@@ -17,7 +17,9 @@ package com.squareup.protoss.schema;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 final class MessageType {
   final String name;
@@ -65,42 +67,44 @@ final class MessageType {
     final String type;
     final String name;
     final int tag;
-    final String defaultValue;
-    final boolean deprecated;
+    final Map<String, String> extensions;
     final String documentation;
 
-    Field(Label label, String type, String name, int tag, String defaultValue, boolean deprecated,
-        String documentation) {
+    Field(Label label, String type, String name, int tag, String documentation,
+        Map<String, String> extensions) {
       if (label == null) throw new NullPointerException("label");
       if (type == null) throw new NullPointerException("type");
       if (name == null) throw new NullPointerException("name");
       if (documentation == null) throw new NullPointerException("documentation");
+      if (extensions == null) throw new NullPointerException("extensions");
 
       this.label = label;
       this.type = type;
       this.name = name;
       this.tag = tag;
-      this.defaultValue = defaultValue;
-      this.deprecated = deprecated;
       this.documentation = documentation;
+      this.extensions = Collections.unmodifiableMap(new LinkedHashMap<String, String>(extensions));
+    }
+
+    public boolean isDeprecated() {
+      return "true".equals(extensions.get("deprecated"));
+    }
+
+    public String getDefault() {
+      return extensions.get("default");
     }
 
     @Override public boolean equals(Object other) {
       if (other instanceof Field) {
         Field that = (Field) other;
-        return eq(label, that.label)
-            && eq(type, that.type)
-            && eq(name, that.name)
+        return label.equals(that.label)
+            && type.equals(that.type)
+            && name.equals(that.name)
             && tag == that.tag
-            && eq(defaultValue, that.defaultValue)
-            && deprecated == that.deprecated
-            && eq(documentation, that.documentation);
+            && extensions.equals(that.extensions)
+            && documentation.equals(that.documentation);
       }
       return false;
-    }
-
-    private static boolean eq(Object a, Object b) {
-      return a == b || a != null && a.equals(b);
     }
 
     @Override public int hashCode() {
@@ -108,7 +112,7 @@ final class MessageType {
     }
 
     @Override public String toString() {
-      return String.format("%s %s %s = %d", label, type, name, tag);
+      return String.format("%s %s %s = %d %s", label, type, name, tag, extensions);
     }
   }
 }

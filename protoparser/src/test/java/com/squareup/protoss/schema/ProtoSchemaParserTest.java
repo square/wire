@@ -18,12 +18,20 @@ package com.squareup.protoss.schema;
 import com.squareup.protoss.schema.EnumType.Value;
 import com.squareup.protoss.schema.MessageType.Field;
 import com.squareup.protoss.schema.MessageType.Label;
-import junit.framework.TestCase;
-
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import junit.framework.TestCase;
 
 public final class ProtoSchemaParserTest extends TestCase {
+  public void testField() throws Exception {
+    Field field = new Field(Label.OPTIONAL, "CType", "ctype", 1, "",
+        map("default", "STRING", "deprecated", "true"));
+    assertTrue(field.isDeprecated());
+    assertEquals("STRING", field.getDefault());
+  }
+
   public void testParseMessageAndFields() throws Exception {
     String proto = ""
         + "message SearchRequest {\n"
@@ -34,9 +42,9 @@ public final class ProtoSchemaParserTest extends TestCase {
 
     ProtoSchemaParser parser = new ProtoSchemaParser(proto);
     MessageType expected = new MessageType("SearchRequest", "", Arrays.asList(
-        new Field(Label.REQUIRED, "string", "query", 1, null, false, ""),
-        new Field(Label.OPTIONAL, "int32", "page_number", 2, null, false, ""),
-        new Field(Label.OPTIONAL, "int32", "result_per_page", 3, null, false, "")));
+        new Field(Label.REQUIRED, "string", "query", 1, "", map()),
+        new Field(Label.OPTIONAL, "int32", "page_number", 2, "", map()),
+        new Field(Label.OPTIONAL, "int32", "result_per_page", 3, "", map())));
     ProtoFile protoFile = new ProtoFile("search.proto", null, Collections.<String>emptyList(),
         Collections.singletonList(expected), Collections.<EnumType>emptyList());
     assertEquals(protoFile, parser.readProtoFile("search.proto"));
@@ -108,9 +116,10 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Collections.<String>emptyList(),
         Collections.singletonList(new MessageType("FieldOptions", "", Arrays.asList(
-            new Field(Label.OPTIONAL, "CType", "ctype", 1, "STRING", true, "")))),
-        Collections.singletonList(new EnumType("CType", "", Arrays.asList(
-            new Value("STRING", 0, "")))));
+            new Field(Label.OPTIONAL, "CType", "ctype", 1, "",
+                map("default", "STRING", "deprecated", "true"))))),
+        Collections.singletonList(
+            new EnumType("CType", "", Arrays.asList(new Value("STRING", 0, "")))));
     ProtoFile actual = parser.readProtoFile("descriptor.proto");
     assertEquals(expected, actual);
   }
@@ -143,5 +152,29 @@ public final class ProtoSchemaParserTest extends TestCase {
         Collections.<EnumType>emptyList());
     ProtoFile actual = parser.readProtoFile("descriptor.proto");
     assertEquals(expected, actual);
+  }
+
+  public void testService() throws Exception {
+    String proto = ""
+        + "service SearchService {\n"
+        + "  rpc Search (SearchRequest) returns (SearchResponse);\n"
+        + "}";
+
+    ProtoSchemaParser parser = new ProtoSchemaParser(proto);
+
+    ProtoFile expected = new ProtoFile("descriptor.proto", null,
+        Collections.<String>emptyList(),
+        Collections.<MessageType>emptyList(),
+        Collections.<EnumType>emptyList());
+    ProtoFile actual = parser.readProtoFile("descriptor.proto");
+    assertEquals(expected, actual);
+  }
+
+  private Map<String, String> map(String... keysAndValues) {
+    Map<String, String> result = new LinkedHashMap<String, String>();
+    for (int i = 0; i < keysAndValues.length; i+=2) {
+      result.put(keysAndValues[i], keysAndValues[i+1]);
+    }
+    return result;
   }
 }
