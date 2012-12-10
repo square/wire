@@ -79,6 +79,10 @@ public final class ProtoSchemaParser {
       readEnumType(documentation);
       return null;
 
+    } else if (label.equals("rpc")) {
+      readRpc();
+      return null;
+
     } else if (label.equals("package")) {
       if (nested) throw unexpected("nested package");
       if (packageName != null) throw unexpected("too many package names");
@@ -114,6 +118,11 @@ public final class ProtoSchemaParser {
     } else if (label.equals("extend")) {
       readExtend();
       return null;
+
+    } else if (label.equals("service")) {
+      readService();
+      return null;
+
     } else {
       throw unexpected("unexpected label: " + label);
     }
@@ -157,6 +166,22 @@ public final class ProtoSchemaParser {
   }
 
   /**
+   * Reads a service declaration (just ignores the content).
+   */
+  private void readService() {
+    readWord(); // Ignore name.
+    if (readChar() != '{') throw unexpected("expected '{'");
+    while (true) {
+      String nestedDocumentation = readDocumentation();
+      if (peekChar() == '}') {
+        pos++;
+        break;
+      }
+      readDeclaration(nestedDocumentation, true);
+    }
+  }
+
+  /**
    * Reads an enumerated type declaration and returns it.
    */
   private void readEnumType(String documentation) {
@@ -187,17 +212,16 @@ public final class ProtoSchemaParser {
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
     char c = peekChar();
+    Map<String, String> options;
     if (c == '[') {
-      Map<String, String> options = readOptions();
-      String deprecatedString = options.get("deprecated");
-      deprecated = deprecatedString != null ? Boolean.valueOf(deprecatedString) : false;
-      defaultValue = options.get("default");
+      options = readOptions();
       c = peekChar();
+    } else {
+      options = new LinkedHashMap<String, String>();
     }
     if (c == ';') {
       pos++;
-      return new MessageType.Field(
-          labelEnum, type, name, tag, defaultValue, deprecated, documentation);
+      return new MessageType.Field(labelEnum, type, name, tag, documentation, options);
     }
     throw unexpected("expected ';'");
   }
@@ -235,6 +259,21 @@ public final class ProtoSchemaParser {
     int tag = readInt();
     if (readChar() != ';') throw unexpected("expected ';'");
     return new EnumType.Value(name, tag, documentation);
+  }
+
+  /**
+   * Reads an rpc method and ignores it.
+   */
+  private void readRpc() {
+    readWord(); // Read method name, ignore.
+    if (readChar() != '(') throw unexpected("expected '('");
+    readWord(); // Read request type, ignore.
+    if (readChar() != ')') throw unexpected("expected ')'");
+    readWord(); // Read returns keyword
+    if (readChar() != '(') throw unexpected("expected '('");
+    readWord(); // Read response type, ignore.
+    if (readChar() != ')') throw unexpected("expected ')'");
+    if (readChar() != ';') throw unexpected("expected ';'");
   }
 
   /**

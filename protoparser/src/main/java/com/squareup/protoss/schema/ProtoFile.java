@@ -62,4 +62,20 @@ final class ProtoFile {
   @Override public int hashCode() {
     return fileName.hashCode();
   }
+
+  @Override public String toString() {
+    StringBuilder result = new StringBuilder();
+    result.append("fileName: ").append(fileName).append('\n');
+    result.append("packageName: ").append(packageName).append('\n');
+    for (String dependency : dependencies) {
+      result.append("import ").append(dependency).append('\n');
+    }
+    for (MessageType messageType : messageTypes) {
+      result.append(messageType).append('\n');
+    }
+    for (EnumType enumType : enumTypes) {
+      result.append(enumType).append('\n');
+    }
+    return result.toString();
+  }
 }
