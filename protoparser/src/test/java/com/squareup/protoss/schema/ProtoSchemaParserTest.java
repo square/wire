@@ -18,9 +18,10 @@ package com.squareup.protoss.schema;
 import com.squareup.protoss.schema.EnumType.Value;
 import com.squareup.protoss.schema.MessageType.Field;
 import com.squareup.protoss.schema.MessageType.Label;
+import junit.framework.TestCase;
+
 import java.util.Arrays;
 import java.util.Collections;
-import junit.framework.TestCase;
 
 public final class ProtoSchemaParserTest extends TestCase {
   public void testParseMessageAndFields() throws Exception {
@@ -122,6 +123,22 @@ public final class ProtoSchemaParserTest extends TestCase {
 
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Collections.singletonList("src/test/resources/unittest_import.proto"),
+        Collections.<MessageType>emptyList(),
+        Collections.<EnumType>emptyList());
+    ProtoFile actual = parser.readProtoFile("descriptor.proto");
+    assertEquals(expected, actual);
+  }
+
+  public void testExtend() throws Exception {
+    String proto = ""
+        + "extend Foo {\n"
+        + "  optional int32 bar = 126;\n"
+        + "}";
+
+    ProtoSchemaParser parser = new ProtoSchemaParser(proto);
+
+    ProtoFile expected = new ProtoFile("descriptor.proto", null,
+        Collections.<String>emptyList(),
         Collections.<MessageType>emptyList(),
         Collections.<EnumType>emptyList());
     ProtoFile actual = parser.readProtoFile("descriptor.proto");

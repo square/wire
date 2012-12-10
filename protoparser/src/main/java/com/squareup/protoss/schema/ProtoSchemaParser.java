@@ -111,6 +111,9 @@ public final class ProtoSchemaParser {
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
 
+    } else if (label.equals("extend")) {
+      readExtend();
+      return null;
     } else {
       throw unexpected("unexpected label: " + label);
     }
@@ -135,6 +138,22 @@ public final class ProtoSchemaParser {
       }
     }
     messageTypes.add(new MessageType(name, documentation, fields));
+  }
+
+  /**
+   * Reads an extend declaration (just ignores the content).
+   */
+  private void readExtend() {
+    readWord(); // Ignore name.
+    if (readChar() != '{') throw unexpected("expected '{'");
+    while (true) {
+      String nestedDocumentation = readDocumentation();
+      if (peekChar() == '}') {
+        pos++;
+        break;
+      }
+      readDeclaration(nestedDocumentation, true);
+    }
   }
 
   /**
