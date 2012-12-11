@@ -28,23 +28,20 @@ final class ProtoFile {
   final String fileName;
   final String packageName;
   final List<String> dependencies;
-  final List<MessageType> messageTypes;
-  final List<EnumType> enumTypes;
+  final List<Type> types;
   final Map<String, String> options;
 
   ProtoFile(String fileName, String packageName, List<String> dependencies,
-      List<MessageType> messageTypes, List<EnumType> enumTypes, Map<String, String> options) {
+      List<Type> types, Map<String, String> options) {
     if (fileName == null) throw new NullPointerException("fileName");
     if (dependencies == null) throw new NullPointerException("dependencies");
-    if (messageTypes == null) throw new NullPointerException("messageTypes");
-    if (enumTypes == null) throw new NullPointerException("enumTypes");
+    if (types == null) throw new NullPointerException("types");
     if (options == null) throw new NullPointerException("options");
 
     this.fileName = fileName;
     this.packageName = packageName;
     this.dependencies = Collections.unmodifiableList(new ArrayList<String>(dependencies));
-    this.messageTypes = Collections.unmodifiableList(new ArrayList<MessageType>(messageTypes));
-    this.enumTypes = Collections.unmodifiableList(new ArrayList<EnumType>(enumTypes));
+    this.types = Collections.unmodifiableList(new ArrayList<Type>(types));
     this.options = Collections.unmodifiableMap(new LinkedHashMap<String, String>(options));
   }
 
@@ -54,8 +51,7 @@ final class ProtoFile {
       return eq(fileName, that.fileName)
           && eq(packageName, that.packageName)
           && eq(dependencies, that.dependencies)
-          && eq(messageTypes, that.messageTypes)
-          && eq(enumTypes, that.enumTypes)
+          && eq(types, that.types)
           && eq(options, that.options);
     }
     return false;
@@ -89,11 +85,8 @@ final class ProtoFile {
     for (String dependency : dependencies) {
       result.append("import ").append(dependency).append('\n');
     }
-    for (MessageType messageType : messageTypes) {
-      result.append(messageType).append('\n');
-    }
-    for (EnumType enumType : enumTypes) {
-      result.append(enumType).append('\n');
+    for (Type type : types) {
+      result.append(type).append('\n');
     }
     return result.toString();
   }
