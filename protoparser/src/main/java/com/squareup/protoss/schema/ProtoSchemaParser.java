@@ -424,7 +424,7 @@ final class ProtoSchemaParser {
     while (true) {
       skipWhitespace(false);
       if (pos == data.length || data[pos] != '/') {
-        return result != null ? result : "";
+        return result != null ? cleanUpDocumentation(result) : "";
       }
       String comment = readComment();
       result = (result == null)
@@ -465,6 +465,26 @@ final class ProtoSchemaParser {
     } else {
       throw unexpected("unexpected '/'");
     }
+  }
+
+  /**
+   * Returns a string like {@code comment}, but without leading whitespace or
+   * asterisks.
+   */
+  private String cleanUpDocumentation(String comment) {
+    StringBuilder result = new StringBuilder();
+    boolean beginningOfLine = true;
+    for (int i = 0; i < comment.length(); i++) {
+      char c = comment.charAt(i);
+      if (!beginningOfLine || (c != ' ' && c != '\t' && c != '*')) {
+        result.append(c);
+        beginningOfLine = false;
+      }
+      if (c == '\n') {
+        beginningOfLine = true;
+      }
+    }
+    return result.toString().trim();
   }
 
   /**
