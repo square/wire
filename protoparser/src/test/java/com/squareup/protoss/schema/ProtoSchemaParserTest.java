@@ -54,7 +54,10 @@ public final class ProtoSchemaParserTest extends TestCase {
 
   public void testParseEnum() throws Exception {
     String proto = ""
-        + "/** What's on my waffles. */\n"
+        + "/**\n"
+        + " * What's on my waffles.\n"
+        + " * Also works on pancakes.\n"
+        + " */\n"
         + "enum Topping {\n"
         + "  FRUIT = 1;\n"
         + "  CREAM = 2;\n"
@@ -62,12 +65,13 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "  // Quebec Maple syrup\n"
         + "  SYRUP = 3;\n"
         + "}\n";
-    Type expected = new EnumType("Topping", "* What's on my waffles. ", Arrays.asList(
-        new Value("FRUIT", 1, ""), new Value("CREAM", 2, ""),
-        new Value("SYRUP", 3, " Quebec Maple syrup")));
+    Type expected = new EnumType("Topping", "What's on my waffles.\nAlso works on pancakes.",
+        Arrays.asList(new Value("FRUIT", 1, ""), new Value("CREAM", 2, ""),
+            new Value("SYRUP", 3, "Quebec Maple syrup")));
     ProtoFile protoFile = new ProtoFile("waffles.proto", null, NO_STRINGS,
         Arrays.asList(expected), map());
-    assertEquals(protoFile, new ProtoSchemaParser("waffles.proto", proto).readProtoFile());
+    ProtoFile actual = new ProtoSchemaParser("waffles.proto", proto).readProtoFile();
+    assertEquals(protoFile, actual);
   }
 
   public void testPackage() throws Exception {
@@ -80,8 +84,8 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "message FileDescriptorSet {\n"
         + "}\n";
     Type message = new MessageType("FileDescriptorSet", ""
-        + " The protocol compiler can output a FileDescriptorSet containing the .proto\n"
-        + " files it parses.", Arrays.<Field>asList(), NO_TYPES);
+        + "The protocol compiler can output a FileDescriptorSet containing the .proto\n"
+        + "files it parses.", Arrays.<Field>asList(), NO_TYPES);
     ProtoFile expected = new ProtoFile("descriptor.proto", "google.protobuf", NO_STRINGS,
         Arrays.asList(message), map("java_package", "com.google.protobuf"));
     assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
