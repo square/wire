@@ -101,6 +101,12 @@ public final class ProtoSchemaParser {
   }
 
   private Object readDeclaration(String documentation, boolean nested) {
+    // Skip unnecessary semicolons, occasionally used after a nested message declaration.
+    if (peekChar() == ';') {
+      pos++;
+      return null;
+    }
+
     String label = readWord();
 
     if (label.equals("message")) {
@@ -497,6 +503,6 @@ public final class ProtoSchemaParser {
 
   private RuntimeException unexpected(String message) {
     throw new IllegalStateException(
-        String.format("Syntax error at at %d:%d: %s", line(), column(), message));
+        String.format("Syntax error in %s at %d:%d: %s", fileName, line(), column(), message));
   }
 }

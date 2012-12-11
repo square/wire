@@ -77,11 +77,6 @@ public final class ProtoSchemaParserTest extends TestCase {
     String proto = ""
         + "package google.protobuf;\n"
         + "option java_package = \"com.google.protobuf\";\n"
-        + "option java_outer_classname = \"DescriptorProtos\";\n"
-        + "\n"
-        + "// descriptor.proto must be optimized for speed because reflection-based\n"
-        + "// algorithms don't work during bootstrapping.\n"
-        + "option optimize_for = SPEED;\n"
         + "\n"
         + "// The protocol compiler can output a FileDescriptorSet containing the .proto\n"
         + "// files it parses.\n"
@@ -95,7 +90,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         Collections.singletonList(new MessageType("FileDescriptorSet", ""
             + " The protocol compiler can output a FileDescriptorSet containing the .proto\n"
             + " files it parses.", Collections.<Field>emptyList())),
-        Collections.<EnumType>emptyList(), map());
+        Collections.<EnumType>emptyList(), map("java_package", "com.google.protobuf"));
     ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
@@ -106,7 +101,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "  optional CType ctype = 1 [default = STRING, deprecated=true];\n"
         + "  enum CType {\n"
         + "    STRING = 0;\n"
-        + "  }\n"
+        + "  };\n"
         + "  // Clients can define custom options in extensions of this message. See above.\n"
         + "  extensions 1000 to max;\n"
         + "}\n";
