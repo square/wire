@@ -21,18 +21,29 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-final class MessageType {
+final class MessageType implements Type {
   final String name;
   final String documentation;
   final List<Field> fields;
+  final List<Type> nestedTypes;
 
-  MessageType(String name, String documentation, List<Field> fields) {
+  MessageType(String name, String documentation, List<Field> fields, List<Type> nestedTypes) {
     if (name == null) throw new NullPointerException("name");
     if (documentation == null) throw new NullPointerException("documentation");
     if (fields == null) throw new NullPointerException("fields");
+    if (nestedTypes == null) throw new NullPointerException("nestedTypes");
     this.name = name;
     this.documentation = documentation;
     this.fields = Collections.unmodifiableList(new ArrayList<Field>(fields));
+    this.nestedTypes = Collections.unmodifiableList(new ArrayList<Type>(nestedTypes));
+  }
+
+  @Override public String getName() {
+    return name;
+  }
+
+  @Override public List<Type> getNestedTypes() {
+    return nestedTypes;
   }
 
   @Override public boolean equals(Object other) {
@@ -40,7 +51,8 @@ final class MessageType {
       MessageType that = (MessageType) other;
       return name.equals(that.name)
           && documentation.equals(that.documentation)
-          && fields.equals(that.fields);
+          && fields.equals(that.fields)
+          && nestedTypes.equals(that.nestedTypes);
     }
     return false;
   }
@@ -54,6 +66,9 @@ final class MessageType {
     result.append(name);
     for (Field field : fields) {
       result.append("\n  ").append(field);
+    }
+    for (Type type : nestedTypes) {
+      result.append(type).append("\n");
     }
     return result.toString();
   }

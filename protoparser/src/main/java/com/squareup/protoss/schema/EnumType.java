@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * An enumerated type declaration.
  */
-final class EnumType {
+final class EnumType implements Type {
   final String name;
   final String documentation;
   final List<Value> values;
@@ -34,6 +34,14 @@ final class EnumType {
     this.name = name;
     this.documentation = documentation;
     this.values = Collections.unmodifiableList(new ArrayList<Value>(values));
+  }
+
+  @Override public String getName() {
+    return name;
+  }
+
+  @Override public List<Type> getNestedTypes() {
+    return Collections.emptyList();
   }
 
   @Override public boolean equals(Object other) {

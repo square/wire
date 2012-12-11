@@ -21,10 +21,14 @@ import com.squareup.protoss.schema.MessageType.Label;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
 
 public final class ProtoSchemaParserTest extends TestCase {
+  private static final List<Type> NO_TYPES = Collections.emptyList();
+  private static final List<String> NO_STRINGS = Collections.emptyList();
+
   public void testField() throws Exception {
     Field field = new Field(Label.OPTIONAL, "CType", "ctype", 1, "",
         map("default", "STRING", "deprecated", "true"));
@@ -39,15 +43,13 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "  optional int32 page_number = 2;\n"
         + "  optional int32 result_per_page = 3;\n"
         + "}";
-
-    ProtoSchemaParser parser = new ProtoSchemaParser("search.proto", proto);
-    MessageType expected = new MessageType("SearchRequest", "", Arrays.asList(
+    Type expected = new MessageType("SearchRequest", "", Arrays.asList(
         new Field(Label.REQUIRED, "string", "query", 1, "", map()),
         new Field(Label.OPTIONAL, "int32", "page_number", 2, "", map()),
-        new Field(Label.OPTIONAL, "int32", "result_per_page", 3, "", map())));
-    ProtoFile protoFile = new ProtoFile("search.proto", null, Collections.<String>emptyList(),
-        Collections.singletonList(expected), Collections.<EnumType>emptyList(), map());
-    assertEquals(protoFile, parser.readProtoFile());
+        new Field(Label.OPTIONAL, "int32", "result_per_page", 3, "", map())), NO_TYPES);
+    ProtoFile protoFile = new ProtoFile("search.proto", null, NO_STRINGS,
+        Arrays.asList(expected), map());
+    assertEquals(protoFile, new ProtoSchemaParser("search.proto", proto).readProtoFile());
   }
 
   public void testParseEnum() throws Exception {
@@ -60,17 +62,12 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "  // Quebec Maple syrup\n"
         + "  SYRUP = 3;\n"
         + "}\n";
-
-    ProtoSchemaParser parser = new ProtoSchemaParser("waffles.proto", proto);
-    EnumType expected = new EnumType("Topping", "* What's on my waffles. ", Arrays.asList(
-        new Value("FRUIT", 1, ""),
-        new Value("CREAM", 2, ""),
-        new Value("SYRUP", 3, " Quebec Maple syrup")
-    ));
-    ProtoFile protoFile = new ProtoFile("waffles.proto", null, Collections.<String>emptyList(),
-        Collections.<MessageType>emptyList(), Collections.singletonList(expected), map());
-    Object actual = parser.readProtoFile();
-    assertEquals(protoFile, actual);
+    Type expected = new EnumType("Topping", "* What's on my waffles. ", Arrays.asList(
+        new Value("FRUIT", 1, ""), new Value("CREAM", 2, ""),
+        new Value("SYRUP", 3, " Quebec Maple syrup")));
+    ProtoFile protoFile = new ProtoFile("waffles.proto", null, NO_STRINGS,
+        Arrays.asList(expected), map());
+    assertEquals(protoFile, new ProtoSchemaParser("waffles.proto", proto).readProtoFile());
   }
 
   public void testPackage() throws Exception {
@@ -82,17 +79,12 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "// files it parses.\n"
         + "message FileDescriptorSet {\n"
         + "}\n";
-
-    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
-
-    ProtoFile expected = new ProtoFile("descriptor.proto", "google.protobuf",
-        Collections.<String>emptyList(),
-        Collections.singletonList(new MessageType("FileDescriptorSet", ""
-            + " The protocol compiler can output a FileDescriptorSet containing the .proto\n"
-            + " files it parses.", Collections.<Field>emptyList())),
-        Collections.<EnumType>emptyList(), map("java_package", "com.google.protobuf"));
-    ProtoFile actual = parser.readProtoFile();
-    assertEquals(expected, actual);
+    Type message = new MessageType("FileDescriptorSet", ""
+        + " The protocol compiler can output a FileDescriptorSet containing the .proto\n"
+        + " files it parses.", Arrays.<Field>asList(), NO_TYPES);
+    ProtoFile expected = new ProtoFile("descriptor.proto", "google.protobuf", NO_STRINGS,
+        Arrays.asList(message), map("java_package", "com.google.protobuf"));
+    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
   public void testNestingInMessage() throws Exception {
@@ -105,32 +97,21 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "  // Clients can define custom options in extensions of this message. See above.\n"
         + "  extensions 1000 to max;\n"
         + "}\n";
-
-    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
-
-    ProtoFile expected = new ProtoFile("descriptor.proto", null,
-        Collections.<String>emptyList(),
-        Collections.singletonList(new MessageType("FieldOptions", "", Arrays.asList(
-            new Field(Label.OPTIONAL, "CType", "ctype", 1, "",
-                map("default", "STRING", "deprecated", "true"))))),
-        Collections.singletonList(
-            new EnumType("CType", "", Arrays.asList(new Value("STRING", 0, "")))), map());
-    ProtoFile actual = parser.readProtoFile();
+    Type enumType = new EnumType("CType", "", Arrays.asList(new Value("STRING", 0, "")));
+    Type messageType = new MessageType("FieldOptions", "", Arrays.asList(new Field(Label.OPTIONAL,
+        "CType", "ctype", 1, "", map("default", "STRING", "deprecated", "true"))),
+        Arrays.asList(enumType));
+    ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS,
+        Arrays.asList(messageType), map());
+    ProtoFile actual = new ProtoSchemaParser("descriptor.proto", proto).readProtoFile();
     assertEquals(expected, actual);
   }
 
   public void testImports() throws Exception {
-    String proto = ""
-        + "import \"src/test/resources/unittest_import.proto\";\n";
-
-    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
-
+    String proto = "import \"src/test/resources/unittest_import.proto\";\n";
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
-        Collections.singletonList("src/test/resources/unittest_import.proto"),
-        Collections.<MessageType>emptyList(),
-        Collections.<EnumType>emptyList(), map());
-    ProtoFile actual = parser.readProtoFile();
-    assertEquals(expected, actual);
+        Arrays.asList("src/test/resources/unittest_import.proto"), NO_TYPES, map());
+    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
   public void testExtend() throws Exception {
@@ -138,15 +119,8 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "extend Foo {\n"
         + "  optional int32 bar = 126;\n"
         + "}";
-
-    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
-
-    ProtoFile expected = new ProtoFile("descriptor.proto", null,
-        Collections.<String>emptyList(),
-        Collections.<MessageType>emptyList(),
-        Collections.<EnumType>emptyList(), map());
-    ProtoFile actual = parser.readProtoFile();
-    assertEquals(expected, actual);
+    ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, map());
+    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
   public void testDefaultFieldWithParen() throws Exception {
@@ -154,17 +128,11 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "message Foo {\n"
         + "  optional string claim_token = 2 [(squareup.redacted) = true];\n"
         + "}";
-
-    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
-
-    ProtoFile expected = new ProtoFile("descriptor.proto", null,
-        Collections.<String>emptyList(),
-        Collections.singletonList(new MessageType("Foo", "", Arrays.asList(
-            new Field(Label.OPTIONAL, "string", "claim_token", 2, "",
-                map("squareup.redacted", "true"))))),
-        Collections.<EnumType>emptyList(), map());
-    ProtoFile actual = parser.readProtoFile();
-    assertEquals(expected, actual);
+    Type messageType = new MessageType("Foo", "", Arrays.asList(new Field(Label.OPTIONAL, "string",
+        "claim_token", 2, "", map("squareup.redacted", "true"))), NO_TYPES);
+    ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS,
+        Arrays.<Type>asList(messageType), map());
+    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
   public void testService() throws Exception {
@@ -175,15 +143,8 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "    option (squareup.sake.timeout) = 15; \n"
         + "  }\n"
         + "}";
-
-    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
-
-    ProtoFile expected = new ProtoFile("descriptor.proto", null,
-        Collections.<String>emptyList(),
-        Collections.<MessageType>emptyList(),
-        Collections.<EnumType>emptyList(), map());
-    ProtoFile actual = parser.readProtoFile();
-    assertEquals(expected, actual);
+    ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, map());
+    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
   private Map<String, String> map(String... keysAndValues) {

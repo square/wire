@@ -34,7 +34,7 @@ import java.util.Map;
  * unrecognized options, and extensions are discarded. It doesn't retain nesting
  * within types.
  */
-public final class ProtoSchemaParser {
+final class ProtoSchemaParser {
   /** The path to the {@code .proto} file. */
   private final String fileName;
 
@@ -56,11 +56,8 @@ public final class ProtoSchemaParser {
   /** Imported files. */
   private List<String> dependencies = new ArrayList<String>();
 
-  /** Declared messages, including nested messages. */
-  private List<MessageType> messageTypes = new ArrayList<MessageType>();
-
-  /** Declared messages, including nested enums. */
-  private List<EnumType> enumTypes = new ArrayList<EnumType>();
+  /** Declared message types and enum types. */
+  private List<Type> types = new ArrayList<Type>();
 
   /** Global options. */
   private Map<String, String> options = new LinkedHashMap<String, String>();
@@ -90,10 +87,12 @@ public final class ProtoSchemaParser {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return new ProtoFile(fileName, packageName, dependencies, messageTypes, enumTypes, options);
+        return new ProtoFile(fileName, packageName, dependencies, types, options);
       }
       Object declaration = readDeclaration(documentation, false);
-      if (declaration instanceof Option) {
+      if (declaration instanceof Type) {
+        types.add((Type) declaration);
+      } else if (declaration instanceof Option) {
         Option option = (Option) declaration;
         options.put(option.name, option.value);
       }
@@ -110,12 +109,10 @@ public final class ProtoSchemaParser {
     String label = readWord();
 
     if (label.equals("message")) {
-      readMessage(documentation);
-      return null;
+      return readMessage(documentation);
 
     } else if (label.equals("enum")) {
-      readEnumType(documentation);
-      return null;
+      return readEnumType(documentation);
 
     } else if (label.equals("rpc")) {
       readRpc();
@@ -168,9 +165,10 @@ public final class ProtoSchemaParser {
   /**
    * Reads a message declaration.
    */
-  private void readMessage(String documentation) {
+  private MessageType readMessage(String documentation) {
     String name = readName();
     List<MessageType.Field> fields = new ArrayList<MessageType.Field>();
+    List<Type> nestedTypes = new ArrayList<Type>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -181,9 +179,11 @@ public final class ProtoSchemaParser {
       Object declared = readDeclaration(nestedDocumentation, true);
       if (declared instanceof MessageType.Field) {
         fields.add((MessageType.Field) declared);
+      } else if (declared instanceof Type) {
+        nestedTypes.add((Type) declared);
       }
     }
-    messageTypes.add(new MessageType(name, documentation, fields));
+    return new MessageType(name, documentation, fields, nestedTypes);
   }
 
   /**
@@ -221,7 +221,7 @@ public final class ProtoSchemaParser {
   /**
    * Reads an enumerated type declaration and returns it.
    */
-  private void readEnumType(String documentation) {
+  private EnumType readEnumType(String documentation) {
     String name = readName();
     List<EnumType.Value> values = new ArrayList<EnumType.Value>();
     if (readChar() != '{') throw unexpected("expected '{'");
@@ -233,7 +233,7 @@ public final class ProtoSchemaParser {
       }
       values.add(readEnumValue(valueDocumentation));
     }
-    enumTypes.add(new EnumType(name, documentation, values));
+    return new EnumType(name, documentation, values);
   }
 
   /**
