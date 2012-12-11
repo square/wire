@@ -62,6 +62,9 @@ public final class ProtoSchemaParser {
   /** Declared messages, including nested enums. */
   private List<EnumType> enumTypes = new ArrayList<EnumType>();
 
+  /** Global options. */
+  private Map<String, String> options = new LinkedHashMap<String, String>();
+
   ProtoSchemaParser(String fileName, String data) {
     this.fileName = fileName;
     this.data = data.toCharArray();
@@ -87,9 +90,13 @@ public final class ProtoSchemaParser {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return new ProtoFile(fileName, packageName, dependencies, messageTypes, enumTypes);
+        return new ProtoFile(fileName, packageName, dependencies, messageTypes, enumTypes, options);
       }
-      readDeclaration(documentation, false);
+      Object declaration = readDeclaration(documentation, false);
+      if (declaration instanceof Option) {
+        Option option = (Option) declaration;
+        options.put(option.name, option.value);
+      }
     }
   }
 
@@ -116,11 +123,11 @@ public final class ProtoSchemaParser {
       return null;
 
     } else if (label.equals("option")) {
-      readName(); // Option name.
+      String name = readName(); // Option name.
       if (readChar() != '=') throw unexpected("expected '=' in option");
-      readString(); // Option value.
+      String value = readString(); // Option value.
       if (readChar() != ';') throw unexpected("expected ';'");
-      return null;
+      return new Option(name, value);
 
     } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
       if (!nested) throw unexpected("fields must be nested");

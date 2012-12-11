@@ -46,7 +46,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         new Field(Label.OPTIONAL, "int32", "page_number", 2, "", map()),
         new Field(Label.OPTIONAL, "int32", "result_per_page", 3, "", map())));
     ProtoFile protoFile = new ProtoFile("search.proto", null, Collections.<String>emptyList(),
-        Collections.singletonList(expected), Collections.<EnumType>emptyList());
+        Collections.singletonList(expected), Collections.<EnumType>emptyList(), map());
     assertEquals(protoFile, parser.readProtoFile());
   }
 
@@ -68,7 +68,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         new Value("SYRUP", 3, " Quebec Maple syrup")
     ));
     ProtoFile protoFile = new ProtoFile("waffles.proto", null, Collections.<String>emptyList(),
-        Collections.<MessageType>emptyList(), Collections.singletonList(expected));
+        Collections.<MessageType>emptyList(), Collections.singletonList(expected), map());
     Object actual = parser.readProtoFile();
     assertEquals(protoFile, actual);
   }
@@ -95,7 +95,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         Collections.singletonList(new MessageType("FileDescriptorSet", ""
             + " The protocol compiler can output a FileDescriptorSet containing the .proto\n"
             + " files it parses.", Collections.<Field>emptyList())),
-        Collections.<EnumType>emptyList());
+        Collections.<EnumType>emptyList(), map());
     ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
@@ -119,7 +119,7 @@ public final class ProtoSchemaParserTest extends TestCase {
             new Field(Label.OPTIONAL, "CType", "ctype", 1, "",
                 map("default", "STRING", "deprecated", "true"))))),
         Collections.singletonList(
-            new EnumType("CType", "", Arrays.asList(new Value("STRING", 0, "")))));
+            new EnumType("CType", "", Arrays.asList(new Value("STRING", 0, "")))), map());
     ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
@@ -133,7 +133,7 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Collections.singletonList("src/test/resources/unittest_import.proto"),
         Collections.<MessageType>emptyList(),
-        Collections.<EnumType>emptyList());
+        Collections.<EnumType>emptyList(), map());
     ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
@@ -149,7 +149,7 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Collections.<String>emptyList(),
         Collections.<MessageType>emptyList(),
-        Collections.<EnumType>emptyList());
+        Collections.<EnumType>emptyList(), map());
     ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
@@ -167,7 +167,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         Collections.singletonList(new MessageType("Foo", "", Arrays.asList(
             new Field(Label.OPTIONAL, "string", "claim_token", 2, "",
                 map("squareup.redacted", "true"))))),
-        Collections.<EnumType>emptyList());
+        Collections.<EnumType>emptyList(), map());
     ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
@@ -186,7 +186,7 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Collections.<String>emptyList(),
         Collections.<MessageType>emptyList(),
-        Collections.<EnumType>emptyList());
+        Collections.<EnumType>emptyList(), map());
     ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
