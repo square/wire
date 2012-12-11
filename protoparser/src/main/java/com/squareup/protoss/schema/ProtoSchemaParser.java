@@ -15,6 +15,12 @@
  */
 package com.squareup.protoss.schema;
 
+import java.io.CharArrayWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,8 +35,10 @@ import java.util.Map;
  * within types.
  */
 public final class ProtoSchemaParser {
+  /** The path to the {@code .proto} file. */
+  private final String fileName;
 
-  /** The entire document */
+  /** The entire document. */
   private final char[] data;
 
   /** Our cursor within the document. {@code data[pos]} is the next character to be read. */
@@ -54,11 +62,28 @@ public final class ProtoSchemaParser {
   /** Declared messages, including nested enums. */
   private List<EnumType> enumTypes = new ArrayList<EnumType>();
 
-  ProtoSchemaParser(String data) {
+  ProtoSchemaParser(String fileName, String data) {
+    this.fileName = fileName;
     this.data = data.toCharArray();
   }
 
-  public ProtoFile readProtoFile(String fileName) {
+  ProtoSchemaParser(File file) throws IOException {
+    this.fileName = file.getPath();
+    this.data = fileToCharArray(file);
+  }
+
+  private char[] fileToCharArray(File file) throws IOException {
+    Reader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+    CharArrayWriter writer = new CharArrayWriter();
+    char[] buffer = new char[1024];
+    int count;
+    while ((count = reader.read(buffer)) != -1) {
+      writer.write(buffer, 0, count);
+    }
+    return writer.toCharArray();
+  }
+
+  public ProtoFile readProtoFile() {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
@@ -86,13 +111,12 @@ public final class ProtoSchemaParser {
     } else if (label.equals("package")) {
       if (nested) throw unexpected("nested package");
       if (packageName != null) throw unexpected("too many package names");
-      packageName = readWord();
+      packageName = readName();
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
 
     } else if (label.equals("option")) {
-      if (nested) throw unexpected("nested option");
-      readWord(); // Option name.
+      readName(); // Option name.
       if (readChar() != '=') throw unexpected("expected '=' in option");
       readString(); // Option value.
       if (readChar() != ';') throw unexpected("expected ';'");
@@ -132,7 +156,7 @@ public final class ProtoSchemaParser {
    * Reads a message declaration.
    */
   private void readMessage(String documentation) {
-    String name = readWord();
+    String name = readName();
     List<MessageType.Field> fields = new ArrayList<MessageType.Field>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
@@ -153,7 +177,7 @@ public final class ProtoSchemaParser {
    * Reads an extend declaration (just ignores the content).
    */
   private void readExtend() {
-    readWord(); // Ignore name.
+    readName(); // Ignore name.
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -169,7 +193,7 @@ public final class ProtoSchemaParser {
    * Reads a service declaration (just ignores the content).
    */
   private void readService() {
-    readWord(); // Ignore name.
+    readName(); // Ignore name.
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -185,7 +209,7 @@ public final class ProtoSchemaParser {
    * Reads an enumerated type declaration and returns it.
    */
   private void readEnumType(String documentation) {
-    String name = readWord();
+    String name = readName();
     List<EnumType.Value> values = new ArrayList<EnumType.Value>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
@@ -203,12 +227,9 @@ public final class ProtoSchemaParser {
    * Reads an field declaration and returns it.
    */
   private MessageType.Field readField(String documentation, String label) {
-    boolean deprecated = false;
-    String defaultValue = null;
-
     MessageType.Label labelEnum = MessageType.Label.valueOf(label.toUpperCase(Locale.US));
-    String type = readWord();
-    String name = readWord();
+    String type = readName();
+    String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
     char c = peekChar();
@@ -236,7 +257,7 @@ public final class ProtoSchemaParser {
     }
     // Each iteration of this loop reads a value.
     while (true) {
-      String optionName = readWord();
+      String optionName = readName();
       if (readChar() != '=') throw unexpected("expected '='");
       String optionValue = readString();
       result.put(optionName, optionValue);
@@ -254,7 +275,7 @@ public final class ProtoSchemaParser {
    * Reads an enum constant and returns it.
    */
   private EnumType.Value readEnumValue(String documentation) {
-    String name = readWord();
+    String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
     if (readChar() != ';') throw unexpected("expected ';'");
@@ -265,15 +286,24 @@ public final class ProtoSchemaParser {
    * Reads an rpc method and ignores it.
    */
   private void readRpc() {
-    readWord(); // Read method name, ignore.
-    if (readChar() != '(') throw unexpected("expected '('");
-    readWord(); // Read request type, ignore.
-    if (readChar() != ')') throw unexpected("expected ')'");
+    readName(); // Read method name, ignore.
+    readName(); // Read request type, ignore.
     readWord(); // Read returns keyword
-    if (readChar() != '(') throw unexpected("expected '('");
-    readWord(); // Read response type, ignore.
-    if (readChar() != ')') throw unexpected("expected ')'");
-    if (readChar() != ';') throw unexpected("expected ';'");
+    readName(); // Read response type, ignore.
+
+    char c = readChar();
+    if (c == '{') {
+      while (true) {
+        String nestedDocumentation = readDocumentation();
+        if (peekChar() == '}') {
+          pos++;
+          break;
+        }
+        readDeclaration(nestedDocumentation, true); // Read and ignore.
+      }
+    } else if (c != ';') {
+      throw unexpected("expected '{' or ';'");
+    }
   }
 
   /**
@@ -319,6 +349,21 @@ public final class ProtoSchemaParser {
       if (c == '\n') newline();
     }
     throw unexpected("unterminated string");
+  }
+
+  /**
+   * Reads a (paren-wrapped) or naked symbol name.
+   */
+  private String readName() {
+    String optionName;
+    if (peekChar() == '(') {
+      pos++;
+      optionName = readWord();
+      if (readChar() != ')') throw unexpected("expected ')'");
+    } else {
+      optionName = readWord();
+    }
+    return optionName;
   }
 
   /**
@@ -389,8 +434,8 @@ public final class ProtoSchemaParser {
           pos += 2;
           return new String(data, start, pos - 2 - start);
         } else {
-          pos++;
-          if (data[pos] == '\n') newline();
+          char c = data[pos++];
+          if (c == '\n') newline();
         }
       }
       throw unexpected("unterminated comment");

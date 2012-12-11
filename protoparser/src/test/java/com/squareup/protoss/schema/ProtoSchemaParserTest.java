@@ -40,14 +40,14 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "  optional int32 result_per_page = 3;\n"
         + "}";
 
-    ProtoSchemaParser parser = new ProtoSchemaParser(proto);
+    ProtoSchemaParser parser = new ProtoSchemaParser("search.proto", proto);
     MessageType expected = new MessageType("SearchRequest", "", Arrays.asList(
         new Field(Label.REQUIRED, "string", "query", 1, "", map()),
         new Field(Label.OPTIONAL, "int32", "page_number", 2, "", map()),
         new Field(Label.OPTIONAL, "int32", "result_per_page", 3, "", map())));
     ProtoFile protoFile = new ProtoFile("search.proto", null, Collections.<String>emptyList(),
         Collections.singletonList(expected), Collections.<EnumType>emptyList());
-    assertEquals(protoFile, parser.readProtoFile("search.proto"));
+    assertEquals(protoFile, parser.readProtoFile());
   }
 
   public void testParseEnum() throws Exception {
@@ -61,7 +61,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "  SYRUP = 3;\n"
         + "}\n";
 
-    ProtoSchemaParser parser = new ProtoSchemaParser(proto);
+    ProtoSchemaParser parser = new ProtoSchemaParser("waffles.proto", proto);
     EnumType expected = new EnumType("Topping", "* What's on my waffles. ", Arrays.asList(
         new Value("FRUIT", 1, ""),
         new Value("CREAM", 2, ""),
@@ -69,7 +69,7 @@ public final class ProtoSchemaParserTest extends TestCase {
     ));
     ProtoFile protoFile = new ProtoFile("waffles.proto", null, Collections.<String>emptyList(),
         Collections.<MessageType>emptyList(), Collections.singletonList(expected));
-    Object actual = parser.readProtoFile("waffles.proto");
+    Object actual = parser.readProtoFile();
     assertEquals(protoFile, actual);
   }
 
@@ -88,7 +88,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "message FileDescriptorSet {\n"
         + "}\n";
 
-    ProtoSchemaParser parser = new ProtoSchemaParser(proto);
+    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
 
     ProtoFile expected = new ProtoFile("descriptor.proto", "google.protobuf",
         Collections.<String>emptyList(),
@@ -96,7 +96,7 @@ public final class ProtoSchemaParserTest extends TestCase {
             + " The protocol compiler can output a FileDescriptorSet containing the .proto\n"
             + " files it parses.", Collections.<Field>emptyList())),
         Collections.<EnumType>emptyList());
-    ProtoFile actual = parser.readProtoFile("descriptor.proto");
+    ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
 
@@ -111,7 +111,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "  extensions 1000 to max;\n"
         + "}\n";
 
-    ProtoSchemaParser parser = new ProtoSchemaParser(proto);
+    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
 
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Collections.<String>emptyList(),
@@ -120,7 +120,7 @@ public final class ProtoSchemaParserTest extends TestCase {
                 map("default", "STRING", "deprecated", "true"))))),
         Collections.singletonList(
             new EnumType("CType", "", Arrays.asList(new Value("STRING", 0, "")))));
-    ProtoFile actual = parser.readProtoFile("descriptor.proto");
+    ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
 
@@ -128,13 +128,13 @@ public final class ProtoSchemaParserTest extends TestCase {
     String proto = ""
         + "import \"src/test/resources/unittest_import.proto\";\n";
 
-    ProtoSchemaParser parser = new ProtoSchemaParser(proto);
+    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
 
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Collections.singletonList("src/test/resources/unittest_import.proto"),
         Collections.<MessageType>emptyList(),
         Collections.<EnumType>emptyList());
-    ProtoFile actual = parser.readProtoFile("descriptor.proto");
+    ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
 
@@ -144,29 +144,50 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "  optional int32 bar = 126;\n"
         + "}";
 
-    ProtoSchemaParser parser = new ProtoSchemaParser(proto);
+    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
 
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Collections.<String>emptyList(),
         Collections.<MessageType>emptyList(),
         Collections.<EnumType>emptyList());
-    ProtoFile actual = parser.readProtoFile("descriptor.proto");
+    ProtoFile actual = parser.readProtoFile();
+    assertEquals(expected, actual);
+  }
+
+  public void testDefaultFieldWithParen() throws Exception {
+    String proto = ""
+        + "message Foo {\n"
+        + "  optional string claim_token = 2 [(squareup.redacted) = true];\n"
+        + "}";
+
+    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
+
+    ProtoFile expected = new ProtoFile("descriptor.proto", null,
+        Collections.<String>emptyList(),
+        Collections.singletonList(new MessageType("Foo", "", Arrays.asList(
+            new Field(Label.OPTIONAL, "string", "claim_token", 2, "",
+                map("squareup.redacted", "true"))))),
+        Collections.<EnumType>emptyList());
+    ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
 
   public void testService() throws Exception {
     String proto = ""
         + "service SearchService {\n"
-        + "  rpc Search (SearchRequest) returns (SearchResponse);\n"
+        + "  rpc Search (SearchRequest) returns (SearchResponse);"
+        + "  rpc Purchase (PurchaseRequest) returns (PurchaseResponse) {\n"
+        + "    option (squareup.sake.timeout) = 15; \n"
+        + "  }\n"
         + "}";
 
-    ProtoSchemaParser parser = new ProtoSchemaParser(proto);
+    ProtoSchemaParser parser = new ProtoSchemaParser("descriptor.proto", proto);
 
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Collections.<String>emptyList(),
         Collections.<MessageType>emptyList(),
         Collections.<EnumType>emptyList());
-    ProtoFile actual = parser.readProtoFile("descriptor.proto");
+    ProtoFile actual = parser.readProtoFile();
     assertEquals(expected, actual);
   }
 
