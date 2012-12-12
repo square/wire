@@ -17,9 +17,9 @@ package com.squareup.protoss.schema;
 
 final class Option {
   final String name;
-  final String value;
+  final Object value;
 
-  public Option(String name, String value) {
+  public Option(String name, Object value) {
     if (name == null) throw new NullPointerException("name");
     if (value == null) throw new NullPointerException("value");
 

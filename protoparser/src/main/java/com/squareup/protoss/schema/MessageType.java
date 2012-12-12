@@ -82,11 +82,11 @@ final class MessageType implements Type {
     final String type;
     final String name;
     final int tag;
-    final Map<String, String> extensions;
+    final Map<String, Object> extensions;
     final String documentation;
 
     Field(Label label, String type, String name, int tag, String documentation,
-        Map<String, String> extensions) {
+        Map<String, Object> extensions) {
       if (label == null) throw new NullPointerException("label");
       if (type == null) throw new NullPointerException("type");
       if (name == null) throw new NullPointerException("name");
@@ -98,7 +98,7 @@ final class MessageType implements Type {
       this.name = name;
       this.tag = tag;
       this.documentation = documentation;
-      this.extensions = Collections.unmodifiableMap(new LinkedHashMap<String, String>(extensions));
+      this.extensions = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(extensions));
     }
 
     public boolean isDeprecated() {
@@ -106,7 +106,7 @@ final class MessageType implements Type {
     }
 
     public String getDefault() {
-      return extensions.get("default");
+      return (String) extensions.get("default");
     }
 
     @Override public boolean equals(Object other) {

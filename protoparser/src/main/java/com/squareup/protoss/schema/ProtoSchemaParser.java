@@ -60,7 +60,7 @@ final class ProtoSchemaParser {
   private List<Type> types = new ArrayList<Type>();
 
   /** Global options. */
-  private Map<String, String> options = new LinkedHashMap<String, String>();
+  private Map<String, Object> options = new LinkedHashMap<String, Object>();
 
   ProtoSchemaParser(String fileName, String data) {
     this.fileName = fileName;
@@ -89,7 +89,7 @@ final class ProtoSchemaParser {
       if (pos == data.length) {
         return new ProtoFile(fileName, packageName, dependencies, types, options);
       }
-      Object declaration = readDeclaration(documentation, false);
+      Object declaration = readDeclaration(documentation, Context.FILE);
       if (declaration instanceof Type) {
         types.add((Type) declaration);
       } else if (declaration instanceof Option) {
@@ -99,7 +99,7 @@ final class ProtoSchemaParser {
     }
   }
 
-  private Object readDeclaration(String documentation, boolean nested) {
+  private Object readDeclaration(String documentation, Context context) {
     // Skip unnecessary semicolons, occasionally used after a nested message declaration.
     if (peekChar() == ';') {
       pos++;
@@ -108,54 +108,57 @@ final class ProtoSchemaParser {
 
     String label = readWord();
 
-    if (label.equals("message")) {
-      return readMessage(documentation);
-
-    } else if (label.equals("enum")) {
-      return readEnumType(documentation);
-
-    } else if (label.equals("rpc")) {
-      readRpc();
-      return null;
-
-    } else if (label.equals("package")) {
-      if (nested) throw unexpected("nested package");
+    if (label.equals("package")) {
+      if (!context.permitsPackage()) throw unexpected("package in " + context);
       if (packageName != null) throw unexpected("too many package names");
       packageName = readName();
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
 
-    } else if (label.equals("option")) {
-      String name = readName(); // Option name.
-      if (readChar() != '=') throw unexpected("expected '=' in option");
-      String value = readString(); // Option value.
-      if (readChar() != ';') throw unexpected("expected ';'");
-      return new Option(name, value);
-
-    } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
-      if (!nested) throw unexpected("fields must be nested");
-      return readField(documentation, label);
-
-    } else if (label.equals("extensions")) {
-      if (!nested) throw unexpected("extensions must be nested");
-      readWord(); // Range start.
-      readWord(); // Literal 'to'
-      readWord(); // Range end.
+    } else if (label.equals("import")) {
+      if (!context.permitsImport()) throw unexpected("import in " + context);
+      dependencies.add(readString());
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
 
-    } else if (label.equals("import")) {
-      dependencies.add(readString());
+    } else if (label.equals("option")) {
+      Option result = readOption('=');
       if (readChar() != ';') throw unexpected("expected ';'");
+      return result;
+
+    } else if (label.equals("message")) {
+      return readMessage(documentation);
+
+    } else if (label.equals("enum")) {
+      return readEnumType(documentation);
+
+    } else if (label.equals("service")) {
+      readService();
       return null;
 
     } else if (label.equals("extend")) {
       readExtend();
       return null;
 
-    } else if (label.equals("service")) {
-      readService();
+    } else if (label.equals("rpc")) {
+      if (!context.permitsRpc()) throw unexpected("rpc in " + context);
+      readRpc();
       return null;
+
+    } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
+      if (!context.permitsField()) throw unexpected("fields must be nested");
+      return readField(documentation, label);
+
+    } else if (label.equals("extensions")) {
+      if (!context.permitsExtensions()) throw unexpected("extensions must be nested");
+      readExtensions();
+      return null;
+
+    } else if (context == Context.ENUM) {
+      if (readChar() != '=') throw unexpected("expected '='");
+      int tag = readInt();
+      if (readChar() != ';') throw unexpected("expected ';'");
+      return new EnumType.Value(label, tag, documentation);
 
     } else {
       throw unexpected("unexpected label: " + label);
@@ -176,7 +179,7 @@ final class ProtoSchemaParser {
         pos++;
         break;
       }
-      Object declared = readDeclaration(nestedDocumentation, true);
+      Object declared = readDeclaration(nestedDocumentation, Context.MESSAGE);
       if (declared instanceof MessageType.Field) {
         fields.add((MessageType.Field) declared);
       } else if (declared instanceof Type) {
@@ -198,7 +201,7 @@ final class ProtoSchemaParser {
         pos++;
         break;
       }
-      readDeclaration(nestedDocumentation, true);
+      readDeclaration(nestedDocumentation, Context.EXTEND);
     }
   }
 
@@ -214,7 +217,7 @@ final class ProtoSchemaParser {
         pos++;
         break;
       }
-      readDeclaration(nestedDocumentation, true);
+      readDeclaration(nestedDocumentation, Context.SERVICE);
     }
   }
 
@@ -231,7 +234,10 @@ final class ProtoSchemaParser {
         pos++;
         break;
       }
-      values.add(readEnumValue(valueDocumentation));
+      Object declared = readDeclaration(valueDocumentation, Context.ENUM);
+      if (declared instanceof EnumType.Value) {
+        values.add((EnumType.Value) declared);
+      }
     }
     return new EnumType(name, documentation, values);
   }
@@ -246,12 +252,12 @@ final class ProtoSchemaParser {
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
     char c = peekChar();
-    Map<String, String> options;
+    Map<String, Object> options;
     if (c == '[') {
-      options = readOptions();
+      options = readMap('[', ']', '=');
       c = peekChar();
     } else {
-      options = new LinkedHashMap<String, String>();
+      options = new LinkedHashMap<String, Object>();
     }
     if (c == ';') {
       pos++;
@@ -260,39 +266,57 @@ final class ProtoSchemaParser {
     throw unexpected("expected ';'");
   }
 
-  private Map<String, String> readOptions() {
-    if (readChar() != '[') throw new AssertionError();
-    Map<String, String> result = new LinkedHashMap<String, String>();
-    // Handle '[]' as a special case. Otherwise we need state to avoids invalid cases like '[,]'.
-    if (peekChar() == ']') {
-      pos++;
-      return result;
+  /**
+   * Reads extensions like "extensions 101;" or "extensions 101 to max;".
+   */
+  private void readExtensions() {
+    readWord(); // Range start.
+    if (peekChar() != ';') {
+      readWord(); // Literal 'to'
+      readWord(); // Range end.
     }
-    // Each iteration of this loop reads a value.
-    while (true) {
-      String optionName = readName();
-      if (readChar() != '=') throw unexpected("expected '='");
-      String optionValue = readString();
-      result.put(optionName, optionValue);
-
-      char c = readChar();
-      if (c == ']') {
-        return result;
-      } else if (c != ',') {
-        throw unexpected("expected ','");
-      }
-    }
+    if (readChar() != ';') throw unexpected("expected ';'");
   }
 
   /**
-   * Reads an enum constant and returns it.
+   * Reads a option containing a name, an '=' or ':', and a value.
    */
-  private EnumType.Value readEnumValue(String documentation) {
-    String name = readName();
-    if (readChar() != '=') throw unexpected("expected '='");
-    int tag = readInt();
-    if (readChar() != ';') throw unexpected("expected ';'");
-    return new EnumType.Value(name, tag, documentation);
+  private Option readOption(char keyValueSeparator) {
+    String name = readName(); // Option name.
+    if (readChar() != keyValueSeparator) {
+      throw unexpected("expected '" + keyValueSeparator + "' in option");
+    }
+    Object value = peekChar() == '{'
+        ? readMap('{', '}', ':')
+        : readString();
+    return new Option(name, value);
+  }
+
+  /**
+   * Returns a map of string keys and values. This is similar to a JSON object,
+   * with '{' and '}' surrounding the map, ':' separating keys from values, and
+   * ',' separating entries.
+   */
+  private Map<String, Object> readMap(char openBrace, char closeBrace, char keyValueSeparator) {
+    if (readChar() != openBrace) throw new AssertionError();
+    Map<String, Object> result = new LinkedHashMap<String, Object>();
+    while (true) {
+      if (peekChar() == closeBrace) {
+        // If we see the close brace, finish immediately. This handles {}/[] and ,}/,] cases.
+        pos++;
+        return result;
+      }
+
+      Option option = readOption(keyValueSeparator);
+      result.put(option.name, option.value);
+
+      char c = peekChar();
+      if (c == ',') {
+        pos++;
+      } else if (c != closeBrace) {
+        throw unexpected("expected ',' or '" + closeBrace + "'");
+      }
+    }
   }
 
   /**
@@ -312,7 +336,7 @@ final class ProtoSchemaParser {
           pos++;
           break;
         }
-        readDeclaration(nestedDocumentation, true); // Read and ignore.
+        readDeclaration(nestedDocumentation, Context.RPC); // Read and ignore.
       }
     } else if (c != ';') {
       throw unexpected("expected '{' or ';'");
@@ -365,14 +389,19 @@ final class ProtoSchemaParser {
   }
 
   /**
-   * Reads a (paren-wrapped) or naked symbol name.
+   * Reads a (paren-wrapped), [square-wrapped] or naked symbol name.
    */
   private String readName() {
     String optionName;
-    if (peekChar() == '(') {
+    char c = peekChar();
+    if (c == '(') {
       pos++;
       optionName = readWord();
       if (readChar() != ')') throw unexpected("expected ')'");
+    } else if (c == '[') {
+      pos++;
+      optionName = readWord();
+      if (readChar() != ']') throw unexpected("expected ']'");
     } else {
       optionName = readWord();
     }
@@ -408,7 +437,12 @@ final class ProtoSchemaParser {
   private int readInt() {
     String tag = readWord();
     try {
-      return Integer.valueOf(tag);
+      int radix = 10;
+      if (tag.startsWith("0x")) {
+        tag = tag.substring("0x".length());
+        radix = 16;
+      }
+      return Integer.valueOf(tag, radix);
     } catch (Exception e) {
       throw unexpected("expected an integer but was " + tag);
     }
@@ -524,5 +558,34 @@ final class ProtoSchemaParser {
   private RuntimeException unexpected(String message) {
     throw new IllegalStateException(
         String.format("Syntax error in %s at %d:%d: %s", fileName, line(), column(), message));
+  }
+
+  enum Context {
+    FILE,
+    MESSAGE,
+    ENUM,
+    RPC,
+    EXTEND,
+    SERVICE;
+
+    public boolean permitsPackage() {
+      return this == FILE;
+    }
+
+    public boolean permitsImport() {
+      return this == FILE;
+    }
+
+    public boolean permitsField() {
+      return this == MESSAGE || this == EXTEND;
+    }
+
+    public boolean permitsExtensions() {
+      return this != FILE;
+    }
+
+    public boolean permitsRpc() {
+      return this == SERVICE;
+    }
   }
 }
