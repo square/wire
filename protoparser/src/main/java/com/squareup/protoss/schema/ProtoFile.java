@@ -29,10 +29,10 @@ final class ProtoFile {
   final String packageName;
   final List<String> dependencies;
   final List<Type> types;
-  final Map<String, String> options;
+  final Map<String, Object> options;
 
   ProtoFile(String fileName, String packageName, List<String> dependencies,
-      List<Type> types, Map<String, String> options) {
+      List<Type> types, Map<String, Object> options) {
     if (fileName == null) throw new NullPointerException("fileName");
     if (dependencies == null) throw new NullPointerException("dependencies");
     if (types == null) throw new NullPointerException("types");
@@ -42,7 +42,7 @@ final class ProtoFile {
     this.packageName = packageName;
     this.dependencies = Collections.unmodifiableList(new ArrayList<String>(dependencies));
     this.types = Collections.unmodifiableList(new ArrayList<Type>(types));
-    this.options = Collections.unmodifiableMap(new LinkedHashMap<String, String>(options));
+    this.options = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(options));
   }
 
   @Override public boolean equals(Object other) {
@@ -62,8 +62,8 @@ final class ProtoFile {
    * specified.
    */
   public String getJavaPackage() {
-    String javaPackage = options.get("java_package");
-    return javaPackage != null ? javaPackage : packageName;
+    Object javaPackage = options.get("java_package");
+    return javaPackage != null ? (String) javaPackage : packageName;
   }
 
   private static boolean eq(Object a, Object b) {
@@ -78,7 +78,7 @@ final class ProtoFile {
     StringBuilder result = new StringBuilder();
     result.append("fileName: ").append(fileName).append('\n');
     result.append("packageName: ").append(packageName).append('\n');
-    for (Map.Entry<String, String> option : options.entrySet()) {
+    for (Map.Entry<String, Object> option : options.entrySet()) {
       result.append("option ").append(option.getKey()).append(" = ").append(option.getValue())
           .append('\n');
     }

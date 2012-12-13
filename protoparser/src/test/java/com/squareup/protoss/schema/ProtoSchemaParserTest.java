@@ -99,6 +99,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "    STRING = 0;\n"
         + "  };\n"
         + "  // Clients can define custom options in extensions of this message. See above.\n"
+        + "  extensions 500;\n"
         + "  extensions 1000 to max;\n"
         + "}\n";
     Type enumType = new EnumType("CType", "", Arrays.asList(new Value("STRING", 0, "")));
@@ -151,10 +152,53 @@ public final class ProtoSchemaParserTest extends TestCase {
     assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
-  private Map<String, String> map(String... keysAndValues) {
-    Map<String, String> result = new LinkedHashMap<String, String>();
+  public void testHexTag() throws Exception {
+    String proto = ""
+        + "message HexTag {\n"
+        + "  required string hex = 0x10;\n"
+        + "}";
+    Type expected = new MessageType("HexTag", "", Arrays.asList(
+        new Field(Label.REQUIRED, "string", "hex", 16, "", map())), NO_TYPES);
+    ProtoFile protoFile = new ProtoFile(
+        "hex.proto", null, NO_STRINGS, Arrays.asList(expected), map());
+    assertEquals(protoFile, new ProtoSchemaParser("hex.proto", proto).readProtoFile());
+  }
+
+  public void testStructuredOption() throws Exception {
+    String proto = ""
+        + "message ExoticOptions {\n"
+        + "  option (squareup.one) = {name: \"Name\", class_name:\"ClassName\"};\n"
+        + "  option (squareup.two.a) = {[squareup.options.type]: EXOTIC};\n"
+        + "}";
+    Type expected = new MessageType("ExoticOptions", "", Arrays.<Field>asList(), NO_TYPES);
+    ProtoFile protoFile = new ProtoFile(
+        "exotic.proto", null, NO_STRINGS, Arrays.asList(expected), map());
+    assertEquals(protoFile, new ProtoSchemaParser("exotic.proto", proto).readProtoFile());
+  }
+
+  public void testOptionsWithNestedMapsAndTrailingCommas() throws Exception {
+    String proto = ""
+        + "message StructuredOption {\n"
+        + "    optional field.type has_options = 3 [\n"
+        + "            (option_map) = {\n"
+        + "                nested_map: {key:\"value\", key2:\"value2\"},\n" // Note trailing ','.
+        + "            },\n"
+        + "            (option_string) = \"string\"\n"
+        + "    ];\n"
+        + "}";
+    Type expected = new MessageType("StructuredOption", "",Arrays.<Field>asList(
+        new Field(Label.OPTIONAL, "field.type", "has_options", 3, "",
+            map("option_map", map("nested_map", map("key", "value", "key2", "value2")),
+                "option_string", "string"))), NO_TYPES);
+    ProtoFile protoFile = new ProtoFile(
+        "nestedmaps.proto", null, NO_STRINGS, Arrays.asList(expected), map());
+    assertEquals(protoFile, new ProtoSchemaParser("nestedmaps.proto", proto).readProtoFile());
+  }
+
+  private Map<String, Object> map(Object... keysAndValues) {
+    Map<String, Object> result = new LinkedHashMap<String, Object>();
     for (int i = 0; i < keysAndValues.length; i+=2) {
-      result.put(keysAndValues[i], keysAndValues[i+1]);
+      result.put((String) keysAndValues[i], keysAndValues[i+1]);
     }
     return result;
   }
