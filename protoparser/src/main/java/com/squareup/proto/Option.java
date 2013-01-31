@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.protoss.schema;
+package com.squareup.proto;
 
 public final class Option {
   private final String name;

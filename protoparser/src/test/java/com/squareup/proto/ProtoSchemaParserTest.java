@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.protoss.schema;
+package com.squareup.proto;
 
-import com.squareup.protoss.schema.EnumType.Value;
-import com.squareup.protoss.schema.MessageType.Label;
+import com.squareup.proto.EnumType.Value;
+import com.squareup.proto.MessageType.Label;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
