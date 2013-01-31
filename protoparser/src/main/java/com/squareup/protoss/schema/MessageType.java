@@ -21,11 +21,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-final class MessageType implements Type {
-  final String name;
-  final String documentation;
-  final List<Field> fields;
-  final List<Type> nestedTypes;
+public final class MessageType implements Type {
+  private final String name;
+  private final String documentation;
+  private final List<Field> fields;
+  private final List<Type> nestedTypes;
 
   MessageType(String name, String documentation, List<Field> fields, List<Type> nestedTypes) {
     if (name == null) throw new NullPointerException("name");
@@ -40,6 +40,14 @@ final class MessageType implements Type {
 
   @Override public String getName() {
     return name;
+  }
+
+  public String getDocumentation() {
+    return documentation;
+  }
+
+  public List<Field> getFields() {
+    return fields;
   }
 
   @Override public List<Type> getNestedTypes() {
@@ -77,13 +85,13 @@ final class MessageType implements Type {
     OPTIONAL, REQUIRED, REPEATED
   }
 
-  static final class Field {
-    final Label label;
-    final String type;
-    final String name;
-    final int tag;
-    final Map<String, Object> extensions;
-    final String documentation;
+  public static final class Field {
+    private final Label label;
+    private final String type;
+    private final String name;
+    private final int tag;
+    private final Map<String, Object> extensions;
+    private final String documentation;
 
     Field(Label label, String type, String name, int tag, String documentation,
         Map<String, Object> extensions) {
@@ -99,6 +107,30 @@ final class MessageType implements Type {
       this.tag = tag;
       this.documentation = documentation;
       this.extensions = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(extensions));
+    }
+
+    public Label getLabel() {
+      return label;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public int getTag() {
+      return tag;
+    }
+
+    public Map<String, Object> getExtensions() {
+      return extensions;
+    }
+
+    public String getDocumentation() {
+      return documentation;
     }
 
     public boolean isDeprecated() {

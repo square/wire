@@ -22,10 +22,10 @@ import java.util.List;
 /**
  * An enumerated type declaration.
  */
-final class EnumType implements Type {
-  final String name;
-  final String documentation;
-  final List<Value> values;
+public final class EnumType implements Type {
+  private final String name;
+  private final String documentation;
+  private final List<Value> values;
 
   EnumType(String name, String documentation, List<Value> values) {
     if (name == null) throw new NullPointerException("name");
@@ -38,6 +38,14 @@ final class EnumType implements Type {
 
   @Override public String getName() {
     return name;
+  }
+
+  public String getDocumentation() {
+    return documentation;
+  }
+
+  public List<Value> getValues() {
+    return values;
   }
 
   @Override public List<Type> getNestedTypes() {
