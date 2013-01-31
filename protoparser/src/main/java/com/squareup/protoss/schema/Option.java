@@ -15,16 +15,24 @@
  */
 package com.squareup.protoss.schema;
 
-final class Option {
-  final String name;
-  final Object value;
+public final class Option {
+  private final String name;
+  private final Object value;
 
-  public Option(String name, Object value) {
+  Option(String name, Object value) {
     if (name == null) throw new NullPointerException("name");
     if (value == null) throw new NullPointerException("value");
 
     this.name = name;
     this.value = value;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public Object getValue() {
+    return value;
   }
 
   @Override public boolean equals(Object other) {

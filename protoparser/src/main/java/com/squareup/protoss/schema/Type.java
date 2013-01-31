@@ -17,10 +17,9 @@ package com.squareup.protoss.schema;
 
 import java.util.List;
 
-/**
- * A message type or enum type declaration.
- */
-interface Type {
+/** A message type or enum type declaration. */
+public interface Type {
   String getName();
+
   List<Type> getNestedTypes();
 }

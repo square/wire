@@ -24,12 +24,12 @@ import java.util.Map;
 /**
  * A single {@code .proto} file.
  */
-final class ProtoFile {
-  final String fileName;
-  final String packageName;
-  final List<String> dependencies;
-  final List<Type> types;
-  final Map<String, Object> options;
+public final class ProtoFile {
+  private final String fileName;
+  private final String packageName;
+  private final List<String> dependencies;
+  private final List<Type> types;
+  private final Map<String, Object> options;
 
   ProtoFile(String fileName, String packageName, List<String> dependencies,
       List<Type> types, Map<String, Object> options) {
@@ -45,6 +45,35 @@ final class ProtoFile {
     this.options = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(options));
   }
 
+  /**
+   * Returns the Java package, or the default package if no Java package is
+   * specified.
+   */
+  public String getJavaPackage() {
+    Object javaPackage = options.get("java_package");
+    return javaPackage != null ? (String) javaPackage : packageName;
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public String getPackageName() {
+    return packageName;
+  }
+
+  public List<String> getDependencies() {
+    return dependencies;
+  }
+
+  public List<Type> getTypes() {
+    return types;
+  }
+
+  public Map<String, Object> getOptions() {
+    return options;
+  }
+
   @Override public boolean equals(Object other) {
     if (other instanceof ProtoFile) {
       ProtoFile that = (ProtoFile) other;
@@ -55,15 +84,6 @@ final class ProtoFile {
           && eq(options, that.options);
     }
     return false;
-  }
-
-  /**
-   * Returns the Java package, or the default package if no Java package is
-   * specified.
-   */
-  public String getJavaPackage() {
-    Object javaPackage = options.get("java_package");
-    return javaPackage != null ? (String) javaPackage : packageName;
   }
 
   private static boolean eq(Object a, Object b) {

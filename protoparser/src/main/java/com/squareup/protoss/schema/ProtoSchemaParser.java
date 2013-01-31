@@ -34,7 +34,15 @@ import java.util.Map;
  * unrecognized options, and extensions are discarded. It doesn't retain nesting
  * within types.
  */
-final class ProtoSchemaParser {
+public final class ProtoSchemaParser {
+  public static ProtoFile parse(File file) throws IOException {
+    return new ProtoSchemaParser(file).readProtoFile();
+  }
+
+  public static ProtoFile parse(String name, String data) {
+    return new ProtoSchemaParser(name, data).readProtoFile();
+  }
+
   /** The path to the {@code .proto} file. */
   private final String fileName;
 
@@ -94,7 +102,7 @@ final class ProtoSchemaParser {
         types.add((Type) declaration);
       } else if (declaration instanceof Option) {
         Option option = (Option) declaration;
-        options.put(option.name, option.value);
+        options.put(option.getName(), option.getValue());
       }
     }
   }
@@ -114,60 +122,47 @@ final class ProtoSchemaParser {
       packageName = readName();
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
-
     } else if (label.equals("import")) {
       if (!context.permitsImport()) throw unexpected("import in " + context);
       dependencies.add(readString());
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
-
     } else if (label.equals("option")) {
       Option result = readOption('=');
       if (readChar() != ';') throw unexpected("expected ';'");
       return result;
-
     } else if (label.equals("message")) {
       return readMessage(documentation);
-
     } else if (label.equals("enum")) {
       return readEnumType(documentation);
-
     } else if (label.equals("service")) {
       readService();
       return null;
-
     } else if (label.equals("extend")) {
       readExtend();
       return null;
-
     } else if (label.equals("rpc")) {
       if (!context.permitsRpc()) throw unexpected("rpc in " + context);
       readRpc();
       return null;
-
     } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
       if (!context.permitsField()) throw unexpected("fields must be nested");
       return readField(documentation, label);
-
     } else if (label.equals("extensions")) {
       if (!context.permitsExtensions()) throw unexpected("extensions must be nested");
       readExtensions();
       return null;
-
     } else if (context == Context.ENUM) {
       if (readChar() != '=') throw unexpected("expected '='");
       int tag = readInt();
       if (readChar() != ';') throw unexpected("expected ';'");
       return new EnumType.Value(label, tag, documentation);
-
     } else {
       throw unexpected("unexpected label: " + label);
     }
   }
 
-  /**
-   * Reads a message declaration.
-   */
+  /** Reads a message declaration. */
   private MessageType readMessage(String documentation) {
     String name = readName();
     List<MessageType.Field> fields = new ArrayList<MessageType.Field>();
@@ -189,9 +184,7 @@ final class ProtoSchemaParser {
     return new MessageType(name, documentation, fields, nestedTypes);
   }
 
-  /**
-   * Reads an extend declaration (just ignores the content).
-   */
+  /** Reads an extend declaration (just ignores the content). */
   private void readExtend() {
     readName(); // Ignore name.
     if (readChar() != '{') throw unexpected("expected '{'");
@@ -205,9 +198,7 @@ final class ProtoSchemaParser {
     }
   }
 
-  /**
-   * Reads a service declaration (just ignores the content).
-   */
+  /** Reads a service declaration (just ignores the content). */
   private void readService() {
     readName(); // Ignore name.
     if (readChar() != '{') throw unexpected("expected '{'");
@@ -221,9 +212,7 @@ final class ProtoSchemaParser {
     }
   }
 
-  /**
-   * Reads an enumerated type declaration and returns it.
-   */
+  /** Reads an enumerated type declaration and returns it. */
   private EnumType readEnumType(String documentation) {
     String name = readName();
     List<EnumType.Value> values = new ArrayList<EnumType.Value>();
@@ -242,9 +231,7 @@ final class ProtoSchemaParser {
     return new EnumType(name, documentation, values);
   }
 
-  /**
-   * Reads an field declaration and returns it.
-   */
+  /** Reads an field declaration and returns it. */
   private MessageType.Field readField(String documentation, String label) {
     MessageType.Label labelEnum = MessageType.Label.valueOf(label.toUpperCase(Locale.US));
     String type = readName();
@@ -266,9 +253,7 @@ final class ProtoSchemaParser {
     throw unexpected("expected ';'");
   }
 
-  /**
-   * Reads extensions like "extensions 101;" or "extensions 101 to max;".
-   */
+  /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
   private void readExtensions() {
     readWord(); // Range start.
     if (peekChar() != ';') {
@@ -278,17 +263,13 @@ final class ProtoSchemaParser {
     if (readChar() != ';') throw unexpected("expected ';'");
   }
 
-  /**
-   * Reads a option containing a name, an '=' or ':', and a value.
-   */
+  /** Reads a option containing a name, an '=' or ':', and a value. */
   private Option readOption(char keyValueSeparator) {
     String name = readName(); // Option name.
     if (readChar() != keyValueSeparator) {
       throw unexpected("expected '" + keyValueSeparator + "' in option");
     }
-    Object value = peekChar() == '{'
-        ? readMap('{', '}', ':')
-        : readString();
+    Object value = peekChar() == '{' ? readMap('{', '}', ':') : readString();
     return new Option(name, value);
   }
 
@@ -308,7 +289,7 @@ final class ProtoSchemaParser {
       }
 
       Option option = readOption(keyValueSeparator);
-      result.put(option.name, option.value);
+      result.put(option.getName(), option.getValue());
 
       char c = peekChar();
       if (c == ',') {
@@ -319,9 +300,7 @@ final class ProtoSchemaParser {
     }
   }
 
-  /**
-   * Reads an rpc method and ignores it.
-   */
+  /** Reads an rpc method and ignores it. */
   private void readRpc() {
     readName(); // Read method name, ignore.
     readName(); // Read request type, ignore.
@@ -343,9 +322,7 @@ final class ProtoSchemaParser {
     }
   }
 
-  /**
-   * Reads a non-whitespace character and returns it.
-   */
+  /** Reads a non-whitespace character and returns it. */
   private char readChar() {
     char result = peekChar();
     pos++;
@@ -362,9 +339,7 @@ final class ProtoSchemaParser {
     return data[pos];
   }
 
-  /**
-   * Reads a quoted or unquoted string and returns it.
-   */
+  /** Reads a quoted or unquoted string and returns it. */
   private String readString() {
     skipWhitespace(true);
     return peekChar() == '"' ? readQuotedString() : readWord();
@@ -388,9 +363,7 @@ final class ProtoSchemaParser {
     throw unexpected("unterminated string");
   }
 
-  /**
-   * Reads a (paren-wrapped), [square-wrapped] or naked symbol name.
-   */
+  /** Reads a (paren-wrapped), [square-wrapped] or naked symbol name. */
   private String readName() {
     String optionName;
     char c = peekChar();
@@ -408,9 +381,7 @@ final class ProtoSchemaParser {
     return optionName;
   }
 
-  /**
-   * Reads a non-empty word and returns it.
-   */
+  /** Reads a non-empty word and returns it. */
   private String readWord() {
     skipWhitespace(true);
     int start = pos;
@@ -431,9 +402,7 @@ final class ProtoSchemaParser {
     return new String(data, start, pos - start);
   }
 
-  /**
-   * Reads an integer and returns it.
-   */
+  /** Reads an integer and returns it. */
   private int readInt() {
     String tag = readWord();
     try {
@@ -461,15 +430,11 @@ final class ProtoSchemaParser {
         return result != null ? cleanUpDocumentation(result) : "";
       }
       String comment = readComment();
-      result = (result == null)
-          ? comment
-          : (result + "\n" + comment);
+      result = (result == null) ? comment : (result + "\n" + comment);
     }
   }
 
-  /**
-   * Reads a comment and returns its body.
-   */
+  /** Reads a comment and returns its body. */
   private String readComment() {
     if (pos == data.length || data[pos] != '/') throw new AssertionError();
     pos++;
@@ -539,9 +504,7 @@ final class ProtoSchemaParser {
     }
   }
 
-  /**
-   * Call this everytime a '\n' is encountered.
-   */
+  /** Call this everytime a '\n' is encountered. */
   private void newline() {
     line++;
     lineStart = pos;
