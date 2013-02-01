@@ -67,7 +67,7 @@ public final class MessageType implements Type {
     return result.toString();
   }
 
-  enum Label {
+  public enum Label {
     OPTIONAL, REQUIRED, REPEATED
   }
 

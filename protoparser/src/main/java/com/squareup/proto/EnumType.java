@@ -59,10 +59,10 @@ public final class EnumType implements Type {
     return result.toString();
   }
 
-  static final class Value {
-    final String name;
-    final int tag;
-    final String documentation;
+  public static final class Value {
+    private final String name;
+    private final int tag;
+    private final String documentation;
 
     Value(String name, int tag, String documentation) {
       if (name == null) throw new NullPointerException("name");
@@ -70,6 +70,18 @@ public final class EnumType implements Type {
       this.name = name;
       this.tag = tag;
       this.documentation = documentation;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public int getTag() {
+      return tag;
+    }
+
+    public String getDocumentation() {
+      return documentation;
     }
 
     @Override public boolean equals(Object other) {
