@@ -12,6 +12,7 @@ import junit.framework.TestCase;
 
 public final class ProtoSchemaParserTest extends TestCase {
   private static final List<Type> NO_TYPES = Collections.emptyList();
+  private static final List<Service> NO_SERVICES = Collections.emptyList();
   private static final List<String> NO_STRINGS = Collections.emptyList();
 
   public void testField() throws Exception {
@@ -34,7 +35,7 @@ public final class ProtoSchemaParserTest extends TestCase {
             new MessageType.Field(Label.OPTIONAL, "int32", "result_per_page", 3, "", map())),
         NO_TYPES);
     ProtoFile protoFile =
-        new ProtoFile("search.proto", null, NO_STRINGS, Arrays.asList(expected), map());
+        new ProtoFile("search.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map());
     assertEquals(protoFile, new ProtoSchemaParser("search.proto", proto).readProtoFile());
   }
 
@@ -55,7 +56,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         Arrays.asList(new Value("FRUIT", 1, ""), new Value("CREAM", 2, ""),
             new Value("SYRUP", 3, "Quebec Maple syrup")));
     ProtoFile protoFile =
-        new ProtoFile("waffles.proto", null, NO_STRINGS, Arrays.asList(expected), map());
+        new ProtoFile("waffles.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map());
     ProtoFile actual = new ProtoSchemaParser("waffles.proto", proto).readProtoFile();
     assertEquals(protoFile, actual);
   }
@@ -74,7 +75,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "files it parses.", Arrays.<MessageType.Field>asList(), NO_TYPES);
     ProtoFile expected =
         new ProtoFile("descriptor.proto", "google.protobuf", NO_STRINGS, Arrays.asList(message),
-            map("java_package", "com.google.protobuf"));
+            NO_SERVICES, map("java_package", "com.google.protobuf"));
     assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
@@ -94,7 +95,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
             map("default", "STRING", "deprecated", "true"))), Arrays.asList(enumType));
     ProtoFile expected =
-        new ProtoFile("descriptor.proto", null, NO_STRINGS, Arrays.asList(messageType), map());
+        new ProtoFile("descriptor.proto", null, NO_STRINGS, Arrays.asList(messageType), NO_SERVICES, map());
     ProtoFile actual = new ProtoSchemaParser("descriptor.proto", proto).readProtoFile();
     assertEquals(expected, actual);
   }
@@ -102,7 +103,7 @@ public final class ProtoSchemaParserTest extends TestCase {
   public void testImports() throws Exception {
     String proto = "import \"src/test/resources/unittest_import.proto\";\n";
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
-        Arrays.asList("src/test/resources/unittest_import.proto"), NO_TYPES, map());
+        Arrays.asList("src/test/resources/unittest_import.proto"), NO_TYPES, NO_SERVICES, map());
     assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
@@ -111,7 +112,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "extend Foo {\n"
         + "  optional int32 bar = 126;\n"
         + "}";
-    ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, map());
+    ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, NO_SERVICES, map());
     assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
@@ -125,7 +126,7 @@ public final class ProtoSchemaParserTest extends TestCase {
             map("squareup.redacted", "true"))), NO_TYPES);
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, Arrays.<Type>asList(messageType),
-            map());
+            NO_SERVICES, map());
     assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
@@ -137,8 +138,13 @@ public final class ProtoSchemaParserTest extends TestCase {
         + "    option (squareup.sake.timeout) = 15; \n"
         + "  }\n"
         + "}";
-    ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, map());
-    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
+    Service expected = new Service("SearchService", "", Arrays.asList(
+        new Service.Method("Search", "", "SearchRequest", "SearchResponse", map()),
+        new Service.Method("Purchase", "", "PurchaseRequest", "PurchaseResponse",
+            map("squareup.sake.timeout", "15"))));
+    ProtoFile protoFile =
+        new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, Arrays.asList(expected), map());
+    assertEquals(protoFile, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
   }
 
   public void testHexTag() throws Exception {
@@ -150,7 +156,7 @@ public final class ProtoSchemaParserTest extends TestCase {
         Arrays.asList(new MessageType.Field(Label.REQUIRED, "string", "hex", 16, "", map())),
         NO_TYPES);
     ProtoFile protoFile =
-        new ProtoFile("hex.proto", null, NO_STRINGS, Arrays.asList(expected), map());
+        new ProtoFile("hex.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map());
     assertEquals(protoFile, new ProtoSchemaParser("hex.proto", proto).readProtoFile());
   }
 
@@ -163,7 +169,7 @@ public final class ProtoSchemaParserTest extends TestCase {
     Type expected =
         new MessageType("ExoticOptions", "", Arrays.<MessageType.Field>asList(), NO_TYPES);
     ProtoFile protoFile =
-        new ProtoFile("exotic.proto", null, NO_STRINGS, Arrays.asList(expected), map());
+        new ProtoFile("exotic.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map());
     assertEquals(protoFile, new ProtoSchemaParser("exotic.proto", proto).readProtoFile());
   }
 
@@ -182,7 +188,7 @@ public final class ProtoSchemaParserTest extends TestCase {
             map("option_map", map("nested_map", map("key", "value", "key2", "value2")),
                 "option_string", "string"))), NO_TYPES);
     ProtoFile protoFile =
-        new ProtoFile("nestedmaps.proto", null, NO_STRINGS, Arrays.asList(expected), map());
+        new ProtoFile("nestedmaps.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map());
     assertEquals(protoFile, new ProtoSchemaParser("nestedmaps.proto", proto).readProtoFile());
   }
 
