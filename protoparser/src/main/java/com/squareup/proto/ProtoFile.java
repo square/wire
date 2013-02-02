@@ -13,19 +13,22 @@ public final class ProtoFile {
   private final String packageName;
   private final List<String> dependencies;
   private final List<Type> types;
+  private final List<Service> services;
   private final Map<String, Object> options;
 
   ProtoFile(String fileName, String packageName, List<String> dependencies,
-      List<Type> types, Map<String, Object> options) {
+      List<Type> types, List<Service> services, Map<String, Object> options) {
     if (fileName == null) throw new NullPointerException("fileName");
     if (dependencies == null) throw new NullPointerException("dependencies");
     if (types == null) throw new NullPointerException("types");
+    if (services == null) throw new NullPointerException("services");
     if (options == null) throw new NullPointerException("options");
 
     this.fileName = fileName;
     this.packageName = packageName;
     this.dependencies = Collections.unmodifiableList(new ArrayList<String>(dependencies));
     this.types = Collections.unmodifiableList(new ArrayList<Type>(types));
+    this.services = Collections.unmodifiableList(new ArrayList<Service>(services));
     this.options = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(options));
   }
 
@@ -51,6 +54,10 @@ public final class ProtoFile {
     return types;
   }
 
+  public List<Service> getServices() {
+    return services;
+  }
+
   public Map<String, Object> getOptions() {
     return options;
   }
@@ -62,6 +69,7 @@ public final class ProtoFile {
           && eq(packageName, that.packageName)
           && eq(dependencies, that.dependencies)
           && eq(types, that.types)
+          && eq(services, that.services)
           && eq(options, that.options);
     }
     return false;
@@ -88,6 +96,9 @@ public final class ProtoFile {
     }
     for (Type type : types) {
       result.append(type).append('\n');
+    }
+    for (Service service : services) {
+      result.append(service).append('\n');
     }
     return result.toString();
   }

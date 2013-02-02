@@ -55,6 +55,9 @@ public final class ProtoSchemaParser {
   /** Declared message types and enum types. */
   private List<Type> types = new ArrayList<Type>();
 
+  /** Declared services. */
+  private List<Service> services = new ArrayList<Service>();
+
   /** Global options. */
   private Map<String, Object> options = new LinkedHashMap<String, Object>();
 
@@ -83,11 +86,13 @@ public final class ProtoSchemaParser {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return new ProtoFile(fileName, packageName, dependencies, types, options);
+        return new ProtoFile(fileName, packageName, dependencies, types, services, options);
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
       if (declaration instanceof Type) {
         types.add((Type) declaration);
+      } else if (declaration instanceof Service) {
+        services.add((Service) declaration);
       } else if (declaration instanceof Option) {
         Option option = (Option) declaration;
         options.put(option.getName(), option.getValue());
@@ -124,15 +129,13 @@ public final class ProtoSchemaParser {
     } else if (label.equals("enum")) {
       return readEnumType(documentation);
     } else if (label.equals("service")) {
-      readService();
-      return null;
+      return readService(documentation);
     } else if (label.equals("extend")) {
       readExtend();
       return null;
     } else if (label.equals("rpc")) {
       if (!context.permitsRpc()) throw unexpected("rpc in " + context);
-      readRpc();
-      return null;
+      return readRpc(documentation);
     } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
       if (!context.permitsField()) throw unexpected("fields must be nested");
       return readField(documentation, label);
@@ -186,18 +189,23 @@ public final class ProtoSchemaParser {
     }
   }
 
-  /** Reads a service declaration (just ignores the content). */
-  private void readService() {
-    readName(); // Ignore name.
+  /** Reads a service declaration and returns it. */
+  private Service readService(String documentation) {
+    String name = readName();
+    List<Service.Method> methods = new ArrayList<Service.Method>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
-      String nestedDocumentation = readDocumentation();
+      String methodDocumentation = readDocumentation();
       if (peekChar() == '}') {
         pos++;
         break;
       }
-      readDeclaration(nestedDocumentation, Context.SERVICE);
+      Object declared = readDeclaration(methodDocumentation, Context.SERVICE);
+      if (declared instanceof Service.Method) {
+        methods.add((Service.Method) declared);
+      }
     }
+    return new Service(name, documentation, methods);
   }
 
   /** Reads an enumerated type declaration and returns it. */
@@ -288,26 +296,38 @@ public final class ProtoSchemaParser {
     }
   }
 
-  /** Reads an rpc method and ignores it. */
-  private void readRpc() {
-    readName(); // Read method name, ignore.
-    readName(); // Read request type, ignore.
-    readWord(); // Read returns keyword
-    readName(); // Read response type, ignore.
+  /** Reads an rpc method and returns it. */
+  private Service.Method readRpc(String documentation) {
+    String name = readName();
 
-    char c = readChar();
-    if (c == '{') {
+    if (readChar() != '(') throw unexpected("expected '('");
+    String requestType = readName();
+    if (readChar() != ')') throw unexpected("expected ')'");
+
+    if (!readWord().equals("returns")) throw unexpected("expected 'returns'");
+
+    if (readChar() != '(') throw unexpected("expected '('");
+    String responseType = readName();
+    if (readChar() != ')') throw unexpected("expected ')'");
+
+    Map<String, Object> options = new LinkedHashMap<String, Object>();
+    if (peekChar() == '{') {
+      pos++;
       while (true) {
-        String nestedDocumentation = readDocumentation();
+        String methodDocumentation = readDocumentation();
         if (peekChar() == '}') {
           pos++;
           break;
         }
-        readDeclaration(nestedDocumentation, Context.RPC); // Read and ignore.
+        Object declared = readDeclaration(methodDocumentation, Context.RPC);
+        if (declared instanceof Option) {
+          Option option = (Option) declared;
+          options.put(option.getName(), option.getValue());
+        }
       }
-    } else if (c != ';') {
-      throw unexpected("expected '{' or ';'");
-    }
+    } else if (readChar() != ';') throw unexpected("expected ';'");
+
+    return new Service.Method(name, documentation, requestType, responseType, options);
   }
 
   /** Reads a non-whitespace character and returns it. */
