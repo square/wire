@@ -59,6 +59,7 @@ public final class EnumType implements Type {
     return result.toString();
   }
 
+  /** An enum constant. */
   public static final class Value {
     private final String name;
     private final int tag;
