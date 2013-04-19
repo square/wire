@@ -82,7 +82,7 @@ public final class ProtoSchemaParser {
     return writer.toCharArray();
   }
 
-  public ProtoFile readProtoFile() {
+  ProtoFile readProtoFile() {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {

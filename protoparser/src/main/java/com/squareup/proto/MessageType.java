@@ -99,6 +99,11 @@ public final class MessageType implements Type {
       return label;
     }
 
+    /**
+     * Returns the type of this field. May be a message type name, an enum type
+     * name, or a <a href="https://developers.google.com/protocol-buffers/docs/proto#scalar">
+     * scalar value type</a> like {@code int64} or {@code bytes}.
+     */
     public String getType() {
       return type;
     }
