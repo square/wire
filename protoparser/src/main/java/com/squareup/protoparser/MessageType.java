@@ -1,5 +1,5 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.proto;
+package com.squareup.protoparser;
 
 import java.util.ArrayList;
 import java.util.Collections;

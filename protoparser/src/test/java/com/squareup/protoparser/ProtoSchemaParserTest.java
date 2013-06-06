@@ -1,8 +1,8 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.proto;
+package com.squareup.protoparser;
 
-import com.squareup.proto.EnumType.Value;
-import com.squareup.proto.MessageType.Label;
+import com.squareup.protoparser.EnumType.Value;
+import com.squareup.protoparser.MessageType.Label;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
