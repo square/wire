@@ -1,5 +1,5 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.proto;
+package com.squareup.protoparser;
 
 public final class Option {
   private final String name;
