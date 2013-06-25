@@ -6,6 +6,7 @@ import java.util.List;
 /** A message type or enum type declaration. */
 public interface Type {
   String getName();
+  String getFullyQualifiedName();
 
   List<Type> getNestedTypes();
 }

@@ -21,6 +21,8 @@ import java.util.Map;
  * within types.
  */
 public final class ProtoSchemaParser {
+  private static final int MAX_TAG_VALUE = (1 << 29) - 1; // 536,870,911
+
   /** Parse a {@code .proto} definition file. */
   public static ProtoFile parse(File file) throws IOException {
     return new ProtoSchemaParser(file).readProtoFile();
@@ -49,6 +51,9 @@ public final class ProtoSchemaParser {
   /** Output package name, or null if none yet encountered. */
   private String packageName;
 
+  /** The current package name + nested type names, separated by dots. */
+  private String prefix;
+
   /** Imported files. */
   private List<String> dependencies = new ArrayList<String>();
 
@@ -57,6 +62,9 @@ public final class ProtoSchemaParser {
 
   /** Declared services. */
   private List<Service> services = new ArrayList<Service>();
+
+  /** Declared 'extend's. */
+  private List<ExtendDeclaration> extendDeclarations = new ArrayList<ExtendDeclaration>();
 
   /** Global options. */
   private Map<String, Object> options = new LinkedHashMap<String, Object>();
@@ -86,7 +94,8 @@ public final class ProtoSchemaParser {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return new ProtoFile(fileName, packageName, dependencies, types, services, options);
+        return new ProtoFile(fileName, packageName, dependencies, types, services, options,
+            extendDeclarations);
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
       if (declaration instanceof Type) {
@@ -96,6 +105,8 @@ public final class ProtoSchemaParser {
       } else if (declaration instanceof Option) {
         Option option = (Option) declaration;
         options.put(option.getName(), option.getValue());
+      } else if (declaration instanceof ExtendDeclaration) {
+        extendDeclarations.add((ExtendDeclaration) declaration);
       }
     }
   }
@@ -113,6 +124,7 @@ public final class ProtoSchemaParser {
       if (!context.permitsPackage()) throw unexpected("package in " + context);
       if (packageName != null) throw unexpected("too many package names");
       packageName = readName();
+      prefix = packageName + ".";
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
     } else if (label.equals("import")) {
@@ -131,8 +143,7 @@ public final class ProtoSchemaParser {
     } else if (label.equals("service")) {
       return readService(documentation);
     } else if (label.equals("extend")) {
-      readExtend();
-      return null;
+      return readExtend(documentation);
     } else if (label.equals("rpc")) {
       if (!context.permitsRpc()) throw unexpected("rpc in " + context);
       return readRpc(documentation);
@@ -141,8 +152,7 @@ public final class ProtoSchemaParser {
       return readField(documentation, label);
     } else if (label.equals("extensions")) {
       if (!context.permitsExtensions()) throw unexpected("extensions must be nested");
-      readExtensions();
-      return null;
+      return readExtensions(documentation);
     } else if (context == Context.ENUM) {
       if (readChar() != '=') throw unexpected("expected '='");
       int tag = readInt();
@@ -155,9 +165,12 @@ public final class ProtoSchemaParser {
 
   /** Reads a message declaration. */
   private MessageType readMessage(String documentation) {
+    String previousPrefix = prefix;
     String name = readName();
+    prefix = prefix + name + ".";
     List<MessageType.Field> fields = new ArrayList<MessageType.Field>();
     List<Type> nestedTypes = new ArrayList<Type>();
+    List<Extensions> extensions = new ArrayList<Extensions>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -170,14 +183,18 @@ public final class ProtoSchemaParser {
         fields.add((MessageType.Field) declared);
       } else if (declared instanceof Type) {
         nestedTypes.add((Type) declared);
+      } else if (declared instanceof Extensions) {
+        extensions.add((Extensions) declared);
       }
     }
-    return new MessageType(name, documentation, fields, nestedTypes);
+    prefix = previousPrefix;
+    return new MessageType(name, prefix + name, documentation, fields, nestedTypes, extensions);
   }
 
-  /** Reads an extend declaration (just ignores the content). */
-  private void readExtend() {
-    readName(); // Ignore name.
+  /** Reads an extend declaration. */
+  private ExtendDeclaration readExtend(String documentation) {
+    String name = readName();
+    List<MessageType.Field> fields = new ArrayList<MessageType.Field>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -185,8 +202,13 @@ public final class ProtoSchemaParser {
         pos++;
         break;
       }
-      readDeclaration(nestedDocumentation, Context.EXTEND);
+      Object declared = readDeclaration(nestedDocumentation, Context.EXTEND);
+      if (declared instanceof MessageType.Field) {
+        fields.add((MessageType.Field) declared);
+      }
     }
+    return new ExtendDeclaration(name, name.contains(".") ? name : prefix + name, documentation,
+        fields);
   }
 
   /** Reads a service declaration and returns it. */
@@ -224,7 +246,7 @@ public final class ProtoSchemaParser {
         values.add((EnumType.Value) declared);
       }
     }
-    return new EnumType(name, documentation, values);
+    return new EnumType(name, prefix + name, documentation, values);
   }
 
   /** Reads an field declaration and returns it. */
@@ -250,13 +272,20 @@ public final class ProtoSchemaParser {
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
-  private void readExtensions() {
-    readWord(); // Range start.
+  private Extensions readExtensions(String documentation) {
+    int start = readInt(); // Range start.
+    int end = start;
     if (peekChar() != ';') {
       readWord(); // Literal 'to'
-      readWord(); // Range end.
+      String s = readWord(); // Range end.
+      if (s.equals("max")) {
+        end = MAX_TAG_VALUE;
+      } else {
+        end = Integer.parseInt(s);
+      }
     }
     if (readChar() != ';') throw unexpected("expected ';'");
+    return new Extensions(documentation, start, end);
   }
 
   /** Reads a option containing a name, an '=' or ':', and a value. */

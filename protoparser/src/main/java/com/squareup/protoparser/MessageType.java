@@ -9,23 +9,34 @@ import java.util.Map;
 
 public final class MessageType implements Type {
   private final String name;
+  private final String fqname;
   private final String documentation;
   private final List<Field> fields;
   private final List<Type> nestedTypes;
+  private final List<Extensions> extensions;
 
-  MessageType(String name, String documentation, List<Field> fields, List<Type> nestedTypes) {
+  MessageType(String name, String fqname, String documentation, List<Field> fields,
+      List<Type> nestedTypes, List<Extensions> extensions) {
     if (name == null) throw new NullPointerException("name");
+    if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
     if (fields == null) throw new NullPointerException("fields");
     if (nestedTypes == null) throw new NullPointerException("nestedTypes");
+    if (extensions == null) throw new NullPointerException("extensions");
     this.name = name;
+    this.fqname = fqname;
     this.documentation = documentation;
     this.fields = Collections.unmodifiableList(new ArrayList<Field>(fields));
     this.nestedTypes = Collections.unmodifiableList(new ArrayList<Type>(nestedTypes));
+    this.extensions = Collections.unmodifiableList(new ArrayList<Extensions>(extensions));
   }
 
   @Override public String getName() {
     return name;
+  }
+
+  @Override public String getFullyQualifiedName() {
+    return fqname;
   }
 
   public String getDocumentation() {
@@ -38,6 +49,10 @@ public final class MessageType implements Type {
 
   @Override public List<Type> getNestedTypes() {
     return nestedTypes;
+  }
+
+  public List<Extensions> getExtensions() {
+    return extensions;
   }
 
   @Override public boolean equals(Object other) {
