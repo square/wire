@@ -8,20 +8,27 @@ import java.util.List;
 /** An enumerated type declaration. */
 public final class EnumType implements Type {
   private final String name;
+  private final String fqname;
   private final String documentation;
   private final List<Value> values;
 
-  EnumType(String name, String documentation, List<Value> values) {
+  EnumType(String name, String fqname, String documentation, List<Value> values) {
     if (name == null) throw new NullPointerException("name");
+    if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
     if (values == null) throw new NullPointerException("values");
     this.name = name;
+    this.fqname = fqname;
     this.documentation = documentation;
     this.values = Collections.unmodifiableList(new ArrayList<Value>(values));
   }
 
   @Override public String getName() {
     return name;
+  }
+
+  @Override public String getFullyQualifiedName() {
+    return fqname;
   }
 
   public String getDocumentation() {

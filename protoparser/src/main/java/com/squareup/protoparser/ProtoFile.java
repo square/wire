@@ -15,14 +15,17 @@ public final class ProtoFile {
   private final List<Type> types;
   private final List<Service> services;
   private final Map<String, Object> options;
+  private final List<ExtendDeclaration> extendDeclarations;
 
   ProtoFile(String fileName, String packageName, List<String> dependencies,
-      List<Type> types, List<Service> services, Map<String, Object> options) {
+      List<Type> types, List<Service> services, Map<String, Object> options,
+      List<ExtendDeclaration> extendDeclarations) {
     if (fileName == null) throw new NullPointerException("fileName");
     if (dependencies == null) throw new NullPointerException("dependencies");
     if (types == null) throw new NullPointerException("types");
     if (services == null) throw new NullPointerException("services");
     if (options == null) throw new NullPointerException("options");
+    if (extendDeclarations == null) throw new NullPointerException("extendDeclarations");
 
     this.fileName = fileName;
     this.packageName = packageName;
@@ -30,6 +33,8 @@ public final class ProtoFile {
     this.types = Collections.unmodifiableList(new ArrayList<Type>(types));
     this.services = Collections.unmodifiableList(new ArrayList<Service>(services));
     this.options = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(options));
+    this.extendDeclarations =
+        Collections.unmodifiableList(new ArrayList<ExtendDeclaration>(extendDeclarations));
   }
 
   /** Returns the Java package, or the default package if no Java package is specified. */
@@ -62,6 +67,10 @@ public final class ProtoFile {
     return options;
   }
 
+  public List<ExtendDeclaration> getExtendDeclarations() {
+    return extendDeclarations;
+  }
+
   @Override public boolean equals(Object other) {
     if (other instanceof ProtoFile) {
       ProtoFile that = (ProtoFile) other;
@@ -70,7 +79,8 @@ public final class ProtoFile {
           && eq(dependencies, that.dependencies)
           && eq(types, that.types)
           && eq(services, that.services)
-          && eq(options, that.options);
+          && eq(options, that.options)
+          && eq(extendDeclarations, that.extendDeclarations);
     }
     return false;
   }
@@ -99,6 +109,9 @@ public final class ProtoFile {
     }
     for (Service service : services) {
       result.append(service).append('\n');
+    }
+    for (ExtendDeclaration extendDeclaration : extendDeclarations) {
+      result.append(extendDeclaration).append('\n');
     }
     return result.toString();
   }
