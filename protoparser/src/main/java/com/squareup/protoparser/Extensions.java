@@ -2,10 +2,8 @@
 package com.squareup.protoparser;
 
 public final class Extensions {
-
   private final String documentation;
   private final int start;
-
   private final int end;
 
   public Extensions(String documentation, int start, int end) {

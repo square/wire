@@ -21,7 +21,6 @@ import java.util.Map;
  * within types.
  */
 public final class ProtoSchemaParser {
-
   private static final int MAX_TAG_VALUE = (1 << 29) - 1; // 536,870,911
 
   /** Parse a {@code .proto} definition file. */
@@ -157,7 +156,7 @@ public final class ProtoSchemaParser {
     } else if (context == Context.ENUM) {
       if (readChar() != '=') throw unexpected("expected '='");
       int tag = readInt();
-      if (readChar() != ';') throw unexpected("exp ected ';'");
+      if (readChar() != ';') throw unexpected("expected ';'");
       return new EnumType.Value(label, tag, documentation);
     } else {
       throw unexpected("unexpected label: " + label);
@@ -166,7 +165,7 @@ public final class ProtoSchemaParser {
 
   /** Reads a message declaration. */
   private MessageType readMessage(String documentation) {
-    String oprefix = prefix;
+    String previousPrefix = prefix;
     String name = readName();
     prefix = prefix + name + ".";
     List<MessageType.Field> fields = new ArrayList<MessageType.Field>();
@@ -188,7 +187,7 @@ public final class ProtoSchemaParser {
         extensions.add((Extensions) declared);
       }
     }
-    prefix = oprefix;
+    prefix = previousPrefix;
     return new MessageType(name, prefix + name, documentation, fields, nestedTypes, extensions);
   }
 

@@ -1,10 +1,11 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.protoparser;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class ExtendDeclaration {
-
   private final String name;
   private final String fqname;
   private final String documentation;
@@ -15,7 +16,7 @@ public final class ExtendDeclaration {
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
-    this.fields = fields;
+    this.fields = Collections.unmodifiableList(new ArrayList<MessageType.Field>(fields));
   }
 
   public String getName() {
