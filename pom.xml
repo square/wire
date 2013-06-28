@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.squareup</groupId>
+  <artifactId>omar</artifactId>
+  <version>0.1</version>
+  <packaging>pom</packaging>
+  <name>Omar Protocol Buffers</name>
+  <description>Parent module for Omar protocol buffers</description>
+  <inceptionYear>2013</inceptionYear>
+
+ <modules>
+   <module>compiler</module>
+   <module>runtime</module>
+ </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+        <version>3.0</version>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
