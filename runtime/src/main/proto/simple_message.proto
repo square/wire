@@ -1,5 +1,9 @@
+package squareup.protos.simple;
+
 option java_package = "com.squareup.protos.simple";
 option java_outer_classname = "SimpleMessageContainer";
+
+import "external_message.proto";
 
 message SimpleMessage {
   message NestedMessage {
@@ -17,11 +21,21 @@ message SimpleMessage {
   optional int32 optional_int32 = 1 [default = 123];
   // An optional NestedMessage
   optional NestedMessage optional_nested_msg = 2;
-  optional NestedEnum default_nested_enum = 3 [default = BAZ];
+  // An optional ExternalMessage
+  optional ExternalMessage optional_external_msg = 3;
+  optional NestedEnum default_nested_enum = 4 [default = BAZ];
 
   // A required int32
-  required int32 required_int32 = 4 [default = 456];
+  required int32 required_int32 = 5 [default = 456];
 
   // A repeated double
-  repeated double repeated_double = 5;
+  repeated double repeated_double = 6;
+}
+
+extend ExternalMessage {
+  repeated int32 fooext = 125;
+  optional int32 barext = 126;
+  required int32 bazext = 127;
+  optional SimpleMessage.NestedMessage nested_message_ext = 128;
+  optional SimpleMessage.NestedEnum nested_enum_ext = 129;
 }

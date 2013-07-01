@@ -45,8 +45,13 @@ public class ProtoAdapter<M extends Message> {
      switch (type) {
        case Omar.BOOL:
          return Boolean.getBoolean(s);
-       case Omar.INT32:
+       case Omar.INT32: case Omar.SINT32: case Omar.UINT32: case Omar.FIXED32: case Omar.SFIXED32:
          return new BigInteger(s).intValue();
+       case Omar.INT64: case Omar.SINT64: case Omar.UINT64: case Omar.FIXED64: case Omar.SFIXED64:
+         if (s.endsWith("l") || s.endsWith("L")) {
+           s = s.substring(0, s.length() - 1);
+         }
+         return new BigInteger(s).longValue();
        case Omar.FLOAT:
          if (s.endsWith("f") || s.endsWith("F")) {
            s = s.substring(0, s.length() - 1);
@@ -61,6 +66,8 @@ public class ProtoAdapter<M extends Message> {
          int index = s.lastIndexOf('.');
          String enumName = s.substring(index + 1);
          return Enum.valueOf(enumType, enumName);
+       case Omar.STRING:
+         return s;
      }
      throw new RuntimeException("Not yet implemented: " + type);
   }
