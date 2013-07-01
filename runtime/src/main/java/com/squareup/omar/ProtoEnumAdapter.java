@@ -22,7 +22,7 @@ public class ProtoEnumAdapter<E extends Enum> {
         Field f = type.getField(value.name());
         if (f.isAnnotationPresent(ProtoEnum.class)) {
           ProtoEnum annotation = f.getAnnotation(ProtoEnum.class);
-          int tag = annotation.tag();
+          int tag = annotation.value();
           fromInt.put(tag, value);
           toInt.put(value, tag);
         }

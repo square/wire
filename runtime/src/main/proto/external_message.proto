@@ -1,0 +1,10 @@
+package squareup.protos.simple;
+
+option java_package = "com.squareup.protos.simple";
+option java_outer_classname = "ExternalMessageContainer";
+
+message ExternalMessage {
+  extensions 100 to 200;
+
+  optional float f = 1 [default = 20];
+}
