@@ -13,7 +13,7 @@ public final class ExtensionRegistry {
 
   public <MessageType extends Message.ExtendableMessage, Type> void
       add(Extension<MessageType, Type> extension) {
-    Class<? extends Message.ExtendableMessage> messageClass = extension.getContainingType();
+    Class<? extends Message.ExtendableMessage> messageClass = extension.getExtendedType();
     Map<Integer, Extension<?, ?>> map = extensions.get(messageClass);
     if (map == null) {
       map = new HashMap<Integer, Extension<?, ?>>();
