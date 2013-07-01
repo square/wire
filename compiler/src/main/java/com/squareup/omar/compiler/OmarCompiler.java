@@ -257,7 +257,7 @@ public class OmarCompiler {
       EnumType enumType = (EnumType) type;
       writer.beginType(enumType.getName(), "enum", Modifier.PUBLIC);
       for (EnumType.Value value : enumType.getValues()) {
-        writer.emitAnnotation(ProtoEnum.class, "tag = " + value.getTag());
+        writer.emitAnnotation(ProtoEnum.class, value.getTag());
         writer.emitEnumValue(value.getName());
       }
       writer.endType();
