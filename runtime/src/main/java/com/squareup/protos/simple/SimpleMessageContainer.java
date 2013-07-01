@@ -112,7 +112,7 @@ public final class SimpleMessageContainer {
       this.optional_external_msg = builder.optional_external_msg;
       this.default_nested_enum = builder.default_nested_enum;
       this.required_int32 = builder.required_int32;
-      this.repeated_double = Omar.wrap(builder.repeated_double);
+      this.repeated_double = Omar.unmodifiableCopyOf(builder.repeated_double);
     }
 
     @Override
@@ -176,7 +176,7 @@ public final class SimpleMessageContainer {
         this.optional_external_msg = message.optional_external_msg;
         this.default_nested_enum = message.default_nested_enum;
         this.required_int32 = message.required_int32;
-        this.repeated_double = Omar.copy(message.repeated_double);
+        this.repeated_double = Omar.copyOf(message.repeated_double);
       }
 
       public Builder optional_int32(Integer optional_int32) {

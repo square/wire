@@ -131,6 +131,9 @@ public class ProtoAdapter<M extends Message> {
     this.extensionRegistry = extensionRegistry;
   }
 
+  /**
+   * Returns an instance of the message type of this {@link ProtoAdapter} with all fields unset.
+   */
   public M getDefaultInstance() {
     if (defaultInstance == null) {
       try {
@@ -144,6 +147,9 @@ public class ProtoAdapter<M extends Message> {
     return defaultInstance;
   }
 
+  /**
+   * Returns the {@link ExtensionRegistry} for this {@link ProtoAdapter}.
+   */
   public ExtensionRegistry getExtensionRegistry() {
     return extensionRegistry;
   }
@@ -261,6 +267,9 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
+  /**
+   * Returns the serialized size of a given message, in bytes.
+   */
   public int getSerializedSize(M instance) {
     int size = 0;
     for (int tag : tags) {
@@ -455,6 +464,9 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
+  /**
+   * Serializes a given {@link Message} instance and returns the results as a byte array.
+   */
   public byte[] toByteArray(M message) {
     byte[] result = new byte[getSerializedSize(message)];
     try {

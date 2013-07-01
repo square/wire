@@ -130,6 +130,9 @@ public final class Omar {
   /**
    * Returns a {@link ProtoAdapter} for the given message type, using the given
    * {@link ExtensionRegistry}.
+   *
+   * @param messageType the {@link Message} class
+   * @param registry an {@link ExtensionRegistry}, or null
    */
   public static <M extends Message> ProtoAdapter<M> messageAdapter(Class<M> messageType,
       ExtensionRegistry registry) {
@@ -143,20 +146,24 @@ public final class Omar {
 
   /**
    * Returns a {@link ProtoAdapter} for the given message type, with no
-   * {@link ExtensionRegistry}.
+   * {@link ExtensionRegistry}. Equivalent to {@code messageAdapter(messageType, null)}.
+   *
+   * @param messageType the {@link Message} class
    */
-  public static <M extends Message> ProtoAdapter<M> messageAdapter(Class<M> type) {
-    return messageAdapter(type, null);
+  public static <M extends Message> ProtoAdapter<M> messageAdapter(Class<M> messageType) {
+    return messageAdapter(messageType, null);
   }
 
   /**
-   * Returns an {@link EnumAdapter} for the given enum type.
+   * Returns an {@link ProtoEnumAdapter} for the given enum class.
+   *
+   * @param enumClass the enum class
    */
-  public static <E extends Enum> ProtoEnumAdapter<E> enumAdapter(Class<E> type) {
-    ProtoEnumAdapter<?> adapter = enumAdapters.get(type);
+  public static <E extends Enum> ProtoEnumAdapter<E> enumAdapter(Class<E> enumClass) {
+    ProtoEnumAdapter<?> adapter = enumAdapters.get(enumClass);
     if (adapter == null) {
-      adapter = new ProtoEnumAdapter<E>(type);
-      enumAdapters.put(type, adapter);
+      adapter = new ProtoEnumAdapter<E>(enumClass);
+      enumAdapters.put(enumClass, adapter);
     }
     return (ProtoEnumAdapter<E>) adapter;
   }
@@ -176,40 +183,73 @@ public final class Omar {
     return adapter.fromInt(value);
   }
 
+  /**
+   * Returns the integer value tagged associated with the given enum intance.
+   * The enum values must be annotated with the {@link ProtoEnum}
+   * annotation.
+   *
+   * @param value the integer value
+   * @param <E> the enum class constant
+   * @return the associated integer value
+   */
   public static <E extends Enum> int intFromEnum(E value) {
     ProtoEnumAdapter<E> adapter = enumAdapter((Class <E>) value.getClass());
     return adapter.toInt(value);
   }
 
-  public static boolean equals(Object a, Object b) {
-    return (a == b) || (a != null && a.equals(b));
-  }
-
-  public static <T> List<T> copy(List<T> source) {
-    return source == null ? null : new ArrayList<T>(source);
-  }
-
-  public static <T> List<T> wrap(List<T> source) {
-    return source == null ? null : Collections.unmodifiableList(new ArrayList<T>(source));
-  }
-
+  /**
+   * Parse a given range of bytes into a {@link Message} of the given message class.
+   *
+   * @param messageClass the class of the outermost {@link Message}
+   * @param bytes an array of bytes
+   * @param off the starting offset within the array
+   * @param len the number of bytes to use
+   * @param registry an {@link ExtensionRegistry}, or null
+   * @param <M> the outermost {@link Message} class
+   * @return an instance of the desired message class
+   * @throws IOException if parsing fails
+   */
   public static <M extends Message> M parseFrom(Class<M> messageClass,
       byte[] bytes, int off, int len,
-      ExtensionRegistry extensionRegistry) throws IOException {
-    ProtoAdapter<M> adapter = messageAdapter(messageClass, extensionRegistry);
+      ExtensionRegistry registry) throws IOException {
+    ProtoAdapter<M> adapter = messageAdapter(messageClass, registry);
     return adapter.read(CodedInputByteBufferNano.newInstance(bytes, off, len));
   }
 
+  /**
+   * Parse an entire byte array into a {@link Message} of the given message class.
+   * Equivalent to {@code parseFrom(messageClass, bytes, 0, bytes.length, registry}.
+   *
+   * @param messageClass the class of the outermost {@link Message}
+   * @param bytes an array of bytes
+   * @param registry an {@link ExtensionRegistry}, or null
+   * @param <M> the outermost {@link Message} class
+   * @return an instance of the desired message class
+   * @throws IOException if parsing fails
+   */
   public static <M extends Message> M parseFrom(Class<M> messageClass, byte[] bytes,
-      ExtensionRegistry extensionRegistry) throws IOException {
-    ProtoAdapter<M> adapter = messageAdapter(messageClass, extensionRegistry);
+      ExtensionRegistry registry) throws IOException {
+    ProtoAdapter<M> adapter = messageAdapter(messageClass, registry);
     return adapter.read(CodedInputByteBufferNano.newInstance(bytes));
   }
 
+  /**
+   * Serializes a given {@link Message} and returns the result as a byte array.
+   *
+   * @param message an instance of {@link Message}}
+   * @param <M> the outermost {@link Message} class
+   * @return an array of bytes in protocol buffer format
+   */
   public static <M extends Message> byte[] toByteArray(M message) {
     return messageAdapter((Class<M>) message.getClass()).toByteArray(message);
   }
 
+  /**
+   * Serializes a given {@link Message} and writes the result into a given byte array.
+   *
+   * @param message an instance of {@link Message}}
+   * @param <M> the outermost {@link Message} class
+   */
   public static <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
     ProtoAdapter<M> adapter = messageAdapter((Class<M>) message.getClass());
     try {
@@ -232,9 +272,11 @@ public final class Omar {
 
   /**
    * Utility to return a default value when a protobuf value is null.
-   * For example, <pre>
-   * MyProto myProro = ...
-   * MyField field = get(myProto.f, MyProto.f_default;
+   * For example,
+   *
+   * <pre>
+   * MyProto myProto = ...
+   * MyField field = get(myProto.f, MyProto.f_default);
    * </pre>
    *
    * will attempt to retrieve the value of the field 'f' defined by MyProto.
@@ -249,5 +291,26 @@ public final class Omar {
    */
   public static <M> M get(M value, M defaultValue) {
     return value != null ? value : defaultValue;
+  }
+
+  /**
+   * Utility method to check two possibly null values for equality.
+   */
+  public static boolean equals(Object a, Object b) {
+    return (a == b) || (a != null && a.equals(b));
+  }
+
+  /**
+   * Utility method to return a copy of a given List.
+   */
+  public static <T> List<T> copyOf(List<T> source) {
+    return source == null ? null : new ArrayList<T>(source);
+  }
+
+  /**
+   * Utility method to return a copy of a given List.
+   */
+  public static <T> List<T> unmodifiableCopyOf(List<T> source) {
+    return source == null ? null : Collections.unmodifiableList(new ArrayList<T>(source));
   }
 }

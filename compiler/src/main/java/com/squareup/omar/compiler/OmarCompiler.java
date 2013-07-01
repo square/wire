@@ -357,7 +357,7 @@ public class OmarCompiler {
     writer.beginMethod(null, messageType.getName(), Modifier.PRIVATE, "Builder", "builder");
     for (Field field : messageType.getFields()) {
       if (isRepeated(field)) {
-        writer.emitStatement("this.%1$s = Omar.wrap(builder.%1$s)", sanitize(field.getName()));
+        writer.emitStatement("this.%1$s = Omar.unmodifiableCopyOf(builder.%1$s)", sanitize(field.getName()));
       } else {
         writer.emitStatement("this.%1$s = builder.%1$s", sanitize(field.getName()));
       }
@@ -518,7 +518,7 @@ public class OmarCompiler {
     writer.beginMethod(null, "Builder", Modifier.PUBLIC, messageType.getName(), "message");
     for (Field field : messageType.getFields()) {
       if (isRepeated(field)) {
-        writer.emitStatement("this.%1$s = Omar.copy(message.%1$s)", sanitize(field.getName()));
+        writer.emitStatement("this.%1$s = Omar.copyOf(message.%1$s)", sanitize(field.getName()));
       } else {
         writer.emitStatement("this.%1$s = message.%1$s", sanitize(field.getName()));
       }
