@@ -6,10 +6,11 @@ import java.util.Map;
 
 import static com.squareup.omar.Message.ExtendableMessage.Extension;
 
-public final class ExtensionRegistry {
+final class ExtensionRegistry {
 
-  private final Map<Class<? extends Message.ExtendableMessage>, Map<Integer, Extension<?, ?>>> extensions =
-      new HashMap<Class<? extends Message.ExtendableMessage>, Map<Integer, Extension<?, ?>>>();
+  private final Map<Class<? extends Message.ExtendableMessage>, Map<Integer, Extension<?, ?>>>
+      extensions = new HashMap<Class<? extends Message.ExtendableMessage>,
+          Map<Integer, Extension<?, ?>>>();
 
   public <MessageType extends Message.ExtendableMessage, Type> void
       add(Extension<MessageType, Type> extension) {

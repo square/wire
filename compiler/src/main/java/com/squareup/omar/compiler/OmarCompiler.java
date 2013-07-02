@@ -114,7 +114,6 @@ public class OmarCompiler {
       boolean hasExtensions = hasExtensions(protoFile.getTypes());
       boolean hasExtends = hasExtends();
 
-      imports.add("com.squareup.omar.ExtensionRegistry");
       if (hasMessage) {
         imports.add("com.squareup.omar.Message");
         imports.add("com.squareup.omar.Omar");
@@ -153,7 +152,6 @@ public class OmarCompiler {
         writer.emitEmptyLine();
         emitExtensions(writer);
       }
-      emitRegisterAllExtensions(writer);
 
       for (Type type : types) {
         String savedType = typeBeingGenerated;
@@ -204,18 +202,6 @@ public class OmarCompiler {
             Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, initialValue);
       }
     }
-  }
-
-  private void emitRegisterAllExtensions(JavaWriter writer) throws IOException {
-    writer.emitEmptyLine();
-    writer.beginMethod("void", "registerAllExtensions", Modifier.PUBLIC | Modifier.STATIC,
-      "ExtensionRegistry", "registry");
-    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
-      for (MessageType.Field field : extend.getFields()) {
-        writer.emitStatement("registry.add(%s)", field.getName());
-      }
-    }
-    writer.endMethod();
   }
 
   private boolean hasExtensions(MessageType messageType) {

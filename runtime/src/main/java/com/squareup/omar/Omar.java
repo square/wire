@@ -4,13 +4,20 @@ package com.squareup.omar;
 import com.google.protobuf.nano.CodedInputByteBufferNano;
 import com.google.protobuf.nano.CodedOutputByteBufferNano;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.squareup.omar.Message.ExtendableMessage.Extension;
+
 public final class Omar {
+
+  // Hidden instance that can perform work that does not require knowledge of extensions.
+  private static final Omar instance = new Omar();
 
   /**
    * Constant indicating the protocol buffer 'int32' datatype.
@@ -120,38 +127,60 @@ public final class Omar {
   static final int TYPE_MASK = 0x1f;
   static final int LABEL_MASK = 0xe0;
 
-  private Omar() {}
-
-  private static Map<Class<? extends Message>, ProtoAdapter<? extends Message>> messageAdapters =
+  private Map<Class<? extends Message>, ProtoAdapter<? extends Message>> messageAdapters =
       new HashMap<Class<? extends Message>, ProtoAdapter<? extends Message>>();
-  private static Map<Class<? extends Enum>, ProtoEnumAdapter<? extends Enum>> enumAdapters =
+  private Map<Class<? extends Enum>, ProtoEnumAdapter<? extends Enum>> enumAdapters =
       new HashMap<Class<? extends Enum>, ProtoEnumAdapter<? extends Enum>>();
+  private ExtensionRegistry registry;
+
+  /**
+   * Register all {@link Extension} objects defined as static fields on the given classes.
+   *
+   * @param extensionClasses an array of zero or more classes to search
+   */
+  public Omar(Class<?>... extensionClasses) {
+    this(Arrays.asList(extensionClasses));
+  }
+
+  /**
+   * Register all {@link Extension} objects defined as static fields on the given classes.
+   *
+   * @param extensionClasses a list of zero or more classes to search
+   */
+  public Omar(List<Class<?>> extensionClasses) {
+    this.registry = new ExtensionRegistry();
+    for (Class<?> extensionClass : extensionClasses) {
+      for (Field field : extensionClass.getDeclaredFields()) {
+        if (field.getType().equals(Extension.class)) {
+          try {
+            Extension extension = (Extension) field.get(null);
+            registry.add(extension);
+          } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+          }
+        }
+      }
+    }
+  }
+
+
+  ExtensionRegistry getExtensionRegistry() {
+    return registry;
+  }
 
   /**
    * Returns a {@link ProtoAdapter} for the given message type, using the given
    * {@link ExtensionRegistry}.
    *
    * @param messageType the {@link Message} class
-   * @param registry an {@link ExtensionRegistry}, or null
    */
-  public static <M extends Message> ProtoAdapter<M> messageAdapter(Class<M> messageType,
-      ExtensionRegistry registry) {
+  public <M extends Message> ProtoAdapter<M> messageAdapter(Class <M> messageType) {
     ProtoAdapter<?> adapter = messageAdapters.get(messageType);
-    if (adapter == null || adapter.getExtensionRegistry() != registry) {
-      adapter = new ProtoAdapter<M>(messageType, registry);
+    if (adapter == null) {
+      adapter = new ProtoAdapter<M>(this, messageType);
       messageAdapters.put(messageType, adapter);
     }
     return (ProtoAdapter<M>) adapter;
-  }
-
-  /**
-   * Returns a {@link ProtoAdapter} for the given message type, with no
-   * {@link ExtensionRegistry}. Equivalent to {@code messageAdapter(messageType, null)}.
-   *
-   * @param messageType the {@link Message} class
-   */
-  public static <M extends Message> ProtoAdapter<M> messageAdapter(Class<M> messageType) {
-    return messageAdapter(messageType, null);
   }
 
   /**
@@ -159,13 +188,18 @@ public final class Omar {
    *
    * @param enumClass the enum class
    */
-  public static <E extends Enum> ProtoEnumAdapter<E> enumAdapter(Class<E> enumClass) {
+  public <E extends Enum> ProtoEnumAdapter<E> enumAdapter(Class<E> enumClass) {
     ProtoEnumAdapter<?> adapter = enumAdapters.get(enumClass);
     if (adapter == null) {
       adapter = new ProtoEnumAdapter<E>(enumClass);
       enumAdapters.put(enumClass, adapter);
     }
     return (ProtoEnumAdapter<E>) adapter;
+  }
+
+  <E extends Enum> E enumFromIntInternal(Class<E> enumClass, int value) {
+    ProtoEnumAdapter<E> adapter = enumAdapter(enumClass);
+    return adapter.fromInt(value);
   }
 
   /**
@@ -179,8 +213,12 @@ public final class Omar {
    * @return a value from the given enum, or null
    */
   public static <E extends Enum> E enumFromInt(Class<E> enumClass, int value) {
-    ProtoEnumAdapter<E> adapter = enumAdapter(enumClass);
-    return adapter.fromInt(value);
+    return instance.enumFromIntInternal(enumClass, value);
+  }
+
+  private <E extends Enum> int intFromEnumInternal(E value) {
+    ProtoEnumAdapter<E> adapter = enumAdapter((Class <E>) value.getClass());
+    return adapter.toInt(value);
   }
 
   /**
@@ -193,8 +231,7 @@ public final class Omar {
    * @return the associated integer value
    */
   public static <E extends Enum> int intFromEnum(E value) {
-    ProtoEnumAdapter<E> adapter = enumAdapter((Class <E>) value.getClass());
-    return adapter.toInt(value);
+    return instance.intFromEnumInternal(value);
   }
 
   /**
@@ -204,15 +241,13 @@ public final class Omar {
    * @param bytes an array of bytes
    * @param off the starting offset within the array
    * @param len the number of bytes to use
-   * @param registry an {@link ExtensionRegistry}, or null
    * @param <M> the outermost {@link Message} class
    * @return an instance of the desired message class
    * @throws IOException if parsing fails
    */
-  public static <M extends Message> M parseFrom(Class<M> messageClass,
-      byte[] bytes, int off, int len,
-      ExtensionRegistry registry) throws IOException {
-    ProtoAdapter<M> adapter = messageAdapter(messageClass, registry);
+  public <M extends Message> M parseFrom(Class<M> messageClass,
+      byte[] bytes, int off, int len) throws IOException {
+    ProtoAdapter<M> adapter = messageAdapter(messageClass);
     return adapter.read(CodedInputByteBufferNano.newInstance(bytes, off, len));
   }
 
@@ -227,9 +262,8 @@ public final class Omar {
    * @return an instance of the desired message class
    * @throws IOException if parsing fails
    */
-  public static <M extends Message> M parseFrom(Class<M> messageClass, byte[] bytes,
-      ExtensionRegistry registry) throws IOException {
-    ProtoAdapter<M> adapter = messageAdapter(messageClass, registry);
+  public <M extends Message> M parseFrom(Class<M> messageClass, byte[] bytes) throws IOException {
+    ProtoAdapter<M> adapter = messageAdapter(messageClass);
     return adapter.read(CodedInputByteBufferNano.newInstance(bytes));
   }
 
@@ -240,7 +274,7 @@ public final class Omar {
    * @param <M> the outermost {@link Message} class
    * @return an array of bytes in protocol buffer format
    */
-  public static <M extends Message> byte[] toByteArray(M message) {
+  public <M extends Message> byte[] toByteArray(M message) {
     return messageAdapter((Class<M>) message.getClass()).toByteArray(message);
   }
 
@@ -250,7 +284,7 @@ public final class Omar {
    * @param message an instance of {@link Message}}
    * @param <M> the outermost {@link Message} class
    */
-  public static <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
+  public <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
     ProtoAdapter<M> adapter = messageAdapter((Class<M>) message.getClass());
     try {
       adapter.write(message, CodedOutputByteBufferNano.newInstance(output, off, len));
@@ -259,15 +293,26 @@ public final class Omar {
     }
   }
 
+  ///**
+  // * Returns an instance of the given message class, with all fields unset.
+  // *
+  // * @param messageClass the class of the desired {@link Message}
+  // * @param <M> the Message type
+  // * @return an instance of the desired Message class
+  // */
+  //public <M extends Message> M getDefaultInstance(Class<M> messageClass) {
+  //  return messageAdapter(messageClass).getDefaultInstance();
+  //}
+
   /**
    * Returns an instance of the given message class, with all fields unset.
    *
    * @param messageClass the class of the desired {@link Message}
-   * @param <M> the Message type
+   * @param <Type> the Message type
    * @return an instance of the desired Message class
    */
-  public static <M extends Message> M getDefaultInstance(Class<M> messageClass) {
-    return messageAdapter(messageClass).getDefaultInstance();
+  public static <Type extends Message> Type getDefaultInstance(Class<Type> messageClass) {
+    return instance.messageAdapter(messageClass).getDefaultInstance();
   }
 
   /**

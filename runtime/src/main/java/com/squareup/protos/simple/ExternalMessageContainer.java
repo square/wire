@@ -4,7 +4,6 @@
  */
 package com.squareup.protos.simple;
 
-import com.squareup.omar.ExtensionRegistry;
 import com.squareup.omar.Message;
 import com.squareup.omar.Omar;
 import com.squareup.omar.ProtoField;
@@ -16,9 +15,6 @@ import java.util.TreeMap;
 public final class ExternalMessageContainer {
 
   private ExternalMessageContainer() {
-  }
-
-  public static void registerAllExtensions(ExtensionRegistry registry) {
   }
 
   public static final class ExternalMessage

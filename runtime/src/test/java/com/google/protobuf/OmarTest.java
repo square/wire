@@ -4,7 +4,6 @@ package com.google.protobuf;
 import com.google.protobuf.nano.CodedInputByteBufferNano;
 import com.google.protobuf.nano.CodedOutputByteBufferNano;
 import com.squareup.omar.Omar;
-import com.squareup.omar.ExtensionRegistry;
 import com.squareup.omar.ProtoAdapter;
 import com.squareup.omar.UninitializedMessageException;
 import com.squareup.protos.simple.ExternalMessageContainer;
@@ -20,8 +19,6 @@ import static com.squareup.protos.simple.SimpleMessageContainer.SimpleMessage;
  * Test puny runtime.
  */
 public class OmarTest extends TestCase {
-  public void setUp() throws Exception {
-  }
 
   public void testSimpleMessage() throws Exception {
     SimpleMessage msg = new SimpleMessage.Builder().required_int32(456).build();
@@ -81,7 +78,8 @@ public class OmarTest extends TestCase {
       // expected
     }
 
-    ProtoAdapter<SimpleMessage> adapter = Omar.messageAdapter(SimpleMessage.class);
+    Omar omar = new Omar();
+    ProtoAdapter<SimpleMessage> adapter = omar.messageAdapter(SimpleMessage.class);
 
     int msgSerializedSize = adapter.getSerializedSize(msg);
     assertEquals(46, msgSerializedSize);
@@ -119,9 +117,8 @@ public class OmarTest extends TestCase {
     assertEquals(new Integer(77), msg.optional_external_msg.getExtension(SimpleMessageContainer.nested_message_ext).bb);
     assertEquals(SimpleMessage.NestedEnum.BAZ, msg.optional_external_msg.getExtension(SimpleMessageContainer.nested_enum_ext));
 
-    ExtensionRegistry registry = new ExtensionRegistry();
-    SimpleMessageContainer.registerAllExtensions(registry);
-    ProtoAdapter<SimpleMessage> adapter = Omar.messageAdapter(SimpleMessage.class, registry);
+    Omar omar = new Omar(SimpleMessageContainer.class);
+    ProtoAdapter<SimpleMessage> adapter = omar.messageAdapter(SimpleMessage.class);
     int msgSerializedSize = adapter.getSerializedSize(msg);
     //assertEquals(38, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
@@ -151,7 +148,8 @@ public class OmarTest extends TestCase {
     assertEquals(new Integer(333), msg.optional_external_msg.getExtension(SimpleMessageContainer.barext));
     assertEquals(new Integer(222), msg.optional_external_msg.getExtension(SimpleMessageContainer.bazext));
 
-    ProtoAdapter<SimpleMessage> adapter = Omar.messageAdapter(SimpleMessage.class);
+    Omar omar = new Omar();
+    ProtoAdapter<SimpleMessage> adapter = omar.messageAdapter(SimpleMessage.class);
     int msgSerializedSize = adapter.getSerializedSize(msg);
     //assertEquals(30, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
