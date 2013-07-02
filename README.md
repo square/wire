@@ -30,7 +30,6 @@ other .proto files within the protos-repo/ directory:
 	 */
 	package com.google.protobuf;
 
-	import com.squareup.omar.ExtensionRegistry;
 	import com.squareup.omar.Message;
 	import com.squareup.omar.Omar;
 	import com.squareup.omar.ProtoEnum;

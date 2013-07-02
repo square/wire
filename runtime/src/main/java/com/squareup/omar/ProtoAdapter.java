@@ -25,6 +25,7 @@ import static com.squareup.omar.Message.ExtendableMessage.Extension;
  * @param <M> the Message class handled by this adapter.
  */
 public class ProtoAdapter<M extends Message> {
+  private final Omar omar;
   private final Class<M> messageType;
   private final Class<Message.Builder<M>> builderType;
   private M defaultInstance;
@@ -38,7 +39,6 @@ public class ProtoAdapter<M extends Message> {
   private final Map<Integer, Object> defaultValueMap = new HashMap<Integer, Object>();
   private final Map<Integer, Field> fieldMap = new HashMap<Integer, Field>();
   private final Map<Integer, Method> builderMethodMap = new HashMap<Integer, Method>();
-  private final ExtensionRegistry extensionRegistry;
 
   private static <M extends Message> Object parseDefaultValue(Class<? extends Enum> enumType,
       int type, String s) {
@@ -72,7 +72,8 @@ public class ProtoAdapter<M extends Message> {
      throw new RuntimeException("Not yet implemented: " + type);
   }
 
-  ProtoAdapter(Class <M> messageType, ExtensionRegistry extensionRegistry) {
+  ProtoAdapter(Omar omar, Class <M> messageType) {
+    this.omar = omar;
     this.messageType = messageType;
     try {
       this.builderType = (Class<Message.Builder<M>>) Class.forName(messageType.getName() + "$Builder");
@@ -127,8 +128,6 @@ public class ProtoAdapter<M extends Message> {
 
     // Sort tags so we can process them in order
     Collections.sort(tags);
-
-    this.extensionRegistry = extensionRegistry;
   }
 
   /**
@@ -147,15 +146,8 @@ public class ProtoAdapter<M extends Message> {
     return defaultInstance;
   }
 
-  /**
-   * Returns the {@link ExtensionRegistry} for this {@link ProtoAdapter}.
-   */
-  public ExtensionRegistry getExtensionRegistry() {
-    return extensionRegistry;
-  }
-
   private <M extends Message> int getMessageSize(M message, int tag) {
-    ProtoAdapter<M> adapter = Omar.messageAdapter((Class<M>) message.getClass(), extensionRegistry);
+    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
     int messageSize = adapter.getSerializedSize(message);
     int size = CodedOutputByteBufferNano.computeTagSize(tag);
     size += CodedOutputByteBufferNano.computeRawVarint32Size(messageSize) + messageSize;
@@ -166,8 +158,7 @@ public class ProtoAdapter<M extends Message> {
     if (messages.size() == 0) {
       return 0;
     }
-    ProtoAdapter<M> adapter = Omar.messageAdapter((Class<M>) messages.get(0).getClass(),
-        extensionRegistry);
+    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) messages.get(0).getClass());
     int size = 0;
     for (M message : messages) {
       int messageSize = adapter.getSerializedSize(message);
@@ -180,14 +171,14 @@ public class ProtoAdapter<M extends Message> {
   private Class<? extends Enum> getEnumClass(int tag) {
     Class<? extends Enum> enumType = enumTypeMap.get(tag);
     if (enumType == null) {
-      enumType = extensionRegistry.getExtension((Class<Message.ExtendableMessage>) messageType,
-          tag).getEnumType();
+      enumType = omar.getExtensionRegistry().
+          getExtension((Class<Message.ExtendableMessage>) messageType, tag).getEnumType();
     }
     return enumType;
   }
 
   private <E extends Enum> int getEnumSize(E value, int tag) {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) Omar.enumAdapter(value.getClass());
+    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(value.getClass());
     return CodedOutputByteBufferNano.computeEnumSize(tag, adapter.toInt(value));
   }
 
@@ -196,7 +187,7 @@ public class ProtoAdapter<M extends Message> {
       return 0;
     }
     Class<? extends Enum> enumClass = enums.get(0).getClass();
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) Omar.enumAdapter(enumClass);
+    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(enumClass);
     int size = 0;
     for (E e : enums) {
       size += CodedOutputByteBufferNano.computeEnumSize(tag, adapter.toInt(e));
@@ -206,7 +197,7 @@ public class ProtoAdapter<M extends Message> {
 
   private <M extends Message> void writeMessage(M message, int tag,
       CodedOutputByteBufferNano output) throws IOException {
-    ProtoAdapter<M> adapter = Omar.messageAdapter((Class<M>) message.getClass(), extensionRegistry);
+    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
     output.writeTag(tag, 2); // 2 = WireFormatNano.WIRETYPE_LENGTH_DELIMITED
     output.writeRawVarint32(adapter.getSerializedSize(message));
     adapter.write(message, output);
@@ -217,8 +208,7 @@ public class ProtoAdapter<M extends Message> {
     if (messages.size() == 0) {
       return;
     }
-    ProtoAdapter<M> adapter = Omar.messageAdapter((Class<M>) messages.get(0).getClass(),
-        extensionRegistry);
+    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) messages.get(0).getClass());
     for (M message : messages) {
       output.writeTag(tag, 2); // 2 = WireFormatNano.WIRETYPE_LENGTH_DELIMITED
       output.writeRawVarint32(adapter.getSerializedSize(message));
@@ -228,7 +218,7 @@ public class ProtoAdapter<M extends Message> {
 
   private <E extends Enum> void writeEnum(E value, int tag,
       CodedOutputByteBufferNano output) throws IOException {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) Omar.enumAdapter(value.getClass());
+    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(value.getClass());
     output.writeEnum(tag, adapter.toInt(value));
   }
 
@@ -238,7 +228,7 @@ public class ProtoAdapter<M extends Message> {
       return;
     }
     Class<? extends Enum> enumClass = enums.get(0).getClass();
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) Omar.enumAdapter(enumClass);
+    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(enumClass);
     for (E e : enums) {
       output.writeEnum(tag, adapter.toInt(e));
     }
@@ -330,8 +320,8 @@ public class ProtoAdapter<M extends Message> {
 
   private Class<Message> getMessageClass(int tag) {
     Class<Message> messageClass = (Class<Message>) messageTypeMap.get(tag);
-    if (messageClass == null && extensionRegistry != null) {
-      messageClass = (Class<Message>) extensionRegistry.getExtension(
+    if (messageClass == null && omar.getExtensionRegistry() != null) {
+      messageClass = (Class<Message>) omar.getExtensionRegistry().getExtension(
           (Class<Message.ExtendableMessage>) messageType, tag).getMessageType();
     }
     return messageClass;
@@ -485,8 +475,7 @@ public class ProtoAdapter<M extends Message> {
     }
     final int oldLimit = input.pushLimit(length);
     ++input.recursionDepth;
-    ProtoAdapter<? extends Message> adapter =
-        Omar.messageAdapter(getMessageClass(tag), extensionRegistry);
+    ProtoAdapter<? extends Message> adapter = omar.messageAdapter(getMessageClass(tag));
     Message message = adapter.read(input);
     input.checkLastTagWas(0);
     --input.recursionDepth;
@@ -575,7 +564,7 @@ public class ProtoAdapter<M extends Message> {
           case Omar.SINT32: value = input.readSInt32(); break;
           case Omar.SINT64: value = input.readSInt64(); break;
           case Omar.BOOL: value = input.readBool(); break;
-          case Omar.ENUM: value = Omar.enumFromInt(getEnumClass(tag), input.readEnum()); break;
+          case Omar.ENUM: value = omar.enumFromIntInternal(getEnumClass(tag), input.readEnum()); break;
           case Omar.STRING: value = input.readString(); break;
           case Omar.BYTES: value = input.readBytes(); break;
           case Omar.MESSAGE: value = readMessage(input, tag); break;
@@ -605,7 +594,8 @@ public class ProtoAdapter<M extends Message> {
   }
 
   private Extension<Message.ExtendableMessage, ?> getExtension(int tag) {
-    return extensionRegistry == null ? null :
-        extensionRegistry.getExtension((Class <Message.ExtendableMessage>) messageType, tag);
+    return omar.getExtensionRegistry() == null ? null :
+        omar.getExtensionRegistry().getExtension((Class <Message.ExtendableMessage>) messageType,
+            tag);
   }
 }

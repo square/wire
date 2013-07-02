@@ -4,7 +4,6 @@
  */
 package com.squareup.protos.simple;
 
-import com.squareup.omar.ExtensionRegistry;
 import com.squareup.omar.Message;
 import com.squareup.omar.Omar;
 import com.squareup.omar.ProtoEnum;
@@ -29,14 +28,6 @@ public final class SimpleMessageContainer {
       Extension.getMessageExtension(ExternalMessageContainer.ExternalMessage.class, 128, Omar.OPTIONAL, SimpleMessage.NestedMessage.class);
   public static final Extension<ExternalMessageContainer.ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext =
       Extension.getEnumExtension(ExternalMessageContainer.ExternalMessage.class, 129, Omar.OPTIONAL, SimpleMessage.NestedEnum.class);
-
-  public static void registerAllExtensions(ExtensionRegistry registry) {
-    registry.add(fooext);
-    registry.add(barext);
-    registry.add(bazext);
-    registry.add(nested_message_ext);
-    registry.add(nested_enum_ext);
-  }
 
   public static final class SimpleMessage
       implements Message {
