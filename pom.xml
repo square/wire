@@ -7,7 +7,7 @@
   <groupId>com.squareup</groupId>
   <artifactId>omar</artifactId>
   <packaging>pom</packaging>
-  <version>0.1</version>
+  <version>0.1-SNAPSHOT</version>
 
   <name>Omar Protocol Buffers</name>
   <description>Parent module for Omar protocol buffers</description>
