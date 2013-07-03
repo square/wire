@@ -18,7 +18,7 @@ other .proto files within the protos-repo/ directory:
 
     % mvn clean package
 
-    % java -jar compiler/target/omar-compiler-0.1.jar --proto_path=protos-repo --java_out=out google/protobuf/descriptor.proto
+    % java -jar compiler/target/omar-compiler-0.1-SNAPSHOT.jar --proto_path=protos-repo --java_out=out google/protobuf/descriptor.proto
 	Reading proto source file protos-repo/google/protobuf/descriptor.proto
 	Writing generated code to out/com/google/protobuf/DescriptorProtos.java
 	
@@ -50,7 +50,7 @@ The file names are interpreted relative to the value given for the --proto_path 
     yourcompany/protos/stuff.proto
     ...
 
-    % java -jar compiler/target/omar-compiler-0.1.jar --proto_path=protos-repo --java_out=out --files=protos.include
+    % java -jar compiler/target/omar-compiler-0.1-SNAPSHOT.jar --proto_path=protos-repo --java_out=out --files=protos.include
     Reading proto source file protos-repo/google/protobuf/descriptor.proto
 	Writing generated code to out/com/google/protobuf/DescriptorProtos.java
 	Reading proto source file protos-repo/yourcompany/protos/stuff.proto
@@ -69,7 +69,7 @@ For Maven projects, simply add omar-runtime as a dependency:
     <dependency>
       <groupId>com.squareup</groupId>
       <artifactId>omar-runtime</artifactId>
-      <version>0.1</version>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
 
 Future work
