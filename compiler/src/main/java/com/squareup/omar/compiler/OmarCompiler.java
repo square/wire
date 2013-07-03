@@ -305,7 +305,7 @@ public class OmarCompiler {
       writer.emitEmptyLine();
       String documentation = field.getDocumentation();
       if (!isBlank(documentation)) {
-        writer.emitJavadoc(documentation);
+        writer.emitJavadoc(documentation.replace("%", "%%"));
       }
       writer.emitAnnotation(ProtoField.class, map);
 
