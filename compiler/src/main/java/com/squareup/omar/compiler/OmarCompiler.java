@@ -275,8 +275,7 @@ public class OmarCompiler {
   //  */
   // @ProtoField(
   //   tag = 1,
-  //   type = Omar.INT32,
-  //   defaultValue = "123"
+  //   type = Omar.INT32
   // )
   // public final Integer optional_int32;
   //
@@ -301,14 +300,6 @@ public class OmarCompiler {
 
       if (!isOptional(field)) {
         map.put("label", "Omar." + field.getLabel().toString());
-      }
-      if (field.getDefault() != null) {
-        String defaultValue = getDefaultValue(messageType, field);
-        if (defaultValue.startsWith("\"")) {
-          map.put("defaultValue", defaultValue);
-        } else {
-          map.put("defaultValue", "\"" + defaultValue + "\"");
-        }
       }
 
       writer.emitEmptyLine();

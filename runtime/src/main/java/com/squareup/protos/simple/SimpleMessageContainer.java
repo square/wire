@@ -46,8 +46,7 @@ public final class SimpleMessageContainer {
      */
     @ProtoField(
       tag = 1,
-      type = Omar.INT32,
-      defaultValue = "123"
+      type = Omar.INT32
     )
     public final Integer optional_int32;
 
@@ -71,8 +70,7 @@ public final class SimpleMessageContainer {
 
     @ProtoField(
       tag = 4,
-      type = Omar.ENUM,
-      defaultValue = "NestedEnum.BAZ"
+      type = Omar.ENUM
     )
     public final NestedEnum default_nested_enum;
 
@@ -82,8 +80,7 @@ public final class SimpleMessageContainer {
     @ProtoField(
       tag = 5,
       type = Omar.INT32,
-      label = Omar.REQUIRED,
-      defaultValue = "456"
+      label = Omar.REQUIRED
     )
     public final Integer required_int32;
 

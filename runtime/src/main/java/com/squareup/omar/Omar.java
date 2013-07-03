@@ -127,11 +127,13 @@ public final class Omar {
   static final int TYPE_MASK = 0x1f;
   static final int LABEL_MASK = 0xe0;
 
-  private Map<Class<? extends Message>, ProtoAdapter<? extends Message>> messageAdapters =
+  private final Map<Class<? extends Message>, ProtoAdapter<? extends Message>> messageAdapters =
       new HashMap<Class<? extends Message>, ProtoAdapter<? extends Message>>();
-  private Map<Class<? extends Enum>, ProtoEnumAdapter<? extends Enum>> enumAdapters =
+  private final Map<Class<? extends Enum>, ProtoEnumAdapter<? extends Enum>> enumAdapters =
       new HashMap<Class<? extends Enum>, ProtoEnumAdapter<? extends Enum>>();
-  private ExtensionRegistry registry;
+
+  // Visible to ProtoAdapter
+  final ExtensionRegistry registry;
 
   /**
    * Register all {@link Extension} objects defined as static fields on the given classes.
@@ -161,11 +163,6 @@ public final class Omar {
         }
       }
     }
-  }
-
-
-  ExtensionRegistry getExtensionRegistry() {
-    return registry;
   }
 
   /**
@@ -222,7 +219,7 @@ public final class Omar {
   }
 
   /**
-   * Returns the integer value tagged associated with the given enum intance.
+   * Returns the integer value tagged associated with the given enum instance.
    * The enum values must be annotated with the {@link ProtoEnum}
    * annotation.
    *
@@ -253,11 +250,10 @@ public final class Omar {
 
   /**
    * Parse an entire byte array into a {@link Message} of the given message class.
-   * Equivalent to {@code parseFrom(messageClass, bytes, 0, bytes.length, registry}.
+   * Equivalent to {@code parseFrom(messageClass, bytes, 0, bytes.length, registry)}.
    *
    * @param messageClass the class of the outermost {@link Message}
    * @param bytes an array of bytes
-   * @param registry an {@link ExtensionRegistry}, or null
    * @param <M> the outermost {@link Message} class
    * @return an instance of the desired message class
    * @throws IOException if parsing fails
@@ -267,6 +263,21 @@ public final class Omar {
     return adapter.read(CodedInputByteBufferNano.newInstance(bytes));
   }
 
+  private <M extends Message> int getSerializedSizeHelper(M message) {
+    return messageAdapter((Class<M>) message.getClass()).getSerializedSize(message);
+  }
+
+  /**
+   * Returns the serialized size of a given message, in bytes.
+   */
+  public static <M extends Message> int getSerializedSize(M message) {
+    return instance.getSerializedSizeHelper(message);
+  }
+
+  private <M extends Message> byte[] toByteArrayHelper(M message) {
+    return messageAdapter((Class<M>) message.getClass()).toByteArray(message);
+  }
+
   /**
    * Serializes a given {@link Message} and returns the result as a byte array.
    *
@@ -274,8 +285,8 @@ public final class Omar {
    * @param <M> the outermost {@link Message} class
    * @return an array of bytes in protocol buffer format
    */
-  public <M extends Message> byte[] toByteArray(M message) {
-    return messageAdapter((Class<M>) message.getClass()).toByteArray(message);
+  public static <M extends Message> byte[] toByteArray(M message) {
+    return instance.toByteArrayHelper(message);
   }
 
   /**
@@ -284,7 +295,11 @@ public final class Omar {
    * @param message an instance of {@link Message}}
    * @param <M> the outermost {@link Message} class
    */
-  public <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
+  public static <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
+    instance.writeToHelper(message, output, off, len);
+  }
+
+  private <M extends Message> void writeToHelper(M message, byte[] output, int off, int len) {
     ProtoAdapter<M> adapter = messageAdapter((Class<M>) message.getClass());
     try {
       adapter.write(message, CodedOutputByteBufferNano.newInstance(output, off, len));

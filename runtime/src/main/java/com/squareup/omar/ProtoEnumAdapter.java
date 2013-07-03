@@ -12,8 +12,8 @@ import java.util.Map;
  * @param <E> the Enum class handled by this adapter.
  */
 class ProtoEnumAdapter<E extends Enum> {
-  private Map<Integer, E> fromInt = new HashMap<Integer, E>();
-  private Map<E, Integer> toInt = new HashMap<E, Integer>();
+  private final Map<Integer, E> fromInt = new HashMap<Integer, E>();
+  private final Map<E, Integer> toInt = new HashMap<E, Integer>();
 
   ProtoEnumAdapter(Class<E> type) {
     // Record values for each constant annotated with '@ProtoEnum'.

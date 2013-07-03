@@ -42,10 +42,4 @@ public @interface ProtoField {
    * message type in {@code List<SomeMessage>} is erased.
    */
   Class<? extends Message> messageType() default NotAMessage.class;
-
-  /**
-   * The default value for the field as defined in the protocol buffer
-   * source, for example {@code "17"}, {@code "22L"}, {@code "false"}, etc.
-   */
-  String defaultValue() default "";
 }

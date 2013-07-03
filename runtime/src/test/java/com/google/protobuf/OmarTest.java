@@ -79,15 +79,14 @@ public class OmarTest extends TestCase {
     }
 
     Omar omar = new Omar();
-    ProtoAdapter<SimpleMessage> adapter = omar.messageAdapter(SimpleMessage.class);
 
-    int msgSerializedSize = adapter.getSerializedSize(msg);
+    int msgSerializedSize = Omar.getSerializedSize(msg);
     assertEquals(46, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
-    adapter.write(msg, CodedOutputByteBufferNano.newInstance(result));
+    omar.writeTo(msg, result, 0, result.length);
     assertEquals(46, result.length);
 
-    SimpleMessage newMsg = adapter.read(CodedInputByteBufferNano.newInstance(result));
+    SimpleMessage newMsg = omar.parseFrom(SimpleMessage.class, result);
     assertEquals(new Integer(789), newMsg.optional_int32);
     assertEquals(new Integer(2), newMsg.optional_nested_msg.bb);
     assertEquals(new Float(99.9f), newMsg.optional_external_msg.f);

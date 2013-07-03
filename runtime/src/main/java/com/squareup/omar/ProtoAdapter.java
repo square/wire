@@ -36,47 +36,15 @@ public class ProtoAdapter<M extends Message> {
       new HashMap<Integer, Class<? extends Message>>();
   private final Map<Integer, Class<? extends Enum>> enumTypeMap =
       new HashMap<Integer, Class<? extends Enum>>();
-  private final Map<Integer, Object> defaultValueMap = new HashMap<Integer, Object>();
   private final Map<Integer, Field> fieldMap = new HashMap<Integer, Field>();
   private final Map<Integer, Method> builderMethodMap = new HashMap<Integer, Method>();
-
-  private static <M extends Message> Object parseDefaultValue(Class<? extends Enum> enumType,
-      int type, String s) {
-     switch (type) {
-       case Omar.BOOL:
-         return Boolean.getBoolean(s);
-       case Omar.INT32: case Omar.SINT32: case Omar.UINT32: case Omar.FIXED32: case Omar.SFIXED32:
-         return new BigInteger(s).intValue();
-       case Omar.INT64: case Omar.SINT64: case Omar.UINT64: case Omar.FIXED64: case Omar.SFIXED64:
-         if (s.endsWith("l") || s.endsWith("L")) {
-           s = s.substring(0, s.length() - 1);
-         }
-         return new BigInteger(s).longValue();
-       case Omar.FLOAT:
-         if (s.endsWith("f") || s.endsWith("F")) {
-           s = s.substring(0, s.length() - 1);
-         }
-         return new BigDecimal(s).floatValue();
-       case Omar.DOUBLE:
-         if (s.endsWith("d") || s.endsWith("D")) {
-           s = s.substring(0, s.length() - 1);
-         }
-         return new BigDecimal(s).doubleValue();
-       case Omar.ENUM:
-         int index = s.lastIndexOf('.');
-         String enumName = s.substring(index + 1);
-         return Enum.valueOf(enumType, enumName);
-       case Omar.STRING:
-         return s;
-     }
-     throw new RuntimeException("Not yet implemented: " + type);
-  }
 
   ProtoAdapter(Omar omar, Class <M> messageType) {
     this.omar = omar;
     this.messageType = messageType;
     try {
-      this.builderType = (Class<Message.Builder<M>>) Class.forName(messageType.getName() + "$Builder");
+      this.builderType =
+          (Class<Message.Builder<M>>) Class.forName(messageType.getName() + "$Builder");
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException("No builder class found for message type " +
           messageType.getName());
@@ -102,17 +70,10 @@ public class ProtoAdapter<M extends Message> {
             }
         }
 
-        Class<? extends Enum> enumType = null;
-
         // Record type for tags that store an Enum
         if (Enum.class.isAssignableFrom(field.getType())) {
-          enumType = (Class<? extends Enum>) field.getType();
+          Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
           enumTypeMap.put(tag, enumType);
-        }
-        // Record default values
-        if (annotation.defaultValue().length() > 0) {
-          defaultValueMap.put(tag, parseDefaultValue(enumType, annotation.type(),
-              annotation.defaultValue()));
         }
 
         // Record setter methods on the builder class
@@ -133,7 +94,7 @@ public class ProtoAdapter<M extends Message> {
   /**
    * Returns an instance of the message type of this {@link ProtoAdapter} with all fields unset.
    */
-  public M getDefaultInstance() {
+  public synchronized M getDefaultInstance() {
     if (defaultInstance == null) {
       try {
         defaultInstance = builderType.newInstance().build();
@@ -145,6 +106,8 @@ public class ProtoAdapter<M extends Message> {
     }
     return defaultInstance;
   }
+
+  // Writing
 
   private <M extends Message> int getMessageSize(M message, int tag) {
     ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
@@ -166,15 +129,6 @@ public class ProtoAdapter<M extends Message> {
       size += CodedOutputByteBufferNano.computeRawVarint32Size(messageSize) + messageSize;
     }
     return size;
-  }
-
-  private Class<? extends Enum> getEnumClass(int tag) {
-    Class<? extends Enum> enumType = enumTypeMap.get(tag);
-    if (enumType == null) {
-      enumType = omar.getExtensionRegistry().
-          getExtension((Class<Message.ExtendableMessage>) messageType, tag).getEnumType();
-    }
-    return enumType;
   }
 
   private <E extends Enum> int getEnumSize(E value, int tag) {
@@ -234,29 +188,6 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
-  private void set(Message.Builder builder, int tag, Object value) {
-    try {
-      builderMethodMap.get(tag).invoke(builder, value);
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
-    } catch (InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private void setExtension(Message.Builder builder, Extension<?, ?> extension, Object value) {
-    try {
-      Method setExtension = builder.getClass().getMethod("setExtension", Extension.class, Object.class);
-      setExtension.invoke(builder, extension, (Object) value);
-    } catch (NoSuchMethodException e) {
-      throw new RuntimeException(e);
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
-    } catch (InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   /**
    * Returns the serialized size of a given message, in bytes.
    */
@@ -296,7 +227,7 @@ public class ProtoAdapter<M extends Message> {
         Map<Extension<?, ?>, ?> map = (Map<Extension<?, ?>, ?>) extensionMap.get(instance);
         for (Map.Entry<Extension<?, ?>, ?> entry: map.entrySet()) {
           Extension<?, ?> extension = entry.getKey();
-          Object value = (Object) entry.getValue();
+          Object value = entry.getValue();
           int tag = extension.getTag();
           int type = extension.getType();
           int label = extension.getLabel();
@@ -316,15 +247,6 @@ public class ProtoAdapter<M extends Message> {
     }
 
     return size;
-  }
-
-  private Class<Message> getMessageClass(int tag) {
-    Class<Message> messageClass = (Class<Message>) messageTypeMap.get(tag);
-    if (messageClass == null && omar.getExtensionRegistry() != null) {
-      messageClass = (Class<Message>) omar.getExtensionRegistry().getExtension(
-          (Class<Message.ExtendableMessage>) messageType, tag).getMessageType();
-    }
-    return messageClass;
   }
 
   private int getSerializedSize(int tag, Object value, int type, int label) {
@@ -352,7 +274,8 @@ public class ProtoAdapter<M extends Message> {
         }
       case Omar.PACKED: throw new IllegalArgumentException("not yet supported");
       case Omar.FIXED32: return CodedOutputByteBufferNano.computeFixed32Size(tag, (Integer) value);
-      case Omar.SFIXED32: return CodedOutputByteBufferNano.computeSFixed32Size(tag, (Integer) value);
+      case Omar.SFIXED32: return CodedOutputByteBufferNano.computeSFixed32Size(tag,
+          (Integer) value);
       case Omar.FIXED64: return CodedOutputByteBufferNano.computeFixed64Size(tag, (Long) value);
       case Omar.SFIXED64: return CodedOutputByteBufferNano.computeSFixed64Size(tag, (Long) value);
       case Omar.FLOAT: return CodedOutputByteBufferNano.computeFloatSize(tag, (Float) value);
@@ -434,7 +357,7 @@ public class ProtoAdapter<M extends Message> {
         Map<Extension<?, ?>, ?> map = (Map<Extension<?, ?>, ?>) extensionMap.get(instance);
         for (Map.Entry<Extension<?, ?>, ?> entry: map.entrySet()) {
            Extension<?, ?> extension = entry.getKey();
-           Object value = (Object) entry.getValue();
+           Object value = entry.getValue();
           int tag = extension.getTag();
           int type = extension.getType();
           int label = extension.getLabel();
@@ -467,23 +390,9 @@ public class ProtoAdapter<M extends Message> {
     return result;
   }
 
-  private Message readMessage(CodedInputByteBufferNano input, int tag) throws IOException {
-    // inlined from CodedInputByteBufferNano.readMessage()
-    final int length = input.readRawVarint32();
-    if (input.recursionDepth >= input.recursionLimit) {
-      throw new InvalidProtocolBufferNanoException("recursion limit exceeded");
-    }
-    final int oldLimit = input.pushLimit(length);
-    ++input.recursionDepth;
-    ProtoAdapter<? extends Message> adapter = omar.messageAdapter(getMessageClass(tag));
-    Message message = adapter.read(input);
-    input.checkLastTagWas(0);
-    --input.recursionDepth;
-    input.popLimit(oldLimit);
-    return message;
-  }
+  // Reading
 
-  private void readUnknownField(CodedInputByteBufferNano input, int tag, int type)
+  private void readUnknownField(CodedInputByteBufferNano input, int type)
       throws IOException {
     switch (type) {
       case 0: input.readRawVarint64(); break;
@@ -518,6 +427,74 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
+  private Extension<Message.ExtendableMessage, ?> getExtension(int tag) {
+    ExtensionRegistry registry = omar.registry;
+    return registry == null ? null :
+        registry.getExtension((Class<Message.ExtendableMessage>) messageType, tag);
+  }
+
+  private void set(Message.Builder builder, int tag, Object value) {
+    try {
+      builderMethodMap.get(tag).invoke(builder, value);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    } catch (InvocationTargetException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void setExtension(Message.Builder builder, Extension<?, ?> extension, Object value) {
+    try {
+      Method setExtension = builder.getClass().getMethod("setExtension", Extension.class,
+          Object.class);
+      setExtension.invoke(builder, extension, value);
+    } catch (NoSuchMethodException e) {
+      throw new RuntimeException(e);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    } catch (InvocationTargetException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private Class<? extends Enum> getEnumClass(int tag) {
+    Class<? extends Enum> enumType = enumTypeMap.get(tag);
+    if (enumType == null) {
+      Extension<Message.ExtendableMessage, ?> extension = getExtension(tag);
+      if (extension != null) {
+        enumType = extension.getEnumType();
+      }
+    }
+    return enumType;
+  }
+
+  private Class<Message> getMessageClass(int tag) {
+    Class<Message> messageClass = (Class<Message>) messageTypeMap.get(tag);
+    if (messageClass == null) {
+      Extension<Message.ExtendableMessage, ?> extension = getExtension(tag);
+      if (extension != null) {
+        messageClass = (Class<Message>) extension.getMessageType();
+      }
+    }
+    return messageClass;
+  }
+
+  private Message readMessage(CodedInputByteBufferNano input, int tag) throws IOException {
+    // inlined from CodedInputByteBufferNano.readMessage()
+    final int length = input.readRawVarint32();
+    if (input.recursionDepth >= input.recursionLimit) {
+      throw new InvalidProtocolBufferNanoException("recursion limit exceeded");
+    }
+    final int oldLimit = input.pushLimit(length);
+    ++input.recursionDepth;
+    ProtoAdapter<? extends Message> adapter = omar.messageAdapter(getMessageClass(tag));
+    Message message = adapter.read(input);
+    input.checkLastTagWas(0);
+    --input.recursionDepth;
+    input.popLimit(oldLimit);
+    return message;
+  }
+
   /** Uses reflection to read an instance from {@code in}. */
   public M read(CodedInputByteBufferNano input) throws IOException {
     try {
@@ -549,7 +526,7 @@ public class ProtoAdapter<M extends Message> {
         } else {
           extension = getExtension(tag);
           if (extension == null) {
-            readUnknownField(input, tag, tagAndType & 0x7);
+            readUnknownField(input, tagAndType & 0x7);
             continue;
           }
           type = extension.getType();
@@ -591,11 +568,5 @@ public class ProtoAdapter<M extends Message> {
     } catch (InstantiationException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private Extension<Message.ExtendableMessage, ?> getExtension(int tag) {
-    return omar.getExtensionRegistry() == null ? null :
-        omar.getExtensionRegistry().getExtension((Class <Message.ExtendableMessage>) messageType,
-            tag);
   }
 }
