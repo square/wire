@@ -26,8 +26,7 @@ public final class ExternalMessageContainer {
 
     @ProtoField(
       tag = 1,
-      type = Omar.FLOAT,
-      defaultValue = "20F"
+      type = Omar.FLOAT
     )
     public final Float f;
 

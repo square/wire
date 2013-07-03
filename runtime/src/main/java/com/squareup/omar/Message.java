@@ -18,8 +18,6 @@ public interface Message {
     /**
      * Returns an immutable {@link Message} based on the fields that have been set
      * in this builder.
-     *
-     * @return
      */
     T build();
   }
