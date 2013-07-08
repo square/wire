@@ -30,6 +30,7 @@ public class OmarCompiler {
 
   private static final Map<String, String> javaTypes = new HashMap<String, String>();
   private static final Map<String, String> protoFieldTypes = new HashMap<String, String>();
+  private static final Set<String> packableTypes = new HashSet<String>();
   private static final Set<String> javaKeywords = new HashSet<String>(Arrays.asList(
       "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
       "class", "const", "continue", "default", "do", "double", "else", "enum", "extends",
@@ -70,6 +71,20 @@ public class OmarCompiler {
     protoFieldTypes.put("string", "Omar.STRING");
     protoFieldTypes.put("uint32", "Omar.UINT32");
     protoFieldTypes.put("uint64", "Omar.UINT64");
+
+    packableTypes.add("bool");
+    packableTypes.add("double");
+    packableTypes.add("float");
+    packableTypes.add("fixed32");
+    packableTypes.add("fixed64");
+    packableTypes.add("int32");
+    packableTypes.add("int64");
+    packableTypes.add("sfixed32");
+    packableTypes.add("sfixed64");
+    packableTypes.add("sint32");
+    packableTypes.add("sint64");
+    packableTypes.add("uint32");
+    packableTypes.add("uint64");
   }
 
   private final String repoPath;
@@ -287,15 +302,21 @@ public class OmarCompiler {
       map.put("tag", String.valueOf(field.getTag()));
 
       String type = field.getType();
+      boolean isEnum = false;
       if (isScalar(field)) {
         map.put("type", protoFieldType(type));
       } else {
         String fullyQualifiedName = fullyQualifiedName(messageType, type);
-        if (isEnum(fullyQualifiedName)) {
+        isEnum = isEnum(fullyQualifiedName);
+        if (isEnum) {
           map.put("type", "Omar.ENUM");
         } else {
           map.put("messageType", javaName + ".class");
         }
+      }
+
+      if (isPacked(field, isEnum)) {
+        map.put("packed", "true");
       }
 
       if (!isOptional(field)) {
@@ -738,6 +759,11 @@ public class OmarCompiler {
 
   private boolean isRepeated(Field field) {
     return field.getLabel() == MessageType.Label.REPEATED;
+  }
+
+  private boolean isPacked(Field field, boolean isEnum) {
+    return "true".equals(field.getExtensions().get("packed")) &&
+        (packableTypes.contains(field.getType()) || isEnum);
   }
 
   private boolean isRequired(Field field) {

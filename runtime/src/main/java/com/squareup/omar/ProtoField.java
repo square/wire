@@ -35,6 +35,9 @@ public @interface ProtoField {
    */
   int label() default Omar.OPTIONAL;
 
+  /** True if the field has the '[packed = true]' extension. */
+  boolean packed() default false;
+
   /**
    * The class type of the message stored in this field, when
    * {@code type() == Omar.Message}. Note that we cannot infer this

@@ -1,0 +1,1 @@
+java -jar /Users/rice/.m2/repository/com/squareup/omar-compiler/0.1-SNAPSHOT/omar-compiler-0.1-SNAPSHOT.jar --proto_path=runtime/src/main/proto all_types.proto --java_out=runtime/src/test/java
