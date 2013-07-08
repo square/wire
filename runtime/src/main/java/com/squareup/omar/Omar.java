@@ -73,41 +73,35 @@ public final class Omar {
    * Constant indicating the protocol buffer 'message' datatype.
    */
   public static final int MESSAGE = 11;
-
-  /**
-   * Constant indicating the protocol buffer 'packed' datatype.
-   */
-  public static final int PACKED = 12;
-
   /**
    * Constant indicating the protocol buffer 'fixed32' datatype.
    */
-  public static final int FIXED32 = 13;
+  public static final int FIXED32 = 12;
 
   /**
    * Constant indicating the protocol buffer 'sfixed32' datatype.
    */
-  public static final int SFIXED32 = 14;
+  public static final int SFIXED32 = 13;
 
   /**
    * Constant indicating the protocol buffer 'fixed64' datatype.
    */
-  public static final int FIXED64 = 15;
+  public static final int FIXED64 = 14;
 
   /**
    * Constant indicating the protocol buffer 'sfixed64' datatype.
    */
-  public static final int SFIXED64 = 16;
+  public static final int SFIXED64 = 15;
 
   /**
    * Constant indicating the protocol buffer 'float' datatype.
    */
-  public static final int FLOAT = 17;
+  public static final int FLOAT = 16;
 
   /**
    * Constant indicating the protocol buffer 'double' datatype.
    */
-  public static final int DOUBLE = 18;
+  public static final int DOUBLE = 17;
 
   /**
    * Constant indicating the protocol buffer 'required' label.
@@ -124,8 +118,14 @@ public final class Omar {
    */
   public static final int REPEATED = 128;
 
+  /**
+   * Constant indicating the protocol buffer '[packed = true]' extension.
+   */
+  public static final int PACKED = 256;
+
   static final int TYPE_MASK = 0x1f;
   static final int LABEL_MASK = 0xe0;
+  static final int PACKED_MASK = 0x100;
 
   private final Map<Class<? extends Message>, ProtoAdapter<? extends Message>> messageAdapters =
       new HashMap<Class<? extends Message>, ProtoAdapter<? extends Message>>();

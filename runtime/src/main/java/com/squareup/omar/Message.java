@@ -43,6 +43,7 @@ public interface Message {
       private final int tag;
       private final int type;
       private final int label;
+      private final boolean packed;
 
       /**
        * Returns an {@link Extension} instance for a built-in datatype.
@@ -56,7 +57,24 @@ public interface Message {
        */
       public static <X extends ExtendableMessage, Type> Extension<X, Type> getExtension(Class<X> extendedType,
           int tag, int type, int label) {
-        return new Extension<X, Type>(extendedType, tag, type, label, null, null);
+        return new Extension<X, Type>(extendedType, tag, type, label, false, null, null);
+      }
+
+      /**
+       * Returns an {@link Extension} instance for a built-in datatype.
+       *
+       * @param extendedType the type of message being extended
+       * @param tag the tag number of the extension
+       * @param type one of {@code Omar.INT32}, etc.
+       * @param label one of {@code Omar.OPTIONAL}, {@code Omar.REQUIRED}, or {@code Omar.REPEATED}
+       * @param packed true if the '[packed = true]' extension is present
+       * @param <X> the type of message being extended
+       * @param <Type> the (boxed) Java data type of the {@link Extension} value
+       */
+      // TODO - generate this
+      public static <X extends ExtendableMessage, Type> Extension<X, Type> getExtension(Class<X> extendedType,
+          int tag, int type, int label, boolean packed) {
+        return new Extension<X, Type>(extendedType, tag, type, label, packed, null, null);
       }
 
       /**
@@ -72,7 +90,7 @@ public interface Message {
       public static <X extends ExtendableMessage, Type extends Message> Extension<X, Type>
           getMessageExtension(Class<X> extendedType, int tag, int label,
               Class<Type> messageType) {
-        return new Extension<X, Type>(extendedType, tag, Omar.MESSAGE, label, messageType, null);
+        return new Extension<X, Type>(extendedType, tag, Omar.MESSAGE, label, false, messageType, null);
       }
 
       /**
@@ -88,17 +106,36 @@ public interface Message {
       public static <X extends ExtendableMessage, Type extends Enum> Extension<X, Type>
           getEnumExtension(Class<X> extendedType, int tag, int label,
               Class<Type> enumType) {
-        return new Extension<X, Type>(extendedType, tag, Omar.ENUM, label, null, enumType);
+        return new Extension<X, Type>(extendedType, tag, Omar.ENUM, label, false, null, enumType);
+      }
+
+      /**
+       * Returns an {@link Extension} instance for an enum datatype.
+       *
+       * @param extendedType the type of message being extended
+       * @param tag the tag number of the extension
+       * @param label one of {@code Omar.OPTIONAL}, {@code Omar.REQUIRED}, or {@code Omar.REPEATED}
+       * @param packed true if the '[packed = true]' extension is present
+       * @param enumType the class type of the {@link Extension}'s enum value
+       * @param <X> the type of message being extended
+       * @param <Type> the Java data type of the {@link Extension} enum value
+       */
+      // TODO - generate this
+      public static <X extends ExtendableMessage, Type extends Enum> Extension<X, Type>
+          getEnumExtension(Class<X> extendedType, int tag, int label, boolean packed,
+              Class<Type> enumType) {
+        return new Extension<X, Type>(extendedType, tag, Omar.ENUM, label, packed, null, enumType);
       }
 
       private Extension(Class <ExtendedType> extendedType, int tag, int type, int label,
-          Class<? extends Message> messageType, Class<? extends Enum> enumType) {
+          boolean packed, Class<? extends Message> messageType, Class<? extends Enum> enumType) {
         this.extendedType = extendedType;
-        this.messageType = messageType;
-        this.enumType = enumType;
         this.tag = tag;
         this.type = type;
         this.label = label;
+        this.packed = packed;
+        this.messageType = messageType;
+        this.enumType = enumType;
       }
 
       /**
@@ -130,6 +167,10 @@ public interface Message {
 
       public int getLabel() {
         return label;
+      }
+
+      public boolean getPacked() {
+        return packed;
       }
     }
 
