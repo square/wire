@@ -80,7 +80,7 @@ public class OmarTest extends TestCase {
 
     Omar omar = new Omar();
 
-    int msgSerializedSize = Omar.getSerializedSize(msg);
+    int msgSerializedSize = omar.getSerializedSize(msg);
     assertEquals(46, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
     omar.writeTo(msg, result, 0, result.length);

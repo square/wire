@@ -7,17 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation placed on {@link Message} fields in generated code to provide additional
- * metadata by the protocol buffer runtime to perform serialization and deserialization.
+ * An annotation placed on {@link Message} fields in generated code to provide necessary
+ * metadata for the protocol buffer runtime to perform serialization and deserialization.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ProtoField {
-  // Marker value for annotations that don't specify messageType()
-  public static class NotAMessage implements Message {
-    private NotAMessage() {}
-  }
-
   /** The tag number used to store the field's value. */
   int tag();
 
@@ -37,13 +32,4 @@ public @interface ProtoField {
 
   /** True if the field has the '[packed = true]' extension. */
   boolean packed() default false;
-
-  /**
-   * The class type of the message stored in this field, when
-   * {@code type() == }{@link Omar#MESSAGE}. Note that we cannot infer this
-   * from the field's declared type for repeated fields, since the
-   * message type in {@code List<SomeMessage>} is erased.
-   */
-  Class<? extends Message> messageType() default NotAMessage.class;
-
 }

@@ -98,10 +98,10 @@ public class TestAllTypes extends TestCase {
   }
 
   public void testWrite() {
-    int len = Omar.getSerializedSize(allTypes);
+    int len = omar.getSerializedSize(allTypes);
     assertEquals(AllTypesData.expectedOutput.length, len);
     byte[] output = new byte[len];
-    Omar.writeTo(allTypes, output, 0, len);
+    omar.writeTo(allTypes, output, 0, len);
     for (int i = 0; i < output.length; i++) {
       assertEquals("Byte " + i, AllTypesData.expectedOutput[i], output[i] & 0xff);
     }
@@ -109,14 +109,14 @@ public class TestAllTypes extends TestCase {
 
   public void testRead() throws IOException {
     byte[] data = new byte[AllTypesData.expectedOutput.length];
-    Omar.writeTo(allTypes, data, 0, data.length);
+    omar.writeTo(allTypes, data, 0, data.length);
     AllTypes parsed = omar.parseFrom(AllTypes.class, data);
     assertEquals(allTypes, parsed);
   }
 
   public void testReadNoExtension() throws IOException {
     byte[] data = new byte[AllTypesData.expectedOutput.length];
-    Omar.writeTo(allTypes, data, 0, data.length);
+    omar.writeTo(allTypes, data, 0, data.length);
     AllTypes parsed = new Omar().parseFrom(AllTypes.class, data);
     assertFalse(allTypes.equals(parsed));
   }
@@ -132,7 +132,7 @@ public class TestAllTypes extends TestCase {
 
   public void testToString() throws IOException {
     byte[] data = new byte[AllTypesData.expectedOutput.length];
-    Omar.writeTo(allTypes, data, 0, data.length);
+    omar.writeTo(allTypes, data, 0, data.length);
     AllTypes parsed = omar.parseFrom(AllTypes.class, data);
     assertEquals(AllTypesData.expectedToString, parsed.toString());
   }

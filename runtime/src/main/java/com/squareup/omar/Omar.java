@@ -11,10 +11,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.squareup.omar.Message.ExtendableMessage.Extension;
 
+/**
+ * Main class for "Omar" little protocol buffers.
+ */
 public final class Omar {
 
   // Hidden instance that can perform work that does not require knowledge of extensions.
@@ -168,12 +170,11 @@ public final class Omar {
   }
 
   /**
-   * Returns a {@link ProtoAdapter} for the given message type, using the given
-   * {@link ExtensionRegistry}.
+   * Returns a {@link ProtoAdapter} for the given message type.
    *
    * @param messageType the {@link Message} class
    */
-  public <M extends Message> ProtoAdapter<M> messageAdapter(Class <M> messageType) {
+  public synchronized <M extends Message> ProtoAdapter<M> messageAdapter(Class <M> messageType) {
     ProtoAdapter<?> adapter = messageAdapters.get(messageType);
     if (adapter == null) {
       adapter = new ProtoAdapter<M>(this, messageType);
@@ -187,7 +188,7 @@ public final class Omar {
    *
    * @param enumClass the enum class
    */
-  public <E extends Enum> ProtoEnumAdapter<E> enumAdapter(Class<E> enumClass) {
+  public synchronized <E extends Enum> ProtoEnumAdapter<E> enumAdapter(Class<E> enumClass) {
     ProtoEnumAdapter<?> adapter = enumAdapters.get(enumClass);
     if (adapter == null) {
       adapter = new ProtoEnumAdapter<E>(enumClass);
@@ -196,45 +197,37 @@ public final class Omar {
     return (ProtoEnumAdapter<E>) adapter;
   }
 
-  <E extends Enum> E enumFromIntInternal(Class<E> enumClass, int value) {
-    ProtoEnumAdapter<E> adapter = enumAdapter(enumClass);
-    return adapter.fromInt(value);
-  }
-
   /**
    * Returns the enumerated value tagged with the given integer value for the
-   * given enum class. The enum values must be annotated with the {@link ProtoEnum}
-   * annotation. If no value in the given enumeration
+   * given enum class. If no enum value in the given class is annotated with a {@link ProtoEnum}
+   * annotation having the given value, null is returned.
    *
    * @param enumClass the enum class
    * @param value the integer value
    * @param <E> the enum class constant
    * @return a value from the given enum, or null
    */
-  public static <E extends Enum> E enumFromInt(Class<E> enumClass, int value) {
-    return instance.enumFromIntInternal(enumClass, value);
-  }
-
-  private <E extends Enum> int intFromEnumInternal(E value) {
-    ProtoEnumAdapter<E> adapter = enumAdapter((Class <E>) value.getClass());
-    return adapter.toInt(value);
+  public <E extends Enum> E enumFromInt(Class<E> enumClass, int value) {
+    ProtoEnumAdapter<E> adapter = enumAdapter(enumClass);
+    return adapter.fromInt(value);
   }
 
   /**
    * Returns the integer value tagged associated with the given enum instance.
-   * The enum values must be annotated with the {@link ProtoEnum}
-   * annotation.
+   * If the enum value is not annotated with a {@link ProtoEnum} annotation, an exception
+   * will be thrown.
    *
    * @param value the integer value
    * @param <E> the enum class constant
    * @return the associated integer value
    */
-  public static <E extends Enum> int intFromEnum(E value) {
-    return instance.intFromEnumInternal(value);
+  public <E extends Enum> int intFromEnum(E value) {
+    ProtoEnumAdapter<E> adapter = enumAdapter((Class<E>) value.getClass());
+    return adapter.toInt(value);
   }
 
   /**
-   * Parse a given range of bytes into a {@link Message} of the given message class.
+   * Parses a given range of bytes into a {@link Message} of the given message class.
    *
    * @param messageClass the class of the outermost {@link Message}
    * @param bytes an array of bytes
@@ -252,7 +245,7 @@ public final class Omar {
 
   /**
    * Parse an entire byte array into a {@link Message} of the given message class.
-   * Equivalent to {@code parseFrom(messageClass, bytes, 0, bytes.length, registry)}.
+   * Equivalent to {@code parseFrom(messageClass, bytes, 0, bytes.length)}.
    *
    * @param messageClass the class of the outermost {@link Message}
    * @param bytes an array of bytes
@@ -265,30 +258,22 @@ public final class Omar {
     return adapter.read(CodedInputByteBufferNano.newInstance(bytes));
   }
 
-  private <M extends Message> int getSerializedSizeHelper(M message) {
-    return messageAdapter((Class<M>) message.getClass()).getSerializedSize(message);
-  }
-
   /**
-   * Returns the serialized size of a given message, in bytes.
+   * Returns the serialized size of a given {@link Message}, in bytes.
    */
-  public static <M extends Message> int getSerializedSize(M message) {
-    return instance.getSerializedSizeHelper(message);
-  }
-
-  private <M extends Message> byte[] toByteArrayHelper(M message) {
-    return messageAdapter((Class<M>) message.getClass()).toByteArray(message);
+  public <M extends Message> int getSerializedSize(M message) {
+    return messageAdapter((Class<M>) message.getClass()).getSerializedSize(message);
   }
 
   /**
    * Serializes a given {@link Message} and returns the result as a byte array.
    *
-   * @param message an instance of {@link Message}}
+   * @param message an instance of {@link Message}
    * @param <M> the outermost {@link Message} class
    * @return an array of bytes in protocol buffer format
    */
-  public static <M extends Message> byte[] toByteArray(M message) {
-    return instance.toByteArrayHelper(message);
+  public <M extends Message> byte[] toByteArray(M message) {
+    return messageAdapter((Class<M>) message.getClass()).toByteArray(message);
   }
 
   /**
@@ -297,11 +282,7 @@ public final class Omar {
    * @param message an instance of {@link Message}}
    * @param <M> the outermost {@link Message} class
    */
-  public static <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
-    instance.writeToHelper(message, output, off, len);
-  }
-
-  private <M extends Message> void writeToHelper(M message, byte[] output, int off, int len) {
+  public <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
     ProtoAdapter<M> adapter = messageAdapter((Class<M>) message.getClass());
     try {
       adapter.write(message, CodedOutputByteBufferNano.newInstance(output, off, len));
@@ -309,17 +290,6 @@ public final class Omar {
       throw new RuntimeException(e);
     }
   }
-
-  ///**
-  // * Returns an instance of the given message class, with all fields unset.
-  // *
-  // * @param messageClass the class of the desired {@link Message}
-  // * @param <M> the Message type
-  // * @return an instance of the desired Message class
-  // */
-  //public <M extends Message> M getDefaultInstance(Class<M> messageClass) {
-  //  return messageAdapter(messageClass).getDefaultInstance();
-  //}
 
   /**
    * Returns an instance of the given message class, with all fields unset.
@@ -338,7 +308,7 @@ public final class Omar {
    *
    * <pre>
    * MyProto myProto = ...
-   * MyField field = get(myProto.f, MyProto.f_default);
+   * MyField field = Omar.get(myProto.f, MyProto.f_default);
    * </pre>
    *
    * will attempt to retrieve the value of the field 'f' defined by MyProto.
@@ -394,12 +364,13 @@ public final class Omar {
   }
 
   /**
-   * Utility method to return a copy of a given List.
+   * Utility method to return an unmodifiable copy of a given List.
    */
   public static <T> List<T> unmodifiableCopyOf(List<T> source) {
     return source == null ? null : Collections.unmodifiableList(new ArrayList<T>(source));
   }
 
+  /** Formats an extension map as a string, e.g., {@code {key=value, key=value}}. */
   public static String toString(Map<? extends Extension<?, ?>, Object> extensionMap) {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
@@ -415,6 +386,7 @@ public final class Omar {
     return sb.toString();
   }
 
+  /** Formats a byte array as, e.g., {@code {0,1,2}}. */
   public static String toString(byte[] bytes) {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
@@ -428,6 +400,7 @@ public final class Omar {
     return sb.toString();
   }
 
+  /** Formats a list of byte arrays as, e.g., {@code [{0,1,2}, {3,4,5}]}. */
   public static String toString(List<byte[]> bytesList) {
     StringBuilder sb = new StringBuilder();
     String sep = "";
