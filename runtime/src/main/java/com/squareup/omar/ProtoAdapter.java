@@ -39,6 +39,7 @@ public class ProtoAdapter<M extends Message> {
   private final Map<Integer, Field> fieldMap = new HashMap<Integer, Field>();
   private final Map<Integer, Method> builderMethodMap = new HashMap<Integer, Method>();
 
+  /** Cache information about the Message class and its mapping to proto wire format. */
   ProtoAdapter(Omar omar, Class <M> messageType) {
     this.omar = omar;
     this.messageType = messageType;
@@ -308,58 +309,6 @@ public class ProtoAdapter<M extends Message> {
     return result;
   }
 
-  private <M extends Message> void writeMessage(M message, int tag,
-      CodedOutputByteBufferNano output) throws IOException {
-    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
-    output.writeTag(tag, 2); // 2 = WireFormatNano.WIRETYPE_LENGTH_DELIMITED
-    output.writeRawVarint32(adapter.getSerializedSize(message));
-    adapter.write(message, output);
-  }
-
-  private <M extends Message> void writeMessageNoTag(M message, CodedOutputByteBufferNano output)
-      throws IOException {
-    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
-    output.writeRawVarint32(adapter.getSerializedSize(message));
-    adapter.write(message, output);
-  }
-
-  private <M extends Message> void writeRepeatedMessage(List<M> messages,
-      int tag, CodedOutputByteBufferNano output) throws IOException {
-    if (messages.size() == 0) {
-      return;
-    }
-    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) messages.get(0).getClass());
-    for (M message : messages) {
-      output.writeTag(tag, 2); // 2 = WireFormatNano.WIRETYPE_LENGTH_DELIMITED
-      output.writeRawVarint32(adapter.getSerializedSize(message));
-      adapter.write(message, output);
-    }
-  }
-
-  private <E extends Enum> void writeEnum(E value, int tag,
-      CodedOutputByteBufferNano output) throws IOException {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(value.getClass());
-    output.writeEnum(tag, adapter.toInt(value));
-  }
-
-  private <E extends Enum> void writeEnumNoTag(E value, CodedOutputByteBufferNano output)
-      throws IOException {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(value.getClass());
-    output.writeEnumNoTag(adapter.toInt(value));
-  }
-
-  private <E extends Enum> void writeRepeatedEnum(List<E> enums, int tag,
-      CodedOutputByteBufferNano output) throws IOException {
-    if (enums.size() == 0) {
-      return;
-    }
-    Class<? extends Enum> enumClass = enums.get(0).getClass();
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(enumClass);
-    for (E e : enums) {
-      output.writeEnum(tag, adapter.toInt(e));
-    }
-  }
-
   private int getSerializedSize(int tag, Object value, int type) {
     switch (type) {
       case Omar.INT32: return CodedOutputByteBufferNano.computeInt32Size(tag, (Integer) value);
@@ -381,6 +330,19 @@ public class ProtoAdapter<M extends Message> {
       case Omar.DOUBLE: return CodedOutputByteBufferNano.computeDoubleSize(tag, (Double) value);
       default: throw new RuntimeException();
     }
+  }
+
+  private <E extends Enum> int getEnumSize(E value, int tag) {
+    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(value.getClass());
+    return CodedOutputByteBufferNano.computeEnumSize(tag, adapter.toInt(value));
+  }
+
+  private <M extends Message> int getMessageSize(M message, int tag) {
+    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
+    int messageSize = adapter.getSerializedSize(message);
+    int size = CodedOutputByteBufferNano.computeTagSize(tag);
+    size += CodedOutputByteBufferNano.computeRawVarint32Size(messageSize) + messageSize;
+    return size;
   }
 
   private int getSerializedSizeNoTag(Object value, int type) {
@@ -406,54 +368,14 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
-  private <M extends Message> int getMessageSizeNoTag(M message) {
-    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
-    return adapter.getSerializedSize(message);
-  }
-
-  private <M extends Message> int getMessageSize(M message, int tag) {
-    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
-    int messageSize = adapter.getSerializedSize(message);
-    int size = CodedOutputByteBufferNano.computeTagSize(tag);
-    size += CodedOutputByteBufferNano.computeRawVarint32Size(messageSize) + messageSize;
-    return size;
-  }
-
-  private <M extends Message> int getRepeatedMessageSize(List<M> messages, int tag) {
-    if (messages.size() == 0) {
-      return 0;
-    }
-    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) messages.get(0).getClass());
-    int size = 0;
-    for (M message : messages) {
-      int messageSize = adapter.getSerializedSize(message);
-      size += CodedOutputByteBufferNano.computeTagSize(tag);
-      size += CodedOutputByteBufferNano.computeRawVarint32Size(messageSize) + messageSize;
-    }
-    return size;
-  }
-
   private <E extends Enum> int getEnumSizeNoTag(E value) {
     ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(value.getClass());
     return CodedOutputByteBufferNano.computeEnumSizeNoTag(adapter.toInt(value));
   }
 
-  private <E extends Enum> int getEnumSize(E value, int tag) {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(value.getClass());
-    return CodedOutputByteBufferNano.computeEnumSize(tag, adapter.toInt(value));
-  }
-
-  private <E extends Enum> int getRepeatedEnumSize(List<E> enums, int tag) {
-    if (enums.size() == 0) {
-      return 0;
-    }
-    Class<? extends Enum> enumClass = enums.get(0).getClass();
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(enumClass);
-    int size = 0;
-    for (E e : enums) {
-      size += CodedOutputByteBufferNano.computeEnumSize(tag, adapter.toInt(e));
-    }
-    return size;
+  private <M extends Message> int getMessageSizeNoTag(M message) {
+    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
+    return adapter.getSerializedSize(message);
   }
 
   private void writeValue(CodedOutputByteBufferNano output, int tag, Object value, int type)
@@ -480,6 +402,20 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
+  private <E extends Enum> void writeEnum(E value, int tag,
+      CodedOutputByteBufferNano output) throws IOException {
+    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(value.getClass());
+    output.writeEnum(tag, adapter.toInt(value));
+  }
+
+  private <M extends Message> void writeMessage(M message, int tag,
+      CodedOutputByteBufferNano output) throws IOException {
+    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
+    output.writeTag(tag, 2); // 2 = WireFormatNano.WIRETYPE_LENGTH_DELIMITED
+    output.writeRawVarint32(adapter.getSerializedSize(message));
+    adapter.write(message, output);
+  }
+
   private void writeValueNoTag(CodedOutputByteBufferNano output, Object value, int type)
       throws IOException {
     switch (type) {
@@ -504,9 +440,22 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
+  private <E extends Enum> void writeEnumNoTag(E value, CodedOutputByteBufferNano output)
+      throws IOException {
+    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) omar.enumAdapter(value.getClass());
+    output.writeEnumNoTag(adapter.toInt(value));
+  }
+
+  private <M extends Message> void writeMessageNoTag(M message, CodedOutputByteBufferNano output)
+      throws IOException {
+    ProtoAdapter<M> adapter = omar.messageAdapter((Class<M>) message.getClass());
+    output.writeRawVarint32(adapter.getSerializedSize(message));
+    adapter.write(message, output);
+  }
+
   // Reading
 
-  /** Uses reflection to read an instance from {@code in}. */
+  /** Uses reflection to read an instance from {@code input}. */
   public M read(CodedInputByteBufferNano input) throws IOException {
     try {
       Message.Builder<M> builder = builderType.newInstance();
@@ -531,7 +480,7 @@ public class ProtoAdapter<M extends Message> {
 
         int type;
         int label;
-        boolean packed = false;
+        boolean packed;
         if (typeMap.containsKey(tag)) {
           type = typeMap.get(tag);
           label = type & Omar.LABEL_MASK;
@@ -591,7 +540,7 @@ public class ProtoAdapter<M extends Message> {
       case Omar.SINT32: value = input.readSInt32(); break;
       case Omar.SINT64: value = input.readSInt64(); break;
       case Omar.BOOL: value = input.readBool(); break;
-      case Omar.ENUM: value = omar.enumFromIntInternal(getEnumClass(tag), input.readEnum()); break;
+      case Omar.ENUM: value = omar.enumFromInt(getEnumClass(tag), input.readEnum()); break;
       case Omar.STRING: value = input.readString(); break;
       case Omar.BYTES: value = input.readBytes(); break;
       case Omar.MESSAGE: value = readMessage(input, tag); break;
@@ -606,6 +555,35 @@ public class ProtoAdapter<M extends Message> {
     return value;
   }
 
+  private Message readMessage(CodedInputByteBufferNano input, int tag) throws IOException {
+    // inlined from CodedInputByteBufferNano.readMessage()
+    final int length = input.readRawVarint32();
+    if (input.recursionDepth >= input.recursionLimit) {
+      throw new InvalidProtocolBufferNanoException("recursion limit exceeded");
+    }
+    final int oldLimit = input.pushLimit(length);
+    ++input.recursionDepth;
+    ProtoAdapter<? extends Message> adapter = omar.messageAdapter(getMessageClass(tag));
+    Message message = adapter.read(input);
+    input.checkLastTagWas(0);
+    --input.recursionDepth;
+    input.popLimit(oldLimit);
+    return message;
+  }
+
+  private Class<Message> getMessageClass(int tag) {
+    Class<Message> messageClass = (Class<Message>) messageTypeMap.get(tag);
+    if (messageClass == null) {
+      Extension<Message.ExtendableMessage, ?> extension = getExtension(tag);
+      if (extension != null) {
+        messageClass = (Class<Message>) extension.getMessageType();
+      }
+    }
+    return messageClass;
+  }
+
+  // Just skip unknown fields for now
+  // TODO - store unknown field values somewhere
   private void readUnknownField(CodedInputByteBufferNano input, int type)
       throws IOException {
     switch (type) {
@@ -680,32 +658,5 @@ public class ProtoAdapter<M extends Message> {
       }
     }
     return enumType;
-  }
-
-  private Class<Message> getMessageClass(int tag) {
-    Class<Message> messageClass = (Class<Message>) messageTypeMap.get(tag);
-    if (messageClass == null) {
-      Extension<Message.ExtendableMessage, ?> extension = getExtension(tag);
-      if (extension != null) {
-        messageClass = (Class<Message>) extension.getMessageType();
-      }
-    }
-    return messageClass;
-  }
-
-  private Message readMessage(CodedInputByteBufferNano input, int tag) throws IOException {
-    // inlined from CodedInputByteBufferNano.readMessage()
-    final int length = input.readRawVarint32();
-    if (input.recursionDepth >= input.recursionLimit) {
-      throw new InvalidProtocolBufferNanoException("recursion limit exceeded");
-    }
-    final int oldLimit = input.pushLimit(length);
-    ++input.recursionDepth;
-    ProtoAdapter<? extends Message> adapter = omar.messageAdapter(getMessageClass(tag));
-    Message message = adapter.read(input);
-    input.checkLastTagWas(0);
-    --input.recursionDepth;
-    input.popLimit(oldLimit);
-    return message;
   }
 }
