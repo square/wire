@@ -11,7 +11,7 @@ public interface Message {
   /**
    * An interface implemented by protocol buffer message builders.
    */
-  public static interface Builder<T extends Message> {
+  public interface Builder<T extends Message> {
     /**
      * Returns true if all required fields have been set.
      */
@@ -29,7 +29,7 @@ public interface Message {
    *
    * @param <MessageType>
    */
-  public static interface ExtendableMessage<MessageType extends ExtendableMessage> extends Message {
+  public interface ExtendableMessage<MessageType extends ExtendableMessage> extends Message {
 
     /**
      * An object describing a ProtocolBuffer extension, i.e., a (tag, type, label) tuple
@@ -38,7 +38,7 @@ public interface Message {
      * @param <ExtendedType> the type of message being extended
      * @param <Type> the (boxed) Java data type of the extension value
      */
-    public static class Extension<ExtendedType extends ExtendableMessage, Type>
+    public static final class Extension<ExtendedType extends ExtendableMessage, Type>
         implements Comparable<Extension> {
       private final Class<ExtendedType> extendedType;
       private final Class<? extends Message> messageType;
@@ -143,7 +143,7 @@ public interface Message {
             null, enumType);
       }
 
-      private Extension(Class <ExtendedType> extendedType, int tag, int type, int label,
+      private Extension(Class<ExtendedType> extendedType, int tag, int type, int label,
           boolean packed, Class<? extends Message> messageType, Class<? extends Enum> enumType) {
         this.extendedType = extendedType;
         this.tag = tag;
@@ -157,7 +157,7 @@ public interface Message {
       /**
        * Orders Extensions in ascending tag order.
        */
-      @Override public final int compareTo(Extension o) {
+      @Override public int compareTo(Extension o) {
         return tag - o.tag;
       }
 
@@ -202,7 +202,8 @@ public interface Message {
     /**
      * An interface implemented by builders for extensible protocol buffer messages.
      */
-    public static interface ExtendableBuilder<MessageType extends ExtendableMessage> extends Builder<MessageType> {
+    public interface ExtendableBuilder<MessageType extends ExtendableMessage>
+        extends Builder<MessageType> {
       /**
        * Returns the value of an extension field set on this builder.
        *
@@ -220,7 +221,8 @@ public interface Message {
        * @param <Type> the (boxed) Java datatype of the extension value
        * @return a reference to this builder
        */
-      <Type> ExtendableBuilder<MessageType> setExtension(Extension<MessageType, Type> extension, Type val);
+      <Type> ExtendableBuilder<MessageType> setExtension(Extension<MessageType, Type> extension,
+          Type val);
     }
   }
 }

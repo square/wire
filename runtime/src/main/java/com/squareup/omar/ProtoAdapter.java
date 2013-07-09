@@ -4,6 +4,7 @@ package com.squareup.omar;
 import com.google.protobuf.nano.CodedInputByteBufferNano;
 import com.google.protobuf.nano.CodedOutputByteBufferNano;
 import com.google.protobuf.nano.InvalidProtocolBufferNanoException;
+import com.google.protobuf.nano.WireFormatNano;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +26,7 @@ import static com.squareup.omar.Message.ExtendableMessage.Extension;
  * @param <M> the Message class handled by this adapter.
  */
 public class ProtoAdapter<M extends Message> {
+
   private final Omar omar;
   private final Class<M> messageType;
   private final Class<Message.Builder<M>> builderType;
@@ -40,15 +42,15 @@ public class ProtoAdapter<M extends Message> {
   private final Map<Integer, Method> builderMethodMap = new HashMap<Integer, Method>();
 
   /** Cache information about the Message class and its mapping to proto wire format. */
-  ProtoAdapter(Omar omar, Class <M> messageType) {
+  ProtoAdapter(Omar omar, Class<M> messageType) {
     this.omar = omar;
     this.messageType = messageType;
     try {
       this.builderType =
           (Class<Message.Builder<M>>) Class.forName(messageType.getName() + "$Builder");
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("No builder class found for message type " +
-          messageType.getName());
+      throw new IllegalArgumentException("No builder class found for message type "
+          + messageType.getName());
     }
 
     for (Field field : messageType.getDeclaredFields()) {
@@ -59,16 +61,16 @@ public class ProtoAdapter<M extends Message> {
 
         tags.add(tag);
         fieldMap.put(tag, field);
-        typeMap.put(tag, annotation.label() | annotation.type() |
-            (annotation.packed() ? Omar.PACKED : 0));
+        typeMap.put(tag, annotation.label() | annotation.type()
+            | (annotation.packed() ? Omar.PACKED : 0));
 
         // Record setter methods on the builder class
         try {
           Method method = builderType.getMethod(field.getName(), field.getType());
           builderMethodMap.put(tag, method);
         } catch (NoSuchMethodException e) {
-          throw new IllegalArgumentException("No builder method " +
-              builderType.getName() + "." + field.getName() + "(" + field.getType() + ")");
+          throw new IllegalArgumentException("No builder method "
+              + builderType.getName() + "." + field.getName() + "(" + field.getType() + ")");
         }
 
         // Record type for tags that store a Message
@@ -166,7 +168,8 @@ public class ProtoAdapter<M extends Message> {
             len += getSerializedSizeNoTag(o, type);
           }
           // tag + length + value + value + ...
-          size += CodedOutputByteBufferNano.computeRawVarint32Size((tag << 3) | 2);
+          size += CodedOutputByteBufferNano.computeRawVarint32Size(
+              WireFormatNano.makeTag(tag, WireFormatNano.WIRETYPE_LENGTH_DELIMITED));
           size += CodedOutputByteBufferNano.computeRawVarint32Size(len);
           size += len;
         } else {
@@ -195,7 +198,8 @@ public class ProtoAdapter<M extends Message> {
               for (Object o : (List<?>) value) {
                 len += getSerializedSizeNoTag(o, type);
               }
-              size += CodedOutputByteBufferNano.computeRawVarint32Size((tag << 3) | 2);
+              size += CodedOutputByteBufferNano.computeRawVarint32Size(
+                  WireFormatNano.makeTag(tag, WireFormatNano.WIRETYPE_LENGTH_DELIMITED));
               size += CodedOutputByteBufferNano.computeRawVarint32Size(len);
               size += len;
             } else {
@@ -323,7 +327,8 @@ public class ProtoAdapter<M extends Message> {
       case Omar.BYTES: return CodedOutputByteBufferNano.computeBytesSize(tag, (byte[]) value);
       case Omar.MESSAGE: return getMessageSize((Message) value, tag);
       case Omar.FIXED32: return CodedOutputByteBufferNano.computeFixed32Size(tag, (Integer) value);
-      case Omar.SFIXED32: return CodedOutputByteBufferNano.computeSFixed32Size(tag,  (Integer) value);
+      case Omar.SFIXED32: return CodedOutputByteBufferNano.computeSFixed32Size(tag,
+          (Integer) value);
       case Omar.FIXED64: return CodedOutputByteBufferNano.computeFixed64Size(tag, (Long) value);
       case Omar.SFIXED64: return CodedOutputByteBufferNano.computeSFixed64Size(tag, (Long) value);
       case Omar.FLOAT: return CodedOutputByteBufferNano.computeFloatSize(tag, (Float) value);
@@ -359,7 +364,8 @@ public class ProtoAdapter<M extends Message> {
       case Omar.BYTES: return CodedOutputByteBufferNano.computeBytesSizeNoTag((byte[]) value);
       case Omar.MESSAGE: return getMessageSizeNoTag((Message) value);
       case Omar.FIXED32: return CodedOutputByteBufferNano.computeFixed32SizeNoTag((Integer) value);
-      case Omar.SFIXED32: return CodedOutputByteBufferNano.computeSFixed32SizeNoTag((Integer) value);
+      case Omar.SFIXED32:
+          return CodedOutputByteBufferNano.computeSFixed32SizeNoTag((Integer) value);
       case Omar.FIXED64: return CodedOutputByteBufferNano.computeFixed64SizeNoTag((Long) value);
       case Omar.SFIXED64: return CodedOutputByteBufferNano.computeSFixed64SizeNoTag((Long) value);
       case Omar.FLOAT: return CodedOutputByteBufferNano.computeFloatSizeNoTag((Float) value);
@@ -464,8 +470,8 @@ public class ProtoAdapter<M extends Message> {
       while (true) {
         Extension<?, ?> extension = null;
         int tagAndType = input.readTag();
-        int tag = tagAndType >> 3;
-        int wireType = tagAndType & 0x7;
+        int tag = tagAndType >> WireFormatNano.TAG_TYPE_BITS;
+        int wireType = tagAndType & WireFormatNano.TAG_TYPE_MASK;
         if (tag == 0) {
           // Set repeated fields
           for (int storedTag : storage.getTags()) {
@@ -489,7 +495,7 @@ public class ProtoAdapter<M extends Message> {
         } else {
           extension = getExtension(tag);
           if (extension == null) {
-            readUnknownField(input, tagAndType & 0x7);
+            readUnknownField(input, tagAndType & WireFormatNano.TAG_TYPE_MASK);
             continue;
           }
           type = extension.getType();
@@ -587,14 +593,15 @@ public class ProtoAdapter<M extends Message> {
   private void readUnknownField(CodedInputByteBufferNano input, int type)
       throws IOException {
     switch (type) {
-      case 0: input.readRawVarint64(); break;
-      case 1: input.readFixed64(); break;
-      case 2: case 3:
+      case WireFormatNano.WIRETYPE_VARINT: input.readRawVarint64(); break;
+      case WireFormatNano.WIRETYPE_FIXED64: input.readFixed64(); break;
+      case WireFormatNano.WIRETYPE_LENGTH_DELIMITED: case WireFormatNano.WIRETYPE_START_GROUP:
         int length = input.readInt32();
         input.readRawBytes(length);
         break;
-      case 4: break;
-      case 5: input.readFixed32();
+      case WireFormatNano.WIRETYPE_END_GROUP: break;
+      case WireFormatNano.WIRETYPE_FIXED32: input.readFixed32();
+      default: throw new RuntimeException();
     }
   }
 
@@ -621,8 +628,8 @@ public class ProtoAdapter<M extends Message> {
 
   private Extension<Message.ExtendableMessage, ?> getExtension(int tag) {
     ExtensionRegistry registry = omar.registry;
-    return registry == null ? null :
-        registry.getExtension((Class<Message.ExtendableMessage>) messageType, tag);
+    return registry == null
+        ? null : registry.getExtension((Class<Message.ExtendableMessage>) messageType, tag);
   }
 
   private void set(Message.Builder builder, int tag, Object value) {
