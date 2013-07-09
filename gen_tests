@@ -1,1 +1,3 @@
-java -jar /Users/rice/.m2/repository/com/squareup/omar-compiler/0.1-SNAPSHOT/omar-compiler-0.1-SNAPSHOT.jar --proto_path=runtime/src/main/proto all_types.proto --java_out=runtime/src/test/java
+mvn clean package -U
+java -jar compiler/target/omar-compiler-0.1-SNAPSHOT.jar --proto_path=runtime/src/main/proto --java_out=runtime/src/test/java all_types.proto
+java -jar compiler/target/omar-compiler-0.1-SNAPSHOT.jar --proto_path=runtime/src/main/proto --java_out=runtime/src/test/java simple_message.proto external_message.proto
