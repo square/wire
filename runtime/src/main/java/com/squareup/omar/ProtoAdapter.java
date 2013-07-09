@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,22 +60,6 @@ public class ProtoAdapter<M extends Message> {
         fieldMap.put(tag, field);
         typeMap.put(tag, annotation.label() | annotation.type() |
             (annotation.packed() ? Omar.PACKED : 0));
-        // Record type for tags that store a Message.
-        if (Message.class.isAssignableFrom(field.getType())) {
-          messageTypeMap.put(tag, (Class<Message>) field.getType());
-        } else if (List.class.isAssignableFrom(field.getType())) {
-            // If the field is repeated, the @ProtoField annotation must specify messageType
-            // since the actual type within the List has been erased.
-            if (annotation.messageType() != ProtoField.NotAMessage.class) {
-              messageTypeMap.put(tag, annotation.messageType());
-            }
-        }
-
-        // Record type for tags that store an Enum
-        if (Enum.class.isAssignableFrom(field.getType())) {
-          Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
-          enumTypeMap.put(tag, enumType);
-        }
 
         // Record setter methods on the builder class
         try {
@@ -83,11 +69,52 @@ public class ProtoAdapter<M extends Message> {
           throw new IllegalArgumentException("No builder method " +
               builderType.getName() + "." + field.getName() + "(" + field.getType() + ")");
         }
+
+        // Record type for tags that store a Message
+        Class<Message> fieldAsMessage = getMessageType(field);
+        if (fieldAsMessage != null) {
+          messageTypeMap.put(tag, fieldAsMessage);
+          continue;
+        }
+
+        // Record type for tags that store an Enum
+        Class<Enum> fieldAsEnum = getEnumType(field);
+        if (fieldAsEnum != null) {
+          enumTypeMap.put(tag, fieldAsEnum);
+        }
       }
     }
 
     // Sort tags so we can process them in order
     Collections.sort(tags);
+  }
+
+  private Class<Message> getMessageType(Field field) {
+    Class<?> fieldType = field.getType();
+    if (Message.class.isAssignableFrom(fieldType)) {
+      return (Class<Message>) fieldType;
+    } else if (List.class.isAssignableFrom(fieldType)) {
+      // Retrieve the declare element type of the list
+      Type type = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+      if (type instanceof Class<?> && Message.class.isAssignableFrom((Class<?>) type)) {
+        return (Class<Message>) type;
+      }
+    }
+    return null;
+  }
+
+  private Class<Enum> getEnumType(Field field) {
+    Class<?> fieldType = field.getType();
+    if (Enum.class.isAssignableFrom(fieldType)) {
+      return (Class<Enum>) fieldType;
+    } else if (List.class.isAssignableFrom(fieldType)) {
+      // Retrieve the declare element type of the list
+      Type type = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+      if (type instanceof Class<?> && Enum.class.isAssignableFrom((Class<?>) type)) {
+        return (Class<Enum>) type;
+      }
+    }
+    return null;
   }
 
   /**
@@ -489,6 +516,7 @@ public class ProtoAdapter<M extends Message> {
         Extension<?, ?> extension = null;
         int tagAndType = input.readTag();
         int tag = tagAndType >> 3;
+        int wireType = tagAndType & 0x7;
         if (tag == 0) {
           // Set repeated fields
           for (int storedTag : storage.getTags()) {
@@ -503,9 +531,11 @@ public class ProtoAdapter<M extends Message> {
 
         int type;
         int label;
+        boolean packed = false;
         if (typeMap.containsKey(tag)) {
           type = typeMap.get(tag);
           label = type & Omar.LABEL_MASK;
+          packed = (type & Omar.PACKED_MASK) == Omar.PACKED;
           type &= Omar.TYPE_MASK;
         } else {
           extension = getExtension(tag);
@@ -515,35 +545,33 @@ public class ProtoAdapter<M extends Message> {
           }
           type = extension.getType();
           label = extension.getLabel();
+          packed = extension.getPacked();
         }
         Object value;
-        switch (type) {
-          case Omar.INT32: value = input.readInt32(); break;
-          case Omar.INT64: value = input.readInt64(); break;
-          case Omar.UINT32: value = input.readUInt32(); break;
-          case Omar.UINT64: value = input.readUInt64(); break;
-          case Omar.SINT32: value = input.readSInt32(); break;
-          case Omar.SINT64: value = input.readSInt64(); break;
-          case Omar.BOOL: value = input.readBool(); break;
-          case Omar.ENUM: value = omar.enumFromIntInternal(getEnumClass(tag), input.readEnum()); break;
-          case Omar.STRING: value = input.readString(); break;
-          case Omar.BYTES: value = input.readBytes(); break;
-          case Omar.MESSAGE: value = readMessage(input, tag); break;
-          case Omar.FIXED32: value = input.readFixed32(); break;
-          case Omar.SFIXED32: value = input.readSFixed32(); break;
-          case Omar.FIXED64: value = input.readFixed64(); break;
-          case Omar.SFIXED64: value = input.readSFixed64(); break;
-          case Omar.FLOAT: value = input.readFloat(); break;
-          case Omar.DOUBLE: value = input.readDouble(); break;
-          default: throw new RuntimeException();
-        }
 
-        if (label == Omar.REPEATED) {
-          storage.add(tag, value);
-        } else if (extension != null) {
-          setExtension(builder, extension, value);
+        if (label == Omar.REPEATED && packed && wireType == 2) {
+          // Decode packed format
+          int length = input.readRawVarint32();
+          int start = input.getPosition();
+          int oldLimit = input.pushLimit(length);
+          while (input.getPosition() < start + length) {
+            value = readValue(input, tag, type);
+            storage.add(tag, value);
+          }
+          input.popLimit(oldLimit);
+          if (input.getPosition() != start + length) {
+            throw new IOException("Packed data had wrong length!");
+          }
         } else {
-          set(builder, tag, value);
+          // Read a single value
+          value = readValue(input, tag, type);
+          if (label == Omar.REPEATED) {
+            storage.add(tag, value);
+          } else if (extension != null) {
+            setExtension(builder, extension, value);
+          } else {
+            set(builder, tag, value);
+          }
         }
       }
     } catch (IllegalAccessException e) {
@@ -551,6 +579,31 @@ public class ProtoAdapter<M extends Message> {
     } catch (InstantiationException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private Object readValue(CodedInputByteBufferNano input, int tag, int type) throws IOException {
+    Object value;
+    switch (type) {
+      case Omar.INT32: value = input.readInt32(); break;
+      case Omar.INT64: value = input.readInt64(); break;
+      case Omar.UINT32: value = input.readUInt32(); break;
+      case Omar.UINT64: value = input.readUInt64(); break;
+      case Omar.SINT32: value = input.readSInt32(); break;
+      case Omar.SINT64: value = input.readSInt64(); break;
+      case Omar.BOOL: value = input.readBool(); break;
+      case Omar.ENUM: value = omar.enumFromIntInternal(getEnumClass(tag), input.readEnum()); break;
+      case Omar.STRING: value = input.readString(); break;
+      case Omar.BYTES: value = input.readBytes(); break;
+      case Omar.MESSAGE: value = readMessage(input, tag); break;
+      case Omar.FIXED32: value = input.readFixed32(); break;
+      case Omar.SFIXED32: value = input.readSFixed32(); break;
+      case Omar.FIXED64: value = input.readFixed64(); break;
+      case Omar.SFIXED64: value = input.readSFixed64(); break;
+      case Omar.FLOAT: value = input.readFloat(); break;
+      case Omar.DOUBLE: value = input.readDouble(); break;
+      default: throw new RuntimeException();
+    }
+    return value;
   }
 
   private void readUnknownField(CodedInputByteBufferNano input, int type)

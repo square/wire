@@ -44,27 +44,31 @@ public final class ExternalMessageContainer {
     public boolean equals(Object other) {
       if (!(other instanceof ExternalMessage)) return false;
       ExternalMessage o = (ExternalMessage) other;
+      if (!extensionMap.equals(o.extensionMap)) return false;
       if (!Omar.equals(f, o.f)) return false;
       return true;
     }
 
     @Override
     public int hashCode() {
-      return f != null ? f.hashCode() : 0;
+      int hashCode = extensionMap.hashCode();
+      hashCode = hashCode * 37 + (f != null ? f.hashCode() : 0);
+      return hashCode;
     }
 
     @Override
     public String toString() {
       return String.format("ExternalMessage{" +
-          "f=%s}",
-          f);
+          "f=%s," +
+          "{extensionMap=%s}",
+          f,
+          Omar.toString(extensionMap));
     }
 
     public static final class Builder
         implements ExtendableMessage.ExtendableBuilder<ExternalMessage> {
 
-      private final Map<Extension<ExternalMessage, ?>, Object> extensionMap =
-          new TreeMap<Extension<ExternalMessage, ?>, Object>();
+      private final Map<Extension<ExternalMessage, ?>, Object> extensionMap = new TreeMap<Extension<ExternalMessage, ?>, Object>();
 
       public Float f;
 

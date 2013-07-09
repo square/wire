@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.squareup.omar.Message.ExtendableMessage.Extension;
 
@@ -73,6 +74,7 @@ public final class Omar {
    * Constant indicating the protocol buffer 'message' datatype.
    */
   public static final int MESSAGE = 11;
+
   /**
    * Constant indicating the protocol buffer 'fixed32' datatype.
    */
@@ -354,10 +356,34 @@ public final class Omar {
   }
 
   /**
-   * Utility method to check two possibly null values for equality.
+   * Utility method to check two values for equality. Nulls compare as equal.
+   * Lists and byte arrays are compared element-by-element.
    */
   public static boolean equals(Object a, Object b) {
-    return (a == b) || (a != null && a.equals(b));
+    if (a == b) {
+      return true;
+    }
+    if (a == null || b == null) {
+      return false;
+    }
+    if (a instanceof List && b instanceof List) {
+      List<?> aList = (List<?>) a;
+      List<?> bList = (List<?>) b;
+      int size = aList.size();
+      if (size != bList.size()) {
+        return false;
+      }
+      for (int i = 0; i < size; i++) {
+        if (!equals(aList.get(i), bList.get(i))) {
+          return false;
+        }
+      }
+      return true;
+    }
+    if (a instanceof byte[] && b instanceof byte[]) {
+      return Arrays.equals((byte[]) a, (byte[]) b);
+    }
+    return a.equals(b);
   }
 
   /**
@@ -372,5 +398,46 @@ public final class Omar {
    */
   public static <T> List<T> unmodifiableCopyOf(List<T> source) {
     return source == null ? null : Collections.unmodifiableList(new ArrayList<T>(source));
+  }
+
+  public static String toString(Map<? extends Extension<?, ?>, Object> extensionMap) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    String sep = "";
+    for (Map.Entry<? extends Extension<?,?>,Object> entry : extensionMap.entrySet()) {
+      sb.append(sep);
+      sb.append(entry.getKey().getTag());
+      sb.append("=");
+      sb.append(entry.getValue());
+      sep = ",";
+    }
+    sb.append("}");
+    return sb.toString();
+  }
+
+  public static String toString(byte[] bytes) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    String sep = "";
+    for (int i = 0; i < bytes.length; i++) {
+      sb.append(sep);
+      sb.append(bytes[i] & 0xff);
+      sep = ",";
+    }
+    sb.append("}");
+    return sb.toString();
+  }
+
+  public static String toString(List<byte[]> bytesList) {
+    StringBuilder sb = new StringBuilder();
+    String sep = "";
+    sb.append("[");
+    for (byte[] bytes : bytesList) {
+      sb.append(sep);
+      sb.append(toString(bytes));
+      sep = ", ";
+    }
+    sb.append("]");
+    return sb.toString();
   }
 }

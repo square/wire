@@ -9,15 +9,40 @@ import com.squareup.omar.Omar;
 import com.squareup.omar.ProtoEnum;
 import com.squareup.omar.ProtoField;
 import com.squareup.omar.UninitializedMessageException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static com.squareup.omar.Message.ExtendableMessage.Extension;
 
 public final class AllTypesContainer {
 
   private AllTypesContainer() {
   }
 
+  public static final Extension<AllTypes, List<Integer>> ext_pack_int32 = Extension.getRepeatedExtension(AllTypes.class, 1001, Omar.INT32, true);
+  public static final Extension<AllTypes, List<Integer>> ext_pack_uint32 = Extension.getRepeatedExtension(AllTypes.class, 1002, Omar.UINT32, true);
+  public static final Extension<AllTypes, List<Integer>> ext_pack_sint32 = Extension.getRepeatedExtension(AllTypes.class, 1003, Omar.SINT32, true);
+  public static final Extension<AllTypes, List<Integer>> ext_pack_fixed32 = Extension.getRepeatedExtension(AllTypes.class, 1004, Omar.FIXED32, true);
+  public static final Extension<AllTypes, List<Integer>> ext_pack_sfixed32 = Extension.getRepeatedExtension(AllTypes.class, 1005, Omar.SFIXED32, true);
+  public static final Extension<AllTypes, List<Long>> ext_pack_int64 = Extension.getRepeatedExtension(AllTypes.class, 1006, Omar.INT64, true);
+  public static final Extension<AllTypes, List<Long>> ext_pack_uint64 = Extension.getRepeatedExtension(AllTypes.class, 1007, Omar.UINT64, true);
+  public static final Extension<AllTypes, List<Long>> ext_pack_sint64 = Extension.getRepeatedExtension(AllTypes.class, 1008, Omar.SINT64, true);
+  public static final Extension<AllTypes, List<Long>> ext_pack_fixed64 = Extension.getRepeatedExtension(AllTypes.class, 1009, Omar.FIXED64, true);
+  public static final Extension<AllTypes, List<Long>> ext_pack_sfixed64 = Extension.getRepeatedExtension(AllTypes.class, 1010, Omar.SFIXED64, true);
+  public static final Extension<AllTypes, List<Boolean>> ext_pack_bool = Extension.getRepeatedExtension(AllTypes.class, 1011, Omar.BOOL, true);
+  public static final Extension<AllTypes, List<Float>> ext_pack_float = Extension.getRepeatedExtension(AllTypes.class, 1012, Omar.FLOAT, true);
+  public static final Extension<AllTypes, List<Double>> ext_pack_double = Extension.getRepeatedExtension(AllTypes.class, 1013, Omar.DOUBLE, true);
+  public static final Extension<AllTypes, List<String>> ext_pack_string = Extension.getRepeatedExtension(AllTypes.class, 1014, Omar.STRING, false);
+  public static final Extension<AllTypes, List<byte[]>> ext_pack_bytes = Extension.getRepeatedExtension(AllTypes.class, 1015, Omar.BYTES, false);
+  public static final Extension<AllTypes, List<AllTypes.NestedEnum>> ext_pack_nested_enum = Extension.getRepeatedEnumExtension(AllTypes.class, 1016, true, AllTypes.NestedEnum.class);
+  public static final Extension<AllTypes, List<AllTypes.NestedMessage>> ext_pack_nested_message = Extension.getRepeatedMessageExtension(AllTypes.class, 1017, AllTypes.NestedMessage.class);
+
   public static final class AllTypes
-      implements Message {
+      implements Message.ExtendableMessage<AllTypes> {
+
+    public final Map<Extension<AllTypes, ?>, Object> extensionMap;
 
     public static final Integer opt_int32_default = 0;
     public static final Integer opt_uint32_default = 0;
@@ -185,8 +210,7 @@ public final class AllTypesContainer {
     public final NestedEnum opt_nested_enum;
 
     @ProtoField(
-      tag = 17,
-      messageType = NestedMessage.class
+      tag = 17
     )
     public final NestedMessage opt_nested_message;
 
@@ -304,7 +328,6 @@ public final class AllTypesContainer {
 
     @ProtoField(
       tag = 117,
-      messageType = NestedMessage.class,
       label = Omar.REQUIRED
     )
     public final NestedMessage req_nested_message;
@@ -423,7 +446,6 @@ public final class AllTypesContainer {
 
     @ProtoField(
       tag = 217,
-      messageType = NestedMessage.class,
       label = Omar.REPEATED
     )
     public final List<NestedMessage> rep_nested_message;
@@ -562,7 +584,6 @@ public final class AllTypesContainer {
 
     @ProtoField(
       tag = 317,
-      messageType = NestedMessage.class,
       label = Omar.REPEATED
     )
     public final List<NestedMessage> pack_nested_message;
@@ -636,12 +657,19 @@ public final class AllTypesContainer {
       this.pack_bytes = Omar.unmodifiableCopyOf(builder.pack_bytes);
       this.pack_nested_enum = Omar.unmodifiableCopyOf(builder.pack_nested_enum);
       this.pack_nested_message = Omar.unmodifiableCopyOf(builder.pack_nested_message);
+      this.extensionMap = Collections.unmodifiableMap(new TreeMap<Extension<AllTypes, ?>, Object>(builder.extensionMap));
+    }
+
+    @Override
+    public <Type> Type getExtension(Extension<AllTypes, Type> extension) {
+      return (Type) extensionMap.get(extension);
     }
 
     @Override
     public boolean equals(Object other) {
       if (!(other instanceof AllTypes)) return false;
       AllTypes o = (AllTypes) other;
+      if (!extensionMap.equals(o.extensionMap)) return false;
       if (!Omar.equals(opt_int32, o.opt_int32)) return false;
       if (!Omar.equals(opt_uint32, o.opt_uint32)) return false;
       if (!Omar.equals(opt_sint32, o.opt_sint32)) return false;
@@ -715,7 +743,7 @@ public final class AllTypesContainer {
 
     @Override
     public int hashCode() {
-      int hashCode = 0;
+      int hashCode = extensionMap.hashCode();
       hashCode = hashCode * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
       hashCode = hashCode * 37 + (opt_uint32 != null ? opt_uint32.hashCode() : 0);
       hashCode = hashCode * 37 + (opt_sint32 != null ? opt_sint32.hashCode() : 0);
@@ -857,7 +885,8 @@ public final class AllTypesContainer {
           "pack_string=%s," +
           "pack_bytes=%s," +
           "pack_nested_enum=%s," +
-          "pack_nested_message=%s}",
+          "pack_nested_message=%s," +
+          "{extensionMap=%s}",
           opt_int32,
           opt_uint32,
           opt_sint32,
@@ -872,7 +901,7 @@ public final class AllTypesContainer {
           opt_float,
           opt_double,
           opt_string,
-          opt_bytes,
+          Omar.toString(opt_bytes),
           opt_nested_enum,
           opt_nested_message,
           req_int32,
@@ -889,7 +918,7 @@ public final class AllTypesContainer {
           req_float,
           req_double,
           req_string,
-          req_bytes,
+          Omar.toString(req_bytes),
           req_nested_enum,
           req_nested_message,
           rep_int32,
@@ -906,7 +935,7 @@ public final class AllTypesContainer {
           rep_float,
           rep_double,
           rep_string,
-          rep_bytes,
+          Omar.toString(rep_bytes),
           rep_nested_enum,
           rep_nested_message,
           pack_int32,
@@ -923,13 +952,16 @@ public final class AllTypesContainer {
           pack_float,
           pack_double,
           pack_string,
-          pack_bytes,
+          Omar.toString(pack_bytes),
           pack_nested_enum,
-          pack_nested_message);
+          pack_nested_message,
+          Omar.toString(extensionMap));
     }
 
     public static final class Builder
-        implements Message.Builder<AllTypes> {
+        implements ExtendableMessage.ExtendableBuilder<AllTypes> {
+
+      private final Map<Extension<AllTypes, ?>, Object> extensionMap = new TreeMap<Extension<AllTypes, ?>, Object>();
 
       public Integer opt_int32;
       public Integer opt_uint32;
@@ -1072,6 +1104,7 @@ public final class AllTypesContainer {
         this.pack_bytes = Omar.copyOf(message.pack_bytes);
         this.pack_nested_enum = Omar.copyOf(message.pack_nested_enum);
         this.pack_nested_message = Omar.copyOf(message.pack_nested_message);
+        this.extensionMap.putAll(message.extensionMap);
       }
 
       public Builder opt_int32(Integer opt_int32) {
@@ -1411,6 +1444,17 @@ public final class AllTypesContainer {
 
       public Builder pack_nested_message(List<NestedMessage> pack_nested_message) {
         this.pack_nested_message = pack_nested_message;
+        return this;
+      }
+
+      @Override
+      public <Type> Type getExtension(Extension<AllTypes, Type> extension) {
+        return (Type) extensionMap.get(extension);
+      }
+
+      @Override
+      public <Type> Builder setExtension(Extension<AllTypes, Type> extension, Type value) {
+        extensionMap.put(extension, value);
         return this;
       }
 

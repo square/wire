@@ -40,9 +40,10 @@ public @interface ProtoField {
 
   /**
    * The class type of the message stored in this field, when
-   * {@code type() == Omar.Message}. Note that we cannot infer this
+   * {@code type() == }{@link Omar#MESSAGE}. Note that we cannot infer this
    * from the field's declared type for repeated fields, since the
    * message type in {@code List<SomeMessage>} is erased.
    */
   Class<? extends Message> messageType() default NotAMessage.class;
+
 }
