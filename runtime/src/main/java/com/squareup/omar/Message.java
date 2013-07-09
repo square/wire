@@ -1,6 +1,8 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.omar;
 
+import java.util.List;
+
 /**
  * An interface implemented by protocol buffer messages.
  */
@@ -36,7 +38,8 @@ public interface Message {
      * @param <ExtendedType> the type of message being extended
      * @param <Type> the (boxed) Java data type of the extension value
      */
-    public static class Extension<ExtendedType extends ExtendableMessage, Type> implements Comparable<Extension> {
+    public static class Extension<ExtendedType extends ExtendableMessage, Type>
+        implements Comparable<Extension> {
       private final Class<ExtendedType> extendedType;
       private final Class<? extends Message> messageType;
       private final Class<? extends Enum> enumType;
@@ -51,30 +54,29 @@ public interface Message {
        * @param extendedType the type of message being extended
        * @param tag the tag number of the extension
        * @param type one of {@code Omar.INT32}, etc.
-       * @param label one of {@code Omar.OPTIONAL}, {@code Omar.REQUIRED}, or {@code Omar.REPEATED}
+       * @param label one of {@code Omar.OPTIONAL} or {@code Omar.REQUIRED}
        * @param <X> the type of message being extended
        * @param <Type> the (boxed) Java data type of the {@link Extension} value
        */
-      public static <X extends ExtendableMessage, Type> Extension<X, Type> getExtension(Class<X> extendedType,
-          int tag, int type, int label) {
+      public static <X extends ExtendableMessage, Type> Extension<X, Type>
+          getExtension(Class<X> extendedType, int tag, int type, int label) {
         return new Extension<X, Type>(extendedType, tag, type, label, false, null, null);
       }
 
       /**
-       * Returns an {@link Extension} instance for a built-in datatype.
+       * Returns an {@link Extension} instance for a repeated built-in datatype.
        *
        * @param extendedType the type of message being extended
        * @param tag the tag number of the extension
        * @param type one of {@code Omar.INT32}, etc.
-       * @param label one of {@code Omar.OPTIONAL}, {@code Omar.REQUIRED}, or {@code Omar.REPEATED}
        * @param packed true if the '[packed = true]' extension is present
        * @param <X> the type of message being extended
        * @param <Type> the (boxed) Java data type of the {@link Extension} value
        */
-      // TODO - generate this
-      public static <X extends ExtendableMessage, Type> Extension<X, Type> getExtension(Class<X> extendedType,
-          int tag, int type, int label, boolean packed) {
-        return new Extension<X, Type>(extendedType, tag, type, label, packed, null, null);
+      public static <X extends ExtendableMessage, Type> Extension<X, List<Type>>
+          getRepeatedExtension(Class<X> extendedType, int tag, int type, boolean packed) {
+        return new Extension<X, List<Type>>(extendedType, tag, type, Omar.REPEATED, packed, null,
+            null);
       }
 
       /**
@@ -82,7 +84,7 @@ public interface Message {
        *
        * @param extendedType the type of message being extended
        * @param tag the tag number of the extension
-       * @param label one of {@code Omar.OPTIONAL}, {@code Omar.REQUIRED}, or {@code Omar.REPEATED}
+       * @param label one of {@code Omar.OPTIONAL} or {@code Omar.REQUIRED}
        * @param messageType the class type of the {@link Extension}'s message value
        * @param <X> the type of message being extended
        * @param <Type> the Java data type of the {@link Extension} message value
@@ -90,7 +92,23 @@ public interface Message {
       public static <X extends ExtendableMessage, Type extends Message> Extension<X, Type>
           getMessageExtension(Class<X> extendedType, int tag, int label,
               Class<Type> messageType) {
-        return new Extension<X, Type>(extendedType, tag, Omar.MESSAGE, label, false, messageType, null);
+        return new Extension<X, Type>(extendedType, tag, Omar.MESSAGE, label, false, messageType,
+            null);
+      }
+
+      /**
+       * Returns an {@link Extension} instance for a repeated message datatype.
+       *
+       * @param extendedType the type of message being extended
+       * @param tag the tag number of the extension
+       * @param messageType the class type of the {@link Extension}'s message value
+       * @param <X> the type of message being extended
+       * @param <Type> the Java data type of the {@link Extension} message value
+       */
+      public static <X extends ExtendableMessage, Type extends Message> Extension<X, List<Type>>
+          getRepeatedMessageExtension(Class<X> extendedType, int tag, Class<Type> messageType) {
+        return new Extension<X, List<Type>>(extendedType, tag, Omar.MESSAGE, Omar.REPEATED, false,
+            messageType, null);
       }
 
       /**
@@ -104,8 +122,7 @@ public interface Message {
        * @param <Type> the Java data type of the {@link Extension} enum value
        */
       public static <X extends ExtendableMessage, Type extends Enum> Extension<X, Type>
-          getEnumExtension(Class<X> extendedType, int tag, int label,
-              Class<Type> enumType) {
+          getEnumExtension(Class<X> extendedType, int tag, int label, Class<Type> enumType) {
         return new Extension<X, Type>(extendedType, tag, Omar.ENUM, label, false, null, enumType);
       }
 
@@ -114,17 +131,16 @@ public interface Message {
        *
        * @param extendedType the type of message being extended
        * @param tag the tag number of the extension
-       * @param label one of {@code Omar.OPTIONAL}, {@code Omar.REQUIRED}, or {@code Omar.REPEATED}
        * @param packed true if the '[packed = true]' extension is present
        * @param enumType the class type of the {@link Extension}'s enum value
        * @param <X> the type of message being extended
        * @param <Type> the Java data type of the {@link Extension} enum value
        */
-      // TODO - generate this
-      public static <X extends ExtendableMessage, Type extends Enum> Extension<X, Type>
-          getEnumExtension(Class<X> extendedType, int tag, int label, boolean packed,
+      public static <X extends ExtendableMessage, Type extends Enum> Extension<X, List<Type>>
+          getRepeatedEnumExtension(Class<X> extendedType, int tag, boolean packed,
               Class<Type> enumType) {
-        return new Extension<X, Type>(extendedType, tag, Omar.ENUM, label, packed, null, enumType);
+        return new Extension<X, List<Type>>(extendedType, tag, Omar.ENUM, Omar.REPEATED, packed,
+            null, enumType);
       }
 
       private Extension(Class <ExtendedType> extendedType, int tag, int type, int label,

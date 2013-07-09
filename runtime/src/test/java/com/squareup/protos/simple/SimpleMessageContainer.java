@@ -18,25 +18,18 @@ public final class SimpleMessageContainer {
   private SimpleMessageContainer() {
   }
 
-  public static final Extension<ExternalMessageContainer.ExternalMessage, List<Integer>> fooext =
-      Extension.getExtension(ExternalMessageContainer.ExternalMessage.class, 125, Omar.INT32, Omar.REPEATED);
-  public static final Extension<ExternalMessageContainer.ExternalMessage, Integer> barext =
-      Extension.getExtension(ExternalMessageContainer.ExternalMessage.class, 126, Omar.INT32, Omar.OPTIONAL);
-  public static final Extension<ExternalMessageContainer.ExternalMessage, Integer> bazext =
-      Extension.getExtension(ExternalMessageContainer.ExternalMessage.class, 127, Omar.INT32, Omar.REQUIRED);
-  public static final Extension<ExternalMessageContainer.ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext =
-      Extension.getMessageExtension(ExternalMessageContainer.ExternalMessage.class, 128, Omar.OPTIONAL, SimpleMessage.NestedMessage.class);
-  public static final Extension<ExternalMessageContainer.ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext =
-      Extension.getEnumExtension(ExternalMessageContainer.ExternalMessage.class, 129, Omar.OPTIONAL, SimpleMessage.NestedEnum.class);
+  public static final Extension<ExternalMessageContainer.ExternalMessage, List<Integer>> fooext = Extension.getRepeatedExtension(ExternalMessageContainer.ExternalMessage.class, 125, Omar.INT32, false);
+  public static final Extension<ExternalMessageContainer.ExternalMessage, Integer> barext = Extension.getExtension(ExternalMessageContainer.ExternalMessage.class, 126, Omar.INT32, Omar.OPTIONAL);
+  public static final Extension<ExternalMessageContainer.ExternalMessage, Integer> bazext = Extension.getExtension(ExternalMessageContainer.ExternalMessage.class, 127, Omar.INT32, Omar.REQUIRED);
+  public static final Extension<ExternalMessageContainer.ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension.getMessageExtension(ExternalMessageContainer.ExternalMessage.class, 128, Omar.OPTIONAL, SimpleMessage.NestedMessage.class);
+  public static final Extension<ExternalMessageContainer.ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext = Extension.getEnumExtension(ExternalMessageContainer.ExternalMessage.class, 129, Omar.OPTIONAL, SimpleMessage.NestedEnum.class);
 
   public static final class SimpleMessage
       implements Message {
 
     public static final Integer optional_int32_default = 123;
-    public static final NestedMessage optional_nested_msg_default =
-        Omar.getDefaultInstance(NestedMessage.class);
-    public static final ExternalMessageContainer.ExternalMessage optional_external_msg_default =
-        Omar.getDefaultInstance(ExternalMessageContainer.ExternalMessage.class);
+    public static final NestedMessage optional_nested_msg_default = Omar.getDefaultInstance(NestedMessage.class);
+    public static final ExternalMessageContainer.ExternalMessage optional_external_msg_default = Omar.getDefaultInstance(ExternalMessageContainer.ExternalMessage.class);
     public static final NestedEnum default_nested_enum_default = NestedEnum.BAZ;
     public static final Integer required_int32_default = 456;
     public static final List<Double> repeated_double_default = java.util.Collections.emptyList();
@@ -54,8 +47,7 @@ public final class SimpleMessageContainer {
      * An optional NestedMessage
      */
     @ProtoField(
-      tag = 2,
-      messageType = NestedMessage.class
+      tag = 2
     )
     public final NestedMessage optional_nested_msg;
 
@@ -63,8 +55,7 @@ public final class SimpleMessageContainer {
      * An optional ExternalMessage
      */
     @ProtoField(
-      tag = 3,
-      messageType = ExternalMessageContainer.ExternalMessage.class
+      tag = 3
     )
     public final ExternalMessageContainer.ExternalMessage optional_external_msg;
 

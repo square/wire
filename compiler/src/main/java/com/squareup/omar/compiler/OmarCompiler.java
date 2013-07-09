@@ -199,19 +199,35 @@ public class OmarCompiler {
           type = javaName(null, qualifiedFieldType);
         }
         type = shortenJavaName(type);
-        if (isRepeated(field)) {
-          type = "List<" + type + ">";
-        }
         String initialValue;
         if (isScalar(field)) {
-          initialValue = String.format("Extension.getExtension(%s.class, %s, %s, Omar.%s)",
-              name, field.getTag(), protoFieldType(field.getType()), field.getLabel());
+          if (isRepeated(field)) {
+            initialValue = String.format("Extension.getRepeatedExtension(%s.class, %s, %s, %s)",
+                name, field.getTag(), protoFieldType(field.getType()), isPacked(field, false));
+          } else {
+            initialValue = String.format("Extension.getExtension(%s.class, %s, %s, Omar.%s)",
+                name, field.getTag(), protoFieldType(field.getType()), field.getLabel());
+          }
         } else if (isEnum) {
-          initialValue = String.format("Extension.getEnumExtension(%s.class, %s, Omar.%s, %s.class)",
-              name, field.getTag(), field.getLabel(), type);
+          if (isRepeated(field)) {
+            initialValue = String.format("Extension.getRepeatedEnumExtension(%s.class, %s, %s, %s.class)",
+                name, field.getTag(), isPacked(field, true), type);
+          } else {
+            initialValue = String.format("Extension.getEnumExtension(%s.class, %s, Omar.%s, %s.class)",
+                name, field.getTag(), field.getLabel(), type);
+          }
         } else {
-          initialValue = String.format("Extension.getMessageExtension(%s.class, %s, Omar.%s, %s.class)",
-              name, field.getTag(), field.getLabel(), type);
+          if (isRepeated(field)) {
+            initialValue = String.format("Extension.getRepeatedMessageExtension(%s.class, %s, %s.class)",
+                name, field.getTag(),
+                 type);
+          } else {
+            initialValue = String.format("Extension.getMessageExtension(%s.class, %s, Omar.%s, %s.class)",
+                name, field.getTag(), field.getLabel(), type);
+          }
+        }
+        if (isRepeated(field)) {
+          type = "List<" + type + ">";
         }
         writer.emitField("Extension<" + name + ", " + type + ">", field.getName(),
             Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, initialValue);
@@ -310,8 +326,6 @@ public class OmarCompiler {
         isEnum = isEnum(fullyQualifiedName);
         if (isEnum) {
           map.put("type", "Omar.ENUM");
-        } else {
-          map.put("messageType", javaName + ".class");
         }
       }
 
@@ -399,6 +413,9 @@ public class OmarCompiler {
     writer.beginMethod("boolean", "equals", Modifier.PUBLIC, "Object", "other");
     writer.emitStatement("if (!(other instanceof %s)) return false", messageType.getName());
     writer.emitStatement("%1$s o = (%1$s) other", messageType.getName());
+    if (hasExtensions(messageType)) {
+      writer.emitStatement("if (!extensionMap.equals(o.extensionMap)) return false");
+    }
     for (Field field : messageType.getFields()) {
       writer.emitStatement("if (!Omar.equals(%1$s, o.%1$s)) return false", sanitize(field.getName()));
     }
@@ -410,7 +427,9 @@ public class OmarCompiler {
   //
   // @Override
   // public int hashCode() {
-  //   return optional_int32 != null ? optional_int32.hashCode() : 0;
+  //   int hashCode = extensionMap.hashCode();
+  //   hashCode = hashCode * 37 + (f != null ? f.hashCode() : 0);
+  //   return hashCode;
   // }
   //
   private void emitMessageHashCode(JavaWriter writer, MessageType messageType)
@@ -419,11 +438,16 @@ public class OmarCompiler {
     writer.emitAnnotation(Override.class);
     writer.beginMethod("int", "hashCode", Modifier.PUBLIC);
 
-    if (messageType.getFields().size() == 1) {
+    boolean hasExtensions = !hasExtensions(messageType);
+    if (hasExtensions && messageType.getFields().size() == 1) {
       writer.emitStatement("return %1$s != null ? %1$s.hashCode() : 0",
           messageType.getFields().get(0).getName());
     } else {
-      writer.emitStatement("int hashCode = 0");
+      if (hasExtensions(messageType)) {
+        writer.emitStatement("int hashCode = extensionMap.hashCode()");
+      } else {
+        writer.emitStatement("int hashCode = 0");
+      }
       for (Field field : messageType.getFields()) {
         writer.emitStatement("hashCode = hashCode * 37 + (%1$s != null ? %1$s.hashCode() : 0)",
           sanitize(field.getName()));
@@ -458,9 +482,17 @@ public class OmarCompiler {
       for (Field field : messageType.getFields()) {
         String sanitized = sanitize(field.getName());
         format.append(String.format("%s%s=%%s", formatSep, sanitized));
-        args.append(String.format("%s%s", argsSep, sanitized));
+        if (field.getType().equals("bytes")) {
+          args.append(String.format("%s%s", argsSep, "Omar.toString(" + sanitized + ")"));
+        } else {
+          args.append(String.format("%s%s", argsSep, sanitized));
+        }
         formatSep = ",\" +\n\"";
         argsSep = ",\n";
+      }
+      if (hasExtensions(messageType)) {
+        format.append(String.format("%s{extensionMap=%%s", formatSep));
+        args.append(String.format("%sOmar.toString(extensionMap)", argsSep));
       }
 
       writer.emitStatement("return String.format(\"%s{\" +\n%s}\",\n%s)", messageType.getName(),

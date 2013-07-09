@@ -5,6 +5,8 @@ option java_outer_classname = "AllTypesContainer";
 
 message AllTypes {
 
+  extensions 1001 to 1017;
+
   enum NestedEnum {
     A = 1;
   }
@@ -84,4 +86,24 @@ message AllTypes {
   repeated bytes pack_bytes = 315 [packed = true]; // ignored
   repeated NestedEnum pack_nested_enum = 316 [packed = true];
   repeated NestedMessage pack_nested_message = 317 [packed = true]; // ignored
+}
+
+extend AllTypes {
+  repeated int32 ext_pack_int32 = 1001 [packed = true];
+  repeated uint32 ext_pack_uint32 = 1002 [packed = true];
+  repeated sint32 ext_pack_sint32 = 1003 [packed = true];
+  repeated fixed32 ext_pack_fixed32 = 1004 [packed = true];
+  repeated sfixed32 ext_pack_sfixed32 = 1005 [packed = true];
+  repeated int64 ext_pack_int64 = 1006 [packed = true];
+  repeated uint64 ext_pack_uint64 = 1007 [packed = true];
+  repeated sint64 ext_pack_sint64 = 1008 [packed = true];
+  repeated fixed64 ext_pack_fixed64 = 1009 [packed = true];
+  repeated sfixed64 ext_pack_sfixed64 = 1010 [packed = true];
+  repeated bool ext_pack_bool = 1011 [packed = true];
+  repeated float ext_pack_float = 1012 [packed = true];
+  repeated double ext_pack_double = 1013 [packed = true];
+  repeated string ext_pack_string = 1014 [packed = true]; // ignored
+  repeated bytes ext_pack_bytes = 1015 [packed = true]; // ignored
+  repeated AllTypes.NestedEnum ext_pack_nested_enum = 1016 [packed = true];
+  repeated AllTypes.NestedMessage ext_pack_nested_message = 1017 [packed = true]; // ignored
 }
