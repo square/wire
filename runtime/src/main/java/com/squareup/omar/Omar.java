@@ -20,7 +20,7 @@ import static com.squareup.omar.Message.ExtendableMessage.Extension;
 public final class Omar {
 
   // Hidden instance that can perform work that does not require knowledge of extensions.
-  private static final Omar instance = new Omar();
+  private static final Omar INSTANCE = new Omar();
 
   /**
    * Constant indicating the protocol buffer 'int32' datatype.
@@ -130,6 +130,7 @@ public final class Omar {
   static final int TYPE_MASK = 0x1f;
   static final int LABEL_MASK = 0xe0;
   static final int PACKED_MASK = 0x100;
+  static final int BYTE_MASK = 0xff;
 
   private final Map<Class<? extends Message>, ProtoAdapter<? extends Message>> messageAdapters =
       new HashMap<Class<? extends Message>, ProtoAdapter<? extends Message>>();
@@ -174,7 +175,7 @@ public final class Omar {
    *
    * @param messageType the {@link Message} class
    */
-  public synchronized <M extends Message> ProtoAdapter<M> messageAdapter(Class <M> messageType) {
+  public synchronized <M extends Message> ProtoAdapter<M> messageAdapter(Class<M> messageType) {
     ProtoAdapter<?> adapter = messageAdapters.get(messageType);
     if (adapter == null) {
       adapter = new ProtoAdapter<M>(this, messageType);
@@ -299,7 +300,7 @@ public final class Omar {
    * @return an instance of the desired Message class
    */
   public static <Type extends Message> Type getDefaultInstance(Class<Type> messageClass) {
-    return instance.messageAdapter(messageClass).getDefaultInstance();
+    return INSTANCE.messageAdapter(messageClass).getDefaultInstance();
   }
 
   /**
@@ -375,7 +376,7 @@ public final class Omar {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
     String sep = "";
-    for (Map.Entry<? extends Extension<?,?>,Object> entry : extensionMap.entrySet()) {
+    for (Map.Entry<? extends Extension<?, ?>, Object> entry : extensionMap.entrySet()) {
       sb.append(sep);
       sb.append(entry.getKey().getTag());
       sb.append("=");
@@ -393,7 +394,7 @@ public final class Omar {
     String sep = "";
     for (int i = 0; i < bytes.length; i++) {
       sb.append(sep);
-      sb.append(bytes[i] & 0xff);
+      sb.append(bytes[i] & BYTE_MASK);
       sep = ",";
     }
     sb.append("}");

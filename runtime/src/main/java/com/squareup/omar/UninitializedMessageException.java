@@ -3,5 +3,6 @@ package com.squareup.omar;
 
 public class UninitializedMessageException extends RuntimeException {
 
-  public UninitializedMessageException() {}
+  public UninitializedMessageException() {
+  }
 }
