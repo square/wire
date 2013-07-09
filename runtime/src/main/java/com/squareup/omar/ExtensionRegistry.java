@@ -23,7 +23,8 @@ final class ExtensionRegistry {
     map.put(extension.getTag(), extension);
   }
 
-  public <MessageType extends Message.ExtendableMessage, Type> Extension<MessageType, Type> getExtension(Class<MessageType> messageClass, int tag) {
+  public <MessageType extends Message.ExtendableMessage, Type> Extension<MessageType, Type>
+      getExtension(Class<MessageType> messageClass, int tag) {
     Map<Integer, Extension<?, ?>> map = extensions.get(messageClass);
     return map == null ? null : (Extension<MessageType, Type>) map.get(tag);
   }
