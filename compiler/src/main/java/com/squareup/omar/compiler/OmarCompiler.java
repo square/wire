@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -123,7 +124,7 @@ public class OmarCompiler {
           protoFile.getFileName());
       writer.emitPackage(protoFile.getJavaPackage());
 
-      List<String> imports = new ArrayList<String>();
+      Set<String> imports = new LinkedHashSet<String>();
       List<Type> types = protoFile.getTypes();
       boolean hasMessage = hasMessage(types);
       boolean hasExtensions = hasExtensions(protoFile.getTypes());
@@ -147,6 +148,9 @@ public class OmarCompiler {
         imports.add("java.util.Collections");
         imports.add("java.util.Map");
         imports.add("java.util.TreeMap");
+      }
+      if (hasExtends) {
+        imports.add("com.squareup.omar.Omar");
       }
       writer.emitImports(imports);
 
