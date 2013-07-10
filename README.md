@@ -16,7 +16,7 @@ other .proto files within the protos-repo/ directory:
 
     % mvn clean package
 
-    % java -jar compiler/target/wire-compiler-0.1-SNAPSHOT.jar --proto_path=protos-repo --java_out=out google/protobuf/descriptor.proto
+    % java -jar compiler/target/wire-compiler-0.2-SNAPSHOT.jar --proto_path=protos-repo --java_out=out google/protobuf/descriptor.proto
 	Reading proto source file protos-repo/google/protobuf/descriptor.proto
 	Writing generated code to out/com/google/protobuf/DescriptorProtos.java
 	
@@ -47,7 +47,7 @@ Instead of supplying individual filename arguments on the command line, the --fi
     yourcompany/protos/stuff.proto
     ...
 
-    % java -jar compiler/target/wire-compiler-0.1-SNAPSHOT.jar --proto_path=protos-repo --java_out=out --files=protos.include
+    % java -jar compiler/target/wire-compiler-0.2-SNAPSHOT.jar --proto_path=protos-repo --java_out=out --files=protos.include
     Reading proto source file protos-repo/google/protobuf/descriptor.proto
 	Writing generated code to out/com/google/protobuf/DescriptorProtos.java
 	Reading proto source file protos-repo/yourcompany/protos/stuff.proto
@@ -65,7 +65,7 @@ For Maven projects, simply add wire-runtime as a dependency:
     <dependency>
       <groupId>com.squareup</groupId>
       <artifactId>wire-runtime</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.2-SNAPSHOT</version>
     </dependency>
 
 Future work

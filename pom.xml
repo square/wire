@@ -7,7 +7,7 @@
   <groupId>com.squareup</groupId>
   <artifactId>wire</artifactId>
   <packaging>pom</packaging>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
 
   <name>Wire Protocol Buffers</name>
   <description>Parent module for Wire protocol buffers</description>

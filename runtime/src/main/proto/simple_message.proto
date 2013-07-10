@@ -1,7 +1,6 @@
 package squareup.protos.simple;
 
 option java_package = "com.squareup.protos.simple";
-option java_outer_classname = "SimpleMessageContainer";
 
 import "external_message.proto";
 
