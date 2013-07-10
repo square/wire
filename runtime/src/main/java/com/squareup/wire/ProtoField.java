@@ -1,5 +1,5 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.omar;
+package com.squareup.wire;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,18 +17,18 @@ public @interface ProtoField {
   int tag();
 
   /**
-   * The field's protocol buffer datatype, e.g., {@code Omar.INT32},
-   * {@code Omar.MESSAGE}, or {@code Omar.ENUM}. Defaults to
-   * {@code Omar.MESSAGE}.
+   * The field's protocol buffer datatype, e.g., {@code Wire.INT32},
+   * {@code Wire.MESSAGE}, or {@code Wire.ENUM}. Defaults to
+   * {@code Wire.MESSAGE}.
    */
-  int type() default Omar.MESSAGE;
+  int type() default Wire.MESSAGE;
 
   /**
-   * The field's protocol buffer label, one of {@code Omar.OPTIONAL},
-   * {@code Omar.REQUIRED}, or {@code Omar.REPEATED}. Defaults to
-   * {@code Omar.OPTIONAL}.
+   * The field's protocol buffer label, one of {@code Wire.OPTIONAL},
+   * {@code Wire.REQUIRED}, or {@code Wire.REPEATED}. Defaults to
+   * {@code Wire.OPTIONAL}.
    */
-  int label() default Omar.OPTIONAL;
+  int label() default Wire.OPTIONAL;
 
   /** True if the field has the '[packed = true]' extension. */
   boolean packed() default false;

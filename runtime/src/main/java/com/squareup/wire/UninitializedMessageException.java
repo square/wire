@@ -1,5 +1,5 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.omar;
+package com.squareup.wire;
 
 public class UninitializedMessageException extends RuntimeException {
 

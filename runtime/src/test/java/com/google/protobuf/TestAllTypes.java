@@ -1,7 +1,7 @@
 // Copyright 2013 Square, Inc.
 package com.google.protobuf;
 
-import com.squareup.omar.Omar;
+import com.squareup.wire.Wire;
 import com.squareup.protos.alltypes.AllTypesContainer;
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class TestAllTypes extends TestCase {
   }
 
   private final AllTypes allTypes = createAllTypes();
-  private final Omar omar = new Omar(AllTypesContainer.class);
+  private final Wire wire = new Wire(AllTypesContainer.class);
 
   private AllTypes createAllTypes() {
     byte[] bytes = { (byte) 125, (byte) 225 };
@@ -98,10 +98,10 @@ public class TestAllTypes extends TestCase {
   }
 
   public void testWrite() {
-    int len = omar.getSerializedSize(allTypes);
+    int len = wire.getSerializedSize(allTypes);
     assertEquals(AllTypesData.expectedOutput.length, len);
     byte[] output = new byte[len];
-    omar.writeTo(allTypes, output, 0, len);
+    wire.writeTo(allTypes, output, 0, len);
     for (int i = 0; i < output.length; i++) {
       assertEquals("Byte " + i, AllTypesData.expectedOutput[i], output[i] & 0xff);
     }
@@ -109,15 +109,15 @@ public class TestAllTypes extends TestCase {
 
   public void testRead() throws IOException {
     byte[] data = new byte[AllTypesData.expectedOutput.length];
-    omar.writeTo(allTypes, data, 0, data.length);
-    AllTypes parsed = omar.parseFrom(AllTypes.class, data);
+    wire.writeTo(allTypes, data, 0, data.length);
+    AllTypes parsed = wire.parseFrom(AllTypes.class, data);
     assertEquals(allTypes, parsed);
   }
 
   public void testReadNoExtension() throws IOException {
     byte[] data = new byte[AllTypesData.expectedOutput.length];
-    omar.writeTo(allTypes, data, 0, data.length);
-    AllTypes parsed = new Omar().parseFrom(AllTypes.class, data);
+    wire.writeTo(allTypes, data, 0, data.length);
+    AllTypes parsed = new Wire().parseFrom(AllTypes.class, data);
     assertFalse(allTypes.equals(parsed));
   }
 
@@ -126,14 +126,14 @@ public class TestAllTypes extends TestCase {
     for (int i = 0; i < AllTypesData.nonPacked.length; i++) {
       data[i] = (byte) AllTypesData.nonPacked[i];
     }
-    AllTypes parsed = omar.parseFrom(AllTypes.class, data);
+    AllTypes parsed = wire.parseFrom(AllTypes.class, data);
     assertEquals(allTypes, parsed);
   }
 
   public void testToString() throws IOException {
     byte[] data = new byte[AllTypesData.expectedOutput.length];
-    omar.writeTo(allTypes, data, 0, data.length);
-    AllTypes parsed = omar.parseFrom(AllTypes.class, data);
+    wire.writeTo(allTypes, data, 0, data.length);
+    AllTypes parsed = wire.parseFrom(AllTypes.class, data);
     assertEquals(AllTypesData.expectedToString, parsed.toString());
   }
 }

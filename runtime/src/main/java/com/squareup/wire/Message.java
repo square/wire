@@ -1,5 +1,5 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.omar;
+package com.squareup.wire;
 
 import java.util.List;
 
@@ -53,8 +53,8 @@ public interface Message {
        *
        * @param extendedType the type of message being extended
        * @param tag the tag number of the extension
-       * @param type one of {@code Omar.INT32}, etc.
-       * @param label one of {@code Omar.OPTIONAL} or {@code Omar.REQUIRED}
+       * @param type one of {@code Wire.INT32}, etc.
+       * @param label one of {@code Wire.OPTIONAL} or {@code Wire.REQUIRED}
        * @param <X> the type of message being extended
        * @param <Type> the (boxed) Java data type of the {@link Extension} value
        */
@@ -68,14 +68,14 @@ public interface Message {
        *
        * @param extendedType the type of message being extended
        * @param tag the tag number of the extension
-       * @param type one of {@code Omar.INT32}, etc.
+       * @param type one of {@code Wire.INT32}, etc.
        * @param packed true if the '[packed = true]' extension is present
        * @param <X> the type of message being extended
        * @param <Type> the (boxed) Java data type of the {@link Extension} value
        */
       public static <X extends ExtendableMessage, Type> Extension<X, List<Type>>
           getRepeatedExtension(Class<X> extendedType, int tag, int type, boolean packed) {
-        return new Extension<X, List<Type>>(extendedType, tag, type, Omar.REPEATED, packed, null,
+        return new Extension<X, List<Type>>(extendedType, tag, type, Wire.REPEATED, packed, null,
             null);
       }
 
@@ -84,7 +84,7 @@ public interface Message {
        *
        * @param extendedType the type of message being extended
        * @param tag the tag number of the extension
-       * @param label one of {@code Omar.OPTIONAL} or {@code Omar.REQUIRED}
+       * @param label one of {@code Wire.OPTIONAL} or {@code Wire.REQUIRED}
        * @param messageType the class type of the {@link Extension}'s message value
        * @param <X> the type of message being extended
        * @param <Type> the Java data type of the {@link Extension} message value
@@ -92,7 +92,7 @@ public interface Message {
       public static <X extends ExtendableMessage, Type extends Message> Extension<X, Type>
           getMessageExtension(Class<X> extendedType, int tag, int label,
               Class<Type> messageType) {
-        return new Extension<X, Type>(extendedType, tag, Omar.MESSAGE, label, false, messageType,
+        return new Extension<X, Type>(extendedType, tag, Wire.MESSAGE, label, false, messageType,
             null);
       }
 
@@ -107,7 +107,7 @@ public interface Message {
        */
       public static <X extends ExtendableMessage, Type extends Message> Extension<X, List<Type>>
           getRepeatedMessageExtension(Class<X> extendedType, int tag, Class<Type> messageType) {
-        return new Extension<X, List<Type>>(extendedType, tag, Omar.MESSAGE, Omar.REPEATED, false,
+        return new Extension<X, List<Type>>(extendedType, tag, Wire.MESSAGE, Wire.REPEATED, false,
             messageType, null);
       }
 
@@ -116,14 +116,14 @@ public interface Message {
        *
        * @param extendedType the type of message being extended
        * @param tag the tag number of the extension
-       * @param label one of {@code Omar.OPTIONAL}, {@code Omar.REQUIRED}, or {@code Omar.REPEATED}
+       * @param label one of {@code Wire.OPTIONAL}, {@code Wire.REQUIRED}, or {@code Wire.REPEATED}
        * @param enumType the class type of the {@link Extension}'s enum value
        * @param <X> the type of message being extended
        * @param <Type> the Java data type of the {@link Extension} enum value
        */
       public static <X extends ExtendableMessage, Type extends Enum> Extension<X, Type>
           getEnumExtension(Class<X> extendedType, int tag, int label, Class<Type> enumType) {
-        return new Extension<X, Type>(extendedType, tag, Omar.ENUM, label, false, null, enumType);
+        return new Extension<X, Type>(extendedType, tag, Wire.ENUM, label, false, null, enumType);
       }
 
       /**
@@ -139,7 +139,7 @@ public interface Message {
       public static <X extends ExtendableMessage, Type extends Enum> Extension<X, List<Type>>
           getRepeatedEnumExtension(Class<X> extendedType, int tag, boolean packed,
               Class<Type> enumType) {
-        return new Extension<X, List<Type>>(extendedType, tag, Omar.ENUM, Omar.REPEATED, packed,
+        return new Extension<X, List<Type>>(extendedType, tag, Wire.ENUM, Wire.REPEATED, packed,
             null, enumType);
       }
 

@@ -5,18 +5,18 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.squareup</groupId>
-  <artifactId>omar</artifactId>
+  <artifactId>wire</artifactId>
   <packaging>pom</packaging>
   <version>0.1-SNAPSHOT</version>
 
-  <name>Omar Protocol Buffers</name>
-  <description>Parent module for Omar protocol buffers</description>
+  <name>Wire Protocol Buffers</name>
+  <description>Parent module for Wire protocol buffers</description>
   <inceptionYear>2013</inceptionYear>
 
   <scm>
-    <url>https://git.squareup.com/rice/omar</url>
-    <connection>scm:git:https://git.squareup.com/rice/omar.git</connection>
-    <developerConnection>scg:git:git@git.squareup.com:rice/omar.git</developerConnection>
+    <url>https://git.squareup.com/rice/wire</url>
+    <connection>scm:git:https://git.squareup.com/rice/wire.git</connection>
+    <developerConnection>scg:git:git@git.squareup.com:rice/wire.git</developerConnection>
   </scm>
 
   <organization>
@@ -26,7 +26,7 @@
 
  <issueManagement>
     <system>GitHub Issues</system>
-    <url>http://git.squareup.com/rice/omar/issues</url>
+    <url>http://git.squareup.com/rice/wire/issues</url>
   </issueManagement>
 
   <licenses>

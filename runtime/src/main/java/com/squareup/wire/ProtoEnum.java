@@ -1,5 +1,5 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.omar;
+package com.squareup.wire;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

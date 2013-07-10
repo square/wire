@@ -6,11 +6,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.squareup</groupId>
-  <artifactId>omar-runtime</artifactId>
+  <artifactId>wire-runtime</artifactId>
   <packaging>jar</packaging>
   <version>0.1-SNAPSHOT</version>
 
-  <name>Omar Protocol Buffer Runtime</name>
+  <name>Wire Protocol Buffer Runtime</name>
   <description>A lightweight protocol buffer implementation for mobile devices</description>
   <inceptionYear>2013</inceptionYear>
 

@@ -1,10 +1,10 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.omar;
+package com.squareup.wire;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.squareup.omar.Message.ExtendableMessage.Extension;
+import static com.squareup.wire.Message.ExtendableMessage.Extension;
 
 final class ExtensionRegistry {
 

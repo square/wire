@@ -3,9 +3,9 @@ package com.google.protobuf;
 
 import com.google.protobuf.nano.CodedInputByteBufferNano;
 import com.google.protobuf.nano.CodedOutputByteBufferNano;
-import com.squareup.omar.Omar;
-import com.squareup.omar.ProtoAdapter;
-import com.squareup.omar.UninitializedMessageException;
+import com.squareup.wire.Wire;
+import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.UninitializedMessageException;
 import com.squareup.protos.simple.ExternalMessageContainer;
 import com.squareup.protos.simple.SimpleMessageContainer;
 import java.util.ArrayList;
@@ -16,9 +16,9 @@ import junit.framework.TestCase;
 import static com.squareup.protos.simple.SimpleMessageContainer.SimpleMessage;
 
 /**
- * Test puny runtime.
+ * Test Wire runtime.
  */
-public class OmarTest extends TestCase {
+public class WireTest extends TestCase {
 
   public void testSimpleMessage() throws Exception {
     SimpleMessage msg = new SimpleMessage.Builder().required_int32(456).build();
@@ -78,15 +78,15 @@ public class OmarTest extends TestCase {
       // expected
     }
 
-    Omar omar = new Omar();
+    Wire wire = new Wire();
 
-    int msgSerializedSize = omar.getSerializedSize(msg);
+    int msgSerializedSize = wire.getSerializedSize(msg);
     assertEquals(46, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
-    omar.writeTo(msg, result, 0, result.length);
+    wire.writeTo(msg, result, 0, result.length);
     assertEquals(46, result.length);
 
-    SimpleMessage newMsg = omar.parseFrom(SimpleMessage.class, result);
+    SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, result);
     assertEquals(new Integer(789), newMsg.optional_int32);
     assertEquals(new Integer(2), newMsg.optional_nested_msg.bb);
     assertEquals(new Float(99.9f), newMsg.optional_external_msg.f);
@@ -116,8 +116,8 @@ public class OmarTest extends TestCase {
     assertEquals(new Integer(77), msg.optional_external_msg.getExtension(SimpleMessageContainer.nested_message_ext).bb);
     assertEquals(SimpleMessage.NestedEnum.BAZ, msg.optional_external_msg.getExtension(SimpleMessageContainer.nested_enum_ext));
 
-    Omar omar = new Omar(SimpleMessageContainer.class);
-    ProtoAdapter<SimpleMessage> adapter = omar.messageAdapter(SimpleMessage.class);
+    Wire wire = new Wire(SimpleMessageContainer.class);
+    ProtoAdapter<SimpleMessage> adapter = wire.messageAdapter(SimpleMessage.class);
     int msgSerializedSize = adapter.getSerializedSize(msg);
     //assertEquals(38, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
@@ -147,8 +147,8 @@ public class OmarTest extends TestCase {
     assertEquals(new Integer(333), msg.optional_external_msg.getExtension(SimpleMessageContainer.barext));
     assertEquals(new Integer(222), msg.optional_external_msg.getExtension(SimpleMessageContainer.bazext));
 
-    Omar omar = new Omar();
-    ProtoAdapter<SimpleMessage> adapter = omar.messageAdapter(SimpleMessage.class);
+    Wire wire = new Wire();
+    ProtoAdapter<SimpleMessage> adapter = wire.messageAdapter(SimpleMessage.class);
     int msgSerializedSize = adapter.getSerializedSize(msg);
     //assertEquals(30, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
