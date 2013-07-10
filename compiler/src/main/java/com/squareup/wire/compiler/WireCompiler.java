@@ -154,9 +154,9 @@ public class WireCompiler {
   public JavaWriter getJavaWriter(String javaOut) throws IOException {
     String javaPackage = protoFile.getJavaPackage();
     String directory = javaOut + "/" + javaPackage.replace(".", "/");
-    boolean success = new File(directory).mkdirs();
-    if (!success) {
-      throw new IOException("Unable to create directory " + directory);
+    boolean created = new File(directory).mkdirs();
+    if (created) {
+      System.out.println("Created output directory " + directory);
     }
 
     String className = outerClassName(protoFile);
