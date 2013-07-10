@@ -1,5 +1,8 @@
+.idea
+wire.iml
 compiler/dependency-reduced-pom.xml
 compiler/wire-compiler.iml
+runtime/dependency-reduced-pom.xml
 runtime/wire-runtime.iml
-wire.iml
-.idea
+compiler/target
+runtime/target
