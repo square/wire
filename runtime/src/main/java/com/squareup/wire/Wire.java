@@ -1,5 +1,5 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.omar;
+package com.squareup.wire;
 
 import com.google.protobuf.nano.CodedInputByteBufferNano;
 import com.google.protobuf.nano.CodedOutputByteBufferNano;
@@ -12,15 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.squareup.omar.Message.ExtendableMessage.Extension;
+import static com.squareup.wire.Message.ExtendableMessage.Extension;
 
 /**
- * Main class for "Omar" little protocol buffers.
+ * Main class for "Wire" mobile protocol buffers.
  */
-public final class Omar {
+public final class Wire {
 
   // Hidden instance that can perform work that does not require knowledge of extensions.
-  private static final Omar INSTANCE = new Omar();
+  private static final Wire INSTANCE = new Wire();
 
   /**
    * Constant indicating the protocol buffer 'int32' datatype.
@@ -145,7 +145,7 @@ public final class Omar {
    *
    * @param extensionClasses an array of zero or more classes to search
    */
-  public Omar(Class<?>... extensionClasses) {
+  public Wire(Class<?>... extensionClasses) {
     this(Arrays.asList(extensionClasses));
   }
 
@@ -154,7 +154,7 @@ public final class Omar {
    *
    * @param extensionClasses a list of zero or more classes to search
    */
-  public Omar(List<Class<?>> extensionClasses) {
+  public Wire(List<Class<?>> extensionClasses) {
     this.registry = new ExtensionRegistry();
     for (Class<?> extensionClass : extensionClasses) {
       for (Field field : extensionClass.getDeclaredFields()) {
@@ -309,7 +309,7 @@ public final class Omar {
    *
    * <pre>
    * MyProto myProto = ...
-   * MyField field = Omar.get(myProto.f, MyProto.f_default);
+   * MyField field = Wire.get(myProto.f, MyProto.f_default);
    * </pre>
    *
    * will attempt to retrieve the value of the field 'f' defined by MyProto.
