@@ -628,8 +628,7 @@ public final class CodedOutputByteBufferNano {
   public static int computeStringSizeNoTag(final String value) {
     try {
       final byte[] bytes = value.getBytes("UTF-8");
-      return computeRawVarint32Size(bytes.length) +
-             bytes.length;
+      return computeRawVarint32Size(bytes.length) + bytes.length;
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException("UTF-8 not supported.");
     }
@@ -749,8 +748,8 @@ public final class CodedOutputByteBufferNano {
     private static final long serialVersionUID = -6947486886997889499L;
 
     OutOfSpaceException(int position, int limit) {
-      super("CodedOutputStream was writing to a flat byte array and ran " +
-            "out of space (pos " + position + " limit " + limit + ").");
+      super("CodedOutputStream was writing to a flat byte array and ran "
+            + "out of space (pos " + position + " limit " + limit + ").");
     }
   }
 
@@ -831,10 +830,10 @@ public final class CodedOutputByteBufferNano {
   public void writeRawVarint64(long value) throws IOException {
     while (true) {
       if ((value & ~0x7FL) == 0) {
-        writeRawByte((int)value);
+        writeRawByte((int) value);
         return;
       } else {
-        writeRawByte(((int)value & 0x7F) | 0x80);
+        writeRawByte(((int) value & 0x7F) | 0x80);
         value >>>= 7;
       }
     }
@@ -856,24 +855,28 @@ public final class CodedOutputByteBufferNano {
 
   /** Write a little-endian 32-bit integer. */
   public void writeRawLittleEndian32(final int value) throws IOException {
+    // CHECKSTYLE.OFF: ParenPad
     writeRawByte((value      ) & 0xFF);
     writeRawByte((value >>  8) & 0xFF);
     writeRawByte((value >> 16) & 0xFF);
     writeRawByte((value >> 24) & 0xFF);
+    // CHECKSTYLE.ON: ParenPad
   }
 
   public static final int LITTLE_ENDIAN_32_SIZE = 4;
 
   /** Write a little-endian 64-bit integer. */
   public void writeRawLittleEndian64(final long value) throws IOException {
-    writeRawByte((int)(value      ) & 0xFF);
-    writeRawByte((int)(value >>  8) & 0xFF);
-    writeRawByte((int)(value >> 16) & 0xFF);
-    writeRawByte((int)(value >> 24) & 0xFF);
-    writeRawByte((int)(value >> 32) & 0xFF);
-    writeRawByte((int)(value >> 40) & 0xFF);
-    writeRawByte((int)(value >> 48) & 0xFF);
-    writeRawByte((int)(value >> 56) & 0xFF);
+    // CHECKSTYLE.OFF: ParenPad
+    writeRawByte((int) (value      ) & 0xFF);
+    writeRawByte((int) (value >>  8) & 0xFF);
+    writeRawByte((int) (value >> 16) & 0xFF);
+    writeRawByte((int) (value >> 24) & 0xFF);
+    writeRawByte((int) (value >> 32) & 0xFF);
+    writeRawByte((int) (value >> 40) & 0xFF);
+    writeRawByte((int) (value >> 48) & 0xFF);
+    writeRawByte((int) (value >> 56) & 0xFF);
+    // CHECKSTYLE.ON: ParenPad
   }
 
   public static final int LITTLE_ENDIAN_64_SIZE = 8;
