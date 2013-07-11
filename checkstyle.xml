@@ -4,6 +4,18 @@
     "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 
 <module name="Checker">
+  <!--
+  - Lets us turn off a rule like this:
+  - // CHECKSTYLE.OFF: LineLength blah blah blah.
+  - And back on:
+  - // CHECKSTYLE.ON: LineLength
+  -->
+  <module name="SuppressionCommentFilter">
+    <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
+    <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
+    <property name="checkFormat" value="$1"/>
+  </module>
+
   <module name="NewlineAtEndOfFile"/>
   <module name="FileLength"/>
   <module name="FileTabCharacter"/>
@@ -15,6 +27,8 @@
   </module>
 
   <module name="TreeWalker">
+    <module name="FileContentsHolder"/>
+
     <property name="cacheFile" value="${checkstyle.cache.file}"/>
 
     <!-- Checks for Javadoc comments.                     -->
@@ -80,7 +94,7 @@
     <module name="AvoidNestedBlocks"/>
     <!--module name="EmptyBlock"/-->
     <module name="LeftCurly"/>
-    <module name="NeedBraces"/>
+    <!-- <module name="NeedBraces"/> -->
     <module name="RightCurly"/>
 
 
@@ -93,8 +107,8 @@
     <module name="EqualsHashCode"/>
     <!--module name="HiddenField"/-->
     <module name="IllegalInstantiation"/>
-    <module name="InnerAssignment"/>
-    <module name="MagicNumber"/>
+    <!-- <module name="InnerAssignment"/> -->
+    <!--<module name="MagicNumber"/>-->
     <module name="MissingSwitchDefault"/>
     <module name="RedundantThrows"/>
     <module name="SimplifyBooleanExpression"/>

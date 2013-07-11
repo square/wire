@@ -80,4 +80,17 @@
     </plugins>
   </build>
 
+  <repositories>
+    <repository>
+      <id>square-android-public</id>
+      <url>https://nexus.corp.squareup.com/content/repositories/android-public</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>square-android-plugins-public</id>
+      <url>https://nexus.corp.squareup.com/content/repositories/android-plugins-public</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
