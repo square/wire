@@ -1,14 +1,13 @@
 // Copyright 2013 Square, Inc.
 package com.google.protobuf;
 
+import com.squareup.protos.alltypes.AllTypes;
+import com.squareup.protos.alltypes.Ext_all_types;
 import com.squareup.wire.Wire;
-import com.squareup.protos.alltypes.AllTypesContainer;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import junit.framework.TestCase;
-
-import static com.squareup.protos.alltypes.AllTypesContainer.AllTypes;
 
 public class TestAllTypes extends TestCase {
 
@@ -18,12 +17,11 @@ public class TestAllTypes extends TestCase {
   }
 
   private final AllTypes allTypes = createAllTypes();
-  private final Wire wire = new Wire(AllTypesContainer.class);
+  private final Wire wire = new Wire(Ext_all_types.class);
 
   private AllTypes createAllTypes() {
     byte[] bytes = { (byte) 125, (byte) 225 };
-    AllTypesContainer.AllTypes.NestedMessage nestedMessage =
-        new AllTypes.NestedMessage.Builder().a(999).build();
+    AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
     return new AllTypes.Builder()
         .opt_int32(111)
         .opt_uint32(112)
@@ -93,7 +91,7 @@ public class TestAllTypes extends TestCase {
         .pack_bytes(array(bytes))
         .pack_nested_enum(array(AllTypes.NestedEnum.A))
         .pack_nested_message(array(nestedMessage))
-        .setExtension(AllTypesContainer.ext_pack_bool, array(true))
+        .setExtension(Ext_all_types.ext_pack_bool, array(true))
         .build();
   }
 
