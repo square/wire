@@ -321,7 +321,7 @@ public final class CodedInputByteBufferNano {
     long result = 0;
     while (shift < 64) {
       final byte b = readRawByte();
-      result |= (long)(b & 0x7F) << shift;
+      result |= (long) (b & 0x7F) << shift;
       if ((b & 0x80) == 0) {
         return result;
       }
@@ -336,10 +336,10 @@ public final class CodedInputByteBufferNano {
     final byte b2 = readRawByte();
     final byte b3 = readRawByte();
     final byte b4 = readRawByte();
-    return ((b1 & 0xff)      ) |
-           ((b2 & 0xff) <<  8) |
-           ((b3 & 0xff) << 16) |
-           ((b4 & 0xff) << 24);
+    return   (b1 & 0xff)
+          | ((b2 & 0xff) <<  8)
+          | ((b3 & 0xff) << 16)
+          | ((b4 & 0xff) << 24);
   }
 
   /** Read a 64-bit little-endian integer from the stream. */
@@ -352,14 +352,14 @@ public final class CodedInputByteBufferNano {
     final byte b6 = readRawByte();
     final byte b7 = readRawByte();
     final byte b8 = readRawByte();
-    return (((long)b1 & 0xff)      ) |
-           (((long)b2 & 0xff) <<  8) |
-           (((long)b3 & 0xff) << 16) |
-           (((long)b4 & 0xff) << 24) |
-           (((long)b5 & 0xff) << 32) |
-           (((long)b6 & 0xff) << 40) |
-           (((long)b7 & 0xff) << 48) |
-           (((long)b8 & 0xff) << 56);
+    return    ((long) b1 & 0xff)
+           | (((long) b2 & 0xff) <<  8)
+           | (((long) b3 & 0xff) << 16)
+           | (((long) b4 & 0xff) << 24)
+           | (((long) b5 & 0xff) << 32)
+           | (((long) b6 & 0xff) << 40)
+           | (((long) b7 & 0xff) << 48)
+           | (((long) b8 & 0xff) << 56);
   }
 
   /**
@@ -402,11 +402,11 @@ public final class CodedInputByteBufferNano {
   /** The absolute position of the end of the current message. */
   private int currentLimit = Integer.MAX_VALUE;
 
-  /** See setRecursionLimit() */
+  /** See setRecursionLimit(). */
   public int recursionDepth;
   public int recursionLimit = DEFAULT_RECURSION_LIMIT;
 
-  /** See setSizeLimit() */
+  /** See setSizeLimit(). */
   private int sizeLimit = DEFAULT_SIZE_LIMIT;
 
   private static final int DEFAULT_RECURSION_LIMIT = 64;

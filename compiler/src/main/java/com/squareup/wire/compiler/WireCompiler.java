@@ -31,10 +31,10 @@ import static com.squareup.protoparser.MessageType.Field;
  */
 public class WireCompiler {
 
-  private static final Map<String, String> javaTypes = new HashMap<String, String>();
-  private static final Map<String, String> protoFieldTypes = new HashMap<String, String>();
-  private static final Set<String> packableTypes = new HashSet<String>();
-  private static final Set<String> javaKeywords = new HashSet<String>(Arrays.asList(
+  private static final Map<String, String> JAVA_TYPES = new HashMap<String, String>();
+  private static final Map<String, String> PROTO_FIELD_TYPES = new HashMap<String, String>();
+  private static final Set<String> PACKABLE_TYPES = new HashSet<String>();
+  private static final Set<String> JAVA_KEYWORDS = new HashSet<String>(Arrays.asList(
       "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
       "class", "const", "continue", "default", "do", "double", "else", "enum", "extends",
       "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof",
@@ -43,51 +43,51 @@ public class WireCompiler {
       "throw", "throws", "transient", "try", "void", "volatile", "while"));
 
   static {
-    javaTypes.put("bool", "Boolean");
-    javaTypes.put("bytes", "byte[]");
-    javaTypes.put("double", "Double");
-    javaTypes.put("float", "Float");
-    javaTypes.put("fixed32", "Integer");
-    javaTypes.put("fixed64", "Long");
-    javaTypes.put("int32", "Integer");
-    javaTypes.put("int64", "Long");
-    javaTypes.put("sfixed32", "Integer");
-    javaTypes.put("sfixed64", "Long");
-    javaTypes.put("sint32", "Integer");
-    javaTypes.put("sint64", "Long");
-    javaTypes.put("string", "String");
-    javaTypes.put("uint32", "Integer");
-    javaTypes.put("uint64", "Long");
+    JAVA_TYPES.put("bool", "Boolean");
+    JAVA_TYPES.put("bytes", "byte[]");
+    JAVA_TYPES.put("double", "Double");
+    JAVA_TYPES.put("float", "Float");
+    JAVA_TYPES.put("fixed32", "Integer");
+    JAVA_TYPES.put("fixed64", "Long");
+    JAVA_TYPES.put("int32", "Integer");
+    JAVA_TYPES.put("int64", "Long");
+    JAVA_TYPES.put("sfixed32", "Integer");
+    JAVA_TYPES.put("sfixed64", "Long");
+    JAVA_TYPES.put("sint32", "Integer");
+    JAVA_TYPES.put("sint64", "Long");
+    JAVA_TYPES.put("string", "String");
+    JAVA_TYPES.put("uint32", "Integer");
+    JAVA_TYPES.put("uint64", "Long");
 
-    protoFieldTypes.put("bool", "Wire.BOOL");
-    protoFieldTypes.put("bytes", "Wire.BYTES");
-    protoFieldTypes.put("double", "Wire.DOUBLE");
-    protoFieldTypes.put("float", "Wire.FLOAT");
-    protoFieldTypes.put("fixed32", "Wire.FIXED32");
-    protoFieldTypes.put("fixed64", "Wire.FIXED64");
-    protoFieldTypes.put("int32", "Wire.INT32");
-    protoFieldTypes.put("int64", "Wire.INT64");
-    protoFieldTypes.put("sfixed32", "Wire.SFIXED32");
-    protoFieldTypes.put("sfixed64", "Wire.SFIXED64");
-    protoFieldTypes.put("sint32", "Wire.SINT32");
-    protoFieldTypes.put("sint64", "Wire.SINT64");
-    protoFieldTypes.put("string", "Wire.STRING");
-    protoFieldTypes.put("uint32", "Wire.UINT32");
-    protoFieldTypes.put("uint64", "Wire.UINT64");
+    PROTO_FIELD_TYPES.put("bool", "Wire.BOOL");
+    PROTO_FIELD_TYPES.put("bytes", "Wire.BYTES");
+    PROTO_FIELD_TYPES.put("double", "Wire.DOUBLE");
+    PROTO_FIELD_TYPES.put("float", "Wire.FLOAT");
+    PROTO_FIELD_TYPES.put("fixed32", "Wire.FIXED32");
+    PROTO_FIELD_TYPES.put("fixed64", "Wire.FIXED64");
+    PROTO_FIELD_TYPES.put("int32", "Wire.INT32");
+    PROTO_FIELD_TYPES.put("int64", "Wire.INT64");
+    PROTO_FIELD_TYPES.put("sfixed32", "Wire.SFIXED32");
+    PROTO_FIELD_TYPES.put("sfixed64", "Wire.SFIXED64");
+    PROTO_FIELD_TYPES.put("sint32", "Wire.SINT32");
+    PROTO_FIELD_TYPES.put("sint64", "Wire.SINT64");
+    PROTO_FIELD_TYPES.put("string", "Wire.STRING");
+    PROTO_FIELD_TYPES.put("uint32", "Wire.UINT32");
+    PROTO_FIELD_TYPES.put("uint64", "Wire.UINT64");
 
-    packableTypes.add("bool");
-    packableTypes.add("double");
-    packableTypes.add("float");
-    packableTypes.add("fixed32");
-    packableTypes.add("fixed64");
-    packableTypes.add("int32");
-    packableTypes.add("int64");
-    packableTypes.add("sfixed32");
-    packableTypes.add("sfixed64");
-    packableTypes.add("sint32");
-    packableTypes.add("sint64");
-    packableTypes.add("uint32");
-    packableTypes.add("uint64");
+    PACKABLE_TYPES.add("bool");
+    PACKABLE_TYPES.add("double");
+    PACKABLE_TYPES.add("float");
+    PACKABLE_TYPES.add("fixed32");
+    PACKABLE_TYPES.add("fixed64");
+    PACKABLE_TYPES.add("int32");
+    PACKABLE_TYPES.add("int64");
+    PACKABLE_TYPES.add("sfixed32");
+    PACKABLE_TYPES.add("sfixed64");
+    PACKABLE_TYPES.add("sint32");
+    PACKABLE_TYPES.add("sint64");
+    PACKABLE_TYPES.add("uint32");
+    PACKABLE_TYPES.add("uint64");
   }
 
   private final String repoPath;
@@ -490,7 +490,7 @@ public class WireCompiler {
   }
 
   private String sanitize(String name) {
-    if (javaKeywords.contains(name)) {
+    if (JAVA_KEYWORDS.contains(name)) {
       return "_" + name;
     }
     return name;
@@ -889,12 +889,12 @@ public class WireCompiler {
   }
 
   private String protoFieldType(String type) {
-    String protoFieldType = protoFieldTypes.get(type);
+    String protoFieldType = PROTO_FIELD_TYPES.get(type);
     return protoFieldType != null ? protoFieldType : type + ".class";
   }
 
   private boolean isScalar(Field field) {
-    return protoFieldTypes.containsKey(field.getType());
+    return PROTO_FIELD_TYPES.containsKey(field.getType());
   }
 
   private boolean isEnum(String fieldType) {
@@ -911,7 +911,7 @@ public class WireCompiler {
 
   private boolean isPacked(Field field, boolean isEnum) {
     return "true".equals(field.getExtensions().get("packed"))
-        && (packableTypes.contains(field.getType()) || isEnum);
+        && (PACKABLE_TYPES.contains(field.getType()) || isEnum);
   }
 
   private boolean isRequired(Field field) {
@@ -946,7 +946,7 @@ public class WireCompiler {
   }
 
   private String javaName(MessageType messageType, String type) {
-    String scalarType = javaTypes.get(type);
+    String scalarType = JAVA_TYPES.get(type);
     if (scalarType != null) {
       return scalarType;
     }
@@ -969,7 +969,7 @@ public class WireCompiler {
   }
 
   private String fqJavaName(MessageType messageType, String type) {
-    String scalarType = javaTypes.get(type);
+    String scalarType = JAVA_TYPES.get(type);
     if (scalarType != null) {
       return null;
     }
