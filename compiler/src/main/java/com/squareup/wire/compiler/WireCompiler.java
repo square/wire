@@ -430,7 +430,7 @@ public class WireCompiler {
   private void emitMessageDefaults(MessageType messageType)
       throws IOException {
     List<Field> fields = messageType.getFields();
-    if (!fields.isEmpty()){
+    if (!fields.isEmpty()) {
       writer.emitEmptyLine();
     }
     for (Field field : fields) {
@@ -603,7 +603,7 @@ public class WireCompiler {
     } else if (!hasExtensions(messageType) && messageType.getFields().size() == 1) {
       Field field = messageType.getFields().get(0);
       String name = sanitize(field.getName());
-      if ("bytes".equals(field.getType())){
+      if ("bytes".equals(field.getType())) {
         writer.emitStatement("return Wire.hashCode(%1$s)", name);
       } else {
         writer.emitStatement("return %1$s != null ? %1$s.hashCode() : 0", name);
@@ -616,7 +616,7 @@ public class WireCompiler {
       }
       for (Field field : messageType.getFields()) {
         String name = sanitize(field.getName());
-        if ("bytes".equals(field.getType())){
+        if ("bytes".equals(field.getType())) {
           writer.emitStatement("hashCode = hashCode * 37 + Wire.hashCode(%1$s)", name);
         } else {
           writer.emitStatement("hashCode = hashCode * 37 + (%1$s != null ? %1$s.hashCode() : 0)",
