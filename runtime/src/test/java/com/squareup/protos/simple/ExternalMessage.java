@@ -6,7 +6,6 @@ package com.squareup.protos.simple;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-import com.squareup.wire.UninitializedMessageException;
 import com.squareup.wire.Wire;
 import java.util.Collections;
 import java.util.Map;
@@ -71,6 +70,7 @@ public final class ExternalMessage
     }
 
     public Builder(ExternalMessage message) {
+      if (message == null) return;
       this.f = message.f;
       this.extensionMap.putAll(message.extensionMap);
     }
@@ -98,7 +98,6 @@ public final class ExternalMessage
 
     @Override
     public ExternalMessage build() {
-      if (!isInitialized()) throw new UninitializedMessageException();
       return new ExternalMessage(this);
     }
   }

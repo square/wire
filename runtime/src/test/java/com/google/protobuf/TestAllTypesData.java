@@ -1,7 +1,7 @@
 // Copyright 2013 Square, Inc.
 package com.google.protobuf;
 
-public class AllTypesData {
+public class TestAllTypesData {
 
   public static final String expectedToString =
       "AllTypes{opt_int32=111,opt_uint32=112,opt_sint32=113,opt_fixed32=114,opt_sfixed32=115," +
@@ -23,7 +23,7 @@ public class AllTypesData {
       "pack_sfixed64=[120, 120],pack_bool=[true, true],pack_float=[122.0, 122.0]," +
       "pack_double=[123.0, 123.0],pack_string=[124, 124],pack_bytes=[{125,225}, {125,225}]," +
       "pack_nested_enum=[A, A],pack_nested_message=[NestedMessage{a=999}, NestedMessage{a=999}]," +
-      "{extensionMap={1011=[true, true]}}";
+      "{extensionMap={1011=true,1111=[true, true],1211=[true, true]}}";
 
   public static final int[] expectedOutput = {
       // optional
@@ -301,9 +301,17 @@ public class AllTypesData {
       0x08, // nested tag = 1, type = 0
       0xe7, 0x07, // value = 999
 
-      // extension
+      // extensions
 
-      0x9a, 0x3f, // tag = 1011, type = 2
+      0x98, 0x3f, // tag = 1011, type = 0
+      0x01, // value = 1 (true)
+
+      0xb8, 0x45, // tag = 1111, type = 0
+      0x01, // value = 1 (true)
+      0xb8, 0x45, // tag = 1111, type = 0
+      0x01, // value = 1 (true)
+
+      0xda, 0x4b, // tag = 1211, type = 2
       0x02, // length = 2
       0x01, // value = 1 (true)
       0x01, // value = 1 (true)
@@ -590,7 +598,15 @@ public class AllTypesData {
 
       0x98, 0x3f, // tag = 1011, type = 0
       0x01, // value = 1 (true)
-      0x98, 0x3f, // tag = 1011, type = 0
+
+      0xb8, 0x45, // tag = 1111, type = 0
+      0x01, // value = 1 (true)
+      0xb8, 0x45, // tag = 1111, type = 0
+      0x01, // value = 1 (true)
+
+      0xd8, 0x4b, // tag = 1211, type = 0
+      0x01, // value = 1 (true)
+      0xd8, 0x4b, // tag = 1211, type = 0
       0x01, // value = 1 (true)
   };
 }

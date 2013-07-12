@@ -58,6 +58,22 @@ public class WireCompilerTest extends TestCase {
   }
 
   @Test
+  public void testEdgeCases() throws Exception {
+    String[] args = {
+        "--proto_path=../runtime/src/main/proto",
+        "--java_out=" + testAllTypesDir.getAbsolutePath(),
+        "edge_cases.proto" };
+    WireCompiler.main(args);
+
+    List<String> filesAfter = getAllFiles(testAllTypesDir);
+    assertEquals(3, filesAfter.size());
+
+    filesMatch(testAllTypesDir, "com/squareup/protos/edgecases/NoFields.java");
+    filesMatch(testAllTypesDir, "com/squareup/protos/edgecases/OneField.java");
+    filesMatch(testAllTypesDir, "com/squareup/protos/edgecases/OneBytesField.java");
+  }
+
+  @Test
   public void testSimple() throws Exception {
     String[] args = {
         "--proto_path=../runtime/src/main/proto",

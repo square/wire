@@ -137,6 +137,7 @@ public final class SimpleMessage
     }
 
     public Builder(SimpleMessage message) {
+      if (message == null) return;
       this.optional_int32 = message.optional_int32;
       this.optional_nested_msg = message.optional_nested_msg;
       this.optional_external_msg = message.optional_external_msg;
@@ -209,9 +210,7 @@ public final class SimpleMessage
     @Override
     public boolean equals(Object other) {
       if (!(other instanceof NestedMessage)) return false;
-      NestedMessage o = (NestedMessage) other;
-      if (!Wire.equals(bb, o.bb)) return false;
-      return true;
+      return Wire.equals(bb, ((NestedMessage) other).bb);
     }
 
     @Override
@@ -235,6 +234,7 @@ public final class SimpleMessage
       }
 
       public Builder(NestedMessage message) {
+        if (message == null) return;
         this.bb = message.bb;
       }
 
@@ -250,7 +250,6 @@ public final class SimpleMessage
 
       @Override
       public NestedMessage build() {
-        if (!isInitialized()) throw new UninitializedMessageException();
         return new NestedMessage(this);
       }
     }
