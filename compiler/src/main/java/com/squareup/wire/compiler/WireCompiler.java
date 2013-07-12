@@ -42,6 +42,10 @@ public class WireCompiler {
       "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this",
       "throw", "throws", "transient", "try", "void", "volatile", "while"));
 
+  private static final String PROTO_PATH_FLAG = "--proto_path=";
+  private static final String JAVA_OUT_FLAG = "--java_out=";
+  private static final String FILES_FLAG = "--files=";
+
   static {
     JAVA_TYPES.put("bool", "Boolean");
     JAVA_TYPES.put("bytes", "byte[]");
@@ -97,9 +101,9 @@ public class WireCompiler {
   private final Set<String> enumTypes = new HashSet<String>();
   private final Map<String, String> enumDefaults = new HashMap<String, String>();
 
-  private static final String PROTO_PATH_FLAG = "--proto_path=";
-  private static final String JAVA_OUT_FLAG = "--java_out=";
-  private static final String FILES_FLAG = "--files=";
+  private String protoFileName;
+  private String typeBeingGenerated = "";
+  private JavaWriter writer;
 
   /**
    * Runs the compiler. Usage:
@@ -164,10 +168,6 @@ public class WireCompiler {
     return new JavaWriter(new FileWriter(fileName));
   }
 
-  private String protoFileName;
-  private String typeBeingGenerated = "";
-  private JavaWriter writer;
-
   public void compile(String javaOut) throws IOException {
     protoFileName = protoFileName(protoFile.getFileName());
     loadSymbols(protoFile);
@@ -189,6 +189,17 @@ public class WireCompiler {
     }
   }
 
+  private String protoFileName(String path) {
+    int rindex = path.lastIndexOf('/');
+    if (rindex != -1) {
+      path = path.substring(rindex + 1);
+    }
+    if (path.endsWith(".proto")) {
+      path = path.substring(0, path.length() - ".proto".length());
+    }
+    return path;
+  }
+
   private void emitMessageClass(String javaOut, Type type) throws IOException {
     try {
       writer = getJavaWriter(javaOut, type.getName());
@@ -203,9 +214,13 @@ public class WireCompiler {
       Set<String> imports = new HashSet<String>();
       if (hasMessage) {
         imports.add("com.squareup.wire.Message");
-        imports.add("com.squareup.wire.ProtoField");
-        imports.add("com.squareup.wire.UninitializedMessageException");
-        imports.add("com.squareup.wire.Wire");
+        if (hasFields(type)) {
+          imports.add("com.squareup.wire.ProtoField");
+          if (hasRequiredFields(types)) {
+            imports.add("com.squareup.wire.UninitializedMessageException");
+          }
+          imports.add("com.squareup.wire.Wire");
+        }
       }
       if (hasEnum(types)) {
         imports.add("com.squareup.wire.ProtoEnum");
@@ -273,17 +288,6 @@ public class WireCompiler {
       }
     }
     return extensionClasses;
-  }
-
-  private String protoFileName(String path) {
-    int rindex = path.lastIndexOf('/');
-    if (rindex != -1) {
-      path = path.substring(rindex + 1);
-    }
-    if (path.endsWith(".proto")) {
-      path = path.substring(0, path.length() - ".proto".length());
-    }
-    return path;
   }
 
   private boolean hasExtends() {
@@ -425,8 +429,11 @@ public class WireCompiler {
   //
   private void emitMessageDefaults(MessageType messageType)
       throws IOException {
-    writer.emitEmptyLine();
-    for (Field field : messageType.getFields()) {
+    List<Field> fields = messageType.getFields();
+    if (!fields.isEmpty()){
+      writer.emitEmptyLine();
+    }
+    for (Field field : fields) {
       String javaName = javaName(messageType, field.getType());
       if (isRepeated(field)) {
         javaName = "List<" + javaName + ">";
@@ -435,6 +442,13 @@ public class WireCompiler {
       writer.emitField(javaName, sanitize(field.getName()) + "_default",
           Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, defaultValue);
     }
+  }
+
+  private String sanitize(String name) {
+    if (JAVA_KEYWORDS.contains(name)) {
+      return "_" + name;
+    }
+    return name;
   }
 
   // Example:
@@ -487,13 +501,6 @@ public class WireCompiler {
       }
       writer.emitField(javaName, sanitize(field.getName()), Modifier.PUBLIC | Modifier.FINAL);
     }
-  }
-
-  private String sanitize(String name) {
-    if (JAVA_KEYWORDS.contains(name)) {
-      return "_" + name;
-    }
-    return name;
   }
 
   // Example:
@@ -550,16 +557,29 @@ public class WireCompiler {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
     writer.beginMethod("boolean", "equals", Modifier.PUBLIC, "Object", "other");
-    writer.emitStatement("if (!(other instanceof %s)) return false", messageType.getName());
-    writer.emitStatement("%1$s o = (%1$s) other", messageType.getName());
-    if (hasExtensions(messageType)) {
-      writer.emitStatement("if (!extensionMap.equals(o.extensionMap)) return false");
+
+    List<Field> fields = messageType.getFields();
+    if (fields.isEmpty()) {
+      writer.emitStatement("return other instanceof %s", messageType.getName());
+    } else {
+      boolean hasExtensions = hasExtensions(messageType);
+      if (fields.size() == 1 && !hasExtensions) {
+        writer.emitStatement("if (!(other instanceof %s)) return false", messageType.getName());
+        writer.emitStatement("return Wire.equals(%1$s, ((%2$s) other).%1$s)",
+            sanitize(fields.get(0).getName()), messageType.getName());
+      } else {
+        writer.emitStatement("if (!(other instanceof %s)) return false", messageType.getName());
+        writer.emitStatement("%1$s o = (%1$s) other", messageType.getName());
+        if (hasExtensions) {
+          writer.emitStatement("if (!extensionMap.equals(o.extensionMap)) return false");
+        }
+        for (Field field : fields) {
+          writer.emitStatement("if (!Wire.equals(%1$s, o.%1$s)) return false",
+              sanitize(field.getName()));
+        }
+        writer.emitStatement("return true");
+      }
     }
-    for (Field field : messageType.getFields()) {
-      writer.emitStatement("if (!Wire.equals(%1$s, o.%1$s)) return false",
-          sanitize(field.getName()));
-    }
-    writer.emitStatement("return true");
     writer.endMethod();
   }
 
@@ -578,10 +598,16 @@ public class WireCompiler {
     writer.emitAnnotation(Override.class);
     writer.beginMethod("int", "hashCode", Modifier.PUBLIC);
 
-    boolean hasExtensions = !hasExtensions(messageType);
-    if (hasExtensions && messageType.getFields().size() == 1) {
-      writer.emitStatement("return %1$s != null ? %1$s.hashCode() : 0",
-          messageType.getFields().get(0).getName());
+    if (!hasFields(messageType) && !hasExtensions(messageType)) {
+      writer.emitStatement("return 0");
+    } else if (!hasExtensions(messageType) && messageType.getFields().size() == 1) {
+      Field field = messageType.getFields().get(0);
+      String name = sanitize(field.getName());
+      if ("bytes".equals(field.getType())){
+        writer.emitStatement("return Wire.hashCode(%1$s)", name);
+      } else {
+        writer.emitStatement("return %1$s != null ? %1$s.hashCode() : 0", name);
+      }
     } else {
       if (hasExtensions(messageType)) {
         writer.emitStatement("int hashCode = extensionMap.hashCode()");
@@ -589,8 +615,13 @@ public class WireCompiler {
         writer.emitStatement("int hashCode = 0");
       }
       for (Field field : messageType.getFields()) {
-        writer.emitStatement("hashCode = hashCode * 37 + (%1$s != null ? %1$s.hashCode() : 0)",
-          sanitize(field.getName()));
+        String name = sanitize(field.getName());
+        if ("bytes".equals(field.getType())){
+          writer.emitStatement("hashCode = hashCode * 37 + Wire.hashCode(%1$s)", name);
+        } else {
+          writer.emitStatement("hashCode = hashCode * 37 + (%1$s != null ? %1$s.hashCode() : 0)",
+              name);
+        }
       }
       writer.emitStatement("return hashCode");
     }
@@ -646,7 +677,8 @@ public class WireCompiler {
     writer.emitEmptyLine();
     writer.beginType("Builder", "class", Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, null,
         (hasExtensions(messageType) ? "ExtendableMessage.ExtendableBuilder<" : "Message.Builder<")
-            + messageType.getName() + ">");
+            + messageType.getName()
+            + ">");
     emitBuilderFields(messageType);
     emitBuilderConstructors(messageType);
     emitBuilderSetters(messageType);
@@ -660,16 +692,20 @@ public class WireCompiler {
   }
 
   private void emitBuilderFields(MessageType messageType) throws IOException {
-    writer.emitEmptyLine();
-
+    List<Field> fields = messageType.getFields();
+    boolean hasExtensions = hasExtensions(messageType);
     String name = messageType.getName();
-    if (hasExtensions(messageType)) {
+
+    if (!fields.isEmpty() || hasExtensions) {
+      writer.emitEmptyLine();
+    }
+    if (hasExtensions) {
       writer.emitField("Map<Extension<" + name + ", ?>, Object>",
           "extensionMap", Modifier.PRIVATE | Modifier.FINAL,
           "new TreeMap<Extension<" + name + ", ?>, Object>()");
       writer.emitEmptyLine();
     }
-    for (Field field : messageType.getFields()) {
+    for (Field field : fields) {
       String javaName = javaName(messageType, field.getType());
       if (isRepeated(field)) {
         javaName = "List<" + javaName + ">";
@@ -685,7 +721,11 @@ public class WireCompiler {
 
     writer.emitEmptyLine();
     writer.beginMethod(null, "Builder", Modifier.PUBLIC, messageType.getName(), "message");
-    for (Field field : messageType.getFields()) {
+    List<Field> fields = messageType.getFields();
+    if (!fields.isEmpty()) {
+      writer.emitStatement("if (message == null) return");
+    }
+    for (Field field : fields) {
       if (isRepeated(field)) {
         writer.emitStatement("this.%1$s = Wire.copyOf(message.%1$s)", sanitize(field.getName()));
       } else {
@@ -734,6 +774,8 @@ public class WireCompiler {
       // Quote String values
       return "\"" + (initialValue == null
           ? "" : initialValue.replaceAll("[\\\\]", "\\\\").replaceAll("[\"]", "\\\"")) + "\"";
+    } else if ("byte[]".equals(javaName)) {
+      return "new byte[0]";
     } else {
       return "null";
     }
@@ -800,7 +842,9 @@ public class WireCompiler {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
     writer.beginMethod(messageType.getName(), "build", Modifier.PUBLIC);
-    writer.emitStatement("if (!isInitialized()) throw new UninitializedMessageException()");
+    if (hasRequiredFields(messageType)) {
+      writer.emitStatement("if (!isInitialized()) throw new UninitializedMessageException()");
+    }
     writer.emitStatement("return new %s(this)", messageType.getName());
     writer.endMethod();
   }
@@ -878,6 +922,33 @@ public class WireCompiler {
         }
       }
       if (hasRepeatedField(type.getNestedTypes())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean hasFields(Type type) {
+    if (type instanceof MessageType) {
+      return !((MessageType) type).getFields().isEmpty();
+    }
+    return false;
+  }
+
+  private boolean hasRequiredFields(Type type) {
+    if (type instanceof MessageType) {
+      for (MessageType.Field field : ((MessageType) type).getFields()) {
+        if (field.getLabel() == MessageType.Label.REQUIRED) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean hasRequiredFields(List<Type> types) {
+    for (Type type : types) {
+      if (hasRequiredFields(type)) {
         return true;
       }
     }

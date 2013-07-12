@@ -39,7 +39,7 @@ public interface Message {
      * @param <Type> the (boxed) Java data type of the extension value
      */
     public static final class Extension<ExtendedType extends ExtendableMessage, Type>
-        implements Comparable<Extension> {
+        implements Comparable<Extension<?, ?>> {
       private final Class<ExtendedType> extendedType;
       private final Class<? extends Message> messageType;
       private final Class<? extends Enum> enumType;
@@ -157,8 +157,47 @@ public interface Message {
       /**
        * Orders Extensions in ascending tag order.
        */
-      @Override public int compareTo(Extension o) {
-        return tag - o.tag;
+      @Override public int compareTo(Extension<?, ?> o) {
+        if (tag != o.tag) {
+          return tag - o.tag;
+        }
+        if (type != o.type) {
+          return type - o.type;
+        }
+        if (label != o.label) {
+          return label - o.label;
+        }
+        if (packed != o.packed) {
+          return packed ? 1 : -1;
+        }
+        if (extendedType != null && !extendedType.equals(o.extendedType)) {
+          return extendedType.getCanonicalName().compareTo(o.extendedType.getCanonicalName());
+        }
+        if (messageType != null && !messageType.equals(o.messageType)) {
+          return messageType.getCanonicalName().compareTo(o.messageType.getCanonicalName());
+        }
+        if (enumType != null && !enumType.equals(o.enumType)) {
+          return enumType.getCanonicalName().compareTo(o.enumType.getCanonicalName());
+        }
+        return 0;
+      }
+
+      @Override public boolean equals(Object other) {
+        if (!(other instanceof Extension<?, ?>)) {
+          return false;
+        }
+        return compareTo((Extension<?, ?>) other) == 0;
+      }
+
+      @Override public int hashCode() {
+        int hash = tag;
+        hash = hash * 37 + type;
+        hash = hash * 37 + label;
+        hash = hash * 37 + (packed ? 1 : 0);
+        hash = hash * 37 + extendedType.getCanonicalName().hashCode();
+        hash = hash * 37 + (messageType != null ? messageType.getCanonicalName().hashCode() : 0);
+        hash = hash * 37 + (enumType != null ? enumType.getCanonicalName().hashCode() : 0);
+        return hash;
       }
 
       public Class<ExtendedType> getExtendedType() {

@@ -33,7 +33,7 @@ public final class AllTypes
   public static final Float opt_float_default = 0F;
   public static final Double opt_double_default = 0D;
   public static final String opt_string_default = "";
-  public static final byte[] opt_bytes_default = null;
+  public static final byte[] opt_bytes_default = new byte[0];
   public static final NestedEnum opt_nested_enum_default = NestedEnum.A;
   public static final NestedMessage opt_nested_message_default = Wire.getDefaultInstance(NestedMessage.class);
   public static final Integer req_int32_default = 0;
@@ -50,7 +50,7 @@ public final class AllTypes
   public static final Float req_float_default = 0F;
   public static final Double req_double_default = 0D;
   public static final String req_string_default = "";
-  public static final byte[] req_bytes_default = null;
+  public static final byte[] req_bytes_default = new byte[0];
   public static final NestedEnum req_nested_enum_default = NestedEnum.A;
   public static final NestedMessage req_nested_message_default = Wire.getDefaultInstance(NestedMessage.class);
   public static final List<Integer> rep_int32_default = java.util.Collections.emptyList();
@@ -733,7 +733,7 @@ public final class AllTypes
     hashCode = hashCode * 37 + (opt_float != null ? opt_float.hashCode() : 0);
     hashCode = hashCode * 37 + (opt_double != null ? opt_double.hashCode() : 0);
     hashCode = hashCode * 37 + (opt_string != null ? opt_string.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
+    hashCode = hashCode * 37 + Wire.hashCode(opt_bytes);
     hashCode = hashCode * 37 + (opt_nested_enum != null ? opt_nested_enum.hashCode() : 0);
     hashCode = hashCode * 37 + (opt_nested_message != null ? opt_nested_message.hashCode() : 0);
     hashCode = hashCode * 37 + (req_int32 != null ? req_int32.hashCode() : 0);
@@ -750,7 +750,7 @@ public final class AllTypes
     hashCode = hashCode * 37 + (req_float != null ? req_float.hashCode() : 0);
     hashCode = hashCode * 37 + (req_double != null ? req_double.hashCode() : 0);
     hashCode = hashCode * 37 + (req_string != null ? req_string.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_bytes != null ? req_bytes.hashCode() : 0);
+    hashCode = hashCode * 37 + Wire.hashCode(req_bytes);
     hashCode = hashCode * 37 + (req_nested_enum != null ? req_nested_enum.hashCode() : 0);
     hashCode = hashCode * 37 + (req_nested_message != null ? req_nested_message.hashCode() : 0);
     hashCode = hashCode * 37 + (rep_int32 != null ? rep_int32.hashCode() : 0);
@@ -767,7 +767,7 @@ public final class AllTypes
     hashCode = hashCode * 37 + (rep_float != null ? rep_float.hashCode() : 0);
     hashCode = hashCode * 37 + (rep_double != null ? rep_double.hashCode() : 0);
     hashCode = hashCode * 37 + (rep_string != null ? rep_string.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_bytes != null ? rep_bytes.hashCode() : 0);
+    hashCode = hashCode * 37 + Wire.hashCode(rep_bytes);
     hashCode = hashCode * 37 + (rep_nested_enum != null ? rep_nested_enum.hashCode() : 0);
     hashCode = hashCode * 37 + (rep_nested_message != null ? rep_nested_message.hashCode() : 0);
     hashCode = hashCode * 37 + (pack_int32 != null ? pack_int32.hashCode() : 0);
@@ -784,7 +784,7 @@ public final class AllTypes
     hashCode = hashCode * 37 + (pack_float != null ? pack_float.hashCode() : 0);
     hashCode = hashCode * 37 + (pack_double != null ? pack_double.hashCode() : 0);
     hashCode = hashCode * 37 + (pack_string != null ? pack_string.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_bytes != null ? pack_bytes.hashCode() : 0);
+    hashCode = hashCode * 37 + Wire.hashCode(pack_bytes);
     hashCode = hashCode * 37 + (pack_nested_enum != null ? pack_nested_enum.hashCode() : 0);
     hashCode = hashCode * 37 + (pack_nested_message != null ? pack_nested_message.hashCode() : 0);
     return hashCode;
@@ -1011,6 +1011,7 @@ public final class AllTypes
     }
 
     public Builder(AllTypes message) {
+      if (message == null) return;
       this.opt_int32 = message.opt_int32;
       this.opt_uint32 = message.opt_uint32;
       this.opt_sint32 = message.opt_sint32;
@@ -1485,9 +1486,7 @@ public final class AllTypes
     @Override
     public boolean equals(Object other) {
       if (!(other instanceof NestedMessage)) return false;
-      NestedMessage o = (NestedMessage) other;
-      if (!Wire.equals(a, o.a)) return false;
-      return true;
+      return Wire.equals(a, ((NestedMessage) other).a);
     }
 
     @Override
@@ -1511,6 +1510,7 @@ public final class AllTypes
       }
 
       public Builder(NestedMessage message) {
+        if (message == null) return;
         this.a = message.a;
       }
 
@@ -1526,7 +1526,6 @@ public final class AllTypes
 
       @Override
       public NestedMessage build() {
-        if (!isInitialized()) throw new UninitializedMessageException();
         return new NestedMessage(this);
       }
     }

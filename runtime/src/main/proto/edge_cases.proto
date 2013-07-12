@@ -1,0 +1,14 @@
+package squareup.protos.edgecases;
+
+option java_package = "com.squareup.protos.edgecases";
+
+message NoFields {
+}
+
+message OneField {
+  optional int32 opt_int32 = 1;
+}
+
+message OneBytesField {
+  optional bytes opt_bytes = 1;
+}
