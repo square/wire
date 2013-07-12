@@ -199,35 +199,6 @@ public final class Wire {
   }
 
   /**
-   * Returns the enumerated value tagged with the given integer value for the
-   * given enum class. If no enum value in the given class is annotated with a {@link ProtoEnum}
-   * annotation having the given value, null is returned.
-   *
-   * @param enumClass the enum class
-   * @param value the integer value
-   * @param <E> the enum class constant
-   * @return a value from the given enum, or null
-   */
-  public <E extends Enum> E enumFromInt(Class<E> enumClass, int value) {
-    ProtoEnumAdapter<E> adapter = enumAdapter(enumClass);
-    return adapter.fromInt(value);
-  }
-
-  /**
-   * Returns the integer value tagged associated with the given enum instance.
-   * If the enum value is not annotated with a {@link ProtoEnum} annotation, an exception
-   * will be thrown.
-   *
-   * @param value the integer value
-   * @param <E> the enum class constant
-   * @return the associated integer value
-   */
-  public <E extends Enum> int intFromEnum(E value) {
-    ProtoEnumAdapter<E> adapter = enumAdapter((Class<E>) value.getClass());
-    return adapter.toInt(value);
-  }
-
-  /**
    * Parses a given range of bytes into a {@link Message} of the given message class.
    *
    * @param messageClass the class of the outermost {@link Message}
@@ -301,6 +272,43 @@ public final class Wire {
    */
   public static <Type extends Message> Type getDefaultInstance(Class<Type> messageClass) {
     return INSTANCE.messageAdapter(messageClass).getDefaultInstance();
+  }
+
+  /**
+   * Returns the integer value tagged associated with the given enum instance.
+   * If the enum value is not annotated with a {@link ProtoEnum} annotation, an exception
+   * will be thrown.
+   *
+   * @param value the integer value
+   * @param <E> the enum class constant
+   * @return the associated integer value
+   */
+  public static <E extends Enum> int intFromEnum(E value) {
+    return INSTANCE.intFromEnumHelper(value);
+  }
+
+  private <E extends Enum> int intFromEnumHelper(E value) {
+    ProtoEnumAdapter<E> adapter = enumAdapter((Class<E>) value.getClass());
+    return adapter.toInt(value);
+  }
+
+  /**
+   * Returns the enumerated value tagged with the given integer value for the
+   * given enum class. If no enum value in the given class is annotated with a {@link ProtoEnum}
+   * annotation having the given value, null is returned.
+   *
+   * @param enumClass the enum class
+   * @param value the integer value
+   * @param <E> the enum class constant
+   * @return a value from the given enum, or null
+   */
+  public static <E extends Enum> E enumFromInt(Class<E> enumClass, int value) {
+    return INSTANCE.enumFromIntHelper(enumClass, value);
+  }
+
+  private <E extends Enum> E enumFromIntHelper(Class<E> enumClass, int value) {
+    ProtoEnumAdapter<E> adapter = enumAdapter(enumClass);
+    return adapter.fromInt(value);
   }
 
   /**
@@ -413,5 +421,25 @@ public final class Wire {
     }
     sb.append("]");
     return sb.toString();
+  }
+
+  public static int hashCode(byte[] bytes) {
+    int hashCode = 0;
+    if (bytes != null) {
+      for (byte b : bytes) {
+        hashCode = 37 * hashCode + b;
+      }
+    }
+    return hashCode;
+  }
+
+  public static int hashCode(List<byte[]> bytesList) {
+    int hashCode = 0;
+    if (bytesList != null) {
+      for (byte[] bytes : bytesList) {
+        hashCode = 37 * hashCode(bytes);
+      }
+    }
+    return hashCode;
   }
 }
