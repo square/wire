@@ -38,8 +38,8 @@
   </licenses>
 
   <modules>
-    <module>compiler</module>
-    <module>runtime</module>
+    <module>wire-compiler</module>
+    <module>wire-runtime</module>
   </modules>
 
  <properties>
