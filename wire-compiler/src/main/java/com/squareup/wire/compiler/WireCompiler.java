@@ -1,8 +1,6 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.wire.compiler;
 
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.ExtendDeclaration;
@@ -10,14 +8,16 @@ import com.squareup.protoparser.MessageType;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 import com.squareup.protoparser.Type;
+import com.squareup.wire.ProtoEnum;
+import com.squareup.wire.ProtoField;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -25,8 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import javax.lang.model.element.Modifier;
 
 import static com.squareup.protoparser.MessageType.Field;
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.STATIC;
 
 /**
  * Compiler for Wire protocol buffers.
@@ -313,11 +318,11 @@ public class WireCompiler {
     writer.emitEmptyLine();
 
     String className = "Ext_" + protoFileName;
-    writer.beginType(className, "class", Modifier.PUBLIC | Modifier.FINAL);
+    writer.beginType(className, "class", EnumSet.of(PUBLIC, FINAL));
     writer.emitEmptyLine();
 
     // Private no-args constructor
-    writer.beginMethod(null, className, Modifier.PRIVATE);
+    writer.beginMethod(null, className, EnumSet.of(PRIVATE));
     writer.endMethod();
     writer.emitEmptyLine();
 
@@ -375,7 +380,7 @@ public class WireCompiler {
           type = "List<" + type + ">";
         }
         writer.emitField("Extension<" + name + ", " + type + ">", field.getName(),
-            Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, initialValue);
+            EnumSet.of(PUBLIC, STATIC, FINAL), initialValue);
       }
     }
   }
@@ -391,13 +396,16 @@ public class WireCompiler {
       boolean hasExtensions = hasExtensions(messageType);
 
       String name = type.getName();
-      writer.beginType(name, "class",
-          Modifier.PUBLIC | Modifier.FINAL | (topLevel ? 0 : Modifier.STATIC), null,
+      Set<Modifier> modifiers = EnumSet.of(PUBLIC, FINAL);
+      if (!topLevel) {
+        modifiers.add(STATIC);
+      }
+      writer.beginType(name, "class", modifiers, null,
           hasExtensions ? "Message.ExtendableMessage<" + name + ">" : "Message");
       if (hasExtensions) {
         writer.emitEmptyLine();
         writer.emitField("Map<Extension<" + name + ", ?>, Object>",
-            "extensionMap", Modifier.PUBLIC | Modifier.FINAL);
+            "extensionMap", EnumSet.of(PUBLIC, FINAL));
       }
       emitMessageDefaults(messageType);
       emitMessageFields(messageType);
@@ -417,7 +425,7 @@ public class WireCompiler {
       writer.endType();
     } else if (type instanceof EnumType) {
       EnumType enumType = (EnumType) type;
-      writer.beginType(enumType.getName(), "enum", Modifier.PUBLIC);
+      writer.beginType(enumType.getName(), "enum", EnumSet.of(PUBLIC));
       for (EnumType.Value value : enumType.getValues()) {
         writer.emitAnnotation(ProtoEnum.class, value.getTag());
         writer.emitEnumValue(value.getName());
@@ -443,7 +451,7 @@ public class WireCompiler {
       }
       String defaultValue = getDefaultValue(messageType, field);
       writer.emitField(javaName, sanitize(field.getName()) + "_default",
-          Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, defaultValue);
+          EnumSet.of(PUBLIC, STATIC, FINAL), defaultValue);
     }
   }
 
@@ -502,7 +510,7 @@ public class WireCompiler {
       if (isRepeated(field)) {
         javaName = "List<" + javaName + ">";
       }
-      writer.emitField(javaName, sanitize(field.getName()), Modifier.PUBLIC | Modifier.FINAL);
+      writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC, FINAL));
     }
   }
 
@@ -514,7 +522,7 @@ public class WireCompiler {
   //
   private void emitMessageConstructor(MessageType messageType) throws IOException {
     writer.emitEmptyLine();
-    writer.beginMethod(null, messageType.getName(), Modifier.PRIVATE, "Builder", "builder");
+    writer.beginMethod(null, messageType.getName(), EnumSet.of(PRIVATE), "Builder", "builder");
     for (Field field : messageType.getFields()) {
       if (isRepeated(field)) {
         writer.emitStatement("this.%1$s = Wire.unmodifiableCopyOf(builder.%1$s)",
@@ -540,7 +548,7 @@ public class WireCompiler {
       throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
-    writer.beginMethod("<Type> Type", "getExtension", Modifier.PUBLIC,
+    writer.beginMethod("<Type> Type", "getExtension", EnumSet.of(PUBLIC),
         "Extension<" + messageType.getName() + ", Type>", "extension");
     writer.emitStatement("return (Type) extensionMap.get(extension)");
     writer.endMethod();
@@ -559,7 +567,7 @@ public class WireCompiler {
       throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
-    writer.beginMethod("boolean", "equals", Modifier.PUBLIC, "Object", "other");
+    writer.beginMethod("boolean", "equals", EnumSet.of(PUBLIC), "Object", "other");
 
     List<Field> fields = messageType.getFields();
     if (fields.isEmpty()) {
@@ -599,7 +607,7 @@ public class WireCompiler {
       throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
-    writer.beginMethod("int", "hashCode", Modifier.PUBLIC);
+    writer.beginMethod("int", "hashCode", EnumSet.of(PUBLIC));
 
     if (!hasFields(messageType) && !hasExtensions(messageType)) {
       writer.emitStatement("return 0");
@@ -644,7 +652,7 @@ public class WireCompiler {
       throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
-    writer.beginMethod("String", "toString", Modifier.PUBLIC);
+    writer.beginMethod("String", "toString", EnumSet.of(PUBLIC));
 
     if (messageType.getFields().isEmpty()) {
       writer.emitStatement(String.format("return \"%s{}\"", messageType.getName()));
@@ -678,7 +686,7 @@ public class WireCompiler {
   private void emitBuilder(MessageType messageType)
       throws IOException {
     writer.emitEmptyLine();
-    writer.beginType("Builder", "class", Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, null,
+    writer.beginType("Builder", "class", EnumSet.of(PUBLIC, STATIC, FINAL), null,
         (hasExtensions(messageType) ? "ExtendableMessage.ExtendableBuilder<" : "Message.Builder<")
             + messageType.getName()
             + ">");
@@ -704,7 +712,7 @@ public class WireCompiler {
     }
     if (hasExtensions) {
       writer.emitField("Map<Extension<" + name + ", ?>, Object>",
-          "extensionMap", Modifier.PRIVATE | Modifier.FINAL,
+          "extensionMap", EnumSet.of(PRIVATE, FINAL),
           "new TreeMap<Extension<" + name + ", ?>, Object>()");
       writer.emitEmptyLine();
     }
@@ -713,17 +721,17 @@ public class WireCompiler {
       if (isRepeated(field)) {
         javaName = "List<" + javaName + ">";
       }
-      writer.emitField(javaName, sanitize(field.getName()), Modifier.PUBLIC);
+      writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC));
     }
   }
 
   private void emitBuilderConstructors(MessageType messageType) throws IOException {
     writer.emitEmptyLine();
-    writer.beginMethod(null, "Builder", Modifier.PUBLIC);
+    writer.beginMethod(null, "Builder", EnumSet.of(PUBLIC));
     writer.endMethod();
 
     writer.emitEmptyLine();
-    writer.beginMethod(null, "Builder", Modifier.PUBLIC, messageType.getName(), "message");
+    writer.beginMethod(null, "Builder", EnumSet.of(PUBLIC), messageType.getName(), "message");
     List<Field> fields = messageType.getFields();
     if (!fields.isEmpty()) {
       writer.emitStatement("if (message == null) return");
@@ -796,7 +804,7 @@ public class WireCompiler {
       args.add(sanitized);
 
       writer.emitEmptyLine();
-      writer.beginMethod("Builder", sanitized, Modifier.PUBLIC, args, null);
+      writer.beginMethod("Builder", sanitized, EnumSet.of(PUBLIC), args, null);
       writer.emitStatement("this.%1$s = %1$s", sanitized);
       writer.emitStatement("return this");
       writer.endMethod();
@@ -820,7 +828,7 @@ public class WireCompiler {
       throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
-    writer.beginMethod("<Type> Builder", "setExtension", Modifier.PUBLIC,
+    writer.beginMethod("<Type> Builder", "setExtension", EnumSet.of(PUBLIC),
         "Extension<" + messageType.getName() + ", Type>", "extension", "Type", "value");
     writer.emitStatement("extensionMap.put(extension, value)");
     writer.emitStatement("return this");
@@ -831,7 +839,7 @@ public class WireCompiler {
       throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
-    writer.beginMethod("boolean", "isInitialized", Modifier.PUBLIC);
+    writer.beginMethod("boolean", "isInitialized", EnumSet.of(PUBLIC));
     for (Field field : messageType.getFields()) {
       if (isRequired(field)) {
         writer.emitStatement("if (%s == null) return false", field.getName());
@@ -844,7 +852,7 @@ public class WireCompiler {
   private void emitBuilderBuild(MessageType messageType) throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
-    writer.beginMethod(messageType.getName(), "build", Modifier.PUBLIC);
+    writer.beginMethod(messageType.getName(), "build", EnumSet.of(PUBLIC));
     if (hasRequiredFields(messageType)) {
       writer.emitStatement("if (!isInitialized()) throw new UninitializedMessageException()");
     }
