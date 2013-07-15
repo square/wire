@@ -1,11 +1,11 @@
-
-package com.google.protobuf;
+// Copyright 2013 Square, Inc.
+package com.squareup.wire.protobuf;
 
 import com.google.protobuf.nano.CodedInputByteBufferNano;
 import com.google.protobuf.nano.CodedOutputByteBufferNano;
-import com.squareup.protos.simple.Ext_simple_message;
-import com.squareup.protos.simple.ExternalMessage;
-import com.squareup.protos.simple.SimpleMessage;
+import com.squareup.wire.protos.simple.Ext_simple_message;
+import com.squareup.wire.protos.simple.ExternalMessage;
+import com.squareup.wire.protos.simple.SimpleMessage;
 import com.squareup.wire.Wire;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.UninitializedMessageException;
@@ -14,10 +14,10 @@ import java.util.Arrays;
 import java.util.List;
 import junit.framework.TestCase;
 
-import static com.squareup.protos.simple.Ext_simple_message.barext;
-import static com.squareup.protos.simple.Ext_simple_message.bazext;
-import static com.squareup.protos.simple.Ext_simple_message.fooext;
-import static com.squareup.protos.simple.Ext_simple_message.nested_message_ext;
+import static com.squareup.wire.protos.simple.Ext_simple_message.barext;
+import static com.squareup.wire.protos.simple.Ext_simple_message.bazext;
+import static com.squareup.wire.protos.simple.Ext_simple_message.fooext;
+import static com.squareup.wire.protos.simple.Ext_simple_message.nested_message_ext;
 
 /**
  * Test Wire runtime.
