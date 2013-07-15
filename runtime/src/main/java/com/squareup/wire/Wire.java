@@ -400,9 +400,9 @@ public final class Wire {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
     String sep = "";
-    for (int i = 0; i < bytes.length; i++) {
+    for (byte b : bytes) {
       sb.append(sep);
-      sb.append(bytes[i] & BYTE_MASK);
+      sb.append(b & BYTE_MASK);
       sep = ",";
     }
     sb.append("}");

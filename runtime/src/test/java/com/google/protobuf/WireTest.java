@@ -62,7 +62,7 @@ public class WireTest extends TestCase {
     assertNotSame(doubles, msg.repeated_double);
     assertEquals(savedData, msg.repeated_double);
 
-    // Rebulding will use the new list
+    // Rebuilding will use the new list
     msg = builder.build();
     assertEquals(doubles, msg.repeated_double);
 
@@ -94,7 +94,7 @@ public class WireTest extends TestCase {
     SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, result);
     assertEquals(new Integer(789), newMsg.optional_int32);
     assertEquals(new Integer(2), newMsg.optional_nested_msg.bb);
-    assertEquals(new Float(99.9f), newMsg.optional_external_msg.f);
+    assertEquals(99.9F, newMsg.optional_external_msg.f);
     assertEquals(SimpleMessage.NestedEnum.BAR, newMsg.default_nested_enum);
     assertEquals(new Integer(456), newMsg.required_int32);
     assertEquals(doubles, msg.repeated_double);

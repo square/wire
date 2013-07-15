@@ -11,9 +11,11 @@ import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 import com.squareup.protoparser.Type;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ import static com.squareup.protoparser.MessageType.Field;
  */
 public class WireCompiler {
 
+  private static final Charset UTF_8 = Charset.forName("UTF8");
   private static final Map<String, String> JAVA_TYPES = new HashMap<String, String>();
   private static final Map<String, String> PROTO_FIELD_TYPES = new HashMap<String, String>();
   private static final Set<String> PACKABLE_TYPES = new HashSet<String>();
@@ -126,7 +129,7 @@ public class WireCompiler {
         javaOut = args[index].substring(JAVA_OUT_FLAG.length());
       } else if (args[index].startsWith(FILES_FLAG)) {
         File files = new File(args[index].substring(FILES_FLAG.length()));
-        String[] filenames = new Scanner(files).useDelimiter("\\A").next().split("\n");
+        String[] filenames = new Scanner(files, "UTF8").useDelimiter("\\A").next().split("\n");
         sourceFilenames.addAll(Arrays.asList(filenames));
       } else {
         sourceFilenames.add(args[index]);
@@ -165,7 +168,7 @@ public class WireCompiler {
 
     String fileName = directory + "/" + className + ".java";
     System.out.println("Writing generated code to " + fileName);
-    return new JavaWriter(new FileWriter(fileName));
+    return new JavaWriter(new OutputStreamWriter(new FileOutputStream(fileName), UTF_8));
   }
 
   public void compile(String javaOut) throws IOException {
@@ -491,7 +494,7 @@ public class WireCompiler {
 
       writer.emitEmptyLine();
       String documentation = field.getDocumentation();
-      if (!isBlank(documentation)) {
+      if (hasDocumentation(documentation)) {
         writer.emitJavadoc(documentation.replace("%", "%%"));
       }
       writer.emitAnnotation(ProtoField.class, map);
@@ -929,10 +932,7 @@ public class WireCompiler {
   }
 
   private boolean hasFields(Type type) {
-    if (type instanceof MessageType) {
-      return !((MessageType) type).getFields().isEmpty();
-    }
-    return false;
+    return type instanceof MessageType && !((MessageType) type).getFields().isEmpty();
   }
 
   private boolean hasRequiredFields(Type type) {
@@ -955,8 +955,8 @@ public class WireCompiler {
     return false;
   }
 
-  private boolean isBlank(String documentation) {
-    return documentation == null || documentation.isEmpty();
+  private boolean hasDocumentation(String documentation) {
+    return documentation != null && !documentation.isEmpty();
   }
 
   private String protoFieldType(String type) {

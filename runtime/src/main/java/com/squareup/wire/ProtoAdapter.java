@@ -46,8 +46,8 @@ public class ProtoAdapter<M extends Message> {
     this.wire = wire;
     this.messageType = messageType;
     try {
-      this.builderType =
-          (Class<Message.Builder<M>>) Class.forName(messageType.getName() + "$Builder");
+      this.builderType = (Class<Message.Builder<M>>) Class.forName(messageType.getName()
+          + "$Builder");
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException("No builder class found for message type "
           + messageType.getName());
@@ -454,13 +454,6 @@ public class ProtoAdapter<M extends Message> {
     output.writeEnumNoTag(adapter.toInt(value));
   }
 
-  private <M extends Message> void writeMessageNoTag(M message, CodedOutputByteBufferNano output)
-      throws IOException {
-    ProtoAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
-    output.writeRawVarint32(adapter.getSerializedSize(message));
-    adapter.write(message, output);
-  }
-
   // Reading
 
   /** Uses reflection to read an instance from {@code input}. */
@@ -548,7 +541,7 @@ public class ProtoAdapter<M extends Message> {
       case Wire.SINT32: value = input.readSInt32(); break;
       case Wire.SINT64: value = input.readSInt64(); break;
       case Wire.BOOL: value = input.readBool(); break;
-      case Wire.ENUM: value = wire.enumFromInt(getEnumClass(tag), input.readEnum()); break;
+      case Wire.ENUM: value = Wire.enumFromInt(getEnumClass(tag), input.readEnum()); break;
       case Wire.STRING: value = input.readString(); break;
       case Wire.BYTES: value = input.readBytes(); break;
       case Wire.MESSAGE: value = readMessage(input, tag); break;
