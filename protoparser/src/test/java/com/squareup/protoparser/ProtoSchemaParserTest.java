@@ -220,6 +220,25 @@ public final class ProtoSchemaParserTest {
         .isEqualTo(protoFile);
   }
 
+  @Test public void extensionWithNestedMessage() throws Exception {
+    String proto = ""
+        + "message Foo {\n"
+        + "  optional int32 bar = 1 [\n"
+        + "      (validation.range).min = 1,\n"
+        + "      (validation.range).max = 100,\n"
+        + "      default = 20\n"
+        + "  ];\n"
+        + "}";
+    Type expected = new MessageType("Foo", "Foo", "", Arrays.asList(
+        new MessageType.Field(Label.OPTIONAL, "int32", "bar", 1, "",
+            map("validation.range", map("min", "1", "max", "100"), "default", "20"))), NO_TYPES,
+        NO_EXTENSIONS);
+    ProtoFile protoFile =
+        new ProtoFile("foo.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
+            NO_EXTEND_DECLARATIONs);
+    assertThat(new ProtoSchemaParser("foo.proto", proto).readProtoFile()).isEqualTo(protoFile);
+  }
+
   private Map<String, Object> map(Object... keysAndValues) {
     Map<String, Object> result = new LinkedHashMap<String, Object>();
     for (int i = 0; i < keysAndValues.length; i += 2) {
