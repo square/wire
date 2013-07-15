@@ -116,7 +116,7 @@ public class WireCompiler {
    *     [file [file...]]
    * </pre>
    */
-  public static void main(String[] args) throws Exception {
+  public static void main(String... args) throws Exception {
     String protoPath = null;
     String javaOut = null;
     List<String> sourceFilenames = new ArrayList<String>();
