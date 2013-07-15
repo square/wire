@@ -16,8 +16,7 @@ public class WireCompilerTest {
   File testAllTypesDir;
   File testSimpleDir;
 
-  @Before
-  public void setUp() {
+  @Before public void setUp() {
     System.out.println("cwd = " + new File(".").getAbsolutePath());
 
     testAllTypesDir = new File("WireCompilerTest_testAllTypes");
@@ -33,24 +32,23 @@ public class WireCompilerTest {
     Assert.assertEquals(0, filesBefore.size());
   }
 
-  @After
-  public void tearDown() {
+  @After public void tearDown() {
     cleanup(testAllTypesDir);
     if (!testAllTypesDir.delete()) {
       System.err.println("Couldn't delete " + testAllTypesDir.getAbsolutePath());
-    };
+    }
 
     cleanup(testSimpleDir);
     testSimpleDir.delete();
   }
 
-  @Test
-  public void testAllTypes() throws Exception {
-    String[] args = {
-      "--proto_path=../wire-runtime/src/main/proto",
+  @Test public void testAllTypes() throws Exception {
+    WireCompiler.main(
+      "--proto_path=../wire-runtime/src/test/proto",
       "--java_out=" + testAllTypesDir.getAbsolutePath(),
-      "all_types.proto" };
-    WireCompiler.main(args);
+      "all_types.proto"
+    );
+
 
     List<String> filesAfter = getAllFiles(testAllTypesDir);
     Assert.assertEquals(2, filesAfter.size());
@@ -59,13 +57,12 @@ public class WireCompilerTest {
     filesMatch(testAllTypesDir, "com/squareup/wire/protos/alltypes/AllTypes.java");
   }
 
-  @Test
-  public void testEdgeCases() throws Exception {
-    String[] args = {
-        "--proto_path=../wire-runtime/src/main/proto",
+  @Test public void testEdgeCases() throws Exception {
+    WireCompiler.main(
+        "--proto_path=../wire-runtime/src/test/proto",
         "--java_out=" + testAllTypesDir.getAbsolutePath(),
-        "edge_cases.proto" };
-    WireCompiler.main(args);
+        "edge_cases.proto"
+    );
 
     List<String> filesAfter = getAllFiles(testAllTypesDir);
     Assert.assertEquals(3, filesAfter.size());
@@ -75,14 +72,13 @@ public class WireCompilerTest {
     filesMatch(testAllTypesDir, "com/squareup/wire/protos/edgecases/OneBytesField.java");
   }
 
-  @Test
-  public void testSimple() throws Exception {
-    String[] args = {
-        "--proto_path=../wire-runtime/src/main/proto",
+  @Test public void testSimple() throws Exception {
+    WireCompiler.main(
+        "--proto_path=../wire-runtime/src/test/proto",
         "--java_out=" + testSimpleDir.getAbsolutePath(),
         "simple_message.proto",
-        "external_message.proto" };
-    WireCompiler.main(args);
+        "external_message.proto"
+    );
 
     List<String> filesAfter = getAllFiles(testSimpleDir);
     Assert.assertEquals(3, filesAfter.size());
