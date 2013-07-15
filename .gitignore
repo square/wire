@@ -1,9 +1,18 @@
-.idea/
-wire.iml
-compiler/dependency-reduced-pom.xml
-compiler/wire-compiler.iml
-runtime/dependency-reduced-pom.xml
-runtime/wire-runtime.iml
-compiler/target/
-runtime/target/
+# IDEA
+.idea
+*.iml
+classes
+
+# Eclipse
+.classpath
+.project
+
+# Maven
+target
+pom.xml.*
+release.properties
+
+# Maven shade plugin
+dependency-reduced-pom.xml
+
 out/
