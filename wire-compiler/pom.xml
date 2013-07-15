@@ -19,7 +19,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.squareup</groupId>
+      <groupId>com.squareup.wire</groupId>
       <artifactId>wire-runtime</artifactId>
       <version>${project.version}</version>
     </dependency>
