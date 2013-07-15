@@ -291,11 +291,18 @@ public final class ProtoSchemaParser {
   /** Reads a option containing a name, an '=' or ':', and a value. */
   private Option readOption(char keyValueSeparator) {
     String name = readName(); // Option name.
-    if (readChar() != keyValueSeparator) {
+    String subName = null;
+    char c = readChar();
+    if (c == '.') {
+      // Read nested field name. For example "baz" in "(foo.bar).baz = 12".
+      subName = readName();
+      c = readChar();
+    }
+    if (c != keyValueSeparator) {
       throw unexpected("expected '" + keyValueSeparator + "' in option");
     }
     Object value = peekChar() == '{' ? readMap('{', '}', ':') : readString();
-    return new Option(name, value);
+    return new Option(name, subName != null ? new Option(subName, value) : value);
   }
 
   /**
@@ -314,7 +321,20 @@ public final class ProtoSchemaParser {
       }
 
       Option option = readOption(keyValueSeparator);
-      result.put(option.getName(), option.getValue());
+      String name = option.getName();
+      Object value = option.getValue();
+      if (value instanceof Option) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> nested = (Map<String, Object>) result.get(name);
+        if (nested == null) {
+          nested = new LinkedHashMap<String, Object>();
+          result.put(name, nested);
+        }
+        Option valueOption = (Option) value;
+        nested.put(valueOption.getName(), valueOption.getValue());
+      } else {
+        result.put(name, value);
+      }
 
       char c = peekChar();
       if (c == ',') {
