@@ -47,7 +47,7 @@ public class WireCompilerTest {
   @Test
   public void testAllTypes() throws Exception {
     String[] args = {
-      "--proto_path=../runtime/src/main/proto",
+      "--proto_path=../wire-runtime/src/main/proto",
       "--java_out=" + testAllTypesDir.getAbsolutePath(),
       "all_types.proto" };
     WireCompiler.main(args);
@@ -55,14 +55,14 @@ public class WireCompilerTest {
     List<String> filesAfter = getAllFiles(testAllTypesDir);
     Assert.assertEquals(2, filesAfter.size());
 
-    filesMatch(testAllTypesDir, "com/squareup/protos/alltypes/Ext_all_types.java");
-    filesMatch(testAllTypesDir, "com/squareup/protos/alltypes/AllTypes.java");
+    filesMatch(testAllTypesDir, "com/squareup/wire/protos/alltypes/Ext_all_types.java");
+    filesMatch(testAllTypesDir, "com/squareup/wire/protos/alltypes/AllTypes.java");
   }
 
   @Test
   public void testEdgeCases() throws Exception {
     String[] args = {
-        "--proto_path=../runtime/src/main/proto",
+        "--proto_path=../wire-runtime/src/main/proto",
         "--java_out=" + testAllTypesDir.getAbsolutePath(),
         "edge_cases.proto" };
     WireCompiler.main(args);
@@ -70,15 +70,15 @@ public class WireCompilerTest {
     List<String> filesAfter = getAllFiles(testAllTypesDir);
     Assert.assertEquals(3, filesAfter.size());
 
-    filesMatch(testAllTypesDir, "com/squareup/protos/edgecases/NoFields.java");
-    filesMatch(testAllTypesDir, "com/squareup/protos/edgecases/OneField.java");
-    filesMatch(testAllTypesDir, "com/squareup/protos/edgecases/OneBytesField.java");
+    filesMatch(testAllTypesDir, "com/squareup/wire/protos/edgecases/NoFields.java");
+    filesMatch(testAllTypesDir, "com/squareup/wire/protos/edgecases/OneField.java");
+    filesMatch(testAllTypesDir, "com/squareup/wire/protos/edgecases/OneBytesField.java");
   }
 
   @Test
   public void testSimple() throws Exception {
     String[] args = {
-        "--proto_path=../runtime/src/main/proto",
+        "--proto_path=../wire-runtime/src/main/proto",
         "--java_out=" + testSimpleDir.getAbsolutePath(),
         "simple_message.proto",
         "external_message.proto" };
@@ -88,9 +88,9 @@ public class WireCompilerTest {
     Assert.assertEquals(3, filesAfter.size());
 
     filesMatch(testSimpleDir,
-        "com/squareup/protos/simple/Ext_simple_message.java");
-    filesMatch(testSimpleDir, "com/squareup/protos/simple/SimpleMessage.java");
-    filesMatch(testSimpleDir, "com/squareup/protos/simple/ExternalMessage.java");
+        "com/squareup/wire/protos/simple/Ext_simple_message.java");
+    filesMatch(testSimpleDir, "com/squareup/wire/protos/simple/SimpleMessage.java");
+    filesMatch(testSimpleDir, "com/squareup/wire/protos/simple/ExternalMessage.java");
   }
 
   private void cleanup(File dir) {
@@ -134,7 +134,7 @@ public class WireCompilerTest {
   }
 
   private void filesMatch(File outputDir, String path) throws FileNotFoundException {
-    File expectedFile = new File("../runtime/src/test/java/" + path);
+    File expectedFile = new File("../wire-runtime/src/test/java/" + path);
     String expected = new Scanner(expectedFile).useDelimiter("\\A").next();
     File actualFile = new File(outputDir, path);
     String actual = new Scanner(actualFile).useDelimiter("\\A").next();

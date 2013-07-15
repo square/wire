@@ -1,5 +1,5 @@
 // Copyright 2013 Square, Inc.
-package com.google.protobuf;
+package com.squareup.wire.protobuf;
 
 public class TestUtils {
 

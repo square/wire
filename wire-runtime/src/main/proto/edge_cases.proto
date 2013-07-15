@@ -1,6 +1,6 @@
 package squareup.protos.edgecases;
 
-option java_package = "com.squareup.protos.edgecases";
+option java_package = "com.squareup.wire.protos.edgecases";
 
 message NoFields {
 }
