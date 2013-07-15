@@ -65,6 +65,9 @@ relative to the value given for the `--proto_path` flag.
     Writing generated code to out/com/yourcompany/protos/stuff/Stuff.java
     ...
 
+The compiler will (recursively) import any needed .proto files from the protos-repo/ directory, but
+will only generate output for the .proto files listed on the command line or in the file specified
+by the --files flag.
 
 Using Wire in your application
 ------------------------------
