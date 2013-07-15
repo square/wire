@@ -337,6 +337,7 @@ public final class Wire {
   /**
    * Utility method to check two values for equality. Nulls compare as equal.
    * Lists and byte arrays are compared element-by-element.
+   * Used by generated code.
    */
   public static boolean equals(Object a, Object b) {
     if (a == b) {
@@ -367,6 +368,7 @@ public final class Wire {
 
   /**
    * Utility method to return a copy of a given List.
+   * Used by generated code.
    */
   public static <T> List<T> copyOf(List<T> source) {
     return source == null ? null : new ArrayList<T>(source);
@@ -374,12 +376,16 @@ public final class Wire {
 
   /**
    * Utility method to return an unmodifiable copy of a given List.
+   * Used by generated code.
    */
   public static <T> List<T> unmodifiableCopyOf(List<T> source) {
     return source == null ? null : Collections.unmodifiableList(new ArrayList<T>(source));
   }
 
-  /** Formats an extension map as a string, e.g., {@code {key=value, key=value}}. */
+  /**
+   * Formats an extension map as a string, e.g., {@code {key=value, key=value}}.
+   * Used by generated code.
+   */
   public static String toString(Map<? extends Extension<?, ?>, Object> extensionMap) {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
@@ -395,7 +401,10 @@ public final class Wire {
     return sb.toString();
   }
 
-  /** Formats a byte array as, e.g., {@code {0,1,2}}. */
+  /**
+   * Formats a byte array as, e.g., {@code {0,1,2}}.
+   * Used by generated code.
+   */
   public static String toString(byte[] bytes) {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
@@ -409,7 +418,10 @@ public final class Wire {
     return sb.toString();
   }
 
-  /** Formats a list of byte arrays as, e.g., {@code [{0,1,2}, {3,4,5}]}. */
+  /**
+   * Formats a list of byte arrays as, e.g., {@code [{0,1,2}, {3,4,5}]}.
+   * Used by generated code.
+   */
   public static String toString(List<byte[]> bytesList) {
     StringBuilder sb = new StringBuilder();
     String sep = "";
@@ -423,6 +435,10 @@ public final class Wire {
     return sb.toString();
   }
 
+  /**
+   * Returns a hash code value for an array of bytes that depends only on the
+   * contents of the array. Used by generated code.
+   */
   public static int hashCode(byte[] bytes) {
     int hashCode = 0;
     if (bytes != null) {
@@ -433,6 +449,10 @@ public final class Wire {
     return hashCode;
   }
 
+  /**
+   * Returns a hash code value for an List of arrays of bytes that depends only on the
+   * contents of the array. Used by generated code.
+   */
   public static int hashCode(List<byte[]> bytesList) {
     int hashCode = 0;
     if (bytesList != null) {

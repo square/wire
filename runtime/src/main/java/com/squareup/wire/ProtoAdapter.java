@@ -221,7 +221,7 @@ public class ProtoAdapter<M extends Message> {
     return size;
   }
 
-  /** Uses reflection to write {@code instance} to {@code out}. */
+  /** Uses reflection to write {@code instance} to {@code output} in serialized form. */
   public void write(M instance, CodedOutputByteBufferNano output) throws IOException {
     for (int tag : tags) {
       Field field = fieldMap.get(tag);
