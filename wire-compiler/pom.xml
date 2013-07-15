@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.squareup</groupId>
+    <groupId>com.squareup.wire</groupId>
     <artifactId>wire</artifactId>
     <version>0.2-SNAPSHOT</version>
   </parent>
@@ -21,45 +21,28 @@
     <dependency>
       <groupId>com.squareup</groupId>
       <artifactId>wire-runtime</artifactId>
-      <version>0.2-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup</groupId>
       <artifactId>protoparser</artifactId>
-      <version>2.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.squareup</groupId>
       <artifactId>javawriter</artifactId>
-      <version>2.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
- <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>1.6</java.version>
-  </properties>
-
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
-        <version>3.0</version>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
