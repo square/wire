@@ -1,13 +1,12 @@
 // Copyright 2013 Square, Inc.
-package com.google.protobuf;
+package com.squareup.wire.protobuf;
 
-import com.squareup.protos.alltypes.AllTypes;
-import com.squareup.protos.alltypes.Ext_all_types;
+import com.squareup.wire.protos.alltypes.AllTypes;
+import com.squareup.wire.protos.alltypes.Ext_all_types;
 import com.squareup.wire.Wire;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 
