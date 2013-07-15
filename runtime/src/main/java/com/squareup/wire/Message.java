@@ -183,10 +183,7 @@ public interface Message {
       }
 
       @Override public boolean equals(Object other) {
-        if (!(other instanceof Extension<?, ?>)) {
-          return false;
-        }
-        return compareTo((Extension<?, ?>) other) == 0;
+        return other instanceof Extension<?, ?> && compareTo((Extension<?, ?>) other) == 0;
       }
 
       @Override public int hashCode() {

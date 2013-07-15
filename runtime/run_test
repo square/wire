@@ -1,0 +1,1 @@
+java -ea -classpath /Users/rice/Development/android/wire/runtime/target/test-classes:/Users/rice/Development/android/wire/runtime/target/classes:/Users/rice/.m2/repository/junit/junit/4.4/junit-4.4.jar com.intellij.rt.execution.junit.JUnitStarter com.google.protobuf.TestAllTypes

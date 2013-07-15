@@ -6,12 +6,12 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import junit.framework.TestCase;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class WireCompilerTest extends TestCase {
+public class WireCompilerTest {
 
   File testAllTypesDir;
   File testSimpleDir;
@@ -24,19 +24,21 @@ public class WireCompilerTest extends TestCase {
     testAllTypesDir.mkdir();
     cleanup(testAllTypesDir);
     List<String> filesBefore = getAllFiles(testAllTypesDir);
-    assertEquals(0, filesBefore.size());
+    Assert.assertEquals(0, filesBefore.size());
 
     testSimpleDir = new File("WireCompilerTest_testSimple");
     testSimpleDir.mkdir();
     cleanup(testSimpleDir);
     filesBefore = getAllFiles(testSimpleDir);
-    assertEquals(0, filesBefore.size());
+    Assert.assertEquals(0, filesBefore.size());
   }
 
   @After
   public void tearDown() {
     cleanup(testAllTypesDir);
-    testAllTypesDir.delete();
+    if (!testAllTypesDir.delete()) {
+      System.err.println("Couldn't delete " + testAllTypesDir.getAbsolutePath());
+    };
 
     cleanup(testSimpleDir);
     testSimpleDir.delete();
@@ -51,7 +53,7 @@ public class WireCompilerTest extends TestCase {
     WireCompiler.main(args);
 
     List<String> filesAfter = getAllFiles(testAllTypesDir);
-    assertEquals(2, filesAfter.size());
+    Assert.assertEquals(2, filesAfter.size());
 
     filesMatch(testAllTypesDir, "com/squareup/protos/alltypes/Ext_all_types.java");
     filesMatch(testAllTypesDir, "com/squareup/protos/alltypes/AllTypes.java");
@@ -66,7 +68,7 @@ public class WireCompilerTest extends TestCase {
     WireCompiler.main(args);
 
     List<String> filesAfter = getAllFiles(testAllTypesDir);
-    assertEquals(3, filesAfter.size());
+    Assert.assertEquals(3, filesAfter.size());
 
     filesMatch(testAllTypesDir, "com/squareup/protos/edgecases/NoFields.java");
     filesMatch(testAllTypesDir, "com/squareup/protos/edgecases/OneField.java");
@@ -83,7 +85,7 @@ public class WireCompilerTest extends TestCase {
     WireCompiler.main(args);
 
     List<String> filesAfter = getAllFiles(testSimpleDir);
-    assertEquals(3, filesAfter.size());
+    Assert.assertEquals(3, filesAfter.size());
 
     filesMatch(testSimpleDir,
         "com/squareup/protos/simple/Ext_simple_message.java");
@@ -92,7 +94,7 @@ public class WireCompilerTest extends TestCase {
   }
 
   private void cleanup(File dir) {
-    assertTrue(dir.isDirectory());
+    Assert.assertTrue(dir.isDirectory());
     if (dir.listFiles() != null) {
       for (File f : dir.listFiles()) {
         cleanupHelper(f);
@@ -136,6 +138,6 @@ public class WireCompilerTest extends TestCase {
     String expected = new Scanner(expectedFile).useDelimiter("\\A").next();
     File actualFile = new File(outputDir, path);
     String actual = new Scanner(actualFile).useDelimiter("\\A").next();
-    assertEquals(expected, actual);
+    Assert.assertEquals(expected, actual);
   }
 }
