@@ -9,23 +9,25 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public final class ProtoSchemaParserTest extends TestCase {
+import static org.fest.assertions.api.Assertions.assertThat;
+
+public final class ProtoSchemaParserTest {
   private static final List<Type> NO_TYPES = Collections.emptyList();
   private static final List<Service> NO_SERVICES = Collections.emptyList();
   private static final List<String> NO_STRINGS = Collections.emptyList();
   private static final List<ExtendDeclaration> NO_EXTEND_DECLARATIONs = Collections.emptyList();
   private static final List<Extensions> NO_EXTENSIONS = Collections.emptyList();
 
-  public void testField() throws Exception {
+  @Test public void field() throws Exception {
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
         map("default", "STRING", "deprecated", "true"));
-    assertTrue(field.isDeprecated());
-    assertEquals("STRING", field.getDefault());
+    assertThat(field.isDeprecated()).isTrue();
+    assertThat(field.getDefault()).isEqualTo("STRING");
   }
 
-  public void testParseMessageAndFields() throws Exception {
+  @Test public void parseMessageAndFields() throws Exception {
     String proto = ""
         + "message SearchRequest {\n"
         + "  required string query = 1;\n"
@@ -40,10 +42,10 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile protoFile =
         new ProtoFile("search.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
-    assertEquals(protoFile, new ProtoSchemaParser("search.proto", proto).readProtoFile());
+    assertThat(new ProtoSchemaParser("search.proto", proto).readProtoFile()).isEqualTo(protoFile);
   }
 
-  public void testParseEnum() throws Exception {
+  @Test public void parseEnum() throws Exception {
     String proto = ""
         + "/**\n"
         + " * What's on my waffles.\n"
@@ -61,13 +63,13 @@ public final class ProtoSchemaParserTest extends TestCase {
         Arrays.asList(new Value("FRUIT", 1, ""), new Value("CREAM", 2, ""),
             new Value("SYRUP", 3, "Quebec Maple syrup")));
     ProtoFile protoFile =
-        new ProtoFile("waffles.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
-            NO_EXTEND_DECLARATIONs);
+        new ProtoFile("waffles.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES,
+            map(), NO_EXTEND_DECLARATIONs);
     ProtoFile actual = new ProtoSchemaParser("waffles.proto", proto).readProtoFile();
-    assertEquals(protoFile, actual);
+    assertThat(actual).isEqualTo(protoFile);
   }
 
-  public void testPackage() throws Exception {
+  @Test public void packageDeclaration() throws Exception {
     String proto = ""
         + "package google.protobuf;\n"
         + "option java_package = \"com.google.protobuf\";\n"
@@ -82,10 +84,11 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile expected =
         new ProtoFile("descriptor.proto", "google.protobuf", NO_STRINGS, Arrays.asList(message),
             NO_SERVICES, map("java_package", "com.google.protobuf"), NO_EXTEND_DECLARATIONs);
-    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
+    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+        .isEqualTo(expected);
   }
 
-  public void testNestingInMessage() throws Exception {
+  @Test public void nestingInMessage() throws Exception {
     String proto = ""
         + "message FieldOptions {\n"
         + "  optional CType ctype = 1 [default = STRING, deprecated=true];\n"
@@ -105,18 +108,19 @@ public final class ProtoSchemaParserTest extends TestCase {
         new ProtoFile("descriptor.proto", null, NO_STRINGS, Arrays.asList(messageType), NO_SERVICES,
             map(), NO_EXTEND_DECLARATIONs);
     ProtoFile actual = new ProtoSchemaParser("descriptor.proto", proto).readProtoFile();
-    assertEquals(expected, actual);
+    assertThat(actual).isEqualTo(expected);
   }
 
-  public void testImports() throws Exception {
+  @Test public void imports() throws Exception {
     String proto = "import \"src/test/resources/unittest_import.proto\";\n";
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Arrays.asList("src/test/resources/unittest_import.proto"), NO_TYPES, NO_SERVICES, map(),
         NO_EXTEND_DECLARATIONs);
-    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
+    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+        .isEqualTo(expected);
   }
 
-  public void testExtend() throws Exception {
+  @Test public void extend() throws Exception {
     String proto = ""
         + "// Extends Foo\n"
         + "extend Foo {\n"
@@ -127,10 +131,11 @@ public final class ProtoSchemaParserTest extends TestCase {
         Arrays.asList(new MessageType.Field(Label.OPTIONAL, "int32", "bar", 126, "", map()))));
     ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, NO_SERVICES,
         map(), extendDeclarations);
-    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
+    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+        .isEqualTo(expected);
   }
 
-  public void testDefaultFieldWithParen() throws Exception {
+  @Test public void defaultFieldWithParen() throws Exception {
     String proto = ""
         + "message Foo {\n"
         + "  optional string claim_token = 2 [(squareup.redacted) = true];\n"
@@ -141,10 +146,11 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, Arrays.<Type>asList(messageType),
             NO_SERVICES, map(), NO_EXTEND_DECLARATIONs);
-    assertEquals(expected, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
+    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+        .isEqualTo(expected);
   }
 
-  public void testService() throws Exception {
+  @Test public void service() throws Exception {
     String proto = ""
         + "service SearchService {\n"
         + "  rpc Search (SearchRequest) returns (SearchResponse);"
@@ -159,10 +165,11 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile protoFile =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, Arrays.asList(expected),
             map(), NO_EXTEND_DECLARATIONs);
-    assertEquals(protoFile, new ProtoSchemaParser("descriptor.proto", proto).readProtoFile());
+    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+        .isEqualTo(protoFile);
   }
 
-  public void testHexTag() throws Exception {
+  @Test public void hexTag() throws Exception {
     String proto = ""
         + "message HexTag {\n"
         + "  required string hex = 0x10;\n"
@@ -173,10 +180,10 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile protoFile =
         new ProtoFile("hex.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
-    assertEquals(protoFile, new ProtoSchemaParser("hex.proto", proto).readProtoFile());
+    assertThat(new ProtoSchemaParser("hex.proto", proto).readProtoFile()).isEqualTo(protoFile);
   }
 
-  public void testStructuredOption() throws Exception {
+  @Test public void structuredOption() throws Exception {
     String proto = ""
         + "message ExoticOptions {\n"
         + "  option (squareup.one) = {name: \"Name\", class_name:\"ClassName\"};\n"
@@ -188,10 +195,10 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile protoFile =
         new ProtoFile("exotic.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
-    assertEquals(protoFile, new ProtoSchemaParser("exotic.proto", proto).readProtoFile());
+    assertThat(new ProtoSchemaParser("exotic.proto", proto).readProtoFile()).isEqualTo(protoFile);
   }
 
-  public void testOptionsWithNestedMapsAndTrailingCommas() throws Exception {
+  @Test public void optionsWithNestedMapsAndTrailingCommas() throws Exception {
     String proto = ""
         + "message StructuredOption {\n"
         + "    optional field.type has_options = 3 [\n"
@@ -209,7 +216,8 @@ public final class ProtoSchemaParserTest extends TestCase {
     ProtoFile protoFile =
         new ProtoFile("nestedmaps.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES,
             map(), NO_EXTEND_DECLARATIONs);
-    assertEquals(protoFile, new ProtoSchemaParser("nestedmaps.proto", proto).readProtoFile());
+    assertThat(new ProtoSchemaParser("nestedmaps.proto", proto).readProtoFile())
+        .isEqualTo(protoFile);
   }
 
   private Map<String, Object> map(Object... keysAndValues) {
