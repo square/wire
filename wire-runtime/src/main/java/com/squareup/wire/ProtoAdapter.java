@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.squareup.wire.ExtendableMessage.ExtendableBuilder;
+import static com.squareup.wire.Message.Builder;
+
 /**
  * An adapter than can perform I/O on a given Message type.
  *
@@ -23,7 +26,7 @@ public class ProtoAdapter<M extends Message> {
 
   private final Wire wire;
   private final Class<M> messageType;
-  private final Class<Message.Builder<M>> builderType;
+  private final Class<Builder<M>> builderType;
   private M defaultInstance;
 
   private final List<Integer> tags = new ArrayList<Integer>();
@@ -36,6 +39,7 @@ public class ProtoAdapter<M extends Message> {
   private final Map<Integer, Method> builderMethodMap = new HashMap<Integer, Method>();
 
   /** Cache information about the Message class and its mapping to proto wire format. */
+  @SuppressWarnings("unchecked")
   ProtoAdapter(Wire wire, Class<M> messageType) {
     this.wire = wire;
     this.messageType = messageType;
@@ -86,6 +90,7 @@ public class ProtoAdapter<M extends Message> {
     Collections.sort(tags);
   }
 
+  @SuppressWarnings("unchecked")
   private Class<Message> getMessageType(Field field) {
     Class<?> fieldType = field.getType();
     if (Message.class.isAssignableFrom(fieldType)) {
@@ -100,6 +105,7 @@ public class ProtoAdapter<M extends Message> {
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   private Class<Enum> getEnumType(Field field) {
     Class<?> fieldType = field.getType();
     if (Enum.class.isAssignableFrom(fieldType)) {
@@ -176,42 +182,44 @@ public class ProtoAdapter<M extends Message> {
       }
     }
 
-    if (instance instanceof Message.ExtendableMessage) {
-      Message.ExtendableMessage extendableMessage = (Message.ExtendableMessage) instance;
-      try {
-        Field extensionMap = extendableMessage.getClass().getField("extensionMap");
-        Map<Extension<?, ?>, ?> map = (Map<Extension<?, ?>, ?>) extensionMap.get(instance);
-        for (Map.Entry<Extension<?, ?>, ?> entry: map.entrySet()) {
-          Extension<?, ?> extension = entry.getKey();
-          Object value = entry.getValue();
-          int tag = extension.getTag();
-          int type = extension.getType();
-          if (extension.getLabel() == Wire.REPEATED) {
-            if (extension.getPacked()) {
-              int len = 0;
-              for (Object o : (List<?>) value) {
-                len += getPackedSerializedSize(o, type);
-              }
-              size += CodedOutputByteBufferNano.computeRawVarint32Size(
-                  WireFormatNano.makeTag(tag, WireFormatNano.WIRETYPE_LENGTH_DELIMITED));
-              size += CodedOutputByteBufferNano.computeRawVarint32Size(len);
-              size += len;
-            } else {
-              for (Object o : (List<?>) value) {
-                size += getSerializedSize(tag, o, type);
-              }
-            }
-          } else {
-            size += getSerializedSize(tag, value, type);
-          }
-        }
-      } catch (NoSuchFieldException e) {
-        throw new RuntimeException("Can't access extensionMap in " + instance);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException("Can't access extensionMap in " + instance);
+    if (instance instanceof ExtendableMessage) {
+      ExtendableMessage message = (ExtendableMessage) instance;
+      if (message.extensionMap != null) {
+        size += getExtensionsSerializedSize(message.extensionMap);
       }
     }
+    if (instance.unknownFieldMap != null) {
+      size += instance.unknownFieldMap.getSerializedSize();
+    }
+    return size;
+  }
 
+  private <T extends ExtendableMessage<?>> int getExtensionsSerializedSize(
+      ExtensionMap<T> map) {
+    int size = 0;
+    for (Extension<T, ?> extension : map.getExtensions()) {
+      Object value = map.get(extension);
+      int tag = extension.getTag();
+      int type = extension.getType();
+      if (extension.getLabel() == Wire.REPEATED) {
+        if (extension.getPacked()) {
+          int len = 0;
+          for (Object o : (List<?>) value) {
+            len += getPackedSerializedSize(o, type);
+          }
+          size += CodedOutputByteBufferNano.computeRawVarint32Size(
+              WireFormatNano.makeTag(tag, WireFormatNano.WIRETYPE_LENGTH_DELIMITED));
+          size += CodedOutputByteBufferNano.computeRawVarint32Size(len);
+          size += len;
+        } else {
+          for (Object o : (List<?>) value) {
+            size += getSerializedSize(tag, o, type);
+          }
+        }
+      } else {
+        size += getSerializedSize(tag, value, type);
+      }
+    }
     return size;
   }
 
@@ -256,40 +264,41 @@ public class ProtoAdapter<M extends Message> {
       }
     }
 
-    if (instance instanceof Message.ExtendableMessage) {
-      Message.ExtendableMessage extendableMessage = (Message.ExtendableMessage) instance;
-      try {
-        Field extensionMap = extendableMessage.getClass().getField("extensionMap");
-        Map<Extension<?, ?>, ?> map = (Map<Extension<?, ?>, ?>) extensionMap.get(instance);
-        for (Map.Entry<Extension<?, ?>, ?> entry: map.entrySet()) {
-           Extension<?, ?> extension = entry.getKey();
-           Object value = entry.getValue();
-          int tag = extension.getTag();
-          int type = extension.getType();
-          if (extension.getLabel() == Wire.REPEATED) {
-            if (extension.getPacked()) {
-              int len = 0;
-              for (Object o : (List<?>) value) {
-                len += getPackedSerializedSize(o, type);
-              }
-              output.writeTag(tag, 2);
-              output.writeRawVarint32(len);
-              for (Object o : (List<?>) value) {
-                writePackedValue(output, o, type);
-              }
-            } else {
-              for (Object o : (List<?>) value) {
-                writeValue(output, tag, o, type);
-              }
-            }
-           } else {
-             writeValue(output, tag, value, type);
-           }
+    if (instance instanceof ExtendableMessage) {
+      ExtendableMessage message = (ExtendableMessage) instance;
+      if (message.extensionMap != null) {
+        writeExtensions(output, message.extensionMap);
+      }
+    }
+    if (instance.unknownFieldMap != null) {
+      instance.unknownFieldMap.write(output);
+    }
+  }
+
+  private <T extends ExtendableMessage<?>> void writeExtensions(CodedOutputByteBufferNano output,
+      ExtensionMap<T> extensionMap) throws IOException {
+    for (Extension<T, ?> extension: extensionMap.getExtensions()) {
+      Object value = extensionMap.get(extension);
+      int tag = extension.getTag();
+      int type = extension.getType();
+      if (extension.getLabel() == Wire.REPEATED) {
+        if (extension.getPacked()) {
+          int len = 0;
+          for (Object o : (List<?>) value) {
+            len += getPackedSerializedSize(o, type);
+          }
+          output.writeTag(tag, 2);
+          output.writeRawVarint32(len);
+          for (Object o : (List<?>) value) {
+            writePackedValue(output, o, type);
+          }
+        } else {
+          for (Object o : (List<?>) value) {
+            writeValue(output, tag, o, type);
+          }
         }
-      } catch (NoSuchFieldException e) {
-        throw new RuntimeException("Can't access extensionMap in " + instance);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException("Can't access extensionMap in " + instance);
+      } else {
+        writeValue(output, tag, value, type);
       }
     }
   }
@@ -359,11 +368,13 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private <E extends Enum> int getSerializedEnumSize(E value, int tag) {
     ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
     return CodedOutputByteBufferNano.computeEnumSize(tag, adapter.toInt(value));
   }
 
+  @SuppressWarnings("unchecked")
   private <M extends Message> int getSerializedMessageSize(M message, int tag) {
     ProtoAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
     int messageSize = adapter.getSerializedSize(message);
@@ -372,6 +383,7 @@ public class ProtoAdapter<M extends Message> {
     return size;
   }
 
+  @SuppressWarnings("unchecked")
   private <E extends Enum> int getEnumSizeNoTag(E value) {
     ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
     return CodedOutputByteBufferNano.computeEnumSizeNoTag(adapter.toInt(value));
@@ -428,12 +440,14 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private <E extends Enum> void writeEnum(E value, int tag,
       CodedOutputByteBufferNano output) throws IOException {
     ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
     output.writeEnum(tag, adapter.toInt(value));
   }
 
+  @SuppressWarnings("unchecked")
   private <M extends Message> void writeMessage(M message, int tag,
       CodedOutputByteBufferNano output) throws IOException {
     ProtoAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
@@ -442,6 +456,7 @@ public class ProtoAdapter<M extends Message> {
     adapter.write(message, output);
   }
 
+  @SuppressWarnings("unchecked")
   private <E extends Enum> void writeEnumNoTag(E value, CodedOutputByteBufferNano output)
       throws IOException {
     ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
@@ -453,7 +468,7 @@ public class ProtoAdapter<M extends Message> {
   /** Uses reflection to read an instance from {@code input}. */
   public M read(CodedInputByteBufferNano input) throws IOException {
     try {
-      Message.Builder<M> builder = builderType.newInstance();
+      Builder<M> builder = builderType.newInstance();
       Storage storage = new Storage();
 
       while (true) {
@@ -467,7 +482,8 @@ public class ProtoAdapter<M extends Message> {
             if (typeMap.containsKey(storedTag)) {
               set(builder, storedTag, storage.get(storedTag));
             } else {
-              setExtension(builder, getExtension(storedTag), storage.get(storedTag));
+              setExtension((ExtendableBuilder<?>) builder, getExtension(storedTag),
+                  storage.get(storedTag));
             }
           }
           return builder.build();
@@ -484,7 +500,7 @@ public class ProtoAdapter<M extends Message> {
         } else {
           extension = getExtension(tag);
           if (extension == null) {
-            readUnknownField(input, tagAndType & WireFormatNano.TAG_TYPE_MASK);
+            readUnknownField(builder, input, tag, wireType);
             continue;
           }
           type = extension.getType();
@@ -512,7 +528,7 @@ public class ProtoAdapter<M extends Message> {
           if (label == Wire.REPEATED) {
             storage.add(tag, value);
           } else if (extension != null) {
-            setExtension(builder, extension, value);
+            setExtension((ExtendableBuilder<?>) builder, extension, value);
           } else {
             set(builder, tag, value);
           }
@@ -566,10 +582,11 @@ public class ProtoAdapter<M extends Message> {
     return message;
   }
 
+  @SuppressWarnings("unchecked")
   private Class<Message> getMessageClass(int tag) {
     Class<Message> messageClass = (Class<Message>) messageTypeMap.get(tag);
     if (messageClass == null) {
-      Extension<Message.ExtendableMessage, ?> extension = getExtension(tag);
+      Extension<ExtendableMessage, ?> extension = getExtension(tag);
       if (extension != null) {
         messageClass = (Class<Message>) extension.getMessageType();
       }
@@ -577,19 +594,28 @@ public class ProtoAdapter<M extends Message> {
     return messageClass;
   }
 
-  // Just skip unknown fields for now
-  // TODO - store unknown field values somewhere
-  private void readUnknownField(CodedInputByteBufferNano input, int type)
-      throws IOException {
+  private void readUnknownField(Builder builder, CodedInputByteBufferNano input,
+      int tag, int type) throws IOException {
     switch (type) {
-      case WireFormatNano.WIRETYPE_VARINT: input.readRawVarint64(); break;
-      case WireFormatNano.WIRETYPE_FIXED64: input.readFixed64(); break;
-      case WireFormatNano.WIRETYPE_LENGTH_DELIMITED: case WireFormatNano.WIRETYPE_START_GROUP:
-        int length = input.readInt32();
-        input.readRawBytes(length);
+      case WireFormatNano.WIRETYPE_VARINT:
+        builder.addVarint(tag, input.readRawVarint64());
         break;
-      case WireFormatNano.WIRETYPE_END_GROUP: break;
-      case WireFormatNano.WIRETYPE_FIXED32: input.readFixed32();
+      case WireFormatNano.WIRETYPE_FIXED64:
+        builder.addFixed64(tag, input.readFixed64());
+        break;
+      case WireFormatNano.WIRETYPE_LENGTH_DELIMITED:
+        int length = input.readInt32();
+        builder.addLengthDelimited(tag, ByteString.of(input.readRawBytes(length)));
+        break;
+      case WireFormatNano.WIRETYPE_START_GROUP:
+        int groupLength = input.readInt32();
+        builder.addGroup(tag, ByteString.of(input.readRawBytes(groupLength)));
+        break;
+      case WireFormatNano.WIRETYPE_END_GROUP:
+        break;
+      case WireFormatNano.WIRETYPE_FIXED32:
+        builder.addFixed32(tag, input.readFixed32());
+        break;
       default: throw new RuntimeException();
     }
   }
@@ -615,13 +641,14 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
-  private Extension<Message.ExtendableMessage, ?> getExtension(int tag) {
+  @SuppressWarnings("unchecked")
+  private Extension<ExtendableMessage, ?> getExtension(int tag) {
     ExtensionRegistry registry = wire.registry;
     return registry == null
-        ? null : registry.getExtension((Class<Message.ExtendableMessage>) messageType, tag);
+        ? null : registry.getExtension((Class<ExtendableMessage>) messageType, tag);
   }
 
-  private void set(Message.Builder builder, int tag, Object value) {
+  private void set(Builder builder, int tag, Object value) {
     try {
       builderMethodMap.get(tag).invoke(builder, value);
     } catch (IllegalAccessException e) {
@@ -631,24 +658,16 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
-  private void setExtension(Message.Builder builder, Extension<?, ?> extension, Object value) {
-    try {
-      Method setExtension = builder.getClass().getMethod("setExtension", Extension.class,
-          Object.class);
-      setExtension.invoke(builder, extension, value);
-    } catch (NoSuchMethodException e) {
-      throw new RuntimeException(e);
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
-    } catch (InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
+  // TODO - improve type safety
+  private void setExtension(ExtendableMessage.ExtendableBuilder builder, Extension<?, ?> extension,
+      Object value) {
+    builder.setExtension(extension, value);
   }
 
   private Class<? extends Enum> getEnumClass(int tag) {
     Class<? extends Enum> enumType = enumTypeMap.get(tag);
     if (enumType == null) {
-      Extension<Message.ExtendableMessage, ?> extension = getExtension(tag);
+      Extension<ExtendableMessage, ?> extension = getExtension(tag);
       if (extension != null) {
         enumType = extension.getEnumType();
       }

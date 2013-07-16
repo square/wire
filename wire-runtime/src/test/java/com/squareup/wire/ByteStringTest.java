@@ -56,7 +56,7 @@ public class ByteStringTest {
     assertByteArraysEquals(new byte[] { 0x62, 0x63 }, out.toByteArray());
   }
 
-  private static void assertByteArraysEquals(byte[] a, byte[] b) throws Exception {
+  private static void assertByteArraysEquals(byte[] a, byte[] b) {
     assertEquals(Arrays.toString(a), Arrays.toString(b));
   }
 }
