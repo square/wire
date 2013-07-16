@@ -30,6 +30,7 @@ public final class ExternalMessage
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public <Type> Type getExtension(Extension<ExternalMessage, Type> extension) {
     return (Type) extensionMap.get(extension);
   }
@@ -81,6 +82,7 @@ public final class ExternalMessage
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <Type> Type getExtension(Extension<ExternalMessage, Type> extension) {
       return (Type) extensionMap.get(extension);
     }
