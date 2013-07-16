@@ -636,6 +636,7 @@ public final class AllTypes
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public <Type> Type getExtension(Extension<AllTypes, Type> extension) {
     return (Type) extensionMap.get(extension);
   }
@@ -1424,6 +1425,7 @@ public final class AllTypes
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <Type> Type getExtension(Extension<AllTypes, Type> extension) {
       return (Type) extensionMap.get(extension);
     }
