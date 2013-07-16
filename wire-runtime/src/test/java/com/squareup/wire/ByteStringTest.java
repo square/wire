@@ -15,7 +15,7 @@ public class ByteStringTest {
   public void byteStringToString() throws Exception {
     ByteString byteString = ByteString.of((byte) 0x0, (byte) 0x1, (byte) 0x2, (byte) 0xf,
         (byte) 0x10, (byte) 0x11, (byte) 0x7f, (byte) 0x80, (byte) 0x81, (byte) 0xfe, (byte) 0xff);
-    assertEquals("0001020f10117f8081feff", byteString.toString());
+    assertEquals("[0001020f10117f8081feff]", byteString.toString());
   }
 
   @Test

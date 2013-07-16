@@ -57,7 +57,7 @@ public class WireCompiler {
 
   static {
     JAVA_TYPES.put("bool", "Boolean");
-    JAVA_TYPES.put("bytes", "byte[]");
+    JAVA_TYPES.put("bytes", "ByteString");
     JAVA_TYPES.put("double", "Double");
     JAVA_TYPES.put("float", "Float");
     JAVA_TYPES.put("fixed32", "Integer");
@@ -231,6 +231,9 @@ public class WireCompiler {
           imports.add("com.squareup.wire.Wire");
         }
       }
+      if (hasByteStringField(types)) {
+        imports.add("com.squareup.wire.ByteString");
+      }
       if (hasEnum(types)) {
         imports.add("com.squareup.wire.ProtoEnum");
       }
@@ -310,6 +313,9 @@ public class WireCompiler {
     writer.emitPackage(protoFile.getJavaPackage());
 
     Set<String> imports = new HashSet<String>();
+    if (hasByteStringExtension()) {
+      imports.add("com.squareup.wire.ByteString");
+    }
     imports.add("com.squareup.wire.Wire");
     imports.add("java.util.List");
     imports.addAll(getExtensionTypes());
@@ -385,6 +391,18 @@ public class WireCompiler {
             EnumSet.of(PUBLIC, STATIC, FINAL), initialValue);
       }
     }
+  }
+
+  private boolean hasByteStringExtension() {
+    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
+      for (MessageType.Field field : extend.getFields()) {
+        String fieldType = field.getType();
+        if ("bytes".equals(fieldType)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private boolean hasExtensions(MessageType messageType) {
@@ -615,11 +633,7 @@ public class WireCompiler {
     } else if (!hasExtensions(messageType) && messageType.getFields().size() == 1) {
       Field field = messageType.getFields().get(0);
       String name = sanitize(field.getName());
-      if ("bytes".equals(field.getType())) {
-        writer.emitStatement("return Wire.hashCode(%1$s)", name);
-      } else {
-        writer.emitStatement("return %1$s != null ? %1$s.hashCode() : 0", name);
-      }
+      writer.emitStatement("return %1$s != null ? %1$s.hashCode() : 0", name);
     } else {
       if (hasExtensions(messageType)) {
         writer.emitStatement("int hashCode = extensionMap.hashCode()");
@@ -628,12 +642,8 @@ public class WireCompiler {
       }
       for (Field field : messageType.getFields()) {
         String name = sanitize(field.getName());
-        if ("bytes".equals(field.getType())) {
-          writer.emitStatement("hashCode = hashCode * 37 + Wire.hashCode(%1$s)", name);
-        } else {
-          writer.emitStatement("hashCode = hashCode * 37 + (%1$s != null ? %1$s.hashCode() : 0)",
-              name);
-        }
+        writer.emitStatement("hashCode = hashCode * 37 + (%1$s != null ? %1$s.hashCode() : 0)",
+            name);
       }
       writer.emitStatement("return hashCode");
     }
@@ -665,11 +675,7 @@ public class WireCompiler {
       for (Field field : messageType.getFields()) {
         String sanitized = sanitize(field.getName());
         format.append(String.format("%s%s=%%s", formatSep, sanitized));
-        if ("bytes".equals(field.getType())) {
-          args.append(String.format("%s%s", argsSep, "Wire.toString(" + sanitized + ")"));
-        } else {
-          args.append(String.format("%s%s", argsSep, sanitized));
-        }
+        args.append(String.format("%s%s", argsSep, sanitized));
         formatSep = ",\" +\n\"";
         argsSep = ",\n";
       }
@@ -783,8 +789,6 @@ public class WireCompiler {
       // Quote String values
       return "\"" + (initialValue == null
           ? "" : initialValue.replaceAll("[\\\\]", "\\\\").replaceAll("[\"]", "\\\"")) + "\"";
-    } else if ("byte[]".equals(javaName)) {
-      return "new byte[0]";
     } else {
       return "null";
     }
@@ -936,6 +940,23 @@ public class WireCompiler {
         }
       }
       if (hasRepeatedField(type.getNestedTypes())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  private boolean hasByteStringField(List<Type> types) {
+    for (Type type : types) {
+      if (type instanceof MessageType) {
+        for (Field field : ((MessageType) type).getFields()) {
+          if ("bytes".equals(field.getType())) {
+            return true;
+          }
+        }
+      }
+      if (hasByteStringField(type.getNestedTypes())) {
         return true;
       }
     }

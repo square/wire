@@ -146,35 +146,12 @@ final class CodedOutputByteBufferNano {
     writeStringNoTag(value);
   }
 
-  ///** Write a {@code group} field, including tag, to the stream. */
-  //public void writeGroup(final int fieldNumber, final MessageNano value)
-  //                       throws IOException {
-  //  writeTag(fieldNumber, WireFormatNano.WIRETYPE_START_GROUP);
-  //  writeGroupNoTag(value);
-  //  writeTag(fieldNumber, WireFormatNano.WIRETYPE_END_GROUP);
-  //}
-  //
-  ///** Write an embedded message field, including tag, to the stream. */
-  //public void writeMessage(final int fieldNumber, final MessageNano value)
-  //                         throws IOException {
-  //  writeTag(fieldNumber, WireFormatNano.WIRETYPE_LENGTH_DELIMITED);
-  //  writeMessageNoTag(value);
-  //}
-
   /** Write a {@code bytes} field, including tag, to the stream. */
-  public void writeBytes(final int fieldNumber, final byte[] value)
+  public void writeBytes(final int fieldNumber, final ByteString value)
                          throws IOException {
     writeTag(fieldNumber, WireFormatNano.WIRETYPE_LENGTH_DELIMITED);
     writeBytesNoTag(value);
   }
-
-  /** Write a {@code byte} field, including tag, to the stream. */
-  public void writeByteArray(final int fieldNumber, final byte[] value)
-                         throws IOException {
-    writeTag(fieldNumber, WireFormatNano.WIRETYPE_LENGTH_DELIMITED);
-    writeByteArrayNoTag(value);
-  }
-
 
   /** Write a {@code uint32} field, including tag, to the stream. */
   public void writeUInt32(final int fieldNumber, final int value)
@@ -220,32 +197,6 @@ final class CodedOutputByteBufferNano {
     writeTag(fieldNumber, WireFormatNano.WIRETYPE_VARINT);
     writeSInt64NoTag(value);
   }
-
-  /**
-   * Write a MessageSet extension field to the stream.  For historical reasons,
-   * the wire format differs from normal fields.
-   */
-//  public void writeMessageSetExtension(final int fieldNumber,
-//                                       final MessageMicro value)
-//                                       throws IOException {
-//    writeTag(WireFormatMicro.MESSAGE_SET_ITEM, WireFormatMicro.WIRETYPE_START_GROUP);
-//    writeUInt32(WireFormatMicro.MESSAGE_SET_TYPE_ID, fieldNumber);
-//    writeMessage(WireFormatMicro.MESSAGE_SET_MESSAGE, value);
-//    writeTag(WireFormatMicro.MESSAGE_SET_ITEM, WireFormatMicro.WIRETYPE_END_GROUP);
-//  }
-
-  /**
-   * Write an unparsed MessageSet extension field to the stream.  For
-   * historical reasons, the wire format differs from normal fields.
-   */
-//  public void writeRawMessageSetExtension(final int fieldNumber,
-//                                          final ByteStringMicro value)
-//                                          throws IOException {
-//    writeTag(WireFormatMicro.MESSAGE_SET_ITEM, WireFormatMicro.WIRETYPE_START_GROUP);
-//    writeUInt32(WireFormatMicro.MESSAGE_SET_TYPE_ID, fieldNumber);
-//    writeBytes(WireFormatMicro.MESSAGE_SET_MESSAGE, value);
-//    writeTag(WireFormatMicro.MESSAGE_SET_ITEM, WireFormatMicro.WIRETYPE_END_GROUP);
-//  }
 
   // -----------------------------------------------------------------
 
@@ -304,27 +255,10 @@ final class CodedOutputByteBufferNano {
     writeRawBytes(bytes);
   }
 
-  ///** Write a {@code group} field to the stream. */
-  //public void writeGroupNoTag(final MessageNano value) throws IOException {
-  //  value.writeTo(this);
-  //}
-  //
-  ///** Write an embedded message field to the stream. */
-  //public void writeMessageNoTag(final MessageNano value) throws IOException {
-  //  writeRawVarint32(value.getCachedSize());
-  //  value.writeTo(this);
-  //}
-
   /** Write a {@code bytes} field to the stream. */
-  public void writeBytesNoTag(final byte[] value) throws IOException {
-    writeRawVarint32(value.length);
-    writeRawBytes(value);
-  }
-
-  /** Write a {@code byte[]} field to the stream. */
-  public void writeByteArrayNoTag(final byte [] value) throws IOException {
-    writeRawVarint32(value.length);
-    writeRawBytes(value);
+  public void writeBytesNoTag(final ByteString value) throws IOException {
+    writeRawVarint32(value.size());
+    writeRawBytes(value.toByteArray());
   }
 
   /** Write a {@code uint32} field to the stream. */
@@ -439,40 +373,13 @@ final class CodedOutputByteBufferNano {
     return computeTagSize(fieldNumber) + computeStringSizeNoTag(value);
   }
 
-  ///**
-  // * Compute the number of bytes that would be needed to encode a
-  // * {@code group} field, including tag.
-  // */
-  //public static int computeGroupSize(final int fieldNumber,
-  //                                   final MessageNano value) {
-  //  return computeTagSize(fieldNumber) * 2 + computeGroupSizeNoTag(value);
-  //}
-  //
-  ///**
-  // * Compute the number of bytes that would be needed to encode an
-  // * embedded message field, including tag.
-  // */
-  //public static int computeMessageSize(final int fieldNumber,
-  //                                     final MessageNano value) {
-  //  return computeTagSize(fieldNumber) + computeMessageSizeNoTag(value);
-  //}
-
   /**
    * Compute the number of bytes that would be needed to encode a
    * {@code bytes} field, including tag.
    */
   public static int computeBytesSize(final int fieldNumber,
-                                     final byte[] value) {
+                                     final ByteString value) {
     return computeTagSize(fieldNumber) + computeBytesSizeNoTag(value);
-  }
-
-  /**
-   * Compute the number of bytes that would be needed to encode a
-   * {@code byte[]} field, including tag.
-   */
-  public static int computeByteArraySize(final int fieldNumber,
-                                     final byte[] value) {
-    return computeTagSize(fieldNumber) + computeByteArraySizeNoTag(value);
   }
 
   /**
@@ -525,30 +432,6 @@ final class CodedOutputByteBufferNano {
   public static int computeSInt64Size(final int fieldNumber, final long value) {
     return computeTagSize(fieldNumber) + computeSInt64SizeNoTag(value);
   }
-
-  /**
-   * Compute the number of bytes that would be needed to encode a
-   * MessageSet extension to the stream.  For historical reasons,
-   * the wire format differs from normal fields.
-   */
-//  public static int computeMessageSetExtensionSize(
-//      final int fieldNumber, final MessageMicro value) {
-//    return computeTagSize(WireFormatMicro.MESSAGE_SET_ITEM) * 2 +
-//           computeUInt32Size(WireFormatMicro.MESSAGE_SET_TYPE_ID, fieldNumber) +
-//           computeMessageSize(WireFormatMicro.MESSAGE_SET_MESSAGE, value);
-//  }
-
-  /**
-   * Compute the number of bytes that would be needed to encode an
-   * unparsed MessageSet extension field to the stream.  For
-   * historical reasons, the wire format differs from normal fields.
-   */
-//  public static int computeRawMessageSetExtensionSize(
-//      final int fieldNumber, final ByteStringMicro value) {
-//    return computeTagSize(WireFormatMicro.MESSAGE_SET_ITEM) * 2 +
-//           computeUInt32Size(WireFormatMicro.MESSAGE_SET_TYPE_ID, fieldNumber) +
-//           computeBytesSize(WireFormatMicro.MESSAGE_SET_MESSAGE, value);
-//  }
 
   // -----------------------------------------------------------------
 
@@ -634,37 +517,12 @@ final class CodedOutputByteBufferNano {
     }
   }
 
-  ///**
-  // * Compute the number of bytes that would be needed to encode a
-  // * {@code group} field.
-  // */
-  //public static int computeGroupSizeNoTag(final MessageNano value) {
-  //  return value.getSerializedSize();
-  //}
-  //
-  ///**
-  // * Compute the number of bytes that would be needed to encode an embedded
-  // * message field.
-  // */
-  //public static int computeMessageSizeNoTag(final MessageNano value) {
-  //  final int size = value.getSerializedSize();
-  //  return computeRawVarint32Size(size) + size;
-  //}
-
   /**
    * Compute the number of bytes that would be needed to encode a
    * {@code bytes} field.
    */
-  public static int computeBytesSizeNoTag(final byte[] value) {
-    return computeRawVarint32Size(value.length) + value.length;
-  }
-
-  /**
-   * Compute the number of bytes that would be needed to encode a
-   * {@code byte[]} field.
-   */
-  public static int computeByteArraySizeNoTag(final byte[] value) {
-    return computeRawVarint32Size(value.length) + value.length;
+  public static int computeBytesSizeNoTag(final ByteString value) {
+    return computeRawVarint32Size(value.size()) + value.size();
   }
 
   /**
@@ -716,28 +574,6 @@ final class CodedOutputByteBufferNano {
   }
 
   // =================================================================
-
-  /**
-   * If writing to a flat array, return the space left in the array.
-   * Otherwise, throws {@code UnsupportedOperationException}.
-   */
-  public int spaceLeft() {
-    return limit - position;
-  }
-
-  /**
-   * Verifies that {@link #spaceLeft()} returns zero.  It's common to create
-   * a byte array that is exactly big enough to hold a message, then write to
-   * it with a {@code CodedOutputStream}.  Calling {@code checkNoSpaceLeft()}
-   * after writing verifies that the message was actually as big as expected,
-   * which can help catch bugs.
-   */
-  public void checkNoSpaceLeft() {
-    if (spaceLeft() != 0) {
-      throw new IllegalStateException(
-        "Did not write as much data as expected.");
-    }
-  }
 
   /**
    * If you create a CodedOutputStream around a simple flat array, you must

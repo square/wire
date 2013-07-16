@@ -4,6 +4,7 @@
  */
 package com.squareup.wire.protos.alltypes;
 
+import com.squareup.wire.ByteString;
 import com.squareup.wire.Wire;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public final class Ext_all_types {
   public static final Extension<AllTypes, Float> ext_opt_float = Extension.getExtension(AllTypes.class, 1012, Wire.FLOAT, Wire.OPTIONAL);
   public static final Extension<AllTypes, Double> ext_opt_double = Extension.getExtension(AllTypes.class, 1013, Wire.DOUBLE, Wire.OPTIONAL);
   public static final Extension<AllTypes, String> ext_opt_string = Extension.getExtension(AllTypes.class, 1014, Wire.STRING, Wire.OPTIONAL);
-  public static final Extension<AllTypes, byte[]> ext_opt_bytes = Extension.getExtension(AllTypes.class, 1015, Wire.BYTES, Wire.OPTIONAL);
+  public static final Extension<AllTypes, ByteString> ext_opt_bytes = Extension.getExtension(AllTypes.class, 1015, Wire.BYTES, Wire.OPTIONAL);
   public static final Extension<AllTypes, AllTypes.NestedEnum> ext_opt_nested_enum = Extension.getEnumExtension(AllTypes.class, 1016, Wire.OPTIONAL, AllTypes.NestedEnum.class);
   public static final Extension<AllTypes, AllTypes.NestedMessage> ext_opt_nested_message = Extension.getMessageExtension(AllTypes.class, 1017, Wire.OPTIONAL, AllTypes.NestedMessage.class);
   public static final Extension<AllTypes, List<Integer>> ext_rep_int32 = Extension.getRepeatedExtension(AllTypes.class, 1101, Wire.INT32, false);
@@ -45,7 +46,7 @@ public final class Ext_all_types {
   public static final Extension<AllTypes, List<Float>> ext_rep_float = Extension.getRepeatedExtension(AllTypes.class, 1112, Wire.FLOAT, false);
   public static final Extension<AllTypes, List<Double>> ext_rep_double = Extension.getRepeatedExtension(AllTypes.class, 1113, Wire.DOUBLE, false);
   public static final Extension<AllTypes, List<String>> ext_rep_string = Extension.getRepeatedExtension(AllTypes.class, 1114, Wire.STRING, false);
-  public static final Extension<AllTypes, List<byte[]>> ext_rep_bytes = Extension.getRepeatedExtension(AllTypes.class, 1115, Wire.BYTES, false);
+  public static final Extension<AllTypes, List<ByteString>> ext_rep_bytes = Extension.getRepeatedExtension(AllTypes.class, 1115, Wire.BYTES, false);
   public static final Extension<AllTypes, List<AllTypes.NestedEnum>> ext_rep_nested_enum = Extension.getRepeatedEnumExtension(AllTypes.class, 1116, false, AllTypes.NestedEnum.class);
   public static final Extension<AllTypes, List<AllTypes.NestedMessage>> ext_rep_nested_message = Extension.getRepeatedMessageExtension(AllTypes.class, 1117, AllTypes.NestedMessage.class);
   public static final Extension<AllTypes, List<Integer>> ext_pack_int32 = Extension.getRepeatedExtension(AllTypes.class, 1201, Wire.INT32, true);
@@ -62,7 +63,7 @@ public final class Ext_all_types {
   public static final Extension<AllTypes, List<Float>> ext_pack_float = Extension.getRepeatedExtension(AllTypes.class, 1212, Wire.FLOAT, true);
   public static final Extension<AllTypes, List<Double>> ext_pack_double = Extension.getRepeatedExtension(AllTypes.class, 1213, Wire.DOUBLE, true);
   public static final Extension<AllTypes, List<String>> ext_pack_string = Extension.getRepeatedExtension(AllTypes.class, 1214, Wire.STRING, false);
-  public static final Extension<AllTypes, List<byte[]>> ext_pack_bytes = Extension.getRepeatedExtension(AllTypes.class, 1215, Wire.BYTES, false);
+  public static final Extension<AllTypes, List<ByteString>> ext_pack_bytes = Extension.getRepeatedExtension(AllTypes.class, 1215, Wire.BYTES, false);
   public static final Extension<AllTypes, List<AllTypes.NestedEnum>> ext_pack_nested_enum = Extension.getRepeatedEnumExtension(AllTypes.class, 1216, true, AllTypes.NestedEnum.class);
   public static final Extension<AllTypes, List<AllTypes.NestedMessage>> ext_pack_nested_message = Extension.getRepeatedMessageExtension(AllTypes.class, 1217, AllTypes.NestedMessage.class);
 }

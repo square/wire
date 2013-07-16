@@ -1,6 +1,7 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.wire.protobuf;
 
+import com.squareup.wire.ByteString;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import com.squareup.wire.Wire;
@@ -25,7 +26,7 @@ public class TestAllTypes {
   }
 
   private AllTypes.Builder getBuilder() {
-    byte[] bytes = { (byte) 125, (byte) 225 };
+    ByteString bytes = ByteString.of((byte) 125, (byte) 225);
     AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
     return new AllTypes.Builder()
         .opt_int32(111)
@@ -103,9 +104,6 @@ public class TestAllTypes {
 
   @Test
   public void testHashCodes() {
-    Assert.assertEquals(0, Wire.hashCode((byte[]) null));
-    Assert.assertEquals(0, Wire.hashCode((List<byte[]>) null));
-
     AllTypes.Builder builder = getBuilder();
     AllTypes message = builder.build();
     int messageHashCode = message.hashCode();
@@ -131,9 +129,9 @@ public class TestAllTypes {
     Assert.assertEquals(new Float(122.0F), builder.opt_float);
     Assert.assertEquals(new Double(123.0), builder.opt_double);
     Assert.assertEquals("124", builder.opt_string);
-    Assert.assertEquals(2, builder.opt_bytes.length);
-    Assert.assertEquals((byte) 125, builder.opt_bytes[0]);
-    Assert.assertEquals((byte) 225, builder.opt_bytes[1]);
+    Assert.assertEquals(2, builder.opt_bytes.size());
+    Assert.assertEquals((byte) 125, builder.opt_bytes.byteAt(0));
+    Assert.assertEquals((byte) 225, builder.opt_bytes.byteAt(1));
     Assert.assertEquals(AllTypes.NestedEnum.A, builder.opt_nested_enum);
     Assert.assertEquals(nestedMessage, builder.opt_nested_message);
 
@@ -151,9 +149,9 @@ public class TestAllTypes {
     Assert.assertEquals(new Float(122.0F), builder.req_float);
     Assert.assertEquals(new Double(123.0), builder.req_double);
     Assert.assertEquals("124", builder.req_string);
-    Assert.assertEquals(2, builder.req_bytes.length);
-    Assert.assertEquals((byte) 125, builder.req_bytes[0]);
-    Assert.assertEquals((byte) 225, builder.req_bytes[1]);
+    Assert.assertEquals(2, builder.req_bytes.size());
+    Assert.assertEquals((byte) 125, builder.req_bytes.byteAt(0));
+    Assert.assertEquals((byte) 225, builder.req_bytes.byteAt(1));
     Assert.assertEquals(AllTypes.NestedEnum.A, builder.req_nested_enum);
     Assert.assertEquals(nestedMessage, builder.req_nested_message);
 
@@ -200,12 +198,12 @@ public class TestAllTypes {
     Assert.assertEquals("124", builder.rep_string.get(0));
     Assert.assertEquals("124", builder.rep_string.get(1));
     Assert.assertEquals(2, builder.rep_bytes.size());
-    Assert.assertEquals(2, builder.rep_bytes.get(0).length);
-    Assert.assertEquals((byte) 125, builder.rep_bytes.get(0)[0]);
-    Assert.assertEquals((byte) 225, builder.rep_bytes.get(0)[1]);
-    Assert.assertEquals(2, builder.rep_bytes.get(1).length);
-    Assert.assertEquals((byte) 125, builder.rep_bytes.get(1)[0]);
-    Assert.assertEquals((byte) 225, builder.rep_bytes.get(1)[1]);
+    Assert.assertEquals(2, builder.rep_bytes.get(0).size());
+    Assert.assertEquals((byte) 125, builder.rep_bytes.get(0).byteAt(0));
+    Assert.assertEquals((byte) 225, builder.rep_bytes.get(0).byteAt(1));
+    Assert.assertEquals(2, builder.rep_bytes.get(1).size());
+    Assert.assertEquals((byte) 125, builder.rep_bytes.get(1).byteAt(0));
+    Assert.assertEquals((byte) 225, builder.rep_bytes.get(1).byteAt(1));
     Assert.assertEquals(2, builder.rep_nested_enum.size());
     Assert.assertEquals(AllTypes.NestedEnum.A, builder.rep_nested_enum.get(0));
     Assert.assertEquals(AllTypes.NestedEnum.A, builder.rep_nested_enum.get(1));
@@ -256,12 +254,12 @@ public class TestAllTypes {
     Assert.assertEquals("124", builder.pack_string.get(0));
     Assert.assertEquals("124", builder.pack_string.get(1));
     Assert.assertEquals(2, builder.pack_bytes.size());
-    Assert.assertEquals(2, builder.pack_bytes.get(0).length);
-    Assert.assertEquals((byte) 125, builder.pack_bytes.get(0)[0]);
-    Assert.assertEquals((byte) 225, builder.pack_bytes.get(0)[1]);
-    Assert.assertEquals(2, builder.pack_bytes.get(1).length);
-    Assert.assertEquals((byte) 125, builder.pack_bytes.get(1)[0]);
-    Assert.assertEquals((byte) 225, builder.pack_bytes.get(1)[1]);
+    Assert.assertEquals(2, builder.pack_bytes.get(0).size());
+    Assert.assertEquals((byte) 125, builder.pack_bytes.get(0).byteAt(0));
+    Assert.assertEquals((byte) 225, builder.pack_bytes.get(0).byteAt(1));
+    Assert.assertEquals(2, builder.pack_bytes.get(1).size());
+    Assert.assertEquals((byte) 125, builder.pack_bytes.get(1).byteAt(0));
+    Assert.assertEquals((byte) 225, builder.pack_bytes.get(1).byteAt(1));
     Assert.assertEquals(2, builder.pack_nested_enum.size());
     Assert.assertEquals(AllTypes.NestedEnum.A, builder.pack_nested_enum.get(0));
     Assert.assertEquals(AllTypes.NestedEnum.A, builder.pack_nested_enum.get(1));

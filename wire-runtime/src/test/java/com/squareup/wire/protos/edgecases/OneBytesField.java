@@ -4,6 +4,7 @@
  */
 package com.squareup.wire.protos.edgecases;
 
+import com.squareup.wire.ByteString;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.Wire;
@@ -11,13 +12,13 @@ import com.squareup.wire.Wire;
 public final class OneBytesField
     implements Message {
 
-  public static final byte[] DEFAULT_OPT_BYTES = new byte[0];
+  public static final ByteString DEFAULT_OPT_BYTES = null;
 
   @ProtoField(
     tag = 1,
     type = Wire.BYTES
   )
-  public final byte[] opt_bytes;
+  public final ByteString opt_bytes;
 
   private OneBytesField(Builder builder) {
     this.opt_bytes = builder.opt_bytes;
@@ -31,20 +32,20 @@ public final class OneBytesField
 
   @Override
   public int hashCode() {
-    return Wire.hashCode(opt_bytes);
+    return opt_bytes != null ? opt_bytes.hashCode() : 0;
   }
 
   @Override
   public String toString() {
     return String.format("OneBytesField{" +
         "opt_bytes=%s}",
-        Wire.toString(opt_bytes));
+        opt_bytes);
   }
 
   public static final class Builder
       implements Message.Builder<OneBytesField> {
 
-    public byte[] opt_bytes;
+    public ByteString opt_bytes;
 
     public Builder() {
     }
@@ -54,7 +55,7 @@ public final class OneBytesField
       this.opt_bytes = message.opt_bytes;
     }
 
-    public Builder opt_bytes(byte[] opt_bytes) {
+    public Builder opt_bytes(ByteString opt_bytes) {
       this.opt_bytes = opt_bytes;
       return this;
     }
