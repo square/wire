@@ -14,9 +14,9 @@
   <inceptionYear>2013</inceptionYear>
 
   <scm>
-    <url>https://git.squareup.com/rice/wire</url>
-    <connection>scm:git:https://git.squareup.com/rice/wire.git</connection>
-    <developerConnection>scg:git:git@git.squareup.com:rice/wire.git</developerConnection>
+    <url>https://git.squareup.com/android/wire</url>
+    <connection>scm:git:https://git.squareup.com/android/wire.git</connection>
+    <developerConnection>scm:git:git@git.squareup.com:android/wire.git</developerConnection>
   </scm>
 
   <organization>
@@ -26,7 +26,7 @@
 
  <issueManagement>
     <system>GitHub Issues</system>
-    <url>http://git.squareup.com/rice/wire/issues</url>
+    <url>http://git.squareup.com/android/wire/issues</url>
   </issueManagement>
 
   <licenses>
