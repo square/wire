@@ -2,12 +2,14 @@
 package com.squareup.wire.protobuf;
 
 import com.squareup.wire.ByteString;
+import com.squareup.wire.Extension;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import com.squareup.wire.Wire;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -310,6 +312,11 @@ public class TestAllTypes {
     Assert.assertEquals(array(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
     Assert.assertEquals(array(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
 
+    Set<Extension<AllTypes,?>> extensions = parsed.getExtensions();
+    Assert.assertEquals(3, extensions.size());
+    Assert.assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
+    Assert.assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
+    Assert.assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
   }
 
   @Test

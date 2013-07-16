@@ -3,8 +3,6 @@ package com.squareup.wire;
 
 import java.util.List;
 
-import static com.squareup.wire.Message.ExtendableMessage;
-
 /**
  * An object describing a ProtocolBuffer extension, i.e., a (tag, type, label) tuple
  * associated with a particular {@link com.squareup.wire.Message} type being extended.
@@ -90,7 +88,7 @@ public final class Extension<T extends ExtendableMessage, E>
    *
    * @param extendedType the type of message being extended
    * @param tag the tag number of the extension
-   * @param label one of {@code Wire.OPTIONAL}, {@code Wire.REQUIRED}, or {@code Wire.REPEATED}
+   * @param label one of {@code Wire.OPTIONAL} or {@code Wire.REQUIRED}
    * @param enumType the class type of the {@link Extension}'s enum value
    * @param <T> the type of message being extended
    * @param <E> the Java data type of the {@link Extension} enum value

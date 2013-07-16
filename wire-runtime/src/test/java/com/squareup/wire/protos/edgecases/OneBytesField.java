@@ -9,8 +9,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.Wire;
 
-public final class OneBytesField
-    implements Message {
+public final class OneBytesField extends Message {
 
   public static final ByteString DEFAULT_OPT_BYTES = null;
 
@@ -21,6 +20,7 @@ public final class OneBytesField
   public final ByteString opt_bytes;
 
   private OneBytesField(Builder builder) {
+    super(builder);
     this.opt_bytes = builder.opt_bytes;
   }
 
@@ -42,8 +42,7 @@ public final class OneBytesField
         opt_bytes);
   }
 
-  public static final class Builder
-      implements Message.Builder<OneBytesField> {
+  public static final class Builder extends Message.Builder<OneBytesField> {
 
     public ByteString opt_bytes;
 
@@ -51,6 +50,7 @@ public final class OneBytesField
     }
 
     public Builder(OneBytesField message) {
+      super(message);
       if (message == null) return;
       this.opt_bytes = message.opt_bytes;
     }
@@ -58,11 +58,6 @@ public final class OneBytesField
     public Builder opt_bytes(ByteString opt_bytes) {
       this.opt_bytes = opt_bytes;
       return this;
-    }
-
-    @Override
-    public boolean isInitialized() {
-      return true;
     }
 
     @Override

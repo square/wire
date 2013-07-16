@@ -1,7 +1,7 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.wire.protobuf;
 
-public class TestUtils {
+class TestUtils {
 
   private String hex(int x) {
     return "0x" + Integer.toHexString(x);

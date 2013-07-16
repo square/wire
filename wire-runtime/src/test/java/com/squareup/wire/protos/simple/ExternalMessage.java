@@ -4,20 +4,14 @@
  */
 package com.squareup.wire.protos.simple;
 
+import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.Wire;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
 
-public final class ExternalMessage
-    implements Message.ExtendableMessage<ExternalMessage> {
+public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
 
   public static final Float DEFAULT_F = 20F;
-
-  public final Map<Extension<ExternalMessage, ?>, Object> extensionMap;
 
   @ProtoField(
     tag = 1,
@@ -26,28 +20,22 @@ public final class ExternalMessage
   public final Float f;
 
   private ExternalMessage(Builder builder) {
+    super(builder);
     this.f = builder.f;
-    this.extensionMap = Collections.unmodifiableMap(new TreeMap<Extension<ExternalMessage, ?>, Object>(builder.extensionMap));
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public <Type> Type getExtension(Extension<ExternalMessage, Type> extension) {
-    return (Type) extensionMap.get(extension);
   }
 
   @Override
   public boolean equals(Object other) {
     if (!(other instanceof ExternalMessage)) return false;
     ExternalMessage o = (ExternalMessage) other;
-    if (!extensionMap.equals(o.extensionMap)) return false;
+    if (!extensionsEqual(o)) return false;
     if (!Wire.equals(f, o.f)) return false;
     return true;
   }
 
   @Override
   public int hashCode() {
-    int hashCode = extensionMap.hashCode();
+    int hashCode = extensionsHashCode();
     hashCode = hashCode * 37 + (f != null ? f.hashCode() : 0);
     return hashCode;
   }
@@ -56,15 +44,12 @@ public final class ExternalMessage
   public String toString() {
     return String.format("ExternalMessage{" +
         "f=%s," +
-        "{extensionMap=%s}",
+        "{extensions=%s}",
         f,
-        Wire.toString(extensionMap));
+        extensionsToString());
   }
 
-  public static final class Builder
-      implements ExtendableMessage.ExtendableBuilder<ExternalMessage> {
-
-    private final Map<Extension<ExternalMessage, ?>, Object> extensionMap = new TreeMap<Extension<ExternalMessage, ?>, Object>();
+  public static final class Builder extends ExtendableBuilder<ExternalMessage> {
 
     public Float f;
 
@@ -72,9 +57,9 @@ public final class ExternalMessage
     }
 
     public Builder(ExternalMessage message) {
+      super(message);
       if (message == null) return;
       this.f = message.f;
-      this.extensionMap.putAll(message.extensionMap);
     }
 
     public Builder f(Float f) {
@@ -83,20 +68,9 @@ public final class ExternalMessage
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <Type> Type getExtension(Extension<ExternalMessage, Type> extension) {
-      return (Type) extensionMap.get(extension);
-    }
-
-    @Override
-    public <Type> Builder setExtension(Extension<ExternalMessage, Type> extension, Type value) {
-      extensionMap.put(extension, value);
+    public <E> Builder setExtension(Extension<ExternalMessage, E> extension, E value) {
+      super.setExtension(extension, value);
       return this;
-    }
-
-    @Override
-    public boolean isInitialized() {
-      return true;
     }
 
     @Override

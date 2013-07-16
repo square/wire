@@ -171,13 +171,14 @@ public final class Wire {
    *
    * @param messageType the {@link Message} class
    */
+  @SuppressWarnings("unchecked")
   public synchronized <M extends Message> ProtoAdapter<M> messageAdapter(Class<M> messageType) {
-    ProtoAdapter<?> adapter = messageAdapters.get(messageType);
+    ProtoAdapter<M> adapter = (ProtoAdapter<M>) messageAdapters.get(messageType);
     if (adapter == null) {
       adapter = new ProtoAdapter<M>(this, messageType);
       messageAdapters.put(messageType, adapter);
     }
-    return (ProtoAdapter<M>) adapter;
+    return adapter;
   }
 
   /**
@@ -185,13 +186,14 @@ public final class Wire {
    *
    * @param enumClass the enum class
    */
+  @SuppressWarnings("unchecked")
   public synchronized <E extends Enum> ProtoEnumAdapter<E> enumAdapter(Class<E> enumClass) {
-    ProtoEnumAdapter<?> adapter = enumAdapters.get(enumClass);
+    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) enumAdapters.get(enumClass);
     if (adapter == null) {
       adapter = new ProtoEnumAdapter<E>(enumClass);
       enumAdapters.put(enumClass, adapter);
     }
-    return (ProtoEnumAdapter<E>) adapter;
+    return adapter;
   }
 
   /**
@@ -229,6 +231,7 @@ public final class Wire {
   /**
    * Returns the serialized size of a given {@link Message}, in bytes.
    */
+  @SuppressWarnings("unchecked")
   public <M extends Message> int getSerializedSize(M message) {
     return messageAdapter((Class<M>) message.getClass()).getSerializedSize(message);
   }
@@ -240,6 +243,7 @@ public final class Wire {
    * @param <M> the outermost {@link Message} class
    * @return an array of bytes in protocol buffer format
    */
+  @SuppressWarnings("unchecked")
   public <M extends Message> byte[] toByteArray(M message) {
     return messageAdapter((Class<M>) message.getClass()).toByteArray(message);
   }
@@ -250,6 +254,7 @@ public final class Wire {
    * @param message an instance of {@link Message}}
    * @param <M> the outermost {@link Message} class
    */
+  @SuppressWarnings("unchecked")
   public <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
     ProtoAdapter<M> adapter = messageAdapter((Class<M>) message.getClass());
     try {
@@ -283,6 +288,7 @@ public final class Wire {
     return INSTANCE.intFromEnumHelper(value);
   }
 
+  @SuppressWarnings("unchecked")
   private <E extends Enum> int intFromEnumHelper(E value) {
     ProtoEnumAdapter<E> adapter = enumAdapter((Class<E>) value.getClass());
     return adapter.toInt(value);
@@ -356,9 +362,6 @@ public final class Wire {
       }
       return true;
     }
-    if (a instanceof byte[] && b instanceof byte[]) {
-      return Arrays.equals((byte[]) a, (byte[]) b);
-    }
     return a.equals(b);
   }
 
@@ -376,24 +379,5 @@ public final class Wire {
    */
   public static <T> List<T> unmodifiableCopyOf(List<T> source) {
     return source == null ? null : Collections.unmodifiableList(new ArrayList<T>(source));
-  }
-
-  /**
-   * Formats an extension map as a string, e.g., {@code {key=value, key=value}}.
-   * Used by generated code.
-   */
-  public static String toString(Map<? extends Extension<?, ?>, Object> extensionMap) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("{");
-    String sep = "";
-    for (Map.Entry<? extends Extension<?, ?>, Object> entry : extensionMap.entrySet()) {
-      sb.append(sep);
-      sb.append(entry.getKey().getTag());
-      sb.append("=");
-      sb.append(entry.getValue());
-      sep = ",";
-    }
-    sb.append("}");
-    return sb.toString();
   }
 }

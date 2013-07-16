@@ -11,8 +11,7 @@ import com.squareup.wire.Wire;
 import java.util.Collections;
 import java.util.List;
 
-public final class SimpleMessage
-    implements Message {
+public final class SimpleMessage extends Message {
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
   public static final NestedMessage DEFAULT_OPTIONAL_NESTED_MSG = Wire.getDefaultInstance(NestedMessage.class);
@@ -73,6 +72,7 @@ public final class SimpleMessage
   public final List<Double> repeated_double;
 
   private SimpleMessage(Builder builder) {
+    super(builder);
     this.optional_int32 = builder.optional_int32;
     this.optional_nested_msg = builder.optional_nested_msg;
     this.optional_external_msg = builder.optional_external_msg;
@@ -123,8 +123,7 @@ public final class SimpleMessage
         repeated_double);
   }
 
-  public static final class Builder
-      implements Message.Builder<SimpleMessage> {
+  public static final class Builder extends Message.Builder<SimpleMessage> {
 
     public Integer optional_int32;
     public NestedMessage optional_nested_msg;
@@ -137,6 +136,7 @@ public final class SimpleMessage
     }
 
     public Builder(SimpleMessage message) {
+      super(message);
       if (message == null) return;
       this.optional_int32 = message.optional_int32;
       this.optional_nested_msg = message.optional_nested_msg;
@@ -189,8 +189,7 @@ public final class SimpleMessage
     }
   }
 
-  public static final class NestedMessage
-      implements Message {
+  public static final class NestedMessage extends Message {
 
     public static final Integer DEFAULT_BB = 0;
 
@@ -204,6 +203,7 @@ public final class SimpleMessage
     public final Integer bb;
 
     private NestedMessage(Builder builder) {
+      super(builder);
       this.bb = builder.bb;
     }
 
@@ -225,8 +225,7 @@ public final class SimpleMessage
           bb);
     }
 
-    public static final class Builder
-        implements Message.Builder<NestedMessage> {
+    public static final class Builder extends Message.Builder<NestedMessage> {
 
       public Integer bb;
 
@@ -234,6 +233,7 @@ public final class SimpleMessage
       }
 
       public Builder(NestedMessage message) {
+        super(message);
         if (message == null) return;
         this.bb = message.bb;
       }
@@ -241,11 +241,6 @@ public final class SimpleMessage
       public Builder bb(Integer bb) {
         this.bb = bb;
         return this;
-      }
-
-      @Override
-      public boolean isInitialized() {
-        return true;
       }
 
       @Override
