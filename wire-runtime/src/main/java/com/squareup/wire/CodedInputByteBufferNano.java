@@ -28,7 +28,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package com.google.protobuf.nano;
+package com.squareup.wire;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ import java.io.IOException;
  *
  * @author kenton@google.com Kenton Varda
  */
-public final class CodedInputByteBufferNano {
+final class CodedInputByteBufferNano {
   /**
    * Create a new CodedInputByteBufferNano wrapping the given byte array.
    */
