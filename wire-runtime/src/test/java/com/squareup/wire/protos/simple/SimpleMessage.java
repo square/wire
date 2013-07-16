@@ -9,17 +9,18 @@ import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.UninitializedMessageException;
 import com.squareup.wire.Wire;
+import java.util.Collections;
 import java.util.List;
 
 public final class SimpleMessage
     implements Message {
 
-  public static final Integer optional_int32_default = 123;
-  public static final NestedMessage optional_nested_msg_default = Wire.getDefaultInstance(NestedMessage.class);
-  public static final ExternalMessage optional_external_msg_default = Wire.getDefaultInstance(ExternalMessage.class);
-  public static final NestedEnum default_nested_enum_default = NestedEnum.BAZ;
-  public static final Integer required_int32_default = 456;
-  public static final List<Double> repeated_double_default = java.util.Collections.emptyList();
+  public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
+  public static final NestedMessage DEFAULT_OPTIONAL_NESTED_MSG = Wire.getDefaultInstance(NestedMessage.class);
+  public static final ExternalMessage DEFAULT_OPTIONAL_EXTERNAL_MSG = Wire.getDefaultInstance(ExternalMessage.class);
+  public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.BAZ;
+  public static final Integer DEFAULT_REQUIRED_INT32 = 456;
+  public static final List<Double> DEFAULT_REPEATED_DOUBLE = Collections.emptyList();
 
   /**
    * An optional int32
@@ -192,7 +193,7 @@ public final class SimpleMessage
   public static final class NestedMessage
       implements Message {
 
-    public static final Integer bb_default = 0;
+    public static final Integer DEFAULT_BB = 0;
 
     /**
      * An optional int32
