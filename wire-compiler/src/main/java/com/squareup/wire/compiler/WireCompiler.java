@@ -242,6 +242,7 @@ public class WireCompiler {
         imports.add("java.util.List");
       }
       if (hasExtensions) {
+        imports.add("com.squareup.wire.Extension");
         imports.add("java.util.Collections");
         imports.add("java.util.Map");
         imports.add("java.util.TreeMap");
@@ -316,13 +317,11 @@ public class WireCompiler {
     if (hasByteStringExtension()) {
       imports.add("com.squareup.wire.ByteString");
     }
+    imports.add("com.squareup.wire.Extension");
     imports.add("com.squareup.wire.Wire");
     imports.add("java.util.List");
     imports.addAll(getExtensionTypes());
     writer.emitImports(imports);
-    writer.emitEmptyLine();
-
-    writer.emitStaticImports("com.squareup.wire.Message.ExtendableMessage.Extension");
     writer.emitEmptyLine();
 
     String className = "Ext_" + protoFileName;
