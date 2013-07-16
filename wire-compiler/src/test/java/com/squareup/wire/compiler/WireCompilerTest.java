@@ -90,6 +90,7 @@ public class WireCompilerTest {
   }
 
   private void cleanup(File dir) {
+    Assert.assertNotNull(dir);
     Assert.assertTrue(dir.isDirectory());
     if (dir.listFiles() != null) {
       for (File f : dir.listFiles()) {
@@ -99,6 +100,7 @@ public class WireCompilerTest {
   }
 
   private void cleanupHelper(File f) {
+    Assert.assertNotNull(f);
     if (f.isDirectory()) {
       if (f.listFiles() != null) {
         for (File ff : f.listFiles()) {
