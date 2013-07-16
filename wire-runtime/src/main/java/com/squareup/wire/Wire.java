@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main class for "Wire" mobile protocol buffers.
+ * Main class for Wire mobile protocol buffers.
  */
 public final class Wire {
 
