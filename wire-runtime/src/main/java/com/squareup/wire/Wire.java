@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.squareup.wire.Message.ExtendableMessage.Extension;
-
 /**
  * Main class for "Wire" mobile protocol buffers.
  */

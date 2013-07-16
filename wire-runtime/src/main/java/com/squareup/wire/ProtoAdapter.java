@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.squareup.wire.Message.ExtendableMessage.Extension;
-
 /**
  * An adapter than can perform I/O on a given Message type.
  *

@@ -4,6 +4,7 @@
  */
 package com.squareup.wire.protos.simple;
 
+import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.Wire;

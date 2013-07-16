@@ -4,8 +4,6 @@ package com.squareup.wire;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.squareup.wire.Message.ExtendableMessage.Extension;
-
 final class ExtensionRegistry {
 
   private final Map<Class<? extends Message.ExtendableMessage>, Map<Integer, Extension<?, ?>>>

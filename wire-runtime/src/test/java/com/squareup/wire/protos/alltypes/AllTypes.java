@@ -5,6 +5,7 @@
 package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.ByteString;
+import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
