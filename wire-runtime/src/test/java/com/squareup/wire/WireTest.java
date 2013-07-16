@@ -1,14 +1,9 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.wire;
 
-import com.squareup.wire.CodedInputByteBufferNano;
-import com.squareup.wire.CodedOutputByteBufferNano;
 import com.squareup.wire.protos.simple.Ext_simple_message;
 import com.squareup.wire.protos.simple.ExternalMessage;
 import com.squareup.wire.protos.simple.SimpleMessage;
-import com.squareup.wire.Wire;
-import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.UninitializedMessageException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -71,7 +66,7 @@ public class WireTest extends TestCase {
     try {
       builder.build();
       fail();
-    } catch (UninitializedMessageException e) {
+    } catch (IllegalStateException e) {
       // expected
     }
 
