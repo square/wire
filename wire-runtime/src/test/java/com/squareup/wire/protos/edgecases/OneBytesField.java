@@ -11,7 +11,7 @@ import com.squareup.wire.Wire;
 public final class OneBytesField
     implements Message {
 
-  public static final byte[] opt_bytes_default = new byte[0];
+  public static final byte[] DEFAULT_OPT_BYTES = new byte[0];
 
   @ProtoField(
     tag = 1,

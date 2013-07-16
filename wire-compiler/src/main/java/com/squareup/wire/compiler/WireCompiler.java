@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -234,6 +235,7 @@ public class WireCompiler {
         imports.add("com.squareup.wire.ProtoEnum");
       }
       if (hasRepeatedField(types)) {
+        imports.add("java.util.Collections");
         imports.add("java.util.List");
       }
       if (hasExtensions) {
@@ -402,12 +404,12 @@ public class WireCompiler {
       }
       writer.beginType(name, "class", modifiers, null,
           hasExtensions ? "Message.ExtendableMessage<" + name + ">" : "Message");
+      emitMessageDefaults(messageType);
       if (hasExtensions) {
         writer.emitEmptyLine();
         writer.emitField("Map<Extension<" + name + ", ?>, Object>",
             "extensionMap", EnumSet.of(PUBLIC, FINAL));
       }
-      emitMessageDefaults(messageType);
       emitMessageFields(messageType);
       emitMessageConstructor(messageType);
       if (hasExtensions) {
@@ -436,7 +438,7 @@ public class WireCompiler {
 
   // Example:
   //
-  // public static final Integer optional_int32_default = 123;
+  // public static final Integer DEFAULT_OPT_INT32 = 123;
   //
   private void emitMessageDefaults(MessageType messageType)
       throws IOException {
@@ -445,12 +447,10 @@ public class WireCompiler {
       writer.emitEmptyLine();
     }
     for (Field field : fields) {
-      String javaName = javaName(messageType, field.getType());
-      if (isRepeated(field)) {
-        javaName = "List<" + javaName + ">";
-      }
+      String javaName = getJavaType(messageType, field);
       String defaultValue = getDefaultValue(messageType, field);
-      writer.emitField(javaName, sanitize(field.getName()) + "_default",
+
+      writer.emitField(javaName, "DEFAULT_" + sanitize(field.getName()).toUpperCase(Locale.US),
           EnumSet.of(PUBLIC, STATIC, FINAL), defaultValue);
     }
   }
@@ -717,10 +717,7 @@ public class WireCompiler {
       writer.emitEmptyLine();
     }
     for (Field field : fields) {
-      String javaName = javaName(messageType, field.getType());
-      if (isRepeated(field)) {
-        javaName = "List<" + javaName + ">";
-      }
+      String javaName = getJavaType(messageType, field);
       writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC));
     }
   }
@@ -754,7 +751,7 @@ public class WireCompiler {
     // Qualify message and enum values
     boolean isRepeated = field.getLabel() == MessageType.Label.REPEATED;
     if (isRepeated) {
-      return "java.util.Collections.emptyList()";
+      return "Collections.emptyList()";
     }
     String javaName = javaName(messageType, field.getType());
     if (!isScalar(field)) {
@@ -794,10 +791,7 @@ public class WireCompiler {
 
   private void emitBuilderSetters(MessageType messageType) throws IOException {
     for (Field field : messageType.getFields()) {
-      String javaName = javaName(messageType, field.getType());
-      if (isRepeated(field)) {
-        javaName = "List<" + javaName + ">";
-      }
+      String javaName = getJavaType(messageType, field);
       List<String> args = new ArrayList<String>();
       args.add(javaName);
       String sanitized = sanitize(field.getName());
@@ -809,6 +803,14 @@ public class WireCompiler {
       writer.emitStatement("return this");
       writer.endMethod();
     }
+  }
+
+  private String getJavaType(MessageType messageType, Field field) {
+    String javaName = javaName(messageType, field.getType());
+    if (isRepeated(field)) {
+      javaName = "List<" + javaName + ">";
+    }
+    return javaName;
   }
 
   private void emitBuilderGetExtension(MessageType messageType)

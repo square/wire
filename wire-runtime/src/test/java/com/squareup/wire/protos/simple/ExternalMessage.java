@@ -14,9 +14,9 @@ import java.util.TreeMap;
 public final class ExternalMessage
     implements Message.ExtendableMessage<ExternalMessage> {
 
-  public final Map<Extension<ExternalMessage, ?>, Object> extensionMap;
+  public static final Float DEFAULT_F = 20F;
 
-  public static final Float f_default = 20F;
+  public final Map<Extension<ExternalMessage, ?>, Object> extensionMap;
 
   @ProtoField(
     tag = 1,
