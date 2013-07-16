@@ -548,6 +548,7 @@ public class WireCompiler {
       throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
+    writer.emitAnnotation(SuppressWarnings.class, "\"unchecked\"");
     writer.beginMethod("<Type> Type", "getExtension", EnumSet.of(PUBLIC),
         "Extension<" + messageType.getName() + ", Type>", "extension");
     writer.emitStatement("return (Type) extensionMap.get(extension)");
