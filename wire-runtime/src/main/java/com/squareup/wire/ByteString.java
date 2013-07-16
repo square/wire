@@ -19,6 +19,7 @@ import java.util.Arrays;
  * process.
  */
 public final class ByteString {
+  private static final String HEX_DIGITS = "0123456789abcdef";
   private final byte[] data;
   private volatile int hashCode;
 
@@ -79,14 +80,16 @@ public final class ByteString {
     return result != 0 ? result : (hashCode = Arrays.hashCode(data));
   }
 
-  /** Returns a string containing these bytes in hex. */
+  /** Returns a string containing these bytes in hex surrounded by square brackets. */
   @Override public String toString() {
-    char[] result = new char[data.length * 2];
-    int c = 0;
+    char[] result = new char[data.length * 2 + 2];
+    result[0] = '[';
+    int c = 1;
     for (byte b : data) {
-      result[c++] = "0123456789abcdef".charAt((b >> 4) & 0xf);
-      result[c++] = "0123456789abcdef".charAt(b & 0xf);
+      result[c++] = HEX_DIGITS.charAt((b >> 4) & 0xf);
+      result[c++] = HEX_DIGITS.charAt(b & 0xf);
     }
+    result[c] = ']';
     return new String(result);
   }
 }
