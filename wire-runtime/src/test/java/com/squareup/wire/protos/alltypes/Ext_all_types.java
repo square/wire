@@ -5,10 +5,9 @@
 package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.ByteString;
+import com.squareup.wire.Extension;
 import com.squareup.wire.Wire;
 import java.util.List;
-
-import static com.squareup.wire.Message.ExtendableMessage.Extension;
 
 public final class Ext_all_types {
 
