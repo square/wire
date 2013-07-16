@@ -1,8 +1,6 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.wire;
 
-import com.google.protobuf.nano.CodedInputByteBufferNano;
-import com.google.protobuf.nano.CodedOutputByteBufferNano;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -28,7 +28,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package com.google.protobuf.nano;
+package com.squareup.wire;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ import java.io.IOException;
  *
  * @author kenton@google.com Kenton Varda
  */
-public class InvalidProtocolBufferNanoException extends IOException {
+class InvalidProtocolBufferNanoException extends IOException {
   private static final long serialVersionUID = -1616151763072450476L;
 
   public InvalidProtocolBufferNanoException(final String description) {

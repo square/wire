@@ -1,8 +1,8 @@
 // Copyright 2013 Square, Inc.
-package com.squareup.wire.protobuf;
+package com.squareup.wire;
 
-import com.google.protobuf.nano.CodedInputByteBufferNano;
-import com.google.protobuf.nano.CodedOutputByteBufferNano;
+import com.squareup.wire.CodedInputByteBufferNano;
+import com.squareup.wire.CodedOutputByteBufferNano;
 import com.squareup.wire.protos.simple.Ext_simple_message;
 import com.squareup.wire.protos.simple.ExternalMessage;
 import com.squareup.wire.protos.simple.SimpleMessage;

@@ -28,7 +28,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package com.google.protobuf.nano;
+package com.squareup.wire;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -47,7 +47,7 @@ import java.io.UnsupportedEncodingException;
  *
  * @author kneton@google.com Kenton Varda
  */
-public final class CodedOutputByteBufferNano {
+final class CodedOutputByteBufferNano {
   private final byte[] buffer;
   private final int limit;
   private int position;
