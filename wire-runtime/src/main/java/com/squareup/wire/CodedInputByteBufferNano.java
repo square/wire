@@ -227,7 +227,7 @@ final class CodedInputByteBufferNano {
   //}
 
   /** Read a {@code bytes} field value from the stream. */
-  public byte[] readBytes() throws IOException {
+  public ByteString readBytes() throws IOException {
     final int size = readRawVarint32();
     if (size <= (bufferSize - bufferPos) && size > 0) {
       // Fast path:  We already have the bytes in a contiguous buffer, so
@@ -235,10 +235,10 @@ final class CodedInputByteBufferNano {
       final byte[] result = new byte[size];
       System.arraycopy(buffer, bufferPos, result, 0, size);
       bufferPos += size;
-      return result;
+      return ByteString.of(result);
     } else {
       // Slow path:  Build a byte array first then copy it.
-      return readRawBytes(size);
+      return ByteString.of(readRawBytes(size));
     }
   }
 

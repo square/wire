@@ -4,6 +4,7 @@
  */
 package com.squareup.wire.protos.alltypes;
 
+import com.squareup.wire.ByteString;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -31,7 +32,7 @@ public final class AllTypes
   public static final Float DEFAULT_OPT_FLOAT = 0F;
   public static final Double DEFAULT_OPT_DOUBLE = 0D;
   public static final String DEFAULT_OPT_STRING = "";
-  public static final byte[] DEFAULT_OPT_BYTES = new byte[0];
+  public static final ByteString DEFAULT_OPT_BYTES = null;
   public static final NestedEnum DEFAULT_OPT_NESTED_ENUM = NestedEnum.A;
   public static final NestedMessage DEFAULT_OPT_NESTED_MESSAGE = Wire.getDefaultInstance(NestedMessage.class);
   public static final Integer DEFAULT_REQ_INT32 = 0;
@@ -48,7 +49,7 @@ public final class AllTypes
   public static final Float DEFAULT_REQ_FLOAT = 0F;
   public static final Double DEFAULT_REQ_DOUBLE = 0D;
   public static final String DEFAULT_REQ_STRING = "";
-  public static final byte[] DEFAULT_REQ_BYTES = new byte[0];
+  public static final ByteString DEFAULT_REQ_BYTES = null;
   public static final NestedEnum DEFAULT_REQ_NESTED_ENUM = NestedEnum.A;
   public static final NestedMessage DEFAULT_REQ_NESTED_MESSAGE = Wire.getDefaultInstance(NestedMessage.class);
   public static final List<Integer> DEFAULT_REP_INT32 = Collections.emptyList();
@@ -65,7 +66,7 @@ public final class AllTypes
   public static final List<Float> DEFAULT_REP_FLOAT = Collections.emptyList();
   public static final List<Double> DEFAULT_REP_DOUBLE = Collections.emptyList();
   public static final List<String> DEFAULT_REP_STRING = Collections.emptyList();
-  public static final List<byte[]> DEFAULT_REP_BYTES = Collections.emptyList();
+  public static final List<ByteString> DEFAULT_REP_BYTES = Collections.emptyList();
   public static final List<NestedEnum> DEFAULT_REP_NESTED_ENUM = Collections.emptyList();
   public static final List<NestedMessage> DEFAULT_REP_NESTED_MESSAGE = Collections.emptyList();
   public static final List<Integer> DEFAULT_PACK_INT32 = Collections.emptyList();
@@ -82,7 +83,7 @@ public final class AllTypes
   public static final List<Float> DEFAULT_PACK_FLOAT = Collections.emptyList();
   public static final List<Double> DEFAULT_PACK_DOUBLE = Collections.emptyList();
   public static final List<String> DEFAULT_PACK_STRING = Collections.emptyList();
-  public static final List<byte[]> DEFAULT_PACK_BYTES = Collections.emptyList();
+  public static final List<ByteString> DEFAULT_PACK_BYTES = Collections.emptyList();
   public static final List<NestedEnum> DEFAULT_PACK_NESTED_ENUM = Collections.emptyList();
   public static final List<NestedMessage> DEFAULT_PACK_NESTED_MESSAGE = Collections.emptyList();
 
@@ -176,7 +177,7 @@ public final class AllTypes
     tag = 15,
     type = Wire.BYTES
   )
-  public final byte[] opt_bytes;
+  public final ByteString opt_bytes;
 
   @ProtoField(
     tag = 16,
@@ -292,7 +293,7 @@ public final class AllTypes
     type = Wire.BYTES,
     label = Wire.REQUIRED
   )
-  public final byte[] req_bytes;
+  public final ByteString req_bytes;
 
   @ProtoField(
     tag = 116,
@@ -410,7 +411,7 @@ public final class AllTypes
     type = Wire.BYTES,
     label = Wire.REPEATED
   )
-  public final List<byte[]> rep_bytes;
+  public final List<ByteString> rep_bytes;
 
   @ProtoField(
     tag = 216,
@@ -544,7 +545,7 @@ public final class AllTypes
     type = Wire.BYTES,
     label = Wire.REPEATED
   )
-  public final List<byte[]> pack_bytes;
+  public final List<ByteString> pack_bytes;
 
   /**
    * ignored
@@ -734,7 +735,7 @@ public final class AllTypes
     hashCode = hashCode * 37 + (opt_float != null ? opt_float.hashCode() : 0);
     hashCode = hashCode * 37 + (opt_double != null ? opt_double.hashCode() : 0);
     hashCode = hashCode * 37 + (opt_string != null ? opt_string.hashCode() : 0);
-    hashCode = hashCode * 37 + Wire.hashCode(opt_bytes);
+    hashCode = hashCode * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
     hashCode = hashCode * 37 + (opt_nested_enum != null ? opt_nested_enum.hashCode() : 0);
     hashCode = hashCode * 37 + (opt_nested_message != null ? opt_nested_message.hashCode() : 0);
     hashCode = hashCode * 37 + (req_int32 != null ? req_int32.hashCode() : 0);
@@ -751,7 +752,7 @@ public final class AllTypes
     hashCode = hashCode * 37 + (req_float != null ? req_float.hashCode() : 0);
     hashCode = hashCode * 37 + (req_double != null ? req_double.hashCode() : 0);
     hashCode = hashCode * 37 + (req_string != null ? req_string.hashCode() : 0);
-    hashCode = hashCode * 37 + Wire.hashCode(req_bytes);
+    hashCode = hashCode * 37 + (req_bytes != null ? req_bytes.hashCode() : 0);
     hashCode = hashCode * 37 + (req_nested_enum != null ? req_nested_enum.hashCode() : 0);
     hashCode = hashCode * 37 + (req_nested_message != null ? req_nested_message.hashCode() : 0);
     hashCode = hashCode * 37 + (rep_int32 != null ? rep_int32.hashCode() : 0);
@@ -768,7 +769,7 @@ public final class AllTypes
     hashCode = hashCode * 37 + (rep_float != null ? rep_float.hashCode() : 0);
     hashCode = hashCode * 37 + (rep_double != null ? rep_double.hashCode() : 0);
     hashCode = hashCode * 37 + (rep_string != null ? rep_string.hashCode() : 0);
-    hashCode = hashCode * 37 + Wire.hashCode(rep_bytes);
+    hashCode = hashCode * 37 + (rep_bytes != null ? rep_bytes.hashCode() : 0);
     hashCode = hashCode * 37 + (rep_nested_enum != null ? rep_nested_enum.hashCode() : 0);
     hashCode = hashCode * 37 + (rep_nested_message != null ? rep_nested_message.hashCode() : 0);
     hashCode = hashCode * 37 + (pack_int32 != null ? pack_int32.hashCode() : 0);
@@ -785,7 +786,7 @@ public final class AllTypes
     hashCode = hashCode * 37 + (pack_float != null ? pack_float.hashCode() : 0);
     hashCode = hashCode * 37 + (pack_double != null ? pack_double.hashCode() : 0);
     hashCode = hashCode * 37 + (pack_string != null ? pack_string.hashCode() : 0);
-    hashCode = hashCode * 37 + Wire.hashCode(pack_bytes);
+    hashCode = hashCode * 37 + (pack_bytes != null ? pack_bytes.hashCode() : 0);
     hashCode = hashCode * 37 + (pack_nested_enum != null ? pack_nested_enum.hashCode() : 0);
     hashCode = hashCode * 37 + (pack_nested_message != null ? pack_nested_message.hashCode() : 0);
     return hashCode;
@@ -877,7 +878,7 @@ public final class AllTypes
         opt_float,
         opt_double,
         opt_string,
-        Wire.toString(opt_bytes),
+        opt_bytes,
         opt_nested_enum,
         opt_nested_message,
         req_int32,
@@ -894,7 +895,7 @@ public final class AllTypes
         req_float,
         req_double,
         req_string,
-        Wire.toString(req_bytes),
+        req_bytes,
         req_nested_enum,
         req_nested_message,
         rep_int32,
@@ -911,7 +912,7 @@ public final class AllTypes
         rep_float,
         rep_double,
         rep_string,
-        Wire.toString(rep_bytes),
+        rep_bytes,
         rep_nested_enum,
         rep_nested_message,
         pack_int32,
@@ -928,7 +929,7 @@ public final class AllTypes
         pack_float,
         pack_double,
         pack_string,
-        Wire.toString(pack_bytes),
+        pack_bytes,
         pack_nested_enum,
         pack_nested_message,
         Wire.toString(extensionMap));
@@ -953,7 +954,7 @@ public final class AllTypes
     public Float opt_float;
     public Double opt_double;
     public String opt_string;
-    public byte[] opt_bytes;
+    public ByteString opt_bytes;
     public NestedEnum opt_nested_enum;
     public NestedMessage opt_nested_message;
     public Integer req_int32;
@@ -970,7 +971,7 @@ public final class AllTypes
     public Float req_float;
     public Double req_double;
     public String req_string;
-    public byte[] req_bytes;
+    public ByteString req_bytes;
     public NestedEnum req_nested_enum;
     public NestedMessage req_nested_message;
     public List<Integer> rep_int32;
@@ -987,7 +988,7 @@ public final class AllTypes
     public List<Float> rep_float;
     public List<Double> rep_double;
     public List<String> rep_string;
-    public List<byte[]> rep_bytes;
+    public List<ByteString> rep_bytes;
     public List<NestedEnum> rep_nested_enum;
     public List<NestedMessage> rep_nested_message;
     public List<Integer> pack_int32;
@@ -1004,7 +1005,7 @@ public final class AllTypes
     public List<Float> pack_float;
     public List<Double> pack_double;
     public List<String> pack_string;
-    public List<byte[]> pack_bytes;
+    public List<ByteString> pack_bytes;
     public List<NestedEnum> pack_nested_enum;
     public List<NestedMessage> pack_nested_message;
 
@@ -1154,7 +1155,7 @@ public final class AllTypes
       return this;
     }
 
-    public Builder opt_bytes(byte[] opt_bytes) {
+    public Builder opt_bytes(ByteString opt_bytes) {
       this.opt_bytes = opt_bytes;
       return this;
     }
@@ -1239,7 +1240,7 @@ public final class AllTypes
       return this;
     }
 
-    public Builder req_bytes(byte[] req_bytes) {
+    public Builder req_bytes(ByteString req_bytes) {
       this.req_bytes = req_bytes;
       return this;
     }
@@ -1324,7 +1325,7 @@ public final class AllTypes
       return this;
     }
 
-    public Builder rep_bytes(List<byte[]> rep_bytes) {
+    public Builder rep_bytes(List<ByteString> rep_bytes) {
       this.rep_bytes = rep_bytes;
       return this;
     }
@@ -1409,7 +1410,7 @@ public final class AllTypes
       return this;
     }
 
-    public Builder pack_bytes(List<byte[]> pack_bytes) {
+    public Builder pack_bytes(List<ByteString> pack_bytes) {
       this.pack_bytes = pack_bytes;
       return this;
     }

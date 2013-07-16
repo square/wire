@@ -320,7 +320,7 @@ public class ProtoAdapter<M extends Message> {
       case Wire.BOOL: return CodedOutputByteBufferNano.computeBoolSize(tag, (Boolean) value);
       case Wire.ENUM: return getSerializedEnumSize((Enum) value, tag);
       case Wire.STRING: return CodedOutputByteBufferNano.computeStringSize(tag, (String) value);
-      case Wire.BYTES: return CodedOutputByteBufferNano.computeBytesSize(tag, (byte[]) value);
+      case Wire.BYTES: return CodedOutputByteBufferNano.computeBytesSize(tag, (ByteString) value);
       case Wire.MESSAGE: return getSerializedMessageSize((Message) value, tag);
       case Wire.FIXED32: return CodedOutputByteBufferNano.computeFixed32Size(tag, (Integer) value);
       case Wire.SFIXED32: return CodedOutputByteBufferNano.computeSFixed32Size(tag,
@@ -391,7 +391,7 @@ public class ProtoAdapter<M extends Message> {
       case Wire.BOOL: output.writeBool(tag, (Boolean) value); break;
       case Wire.ENUM: writeEnum((Enum) value, tag, output); break;
       case Wire.STRING: output.writeString(tag, (String) value); break;
-      case Wire.BYTES: output.writeBytes(tag, (byte[]) value); break;
+      case Wire.BYTES: output.writeBytes(tag, (ByteString) value); break;
       case Wire.MESSAGE: writeMessage((Message) value, tag, output); break;
       case Wire.FIXED32: output.writeFixed32(tag, (Integer) value); break;
       case Wire.SFIXED32: output.writeSFixed32(tag, (Integer) value); break;
