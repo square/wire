@@ -11,7 +11,7 @@ import com.squareup.wire.Wire;
 public final class OneField
     implements Message {
 
-  public static final Integer opt_int32_default = 0;
+  public static final Integer DEFAULT_OPT_INT32 = 0;
 
   @ProtoField(
     tag = 1,
