@@ -496,18 +496,11 @@ public class WireCompiler {
       } else {
         String fullyQualifiedName = fullyQualifiedName(messageType, type);
         isEnum = isEnum(fullyQualifiedName);
-        if (isEnum) {
-          map.put("type", "Wire.ENUM");
-        }
+        if (isEnum) map.put("type", "Wire.ENUM");
       }
 
-      if (isPacked(field, isEnum)) {
-        map.put("packed", "true");
-      }
-
-      if (!isOptional(field)) {
-        map.put("label", "Wire." + field.getLabel().toString());
-      }
+      if (isPacked(field, isEnum)) map.put("packed", "true");
+      if (!isOptional(field)) map.put("label", "Wire." + field.getLabel().toString());
 
       writer.emitEmptyLine();
       String documentation = field.getDocumentation();
@@ -516,9 +509,7 @@ public class WireCompiler {
       }
       writer.emitAnnotation(ProtoField.class, map);
 
-      if (isRepeated(field)) {
-        javaName = "List<" + javaName + ">";
-      }
+      if (isRepeated(field)) javaName = "List<" + javaName + ">";
       writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC, FINAL));
     }
   }
@@ -672,12 +663,8 @@ public class WireCompiler {
     emitBuilderFields(messageType);
     emitBuilderConstructors(messageType);
     emitBuilderSetters(messageType);
-    if (hasExtensions(messageType)) {
-      emitBuilderSetExtension(messageType);
-    }
-    if (hasRequiredFields(messageType)) {
-      emitBuilderIsInitialized(messageType);
-    }
+    if (hasExtensions(messageType)) emitBuilderSetExtension(messageType);
+    if (hasRequiredFields(messageType)) emitBuilderIsInitialized(messageType);
     emitBuilderBuild(messageType);
     writer.endType();
   }
@@ -685,9 +672,7 @@ public class WireCompiler {
   private void emitBuilderFields(MessageType messageType) throws IOException {
     List<Field> fields = messageType.getFields();
 
-    if (!fields.isEmpty()) {
-      writer.emitEmptyLine();
-    }
+    if (!fields.isEmpty()) writer.emitEmptyLine();
     for (Field field : fields) {
       String javaName = getJavaType(messageType, field);
       writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC));
@@ -703,9 +688,7 @@ public class WireCompiler {
     writer.beginMethod(null, "Builder", EnumSet.of(PUBLIC), messageType.getName(), "message");
     writer.emitStatement("super(message)");
     List<Field> fields = messageType.getFields();
-    if (!fields.isEmpty()) {
-      writer.emitStatement("if (message == null) return");
-    }
+    if (!fields.isEmpty()) writer.emitStatement("if (message == null) return");
     for (Field field : fields) {
       if (isRepeated(field)) {
         writer.emitStatement("this.%1$s = Wire.copyOf(message.%1$s)", sanitize(field.getName()));
@@ -720,9 +703,7 @@ public class WireCompiler {
     String initialValue = field.getDefault();
     // Qualify message and enum values
     boolean isRepeated = field.getLabel() == MessageType.Label.REPEATED;
-    if (isRepeated) {
-      return "Collections.emptyList()";
-    }
+    if (isRepeated) return "Collections.emptyList()";
     String javaName = javaName(messageType, field.getType());
     if (!isScalar(field)) {
       if (initialValue != null) {
@@ -775,9 +756,7 @@ public class WireCompiler {
 
   private String getJavaType(MessageType messageType, Field field) {
     String javaName = javaName(messageType, field.getType());
-    if (isRepeated(field)) {
-      javaName = "List<" + javaName + ">";
-    }
+    if (isRepeated(field)) javaName = "List<" + javaName + ">";
     return javaName;
   }
 
@@ -806,9 +785,7 @@ public class WireCompiler {
     writer.emitAnnotation(Override.class);
     writer.beginMethod("boolean", "isInitialized", EnumSet.of(PUBLIC));
     for (Field field : messageType.getFields()) {
-      if (isRequired(field)) {
-        writer.emitStatement("if (%s == null) return false", field.getName());
-      }
+      if (isRequired(field)) writer.emitStatement("if (%s == null) return false", field.getName());
     }
     writer.emitStatement("return true");
     writer.endMethod();
@@ -856,36 +833,23 @@ public class WireCompiler {
 
   private boolean hasEnum(List<Type> types) {
     for (Type type : types) {
-      if (type instanceof EnumType) {
-        return true;
-      }
-      if (hasEnum(type.getNestedTypes())) {
-        return true;
-      }
+      if (type instanceof EnumType || hasEnum(type.getNestedTypes())) return true;
     }
     return false;
   }
 
   private boolean hasExtensions(List<Type> types) {
     for (Type type : types) {
-      if (type instanceof MessageType && hasExtensions(((MessageType) type))) {
-        return true;
-      }
-      if (hasExtensions(type.getNestedTypes())) {
-        return true;
-      }
+      if (type instanceof MessageType && hasExtensions(((MessageType) type))) return true;
+      if (hasExtensions(type.getNestedTypes())) return true;
     }
     return false;
   }
 
   private boolean hasMessage(List<Type> types) {
     for (Type type : types) {
-      if (type instanceof MessageType && !hasExtensions(((MessageType) type))) {
-        return true;
-      }
-      if (hasMessage(type.getNestedTypes())) {
-        return true;
-      }
+      if (type instanceof MessageType && !hasExtensions(((MessageType) type))) return true;
+      if (hasMessage(type.getNestedTypes())) return true;
     }
     return false;
   }
@@ -894,14 +858,10 @@ public class WireCompiler {
     for (Type type : types) {
       if (type instanceof MessageType) {
         for (Field field : ((MessageType) type).getFields()) {
-          if (isRepeated(field)) {
-            return true;
-          }
+          if (isRepeated(field)) return true;
         }
       }
-      if (hasRepeatedField(type.getNestedTypes())) {
-        return true;
-      }
+      if (hasRepeatedField(type.getNestedTypes())) return true;
     }
     return false;
   }
@@ -911,14 +871,10 @@ public class WireCompiler {
     for (Type type : types) {
       if (type instanceof MessageType) {
         for (Field field : ((MessageType) type).getFields()) {
-          if ("bytes".equals(field.getType())) {
-            return true;
-          }
+          if ("bytes".equals(field.getType())) return true;
         }
       }
-      if (hasByteStringField(type.getNestedTypes())) {
-        return true;
-      }
+      if (hasByteStringField(type.getNestedTypes())) return true;
     }
     return false;
   }
@@ -930,9 +886,7 @@ public class WireCompiler {
   private boolean hasRequiredFields(Type type) {
     if (type instanceof MessageType) {
       for (MessageType.Field field : ((MessageType) type).getFields()) {
-        if (field.getLabel() == MessageType.Label.REQUIRED) {
-          return true;
-        }
+        if (field.getLabel() == MessageType.Label.REQUIRED) return true;
       }
     }
     return false;
@@ -979,9 +933,7 @@ public class WireCompiler {
       String prefix = messageType.getFullyQualifiedName();
       while (prefix.contains(".")) {
         String fqname = prefix + "." + type;
-        if (javaSymbolMap.containsKey(fqname)) {
-          return fqname;
-        }
+        if (javaSymbolMap.containsKey(fqname)) return fqname;
         prefix = prefix.substring(0, prefix.lastIndexOf('.'));
       }
     }
@@ -1001,9 +953,7 @@ public class WireCompiler {
 
   private String javaName(MessageType messageType, String type) {
     String scalarType = JAVA_TYPES.get(type);
-    if (scalarType != null) {
-      return scalarType;
-    }
+    if (scalarType != null) return scalarType;
 
     // Assume names containing a '.' are already fully-qualified
     if (type.contains(".")) {
@@ -1013,9 +963,7 @@ public class WireCompiler {
       while (prefix.contains(".")) {
         String fqname = prefix + "." + type;
         String javaName = javaSymbolMap.get(fqname);
-        if (javaName != null) {
-          return shortenJavaName(javaName);
-        }
+        if (javaName != null) return shortenJavaName(javaName);
         prefix = prefix.substring(0, prefix.lastIndexOf('.'));
       }
     }
@@ -1024,9 +972,7 @@ public class WireCompiler {
 
   private String fqJavaName(MessageType messageType, String type) {
     String scalarType = JAVA_TYPES.get(type);
-    if (scalarType != null) {
-      return null;
-    }
+    if (scalarType != null) return null;
 
     // Assume names containing a '.' are already fully-qualified
     if (type.contains(".")) {
@@ -1036,9 +982,7 @@ public class WireCompiler {
       while (prefix.contains(".")) {
         String fqname = prefix + "." + type;
         String javaName = javaSymbolMap.get(fqname);
-        if (javaName != null) {
-          return javaName;
-        }
+        if (javaName != null) return javaName;
         prefix = prefix.substring(0, prefix.lastIndexOf('.'));
       }
     }
