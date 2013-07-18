@@ -1,8 +1,7 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.wire;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Superclass for protocol buffer messages that declare an extension range.
@@ -11,25 +10,25 @@ import java.util.Set;
  */
 public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends Message {
 
-  ExtensionMap<T> extensionMap;
+  private static final ExtensionMap EMPTY_EXTENSION_MAP = new ExtensionMap();
+
+  @SuppressWarnings("unchecked")
+  ExtensionMap<T> extensionMap = (ExtensionMap<T>) EMPTY_EXTENSION_MAP;
 
   /**
    * Constructs an ExtendableMessage initialized to the current builder state.
    */
   protected ExtendableMessage(ExtendableBuilder<T> builder) {
     super(builder);
-    if (builder.extensionMap != null) {
+    if (!builder.extensionMap.isEmpty()) {
       this.extensionMap = new ExtensionMap<T>(builder.extensionMap);
     }
   }
 
   /**
-   * Returns the set of extensions that are present on this message instance.
+   * Returns a {@link List} of extensions that are present on this message instance in tag order.
    */
-  public Set<Extension<T, ?>> getExtensions() {
-    if (extensionMap == null) {
-      return Collections.emptySet();
-    }
+  public List<Extension<T, ?>> getExtensions() {
     return extensionMap.getExtensions();
   }
 
@@ -41,7 +40,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
    * @return the extension value, or null
    */
   public <E> E getExtension(Extension<T, E> extension) {
-    return extensionMap == null ? null : extensionMap.get(extension);
+    return extensionMap.get(extension);
   }
 
   /**
@@ -49,9 +48,6 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
    * on the given message.
    */
   protected boolean extensionsEqual(ExtendableMessage<T> other) {
-    if (extensionMap == null) {
-      return other.extensionMap == null;
-    }
     return extensionMap.equals(other.extensionMap);
   }
 
@@ -59,14 +55,14 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
    * Returns a hash code for the current set of extensions.
    */
   protected int extensionsHashCode() {
-    return extensionMap == null ? 0 : extensionMap.hashCode();
+    return extensionMap.hashCode();
   }
 
   /**
    * Returns a human-readable dump of the current set of extensions.
    */
   protected String extensionsToString() {
-    return extensionMap == null ? "{}" : extensionMap.toString();
+    return extensionMap.toString();
   }
 
   /**
@@ -75,14 +71,14 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
   public abstract static class ExtendableBuilder<T extends ExtendableMessage<?>>
       extends Builder<T> {
 
-    ExtensionMap<T> extensionMap;
+    ExtensionMap<T> extensionMap = EMPTY_EXTENSION_MAP;
 
     protected ExtendableBuilder() {
     }
 
     protected ExtendableBuilder(ExtendableMessage<T> message) {
       super(message);
-      if (message != null && message.extensionMap != null) {
+      if (message != null && !message.extensionMap.isEmpty()) {
         this.extensionMap = new ExtensionMap<T>(message.extensionMap);
       }
     }
@@ -95,7 +91,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
      * @return the extension value, or null
      */
     public <E> E getExtension(Extension<T, E> extension) {
-      return extensionMap == null ? null : extensionMap.get(extension);
+      return extensionMap.get(extension);
     }
 
     /**
@@ -107,7 +103,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
      * @return a reference to this builder
      */
     public <E> ExtendableBuilder<T> setExtension(Extension<T, E> extension, E value) {
-      if (extensionMap == null) {
+      if (extensionMap == EMPTY_EXTENSION_MAP) {
         extensionMap = new ExtensionMap<T>();
       }
       extensionMap.put(extension, value);

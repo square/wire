@@ -1,8 +1,10 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.wire;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -24,10 +26,10 @@ final class ExtensionMap<T extends ExtendableMessage<?>> {
   }
 
   /**
-   * Returns a {@link Set} of {@link Extension}s in this map.
+   * Returns a {@link List} of {@link Extension}s in this map in tag order.
    */
-  public Set<Extension<T, ?>> getExtensions() {
-    return map.keySet();
+  public List<Extension<T, ?>> getExtensions() {
+    return Collections.unmodifiableList(new ArrayList<Extension<T, ?>>(map.keySet()));
   }
 
   /**
@@ -56,6 +58,10 @@ final class ExtensionMap<T extends ExtendableMessage<?>> {
    */
   public void clear(Extension<T, ?> extension) {
     map.remove(extension);
+  }
+
+  public boolean isEmpty() {
+    return map.isEmpty();
   }
 
   @Override
