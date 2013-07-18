@@ -13,8 +13,8 @@ import org.junit.Test;
 
 public class WireCompilerTest {
 
-  File testAllTypesDir;
-  File testSimpleDir;
+  private File testAllTypesDir;
+  private File testSimpleDir;
 
   @Before public void setUp() {
     System.out.println("cwd = " + new File(".").getAbsolutePath());

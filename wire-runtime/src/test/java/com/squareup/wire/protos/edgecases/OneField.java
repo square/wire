@@ -8,8 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.Wire;
 
-public final class OneField
-    implements Message {
+public final class OneField extends Message {
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
 
@@ -20,6 +19,7 @@ public final class OneField
   public final Integer opt_int32;
 
   private OneField(Builder builder) {
+    super(builder);
     this.opt_int32 = builder.opt_int32;
   }
 
@@ -41,8 +41,7 @@ public final class OneField
         opt_int32);
   }
 
-  public static final class Builder
-      implements Message.Builder<OneField> {
+  public static final class Builder extends Message.Builder<OneField> {
 
     public Integer opt_int32;
 
@@ -50,6 +49,7 @@ public final class OneField
     }
 
     public Builder(OneField message) {
+      super(message);
       if (message == null) return;
       this.opt_int32 = message.opt_int32;
     }
@@ -57,11 +57,6 @@ public final class OneField
     public Builder opt_int32(Integer opt_int32) {
       this.opt_int32 = opt_int32;
       return this;
-    }
-
-    @Override
-    public boolean isInitialized() {
-      return true;
     }
 
     @Override

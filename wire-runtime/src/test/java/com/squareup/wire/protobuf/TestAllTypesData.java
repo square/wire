@@ -1,7 +1,7 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.wire.protobuf;
 
-public class TestAllTypesData {
+class TestAllTypesData {
 
   public static final String expectedToString =
       "AllTypes{opt_int32=111,opt_uint32=112,opt_sint32=113,opt_fixed32=114,opt_sfixed32=115," +
@@ -23,7 +23,7 @@ public class TestAllTypesData {
       "pack_sfixed64=[120, 120],pack_bool=[true, true],pack_float=[122.0, 122.0]," +
       "pack_double=[123.0, 123.0],pack_string=[124, 124],pack_bytes=[[7de1], [7de1]]," +
       "pack_nested_enum=[A, A],pack_nested_message=[NestedMessage{a=999}, NestedMessage{a=999}]," +
-      "{extensionMap={1011=true,1111=[true, true],1211=[true, true]}}";
+      "{extensions={1011=true,1111=[true, true],1211=[true, true]}}";
 
   public static final int[] expectedOutput = {
       // optional

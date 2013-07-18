@@ -121,10 +121,10 @@ public class WireTest extends TestCase {
     Wire wire = new Wire(Ext_simple_message.class);
     ProtoAdapter<SimpleMessage> adapter = wire.messageAdapter(SimpleMessage.class);
     int msgSerializedSize = adapter.getSerializedSize(msg);
-    //assertEquals(38, msgSerializedSize);
+    assertEquals(29, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
     adapter.write(msg, CodedOutputByteBufferNano.newInstance(result));
-    //assertEquals(38, result.length);
+    assertEquals(29, result.length);
 
     SimpleMessage newMsg = adapter.read(CodedInputByteBufferNano.newInstance(result));
     assertEquals(Arrays.asList(444, 555), newMsg.optional_external_msg.getExtension(fooext));
@@ -152,10 +152,10 @@ public class WireTest extends TestCase {
     Wire wire = new Wire();
     ProtoAdapter<SimpleMessage> adapter = wire.messageAdapter(SimpleMessage.class);
     int msgSerializedSize = adapter.getSerializedSize(msg);
-    //assertEquals(30, msgSerializedSize);
+    assertEquals(21, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
     adapter.write(msg, CodedOutputByteBufferNano.newInstance(result));
-    //assertEquals(30, result.length);
+    assertEquals(21, result.length);
 
     SimpleMessage newMsg = adapter.read(CodedInputByteBufferNano.newInstance(result));
     assertNull(newMsg.optional_external_msg.getExtension(fooext));

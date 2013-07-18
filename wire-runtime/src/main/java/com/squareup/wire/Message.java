@@ -2,66 +2,100 @@
 package com.squareup.wire;
 
 /**
- * An interface implemented by protocol buffer messages.
+ * Superclass for protocol buffer messages.
  */
-public interface Message {
+public abstract class Message {
+
+  private static final UnknownFieldMap EMPTY_UNKNOWN_FIELD_MAP = new UnknownFieldMap();
+  transient UnknownFieldMap unknownFieldMap = EMPTY_UNKNOWN_FIELD_MAP;
 
   /**
-   * An interface implemented by protocol buffer message builders.
+   * Constructs a Message, initialized with any unknown field data stored in the given
+   * {@code Builder}.
    */
-  public interface Builder<T extends Message> {
-    /**
-     * Returns true if all required fields have been set.
-     */
-    boolean isInitialized();
-
-    /**
-     * Returns an immutable {@link Message} based on the fields that have been set
-     * in this builder.
-     */
-    T build();
+  protected Message(Builder builder) {
+    if (builder.unknownFieldMap != EMPTY_UNKNOWN_FIELD_MAP) {
+      unknownFieldMap = new UnknownFieldMap(builder.unknownFieldMap);
+    }
   }
 
   /**
-   * An interface implemented by protocol buffer messages that declare an extension range.
-   *
-   * @param <MessageType>
+   * Superclass for protocol buffer message builders.
    */
-  public interface ExtendableMessage<MessageType extends ExtendableMessage> extends Message {
+  public abstract static class Builder<T extends Message> {
+
+    UnknownFieldMap unknownFieldMap = EMPTY_UNKNOWN_FIELD_MAP;
 
     /**
-     * Returns the value of an extension field set on this message.
-     *
-     * @param extension the {@link Extension}
-     * @param <Type> the (boxed) Java datatype of the extension value
-     * @return the extension value, or null
+     * Constructs a Builder with no unknown field data.
      */
-    <Type> Type getExtension(Extension<MessageType, Type> extension);
-
-    /**
-     * An interface implemented by builders for extensible protocol buffer messages.
-     */
-    public interface ExtendableBuilder<MessageType extends ExtendableMessage>
-        extends Builder<MessageType> {
-      /**
-       * Returns the value of an extension field set on this builder.
-       *
-       * @param extension the {@link Extension}
-       * @param <Type> the (boxed) Java datatype of the extension value
-       * @return the extension value, or null
-       */
-      <Type> Type getExtension(Extension<MessageType, Type> extension);
-
-      /**
-       * Sets the value of an extension field on this builder.
-       *
-       * @param extension the {@link Extension}
-       * @param val the extension value
-       * @param <Type> the (boxed) Java datatype of the extension value
-       * @return a reference to this builder
-       */
-      <Type> ExtendableBuilder<MessageType> setExtension(Extension<MessageType, Type> extension,
-          Type val);
+    public Builder() {
     }
+
+    /**
+     * Constructs a Builder with unknown field data initialized to a copy of any unknown
+     * field data in the given {@link Message}.
+     */
+    public Builder(Message message) {
+      if (message != null && !message.unknownFieldMap.isEmpty()) {
+        this.unknownFieldMap = new UnknownFieldMap(message.unknownFieldMap);
+      }
+    }
+
+    /**
+     * Adds a {@code varint} value to the unknown field set with the given tag number.
+     */
+    public void addVarint(int tag, long value) {
+      ensureUnknownFieldMap().addVarint(tag, value);
+    }
+
+    /**
+     * Adds a {@code fixed32} value to the unknown field set with the given tag number.
+     */
+    public void addFixed32(int tag, int value) {
+      ensureUnknownFieldMap().addFixed32(tag, value);
+    }
+
+    /**
+     * Adds a {@code fixed64} value to the unknown field set with the given tag number.
+     */
+    public void addFixed64(int tag, long value) {
+      ensureUnknownFieldMap().addFixed64(tag, value);
+    }
+
+    /**
+     * Adds a length delimited value to the unknown field set with the given tag number.
+     */
+    public void addLengthDelimited(int tag, ByteString value) {
+      ensureUnknownFieldMap().addLengthDelimited(tag, value);
+    }
+
+    /**
+     * Adds a group value to the unknown field set with the given tag number.
+     */
+    public void addGroup(int tag, ByteString value) {
+      ensureUnknownFieldMap().addGroup(tag, value);
+    }
+
+    private UnknownFieldMap ensureUnknownFieldMap() {
+      if (unknownFieldMap == EMPTY_UNKNOWN_FIELD_MAP) {
+        unknownFieldMap = new UnknownFieldMap();
+      }
+      return unknownFieldMap;
+    }
+
+    /**
+     * Returns true if all required fields have been set. The default implementation returns
+     * true.
+     */
+    public boolean isInitialized() {
+      return true;
+    }
+
+    /**
+     * Returns an immutable {@link com.squareup.wire.Message} based on the fields that have been set
+     * in this builder.
+     */
+    public abstract T build();
   }
 }

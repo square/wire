@@ -1,0 +1,16 @@
+package squareup.protos.unknownfields;
+
+option java_package = "com.squareup.wire.protos.unknownfields";
+
+message VersionOne {
+  optional int32 i = 1;
+}
+
+message VersionTwo {
+  optional int32 i = 1;
+
+  optional int32 v2_i = 2;
+  optional string v2_s = 3;
+  optional fixed32 v2_f32 = 4;
+  optional fixed64 v2_f64 = 5;
+}

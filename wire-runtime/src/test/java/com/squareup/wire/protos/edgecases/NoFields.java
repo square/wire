@@ -6,10 +6,10 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 
-public final class NoFields
-    implements Message {
+public final class NoFields extends Message {
 
   private NoFields(Builder builder) {
+    super(builder);
   }
 
   @Override
@@ -27,18 +27,13 @@ public final class NoFields
     return "NoFields{}";
   }
 
-  public static final class Builder
-      implements Message.Builder<NoFields> {
+  public static final class Builder extends Message.Builder<NoFields> {
 
     public Builder() {
     }
 
     public Builder(NoFields message) {
-    }
-
-    @Override
-    public boolean isInitialized() {
-      return true;
+      super(message);
     }
 
     @Override

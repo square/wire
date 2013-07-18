@@ -5,6 +5,7 @@
 package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.ByteString;
+import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
@@ -12,11 +13,8 @@ import com.squareup.wire.ProtoField;
 import com.squareup.wire.Wire;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-public final class AllTypes
-    implements Message.ExtendableMessage<AllTypes> {
+public final class AllTypes extends ExtendableMessage<AllTypes> {
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
   public static final Integer DEFAULT_OPT_UINT32 = 0;
@@ -86,8 +84,6 @@ public final class AllTypes
   public static final List<ByteString> DEFAULT_PACK_BYTES = Collections.emptyList();
   public static final List<NestedEnum> DEFAULT_PACK_NESTED_ENUM = Collections.emptyList();
   public static final List<NestedMessage> DEFAULT_PACK_NESTED_MESSAGE = Collections.emptyList();
-
-  public final Map<Extension<AllTypes, ?>, Object> extensionMap;
 
   @ProtoField(
     tag = 1,
@@ -565,6 +561,7 @@ public final class AllTypes
   public final List<NestedMessage> pack_nested_message;
 
   private AllTypes(Builder builder) {
+    super(builder);
     this.opt_int32 = builder.opt_int32;
     this.opt_uint32 = builder.opt_uint32;
     this.opt_sint32 = builder.opt_sint32;
@@ -633,20 +630,13 @@ public final class AllTypes
     this.pack_bytes = Wire.unmodifiableCopyOf(builder.pack_bytes);
     this.pack_nested_enum = Wire.unmodifiableCopyOf(builder.pack_nested_enum);
     this.pack_nested_message = Wire.unmodifiableCopyOf(builder.pack_nested_message);
-    this.extensionMap = Collections.unmodifiableMap(new TreeMap<Extension<AllTypes, ?>, Object>(builder.extensionMap));
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public <Type> Type getExtension(Extension<AllTypes, Type> extension) {
-    return (Type) extensionMap.get(extension);
   }
 
   @Override
   public boolean equals(Object other) {
     if (!(other instanceof AllTypes)) return false;
     AllTypes o = (AllTypes) other;
-    if (!extensionMap.equals(o.extensionMap)) return false;
+    if (!extensionsEqual(o)) return false;
     if (!Wire.equals(opt_int32, o.opt_int32)) return false;
     if (!Wire.equals(opt_uint32, o.opt_uint32)) return false;
     if (!Wire.equals(opt_sint32, o.opt_sint32)) return false;
@@ -720,7 +710,7 @@ public final class AllTypes
 
   @Override
   public int hashCode() {
-    int hashCode = extensionMap.hashCode();
+    int hashCode = extensionsHashCode();
     hashCode = hashCode * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
     hashCode = hashCode * 37 + (opt_uint32 != null ? opt_uint32.hashCode() : 0);
     hashCode = hashCode * 37 + (opt_sint32 != null ? opt_sint32.hashCode() : 0);
@@ -863,7 +853,7 @@ public final class AllTypes
         "pack_bytes=%s," +
         "pack_nested_enum=%s," +
         "pack_nested_message=%s," +
-        "{extensionMap=%s}",
+        "{extensions=%s}",
         opt_int32,
         opt_uint32,
         opt_sint32,
@@ -932,13 +922,10 @@ public final class AllTypes
         pack_bytes,
         pack_nested_enum,
         pack_nested_message,
-        Wire.toString(extensionMap));
+        extensionsToString());
   }
 
-  public static final class Builder
-      implements ExtendableMessage.ExtendableBuilder<AllTypes> {
-
-    private final Map<Extension<AllTypes, ?>, Object> extensionMap = new TreeMap<Extension<AllTypes, ?>, Object>();
+  public static final class Builder extends ExtendableBuilder<AllTypes> {
 
     public Integer opt_int32;
     public Integer opt_uint32;
@@ -1013,6 +1000,7 @@ public final class AllTypes
     }
 
     public Builder(AllTypes message) {
+      super(message);
       if (message == null) return;
       this.opt_int32 = message.opt_int32;
       this.opt_uint32 = message.opt_uint32;
@@ -1082,7 +1070,6 @@ public final class AllTypes
       this.pack_bytes = Wire.copyOf(message.pack_bytes);
       this.pack_nested_enum = Wire.copyOf(message.pack_nested_enum);
       this.pack_nested_message = Wire.copyOf(message.pack_nested_message);
-      this.extensionMap.putAll(message.extensionMap);
     }
 
     public Builder opt_int32(Integer opt_int32) {
@@ -1426,14 +1413,8 @@ public final class AllTypes
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <Type> Type getExtension(Extension<AllTypes, Type> extension) {
-      return (Type) extensionMap.get(extension);
-    }
-
-    @Override
-    public <Type> Builder setExtension(Extension<AllTypes, Type> extension, Type value) {
-      extensionMap.put(extension, value);
+    public <E> Builder setExtension(Extension<AllTypes, E> extension, E value) {
+      super.setExtension(extension, value);
       return this;
     }
 
@@ -1471,8 +1452,7 @@ public final class AllTypes
     A,
   }
 
-  public static final class NestedMessage
-      implements Message {
+  public static final class NestedMessage extends Message {
 
     public static final Integer DEFAULT_A = 0;
 
@@ -1483,6 +1463,7 @@ public final class AllTypes
     public final Integer a;
 
     private NestedMessage(Builder builder) {
+      super(builder);
       this.a = builder.a;
     }
 
@@ -1504,8 +1485,7 @@ public final class AllTypes
           a);
     }
 
-    public static final class Builder
-        implements Message.Builder<NestedMessage> {
+    public static final class Builder extends Message.Builder<NestedMessage> {
 
       public Integer a;
 
@@ -1513,6 +1493,7 @@ public final class AllTypes
       }
 
       public Builder(NestedMessage message) {
+        super(message);
         if (message == null) return;
         this.a = message.a;
       }
@@ -1520,11 +1501,6 @@ public final class AllTypes
       public Builder a(Integer a) {
         this.a = a;
         return this;
-      }
-
-      @Override
-      public boolean isInitialized() {
-        return true;
       }
 
       @Override
