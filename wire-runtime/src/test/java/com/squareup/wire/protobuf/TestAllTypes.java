@@ -312,7 +312,7 @@ public class TestAllTypes {
     Assert.assertEquals(array(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
     Assert.assertEquals(array(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
 
-    Set<Extension<AllTypes,?>> extensions = parsed.getExtensions();
+    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
     Assert.assertEquals(3, extensions.size());
     Assert.assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
     Assert.assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));

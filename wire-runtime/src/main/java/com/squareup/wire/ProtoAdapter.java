@@ -188,9 +188,7 @@ public class ProtoAdapter<M extends Message> {
         size += getExtensionsSerializedSize(message.extensionMap);
       }
     }
-    if (instance.unknownFieldMap != null) {
-      size += instance.unknownFieldMap.getSerializedSize();
-    }
+    size += instance.unknownFieldMap.getSerializedSize();
     return size;
   }
 
@@ -270,9 +268,7 @@ public class ProtoAdapter<M extends Message> {
         writeExtensions(output, message.extensionMap);
       }
     }
-    if (instance.unknownFieldMap != null) {
-      instance.unknownFieldMap.write(output);
-    }
+    instance.unknownFieldMap.write(output);
   }
 
   private <T extends ExtendableMessage<?>> void writeExtensions(CodedOutputByteBufferNano output,

@@ -10,8 +10,7 @@ final class ExtensionRegistry {
       extensions = new HashMap<Class<? extends ExtendableMessage>,
           Map<Integer, Extension<?, ?>>>();
 
-  public <MessageType extends ExtendableMessage, Type> void
-      add(Extension<MessageType, Type> extension) {
+  public <T extends ExtendableMessage, E> void add(Extension<T, E> extension) {
     Class<? extends ExtendableMessage> messageClass = extension.getExtendedType();
     Map<Integer, Extension<?, ?>> map = extensions.get(messageClass);
     if (map == null) {
@@ -22,9 +21,9 @@ final class ExtensionRegistry {
   }
 
   @SuppressWarnings("unchecked")
-  public <M extends ExtendableMessage, E> Extension<M, E>
-      getExtension(Class<M> messageClass, int tag) {
+  public <T extends ExtendableMessage, E> Extension<T, E>
+      getExtension(Class<T> messageClass, int tag) {
     Map<Integer, Extension<?, ?>> map = extensions.get(messageClass);
-    return map == null ? null : (Extension<M, E>) map.get(tag);
+    return map == null ? null : (Extension<T, E>) map.get(tag);
   }
 }

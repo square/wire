@@ -46,24 +46,6 @@ public class UnknownFieldsTest {
     assertEquals(v1Simple.hashCode(), v1.hashCode());
     assertNotSame(wire.toByteArray(v1Simple), wire.toByteArray(v1));
 
-    // Retrieve unknown fields
-    assertEquals(1, v1.getUnknownVarintTags().size());
-    assertEquals(new Integer(2), v1.getUnknownVarintTags().iterator().next());
-    assertEquals(new Long(12345L), v1.getUnknownVarintFields(2).get(0));
-
-    assertEquals(1, v1.getUnknownLengthDelimitedTags().size());
-    assertEquals(new Integer(3), v1.getUnknownLengthDelimitedTags().iterator().next());
-    assertEquals(ByteString.of((byte) '2', (byte) '2', (byte) '2'),
-        v1.getUnknownLengthDelimitedFields(3).get(0));
-
-    assertEquals(1, v1.getUnknownFixed32Tags().size());
-    assertEquals(new Integer(4), v1.getUnknownFixed32Tags().iterator().next());
-    assertEquals(new Integer(67890), v1.getUnknownFixed32Fields(4).get(0));
-
-    assertEquals(1, v1.getUnknownFixed64Tags().size());
-    assertEquals(new Integer(5), v1.getUnknownFixed64Tags().iterator().next());
-    assertEquals(new Long(98765L), v1.getUnknownFixed64Fields(5).get(0));
-
     // Re-parse
     VersionTwo v2B = wire.parseFrom(VersionTwo.class, v1Bytes);
     assertEquals(new Integer(111), v2B.i);
@@ -76,24 +58,6 @@ public class UnknownFieldsTest {
     VersionOne v1Modified = new VersionOne.Builder(v1).i(777).build();
     assertEquals(new Integer(777), v1Modified.i);
     byte[] v1ModifiedBytes = wire.toByteArray(v1Modified);
-
-    // Retrieve unknown fields
-    assertEquals(1, v1Modified.getUnknownVarintTags().size());
-    assertEquals(new Integer(2), v1Modified.getUnknownVarintTags().iterator().next());
-    assertEquals(new Long(12345L), v1Modified.getUnknownVarintFields(2).get(0));
-
-    assertEquals(1, v1Modified.getUnknownLengthDelimitedTags().size());
-    assertEquals(new Integer(3), v1Modified.getUnknownLengthDelimitedTags().iterator().next());
-    assertEquals(ByteString.of((byte) '2', (byte) '2', (byte) '2'),
-        v1Modified.getUnknownLengthDelimitedFields(3).get(0));
-
-    assertEquals(1, v1Modified.getUnknownFixed32Tags().size());
-    assertEquals(new Integer(4), v1Modified.getUnknownFixed32Tags().iterator().next());
-    assertEquals(new Integer(67890), v1Modified.getUnknownFixed32Fields(4).get(0));
-
-    assertEquals(1, v1Modified.getUnknownFixed64Tags().size());
-    assertEquals(new Integer(5), v1Modified.getUnknownFixed64Tags().iterator().next());
-    assertEquals(new Long(98765L), v1Modified.getUnknownFixed64Fields(5).get(0));
 
     VersionTwo v2C = wire.parseFrom(VersionTwo.class, v1ModifiedBytes);
     assertEquals(new Integer(777), v2C.i);
