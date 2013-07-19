@@ -35,8 +35,11 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
 
   @Override
   public int hashCode() {
-    int hashCode = extensionsHashCode();
-    hashCode = hashCode * 37 + (f != null ? f.hashCode() : 0);
+    if (hashCode == 0) {
+      int result = extensionsHashCode();
+      result = result * 37 + (f != null ? f.hashCode() : 0);
+      hashCode = result;
+    }
     return hashCode;
   }
 

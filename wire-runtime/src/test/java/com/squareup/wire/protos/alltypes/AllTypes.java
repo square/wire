@@ -710,75 +710,78 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
   @Override
   public int hashCode() {
-    int hashCode = extensionsHashCode();
-    hashCode = hashCode * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_uint32 != null ? opt_uint32.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_sint32 != null ? opt_sint32.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_fixed32 != null ? opt_fixed32.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_sfixed32 != null ? opt_sfixed32.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_int64 != null ? opt_int64.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_uint64 != null ? opt_uint64.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_sint64 != null ? opt_sint64.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_fixed64 != null ? opt_fixed64.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_sfixed64 != null ? opt_sfixed64.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_bool != null ? opt_bool.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_float != null ? opt_float.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_double != null ? opt_double.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_string != null ? opt_string.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_nested_enum != null ? opt_nested_enum.hashCode() : 0);
-    hashCode = hashCode * 37 + (opt_nested_message != null ? opt_nested_message.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_int32 != null ? req_int32.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_uint32 != null ? req_uint32.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_sint32 != null ? req_sint32.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_fixed32 != null ? req_fixed32.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_sfixed32 != null ? req_sfixed32.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_int64 != null ? req_int64.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_uint64 != null ? req_uint64.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_sint64 != null ? req_sint64.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_fixed64 != null ? req_fixed64.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_sfixed64 != null ? req_sfixed64.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_bool != null ? req_bool.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_float != null ? req_float.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_double != null ? req_double.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_string != null ? req_string.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_bytes != null ? req_bytes.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_nested_enum != null ? req_nested_enum.hashCode() : 0);
-    hashCode = hashCode * 37 + (req_nested_message != null ? req_nested_message.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_int32 != null ? rep_int32.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_uint32 != null ? rep_uint32.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_sint32 != null ? rep_sint32.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_fixed32 != null ? rep_fixed32.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_sfixed32 != null ? rep_sfixed32.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_int64 != null ? rep_int64.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_uint64 != null ? rep_uint64.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_sint64 != null ? rep_sint64.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_fixed64 != null ? rep_fixed64.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_sfixed64 != null ? rep_sfixed64.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_bool != null ? rep_bool.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_float != null ? rep_float.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_double != null ? rep_double.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_string != null ? rep_string.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_bytes != null ? rep_bytes.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_nested_enum != null ? rep_nested_enum.hashCode() : 0);
-    hashCode = hashCode * 37 + (rep_nested_message != null ? rep_nested_message.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_int32 != null ? pack_int32.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_uint32 != null ? pack_uint32.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_sint32 != null ? pack_sint32.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_fixed32 != null ? pack_fixed32.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_sfixed32 != null ? pack_sfixed32.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_int64 != null ? pack_int64.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_uint64 != null ? pack_uint64.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_sint64 != null ? pack_sint64.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_fixed64 != null ? pack_fixed64.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_sfixed64 != null ? pack_sfixed64.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_bool != null ? pack_bool.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_float != null ? pack_float.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_double != null ? pack_double.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_string != null ? pack_string.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_bytes != null ? pack_bytes.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_nested_enum != null ? pack_nested_enum.hashCode() : 0);
-    hashCode = hashCode * 37 + (pack_nested_message != null ? pack_nested_message.hashCode() : 0);
+    if (hashCode == 0) {
+      int result = extensionsHashCode();
+      result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
+      result = result * 37 + (opt_uint32 != null ? opt_uint32.hashCode() : 0);
+      result = result * 37 + (opt_sint32 != null ? opt_sint32.hashCode() : 0);
+      result = result * 37 + (opt_fixed32 != null ? opt_fixed32.hashCode() : 0);
+      result = result * 37 + (opt_sfixed32 != null ? opt_sfixed32.hashCode() : 0);
+      result = result * 37 + (opt_int64 != null ? opt_int64.hashCode() : 0);
+      result = result * 37 + (opt_uint64 != null ? opt_uint64.hashCode() : 0);
+      result = result * 37 + (opt_sint64 != null ? opt_sint64.hashCode() : 0);
+      result = result * 37 + (opt_fixed64 != null ? opt_fixed64.hashCode() : 0);
+      result = result * 37 + (opt_sfixed64 != null ? opt_sfixed64.hashCode() : 0);
+      result = result * 37 + (opt_bool != null ? opt_bool.hashCode() : 0);
+      result = result * 37 + (opt_float != null ? opt_float.hashCode() : 0);
+      result = result * 37 + (opt_double != null ? opt_double.hashCode() : 0);
+      result = result * 37 + (opt_string != null ? opt_string.hashCode() : 0);
+      result = result * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
+      result = result * 37 + (opt_nested_enum != null ? opt_nested_enum.hashCode() : 0);
+      result = result * 37 + (opt_nested_message != null ? opt_nested_message.hashCode() : 0);
+      result = result * 37 + (req_int32 != null ? req_int32.hashCode() : 0);
+      result = result * 37 + (req_uint32 != null ? req_uint32.hashCode() : 0);
+      result = result * 37 + (req_sint32 != null ? req_sint32.hashCode() : 0);
+      result = result * 37 + (req_fixed32 != null ? req_fixed32.hashCode() : 0);
+      result = result * 37 + (req_sfixed32 != null ? req_sfixed32.hashCode() : 0);
+      result = result * 37 + (req_int64 != null ? req_int64.hashCode() : 0);
+      result = result * 37 + (req_uint64 != null ? req_uint64.hashCode() : 0);
+      result = result * 37 + (req_sint64 != null ? req_sint64.hashCode() : 0);
+      result = result * 37 + (req_fixed64 != null ? req_fixed64.hashCode() : 0);
+      result = result * 37 + (req_sfixed64 != null ? req_sfixed64.hashCode() : 0);
+      result = result * 37 + (req_bool != null ? req_bool.hashCode() : 0);
+      result = result * 37 + (req_float != null ? req_float.hashCode() : 0);
+      result = result * 37 + (req_double != null ? req_double.hashCode() : 0);
+      result = result * 37 + (req_string != null ? req_string.hashCode() : 0);
+      result = result * 37 + (req_bytes != null ? req_bytes.hashCode() : 0);
+      result = result * 37 + (req_nested_enum != null ? req_nested_enum.hashCode() : 0);
+      result = result * 37 + (req_nested_message != null ? req_nested_message.hashCode() : 0);
+      result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 0);
+      result = result * 37 + (rep_uint32 != null ? rep_uint32.hashCode() : 0);
+      result = result * 37 + (rep_sint32 != null ? rep_sint32.hashCode() : 0);
+      result = result * 37 + (rep_fixed32 != null ? rep_fixed32.hashCode() : 0);
+      result = result * 37 + (rep_sfixed32 != null ? rep_sfixed32.hashCode() : 0);
+      result = result * 37 + (rep_int64 != null ? rep_int64.hashCode() : 0);
+      result = result * 37 + (rep_uint64 != null ? rep_uint64.hashCode() : 0);
+      result = result * 37 + (rep_sint64 != null ? rep_sint64.hashCode() : 0);
+      result = result * 37 + (rep_fixed64 != null ? rep_fixed64.hashCode() : 0);
+      result = result * 37 + (rep_sfixed64 != null ? rep_sfixed64.hashCode() : 0);
+      result = result * 37 + (rep_bool != null ? rep_bool.hashCode() : 0);
+      result = result * 37 + (rep_float != null ? rep_float.hashCode() : 0);
+      result = result * 37 + (rep_double != null ? rep_double.hashCode() : 0);
+      result = result * 37 + (rep_string != null ? rep_string.hashCode() : 0);
+      result = result * 37 + (rep_bytes != null ? rep_bytes.hashCode() : 0);
+      result = result * 37 + (rep_nested_enum != null ? rep_nested_enum.hashCode() : 0);
+      result = result * 37 + (rep_nested_message != null ? rep_nested_message.hashCode() : 0);
+      result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 0);
+      result = result * 37 + (pack_uint32 != null ? pack_uint32.hashCode() : 0);
+      result = result * 37 + (pack_sint32 != null ? pack_sint32.hashCode() : 0);
+      result = result * 37 + (pack_fixed32 != null ? pack_fixed32.hashCode() : 0);
+      result = result * 37 + (pack_sfixed32 != null ? pack_sfixed32.hashCode() : 0);
+      result = result * 37 + (pack_int64 != null ? pack_int64.hashCode() : 0);
+      result = result * 37 + (pack_uint64 != null ? pack_uint64.hashCode() : 0);
+      result = result * 37 + (pack_sint64 != null ? pack_sint64.hashCode() : 0);
+      result = result * 37 + (pack_fixed64 != null ? pack_fixed64.hashCode() : 0);
+      result = result * 37 + (pack_sfixed64 != null ? pack_sfixed64.hashCode() : 0);
+      result = result * 37 + (pack_bool != null ? pack_bool.hashCode() : 0);
+      result = result * 37 + (pack_float != null ? pack_float.hashCode() : 0);
+      result = result * 37 + (pack_double != null ? pack_double.hashCode() : 0);
+      result = result * 37 + (pack_string != null ? pack_string.hashCode() : 0);
+      result = result * 37 + (pack_bytes != null ? pack_bytes.hashCode() : 0);
+      result = result * 37 + (pack_nested_enum != null ? pack_nested_enum.hashCode() : 0);
+      result = result * 37 + (pack_nested_message != null ? pack_nested_message.hashCode() : 0);
+      hashCode = result;
+    }
     return hashCode;
   }
 
@@ -1475,7 +1478,10 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
     @Override
     public int hashCode() {
-      return a != null ? a.hashCode() : 0;
+      if (hashCode == 0) {
+        hashCode = a != null ? a.hashCode() : 0;
+      }
+      return hashCode;
     }
 
     @Override
