@@ -210,7 +210,7 @@ public final class Wire {
   public <M extends Message> M parseFrom(Class<M> messageClass,
       byte[] bytes, int off, int len) throws IOException {
     ProtoAdapter<M> adapter = messageAdapter(messageClass);
-    return adapter.read(CodedInputByteBufferNano.newInstance(bytes, off, len));
+    return adapter.read(WireInput.newInstance(bytes, off, len));
   }
 
   /**
@@ -225,7 +225,7 @@ public final class Wire {
    */
   public <M extends Message> M parseFrom(Class<M> messageClass, byte[] bytes) throws IOException {
     ProtoAdapter<M> adapter = messageAdapter(messageClass);
-    return adapter.read(CodedInputByteBufferNano.newInstance(bytes));
+    return adapter.read(WireInput.newInstance(bytes));
   }
 
   /**
@@ -258,7 +258,7 @@ public final class Wire {
   public <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
     ProtoAdapter<M> adapter = messageAdapter((Class<M>) message.getClass());
     try {
-      adapter.write(message, CodedOutputByteBufferNano.newInstance(output, off, len));
+      adapter.write(message, WireOutput.newInstance(output, off, len));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
