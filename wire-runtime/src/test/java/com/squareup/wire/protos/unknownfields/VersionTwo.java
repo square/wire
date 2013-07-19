@@ -69,12 +69,14 @@ public final class VersionTwo extends Message {
 
   @Override
   public int hashCode() {
-    int hashCode = 0;
-    hashCode = hashCode * 37 + (i != null ? i.hashCode() : 0);
-    hashCode = hashCode * 37 + (v2_i != null ? v2_i.hashCode() : 0);
-    hashCode = hashCode * 37 + (v2_s != null ? v2_s.hashCode() : 0);
-    hashCode = hashCode * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
-    hashCode = hashCode * 37 + (v2_f64 != null ? v2_f64.hashCode() : 0);
+    if (hashCode == 0) {
+      int result = (i != null ? i.hashCode() : 0);
+      result = result * 37 + (v2_i != null ? v2_i.hashCode() : 0);
+      result = result * 37 + (v2_s != null ? v2_s.hashCode() : 0);
+      result = result * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
+      result = result * 37 + (v2_f64 != null ? v2_f64.hashCode() : 0);
+      hashCode = result;
+    }
     return hashCode;
   }
 

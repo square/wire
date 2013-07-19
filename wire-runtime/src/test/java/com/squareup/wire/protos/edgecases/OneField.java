@@ -31,7 +31,10 @@ public final class OneField extends Message {
 
   @Override
   public int hashCode() {
-    return opt_int32 != null ? opt_int32.hashCode() : 0;
+    if (hashCode == 0) {
+      hashCode = opt_int32 != null ? opt_int32.hashCode() : 0;
+    }
+    return hashCode;
   }
 
   @Override

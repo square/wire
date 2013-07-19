@@ -7,7 +7,14 @@ package com.squareup.wire;
 public abstract class Message {
 
   private static final UnknownFieldMap EMPTY_UNKNOWN_FIELD_MAP = new UnknownFieldMap();
+
+  /** Use EMPTY_UNKNOWN_FIELD_MAP until a field is added. */
   transient UnknownFieldMap unknownFieldMap = EMPTY_UNKNOWN_FIELD_MAP;
+
+  /** If non-zero, the hash code of this message. */
+  protected transient int hashCode = 0;
+  /** If >= 0, the serialized size of this message. */
+  transient int cachedSerializedSize = -1;
 
   /**
    * Constructs a Message, initialized with any unknown field data stored in the given

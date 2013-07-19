@@ -31,7 +31,10 @@ public final class VersionOne extends Message {
 
   @Override
   public int hashCode() {
-    return i != null ? i.hashCode() : 0;
+    if (hashCode == 0) {
+      hashCode = i != null ? i.hashCode() : 0;
+    }
+    return hashCode;
   }
 
   @Override

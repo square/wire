@@ -142,6 +142,9 @@ public class ProtoAdapter<M extends Message> {
    * Returns the serialized size of a given message, in bytes.
    */
   public int getSerializedSize(M instance) {
+    if (instance.cachedSerializedSize >= 0) {
+      return instance.cachedSerializedSize;
+    }
     int size = 0;
     for (int tag : tags) {
       Field field = fieldMap.get(tag);
@@ -189,6 +192,7 @@ public class ProtoAdapter<M extends Message> {
       }
     }
     size += instance.unknownFieldMap.getSerializedSize();
+    instance.cachedSerializedSize = size;
     return size;
   }
 
