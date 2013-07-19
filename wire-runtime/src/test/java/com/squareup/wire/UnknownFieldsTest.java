@@ -4,13 +4,11 @@ package com.squareup.wire;
 import com.squareup.wire.protos.unknownfields.VersionOne;
 import com.squareup.wire.protos.unknownfields.VersionTwo;
 import java.io.IOException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
-@Ignore
 public class UnknownFieldsTest {
 
   private final Wire wire = new Wire();
