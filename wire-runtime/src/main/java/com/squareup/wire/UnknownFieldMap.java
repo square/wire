@@ -137,7 +137,7 @@ final class UnknownFieldMap {
     for (Map.Entry<Integer, List<Long>> entry : varintMap.entrySet()) {
       int tag = entry.getKey();
       for (Long value : entry.getValue()) {
-        size += CodedOutputByteBufferNano.computeInt64Size(tag, value);
+        size += WireOutput.tagSize(tag) + WireOutput.varint64Size(value);
       }
     }
     return size;
@@ -147,9 +147,8 @@ final class UnknownFieldMap {
     int size = 0;
     for (Map.Entry<Integer, List<Integer>> entry : fixed32Map.entrySet()) {
       int tag = entry.getKey();
-      for (Integer value : entry.getValue()) {
-        size += CodedOutputByteBufferNano.computeFixed32Size(tag, value);
-      }
+      int entrySize = WireOutput.tagSize(tag) + WireOutput.FIXED_32_SIZE;
+      size += entry.getValue().size() * entrySize;
     }
     return size;
   }
@@ -158,9 +157,8 @@ final class UnknownFieldMap {
     int size = 0;
     for (Map.Entry<Integer, List<Long>> entry : fixed64Map.entrySet()) {
       int tag = entry.getKey();
-      for (Long value : entry.getValue()) {
-        size += CodedOutputByteBufferNano.computeFixed64Size(tag, value);
-      }
+      int entrySize = WireOutput.tagSize(tag) + WireOutput.FIXED_64_SIZE;
+      size += entry.getValue().size() * entrySize;
     }
     return size;
   }
@@ -178,15 +176,15 @@ final class UnknownFieldMap {
     for (Map.Entry<Integer, List<ByteString>> entry : map.entrySet()) {
       Integer tag = entry.getKey();
       for (ByteString data : entry.getValue()) {
-        size += CodedOutputByteBufferNano.computeTagSize(tag);
-        size += CodedOutputByteBufferNano.computeRawVarint32Size(data.size());
+        size += WireOutput.tagSize(tag);
+        size += WireOutput.varint32Size(data.size());
         size += data.size();
       }
     }
     return size;
   }
 
-  void write(CodedOutputByteBufferNano output) throws IOException {
+  void write(WireOutput output) throws IOException {
     if (isEmpty()) {
       return;
     }
@@ -197,49 +195,52 @@ final class UnknownFieldMap {
     writeGroup(output);
   }
 
-  private void writeVarint(CodedOutputByteBufferNano output) throws IOException {
+  private void writeVarint(WireOutput output) throws IOException {
     for (Map.Entry<Integer, List<Long>> entry : varintMap.entrySet()) {
       int tag = entry.getKey();
       for (Long value : entry.getValue()) {
-        output.writeInt64(tag, value);
+        output.writeTag(tag, WireOutput.WIRETYPE_VARINT);
+        output.writeVarint64(value);
       }
     }
   }
 
-  private void writeFixed32(CodedOutputByteBufferNano output) throws IOException {
+  private void writeFixed32(WireOutput output) throws IOException {
     for (Map.Entry<Integer, List<Integer>> entry : fixed32Map.entrySet()) {
       int tag = entry.getKey();
       for (Integer value : entry.getValue()) {
-        output.writeFixed32(tag, value);
+        output.writeTag(tag, WireOutput.WIRETYPE_FIXED32);
+        output.writeFixed32(value);
       }
     }
   }
 
-  private void writeFixed64(CodedOutputByteBufferNano output) throws IOException {
+  private void writeFixed64(WireOutput output) throws IOException {
     for (Map.Entry<Integer, List<Long>> entry : fixed64Map.entrySet()) {
       int tag = entry.getKey();
       for (Long value : entry.getValue()) {
-        output.writeFixed64(tag, value);
+        output.writeTag(tag, WireOutput.WIRETYPE_FIXED64);
+        output.writeFixed64(value);
       }
     }
   }
 
-  private void writeLengthDelimited(CodedOutputByteBufferNano output) throws IOException {
+  private void writeLengthDelimited(WireOutput output) throws IOException {
     writeLengthDelimitedOrGroup(output, lengthDelimitedMap,
-        WireFormatNano.WIRETYPE_LENGTH_DELIMITED);
+        WireOutput.WIRETYPE_LENGTH_DELIMITED);
   }
 
-  private void writeGroup(CodedOutputByteBufferNano output) throws IOException {
-    writeLengthDelimitedOrGroup(output, groupMap, WireFormatNano.WIRETYPE_START_GROUP);
+  private void writeGroup(WireOutput output) throws IOException {
+    writeLengthDelimitedOrGroup(output, groupMap, WireOutput.WIRETYPE_START_GROUP);
   }
 
-  private void writeLengthDelimitedOrGroup(CodedOutputByteBufferNano output,
+  private void writeLengthDelimitedOrGroup(WireOutput output,
       Map<Integer, List<ByteString>> map, int wiretype) throws IOException {
     for (Map.Entry<Integer, List<ByteString>> entry : map.entrySet()) {
       for (ByteString data : entry.getValue()) {
         Integer tag = entry.getKey();
         output.writeTag(tag, wiretype);
-        output.writeRawVarint32(data.size());
+        output.writeVarint32(data.size());
         output.writeRawBytes(data.toByteArray());
       }
     }

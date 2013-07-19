@@ -97,6 +97,4 @@ Future work
 Some things that aren't implemented:
 
  * Groups
- * Immutable byte array wrappers
- * Unknown fields
  * Services

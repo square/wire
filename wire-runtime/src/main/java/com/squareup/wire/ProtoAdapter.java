@@ -165,12 +165,12 @@ public class ProtoAdapter<M extends Message> {
         if (packed) {
           int len = 0;
           for (Object o : (List<?>) value) {
-            len += getPackedSerializedSize(o, type);
+            len += getSerializedSizeNoTag(o, type);
           }
           // tag + length + value + value + ...
-          size += CodedOutputByteBufferNano.computeRawVarint32Size(
-              WireFormatNano.makeTag(tag, WireFormatNano.WIRETYPE_LENGTH_DELIMITED));
-          size += CodedOutputByteBufferNano.computeRawVarint32Size(len);
+          size += WireOutput.varint32Size(
+              WireOutput.makeTag(tag, WireOutput.WIRETYPE_LENGTH_DELIMITED));
+          size += WireOutput.varint32Size(len);
           size += len;
         } else {
           for (Object o : (List<?>) value) {
@@ -203,11 +203,11 @@ public class ProtoAdapter<M extends Message> {
         if (extension.getPacked()) {
           int len = 0;
           for (Object o : (List<?>) value) {
-            len += getPackedSerializedSize(o, type);
+            len += getSerializedSizeNoTag(o, type);
           }
-          size += CodedOutputByteBufferNano.computeRawVarint32Size(
-              WireFormatNano.makeTag(tag, WireFormatNano.WIRETYPE_LENGTH_DELIMITED));
-          size += CodedOutputByteBufferNano.computeRawVarint32Size(len);
+          size += WireOutput.varint32Size(
+              WireOutput.makeTag(tag, WireOutput.WIRETYPE_LENGTH_DELIMITED));
+          size += WireOutput.varint32Size(len);
           size += len;
         } else {
           for (Object o : (List<?>) value) {
@@ -222,7 +222,7 @@ public class ProtoAdapter<M extends Message> {
   }
 
   /** Uses reflection to write {@code instance} to {@code output} in serialized form. */
-  public void write(M instance, CodedOutputByteBufferNano output) throws IOException {
+  public void write(M instance, WireOutput output) throws IOException {
     for (int tag : tags) {
       Field field = fieldMap.get(tag);
       if (field == null) {
@@ -245,12 +245,12 @@ public class ProtoAdapter<M extends Message> {
         if (packed) {
           int len = 0;
           for (Object o : (List<?>) value) {
-            len += getPackedSerializedSize(o, type);
+            len += getSerializedSizeNoTag(o, type);
           }
           output.writeTag(tag, 2);
-          output.writeRawVarint32(len);
+          output.writeVarint32(len);
           for (Object o : (List<?>) value) {
-            writePackedValue(output, o, type);
+            writeValueNoTag(output, o, type);
           }
         } else {
           for (Object o : (List<?>) value) {
@@ -271,7 +271,7 @@ public class ProtoAdapter<M extends Message> {
     instance.unknownFieldMap.write(output);
   }
 
-  private <T extends ExtendableMessage<?>> void writeExtensions(CodedOutputByteBufferNano output,
+  private <T extends ExtendableMessage<?>> void writeExtensions(WireOutput output,
       ExtensionMap<T> extensionMap) throws IOException {
     for (Extension<T, ?> extension: extensionMap.getExtensions()) {
       Object value = extensionMap.get(extension);
@@ -281,12 +281,12 @@ public class ProtoAdapter<M extends Message> {
         if (extension.getPacked()) {
           int len = 0;
           for (Object o : (List<?>) value) {
-            len += getPackedSerializedSize(o, type);
+            len += getSerializedSizeNoTag(o, type);
           }
           output.writeTag(tag, 2);
-          output.writeRawVarint32(len);
+          output.writeVarint32(len);
           for (Object o : (List<?>) value) {
-            writePackedValue(output, o, type);
+            writeValueNoTag(output, o, type);
           }
         } else {
           for (Object o : (List<?>) value) {
@@ -305,164 +305,149 @@ public class ProtoAdapter<M extends Message> {
   public byte[] toByteArray(M message) {
     byte[] result = new byte[getSerializedSize(message)];
     try {
-      write(message, CodedOutputByteBufferNano.newInstance(result));
+      write(message, WireOutput.newInstance(result));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
     return result;
   }
 
+  /**
+   * Returns the serialized size in bytes of the given tag and value.
+   */
   private int getSerializedSize(int tag, Object value, int type) {
-    switch (type) {
-      case Wire.INT32: return CodedOutputByteBufferNano.computeInt32Size(tag, (Integer) value);
-      case Wire.INT64: return CodedOutputByteBufferNano.computeInt64Size(tag, (Long) value);
-      case Wire.UINT32: return CodedOutputByteBufferNano.computeUInt32Size(tag, (Integer) value);
-      case Wire.UINT64: return CodedOutputByteBufferNano.computeUInt64Size(tag, (Long) value);
-      case Wire.SINT32: return CodedOutputByteBufferNano.computeSInt32Size(tag, (Integer) value);
-      case Wire.SINT64: return CodedOutputByteBufferNano.computeSInt64Size(tag, (Long) value);
-      case Wire.BOOL: return CodedOutputByteBufferNano.computeBoolSize(tag, (Boolean) value);
-      case Wire.ENUM: return getSerializedEnumSize((Enum) value, tag);
-      case Wire.STRING: return CodedOutputByteBufferNano.computeStringSize(tag, (String) value);
-      case Wire.BYTES: return CodedOutputByteBufferNano.computeBytesSize(tag, (ByteString) value);
-      case Wire.MESSAGE: return getSerializedMessageSize((Message) value, tag);
-      case Wire.FIXED32: return CodedOutputByteBufferNano.computeFixed32Size(tag, (Integer) value);
-      case Wire.SFIXED32: return CodedOutputByteBufferNano.computeSFixed32Size(tag,
-          (Integer) value);
-      case Wire.FIXED64: return CodedOutputByteBufferNano.computeFixed64Size(tag, (Long) value);
-      case Wire.SFIXED64: return CodedOutputByteBufferNano.computeSFixed64Size(tag, (Long) value);
-      case Wire.FLOAT: return CodedOutputByteBufferNano.computeFloatSize(tag, (Float) value);
-      case Wire.DOUBLE: return CodedOutputByteBufferNano.computeDoubleSize(tag, (Double) value);
-      default: throw new RuntimeException();
-    }
+    return WireOutput.tagSize(tag) + getSerializedSizeNoTag(value, type);
   }
 
   /**
    * Returns the serialized size in bytes of the given value without any prepended tag or length,
-   * i.e., as it would be written as part of a 'packed' repeated field.
+   * e.g., as it would be written as part of a 'packed' repeated field.
    */
-  private int getPackedSerializedSize(Object value, int type) {
+  private int getSerializedSizeNoTag(Object value, int type) {
     switch (type) {
-      case Wire.INT32: return CodedOutputByteBufferNano.computeInt32SizeNoTag((Integer) value);
-      case Wire.INT64: return CodedOutputByteBufferNano.computeInt64SizeNoTag((Long) value);
-      case Wire.UINT32: return CodedOutputByteBufferNano.computeUInt32SizeNoTag((Integer) value);
-      case Wire.UINT64: return CodedOutputByteBufferNano.computeUInt64SizeNoTag((Long) value);
-      case Wire.SINT32: return CodedOutputByteBufferNano.computeSInt32SizeNoTag((Integer) value);
-      case Wire.SINT64: return CodedOutputByteBufferNano.computeSInt64SizeNoTag((Long) value);
-      case Wire.BOOL: return CodedOutputByteBufferNano.computeBoolSizeNoTag((Boolean) value);
-      case Wire.ENUM: return getEnumSizeNoTag((Enum) value);
-      case Wire.FIXED32: return CodedOutputByteBufferNano.computeFixed32SizeNoTag((Integer) value);
-      case Wire.SFIXED32:
-        return CodedOutputByteBufferNano.computeSFixed32SizeNoTag((Integer) value);
-      case Wire.FIXED64: return CodedOutputByteBufferNano.computeFixed64SizeNoTag((Long) value);
-      case Wire.SFIXED64: return CodedOutputByteBufferNano.computeSFixed64SizeNoTag((Long) value);
-      case Wire.FLOAT: return CodedOutputByteBufferNano.computeFloatSizeNoTag((Float) value);
-      case Wire.DOUBLE: return CodedOutputByteBufferNano.computeDoubleSizeNoTag((Double) value);
-      case Wire.STRING: case Wire.BYTES: case Wire.MESSAGE:
-        throw new IllegalArgumentException("String, bytes, and messages can't be packed.");
-
+      case Wire.INT32: return WireOutput.int32Size((Integer) value);
+      case Wire.INT64: case Wire.UINT64: return WireOutput.varint64Size((Long) value);
+      case Wire.UINT32: return WireOutput.varint32Size((Integer) value);
+      case Wire.SINT32: return WireOutput.varint32Size(WireOutput.zigZag32((Integer) value));
+      case Wire.SINT64: return WireOutput.varint64Size(WireOutput.zigZag64((Long) value));
+      case Wire.BOOL: return 1;
+      case Wire.ENUM: return getEnumSize((Enum) value);
+      case Wire.STRING:
+        int utf8Length = utf8Length((String) value);
+        return WireOutput.varint32Size(utf8Length) + utf8Length;
+      case Wire.BYTES:
+        int length = ((ByteString) value).size();
+        return WireOutput.varint32Size(length) + length;
+      case Wire.MESSAGE: return getMessageSize((Message) value);
+      case Wire.FIXED32: case Wire.SFIXED32: case Wire.FLOAT: return WireOutput.FIXED_32_SIZE;
+      case Wire.FIXED64: case Wire.SFIXED64: case Wire.DOUBLE: return WireOutput.FIXED_64_SIZE;
       default: throw new RuntimeException();
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private <E extends Enum> int getSerializedEnumSize(E value, int tag) {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
-    return CodedOutputByteBufferNano.computeEnumSize(tag, adapter.toInt(value));
+  private int utf8Length(String s) {
+    int count = 0;
+    for (int i = 0, len = s.length(); i < len; i++) {
+      char ch = s.charAt(i);
+      if (ch <= 0x7F) {
+        count++;
+      } else if (ch <= 0x7FF) {
+        count += 2;
+      } else if (Character.isHighSurrogate(ch)) {
+        count += 4;
+        ++i;
+      } else {
+        count += 3;
+      }
+    }
+    return count;
   }
 
   @SuppressWarnings("unchecked")
-  private <M extends Message> int getSerializedMessageSize(M message, int tag) {
+  private <E extends Enum> int getEnumSize(E value) {
+    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
+    return WireOutput.varint32Size(adapter.toInt(value));
+  }
+
+  @SuppressWarnings("unchecked")
+  private <M extends Message> int getMessageSize(M message) {
     ProtoAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
     int messageSize = adapter.getSerializedSize(message);
-    int size = CodedOutputByteBufferNano.computeTagSize(tag);
-    size += CodedOutputByteBufferNano.computeRawVarint32Size(messageSize) + messageSize;
-    return size;
+    return WireOutput.varint32Size(messageSize) + messageSize;
   }
 
-  @SuppressWarnings("unchecked")
-  private <E extends Enum> int getEnumSizeNoTag(E value) {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
-    return CodedOutputByteBufferNano.computeEnumSizeNoTag(adapter.toInt(value));
-  }
-
-  private void writeValue(CodedOutputByteBufferNano output, int tag, Object value, int type)
+  private void writeValue(WireOutput output, int tag, Object value, int type)
     throws IOException {
+    int wiretype = wiretype(type);
+    output.writeTag(tag, wiretype);
+    writeValueNoTag(output, value, type);
+  }
+
+  private int wiretype(int type) {
     switch (type) {
-      case Wire.INT32: output.writeInt32(tag, (Integer) value); break;
-      case Wire.INT64: output.writeInt64(tag, (Long) value); break;
-      case Wire.UINT32: output.writeUInt32(tag, (Integer) value); break;
-      case Wire.UINT64: output.writeUInt64(tag, (Long) value); break;
-      case Wire.SINT32: output.writeSInt32(tag, (Integer) value); break;
-      case Wire.SINT64: output.writeSInt64(tag, (Long) value); break;
-      case Wire.BOOL: output.writeBool(tag, (Boolean) value); break;
-      case Wire.ENUM: writeEnum((Enum) value, tag, output); break;
-      case Wire.STRING: output.writeString(tag, (String) value); break;
-      case Wire.BYTES: output.writeBytes(tag, (ByteString) value); break;
-      case Wire.MESSAGE: writeMessage((Message) value, tag, output); break;
-      case Wire.FIXED32: output.writeFixed32(tag, (Integer) value); break;
-      case Wire.SFIXED32: output.writeSFixed32(tag, (Integer) value); break;
-      case Wire.FIXED64: output.writeFixed64(tag, (Long) value); break;
-      case Wire.SFIXED64: output.writeSFixed64(tag, (Long) value); break;
-      case Wire.FLOAT: output.writeFloat(tag, (Float) value); break;
-      case Wire.DOUBLE: output.writeDouble(tag, (Double) value); break;
-      default: throw new RuntimeException();
+      case Wire.INT32: case Wire.INT64: case Wire.UINT32: case Wire.UINT64:
+      case Wire.SINT32: case Wire.SINT64: case Wire.BOOL: case Wire.ENUM:
+        return WireOutput.WIRETYPE_VARINT;
+      case Wire.STRING: case Wire.BYTES: case Wire.MESSAGE:
+        return WireOutput.WIRETYPE_LENGTH_DELIMITED;
+      case Wire.FIXED32: case Wire.SFIXED32: case Wire.FLOAT:
+        return WireOutput.WIRETYPE_FIXED32;
+      case Wire.FIXED64: case Wire.SFIXED64: case Wire.DOUBLE:
+        return WireOutput.WIRETYPE_FIXED64;
+      default:
+        throw new IllegalArgumentException("type=" + type);
     }
   }
 
   /**
-   * Writes a value with no tag as part of a 'packed' repeated field.
+   * Writes a value with no tag.
    */
-  private void writePackedValue(CodedOutputByteBufferNano output, Object value, int type)
-      throws IOException {
+  private void writeValueNoTag(WireOutput output, Object value, int type) throws IOException {
     switch (type) {
-      case Wire.INT32: output.writeInt32NoTag((Integer) value); break;
-      case Wire.INT64: output.writeInt64NoTag((Long) value); break;
-      case Wire.UINT32: output.writeUInt32NoTag((Integer) value); break;
-      case Wire.UINT64: output.writeUInt64NoTag((Long) value); break;
-      case Wire.SINT32: output.writeSInt32NoTag((Integer) value); break;
-      case Wire.SINT64: output.writeSInt64NoTag((Long) value); break;
-      case Wire.BOOL: output.writeBoolNoTag((Boolean) value); break;
-      case Wire.ENUM: writeEnumNoTag((Enum) value, output); break;
-      case Wire.FIXED32: output.writeFixed32NoTag((Integer) value); break;
-      case Wire.SFIXED32: output.writeSFixed32NoTag((Integer) value); break;
-      case Wire.FIXED64: output.writeFixed64NoTag((Long) value); break;
-      case Wire.SFIXED64: output.writeSFixed64NoTag((Long) value); break;
-      case Wire.FLOAT: output.writeFloatNoTag((Float) value); break;
-      case Wire.DOUBLE: output.writeDoubleNoTag((Double) value); break;
-      case Wire.STRING: case Wire.BYTES: case Wire.MESSAGE:
-        throw new IllegalArgumentException("String, bytes, and messages can't be packed.");
-
+      case Wire.INT32: output.writeSignedVarint32((Integer) value); break;
+      case Wire.INT64: case Wire.UINT64: output.writeVarint64((Long) value); break;
+      case Wire.UINT32: output.writeVarint32((Integer) value); break;
+      case Wire.SINT32: output.writeVarint32(WireOutput.zigZag32((Integer) value)); break;
+      case Wire.SINT64: output.writeVarint64(WireOutput.zigZag64((Long) value)); break;
+      case Wire.BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
+      case Wire.ENUM: writeEnum((Enum) value, output); break;
+      case Wire.STRING:
+        final byte[] bytes = ((String) value).getBytes("UTF-8");
+        output.writeVarint32(bytes.length);
+        output.writeRawBytes(bytes);
+        break;
+      case Wire.BYTES:
+        ByteString byteString = (ByteString) value;
+        output.writeVarint32(byteString.size());
+        output.writeRawBytes(byteString.toByteArray());
+        break;
+      case Wire.MESSAGE: writeMessage((Message) value, output); break;
+      case Wire.FIXED32: case Wire.SFIXED32: output.writeFixed32((Integer) value); break;
+      case Wire.FIXED64: case Wire.SFIXED64: output.writeFixed64((Long) value); break;
+      case Wire.FLOAT: output.writeFixed32(Float.floatToIntBits((Float) value)); break;
+      case Wire.DOUBLE: output.writeFixed64(Double.doubleToLongBits((Double) value)); break;
       default: throw new RuntimeException();
     }
   }
 
   @SuppressWarnings("unchecked")
-  private <E extends Enum> void writeEnum(E value, int tag,
-      CodedOutputByteBufferNano output) throws IOException {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
-    output.writeEnum(tag, adapter.toInt(value));
-  }
-
-  @SuppressWarnings("unchecked")
-  private <M extends Message> void writeMessage(M message, int tag,
-      CodedOutputByteBufferNano output) throws IOException {
+  private <M extends Message> void writeMessage(M message, WireOutput output) throws IOException {
     ProtoAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
-    output.writeTag(tag, 2); // 2 = WireFormatNano.WIRETYPE_LENGTH_DELIMITED
-    output.writeRawVarint32(adapter.getSerializedSize(message));
+    output.writeVarint32(adapter.getSerializedSize(message));
     adapter.write(message, output);
   }
 
   @SuppressWarnings("unchecked")
-  private <E extends Enum> void writeEnumNoTag(E value, CodedOutputByteBufferNano output)
+  private <E extends Enum> void writeEnum(E value, WireOutput output)
       throws IOException {
     ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
-    output.writeEnumNoTag(adapter.toInt(value));
+    output.writeVarint32(adapter.toInt(value));
   }
 
   // Reading
 
   /** Uses reflection to read an instance from {@code input}. */
-  public M read(CodedInputByteBufferNano input) throws IOException {
+  public M read(WireInput input) throws IOException {
     try {
       Builder<M> builder = builderType.newInstance();
       Storage storage = new Storage();
@@ -470,8 +455,8 @@ public class ProtoAdapter<M extends Message> {
       while (true) {
         Extension<?, ?> extension = null;
         int tagAndType = input.readTag();
-        int tag = tagAndType >> WireFormatNano.TAG_TYPE_BITS;
-        int wireType = tagAndType & WireFormatNano.TAG_TYPE_MASK;
+        int tag = tagAndType >> WireOutput.TAG_TYPE_BITS;
+        int wireType = tagAndType & WireOutput.TAG_TYPE_MASK;
         if (tag == 0) {
           // Set repeated fields
           for (int storedTag : storage.getTags()) {
@@ -507,7 +492,7 @@ public class ProtoAdapter<M extends Message> {
 
         if (label == Wire.REPEATED && packed && wireType == 2) {
           // Decode packed format
-          int length = input.readRawVarint32();
+          int length = input.readVarint32();
           int start = input.getPosition();
           int oldLimit = input.pushLimit(length);
           while (input.getPosition() < start + length) {
@@ -537,36 +522,29 @@ public class ProtoAdapter<M extends Message> {
     }
   }
 
-  private Object readValue(CodedInputByteBufferNano input, int tag, int type) throws IOException {
-    Object value;
+  private Object readValue(WireInput input, int tag, int type) throws IOException {
     switch (type) {
-      case Wire.INT32: value = input.readInt32(); break;
-      case Wire.INT64: value = input.readInt64(); break;
-      case Wire.UINT32: value = input.readUInt32(); break;
-      case Wire.UINT64: value = input.readUInt64(); break;
-      case Wire.SINT32: value = input.readSInt32(); break;
-      case Wire.SINT64: value = input.readSInt64(); break;
-      case Wire.BOOL: value = input.readBool(); break;
-      case Wire.ENUM: value = Wire.enumFromInt(getEnumClass(tag), input.readEnum()); break;
-      case Wire.STRING: value = input.readString(); break;
-      case Wire.BYTES: value = input.readBytes(); break;
-      case Wire.MESSAGE: value = readMessage(input, tag); break;
-      case Wire.FIXED32: value = input.readFixed32(); break;
-      case Wire.SFIXED32: value = input.readSFixed32(); break;
-      case Wire.FIXED64: value = input.readFixed64(); break;
-      case Wire.SFIXED64: value = input.readSFixed64(); break;
-      case Wire.FLOAT: value = input.readFloat(); break;
-      case Wire.DOUBLE: value = input.readDouble(); break;
+      case Wire.INT32: case Wire.UINT32: return input.readVarint32();
+      case Wire.INT64: case Wire.UINT64: return input.readVarint64();
+      case Wire.SINT32: return WireInput.decodeZigZag32(input.readVarint32());
+      case Wire.SINT64: return WireInput.decodeZigZag64(input.readVarint64());
+      case Wire.BOOL: return input.readVarint32() != 0;
+      case Wire.ENUM: return Wire.enumFromInt(getEnumClass(tag), input.readVarint32());
+      case Wire.STRING: return input.readString();
+      case Wire.BYTES: return input.readBytes();
+      case Wire.MESSAGE: return readMessage(input, tag);
+      case Wire.FIXED32: case Wire.SFIXED32: return input.readFixed32();
+      case Wire.FIXED64: case Wire.SFIXED64: return input.readFixed64();
+      case Wire.FLOAT: return Float.intBitsToFloat(input.readFixed32());
+      case Wire.DOUBLE: return Double.longBitsToDouble(input.readFixed64());
       default: throw new RuntimeException();
     }
-    return value;
   }
 
-  private Message readMessage(CodedInputByteBufferNano input, int tag) throws IOException {
-    // inlined from CodedInputByteBufferNano.readMessage()
-    final int length = input.readRawVarint32();
+  private Message readMessage(WireInput input, int tag) throws IOException {
+    final int length = input.readVarint32();
     if (input.recursionDepth >= input.recursionLimit) {
-      throw new InvalidProtocolBufferNanoException("recursion limit exceeded");
+      throw new IOException("Wire recursion limit exceeded");
     }
     final int oldLimit = input.pushLimit(length);
     ++input.recursionDepth;
@@ -590,26 +568,26 @@ public class ProtoAdapter<M extends Message> {
     return messageClass;
   }
 
-  private void readUnknownField(Builder builder, CodedInputByteBufferNano input,
+  private void readUnknownField(Builder builder, WireInput input,
       int tag, int type) throws IOException {
     switch (type) {
-      case WireFormatNano.WIRETYPE_VARINT:
-        builder.addVarint(tag, input.readRawVarint64());
+      case WireOutput.WIRETYPE_VARINT:
+        builder.addVarint(tag, input.readVarint64());
         break;
-      case WireFormatNano.WIRETYPE_FIXED64:
+      case WireOutput.WIRETYPE_FIXED64:
         builder.addFixed64(tag, input.readFixed64());
         break;
-      case WireFormatNano.WIRETYPE_LENGTH_DELIMITED:
-        int length = input.readInt32();
+      case WireOutput.WIRETYPE_LENGTH_DELIMITED:
+        int length = input.readVarint32();
         builder.addLengthDelimited(tag, ByteString.of(input.readRawBytes(length)));
         break;
-      case WireFormatNano.WIRETYPE_START_GROUP:
-        int groupLength = input.readInt32();
+      case WireOutput.WIRETYPE_START_GROUP:
+        int groupLength = input.readVarint32();
         builder.addGroup(tag, ByteString.of(input.readRawBytes(groupLength)));
         break;
-      case WireFormatNano.WIRETYPE_END_GROUP:
+      case WireOutput.WIRETYPE_END_GROUP:
         break;
-      case WireFormatNano.WIRETYPE_FIXED32:
+      case WireOutput.WIRETYPE_FIXED32:
         builder.addFixed32(tag, input.readFixed32());
         break;
       default: throw new RuntimeException();
@@ -655,6 +633,7 @@ public class ProtoAdapter<M extends Message> {
   }
 
   // TODO - improve type safety
+  @SuppressWarnings("unchecked")
   private void setExtension(ExtendableMessage.ExtendableBuilder builder, Extension<?, ?> extension,
       Object value) {
     builder.setExtension(extension, value);
