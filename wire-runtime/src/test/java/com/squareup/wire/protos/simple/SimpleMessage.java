@@ -96,13 +96,15 @@ public final class SimpleMessage extends Message {
 
   @Override
   public int hashCode() {
-    int hashCode = 0;
-    hashCode = hashCode * 37 + (optional_int32 != null ? optional_int32.hashCode() : 0);
-    hashCode = hashCode * 37 + (optional_nested_msg != null ? optional_nested_msg.hashCode() : 0);
-    hashCode = hashCode * 37 + (optional_external_msg != null ? optional_external_msg.hashCode() : 0);
-    hashCode = hashCode * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
-    hashCode = hashCode * 37 + (required_int32 != null ? required_int32.hashCode() : 0);
-    hashCode = hashCode * 37 + (repeated_double != null ? repeated_double.hashCode() : 0);
+    if (hashCode == 0) {
+      int result = optional_int32 != null ? optional_int32.hashCode() : 0;
+      result = result * 37 + (optional_nested_msg != null ? optional_nested_msg.hashCode() : 0);
+      result = result * 37 + (optional_external_msg != null ? optional_external_msg.hashCode() : 0);
+      result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
+      result = result * 37 + (required_int32 != null ? required_int32.hashCode() : 0);
+      result = result * 37 + (repeated_double != null ? repeated_double.hashCode() : 0);
+      hashCode = result;
+    }
     return hashCode;
   }
 
@@ -215,7 +217,10 @@ public final class SimpleMessage extends Message {
 
     @Override
     public int hashCode() {
-      return bb != null ? bb.hashCode() : 0;
+      if (hashCode == 0) {
+        hashCode = bb != null ? bb.hashCode() : 0;
+      }
+      return hashCode;
     }
 
     @Override

@@ -32,7 +32,10 @@ public final class OneBytesField extends Message {
 
   @Override
   public int hashCode() {
-    return opt_bytes != null ? opt_bytes.hashCode() : 0;
+    if (hashCode == 0) {
+      hashCode = opt_bytes != null ? opt_bytes.hashCode() : 0;
+    }
+    return hashCode;
   }
 
   @Override

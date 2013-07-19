@@ -580,8 +580,11 @@ public class WireCompiler {
   //
   // @Override
   // public int hashCode() {
-  //   int hashCode = super.extensionsHashCode();
-  //   hashCode = hashCode * 37 + (f != null ? f.hashCode() : 0);
+  //   if (hashCode == 0) {
+  //     int result = super.extensionsHashCode();
+  //     result = result * 37 + (f != null ? f.hashCode() : 0);
+  //     hashCode = result;
+  //   }
   //   return hashCode;
   // }
   //
@@ -596,18 +599,29 @@ public class WireCompiler {
     } else if (!hasExtensions(messageType) && messageType.getFields().size() == 1) {
       Field field = messageType.getFields().get(0);
       String name = sanitize(field.getName());
-      writer.emitStatement("return %1$s != null ? %1$s.hashCode() : 0", name);
+      writer.beginControlFlow("if (hashCode == 0)");
+      writer.emitStatement("hashCode = %1$s != null ? %1$s.hashCode() : 0", name);
+      writer.endControlFlow();
+      writer.emitStatement("return hashCode");
     } else {
+      writer.beginControlFlow("if (hashCode == 0)");
+      boolean resultInitialized = false;
       if (hasExtensions(messageType)) {
-        writer.emitStatement("int hashCode = extensionsHashCode()");
-      } else {
-        writer.emitStatement("int hashCode = 0");
+        writer.emitStatement("int result = extensionsHashCode()");
+        resultInitialized = true;
       }
       for (Field field : messageType.getFields()) {
         String name = sanitize(field.getName());
-        writer.emitStatement("hashCode = hashCode * 37 + (%1$s != null ? %1$s.hashCode() : 0)",
-            name);
+        if (resultInitialized) {
+          writer.emitStatement("result = result * 37 + (%1$s != null ? %1$s.hashCode() : 0)",
+              name);
+        } else {
+          writer.emitStatement("int result = %1$s != null ? %1$s.hashCode() : 0", name);
+          resultInitialized = true;
+        }
       }
+      writer.emitStatement("hashCode = result");
+      writer.endControlFlow();
       writer.emitStatement("return hashCode");
     }
     writer.endMethod();
