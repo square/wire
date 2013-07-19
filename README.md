@@ -86,7 +86,7 @@ For Maven projects, simply add wire-runtime as a dependency:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.4-SNAPSHOT</version>
 </dependency>
 ```
 
