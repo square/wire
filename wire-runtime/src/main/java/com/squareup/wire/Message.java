@@ -26,6 +26,11 @@ public abstract class Message {
     }
   }
 
+  @Override
+  public String toString() {
+    return Wire.toString(this);
+  }
+
   /**
    * Superclass for protocol buffer message builders.
    */

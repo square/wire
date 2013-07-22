@@ -75,19 +75,6 @@ public final class Person extends Message {
     return hashCode;
   }
 
-  @Override
-  public String toString() {
-    return String.format("Person{" +
-        "name=%s," +
-        "id=%s," +
-        "email=%s," +
-        "phone=%s}",
-        name,
-        id,
-        email,
-        phone);
-  }
-
   public static final class Builder extends Message.Builder<Person> {
 
     public String name;
@@ -191,15 +178,6 @@ public final class Person extends Message {
         hashCode = result;
       }
       return hashCode;
-    }
-
-    @Override
-    public String toString() {
-      return String.format("PhoneNumber{" +
-          "number=%s," +
-          "type=%s}",
-          number,
-          type);
     }
 
     public static final class Builder extends Message.Builder<PhoneNumber> {

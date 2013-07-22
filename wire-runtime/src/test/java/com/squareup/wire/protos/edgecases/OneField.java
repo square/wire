@@ -37,13 +37,6 @@ public final class OneField extends Message {
     return hashCode;
   }
 
-  @Override
-  public String toString() {
-    return String.format("OneField{" +
-        "opt_int32=%s}",
-        opt_int32);
-  }
-
   public static final class Builder extends Message.Builder<OneField> {
 
     public Integer opt_int32;

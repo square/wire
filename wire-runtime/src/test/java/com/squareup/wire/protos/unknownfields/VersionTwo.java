@@ -80,21 +80,6 @@ public final class VersionTwo extends Message {
     return hashCode;
   }
 
-  @Override
-  public String toString() {
-    return String.format("VersionTwo{" +
-        "i=%s," +
-        "v2_i=%s," +
-        "v2_s=%s," +
-        "v2_f32=%s," +
-        "v2_f64=%s}",
-        i,
-        v2_i,
-        v2_s,
-        v2_f32,
-        v2_f64);
-  }
-
   public static final class Builder extends Message.Builder<VersionTwo> {
 
     public Integer i;

@@ -61,7 +61,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
   /**
    * Returns a human-readable dump of the current set of extensions.
    */
-  protected String extensionsToString() {
+  String extensionsToString() {
     return extensionMap.toString();
   }
 
