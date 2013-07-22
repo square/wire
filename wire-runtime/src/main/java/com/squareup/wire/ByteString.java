@@ -5,6 +5,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
@@ -19,6 +20,7 @@ import java.util.Arrays;
  * process.
  */
 public final class ByteString {
+  private static final Charset ISO_8859_1 = Charset.forName("ISO_8859_1");
   private static final String HEX_DIGITS = "0123456789abcdef";
   private final byte[] data;
   private volatile int hashCode;
@@ -26,6 +28,14 @@ public final class ByteString {
   /** Returns a new byte string containing the bytes of {@code data}. */
   public static ByteString of(byte... data) {
     return new ByteString(data.clone());
+  }
+
+  /**
+   * Returns a new byte string containing the bytes of {@code data}, interpreted
+   * as {@code ISO_8859_1}.
+   */
+  public static ByteString of(String data) {
+    return new ByteString(data.getBytes(ISO_8859_1));
   }
 
   /**
@@ -52,10 +62,16 @@ public final class ByteString {
     return data[index];
   }
 
+  /**
+   * Returns the number of bytes in this ByteString.
+   */
   public int size() {
     return data.length;
   }
 
+  /**
+   * Returns a byte array containing a copy of the bytes in this {@code ByteString}.
+   */
   public byte[] toByteArray() {
     return data.clone();
   }
@@ -80,16 +96,16 @@ public final class ByteString {
     return result != 0 ? result : (hashCode = Arrays.hashCode(data));
   }
 
-  /** Returns a string containing these bytes in hex surrounded by square brackets. */
+  /**
+   * Returns a string containing the contents of this ByteString in hex.
+   */
   @Override public String toString() {
-    char[] result = new char[data.length * 2 + 2];
-    result[0] = '[';
-    int c = 1;
+    char[] result = new char[data.length * 2];
+    int c = 0;
     for (byte b : data) {
       result[c++] = HEX_DIGITS.charAt((b >> 4) & 0xf);
       result[c++] = HEX_DIGITS.charAt(b & 0xf);
     }
-    result[c] = ']';
     return new String(result);
   }
 }

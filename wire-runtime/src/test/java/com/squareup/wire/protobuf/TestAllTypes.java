@@ -99,10 +99,7 @@ public class TestAllTypes {
         .pack_bool(array(true))
         .pack_float(array(122.0F))
         .pack_double(array(123.0))
-        .pack_string(array("124"))
-        .pack_bytes(array(bytes))
         .pack_nested_enum(array(AllTypes.NestedEnum.A))
-        .pack_nested_message(array(nestedMessage))
         .setExtension(Ext_all_types.ext_opt_bool, true)
         .setExtension(Ext_all_types.ext_rep_bool, array(true))
         .setExtension(Ext_all_types.ext_pack_bool, array(true));
@@ -256,22 +253,9 @@ public class TestAllTypes {
     assertEquals(2, builder.pack_double.size());
     assertEquals(new Double(123.0), builder.pack_double.get(0));
     assertEquals(new Double(123.0), builder.pack_double.get(1));
-    assertEquals(2, builder.pack_string.size());
-    assertEquals("124", builder.pack_string.get(0));
-    assertEquals("124", builder.pack_string.get(1));
-    assertEquals(2, builder.pack_bytes.size());
-    assertEquals(2, builder.pack_bytes.get(0).size());
-    assertEquals((byte) 125, builder.pack_bytes.get(0).byteAt(0));
-    assertEquals((byte) 225, builder.pack_bytes.get(0).byteAt(1));
-    assertEquals(2, builder.pack_bytes.get(1).size());
-    assertEquals((byte) 125, builder.pack_bytes.get(1).byteAt(0));
-    assertEquals((byte) 225, builder.pack_bytes.get(1).byteAt(1));
     assertEquals(2, builder.pack_nested_enum.size());
     assertEquals(AllTypes.NestedEnum.A, builder.pack_nested_enum.get(0));
     assertEquals(AllTypes.NestedEnum.A, builder.pack_nested_enum.get(1));
-    assertEquals(2, builder.pack_nested_message.size());
-    assertEquals(nestedMessage, builder.pack_nested_message.get(0));
-    assertEquals(nestedMessage, builder.pack_nested_message.get(1));
 
     assertEquals(Boolean.TRUE, builder.getExtension(Ext_all_types.ext_opt_bool));
     assertEquals(array(true), builder.getExtension(Ext_all_types.ext_rep_bool));
@@ -371,5 +355,13 @@ public class TestAllTypes {
       assertEquals("Required fields not set:\n  req_bool\n  req_int32\n  req_sfixed64\n",
         e.getMessage());
     }
+  }
+
+  public void testDefaults() throws Exception {
+    assertEquals(true, AllTypes.DEFAULT_DEFAULT_BOOL);
+    // original: "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel"
+    assertEquals("çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel", AllTypes.DEFAULT_DEFAULT_STRING);
+    assertEquals("çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel",
+        new String(AllTypes.DEFAULT_DEFAULT_BYTES.toByteArray(), "ISO-8859-1"));
   }
 }

@@ -52,12 +52,12 @@
       <dependency>
         <groupId>com.squareup</groupId>
         <artifactId>protoparser</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.squareup</groupId>
         <artifactId>javawriter</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
