@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.fest.assertions.api.Fail;
 import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -155,18 +156,32 @@ public final class ProtoSchemaParserTest {
     String proto = ""
         + "message Foo {\n"
         + "  optional string name = 1 "
-        + "[default = \"\\a\\b\\f\\n\\r\\t\\v\1\01\001\11\011\111\\xe\\Xe\\xE\\xE\\x41\\X41\"];\n"
+        + "[default = \"\\a\\b\\f\\n\\r\\t\\v\1f\01\001\11\011\111\\xe\\Xe\\xE\\xE\\x41\\X41\"];\n"
         + "}";
     Type messageType = new MessageType("Foo", "Foo", "", Arrays.asList(
         new MessageType.Field(Label.OPTIONAL, "string", "name", 1, "",
             map("default",
-            "\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"))),
+            "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"))),
             NO_TYPES, NO_EXTENSIONS);
     ProtoFile expected =
         new ProtoFile("foo.proto", null, NO_STRINGS, Arrays.<Type>asList(messageType),
             NO_SERVICES, map(), NO_EXTEND_DECLARATIONs);
     assertThat(new ProtoSchemaParser("foo.proto", proto).readProtoFile())
         .isEqualTo(expected);
+  }
+
+  @Test public void invalidHexStringEscape() throws Exception {
+    String proto = ""
+        + "message Foo {\n"
+        + "  optional string name = 1 "
+        + "[default = \"\\xW\"];\n"
+        + "}";
+    try {
+      new ProtoSchemaParser("foo.proto", proto).readProtoFile();
+      Fail.fail("Expected parse error");
+    } catch (IllegalStateException e) {
+      assertThat(e.getMessage().contains("expected a digit after \\x or \\X"));
+    }
   }
 
   @Test public void service() throws Exception {
