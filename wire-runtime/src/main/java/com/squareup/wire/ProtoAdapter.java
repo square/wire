@@ -141,9 +141,9 @@ public class ProtoAdapter<M extends Message> {
   /**
    * Returns the serialized size of a given message, in bytes.
    */
-  public int getSerializedSize(M instance) {
-    if (instance.cachedSerializedSize >= 0) {
-      return instance.cachedSerializedSize;
+  public int getSerializedSize(M message) {
+    if (message.cachedSerializedSize >= 0) {
+      return message.cachedSerializedSize;
     }
     int size = 0;
     for (int tag : tags) {
@@ -153,7 +153,7 @@ public class ProtoAdapter<M extends Message> {
       }
       Object value;
       try {
-        value = field.get(instance);
+        value = field.get(message);
       } catch (IllegalAccessException e) {
         throw new RuntimeException(e);
       }
@@ -185,14 +185,14 @@ public class ProtoAdapter<M extends Message> {
       }
     }
 
-    if (instance instanceof ExtendableMessage) {
-      ExtendableMessage message = (ExtendableMessage) instance;
-      if (message.extensionMap != null) {
-        size += getExtensionsSerializedSize(message.extensionMap);
+    if (message instanceof ExtendableMessage) {
+      ExtendableMessage extendableMessage = (ExtendableMessage) message;
+      if (extendableMessage.extensionMap != null) {
+        size += getExtensionsSerializedSize(extendableMessage.extensionMap);
       }
     }
-    size += instance.unknownFieldMap.getSerializedSize();
-    instance.cachedSerializedSize = size;
+    size += message.unknownFieldMap.getSerializedSize();
+    message.cachedSerializedSize = size;
     return size;
   }
 
@@ -225,8 +225,8 @@ public class ProtoAdapter<M extends Message> {
     return size;
   }
 
-  /** Uses reflection to write {@code instance} to {@code output} in serialized form. */
-  public void write(M instance, WireOutput output) throws IOException {
+  /** Uses reflection to write {@code message} to {@code output} in serialized form. */
+  public void write(M message, WireOutput output) throws IOException {
     for (int tag : tags) {
       Field field = fieldMap.get(tag);
       if (field == null) {
@@ -234,7 +234,7 @@ public class ProtoAdapter<M extends Message> {
       }
       Object value;
       try {
-        value = field.get(instance);
+        value = field.get(message);
       } catch (IllegalAccessException e) {
         throw new RuntimeException(e);
       }
@@ -266,13 +266,13 @@ public class ProtoAdapter<M extends Message> {
       }
     }
 
-    if (instance instanceof ExtendableMessage) {
-      ExtendableMessage message = (ExtendableMessage) instance;
-      if (message.extensionMap != null) {
-        writeExtensions(output, message.extensionMap);
+    if (message instanceof ExtendableMessage) {
+      ExtendableMessage extendableMessage = (ExtendableMessage) message;
+      if (extendableMessage.extensionMap != null) {
+        writeExtensions(output, extendableMessage.extensionMap);
       }
     }
-    instance.unknownFieldMap.write(output);
+    message.unknownFieldMap.write(output);
   }
 
   private <T extends ExtendableMessage<?>> void writeExtensions(WireOutput output,
@@ -304,7 +304,7 @@ public class ProtoAdapter<M extends Message> {
   }
 
   /**
-   * Serializes a given {@link Message} instance and returns the results as a byte array.
+   * Serializes a given {@link message} and returns the results as a byte array.
    */
   public byte[] toByteArray(M message) {
     byte[] result = new byte[getSerializedSize(message)];
@@ -314,6 +314,46 @@ public class ProtoAdapter<M extends Message> {
       throw new RuntimeException(e);
     }
     return result;
+  }
+
+  /**
+   * Returns a human-readable version of the given {@link message}.
+   */
+  public String toString(M message) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(messageType.getSimpleName());
+    sb.append("{");
+
+    String sep = "";
+    for (int tag : tags) {
+      Field field = fieldMap.get(tag);
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+      Object value;
+      try {
+        value = field.get(message);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+      }
+      if (value == null) {
+        continue;
+      }
+      sb.append(sep);
+      sep = ",";
+      sb.append(field.getName());
+      sb.append("=");
+      sb.append(value);
+    }
+    if (message instanceof ExtendableMessage<?>) {
+      ExtendableMessage<?> extendableMessage = (ExtendableMessage<?>) message;
+      sb.append(sep);
+      sb.append("{extensions=");
+      sb.append(extendableMessage.extensionsToString());
+      sb.append("}");
+    }
+    sb.append("}");
+    return sb.toString();
   }
 
   /**

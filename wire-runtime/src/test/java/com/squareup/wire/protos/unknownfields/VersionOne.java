@@ -37,13 +37,6 @@ public final class VersionOne extends Message {
     return hashCode;
   }
 
-  @Override
-  public String toString() {
-    return String.format("VersionOne{" +
-        "i=%s}",
-        i);
-  }
-
   public static final class Builder extends Message.Builder<VersionOne> {
 
     public Integer i;

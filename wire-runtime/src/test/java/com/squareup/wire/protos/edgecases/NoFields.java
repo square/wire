@@ -22,11 +22,6 @@ public final class NoFields extends Message {
     return 0;
   }
 
-  @Override
-  public String toString() {
-    return "NoFields{}";
-  }
-
   public static final class Builder extends Message.Builder<NoFields> {
 
     public Builder() {

@@ -108,23 +108,6 @@ public final class SimpleMessage extends Message {
     return hashCode;
   }
 
-  @Override
-  public String toString() {
-    return String.format("SimpleMessage{" +
-        "optional_int32=%s," +
-        "optional_nested_msg=%s," +
-        "optional_external_msg=%s," +
-        "default_nested_enum=%s," +
-        "required_int32=%s," +
-        "repeated_double=%s}",
-        optional_int32,
-        optional_nested_msg,
-        optional_external_msg,
-        default_nested_enum,
-        required_int32,
-        repeated_double);
-  }
-
   public static final class Builder extends Message.Builder<SimpleMessage> {
 
     public Integer optional_int32;
@@ -221,13 +204,6 @@ public final class SimpleMessage extends Message {
         hashCode = bb != null ? bb.hashCode() : 0;
       }
       return hashCode;
-    }
-
-    @Override
-    public String toString() {
-      return String.format("NestedMessage{" +
-          "bb=%s}",
-          bb);
     }
 
     public static final class Builder extends Message.Builder<NestedMessage> {
