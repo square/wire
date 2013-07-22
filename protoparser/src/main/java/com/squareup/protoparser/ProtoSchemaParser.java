@@ -412,12 +412,62 @@ public final class ProtoSchemaParser {
       if (c == '\\') {
         if (pos == data.length) throw unexpected("unexpected end of file");
         c = data[pos++];
+        switch (c) {
+          case 'a': c = 0x7; break;
+          case 'b': c = '\b'; break;
+          case 'f': c = '\f'; break;
+          case 'n': c = '\n'; break;
+          case 'r': c = '\r'; break;
+          case 't': c = '\t'; break;
+          case 'v': c = 0xb; break;
+          case 'x':case 'X':
+            c = readHexEscape();
+            break;
+          case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':
+            --pos;
+            c = readOctalEscape();
+            break;
+          default:
+            // use char as-is
+            break;
+        }
       }
 
       result.append(c);
       if (c == '\n') newline();
     }
     throw unexpected("unterminated string");
+  }
+
+  private char readOctalEscape() {
+    int start = pos;
+    String digits = "";
+    while (pos < data.length && pos < start + 3) {
+      if (!isOctalDigit(data[pos])) break;
+      digits += data[pos++];
+    }
+    return (char) Integer.parseInt(digits, 8);
+  }
+
+  private char readHexEscape() {
+    int start = pos;
+    String digits = "";
+    while (pos < data.length && pos < start + 2) {
+      if (!isHexDigit(data[pos])) break;
+      digits += data[pos++];
+    }
+    if (digits.isEmpty()) {
+      throw unexpected("expected a hex digit after \\x or \\X");
+    }
+    return (char) Integer.parseInt(digits, 16);
+  }
+
+  private boolean isOctalDigit(char c) {
+    return c >= '0' && c <= '7';
+  }
+
+  private boolean isHexDigit(char c) {
+    return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
   }
 
   /** Reads a (paren-wrapped), [square-wrapped] or naked symbol name. */
