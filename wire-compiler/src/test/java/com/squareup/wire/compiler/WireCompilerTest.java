@@ -42,6 +42,20 @@ public class WireCompilerTest {
     testSimpleDir.delete();
   }
 
+  @Test public void testPerson() throws Exception {
+    WireCompiler.main(
+        "--proto_path=../wire-runtime/src/test/proto",
+        "--java_out=" + testAllTypesDir.getAbsolutePath(),
+        "person.proto"
+    );
+
+
+    List<String> filesAfter = getAllFiles(testAllTypesDir);
+    Assert.assertEquals(1, filesAfter.size());
+
+    filesMatch(testAllTypesDir, "com/squareup/wire/protos/person/Person.java");
+  }
+
   @Test public void testAllTypes() throws Exception {
     WireCompiler.main(
       "--proto_path=../wire-runtime/src/test/proto",
