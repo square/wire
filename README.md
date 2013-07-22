@@ -16,11 +16,11 @@ protocol buffer messages.
 Compiling .proto files
 ----------------------
 
-The 'wire-compiler' package contains the `WireCompiler` class, which compiles standard .proto files
-into Java.
+The `wire-compiler` package contains the `WireCompiler` class, which compiles standard `.proto` files
+into Java source code.
 
 For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`, which may
-(recursively) import other .proto files within the `protos-repo/` directory:
+(recursively) import other `.proto` files within the `protos-repo/` directory:
 
     % mvn clean package
 
@@ -48,7 +48,7 @@ For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`,
         implements Message {
 
 Instead of supplying individual filename arguments on the command line, the `--files` flag may be
-used to specify a single file containing a list of .proto files. The file names are interpreted
+used to specify a single file containing a list of `.proto` files. The file names are interpreted
 relative to the value given for the `--proto_path` flag.
 
     % cat protos.include
@@ -67,20 +67,17 @@ relative to the value given for the `--proto_path` flag.
     Writing generated code to out/com/yourcompany/protos/stuff/Stuff.java
     ...
 
-The compiler will (recursively) import any needed .proto files from the protos-repo/ directory, but
-will only generate output for the .proto files listed on the command line or in the file specified
-by the --files flag.
+The compiler will (recursively) import any needed `.proto` files from the `protos-repo/` directory, but
+will only generate output for the `.proto` files listed on the command line or in the file specified
+by the `--files` flag.
 
 Using Wire in your application
 ------------------------------
 
-The 'wire-runtime' package contains runtime support libraries that must be included in applications
+The `wire-runtime` package contains runtime support libraries that must be included in applications
 that use Wire-generated code.
 
-The code in `com.google.protobuf.nano` is taken from the Android Open Source repo, with
-modifications.
-
-For Maven projects, simply add wire-runtime as a dependency:
+For Maven projects, simply add `wire-runtime` as a dependency:
 
 ```xml
 <dependency>
@@ -90,6 +87,56 @@ For Maven projects, simply add wire-runtime as a dependency:
 </dependency>
 ```
 
+How Wire works
+--------------
+
+The Wire compiler generates a Java class for each message or enum defined in a `.proto file` specified
+on the command line. Each message class has an associated Builder class that may be used to construct
+an instance manually:
+
+    MyMessage msg = new MyMessage.Builder().some_int_field(123).build();
+    
+Note that field names are not converted to camel case.
+
+Wire messages contain a `public final` field for each field of the protocol buffer message.
+Each field is annotated with a `@ProtoField` annotation containing the field metadata required
+by the Wire runtime.
+
+Numeric and boolean values are stored usinhg boxed primitive types (e.g., Integer or Long).
+If a field is unset, its value is `null`. Wire does not generate methods such as `getXXX()`,
+`hasXXX()`, `setXXX(`), etc. Repeated fields are stored as Lists of values.
+
+A field `some_field` has a constant `DEFAULT_SOME_FIELD` containing the default value for that
+field. A convenience method `Wire.get` allows substitution of a default value for `null`:
+
+    // Equivalent to:
+    // x = msg.some_field != null ? msg.some_field :  MyMessage.DEFAULT_SOME_FIELD
+    
+    int x = Wire.get(msg.some_field, MyMessage.DEFAULT_SOME_FIELD);
+    
+Builders contain a `public` field for each field of the protocol buffer message, as well as
+a method with the same name that sets the given value and returns the Builder instance for
+chaining.
+
+To convert between messages and their serialized representations, use the `Wire` class. Typically you
+will want to create a singleton instance of `Wire` for use throughout your application.
+
+    Wire wire = new Wire();
+    byte[] serializedMsg = wire.toByteArray(msg);
+
+    MyMessage newMsg = wire.parseFrom(MyMessage.class, serializedMsg);
+    int x = newMsg.some_int_field; // 123
+    
+To use protocol buffer extensions, pass the classes that define the extensions you
+wish to use as arguments to the `Wire` constructor:
+
+    // Assume MessageWithExtensions contains a message SomeMessage that defines
+    // an extension field some_extension to the MyMessage message. 
+    Wire wire = new Wire(MessageWithExtensions.class);
+    MyMessage msg = new MyMessage.Builder()
+        .setExtension(Ext_SomeMessage.some_extension, 3)
+        .build();
+    int x = msg.getExtension(Ext_MessageWithExtensions.some_extension); // 3
 
 Future work
 -----------
