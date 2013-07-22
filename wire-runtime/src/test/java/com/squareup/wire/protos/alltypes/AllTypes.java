@@ -30,7 +30,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   public static final Float DEFAULT_OPT_FLOAT = 0F;
   public static final Double DEFAULT_OPT_DOUBLE = 0D;
   public static final String DEFAULT_OPT_STRING = "";
-  public static final ByteString DEFAULT_OPT_BYTES = null;
+  public static final ByteString DEFAULT_OPT_BYTES = ByteString.of("");
   public static final NestedEnum DEFAULT_OPT_NESTED_ENUM = NestedEnum.A;
   public static final NestedMessage DEFAULT_OPT_NESTED_MESSAGE = Wire.getDefaultInstance(NestedMessage.class);
   public static final Integer DEFAULT_REQ_INT32 = 0;
@@ -47,7 +47,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   public static final Float DEFAULT_REQ_FLOAT = 0F;
   public static final Double DEFAULT_REQ_DOUBLE = 0D;
   public static final String DEFAULT_REQ_STRING = "";
-  public static final ByteString DEFAULT_REQ_BYTES = null;
+  public static final ByteString DEFAULT_REQ_BYTES = ByteString.of("");
   public static final NestedEnum DEFAULT_REQ_NESTED_ENUM = NestedEnum.A;
   public static final NestedMessage DEFAULT_REQ_NESTED_MESSAGE = Wire.getDefaultInstance(NestedMessage.class);
   public static final List<Integer> DEFAULT_REP_INT32 = Collections.emptyList();
@@ -80,10 +80,23 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   public static final List<Boolean> DEFAULT_PACK_BOOL = Collections.emptyList();
   public static final List<Float> DEFAULT_PACK_FLOAT = Collections.emptyList();
   public static final List<Double> DEFAULT_PACK_DOUBLE = Collections.emptyList();
-  public static final List<String> DEFAULT_PACK_STRING = Collections.emptyList();
-  public static final List<ByteString> DEFAULT_PACK_BYTES = Collections.emptyList();
   public static final List<NestedEnum> DEFAULT_PACK_NESTED_ENUM = Collections.emptyList();
-  public static final List<NestedMessage> DEFAULT_PACK_NESTED_MESSAGE = Collections.emptyList();
+  public static final Integer DEFAULT_DEFAULT_INT32 = 2147483647;
+  public static final Integer DEFAULT_DEFAULT_UINT32 = -1;
+  public static final Integer DEFAULT_DEFAULT_SINT32 = -2147483648;
+  public static final Integer DEFAULT_DEFAULT_FIXED32 = -1;
+  public static final Integer DEFAULT_DEFAULT_SFIXED32 = -2147483648;
+  public static final Long DEFAULT_DEFAULT_INT64 = 9223372036854775807L;
+  public static final Long DEFAULT_DEFAULT_UINT64 = -1L;
+  public static final Long DEFAULT_DEFAULT_SINT64 = -9223372036854775808L;
+  public static final Long DEFAULT_DEFAULT_FIXED64 = -1L;
+  public static final Long DEFAULT_DEFAULT_SFIXED64 = -9223372036854775808L;
+  public static final Boolean DEFAULT_DEFAULT_BOOL = true;
+  public static final Float DEFAULT_DEFAULT_FLOAT = 123.456e7F;
+  public static final Double DEFAULT_DEFAULT_DOUBLE = 123.456e78D;
+  public static final String DEFAULT_DEFAULT_STRING = "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel";
+  public static final ByteString DEFAULT_DEFAULT_BYTES = ByteString.of("çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel");
+  public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.A;
 
   @ProtoField(
     tag = 1,
@@ -527,26 +540,6 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   public final List<Double> pack_double;
 
   @ProtoField(
-    tag = 314,
-    type = Wire.STRING,
-    label = Wire.REPEATED
-  )
-  public final List<String> pack_string;
-
-  /**
-   * ignored
-   */
-  @ProtoField(
-    tag = 315,
-    type = Wire.BYTES,
-    label = Wire.REPEATED
-  )
-  public final List<ByteString> pack_bytes;
-
-  /**
-   * ignored
-   */
-  @ProtoField(
     tag = 316,
     type = Wire.ENUM,
     packed = true,
@@ -555,10 +548,100 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   public final List<NestedEnum> pack_nested_enum;
 
   @ProtoField(
-    tag = 317,
-    label = Wire.REPEATED
+    tag = 401,
+    type = Wire.INT32
   )
-  public final List<NestedMessage> pack_nested_message;
+  public final Integer default_int32;
+
+  @ProtoField(
+    tag = 402,
+    type = Wire.UINT32
+  )
+  public final Integer default_uint32;
+
+  @ProtoField(
+    tag = 403,
+    type = Wire.SINT32
+  )
+  public final Integer default_sint32;
+
+  @ProtoField(
+    tag = 404,
+    type = Wire.FIXED32
+  )
+  public final Integer default_fixed32;
+
+  @ProtoField(
+    tag = 405,
+    type = Wire.SFIXED32
+  )
+  public final Integer default_sfixed32;
+
+  @ProtoField(
+    tag = 406,
+    type = Wire.INT64
+  )
+  public final Long default_int64;
+
+  @ProtoField(
+    tag = 407,
+    type = Wire.UINT64
+  )
+  public final Long default_uint64;
+
+  @ProtoField(
+    tag = 408,
+    type = Wire.SINT64
+  )
+  public final Long default_sint64;
+
+  @ProtoField(
+    tag = 409,
+    type = Wire.FIXED64
+  )
+  public final Long default_fixed64;
+
+  @ProtoField(
+    tag = 410,
+    type = Wire.SFIXED64
+  )
+  public final Long default_sfixed64;
+
+  @ProtoField(
+    tag = 411,
+    type = Wire.BOOL
+  )
+  public final Boolean default_bool;
+
+  @ProtoField(
+    tag = 412,
+    type = Wire.FLOAT
+  )
+  public final Float default_float;
+
+  @ProtoField(
+    tag = 413,
+    type = Wire.DOUBLE
+  )
+  public final Double default_double;
+
+  @ProtoField(
+    tag = 414,
+    type = Wire.STRING
+  )
+  public final String default_string;
+
+  @ProtoField(
+    tag = 415,
+    type = Wire.BYTES
+  )
+  public final ByteString default_bytes;
+
+  @ProtoField(
+    tag = 416,
+    type = Wire.ENUM
+  )
+  public final NestedEnum default_nested_enum;
 
   private AllTypes(Builder builder) {
     super(builder);
@@ -626,10 +709,23 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     this.pack_bool = Wire.unmodifiableCopyOf(builder.pack_bool);
     this.pack_float = Wire.unmodifiableCopyOf(builder.pack_float);
     this.pack_double = Wire.unmodifiableCopyOf(builder.pack_double);
-    this.pack_string = Wire.unmodifiableCopyOf(builder.pack_string);
-    this.pack_bytes = Wire.unmodifiableCopyOf(builder.pack_bytes);
     this.pack_nested_enum = Wire.unmodifiableCopyOf(builder.pack_nested_enum);
-    this.pack_nested_message = Wire.unmodifiableCopyOf(builder.pack_nested_message);
+    this.default_int32 = builder.default_int32;
+    this.default_uint32 = builder.default_uint32;
+    this.default_sint32 = builder.default_sint32;
+    this.default_fixed32 = builder.default_fixed32;
+    this.default_sfixed32 = builder.default_sfixed32;
+    this.default_int64 = builder.default_int64;
+    this.default_uint64 = builder.default_uint64;
+    this.default_sint64 = builder.default_sint64;
+    this.default_fixed64 = builder.default_fixed64;
+    this.default_sfixed64 = builder.default_sfixed64;
+    this.default_bool = builder.default_bool;
+    this.default_float = builder.default_float;
+    this.default_double = builder.default_double;
+    this.default_string = builder.default_string;
+    this.default_bytes = builder.default_bytes;
+    this.default_nested_enum = builder.default_nested_enum;
   }
 
   @Override
@@ -701,10 +797,23 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     if (!Wire.equals(pack_bool, o.pack_bool)) return false;
     if (!Wire.equals(pack_float, o.pack_float)) return false;
     if (!Wire.equals(pack_double, o.pack_double)) return false;
-    if (!Wire.equals(pack_string, o.pack_string)) return false;
-    if (!Wire.equals(pack_bytes, o.pack_bytes)) return false;
     if (!Wire.equals(pack_nested_enum, o.pack_nested_enum)) return false;
-    if (!Wire.equals(pack_nested_message, o.pack_nested_message)) return false;
+    if (!Wire.equals(default_int32, o.default_int32)) return false;
+    if (!Wire.equals(default_uint32, o.default_uint32)) return false;
+    if (!Wire.equals(default_sint32, o.default_sint32)) return false;
+    if (!Wire.equals(default_fixed32, o.default_fixed32)) return false;
+    if (!Wire.equals(default_sfixed32, o.default_sfixed32)) return false;
+    if (!Wire.equals(default_int64, o.default_int64)) return false;
+    if (!Wire.equals(default_uint64, o.default_uint64)) return false;
+    if (!Wire.equals(default_sint64, o.default_sint64)) return false;
+    if (!Wire.equals(default_fixed64, o.default_fixed64)) return false;
+    if (!Wire.equals(default_sfixed64, o.default_sfixed64)) return false;
+    if (!Wire.equals(default_bool, o.default_bool)) return false;
+    if (!Wire.equals(default_float, o.default_float)) return false;
+    if (!Wire.equals(default_double, o.default_double)) return false;
+    if (!Wire.equals(default_string, o.default_string)) return false;
+    if (!Wire.equals(default_bytes, o.default_bytes)) return false;
+    if (!Wire.equals(default_nested_enum, o.default_nested_enum)) return false;
     return true;
   }
 
@@ -776,10 +885,23 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
       result = result * 37 + (pack_bool != null ? pack_bool.hashCode() : 0);
       result = result * 37 + (pack_float != null ? pack_float.hashCode() : 0);
       result = result * 37 + (pack_double != null ? pack_double.hashCode() : 0);
-      result = result * 37 + (pack_string != null ? pack_string.hashCode() : 0);
-      result = result * 37 + (pack_bytes != null ? pack_bytes.hashCode() : 0);
       result = result * 37 + (pack_nested_enum != null ? pack_nested_enum.hashCode() : 0);
-      result = result * 37 + (pack_nested_message != null ? pack_nested_message.hashCode() : 0);
+      result = result * 37 + (default_int32 != null ? default_int32.hashCode() : 0);
+      result = result * 37 + (default_uint32 != null ? default_uint32.hashCode() : 0);
+      result = result * 37 + (default_sint32 != null ? default_sint32.hashCode() : 0);
+      result = result * 37 + (default_fixed32 != null ? default_fixed32.hashCode() : 0);
+      result = result * 37 + (default_sfixed32 != null ? default_sfixed32.hashCode() : 0);
+      result = result * 37 + (default_int64 != null ? default_int64.hashCode() : 0);
+      result = result * 37 + (default_uint64 != null ? default_uint64.hashCode() : 0);
+      result = result * 37 + (default_sint64 != null ? default_sint64.hashCode() : 0);
+      result = result * 37 + (default_fixed64 != null ? default_fixed64.hashCode() : 0);
+      result = result * 37 + (default_sfixed64 != null ? default_sfixed64.hashCode() : 0);
+      result = result * 37 + (default_bool != null ? default_bool.hashCode() : 0);
+      result = result * 37 + (default_float != null ? default_float.hashCode() : 0);
+      result = result * 37 + (default_double != null ? default_double.hashCode() : 0);
+      result = result * 37 + (default_string != null ? default_string.hashCode() : 0);
+      result = result * 37 + (default_bytes != null ? default_bytes.hashCode() : 0);
+      result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
       hashCode = result;
     }
     return hashCode;
@@ -851,10 +973,23 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     public List<Boolean> pack_bool;
     public List<Float> pack_float;
     public List<Double> pack_double;
-    public List<String> pack_string;
-    public List<ByteString> pack_bytes;
     public List<NestedEnum> pack_nested_enum;
-    public List<NestedMessage> pack_nested_message;
+    public Integer default_int32;
+    public Integer default_uint32;
+    public Integer default_sint32;
+    public Integer default_fixed32;
+    public Integer default_sfixed32;
+    public Long default_int64;
+    public Long default_uint64;
+    public Long default_sint64;
+    public Long default_fixed64;
+    public Long default_sfixed64;
+    public Boolean default_bool;
+    public Float default_float;
+    public Double default_double;
+    public String default_string;
+    public ByteString default_bytes;
+    public NestedEnum default_nested_enum;
 
     public Builder() {
     }
@@ -926,10 +1061,23 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
       this.pack_bool = Wire.copyOf(message.pack_bool);
       this.pack_float = Wire.copyOf(message.pack_float);
       this.pack_double = Wire.copyOf(message.pack_double);
-      this.pack_string = Wire.copyOf(message.pack_string);
-      this.pack_bytes = Wire.copyOf(message.pack_bytes);
       this.pack_nested_enum = Wire.copyOf(message.pack_nested_enum);
-      this.pack_nested_message = Wire.copyOf(message.pack_nested_message);
+      this.default_int32 = message.default_int32;
+      this.default_uint32 = message.default_uint32;
+      this.default_sint32 = message.default_sint32;
+      this.default_fixed32 = message.default_fixed32;
+      this.default_sfixed32 = message.default_sfixed32;
+      this.default_int64 = message.default_int64;
+      this.default_uint64 = message.default_uint64;
+      this.default_sint64 = message.default_sint64;
+      this.default_fixed64 = message.default_fixed64;
+      this.default_sfixed64 = message.default_sfixed64;
+      this.default_bool = message.default_bool;
+      this.default_float = message.default_float;
+      this.default_double = message.default_double;
+      this.default_string = message.default_string;
+      this.default_bytes = message.default_bytes;
+      this.default_nested_enum = message.default_nested_enum;
     }
 
     public Builder opt_int32(Integer opt_int32) {
@@ -1252,23 +1400,88 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
       return this;
     }
 
-    public Builder pack_string(List<String> pack_string) {
-      this.pack_string = pack_string;
-      return this;
-    }
-
-    public Builder pack_bytes(List<ByteString> pack_bytes) {
-      this.pack_bytes = pack_bytes;
-      return this;
-    }
-
     public Builder pack_nested_enum(List<NestedEnum> pack_nested_enum) {
       this.pack_nested_enum = pack_nested_enum;
       return this;
     }
 
-    public Builder pack_nested_message(List<NestedMessage> pack_nested_message) {
-      this.pack_nested_message = pack_nested_message;
+    public Builder default_int32(Integer default_int32) {
+      this.default_int32 = default_int32;
+      return this;
+    }
+
+    public Builder default_uint32(Integer default_uint32) {
+      this.default_uint32 = default_uint32;
+      return this;
+    }
+
+    public Builder default_sint32(Integer default_sint32) {
+      this.default_sint32 = default_sint32;
+      return this;
+    }
+
+    public Builder default_fixed32(Integer default_fixed32) {
+      this.default_fixed32 = default_fixed32;
+      return this;
+    }
+
+    public Builder default_sfixed32(Integer default_sfixed32) {
+      this.default_sfixed32 = default_sfixed32;
+      return this;
+    }
+
+    public Builder default_int64(Long default_int64) {
+      this.default_int64 = default_int64;
+      return this;
+    }
+
+    public Builder default_uint64(Long default_uint64) {
+      this.default_uint64 = default_uint64;
+      return this;
+    }
+
+    public Builder default_sint64(Long default_sint64) {
+      this.default_sint64 = default_sint64;
+      return this;
+    }
+
+    public Builder default_fixed64(Long default_fixed64) {
+      this.default_fixed64 = default_fixed64;
+      return this;
+    }
+
+    public Builder default_sfixed64(Long default_sfixed64) {
+      this.default_sfixed64 = default_sfixed64;
+      return this;
+    }
+
+    public Builder default_bool(Boolean default_bool) {
+      this.default_bool = default_bool;
+      return this;
+    }
+
+    public Builder default_float(Float default_float) {
+      this.default_float = default_float;
+      return this;
+    }
+
+    public Builder default_double(Double default_double) {
+      this.default_double = default_double;
+      return this;
+    }
+
+    public Builder default_string(String default_string) {
+      this.default_string = default_string;
+      return this;
+    }
+
+    public Builder default_bytes(ByteString default_bytes) {
+      this.default_bytes = default_bytes;
+      return this;
+    }
+
+    public Builder default_nested_enum(NestedEnum default_nested_enum) {
+      this.default_nested_enum = default_nested_enum;
       return this;
     }
 

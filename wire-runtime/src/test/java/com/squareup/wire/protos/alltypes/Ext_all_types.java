@@ -61,8 +61,5 @@ public final class Ext_all_types {
   public static final Extension<AllTypes, List<Boolean>> ext_pack_bool = Extension.getRepeatedExtension(AllTypes.class, 1211, Wire.BOOL, true);
   public static final Extension<AllTypes, List<Float>> ext_pack_float = Extension.getRepeatedExtension(AllTypes.class, 1212, Wire.FLOAT, true);
   public static final Extension<AllTypes, List<Double>> ext_pack_double = Extension.getRepeatedExtension(AllTypes.class, 1213, Wire.DOUBLE, true);
-  public static final Extension<AllTypes, List<String>> ext_pack_string = Extension.getRepeatedExtension(AllTypes.class, 1214, Wire.STRING, false);
-  public static final Extension<AllTypes, List<ByteString>> ext_pack_bytes = Extension.getRepeatedExtension(AllTypes.class, 1215, Wire.BYTES, false);
   public static final Extension<AllTypes, List<AllTypes.NestedEnum>> ext_pack_nested_enum = Extension.getRepeatedEnumExtension(AllTypes.class, 1216, true, AllTypes.NestedEnum.class);
-  public static final Extension<AllTypes, List<AllTypes.NestedMessage>> ext_pack_nested_message = Extension.getRepeatedMessageExtension(AllTypes.class, 1217, AllTypes.NestedMessage.class);
 }
