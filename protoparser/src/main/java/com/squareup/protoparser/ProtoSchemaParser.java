@@ -412,12 +412,53 @@ public final class ProtoSchemaParser {
       if (c == '\\') {
         if (pos == data.length) throw unexpected("unexpected end of file");
         c = data[pos++];
+        switch (c) {
+          case 'a': c = 0x7; break;
+          case 'b': c = '\b'; break;
+          case 'f': c = '\f'; break;
+          case 'n': c = '\n'; break;
+          case 'r': c = '\r'; break;
+          case 't': c = '\t'; break;
+          case 'v': c = 0xb; break;
+          case 'x':case 'X':
+            c = readNumericEscape(16, 2);
+            break;
+          case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':
+            --pos;
+            c = readNumericEscape(8, 3);
+            break;
+          default:
+            // use char as-is
+            break;
+        }
       }
 
       result.append(c);
       if (c == '\n') newline();
     }
     throw unexpected("unterminated string");
+  }
+
+  private char readNumericEscape(int radix, int len) {
+    int value = -1;
+    for (int endPos = Math.min(pos + len, data.length); pos < endPos; pos++) {
+      int digit = hexDigit(data[pos]);
+      if (digit == -1 || digit >= radix) break;
+      if (value < 0) {
+        value = digit;
+      } else {
+        value = value * radix + digit;
+      }
+    }
+    if (value < 0) throw unexpected("expected a digit after \\x or \\X");
+    return (char) value;
+  }
+
+  private int hexDigit(char c) {
+    if (c >= '0' && c <= '9') return c - '0';
+    else if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+    else if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+    else return -1;
   }
 
   /** Reads a (paren-wrapped), [square-wrapped] or naked symbol name. */
