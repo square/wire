@@ -1,10 +1,11 @@
 package squareup.protos.alltypes;
 
 option java_package = "com.squareup.wire.protos.alltypes";
+option java_outer_classname = "AlltypesProtos";
 
 message AllTypes {
 
-  extensions 1001 to 1017;
+  extensions 1001 to 1217;
 
   enum NestedEnum {
     A = 1;
@@ -81,10 +82,24 @@ message AllTypes {
   repeated bool pack_bool = 311 [packed = true];
   repeated float pack_float = 312 [packed = true];
   repeated double pack_double = 313 [packed = true];
-  repeated string pack_string = 314 [packed = true]; // ignored
-  repeated bytes pack_bytes = 315 [packed = true]; // ignored
   repeated NestedEnum pack_nested_enum = 316 [packed = true];
-  repeated NestedMessage pack_nested_message = 317 [packed = true]; // ignored
+
+  optional int32 default_int32 = 401 [default = 2147483647 ];
+  optional uint32 default_uint32 = 402 [default = 4294967295 ];
+  optional sint32 default_sint32 = 403 [default = -2147483648 ];
+  optional fixed32 default_fixed32 = 404 [default = 4294967295 ];
+  optional sfixed32 default_sfixed32 = 405 [default = -2147483648 ];
+  optional int64 default_int64 = 406 [default = 9223372036854775807 ];
+  optional uint64 default_uint64 = 407 [default = 18446744073709551615 ];
+  optional sint64 default_sint64 = 408 [default = -9223372036854775808 ];
+  optional fixed64 default_fixed64 = 409 [default = 18446744073709551615 ];
+  optional sfixed64 default_sfixed64 = 410 [default = -9223372036854775808 ];
+  optional bool default_bool = 411 [default = true ];
+  optional float default_float = 412 [default = 123.456e7 ];
+  optional double default_double = 413 [default = 123.456e78 ];
+  optional string default_string = 414 [default = "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel" ];
+  optional bytes default_bytes = 415 [default = "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel" ];
+  optional NestedEnum default_nested_enum = 416 [default = A ];
 }
 
 extend AllTypes {
@@ -137,8 +152,5 @@ extend AllTypes {
   repeated bool ext_pack_bool = 1211 [packed = true];
   repeated float ext_pack_float = 1212 [packed = true];
   repeated double ext_pack_double = 1213 [packed = true];
-  repeated string ext_pack_string = 1214 [packed = true]; // ignored
-  repeated bytes ext_pack_bytes = 1215 [packed = true]; // ignored
   repeated AllTypes.NestedEnum ext_pack_nested_enum = 1216 [packed = true];
-  repeated AllTypes.NestedMessage ext_pack_nested_message = 1217 [packed = true]; // ignored
 }

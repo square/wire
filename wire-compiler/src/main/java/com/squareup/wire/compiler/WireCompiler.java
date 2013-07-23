@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -456,6 +457,10 @@ public class WireCompiler {
     }
     for (Field field : fields) {
       String javaName = getJavaType(messageType, field);
+      if (javaName == null) {
+        throw new IllegalArgumentException("Unknown type for field " + field + " in message "
+            + messageType.getName());
+      }
       String defaultValue = getDefaultValue(messageType, field);
 
       writer.emitField(javaName, "DEFAULT_" + sanitize(field.getName()).toUpperCase(Locale.US),
@@ -492,19 +497,30 @@ public class WireCompiler {
     } else if ("Double".equals(javaName)) {
       return initialValue == null ? "0D" : initialValue + "D";
     } else if ("Integer".equals(javaName)) {
-      return initialValue == null ? "0" : initialValue;
+      return initialValue == null ? "0" : toInt(initialValue);
     } else if ("Long".equals(javaName)) {
       // Add an 'L' to Long values
-      return initialValue == null ? "0L" : initialValue + "L";
+      return initialValue == null ? "0L" : toLong(initialValue) + "L";
     } else  if ("Float".equals(javaName)) {
       // Add an 'F' to Float values
       return initialValue == null ? "0F" : initialValue + "F";
     } else if ("String".equals(javaName)) {
       // Quote String values
       return initialValue == null ? "\"\"" : JavaWriter.stringLiteral(initialValue);
+    } else if ("ByteString".equals(javaName)) {
+      return "ByteString.of(" + (initialValue == null
+          ? "\"\"" : JavaWriter.stringLiteral(initialValue)) + ")";
     } else {
       return "null";
     }
+  }
+
+  private String toInt(String value) {
+    return Integer.toString(new BigDecimal(value).intValue());
+  }
+
+  private String toLong(String value) {
+    return Long.toString(new BigDecimal(value).longValue());
   }
 
   // Example:
