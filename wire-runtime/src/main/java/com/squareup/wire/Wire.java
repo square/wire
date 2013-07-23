@@ -268,11 +268,16 @@ public final class Wire {
    * Returns an instance of the given message class, with all fields unset.
    *
    * @param messageClass the class of the desired {@link Message}
-   * @param <Type> the Message type
+   * @param <M> the Message type
    * @return an instance of the desired Message class
    */
-  public static <Type extends Message> Type getDefaultInstance(Class<Type> messageClass) {
+  public static <M extends Message> M getDefaultInstance(Class<M> messageClass) {
     return INSTANCE.messageAdapter(messageClass).getDefaultInstance();
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <M extends Message> String toString(M message) {
+    return INSTANCE.messageAdapter((Class<M>) message.getClass()).toString(message);
   }
 
   /**
@@ -329,10 +334,10 @@ public final class Wire {
    *
    * @param value the value to return if non-null
    * @param defaultValue the value to return if value is null
-   * @param <M> the value type
+   * @param <T> the value type
    * @return one of value or defaultValue
    */
-  public static <M> M get(M value, M defaultValue) {
+  public static <T> T get(T value, T defaultValue) {
     return value != null ? value : defaultValue;
   }
 

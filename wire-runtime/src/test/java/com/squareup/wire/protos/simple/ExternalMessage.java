@@ -43,15 +43,6 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
     return hashCode;
   }
 
-  @Override
-  public String toString() {
-    return String.format("ExternalMessage{" +
-        "f=%s," +
-        "{extensions=%s}",
-        f,
-        extensionsToString());
-  }
-
   public static final class Builder extends ExtendableBuilder<ExternalMessage> {
 
     public Float f;

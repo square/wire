@@ -38,13 +38,6 @@ public final class OneBytesField extends Message {
     return hashCode;
   }
 
-  @Override
-  public String toString() {
-    return String.format("OneBytesField{" +
-        "opt_bytes=%s}",
-        opt_bytes);
-  }
-
   public static final class Builder extends Message.Builder<OneBytesField> {
 
     public ByteString opt_bytes;

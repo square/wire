@@ -426,7 +426,6 @@ public class WireCompiler {
       emitMessageConstructor(messageType);
       emitMessageEquals(messageType);
       emitMessageHashCode(messageType);
-      emitMessageToString(messageType);
       emitBuilder(messageType);
 
       for (Type nestedType : type.getNestedTypes()) {
@@ -623,46 +622,6 @@ public class WireCompiler {
       writer.emitStatement("hashCode = result");
       writer.endControlFlow();
       writer.emitStatement("return hashCode");
-    }
-    writer.endMethod();
-  }
-
-  // Example:
-  //
-  // @Override
-  // public String toString() {
-  //   return String.format("SimpleMessage{" +
-  //     "optional_int32=%s}",
-  //     optional_int32);
-  // }
-  //
-  private void emitMessageToString(MessageType messageType)
-      throws IOException {
-    writer.emitEmptyLine();
-    writer.emitAnnotation(Override.class);
-    writer.beginMethod("String", "toString", EnumSet.of(PUBLIC));
-
-    if (messageType.getFields().isEmpty()) {
-      writer.emitStatement(String.format("return \"%s{}\"", messageType.getName()));
-    } else {
-      StringBuilder format = new StringBuilder();
-      StringBuilder args = new StringBuilder();
-      String formatSep = "\"";
-      String argsSep = "";
-      for (Field field : messageType.getFields()) {
-        String sanitized = sanitize(field.getName());
-        format.append(String.format("%s%s=%%s", formatSep, sanitized));
-        args.append(String.format("%s%s", argsSep, sanitized));
-        formatSep = ",\" +\n\"";
-        argsSep = ",\n";
-      }
-      if (hasExtensions(messageType)) {
-        format.append(String.format("%s{extensions=%%s", formatSep));
-        args.append(String.format("%sextensionsToString()", argsSep));
-      }
-
-      writer.emitStatement("return String.format(\"%s{\" +\n%s}\",\n%s)", messageType.getName(),
-          format.toString(), args.toString());
     }
     writer.endMethod();
   }
