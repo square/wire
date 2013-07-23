@@ -1279,30 +1279,8 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     @Override
-    public boolean isInitialized() {
-      if (req_int32 == null) return false;
-      if (req_uint32 == null) return false;
-      if (req_sint32 == null) return false;
-      if (req_fixed32 == null) return false;
-      if (req_sfixed32 == null) return false;
-      if (req_int64 == null) return false;
-      if (req_uint64 == null) return false;
-      if (req_sint64 == null) return false;
-      if (req_fixed64 == null) return false;
-      if (req_sfixed64 == null) return false;
-      if (req_bool == null) return false;
-      if (req_float == null) return false;
-      if (req_double == null) return false;
-      if (req_string == null) return false;
-      if (req_bytes == null) return false;
-      if (req_nested_enum == null) return false;
-      if (req_nested_message == null) return false;
-      return true;
-    }
-
-    @Override
     public AllTypes build() {
-      if (!isInitialized()) throw new IllegalStateException("!isInitialized");
+      checkRequiredFields();
       return new AllTypes(this);
     }
   }

@@ -22,7 +22,7 @@ import static com.squareup.wire.Message.Builder;
  *
  * @param <M> the Message class handled by this adapter.
  */
-public class ProtoAdapter<M extends Message> {
+public class MessageAdapter<M extends Message> {
 
   private final Wire wire;
   private final Class<M> messageType;
@@ -39,8 +39,7 @@ public class ProtoAdapter<M extends Message> {
   private final Map<Integer, Method> builderMethodMap = new HashMap<Integer, Method>();
 
   /** Cache information about the Message class and its mapping to proto wire format. */
-  @SuppressWarnings("unchecked")
-  ProtoAdapter(Wire wire, Class<M> messageType) {
+  @SuppressWarnings("unchecked") MessageAdapter(Wire wire, Class<M> messageType) {
     this.wire = wire;
     this.messageType = messageType;
     try {
@@ -121,7 +120,7 @@ public class ProtoAdapter<M extends Message> {
   }
 
   /**
-   * Returns an instance of the message type of this {@link ProtoAdapter} with all fields unset.
+   * Returns an instance of the message type of this {@link MessageAdapter} with all fields unset.
    */
   public synchronized M getDefaultInstance() {
     if (defaultInstance == null) {
@@ -304,7 +303,7 @@ public class ProtoAdapter<M extends Message> {
   }
 
   /**
-   * Serializes a given {@link message} and returns the results as a byte array.
+   * Serializes a given {@link Message} and returns the results as a byte array.
    */
   public byte[] toByteArray(M message) {
     byte[] result = new byte[getSerializedSize(message)];
@@ -317,7 +316,7 @@ public class ProtoAdapter<M extends Message> {
   }
 
   /**
-   * Returns a human-readable version of the given {@link message}.
+   * Returns a human-readable version of the given {@link Message}.
    */
   public String toString(M message) {
     StringBuilder sb = new StringBuilder();
@@ -409,13 +408,13 @@ public class ProtoAdapter<M extends Message> {
 
   @SuppressWarnings("unchecked")
   private <E extends Enum> int getEnumSize(E value) {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
+    EnumAdapter<E> adapter = (EnumAdapter<E>) wire.enumAdapter(value.getClass());
     return WireOutput.varint32Size(adapter.toInt(value));
   }
 
   @SuppressWarnings("unchecked")
   private <M extends Message> int getMessageSize(M message) {
-    ProtoAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
+    MessageAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
     int messageSize = adapter.getSerializedSize(message);
     return WireOutput.varint32Size(messageSize) + messageSize;
   }
@@ -476,7 +475,7 @@ public class ProtoAdapter<M extends Message> {
 
   @SuppressWarnings("unchecked")
   private <M extends Message> void writeMessage(M message, WireOutput output) throws IOException {
-    ProtoAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
+    MessageAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
     output.writeVarint32(adapter.getSerializedSize(message));
     adapter.write(message, output);
   }
@@ -484,7 +483,7 @@ public class ProtoAdapter<M extends Message> {
   @SuppressWarnings("unchecked")
   private <E extends Enum> void writeEnum(E value, WireOutput output)
       throws IOException {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) wire.enumAdapter(value.getClass());
+    EnumAdapter<E> adapter = (EnumAdapter<E>) wire.enumAdapter(value.getClass());
     output.writeVarint32(adapter.toInt(value));
   }
 
@@ -587,12 +586,12 @@ public class ProtoAdapter<M extends Message> {
 
   private Message readMessage(WireInput input, int tag) throws IOException {
     final int length = input.readVarint32();
-    if (input.recursionDepth >= input.recursionLimit) {
+    if (input.recursionDepth >= WireInput.RECURSION_LIMIT) {
       throw new IOException("Wire recursion limit exceeded");
     }
     final int oldLimit = input.pushLimit(length);
     ++input.recursionDepth;
-    ProtoAdapter<? extends Message> adapter = wire.messageAdapter(getMessageClass(tag));
+    MessageAdapter<? extends Message> adapter = wire.messageAdapter(getMessageClass(tag));
     Message message = adapter.read(input);
     input.checkLastTagWas(0);
     --input.recursionDepth;
@@ -641,7 +640,7 @@ public class ProtoAdapter<M extends Message> {
   private static class Storage {
     private final Map<Integer, List<Object>> map = new HashMap<Integer, List<Object>>();
 
-    public void add(int tag, Object value) {
+    void add(int tag, Object value) {
       List<Object> list = map.get(tag);
       if (list == null) {
         list = new ArrayList<Object>();
@@ -650,11 +649,11 @@ public class ProtoAdapter<M extends Message> {
       list.add(value);
     }
 
-    public Set<Integer> getTags() {
+    Set<Integer> getTags() {
       return map.keySet();
     }
 
-    public List<Object> get(int tag) {
+    List<Object> get(int tag) {
       return map.get(tag);
     }
   }

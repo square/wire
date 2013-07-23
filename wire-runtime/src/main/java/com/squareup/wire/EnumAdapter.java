@@ -11,11 +11,11 @@ import java.util.Map;
  *
  * @param <E> the Enum class handled by this adapter.
  */
-class ProtoEnumAdapter<E extends Enum> {
+class EnumAdapter<E extends Enum> {
   private final Map<Integer, E> fromInt = new HashMap<Integer, E>();
   private final Map<E, Integer> toInt = new HashMap<E, Integer>();
 
-  ProtoEnumAdapter(Class<E> type) {
+  EnumAdapter(Class<E> type) {
     // Record values for each constant annotated with '@ProtoEnum'.
     for (E value : type.getEnumConstants()) {
       try {

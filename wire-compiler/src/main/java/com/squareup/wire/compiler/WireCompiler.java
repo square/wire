@@ -470,6 +470,43 @@ public class WireCompiler {
     return name;
   }
 
+  private String getDefaultValue(MessageType messageType, Field field) {
+    String initialValue = field.getDefault();
+    // Qualify message and enum values
+    if (isRepeated(field)) return "Collections.emptyList()";
+    String javaName = javaName(messageType, field.getType());
+    if (!isScalar(field)) {
+      if (initialValue != null) {
+        return javaName + "." + initialValue;
+      } else {
+        String fullyQualifiedName = fullyQualifiedName(messageType, field.getType());
+        if (isEnum(fullyQualifiedName)) {
+          return javaName + "." + enumDefaults.get(fullyQualifiedName);
+        } else {
+          return "Wire.getDefaultInstance(" + writer.compressType(javaName) + ".class)";
+        }
+      }
+    }
+    if ("Boolean".equals(javaName)) {
+      return initialValue == null ? "false" : initialValue;
+    } else if ("Double".equals(javaName)) {
+      return initialValue == null ? "0D" : initialValue + "D";
+    } else if ("Integer".equals(javaName)) {
+      return initialValue == null ? "0" : initialValue;
+    } else if ("Long".equals(javaName)) {
+      // Add an 'L' to Long values
+      return initialValue == null ? "0L" : initialValue + "L";
+    } else  if ("Float".equals(javaName)) {
+      // Add an 'F' to Float values
+      return initialValue == null ? "0F" : initialValue + "F";
+    } else if ("String".equals(javaName)) {
+      // Quote String values
+      return initialValue == null ? "\"\"" : JavaWriter.stringLiteral(initialValue);
+    } else {
+      return "null";
+    }
+  }
+
   // Example:
   //
   // /**
@@ -637,7 +674,6 @@ public class WireCompiler {
     emitBuilderConstructors(messageType);
     emitBuilderSetters(messageType);
     if (hasExtensions(messageType)) emitBuilderSetExtension(messageType);
-    if (hasRequiredFields(messageType)) emitBuilderIsInitialized(messageType);
     emitBuilderBuild(messageType);
     writer.endType();
   }
@@ -652,6 +688,18 @@ public class WireCompiler {
     }
   }
 
+  // Example:
+  //
+  // public Builder() {
+  // }
+  //
+  // public Builder(SimpleMessage message) {
+  //   super(message);
+  //   if (message == null) return;
+  //   this.optional_int32 = message.optional_int32;
+  //   ...
+  // }
+  //
   private void emitBuilderConstructors(MessageType messageType) throws IOException {
     writer.emitEmptyLine();
     writer.beginMethod(null, "Builder", EnumSet.of(PUBLIC));
@@ -670,45 +718,6 @@ public class WireCompiler {
       }
     }
     writer.endMethod();
-  }
-
-  private String getDefaultValue(MessageType messageType, Field field) {
-    String initialValue = field.getDefault();
-    // Qualify message and enum values
-    boolean isRepeated = field.getLabel() == MessageType.Label.REPEATED;
-    if (isRepeated) return "Collections.emptyList()";
-    String javaName = javaName(messageType, field.getType());
-    if (!isScalar(field)) {
-      if (initialValue != null) {
-        return javaName + "." + initialValue;
-      } else {
-        String fullyQualifiedName = fullyQualifiedName(messageType, field.getType());
-        if (isEnum(fullyQualifiedName)) {
-          return javaName + "." + enumDefaults.get(fullyQualifiedName);
-        } else {
-          return "Wire.getDefaultInstance(" + writer.compressType(javaName) + ".class)";
-        }
-      }
-    }
-    if ("Boolean".equals(javaName)) {
-      return initialValue == null ? "false" : initialValue;
-    } else if ("Double".equals(javaName)) {
-      return initialValue == null ? "0D" : initialValue + "D";
-    } else if ("Integer".equals(javaName)) {
-      return initialValue == null ? "0" : initialValue;
-    } else if ("Long".equals(javaName)) {
-      // Add an 'L' to Long values
-      return initialValue == null ? "0L" : initialValue + "L";
-    } else  if ("Float".equals(javaName)) {
-      // Add an 'F' to Float values
-      return initialValue == null ? "0F" : initialValue + "F";
-    } else if ("String".equals(javaName)) {
-      // Quote String values
-      return "\"" + (initialValue == null
-          ? "" : initialValue.replaceAll("[\\\\]", "\\\\").replaceAll("[\"]", "\\\"")) + "\"";
-    } else {
-      return "null";
-    }
   }
 
   private void emitBuilderSetters(MessageType messageType) throws IOException {
@@ -752,26 +761,23 @@ public class WireCompiler {
     writer.endMethod();
   }
 
-  private void emitBuilderIsInitialized(MessageType messageType)
-      throws IOException {
-    writer.emitEmptyLine();
-    writer.emitAnnotation(Override.class);
-    writer.beginMethod("boolean", "isInitialized", EnumSet.of(PUBLIC));
-    for (Field field : messageType.getFields()) {
-      if (isRequired(field)) writer.emitStatement("if (%s == null) return false", field.getName());
-    }
-    writer.emitStatement("return true");
-    writer.endMethod();
-  }
-
+  // Example:
+  //
+  // @Override
+  // public SimpleMessage build() {
+  //   checkRequiredFields();
+  //   return new SimpleMessage(this);
+  // }
+  //
+  // The call to checkRequiredFields will be emitted only if the message has
+  // required fields.
+  //
   private void emitBuilderBuild(MessageType messageType) throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
     writer.beginMethod(messageType.getName(), "build", EnumSet.of(PUBLIC));
     if (hasRequiredFields(messageType)) {
-      // TODO - make message more informative
-      writer.emitStatement("if (!isInitialized()) throw new IllegalStateException("
-          + "\"!isInitialized\")");
+      writer.emitStatement("checkRequiredFields()");
     }
     writer.emitStatement("return new %s(this)", messageType.getName());
     writer.endMethod();
@@ -859,7 +865,7 @@ public class WireCompiler {
   private boolean hasRequiredFields(Type type) {
     if (type instanceof MessageType) {
       for (MessageType.Field field : ((MessageType) type).getFields()) {
-        if (field.getLabel() == MessageType.Label.REQUIRED) return true;
+        if (isRequired(field)) return true;
       }
     }
     return false;
@@ -890,13 +896,13 @@ public class WireCompiler {
     return field.getLabel() == MessageType.Label.REPEATED;
   }
 
+  private boolean isRequired(Field field) {
+    return field.getLabel() == MessageType.Label.REQUIRED;
+  }
+
   private boolean isPacked(Field field, boolean isEnum) {
     return "true".equals(field.getExtensions().get("packed"))
         && (PACKABLE_TYPES.contains(field.getType()) || isEnum);
-  }
-
-  private boolean isRequired(Field field) {
-    return field.getLabel() == MessageType.Label.REQUIRED;
   }
 
   private String fullyQualifiedName(MessageType messageType, String type) {
