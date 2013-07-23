@@ -126,14 +126,17 @@ public final class Wire {
   static final int TYPE_MASK = 0x1f;
   static final int LABEL_MASK = 0xe0;
   static final int PACKED_MASK = 0x100;
-  static final int BYTE_MASK = 0xff;
 
-  private final Map<Class<? extends Message>, ProtoAdapter<? extends Message>> messageAdapters =
-      new HashMap<Class<? extends Message>, ProtoAdapter<? extends Message>>();
-  private final Map<Class<? extends Enum>, ProtoEnumAdapter<? extends Enum>> enumAdapters =
-      new HashMap<Class<? extends Enum>, ProtoEnumAdapter<? extends Enum>>();
+  private final Map<Class<? extends Message>, MessageAdapter<? extends Message>> messageAdapters =
+      new HashMap<Class<? extends Message>, MessageAdapter<? extends Message>>();
+  private final Map<Class<? extends Message.Builder>,
+      BuilderAdapter<? extends Message.Builder>> builderAdapters =
+          new HashMap<Class<? extends Message.Builder>,
+              BuilderAdapter<? extends Message.Builder>>();
+  private final Map<Class<? extends Enum>, EnumAdapter<? extends Enum>> enumAdapters =
+      new HashMap<Class<? extends Enum>, EnumAdapter<? extends Enum>>();
 
-  // Visible to ProtoAdapter
+  // Visible to MessageAdapter
   final ExtensionRegistry registry;
 
   /**
@@ -167,30 +170,46 @@ public final class Wire {
   }
 
   /**
-   * Returns a {@link ProtoAdapter} for the given message type.
+   * Returns a {@link MessageAdapter} for the given message type.
    *
    * @param messageType the {@link Message} class
    */
   @SuppressWarnings("unchecked")
-  public synchronized <M extends Message> ProtoAdapter<M> messageAdapter(Class<M> messageType) {
-    ProtoAdapter<M> adapter = (ProtoAdapter<M>) messageAdapters.get(messageType);
+  public synchronized <M extends Message> MessageAdapter<M> messageAdapter(Class<M> messageType) {
+    MessageAdapter<M> adapter = (MessageAdapter<M>) messageAdapters.get(messageType);
     if (adapter == null) {
-      adapter = new ProtoAdapter<M>(this, messageType);
+      adapter = new MessageAdapter<M>(this, messageType);
       messageAdapters.put(messageType, adapter);
     }
     return adapter;
   }
 
   /**
-   * Returns an {@link ProtoEnumAdapter} for the given enum class.
+   * Returns a {@link BuilderAdapter} for the given message type.
+   *
+   * @param builderType the {@link Message.Builder} class
+   */
+  @SuppressWarnings("unchecked")
+  public synchronized <B extends Message.Builder> BuilderAdapter<B>
+      builderAdapter(Class<B> builderType) {
+    BuilderAdapter<B> adapter = (BuilderAdapter<B>) builderAdapters.get(builderType);
+    if (adapter == null) {
+      adapter = new BuilderAdapter<B>(builderType);
+      builderAdapters.put(builderType, adapter);
+    }
+    return adapter;
+  }
+
+  /**
+   * Returns an {@link EnumAdapter} for the given enum class.
    *
    * @param enumClass the enum class
    */
   @SuppressWarnings("unchecked")
-  public synchronized <E extends Enum> ProtoEnumAdapter<E> enumAdapter(Class<E> enumClass) {
-    ProtoEnumAdapter<E> adapter = (ProtoEnumAdapter<E>) enumAdapters.get(enumClass);
+  public synchronized <E extends Enum> EnumAdapter<E> enumAdapter(Class<E> enumClass) {
+    EnumAdapter<E> adapter = (EnumAdapter<E>) enumAdapters.get(enumClass);
     if (adapter == null) {
-      adapter = new ProtoEnumAdapter<E>(enumClass);
+      adapter = new EnumAdapter<E>(enumClass);
       enumAdapters.put(enumClass, adapter);
     }
     return adapter;
@@ -209,7 +228,7 @@ public final class Wire {
    */
   public <M extends Message> M parseFrom(Class<M> messageClass,
       byte[] bytes, int off, int len) throws IOException {
-    ProtoAdapter<M> adapter = messageAdapter(messageClass);
+    MessageAdapter<M> adapter = messageAdapter(messageClass);
     return adapter.read(WireInput.newInstance(bytes, off, len));
   }
 
@@ -224,7 +243,7 @@ public final class Wire {
    * @throws IOException if parsing fails
    */
   public <M extends Message> M parseFrom(Class<M> messageClass, byte[] bytes) throws IOException {
-    ProtoAdapter<M> adapter = messageAdapter(messageClass);
+    MessageAdapter<M> adapter = messageAdapter(messageClass);
     return adapter.read(WireInput.newInstance(bytes));
   }
 
@@ -256,7 +275,7 @@ public final class Wire {
    */
   @SuppressWarnings("unchecked")
   public <M extends Message> void writeTo(M message, byte[] output, int off, int len) {
-    ProtoAdapter<M> adapter = messageAdapter((Class<M>) message.getClass());
+    MessageAdapter<M> adapter = messageAdapter((Class<M>) message.getClass());
     try {
       adapter.write(message, WireOutput.newInstance(output, off, len));
     } catch (IOException e) {
@@ -275,9 +294,20 @@ public final class Wire {
     return INSTANCE.messageAdapter(messageClass).getDefaultInstance();
   }
 
+  /**
+   * Returns a String representation of the given {@code Message}.
+   */
   @SuppressWarnings("unchecked")
   public static <M extends Message> String toString(M message) {
     return INSTANCE.messageAdapter((Class<M>) message.getClass()).toString(message);
+  }
+
+  /**
+   * Throws an {@link IllegalStateException} if a required field of the given
+   * {@link Message.Builder} is not set.
+   */
+  public static <B extends Message.Builder> void checkRequiredFields(B builder) {
+    INSTANCE.builderAdapter(builder.getClass()).checkRequiredFields(builder);
   }
 
   /**
@@ -295,7 +325,7 @@ public final class Wire {
 
   @SuppressWarnings("unchecked")
   private <E extends Enum> int intFromEnumHelper(E value) {
-    ProtoEnumAdapter<E> adapter = enumAdapter((Class<E>) value.getClass());
+    EnumAdapter<E> adapter = enumAdapter((Class<E>) value.getClass());
     return adapter.toInt(value);
   }
 
@@ -314,7 +344,7 @@ public final class Wire {
   }
 
   private <E extends Enum> E enumFromIntHelper(Class<E> enumClass, int value) {
-    ProtoEnumAdapter<E> adapter = enumAdapter(enumClass);
+    EnumAdapter<E> adapter = enumAdapter(enumClass);
     return adapter.fromInt(value);
   }
 

@@ -96,11 +96,10 @@ public abstract class Message {
     }
 
     /**
-     * Returns true if all required fields have been set. The default implementation returns
-     * true.
+     * Throws an exception if a required field has not been set.
      */
-    public boolean isInitialized() {
-      return true;
+    public void checkRequiredFields() {
+      Wire.checkRequiredFields(this);
     }
 
     /**
