@@ -26,8 +26,7 @@ public abstract class Message {
     }
   }
 
-  @Override
-  public String toString() {
+  @Override public String toString() {
     return Wire.toString(this);
   }
 
