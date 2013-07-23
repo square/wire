@@ -55,6 +55,8 @@ public class WireCompiler {
   private static final String JAVA_OUT_FLAG = "--java_out=";
   private static final String FILES_FLAG = "--files=";
 
+  private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
+
   static {
     JAVA_TYPES.put("bool", "Boolean");
     JAVA_TYPES.put("bytes", "ByteString");
@@ -541,13 +543,20 @@ public class WireCompiler {
       writer.emitEmptyLine();
       String documentation = field.getDocumentation();
       if (hasDocumentation(documentation)) {
-        writer.emitJavadoc(documentation.replace("%", "%%"));
+        writer.emitJavadoc(sanitizeJavadoc(documentation));
       }
       writer.emitAnnotation(ProtoField.class, map);
 
       if (isRepeated(field)) javaName = "List<" + javaName + ">";
       writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC, FINAL));
     }
+  }
+
+  private String sanitizeJavadoc(String documentation) {
+    documentation = documentation.replace("%", "%%");
+    documentation = documentation.replaceAll("@see (http:" + URL_CHARS + "+)",
+        "@see <a href=\"$1\">$1</a>");
+    return documentation;
   }
 
   // Example:
