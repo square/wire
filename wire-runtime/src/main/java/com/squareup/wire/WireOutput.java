@@ -84,7 +84,7 @@ final class WireOutput {
   }
 
   /** Makes a tag value given a field number and wire type. */
-  public static int makeTag(final int fieldNumber, final int wireType) {
+  public static int makeTag(int fieldNumber, int wireType) {
     return (fieldNumber << TAG_TYPE_BITS) | wireType;
   }
 

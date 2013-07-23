@@ -40,7 +40,7 @@ class BuilderAdapter<B extends Message.Builder> {
     // Cache fields annotated with '@ProtoField(label = REQUIRED)'
     for (Field field : messageType.getDeclaredFields()) {
       ProtoField annotation = field.getAnnotation(ProtoField.class);
-      if (annotation != null && annotation.label() == Wire.REQUIRED) {
+      if (annotation != null && annotation.label() == Message.REQUIRED) {
         try {
           requiredFields.add(builderType.getField(field.getName()));
         } catch (NoSuchFieldException e) {

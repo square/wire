@@ -47,7 +47,7 @@ public final class Extension<T extends ExtendableMessage, E>
    */
   public static <T extends ExtendableMessage, E> Extension<T, List<E>>
       getRepeatedExtension(Class<T> extendedType, int tag, int type, boolean packed) {
-    return new Extension<T, List<E>>(extendedType, tag, type, Wire.REPEATED, packed, null,
+    return new Extension<T, List<E>>(extendedType, tag, type, Message.REPEATED, packed, null,
         null);
   }
 
@@ -64,7 +64,7 @@ public final class Extension<T extends ExtendableMessage, E>
   public static <T extends ExtendableMessage, E extends Message> Extension<T, E>
       getMessageExtension(Class<T> extendedType, int tag, int label,
       Class<E> messageType) {
-    return new Extension<T, E>(extendedType, tag, Wire.MESSAGE, label, false, messageType,
+    return new Extension<T, E>(extendedType, tag, Message.MESSAGE, label, false, messageType,
         null);
   }
 
@@ -79,7 +79,7 @@ public final class Extension<T extends ExtendableMessage, E>
    */
   public static <T extends ExtendableMessage, E extends Message> Extension<T, List<E>>
       getRepeatedMessageExtension(Class<T> extendedType, int tag, Class<E> messageType) {
-    return new Extension<T, List<E>>(extendedType, tag, Wire.MESSAGE, Wire.REPEATED, false,
+    return new Extension<T, List<E>>(extendedType, tag, Message.MESSAGE, Message.REPEATED, false,
         messageType, null);
   }
 
@@ -95,7 +95,7 @@ public final class Extension<T extends ExtendableMessage, E>
    */
   public static <T extends ExtendableMessage, E extends Enum> Extension<T, E>
       getEnumExtension(Class<T> extendedType, int tag, int label, Class<E> enumType) {
-    return new Extension<T, E>(extendedType, tag, Wire.ENUM, label, false, null, enumType);
+    return new Extension<T, E>(extendedType, tag, Message.ENUM, label, false, null, enumType);
   }
 
   /**
@@ -111,7 +111,7 @@ public final class Extension<T extends ExtendableMessage, E>
   public static <T extends ExtendableMessage, E extends Enum> Extension<T, List<E>>
       getRepeatedEnumExtension(Class<T> extendedType, int tag, boolean packed,
       Class<E> enumType) {
-    return new Extension<T, List<E>>(extendedType, tag, Wire.ENUM, Wire.REPEATED, packed,
+    return new Extension<T, List<E>>(extendedType, tag, Message.ENUM, Message.REPEATED, packed,
         null, enumType);
   }
 

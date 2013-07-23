@@ -17,18 +17,18 @@ public @interface ProtoField {
   int tag();
 
   /**
-   * The field's protocol buffer datatype, e.g., {@code Wire.INT32},
-   * {@code Wire.MESSAGE}, or {@code Wire.ENUM}. Defaults to
-   * {@code Wire.MESSAGE}.
+   * The field's protocol buffer datatype, e.g., {@code Message.INT32},
+   * {@code Message.MESSAGE}, or {@code Message.ENUM}. Defaults to
+   * {@code Message.MESSAGE}.
    */
-  int type() default Wire.MESSAGE;
+  int type() default Message.MESSAGE;
 
   /**
-   * The field's protocol buffer label, one of {@code Wire.OPTIONAL},
-   * {@code Wire.REQUIRED}, or {@code Wire.REPEATED}. Defaults to
-   * {@code Wire.OPTIONAL}.
+   * The field's protocol buffer label, one of {@code Message.OPTIONAL},
+   * {@code Message.REQUIRED}, or {@code Message.REPEATED}. Defaults to
+   * {@code Message.OPTIONAL}.
    */
-  int label() default Wire.OPTIONAL;
+  int label() default Message.OPTIONAL;
 
   /** True if the field has the '[packed = true]' extension. */
   boolean packed() default false;

@@ -67,8 +67,8 @@ final class WireInput {
   /**
    * Create a new WireInput wrapping the given byte array slice.
    */
-  public static WireInput newInstance(byte[] buf, int off, int len) {
-    return new WireInput(buf, off, len);
+  public static WireInput newInstance(byte[] buf, int offset, int count) {
+    return new WireInput(buf, offset, count);
   }
 
   // -----------------------------------------------------------------
@@ -107,11 +107,11 @@ final class WireInput {
 
   /** Read a {@code string} field value from the stream. */
   public String readString() throws IOException {
-    final int size = readVarint32();
+    int size = readVarint32();
     if (size <= (bufferSize - bufferPos) && size > 0) {
       // Fast path:  We already have the bytes in a contiguous buffer, so
       //   just copy directly from it.
-      final String result = new String(buffer, bufferPos, size, UTF_8);
+      String result = new String(buffer, bufferPos, size, UTF_8);
       bufferPos += size;
       return result;
     } else {
@@ -122,11 +122,11 @@ final class WireInput {
 
   /** Read a {@code bytes} field value from the stream. */
   public ByteString readBytes() throws IOException {
-    final int size = readVarint32();
+    int size = readVarint32();
     if (size <= (bufferSize - bufferPos) && size > 0) {
       // Fast path:  We already have the bytes in a contiguous buffer, so
       //   just copy directly from it.
-      final byte[] result = new byte[size];
+      byte[] result = new byte[size];
       System.arraycopy(buffer, bufferPos, result, 0, size);
       bufferPos += size;
       return ByteString.of(result);
@@ -179,7 +179,7 @@ final class WireInput {
     int shift = 0;
     long result = 0;
     while (shift < 64) {
-      final byte b = readRawByte();
+      byte b = readRawByte();
       result |= (long) (b & 0x7F) << shift;
       if ((b & 0x80) == 0) {
         return result;
@@ -191,10 +191,10 @@ final class WireInput {
 
   /** Read a 32-bit little-endian integer from the stream. */
   public int readFixed32() throws IOException {
-    final byte b1 = readRawByte();
-    final byte b2 = readRawByte();
-    final byte b3 = readRawByte();
-    final byte b4 = readRawByte();
+    byte b1 = readRawByte();
+    byte b2 = readRawByte();
+    byte b3 = readRawByte();
+    byte b4 = readRawByte();
     return   (b1 & 0xff)
           | ((b2 & 0xff) <<  8)
           | ((b3 & 0xff) << 16)
@@ -203,14 +203,14 @@ final class WireInput {
 
   /** Read a 64-bit little-endian integer from the stream. */
   public long readFixed64() throws IOException {
-    final byte b1 = readRawByte();
-    final byte b2 = readRawByte();
-    final byte b3 = readRawByte();
-    final byte b4 = readRawByte();
-    final byte b5 = readRawByte();
-    final byte b6 = readRawByte();
-    final byte b7 = readRawByte();
-    final byte b8 = readRawByte();
+    byte b1 = readRawByte();
+    byte b2 = readRawByte();
+    byte b3 = readRawByte();
+    byte b4 = readRawByte();
+    byte b5 = readRawByte();
+    byte b6 = readRawByte();
+    byte b7 = readRawByte();
+    byte b8 = readRawByte();
     return    ((long) b1 & 0xff)
            | (((long) b2 & 0xff) <<  8)
            | (((long) b3 & 0xff) << 16)
@@ -231,7 +231,7 @@ final class WireInput {
    *          Java has no explicit unsigned support.
    * @return A signed 32-bit integer.
    */
-  public static int decodeZigZag32(final int n) {
+  public static int decodeZigZag32(int n) {
     return (n >>> 1) ^ -(n & 1);
   }
 
@@ -245,7 +245,7 @@ final class WireInput {
    *          Java has no explicit unsigned support.
    * @return A signed 64-bit integer.
    */
-  public static long decodeZigZag64(final long n) {
+  public static long decodeZigZag64(long n) {
     return (n >>> 1) ^ -(n & 1);
   }
 
@@ -264,11 +264,11 @@ final class WireInput {
   public static final int RECURSION_LIMIT = 64;
   public int recursionDepth;
 
-  private WireInput(final byte[] buffer, final int off, final int len) {
+  private WireInput(byte[] buffer, int offset, int count) {
     this.buffer = buffer;
-    bufferStart = off;
-    bufferSize = off + len;
-    bufferPos = off;
+    bufferStart = offset;
+    bufferSize = offset + count;
+    bufferPos = offset;
   }
 
   /**
@@ -282,20 +282,18 @@ final class WireInput {
       throw new IOException(ENCOUNTERED_A_NEGATIVE_SIZE);
     }
     byteLimit += bufferPos;
-    final int oldLimit = currentLimit;
+    int oldLimit = currentLimit;
     if (byteLimit > oldLimit) {
       throw new IOException(INPUT_ENDED_UNEXPECTEDLY);
     }
     currentLimit = byteLimit;
-
     recomputeBufferSizeAfterLimit();
-
     return oldLimit;
   }
 
   private void recomputeBufferSizeAfterLimit() {
     bufferSize += bufferSizeAfterLimit;
-    final int bufferEnd = bufferSize;
+    int bufferEnd = bufferSize;
     if (bufferEnd > currentLimit) {
       // Limit is in current buffer.
       bufferSizeAfterLimit = bufferEnd - currentLimit;
@@ -310,7 +308,7 @@ final class WireInput {
    *
    * @param oldLimit The old limit, as returned by {@code pushLimit}.
    */
-  public void popLimit(final int oldLimit) {
+  public void popLimit(int oldLimit) {
     currentLimit = oldLimit;
     recomputeBufferSizeAfterLimit();
   }
@@ -348,7 +346,7 @@ final class WireInput {
    *
    * @throws IOException The end of the stream or the current limit was reached.
    */
-  public byte[] readRawBytes(final int size) throws IOException {
+  public byte[] readRawBytes(int size) throws IOException {
     if (size < 0) {
       throw new IOException(ENCOUNTERED_A_NEGATIVE_SIZE);
     }
@@ -360,7 +358,7 @@ final class WireInput {
 
     if (size <= bufferSize - bufferPos) {
       // We have all the bytes we need already.
-      final byte[] bytes = new byte[size];
+      byte[] bytes = new byte[size];
       System.arraycopy(buffer, bufferPos, bytes, 0, size);
       bufferPos += size;
       return bytes;
