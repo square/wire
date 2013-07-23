@@ -5,7 +5,7 @@
 package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Extension;
-import com.squareup.wire.Wire;
+import com.squareup.wire.Message;
 import java.util.List;
 
 public final class Ext_simple_message {
@@ -13,9 +13,9 @@ public final class Ext_simple_message {
   private Ext_simple_message() {
   }
 
-  public static final Extension<ExternalMessage, List<Integer>> fooext = Extension.getRepeatedExtension(ExternalMessage.class, 125, Wire.INT32, false);
-  public static final Extension<ExternalMessage, Integer> barext = Extension.getExtension(ExternalMessage.class, 126, Wire.INT32, Wire.OPTIONAL);
-  public static final Extension<ExternalMessage, Integer> bazext = Extension.getExtension(ExternalMessage.class, 127, Wire.INT32, Wire.REQUIRED);
-  public static final Extension<ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension.getMessageExtension(ExternalMessage.class, 128, Wire.OPTIONAL, SimpleMessage.NestedMessage.class);
-  public static final Extension<ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext = Extension.getEnumExtension(ExternalMessage.class, 129, Wire.OPTIONAL, SimpleMessage.NestedEnum.class);
+  public static final Extension<ExternalMessage, List<Integer>> fooext = Extension.getRepeatedExtension(ExternalMessage.class, 125, Message.INT32, false);
+  public static final Extension<ExternalMessage, Integer> barext = Extension.getExtension(ExternalMessage.class, 126, Message.INT32, Message.OPTIONAL);
+  public static final Extension<ExternalMessage, Integer> bazext = Extension.getExtension(ExternalMessage.class, 127, Message.INT32, Message.REQUIRED);
+  public static final Extension<ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension.getMessageExtension(ExternalMessage.class, 128, Message.OPTIONAL, SimpleMessage.NestedMessage.class);
+  public static final Extension<ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext = Extension.getEnumExtension(ExternalMessage.class, 129, Message.OPTIONAL, SimpleMessage.NestedEnum.class);
 }

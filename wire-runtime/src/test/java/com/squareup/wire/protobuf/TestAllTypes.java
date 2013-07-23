@@ -280,10 +280,10 @@ public class TestAllTypes {
 
   @Test
   public void testWrite() {
-    int len = wire.getSerializedSize(allTypes);
+    int len = allTypes.getSerializedSize();
     assertEquals(TestAllTypesData.expectedOutput.length, len);
     byte[] output = new byte[len];
-    wire.writeTo(allTypes, output, 0, len);
+    allTypes.writeTo(output, 0, len);
     for (int i = 0; i < output.length; i++) {
       assertEquals("Byte " + i, TestAllTypesData.expectedOutput[i], output[i] & 0xff);
     }
@@ -292,7 +292,7 @@ public class TestAllTypes {
   @Test
   public void testRead() throws IOException {
     byte[] data = new byte[TestAllTypesData.expectedOutput.length];
-    wire.writeTo(allTypes, data, 0, data.length);
+    allTypes.writeTo(data, 0, data.length);
     AllTypes parsed = wire.parseFrom(AllTypes.class, data);
     assertEquals(allTypes, parsed);
 
@@ -310,7 +310,7 @@ public class TestAllTypes {
   @Test
   public void testReadNoExtension() throws IOException {
     byte[] data = new byte[TestAllTypesData.expectedOutput.length];
-    wire.writeTo(allTypes, data, 0, data.length);
+    allTypes.writeTo(data, 0, data.length);
     AllTypes parsed = new Wire().parseFrom(AllTypes.class, data);
     assertFalse(allTypes.equals(parsed));
   }
@@ -328,7 +328,7 @@ public class TestAllTypes {
   @Test
   public void testToString() throws IOException {
     byte[] data = new byte[TestAllTypesData.expectedOutput.length];
-    wire.writeTo(allTypes, data, 0, data.length);
+    allTypes.writeTo(data, 0, data.length);
     AllTypes parsed = wire.parseFrom(AllTypes.class, data);
     assertEquals(TestAllTypesData.expectedToString, parsed.toString());
   }

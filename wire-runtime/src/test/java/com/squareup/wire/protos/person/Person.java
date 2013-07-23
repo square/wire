@@ -7,7 +7,6 @@ package com.squareup.wire.protos.person;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
-import com.squareup.wire.Wire;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,27 +19,27 @@ public final class Person extends Message {
 
   @ProtoField(
     tag = 1,
-    type = Wire.STRING,
-    label = Wire.REQUIRED
+    type = STRING,
+    label = REQUIRED
   )
   public final String name;
 
   @ProtoField(
     tag = 2,
-    type = Wire.INT32,
-    label = Wire.REQUIRED
+    type = INT32,
+    label = REQUIRED
   )
   public final Integer id;
 
   @ProtoField(
     tag = 3,
-    type = Wire.STRING
+    type = STRING
   )
   public final String email;
 
   @ProtoField(
     tag = 4,
-    label = Wire.REPEATED
+    label = REPEATED
   )
   public final List<PhoneNumber> phone;
 
@@ -49,30 +48,31 @@ public final class Person extends Message {
     this.name = builder.name;
     this.id = builder.id;
     this.email = builder.email;
-    this.phone = Wire.unmodifiableCopyOf(builder.phone);
+    this.phone = unmodifiableCopyOf(builder.phone);
   }
 
   @Override
   public boolean equals(Object other) {
     if (!(other instanceof Person)) return false;
     Person o = (Person) other;
-    if (!Wire.equals(name, o.name)) return false;
-    if (!Wire.equals(id, o.id)) return false;
-    if (!Wire.equals(email, o.email)) return false;
-    if (!Wire.equals(phone, o.phone)) return false;
+    if (!equals(name, o.name)) return false;
+    if (!equals(id, o.id)) return false;
+    if (!equals(email, o.email)) return false;
+    if (!equals(phone, o.phone)) return false;
     return true;
   }
 
   @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = name != null ? name.hashCode() : 0;
+    int result = hashCode;
+    if (result == 0) {
+      result = name != null ? name.hashCode() : 0;
       result = result * 37 + (id != null ? id.hashCode() : 0);
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + (phone != null ? phone.hashCode() : 0);
       hashCode = result;
     }
-    return hashCode;
+    return result;
   }
 
   public static final class Builder extends Message.Builder<Person> {
@@ -91,7 +91,7 @@ public final class Person extends Message {
       this.name = message.name;
       this.id = message.id;
       this.email = message.email;
-      this.phone = Wire.copyOf(message.phone);
+      this.phone = copyOf(message.phone);
     }
 
     public Builder name(String name) {
@@ -137,14 +137,14 @@ public final class Person extends Message {
 
     @ProtoField(
       tag = 1,
-      type = Wire.STRING,
-      label = Wire.REQUIRED
+      type = STRING,
+      label = REQUIRED
     )
     public final String number;
 
     @ProtoField(
       tag = 2,
-      type = Wire.ENUM
+      type = ENUM
     )
     public final PhoneType type;
 
@@ -158,19 +158,20 @@ public final class Person extends Message {
     public boolean equals(Object other) {
       if (!(other instanceof PhoneNumber)) return false;
       PhoneNumber o = (PhoneNumber) other;
-      if (!Wire.equals(number, o.number)) return false;
-      if (!Wire.equals(type, o.type)) return false;
+      if (!equals(number, o.number)) return false;
+      if (!equals(type, o.type)) return false;
       return true;
     }
 
     @Override
     public int hashCode() {
-      if (hashCode == 0) {
-        int result = number != null ? number.hashCode() : 0;
+      int result = hashCode;
+      if (result == 0) {
+        result = number != null ? number.hashCode() : 0;
         result = result * 37 + (type != null ? type.hashCode() : 0);
         hashCode = result;
       }
-      return hashCode;
+      return result;
     }
 
     public static final class Builder extends Message.Builder<PhoneNumber> {

@@ -7,7 +7,6 @@ package com.squareup.wire.protos.simple;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
-import com.squareup.wire.Wire;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.util.Collections;
 import java.util.List;
@@ -15,8 +14,8 @@ import java.util.List;
 public final class SimpleMessage extends Message {
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
-  public static final NestedMessage DEFAULT_OPTIONAL_NESTED_MSG = Wire.getDefaultInstance(NestedMessage.class);
-  public static final ExternalMessage DEFAULT_OPTIONAL_EXTERNAL_MSG = Wire.getDefaultInstance(ExternalMessage.class);
+  public static final NestedMessage DEFAULT_OPTIONAL_NESTED_MSG = getDefaultInstance(NestedMessage.class);
+  public static final ExternalMessage DEFAULT_OPTIONAL_EXTERNAL_MSG = getDefaultInstance(ExternalMessage.class);
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.BAZ;
   public static final Integer DEFAULT_REQUIRED_INT32 = 456;
   public static final List<Double> DEFAULT_REPEATED_DOUBLE = Collections.emptyList();
@@ -28,7 +27,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 1,
-    type = Wire.INT32
+    type = INT32
   )
   public final Integer optional_int32;
 
@@ -50,7 +49,7 @@ public final class SimpleMessage extends Message {
 
   @ProtoField(
     tag = 4,
-    type = Wire.ENUM
+    type = ENUM
   )
   public final NestedEnum default_nested_enum;
 
@@ -59,8 +58,8 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 5,
-    type = Wire.INT32,
-    label = Wire.REQUIRED
+    type = INT32,
+    label = REQUIRED
   )
   public final Integer required_int32;
 
@@ -69,8 +68,8 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 6,
-    type = Wire.DOUBLE,
-    label = Wire.REPEATED
+    type = DOUBLE,
+    label = REPEATED
   )
   public final List<Double> repeated_double;
 
@@ -79,7 +78,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 7,
-    type = Wire.ENUM
+    type = ENUM
   )
   public final ForeignEnum default_foreign_enum;
 
@@ -88,7 +87,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 8,
-    type = Wire.ENUM
+    type = ENUM
   )
   public final ForeignEnum no_default_foreign_enum;
 
@@ -99,7 +98,7 @@ public final class SimpleMessage extends Message {
     this.optional_external_msg = builder.optional_external_msg;
     this.default_nested_enum = builder.default_nested_enum;
     this.required_int32 = builder.required_int32;
-    this.repeated_double = Wire.unmodifiableCopyOf(builder.repeated_double);
+    this.repeated_double = unmodifiableCopyOf(builder.repeated_double);
     this.default_foreign_enum = builder.default_foreign_enum;
     this.no_default_foreign_enum = builder.no_default_foreign_enum;
   }
@@ -108,21 +107,22 @@ public final class SimpleMessage extends Message {
   public boolean equals(Object other) {
     if (!(other instanceof SimpleMessage)) return false;
     SimpleMessage o = (SimpleMessage) other;
-    if (!Wire.equals(optional_int32, o.optional_int32)) return false;
-    if (!Wire.equals(optional_nested_msg, o.optional_nested_msg)) return false;
-    if (!Wire.equals(optional_external_msg, o.optional_external_msg)) return false;
-    if (!Wire.equals(default_nested_enum, o.default_nested_enum)) return false;
-    if (!Wire.equals(required_int32, o.required_int32)) return false;
-    if (!Wire.equals(repeated_double, o.repeated_double)) return false;
-    if (!Wire.equals(default_foreign_enum, o.default_foreign_enum)) return false;
-    if (!Wire.equals(no_default_foreign_enum, o.no_default_foreign_enum)) return false;
+    if (!equals(optional_int32, o.optional_int32)) return false;
+    if (!equals(optional_nested_msg, o.optional_nested_msg)) return false;
+    if (!equals(optional_external_msg, o.optional_external_msg)) return false;
+    if (!equals(default_nested_enum, o.default_nested_enum)) return false;
+    if (!equals(required_int32, o.required_int32)) return false;
+    if (!equals(repeated_double, o.repeated_double)) return false;
+    if (!equals(default_foreign_enum, o.default_foreign_enum)) return false;
+    if (!equals(no_default_foreign_enum, o.no_default_foreign_enum)) return false;
     return true;
   }
 
   @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = optional_int32 != null ? optional_int32.hashCode() : 0;
+    int result = hashCode;
+    if (result == 0) {
+      result = optional_int32 != null ? optional_int32.hashCode() : 0;
       result = result * 37 + (optional_nested_msg != null ? optional_nested_msg.hashCode() : 0);
       result = result * 37 + (optional_external_msg != null ? optional_external_msg.hashCode() : 0);
       result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
@@ -132,7 +132,7 @@ public final class SimpleMessage extends Message {
       result = result * 37 + (no_default_foreign_enum != null ? no_default_foreign_enum.hashCode() : 0);
       hashCode = result;
     }
-    return hashCode;
+    return result;
   }
 
   public static final class Builder extends Message.Builder<SimpleMessage> {
@@ -157,7 +157,7 @@ public final class SimpleMessage extends Message {
       this.optional_external_msg = message.optional_external_msg;
       this.default_nested_enum = message.default_nested_enum;
       this.required_int32 = message.required_int32;
-      this.repeated_double = Wire.copyOf(message.repeated_double);
+      this.repeated_double = copyOf(message.repeated_double);
       this.default_foreign_enum = message.default_foreign_enum;
       this.no_default_foreign_enum = message.no_default_foreign_enum;
     }
@@ -218,7 +218,7 @@ public final class SimpleMessage extends Message {
      */
     @ProtoField(
       tag = 1,
-      type = Wire.INT32
+      type = INT32
     )
     public final Integer bb;
 
@@ -230,15 +230,13 @@ public final class SimpleMessage extends Message {
     @Override
     public boolean equals(Object other) {
       if (!(other instanceof NestedMessage)) return false;
-      return Wire.equals(bb, ((NestedMessage) other).bb);
+      return equals(bb, ((NestedMessage) other).bb);
     }
 
     @Override
     public int hashCode() {
-      if (hashCode == 0) {
-        hashCode = bb != null ? bb.hashCode() : 0;
-      }
-      return hashCode;
+      int result = hashCode;
+      return result != 0 ? result : (hashCode = bb != null ? bb.hashCode() : 0);
     }
 
     public static final class Builder extends Message.Builder<NestedMessage> {

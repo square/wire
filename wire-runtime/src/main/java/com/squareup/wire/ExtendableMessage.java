@@ -71,6 +71,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
   public abstract static class ExtendableBuilder<T extends ExtendableMessage<?>>
       extends Builder<T> {
 
+    @SuppressWarnings("unchecked")
     ExtensionMap<T> extensionMap = EMPTY_EXTENSION_MAP;
 
     protected ExtendableBuilder() {
