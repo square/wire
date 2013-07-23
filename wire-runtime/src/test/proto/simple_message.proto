@@ -3,6 +3,7 @@ package squareup.protos.simple;
 option java_package = "com.squareup.wire.protos.simple";
 
 import "external_message.proto";
+import "foreign.proto";
 
 message SimpleMessage {
   message NestedMessage {
@@ -29,6 +30,11 @@ message SimpleMessage {
 
   // A repeated double
   repeated double repeated_double = 6;
+
+  // enum from another package with an explicit default
+  optional squareup.protos.foreign.ForeignEnum default_foreign_enum = 7 [default = BAX];
+  // enum from another package without an explicit default
+  optional squareup.protos.foreign.ForeignEnum no_default_foreign_enum = 8;
 }
 
 extend ExternalMessage {

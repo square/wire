@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.Wire;
+import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +20,8 @@ public final class SimpleMessage extends Message {
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.BAZ;
   public static final Integer DEFAULT_REQUIRED_INT32 = 456;
   public static final List<Double> DEFAULT_REPEATED_DOUBLE = Collections.emptyList();
+  public static final ForeignEnum DEFAULT_DEFAULT_FOREIGN_ENUM = com.squareup.wire.protos.foreign.ForeignEnum.BAX;
+  public static final ForeignEnum DEFAULT_NO_DEFAULT_FOREIGN_ENUM = com.squareup.wire.protos.foreign.ForeignEnum.BAV;
 
   /**
    * An optional int32
@@ -71,6 +74,24 @@ public final class SimpleMessage extends Message {
   )
   public final List<Double> repeated_double;
 
+  /**
+   * enum from another package with an explicit default
+   */
+  @ProtoField(
+    tag = 7,
+    type = Wire.ENUM
+  )
+  public final ForeignEnum default_foreign_enum;
+
+  /**
+   * enum from another package without an explicit default
+   */
+  @ProtoField(
+    tag = 8,
+    type = Wire.ENUM
+  )
+  public final ForeignEnum no_default_foreign_enum;
+
   private SimpleMessage(Builder builder) {
     super(builder);
     this.optional_int32 = builder.optional_int32;
@@ -79,6 +100,8 @@ public final class SimpleMessage extends Message {
     this.default_nested_enum = builder.default_nested_enum;
     this.required_int32 = builder.required_int32;
     this.repeated_double = Wire.unmodifiableCopyOf(builder.repeated_double);
+    this.default_foreign_enum = builder.default_foreign_enum;
+    this.no_default_foreign_enum = builder.no_default_foreign_enum;
   }
 
   @Override
@@ -91,6 +114,8 @@ public final class SimpleMessage extends Message {
     if (!Wire.equals(default_nested_enum, o.default_nested_enum)) return false;
     if (!Wire.equals(required_int32, o.required_int32)) return false;
     if (!Wire.equals(repeated_double, o.repeated_double)) return false;
+    if (!Wire.equals(default_foreign_enum, o.default_foreign_enum)) return false;
+    if (!Wire.equals(no_default_foreign_enum, o.no_default_foreign_enum)) return false;
     return true;
   }
 
@@ -103,6 +128,8 @@ public final class SimpleMessage extends Message {
       result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
       result = result * 37 + (required_int32 != null ? required_int32.hashCode() : 0);
       result = result * 37 + (repeated_double != null ? repeated_double.hashCode() : 0);
+      result = result * 37 + (default_foreign_enum != null ? default_foreign_enum.hashCode() : 0);
+      result = result * 37 + (no_default_foreign_enum != null ? no_default_foreign_enum.hashCode() : 0);
       hashCode = result;
     }
     return hashCode;
@@ -116,6 +143,8 @@ public final class SimpleMessage extends Message {
     public NestedEnum default_nested_enum;
     public Integer required_int32;
     public List<Double> repeated_double;
+    public ForeignEnum default_foreign_enum;
+    public ForeignEnum no_default_foreign_enum;
 
     public Builder() {
     }
@@ -129,6 +158,8 @@ public final class SimpleMessage extends Message {
       this.default_nested_enum = message.default_nested_enum;
       this.required_int32 = message.required_int32;
       this.repeated_double = Wire.copyOf(message.repeated_double);
+      this.default_foreign_enum = message.default_foreign_enum;
+      this.no_default_foreign_enum = message.no_default_foreign_enum;
     }
 
     public Builder optional_int32(Integer optional_int32) {
@@ -158,6 +189,16 @@ public final class SimpleMessage extends Message {
 
     public Builder repeated_double(List<Double> repeated_double) {
       this.repeated_double = repeated_double;
+      return this;
+    }
+
+    public Builder default_foreign_enum(ForeignEnum default_foreign_enum) {
+      this.default_foreign_enum = default_foreign_enum;
+      return this;
+    }
+
+    public Builder no_default_foreign_enum(ForeignEnum no_default_foreign_enum) {
+      this.no_default_foreign_enum = no_default_foreign_enum;
       return this;
     }
 

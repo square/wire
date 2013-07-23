@@ -684,7 +684,7 @@ public class WireCompiler {
       } else {
         String fullyQualifiedName = fullyQualifiedName(messageType, field.getType());
         if (isEnum(fullyQualifiedName)) {
-          return field.getType() + "." + enumDefaults.get(fullyQualifiedName);
+          return javaName + "." + enumDefaults.get(fullyQualifiedName);
         } else {
           return "Wire.getDefaultInstance(" + writer.compressType(javaName) + ".class)";
         }
