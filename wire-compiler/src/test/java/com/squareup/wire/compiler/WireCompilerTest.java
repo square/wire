@@ -91,16 +91,18 @@ public class WireCompilerTest {
         "--proto_path=../wire-runtime/src/test/proto",
         "--java_out=" + testSimpleDir.getAbsolutePath(),
         "simple_message.proto",
-        "external_message.proto"
+        "external_message.proto",
+        "foreign.proto"
     );
 
     List<String> filesAfter = getAllFiles(testSimpleDir);
-    Assert.assertEquals(3, filesAfter.size());
+    Assert.assertEquals(4, filesAfter.size());
 
     filesMatch(testSimpleDir,
         "com/squareup/wire/protos/simple/Ext_simple_message.java");
     filesMatch(testSimpleDir, "com/squareup/wire/protos/simple/SimpleMessage.java");
     filesMatch(testSimpleDir, "com/squareup/wire/protos/simple/ExternalMessage.java");
+    filesMatch(testSimpleDir, "com/squareup/wire/protos/foreign/ForeignEnum.java");
   }
 
   private void cleanup(File dir) {

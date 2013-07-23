@@ -1,0 +1,8 @@
+package squareup.protos.foreign;
+
+option java_package = "com.squareup.wire.protos.foreign";
+
+enum ForeignEnum {
+  BAV = 0;
+  BAX = 1;
+}
