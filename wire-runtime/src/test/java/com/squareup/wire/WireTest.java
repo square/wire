@@ -67,7 +67,7 @@ public class WireTest extends TestCase {
       builder.build();
       fail();
     } catch (IllegalStateException e) {
-      // expected
+      assertEquals("Required field not set:\n  required_int32\n", e.getMessage());
     }
 
     // The message list is immutable
@@ -119,7 +119,7 @@ public class WireTest extends TestCase {
         Ext_simple_message.nested_enum_ext));
 
     Wire wire = new Wire(Ext_simple_message.class);
-    ProtoAdapter<SimpleMessage> adapter = wire.messageAdapter(SimpleMessage.class);
+    MessageAdapter<SimpleMessage> adapter = wire.messageAdapter(SimpleMessage.class);
     int msgSerializedSize = adapter.getSerializedSize(msg);
     assertEquals(29, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
@@ -150,7 +150,7 @@ public class WireTest extends TestCase {
     assertEquals(new Integer(222), msg.optional_external_msg.getExtension(bazext));
 
     Wire wire = new Wire();
-    ProtoAdapter<SimpleMessage> adapter = wire.messageAdapter(SimpleMessage.class);
+    MessageAdapter<SimpleMessage> adapter = wire.messageAdapter(SimpleMessage.class);
     int msgSerializedSize = adapter.getSerializedSize(msg);
     assertEquals(21, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];

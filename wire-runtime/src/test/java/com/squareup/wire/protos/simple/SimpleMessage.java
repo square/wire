@@ -203,14 +203,8 @@ public final class SimpleMessage extends Message {
     }
 
     @Override
-    public boolean isInitialized() {
-      if (required_int32 == null) return false;
-      return true;
-    }
-
-    @Override
     public SimpleMessage build() {
-      if (!isInitialized()) throw new IllegalStateException("!isInitialized");
+      checkRequiredFields();
       return new SimpleMessage(this);
     }
   }

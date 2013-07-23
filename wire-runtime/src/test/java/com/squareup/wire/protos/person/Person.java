@@ -115,15 +115,8 @@ public final class Person extends Message {
     }
 
     @Override
-    public boolean isInitialized() {
-      if (name == null) return false;
-      if (id == null) return false;
-      return true;
-    }
-
-    @Override
     public Person build() {
-      if (!isInitialized()) throw new IllegalStateException("!isInitialized");
+      checkRequiredFields();
       return new Person(this);
     }
   }
@@ -206,14 +199,8 @@ public final class Person extends Message {
       }
 
       @Override
-      public boolean isInitialized() {
-        if (number == null) return false;
-        return true;
-      }
-
-      @Override
       public PhoneNumber build() {
-        if (!isInitialized()) throw new IllegalStateException("!isInitialized");
+        checkRequiredFields();
         return new PhoneNumber(this);
       }
     }

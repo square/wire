@@ -44,17 +44,17 @@ import java.io.IOException;
  */
 final class WireInput {
 
-  public static final String UTF_8 = "UTF-8";
+  private static final String UTF_8 = "UTF-8";
 
-  public static final String ENCOUNTERED_A_NEGATIVE_SIZE =
+  private static final String ENCOUNTERED_A_NEGATIVE_SIZE =
       "Encountered a negative size";
-  public static final String INPUT_ENDED_UNEXPECTEDLY =
+  private static final String INPUT_ENDED_UNEXPECTEDLY =
       "The input ended unexpectedly in the middle of a field";
-  public static final String PROTOCOL_MESSAGE_CONTAINED_AN_INVALID_TAG_ZERO =
+  private static final String PROTOCOL_MESSAGE_CONTAINED_AN_INVALID_TAG_ZERO =
       "Protocol message contained an invalid tag (zero).";
-  public static final String PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG =
+  private static final String PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG =
       "Protocol message end-group tag did not match expected tag.";
-  public static final String ENCOUNTERED_A_MALFORMED_VARINT =
+  private static final String ENCOUNTERED_A_MALFORMED_VARINT =
       "WireInput encountered a malformed varint.";
 
   /**
@@ -261,11 +261,8 @@ final class WireInput {
   /** The absolute position of the end of the current message. */
   private int currentLimit = Integer.MAX_VALUE;
 
-  /** See setRecursionLimit(). */
+  public static final int RECURSION_LIMIT = 64;
   public int recursionDepth;
-  public final int recursionLimit = DEFAULT_RECURSION_LIMIT;
-
-  private static final int DEFAULT_RECURSION_LIMIT = 64;
 
   private WireInput(final byte[] buffer, final int off, final int len) {
     this.buffer = buffer;
