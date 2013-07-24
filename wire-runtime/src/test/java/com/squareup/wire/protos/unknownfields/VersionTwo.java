@@ -6,7 +6,6 @@ package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-import com.squareup.wire.Wire;
 
 public final class VersionTwo extends Message {
 
@@ -18,31 +17,31 @@ public final class VersionTwo extends Message {
 
   @ProtoField(
     tag = 1,
-    type = Wire.INT32
+    type = INT32
   )
   public final Integer i;
 
   @ProtoField(
     tag = 2,
-    type = Wire.INT32
+    type = INT32
   )
   public final Integer v2_i;
 
   @ProtoField(
     tag = 3,
-    type = Wire.STRING
+    type = STRING
   )
   public final String v2_s;
 
   @ProtoField(
     tag = 4,
-    type = Wire.FIXED32
+    type = FIXED32
   )
   public final Integer v2_f32;
 
   @ProtoField(
     tag = 5,
-    type = Wire.FIXED64
+    type = FIXED64
   )
   public final Long v2_f64;
 
@@ -53,31 +52,6 @@ public final class VersionTwo extends Message {
     this.v2_s = builder.v2_s;
     this.v2_f32 = builder.v2_f32;
     this.v2_f64 = builder.v2_f64;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (!(other instanceof VersionTwo)) return false;
-    VersionTwo o = (VersionTwo) other;
-    if (!Wire.equals(i, o.i)) return false;
-    if (!Wire.equals(v2_i, o.v2_i)) return false;
-    if (!Wire.equals(v2_s, o.v2_s)) return false;
-    if (!Wire.equals(v2_f32, o.v2_f32)) return false;
-    if (!Wire.equals(v2_f64, o.v2_f64)) return false;
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    if (hashCode == 0) {
-      int result = (i != null ? i.hashCode() : 0);
-      result = result * 37 + (v2_i != null ? v2_i.hashCode() : 0);
-      result = result * 37 + (v2_s != null ? v2_s.hashCode() : 0);
-      result = result * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
-      result = result * 37 + (v2_f64 != null ? v2_f64.hashCode() : 0);
-      hashCode = result;
-    }
-    return hashCode;
   }
 
   public static final class Builder extends Message.Builder<VersionTwo> {

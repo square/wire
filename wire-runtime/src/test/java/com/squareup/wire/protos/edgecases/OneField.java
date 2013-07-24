@@ -6,7 +6,6 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-import com.squareup.wire.Wire;
 
 public final class OneField extends Message {
 
@@ -14,7 +13,7 @@ public final class OneField extends Message {
 
   @ProtoField(
     tag = 1,
-    type = Wire.INT32
+    type = INT32
   )
   public final Integer opt_int32;
 
@@ -26,15 +25,13 @@ public final class OneField extends Message {
   @Override
   public boolean equals(Object other) {
     if (!(other instanceof OneField)) return false;
-    return Wire.equals(opt_int32, ((OneField) other).opt_int32);
+    return equals(opt_int32, ((OneField) other).opt_int32);
   }
 
   @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      hashCode = opt_int32 != null ? opt_int32.hashCode() : 0;
-    }
-    return hashCode;
+    int result = hashCode;
+    return result != 0 ? result : (hashCode = opt_int32 != null ? opt_int32.hashCode() : 0);
   }
 
   public static final class Builder extends Message.Builder<OneField> {

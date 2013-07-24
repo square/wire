@@ -22,7 +22,7 @@ import static com.squareup.wire.Message.Builder;
  *
  * @param <M> the Message class handled by this adapter.
  */
-public class MessageAdapter<M extends Message> {
+class MessageAdapter<M extends Message> {
 
   private final Wire wire;
   private final Class<M> messageType;
@@ -59,7 +59,7 @@ public class MessageAdapter<M extends Message> {
         tags.add(tag);
         fieldMap.put(tag, field);
         typeMap.put(tag, annotation.label() | annotation.type()
-            | (annotation.packed() ? Wire.PACKED : 0));
+            | (annotation.packed() ? Message.PACKED : 0));
 
         // Record setter methods on the builder class
         try {
@@ -140,10 +140,7 @@ public class MessageAdapter<M extends Message> {
   /**
    * Returns the serialized size of a given message, in bytes.
    */
-  public int getSerializedSize(M message) {
-    if (message.cachedSerializedSize >= 0) {
-      return message.cachedSerializedSize;
-    }
+  int getSerializedSize(M message) {
     int size = 0;
     for (int tag : tags) {
       Field field = fieldMap.get(tag);
@@ -160,11 +157,10 @@ public class MessageAdapter<M extends Message> {
         continue;
       }
       int typeFlags = typeMap.get(tag);
-      int type = typeFlags & Wire.TYPE_MASK;
+      int type = typeFlags & Message.TYPE_MASK;
 
-      if ((typeFlags & Wire.LABEL_MASK) == Wire.REPEATED) {
-        boolean packed = (typeFlags & Wire.PACKED_MASK) == Wire.PACKED;
-        if (packed) {
+      if ((typeFlags & Message.LABEL_MASK) == Message.REPEATED) {
+        if (isPacked(typeFlags)) {
           int len = 0;
           for (Object o : (List<?>) value) {
             len += getSerializedSizeNoTag(o, type);
@@ -191,8 +187,11 @@ public class MessageAdapter<M extends Message> {
       }
     }
     size += message.unknownFieldMap.getSerializedSize();
-    message.cachedSerializedSize = size;
     return size;
+  }
+
+  private boolean isPacked(int typeFlags) {
+    return (typeFlags & Message.PACKED_MASK) == Message.PACKED;
   }
 
   private <T extends ExtendableMessage<?>> int getExtensionsSerializedSize(
@@ -202,7 +201,7 @@ public class MessageAdapter<M extends Message> {
       Object value = map.get(extension);
       int tag = extension.getTag();
       int type = extension.getType();
-      if (extension.getLabel() == Wire.REPEATED) {
+      if (extension.getLabel() == Message.REPEATED) {
         if (extension.getPacked()) {
           int len = 0;
           for (Object o : (List<?>) value) {
@@ -225,7 +224,7 @@ public class MessageAdapter<M extends Message> {
   }
 
   /** Uses reflection to write {@code message} to {@code output} in serialized form. */
-  public void write(M message, WireOutput output) throws IOException {
+  void write(M message, WireOutput output) throws IOException {
     for (int tag : tags) {
       Field field = fieldMap.get(tag);
       if (field == null) {
@@ -241,11 +240,10 @@ public class MessageAdapter<M extends Message> {
         continue;
       }
       int typeFlags = typeMap.get(tag);
-      int type = typeFlags & Wire.TYPE_MASK;
+      int type = typeFlags & Message.TYPE_MASK;
 
-      if ((typeFlags & Wire.LABEL_MASK) == Wire.REPEATED) {
-        boolean packed = (typeFlags & Wire.PACKED_MASK) == Wire.PACKED;
-        if (packed) {
+      if ((typeFlags & Message.LABEL_MASK) == Message.REPEATED) {
+        if (isPacked(typeFlags)) {
           int len = 0;
           for (Object o : (List<?>) value) {
             len += getSerializedSizeNoTag(o, type);
@@ -280,7 +278,7 @@ public class MessageAdapter<M extends Message> {
       Object value = extensionMap.get(extension);
       int tag = extension.getTag();
       int type = extension.getType();
-      if (extension.getLabel() == Wire.REPEATED) {
+      if (extension.getLabel() == Message.REPEATED) {
         if (extension.getPacked()) {
           int len = 0;
           for (Object o : (List<?>) value) {
@@ -305,7 +303,7 @@ public class MessageAdapter<M extends Message> {
   /**
    * Serializes a given {@link Message} and returns the results as a byte array.
    */
-  public byte[] toByteArray(M message) {
+  byte[] toByteArray(M message) {
     byte[] result = new byte[getSerializedSize(message)];
     try {
       write(message, WireOutput.newInstance(result));
@@ -315,10 +313,51 @@ public class MessageAdapter<M extends Message> {
     return result;
   }
 
+  @SuppressWarnings("unchecked")
+  <T extends ExtendableMessage<?>> boolean equals(M message1, M message2) {
+    if (message1 instanceof ExtendableMessage<?>) {
+      if (!((ExtendableMessage<T>) message1).extensionsEqual((ExtendableMessage<T>) message2)) {
+        return false;
+      }
+    }
+    for (int i = 0, size = tags.size(); i < size; i++) {
+      Field field = fieldMap.get(tags.get(i));
+      Object a, b;
+      try {
+        a = field.get(message1);
+        b = field.get(message2);
+      } catch (IllegalAccessException e) {
+        throw new AssertionError(e);
+      }
+      if (a != b && (a == null || !a.equals(b))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  int hashCode(M message) {
+    int hashCode = 0;
+    if (message instanceof ExtendableMessage<?>) {
+      hashCode = ((ExtendableMessage<?>) message).extensionMap.hashCode();
+    }
+    for (int i = 0, size = tags.size(); i < size; i++) {
+      Field field = fieldMap.get(tags.get(i));
+      Object value;
+      try {
+        value = field.get(message);
+      } catch (IllegalAccessException e) {
+        throw new AssertionError(e);
+      }
+      hashCode = 37 * hashCode + (value == null ? 0 : value.hashCode());
+    }
+    return hashCode;
+  }
+
   /**
    * Returns a human-readable version of the given {@link Message}.
    */
-  public String toString(M message) {
+  String toString(M message) {
     StringBuilder sb = new StringBuilder();
     sb.append(messageType.getSimpleName());
     sb.append("{");
@@ -327,13 +366,13 @@ public class MessageAdapter<M extends Message> {
     for (int tag : tags) {
       Field field = fieldMap.get(tag);
       if (field == null) {
-        throw new IllegalArgumentException();
+        throw new AssertionError();
       }
       Object value;
       try {
         value = field.get(message);
       } catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
+        throw new AssertionError(e);
       }
       if (value == null) {
         continue;
@@ -368,22 +407,24 @@ public class MessageAdapter<M extends Message> {
    */
   private int getSerializedSizeNoTag(Object value, int type) {
     switch (type) {
-      case Wire.INT32: return WireOutput.int32Size((Integer) value);
-      case Wire.INT64: case Wire.UINT64: return WireOutput.varint64Size((Long) value);
-      case Wire.UINT32: return WireOutput.varint32Size((Integer) value);
-      case Wire.SINT32: return WireOutput.varint32Size(WireOutput.zigZag32((Integer) value));
-      case Wire.SINT64: return WireOutput.varint64Size(WireOutput.zigZag64((Long) value));
-      case Wire.BOOL: return 1;
-      case Wire.ENUM: return getEnumSize((Enum) value);
-      case Wire.STRING:
+      case Message.INT32: return WireOutput.int32Size((Integer) value);
+      case Message.INT64: case Message.UINT64: return WireOutput.varint64Size((Long) value);
+      case Message.UINT32: return WireOutput.varint32Size((Integer) value);
+      case Message.SINT32: return WireOutput.varint32Size(WireOutput.zigZag32((Integer) value));
+      case Message.SINT64: return WireOutput.varint64Size(WireOutput.zigZag64((Long) value));
+      case Message.BOOL: return 1;
+      case Message.ENUM: return getEnumSize((Enum) value);
+      case Message.STRING:
         int utf8Length = utf8Length((String) value);
         return WireOutput.varint32Size(utf8Length) + utf8Length;
-      case Wire.BYTES:
+      case Message.BYTES:
         int length = ((ByteString) value).size();
         return WireOutput.varint32Size(length) + length;
-      case Wire.MESSAGE: return getMessageSize((Message) value);
-      case Wire.FIXED32: case Wire.SFIXED32: case Wire.FLOAT: return WireOutput.FIXED_32_SIZE;
-      case Wire.FIXED64: case Wire.SFIXED64: case Wire.DOUBLE: return WireOutput.FIXED_64_SIZE;
+      case Message.MESSAGE: return getMessageSize((Message) value);
+      case Message.FIXED32: case Message.SFIXED32: case Message.FLOAT:
+        return WireOutput.FIXED_32_SIZE;
+      case Message.FIXED64: case Message.SFIXED64: case Message.DOUBLE:
+        return WireOutput.FIXED_64_SIZE;
       default: throw new RuntimeException();
     }
   }
@@ -414,8 +455,7 @@ public class MessageAdapter<M extends Message> {
 
   @SuppressWarnings("unchecked")
   private <M extends Message> int getMessageSize(M message) {
-    MessageAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
-    int messageSize = adapter.getSerializedSize(message);
+    int messageSize = message.getSerializedSize();
     return WireOutput.varint32Size(messageSize) + messageSize;
   }
 
@@ -428,14 +468,14 @@ public class MessageAdapter<M extends Message> {
 
   private int wiretype(int type) {
     switch (type) {
-      case Wire.INT32: case Wire.INT64: case Wire.UINT32: case Wire.UINT64:
-      case Wire.SINT32: case Wire.SINT64: case Wire.BOOL: case Wire.ENUM:
+      case Message.INT32: case Message.INT64: case Message.UINT32: case Message.UINT64:
+      case Message.SINT32: case Message.SINT64: case Message.BOOL: case Message.ENUM:
         return WireOutput.WIRETYPE_VARINT;
-      case Wire.STRING: case Wire.BYTES: case Wire.MESSAGE:
+      case Message.STRING: case Message.BYTES: case Message.MESSAGE:
         return WireOutput.WIRETYPE_LENGTH_DELIMITED;
-      case Wire.FIXED32: case Wire.SFIXED32: case Wire.FLOAT:
+      case Message.FIXED32: case Message.SFIXED32: case Message.FLOAT:
         return WireOutput.WIRETYPE_FIXED32;
-      case Wire.FIXED64: case Wire.SFIXED64: case Wire.DOUBLE:
+      case Message.FIXED64: case Message.SFIXED64: case Message.DOUBLE:
         return WireOutput.WIRETYPE_FIXED64;
       default:
         throw new IllegalArgumentException("type=" + type);
@@ -447,36 +487,36 @@ public class MessageAdapter<M extends Message> {
    */
   private void writeValueNoTag(WireOutput output, Object value, int type) throws IOException {
     switch (type) {
-      case Wire.INT32: output.writeSignedVarint32((Integer) value); break;
-      case Wire.INT64: case Wire.UINT64: output.writeVarint64((Long) value); break;
-      case Wire.UINT32: output.writeVarint32((Integer) value); break;
-      case Wire.SINT32: output.writeVarint32(WireOutput.zigZag32((Integer) value)); break;
-      case Wire.SINT64: output.writeVarint64(WireOutput.zigZag64((Long) value)); break;
-      case Wire.BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
-      case Wire.ENUM: writeEnum((Enum) value, output); break;
-      case Wire.STRING:
+      case Message.INT32: output.writeSignedVarint32((Integer) value); break;
+      case Message.INT64: case Message.UINT64: output.writeVarint64((Long) value); break;
+      case Message.UINT32: output.writeVarint32((Integer) value); break;
+      case Message.SINT32: output.writeVarint32(WireOutput.zigZag32((Integer) value)); break;
+      case Message.SINT64: output.writeVarint64(WireOutput.zigZag64((Long) value)); break;
+      case Message.BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
+      case Message.ENUM: writeEnum((Enum) value, output); break;
+      case Message.STRING:
         final byte[] bytes = ((String) value).getBytes("UTF-8");
         output.writeVarint32(bytes.length);
         output.writeRawBytes(bytes);
         break;
-      case Wire.BYTES:
+      case Message.BYTES:
         ByteString byteString = (ByteString) value;
         output.writeVarint32(byteString.size());
         output.writeRawBytes(byteString.toByteArray());
         break;
-      case Wire.MESSAGE: writeMessage((Message) value, output); break;
-      case Wire.FIXED32: case Wire.SFIXED32: output.writeFixed32((Integer) value); break;
-      case Wire.FIXED64: case Wire.SFIXED64: output.writeFixed64((Long) value); break;
-      case Wire.FLOAT: output.writeFixed32(Float.floatToIntBits((Float) value)); break;
-      case Wire.DOUBLE: output.writeFixed64(Double.doubleToLongBits((Double) value)); break;
+      case Message.MESSAGE: writeMessage((Message) value, output); break;
+      case Message.FIXED32: case Message.SFIXED32: output.writeFixed32((Integer) value); break;
+      case Message.FIXED64: case Message.SFIXED64: output.writeFixed64((Long) value); break;
+      case Message.FLOAT: output.writeFixed32(Float.floatToIntBits((Float) value)); break;
+      case Message.DOUBLE: output.writeFixed64(Double.doubleToLongBits((Double) value)); break;
       default: throw new RuntimeException();
     }
   }
 
   @SuppressWarnings("unchecked")
   private <M extends Message> void writeMessage(M message, WireOutput output) throws IOException {
+    output.writeVarint32(message.getSerializedSize());
     MessageAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
-    output.writeVarint32(adapter.getSerializedSize(message));
     adapter.write(message, output);
   }
 
@@ -490,7 +530,7 @@ public class MessageAdapter<M extends Message> {
   // Reading
 
   /** Uses reflection to read an instance from {@code input}. */
-  public M read(WireInput input) throws IOException {
+  M read(WireInput input) throws IOException {
     try {
       Builder<M> builder = builderType.newInstance();
       Storage storage = new Storage();
@@ -518,9 +558,9 @@ public class MessageAdapter<M extends Message> {
         boolean packed;
         if (typeMap.containsKey(tag)) {
           type = typeMap.get(tag);
-          label = type & Wire.LABEL_MASK;
-          packed = (type & Wire.PACKED_MASK) == Wire.PACKED;
-          type &= Wire.TYPE_MASK;
+          label = type & Message.LABEL_MASK;
+          packed = (type & Message.PACKED_MASK) == Message.PACKED;
+          type &= Message.TYPE_MASK;
         } else {
           extension = getExtension(tag);
           if (extension == null) {
@@ -533,7 +573,7 @@ public class MessageAdapter<M extends Message> {
         }
         Object value;
 
-        if (label == Wire.REPEATED && packed && wireType == 2) {
+        if (label == Message.REPEATED && packed && wireType == 2) {
           // Decode packed format
           int length = input.readVarint32();
           int start = input.getPosition();
@@ -549,7 +589,7 @@ public class MessageAdapter<M extends Message> {
         } else {
           // Read a single value
           value = readValue(input, tag, type);
-          if (label == Wire.REPEATED) {
+          if (label == Message.REPEATED) {
             storage.add(tag, value);
           } else if (extension != null) {
             setExtension((ExtendableBuilder<?>) builder, extension, value);
@@ -567,19 +607,21 @@ public class MessageAdapter<M extends Message> {
 
   private Object readValue(WireInput input, int tag, int type) throws IOException {
     switch (type) {
-      case Wire.INT32: case Wire.UINT32: return input.readVarint32();
-      case Wire.INT64: case Wire.UINT64: return input.readVarint64();
-      case Wire.SINT32: return WireInput.decodeZigZag32(input.readVarint32());
-      case Wire.SINT64: return WireInput.decodeZigZag64(input.readVarint64());
-      case Wire.BOOL: return input.readVarint32() != 0;
-      case Wire.ENUM: return Wire.enumFromInt(getEnumClass(tag), input.readVarint32());
-      case Wire.STRING: return input.readString();
-      case Wire.BYTES: return input.readBytes();
-      case Wire.MESSAGE: return readMessage(input, tag);
-      case Wire.FIXED32: case Wire.SFIXED32: return input.readFixed32();
-      case Wire.FIXED64: case Wire.SFIXED64: return input.readFixed64();
-      case Wire.FLOAT: return Float.intBitsToFloat(input.readFixed32());
-      case Wire.DOUBLE: return Double.longBitsToDouble(input.readFixed64());
+      case Message.INT32: case Message.UINT32: return input.readVarint32();
+      case Message.INT64: case Message.UINT64: return input.readVarint64();
+      case Message.SINT32: return WireInput.decodeZigZag32(input.readVarint32());
+      case Message.SINT64: return WireInput.decodeZigZag64(input.readVarint64());
+      case Message.BOOL: return input.readVarint32() != 0;
+      case Message.ENUM:
+        EnumAdapter<? extends Enum> adapter = wire.enumAdapter(getEnumClass(tag));
+        return adapter.fromInt(input.readVarint32());
+      case Message.STRING: return input.readString();
+      case Message.BYTES: return input.readBytes();
+      case Message.MESSAGE: return readMessage(input, tag);
+      case Message.FIXED32: case Message.SFIXED32: return input.readFixed32();
+      case Message.FIXED64: case Message.SFIXED64: return input.readFixed64();
+      case Message.FLOAT: return Float.intBitsToFloat(input.readFixed32());
+      case Message.DOUBLE: return Double.longBitsToDouble(input.readFixed64());
       default: throw new RuntimeException();
     }
   }

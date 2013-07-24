@@ -6,7 +6,6 @@ package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-import com.squareup.wire.Wire;
 
 public final class VersionOne extends Message {
 
@@ -14,27 +13,13 @@ public final class VersionOne extends Message {
 
   @ProtoField(
     tag = 1,
-    type = Wire.INT32
+    type = INT32
   )
   public final Integer i;
 
   private VersionOne(Builder builder) {
     super(builder);
     this.i = builder.i;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (!(other instanceof VersionOne)) return false;
-    return Wire.equals(i, ((VersionOne) other).i);
-  }
-
-  @Override
-  public int hashCode() {
-    if (hashCode == 0) {
-      hashCode = i != null ? i.hashCode() : 0;
-    }
-    return hashCode;
   }
 
   public static final class Builder extends Message.Builder<VersionOne> {

@@ -7,7 +7,6 @@ package com.squareup.wire.protos.simple;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
 import com.squareup.wire.ProtoField;
-import com.squareup.wire.Wire;
 
 public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
 
@@ -15,7 +14,7 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
 
   @ProtoField(
     tag = 1,
-    type = Wire.FLOAT
+    type = FLOAT
   )
   public final Float f;
 
@@ -29,18 +28,19 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
     if (!(other instanceof ExternalMessage)) return false;
     ExternalMessage o = (ExternalMessage) other;
     if (!extensionsEqual(o)) return false;
-    if (!Wire.equals(f, o.f)) return false;
+    if (!equals(f, o.f)) return false;
     return true;
   }
 
   @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = extensionsHashCode();
+    int result = hashCode;
+    if (result == 0) {
+      result = extensionsHashCode();
       result = result * 37 + (f != null ? f.hashCode() : 0);
       hashCode = result;
     }
-    return hashCode;
+    return result;
   }
 
   public static final class Builder extends ExtendableBuilder<ExternalMessage> {
