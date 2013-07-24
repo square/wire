@@ -52,8 +52,7 @@ public class WireCompiler {
   private static final String JAVA_OUT_FLAG = "--java_out=";
   private static final String FILES_FLAG = "--files=";
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
-  private static final boolean EMIT_EQUALS = true;
-  private static final boolean EMIT_HASH_CODE = true;
+
   static {
     JAVA_TYPES.put("bool", "Boolean");
     JAVA_TYPES.put("bytes", "ByteString");
@@ -423,12 +422,8 @@ public class WireCompiler {
       emitMessageDefaults(messageType);
       emitMessageFields(messageType);
       emitMessageConstructor(messageType);
-      if (EMIT_EQUALS) {
-        emitMessageEquals(messageType);
-      }
-      if (EMIT_HASH_CODE) {
-        emitMessageHashCode(messageType);
-      }
+      emitMessageEquals(messageType);
+      emitMessageHashCode(messageType);
       emitBuilder(messageType);
 
       for (Type nestedType : type.getNestedTypes()) {

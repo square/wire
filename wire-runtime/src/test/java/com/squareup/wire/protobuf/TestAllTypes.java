@@ -357,6 +357,7 @@ public class TestAllTypes {
     }
   }
 
+  @Test
   public void testDefaults() throws Exception {
     assertEquals(true, AllTypes.DEFAULT_DEFAULT_BOOL);
     // original: "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel"

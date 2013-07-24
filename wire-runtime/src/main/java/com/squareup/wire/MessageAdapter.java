@@ -313,47 +313,6 @@ class MessageAdapter<M extends Message> {
     return result;
   }
 
-  @SuppressWarnings("unchecked")
-  <T extends ExtendableMessage<?>> boolean equals(M message1, M message2) {
-    if (message1 instanceof ExtendableMessage<?>) {
-      if (!((ExtendableMessage<T>) message1).extensionsEqual((ExtendableMessage<T>) message2)) {
-        return false;
-      }
-    }
-    for (int i = 0, size = tags.size(); i < size; i++) {
-      Field field = fieldMap.get(tags.get(i));
-      Object a, b;
-      try {
-        a = field.get(message1);
-        b = field.get(message2);
-      } catch (IllegalAccessException e) {
-        throw new AssertionError(e);
-      }
-      if (a != b && (a == null || !a.equals(b))) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  int hashCode(M message) {
-    int hashCode = 0;
-    if (message instanceof ExtendableMessage<?>) {
-      hashCode = ((ExtendableMessage<?>) message).extensionMap.hashCode();
-    }
-    for (int i = 0, size = tags.size(); i < size; i++) {
-      Field field = fieldMap.get(tags.get(i));
-      Object value;
-      try {
-        value = field.get(message);
-      } catch (IllegalAccessException e) {
-        throw new AssertionError(e);
-      }
-      hashCode = 37 * hashCode + (value == null ? 0 : value.hashCode());
-    }
-    return hashCode;
-  }
-
   /**
    * Returns a human-readable version of the given {@link Message}.
    */
