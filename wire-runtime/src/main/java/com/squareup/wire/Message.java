@@ -231,21 +231,6 @@ public abstract class Message {
   }
 
   @SuppressWarnings("unchecked")
-  @Override public boolean equals(Object other) {
-    return other != null && getClass().equals(other.getClass())
-        && WIRE.messageAdapter((Class<Message>) this.getClass())
-            .equals(this, (Message) other);
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override public int hashCode() {
-    if (hashCode == 0) {
-      hashCode = WIRE.messageAdapter((Class<Message>) getClass()).hashCode(this);
-    }
-    return hashCode;
-  }
-
-  @SuppressWarnings("unchecked")
   @Override public String toString() {
     return WIRE.messageAdapter((Class<Message>) getClass()).toString(this);
   }
