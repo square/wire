@@ -21,6 +21,7 @@ public final class SimpleMessage extends Message {
   public static final List<Double> DEFAULT_REPEATED_DOUBLE = Collections.emptyList();
   public static final ForeignEnum DEFAULT_DEFAULT_FOREIGN_ENUM = com.squareup.wire.protos.foreign.ForeignEnum.BAX;
   public static final ForeignEnum DEFAULT_NO_DEFAULT_FOREIGN_ENUM = com.squareup.wire.protos.foreign.ForeignEnum.BAV;
+  public static final String DEFAULT_PACKAGE = "";
 
   /**
    * An optional int32
@@ -91,6 +92,15 @@ public final class SimpleMessage extends Message {
   )
   public final ForeignEnum no_default_foreign_enum;
 
+  /**
+   * field with the same name as a Java keyword
+   */
+  @ProtoField(
+    tag = 9,
+    type = STRING
+  )
+  public final String _package;
+
   private SimpleMessage(Builder builder) {
     super(builder);
     this.optional_int32 = builder.optional_int32;
@@ -101,6 +111,7 @@ public final class SimpleMessage extends Message {
     this.repeated_double = unmodifiableCopyOf(builder.repeated_double);
     this.default_foreign_enum = builder.default_foreign_enum;
     this.no_default_foreign_enum = builder.no_default_foreign_enum;
+    this._package = builder._package;
   }
 
   @Override
@@ -115,6 +126,7 @@ public final class SimpleMessage extends Message {
     if (!equals(repeated_double, o.repeated_double)) return false;
     if (!equals(default_foreign_enum, o.default_foreign_enum)) return false;
     if (!equals(no_default_foreign_enum, o.no_default_foreign_enum)) return false;
+    if (!equals(_package, o._package)) return false;
     return true;
   }
 
@@ -130,6 +142,7 @@ public final class SimpleMessage extends Message {
       result = result * 37 + (repeated_double != null ? repeated_double.hashCode() : 0);
       result = result * 37 + (default_foreign_enum != null ? default_foreign_enum.hashCode() : 0);
       result = result * 37 + (no_default_foreign_enum != null ? no_default_foreign_enum.hashCode() : 0);
+      result = result * 37 + (_package != null ? _package.hashCode() : 0);
       hashCode = result;
     }
     return result;
@@ -145,6 +158,7 @@ public final class SimpleMessage extends Message {
     public List<Double> repeated_double;
     public ForeignEnum default_foreign_enum;
     public ForeignEnum no_default_foreign_enum;
+    public String _package;
 
     public Builder() {
     }
@@ -160,6 +174,7 @@ public final class SimpleMessage extends Message {
       this.repeated_double = copyOf(message.repeated_double);
       this.default_foreign_enum = message.default_foreign_enum;
       this.no_default_foreign_enum = message.no_default_foreign_enum;
+      this._package = message._package;
     }
 
     public Builder optional_int32(Integer optional_int32) {
@@ -199,6 +214,11 @@ public final class SimpleMessage extends Message {
 
     public Builder no_default_foreign_enum(ForeignEnum no_default_foreign_enum) {
       this.no_default_foreign_enum = no_default_foreign_enum;
+      return this;
+    }
+
+    public Builder _package(String _package) {
+      this._package = _package;
       return this;
     }
 

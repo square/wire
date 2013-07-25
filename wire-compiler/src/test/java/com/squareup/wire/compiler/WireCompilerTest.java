@@ -13,96 +13,120 @@ import org.junit.Test;
 
 public class WireCompilerTest {
 
-  private File testAllTypesDir;
+  private File testPersonDir;
   private File testSimpleDir;
+  private File testAllTypesDir;
+  private File testEdgeCasesDir;
+  private File testUnknownFieldsDir;
 
   @Before public void setUp() {
     System.out.println("cwd = " + new File(".").getAbsolutePath());
+    List<String> filesBefore;
 
-    testAllTypesDir = new File("WireCompilerTest_testAllTypes");
-    testAllTypesDir.mkdir();
-    cleanup(testAllTypesDir);
-    List<String> filesBefore = getAllFiles(testAllTypesDir);
-    Assert.assertEquals(0, filesBefore.size());
+    testPersonDir = makeTestDirectory("WireCompilerTest_testPerson");
+    testSimpleDir = makeTestDirectory("WireCompilerTest_testSimple");
+    testAllTypesDir = makeTestDirectory("WireCompilerTest_testAllTypes");
+    testEdgeCasesDir = makeTestDirectory("WireCompilerTest_testEdgeCases");
+    testUnknownFieldsDir = makeTestDirectory("WireCompilerTest_testUnknownFields");
+  }
 
-    testSimpleDir = new File("WireCompilerTest_testSimple");
-    testSimpleDir.mkdir();
-    cleanup(testSimpleDir);
-    filesBefore = getAllFiles(testSimpleDir);
+  private File makeTestDirectory(String path) {
+    File dir = new File(path);
+    dir.mkdir();
+    cleanup(dir);
+    List<String> filesBefore = getAllFiles(dir);
     Assert.assertEquals(0, filesBefore.size());
+    return dir;
   }
 
   @After public void tearDown() {
-    cleanup(testAllTypesDir);
-    if (!testAllTypesDir.delete()) {
-      System.err.println("Couldn't delete " + testAllTypesDir.getAbsolutePath());
-    }
+    cleanupAndDelete(testPersonDir);
+    cleanupAndDelete(testSimpleDir);
+    cleanupAndDelete(testAllTypesDir);
+    cleanupAndDelete(testEdgeCasesDir);
+    cleanupAndDelete(testUnknownFieldsDir);
+  }
 
-    cleanup(testSimpleDir);
-    testSimpleDir.delete();
+  private void cleanupAndDelete(File dir) {
+    cleanup(dir);
+    if (!dir.delete()) {
+      System.err.println("Couldn't delete " + dir.getAbsolutePath());
+    }
+  }
+
+  private void testProto(File dir, String[] sources, String[] outputs) throws Exception {
+    String[] args = new String[2 + sources.length];
+    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[1] = "--java_out=" + dir.getAbsolutePath();
+    System.arraycopy(sources, 0, args, 2, sources.length);
+
+    WireCompiler.main(args);
+
+    List<String> filesAfter = getAllFiles(dir);
+    Assert.assertEquals(outputs.length, filesAfter.size());
+
+    for (String output : outputs) {
+      assertFilesMatch(dir, output);
+    }
   }
 
   @Test public void testPerson() throws Exception {
-    WireCompiler.main(
-        "--proto_path=../wire-runtime/src/test/proto",
-        "--java_out=" + testAllTypesDir.getAbsolutePath(),
+    String[] sources = {
         "person.proto"
-    );
-
-
-    List<String> filesAfter = getAllFiles(testAllTypesDir);
-    Assert.assertEquals(1, filesAfter.size());
-
-    filesMatch(testAllTypesDir, "com/squareup/wire/protos/person/Person.java");
-  }
-
-  @Test public void testAllTypes() throws Exception {
-    WireCompiler.main(
-      "--proto_path=../wire-runtime/src/test/proto",
-      "--java_out=" + testAllTypesDir.getAbsolutePath(),
-      "all_types.proto"
-    );
-
-
-    List<String> filesAfter = getAllFiles(testAllTypesDir);
-    Assert.assertEquals(2, filesAfter.size());
-
-    filesMatch(testAllTypesDir, "com/squareup/wire/protos/alltypes/Ext_all_types.java");
-    filesMatch(testAllTypesDir, "com/squareup/wire/protos/alltypes/AllTypes.java");
-  }
-
-  @Test public void testEdgeCases() throws Exception {
-    WireCompiler.main(
-        "--proto_path=../wire-runtime/src/test/proto",
-        "--java_out=" + testAllTypesDir.getAbsolutePath(),
-        "edge_cases.proto"
-    );
-
-    List<String> filesAfter = getAllFiles(testAllTypesDir);
-    Assert.assertEquals(3, filesAfter.size());
-
-    filesMatch(testAllTypesDir, "com/squareup/wire/protos/edgecases/NoFields.java");
-    filesMatch(testAllTypesDir, "com/squareup/wire/protos/edgecases/OneField.java");
-    filesMatch(testAllTypesDir, "com/squareup/wire/protos/edgecases/OneBytesField.java");
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/person/Person.java"
+    };
+    testProto(testPersonDir, sources, outputs);
   }
 
   @Test public void testSimple() throws Exception {
-    WireCompiler.main(
-        "--proto_path=../wire-runtime/src/test/proto",
-        "--java_out=" + testSimpleDir.getAbsolutePath(),
+    String[] sources = {
         "simple_message.proto",
         "external_message.proto",
         "foreign.proto"
-    );
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/simple/Ext_simple_message.java",
+        "com/squareup/wire/protos/simple/SimpleMessage.java",
+        "com/squareup/wire/protos/simple/ExternalMessage.java",
+        "com/squareup/wire/protos/foreign/ForeignEnum.java"
+    };
+    testProto(testSimpleDir, sources, outputs);
+  }
 
-    List<String> filesAfter = getAllFiles(testSimpleDir);
-    Assert.assertEquals(4, filesAfter.size());
+  @Test public void testAllTypes() throws Exception {
+    String[] sources = {
+        "all_types.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/alltypes/Ext_all_types.java",
+        "com/squareup/wire/protos/alltypes/AllTypes.java"
+    };
+    testProto(testAllTypesDir, sources, outputs);
+  }
 
-    filesMatch(testSimpleDir,
-        "com/squareup/wire/protos/simple/Ext_simple_message.java");
-    filesMatch(testSimpleDir, "com/squareup/wire/protos/simple/SimpleMessage.java");
-    filesMatch(testSimpleDir, "com/squareup/wire/protos/simple/ExternalMessage.java");
-    filesMatch(testSimpleDir, "com/squareup/wire/protos/foreign/ForeignEnum.java");
+  @Test public void testEdgeCases() throws Exception {
+    String[] sources = {
+        "edge_cases.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/edgecases/NoFields.java",
+        "com/squareup/wire/protos/edgecases/OneField.java",
+        "com/squareup/wire/protos/edgecases/OneBytesField.java"
+    };
+    testProto(testEdgeCasesDir, sources, outputs);
+  }
+
+  @Test public void testUnknownFields() throws Exception {
+    String[] sources = {
+        "unknown_fields.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/unknownfields/VersionOne.java",
+        "com/squareup/wire/protos/unknownfields/VersionTwo.java"
+    };
+    testProto(testUnknownFieldsDir, sources, outputs);
   }
 
   private void cleanup(File dir) {
@@ -147,7 +171,7 @@ public class WireCompilerTest {
     }
   }
 
-  private void filesMatch(File outputDir, String path) throws FileNotFoundException {
+  private void assertFilesMatch(File outputDir, String path) throws FileNotFoundException {
     File expectedFile = new File("../wire-runtime/src/test/java/" + path);
     String expected = new Scanner(expectedFile).useDelimiter("\\A").next();
     File actualFile = new File(outputDir, path);
