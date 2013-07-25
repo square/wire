@@ -175,15 +175,15 @@ class MessageAdapter<M extends Message> {
 
       if ((typeFlags & Message.LABEL_MASK) == Message.REPEATED) {
         if (isPacked(typeFlags)) {
-          int len = 0;
+          int packedLength = 0;
           for (Object o : (List<?>) value) {
-            len += getSerializedSizeNoTag(o, type);
+            packedLength += getSerializedSizeNoTag(o, type);
           }
           // tag + length + value + value + ...
           size += WireOutput.varint32Size(
               WireOutput.makeTag(tag, WireOutput.WIRETYPE_LENGTH_DELIMITED));
-          size += WireOutput.varint32Size(len);
-          size += len;
+          size += WireOutput.varint32Size(packedLength);
+          size += packedLength;
         } else {
           for (Object o : (List<?>) value) {
             size += getSerializedSize(tag, o, type);
@@ -217,14 +217,14 @@ class MessageAdapter<M extends Message> {
       int type = extension.getType();
       if (extension.getLabel() == Message.REPEATED) {
         if (extension.getPacked()) {
-          int len = 0;
+          int packedLength = 0;
           for (Object o : (List<?>) value) {
-            len += getSerializedSizeNoTag(o, type);
+            packedLength += getSerializedSizeNoTag(o, type);
           }
           size += WireOutput.varint32Size(
               WireOutput.makeTag(tag, WireOutput.WIRETYPE_LENGTH_DELIMITED));
-          size += WireOutput.varint32Size(len);
-          size += len;
+          size += WireOutput.varint32Size(packedLength);
+          size += packedLength;
         } else {
           for (Object o : (List<?>) value) {
             size += getSerializedSize(tag, o, type);
@@ -258,12 +258,12 @@ class MessageAdapter<M extends Message> {
 
       if ((typeFlags & Message.LABEL_MASK) == Message.REPEATED) {
         if (isPacked(typeFlags)) {
-          int len = 0;
+          int packedLength = 0;
           for (Object o : (List<?>) value) {
-            len += getSerializedSizeNoTag(o, type);
+            packedLength += getSerializedSizeNoTag(o, type);
           }
           output.writeTag(tag, 2);
-          output.writeVarint32(len);
+          output.writeVarint32(packedLength);
           for (Object o : (List<?>) value) {
             writeValueNoTag(output, o, type);
           }
@@ -294,12 +294,12 @@ class MessageAdapter<M extends Message> {
       int type = extension.getType();
       if (extension.getLabel() == Message.REPEATED) {
         if (extension.getPacked()) {
-          int len = 0;
+          int packedLength = 0;
           for (Object o : (List<?>) value) {
-            len += getSerializedSizeNoTag(o, type);
+            packedLength += getSerializedSizeNoTag(o, type);
           }
           output.writeTag(tag, 2);
-          output.writeVarint32(len);
+          output.writeVarint32(packedLength);
           for (Object o : (List<?>) value) {
             writeValueNoTag(output, o, type);
           }
@@ -404,7 +404,7 @@ class MessageAdapter<M extends Message> {
 
   private int utf8Length(String s) {
     int count = 0;
-    for (int i = 0, len = s.length(); i < len; i++) {
+    for (int i = 0, length = s.length(); i < length; i++) {
       char ch = s.charAt(i);
       if (ch <= 0x7F) {
         count++;

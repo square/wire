@@ -135,10 +135,10 @@ public class WireTest extends TestCase {
     int msgSerializedSize = msg.getSerializedSize();
     assertEquals(29, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
-    msg.write(WireOutput.newInstance(result));
+    msg.writeTo(result);
     assertEquals(29, result.length);
 
-    SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, WireInput.newInstance(result));
+    SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, result);
     assertEquals(Arrays.asList(444, 555), newMsg.optional_external_msg.getExtension(fooext));
     assertEquals(new Integer(333), newMsg.optional_external_msg.getExtension(barext));
     assertEquals(new Integer(222), newMsg.optional_external_msg.getExtension(bazext));
@@ -165,10 +165,10 @@ public class WireTest extends TestCase {
     int msgSerializedSize = msg.getSerializedSize();
     assertEquals(21, msgSerializedSize);
     byte[] result = new byte[msgSerializedSize];
-    msg.write(WireOutput.newInstance(result));
+    msg.writeTo(result);
     assertEquals(21, result.length);
 
-    SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, WireInput.newInstance(result));
+    SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, result);
     assertNull(newMsg.optional_external_msg.getExtension(fooext));
     assertNull(newMsg.optional_external_msg.getExtension(barext));
     assertNull(newMsg.optional_external_msg.getExtension(bazext));
