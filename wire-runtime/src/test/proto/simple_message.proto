@@ -35,6 +35,9 @@ message SimpleMessage {
   optional squareup.protos.foreign.ForeignEnum default_foreign_enum = 7 [default = BAX];
   // enum from another package without an explicit default
   optional squareup.protos.foreign.ForeignEnum no_default_foreign_enum = 8;
+
+  // field with the same name as a Java keyword
+  optional string package = 9;
 }
 
 extend ExternalMessage {
