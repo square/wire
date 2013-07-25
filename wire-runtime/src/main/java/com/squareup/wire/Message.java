@@ -222,7 +222,7 @@ public abstract class Message {
   }
 
   @SuppressWarnings("unchecked")
-  public void write(WireOutput output) {
+  private void write(WireOutput output) {
     MessageAdapter<Message> adapter = WIRE.messageAdapter((Class<Message>) getClass());
     try {
       adapter.write(this, output);
