@@ -17,6 +17,7 @@ package com.squareup.wire.protobuf;
 
 import com.squareup.wire.ByteString;
 import com.squareup.wire.Extension;
+import com.squareup.wire.Message;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import com.squareup.wire.Wire;
@@ -294,13 +295,19 @@ public class TestAllTypes {
 
   @Test
   public void testWrite() {
-    int len = allTypes.getSerializedSize();
-    assertEquals(TestAllTypesData.expectedOutput.length, len);
-    byte[] output = new byte[len];
-    allTypes.writeTo(output, 0, len);
-    for (int i = 0; i < output.length; i++) {
-      assertEquals("Byte " + i, TestAllTypesData.expectedOutput[i], output[i] & 0xff);
-    }
+    int count = allTypes.getSerializedSize();
+    assertEquals(TestAllTypesData.expectedOutput.length, count);
+    byte[] output = new byte[count];
+    allTypes.writeTo(output, 0, count);
+    assertEquals(ByteString.of(TestAllTypesData.expectedOutput), ByteString.of(output));
+
+    output = new byte[count];
+    allTypes.writeTo(output);
+    assertEquals(ByteString.of(TestAllTypesData.expectedOutput), ByteString.of(output));
+
+    output = allTypes.toByteArray();
+    assertEquals(TestAllTypesData.expectedOutput.length, output.length);
+    assertEquals(ByteString.of(TestAllTypesData.expectedOutput), ByteString.of(output));
   }
 
   @Test
@@ -378,5 +385,11 @@ public class TestAllTypes {
     assertEquals("çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel", AllTypes.DEFAULT_DEFAULT_STRING);
     assertEquals("çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel",
         new String(AllTypes.DEFAULT_DEFAULT_BYTES.toByteArray(), "ISO-8859-1"));
+  }
+
+  @Test
+  public void testEnums() {
+    assertEquals(AllTypes.NestedEnum.A, Message.enumFromInt(AllTypes.NestedEnum.class, 1));
+    assertEquals(1, Message.intFromEnum(AllTypes.NestedEnum.A));
   }
 }

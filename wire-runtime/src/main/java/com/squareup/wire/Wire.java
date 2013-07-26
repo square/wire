@@ -154,7 +154,7 @@ public final class Wire {
    * @return an instance of the desired message class
    * @throws IOException if parsing fails
    */
-  public <M extends Message> M parseFrom(Class<M> messageClass, WireInput input)
+  private <M extends Message> M parseFrom(Class<M> messageClass, WireInput input)
       throws IOException {
     MessageAdapter<M> adapter = messageAdapter(messageClass);
     return adapter.read(input);
