@@ -31,113 +31,86 @@ public abstract class Message {
   private static final Wire WIRE = new Wire();
 
   /**
-   * Constant indicating the protocol buffer 'int32' datatype.
+   * A protocol buffer data type.
    */
-  public static final int INT32 = 1;
+  public enum Datatype {
+    INT32(1), INT64(2), UINT32(3), UINT64(4), SINT32(5),
+    SINT64(6), BOOL(7), ENUM(8), STRING(9), BYTES(10),
+    MESSAGE(11), FIXED32(12), SFIXED32(13), FIXED64(14),
+    SFIXED64(15), FLOAT(16), DOUBLE(17);
+
+    private static final int TYPE_MASK = 0x1f;
+
+    public static Datatype valueOf(int value) {
+      switch (value & TYPE_MASK) {
+        case 1: return INT32;
+        case 2: return INT64;
+        case 3: return UINT32;
+        case 4: return UINT64;
+        case 5: return SINT32;
+        case 6: return SINT64;
+        case 7: return BOOL;
+        case 8: return ENUM;
+        case 9: return STRING;
+        case 10: return BYTES;
+        case 11: return MESSAGE;
+        case 12: return FIXED32;
+        case 13: return SFIXED32;
+        case 14: return FIXED64;
+        case 15: return SFIXED64;
+        case 16: return FLOAT;
+        case 17: return DOUBLE;
+        default: throw new IllegalArgumentException("value = " + value);
+      }
+    }
+
+    private final int value;
+
+    private Datatype(int value) {
+      this.value = value;
+    }
+
+    public int value() {
+      return value;
+    }
+  }
 
   /**
-   * Constant indicating the protocol buffer 'int64' datatype.
+   * A protocol buffer label. We treat "packed" as a label of its own that implies "repeated."
    */
-  public static final int INT64 = 2;
+  public enum Label {
+    REQUIRED(32), OPTIONAL(64), REPEATED(128), PACKED(256);
 
-  /**
-   * Constant indicating the protocol buffer 'uint32' datatype.
-   */
-  public static final int UINT32 = 3;
+    private static final int LABEL_MASK = 0x1e0;
 
-  /**
-   * Constant indicating the protocol buffer 'unit64' datatype.
-   */
-  public static final int UINT64 = 4;
+    public static Label valueOf(int value) {
+      switch (value & LABEL_MASK) {
+        case 32: return REQUIRED;
+        case 64: return OPTIONAL;
+        case 128: return REPEATED;
+        case 256: return PACKED;
+        default: throw new IllegalArgumentException("value = " + value);
+      }
+    }
 
-  /**
-   * Constant indicating the protocol buffer 'sint32' datatype.
-   */
-  public static final int SINT32 = 5;
+    private final int value;
 
-  /**
-   * Constant indicating the protocol buffer 'sint64' datatype.
-   */
-  public static final int SINT64 = 6;
+    private Label(int value) {
+      this.value = value;
+    }
 
-  /**
-   * Constant indicating the protocol buffer 'bool' datatype.
-   */
-  public static final int BOOL = 7;
+    public int value() {
+      return value;
+    }
 
-  /**
-   * Constant indicating the protocol buffer 'enum' datatype.
-   */
-  public static final int ENUM = 8;
+    public boolean isRepeated() {
+      return this == REPEATED || this == PACKED;
+    }
 
-  /**
-   * Constant indicating the protocol buffer 'string' datatype.
-   */
-  public static final int STRING = 9;
-
-  /**
-   * Constant indicating the protocol buffer 'bytes' datatype.
-   */
-  public static final int BYTES = 10;
-
-  /**
-   * Constant indicating the protocol buffer 'message' datatype.
-   */
-  public static final int MESSAGE = 11;
-
-  /**
-   * Constant indicating the protocol buffer 'fixed32' datatype.
-   */
-  public static final int FIXED32 = 12;
-
-  /**
-   * Constant indicating the protocol buffer 'sfixed32' datatype.
-   */
-  public static final int SFIXED32 = 13;
-
-  /**
-   * Constant indicating the protocol buffer 'fixed64' datatype.
-   */
-  public static final int FIXED64 = 14;
-
-  /**
-   * Constant indicating the protocol buffer 'sfixed64' datatype.
-   */
-  public static final int SFIXED64 = 15;
-
-  /**
-   * Constant indicating the protocol buffer 'float' datatype.
-   */
-  public static final int FLOAT = 16;
-
-  /**
-   * Constant indicating the protocol buffer 'double' datatype.
-   */
-  public static final int DOUBLE = 17;
-
-  /**
-   * Constant indicating the protocol buffer 'required' label.
-   */
-  public static final int REQUIRED = 32;
-
-  /**
-   * Constant indicating the protocol buffer 'optional' label.
-   */
-  public static final int OPTIONAL = 64;
-
-  /**
-   * Constant indicating the protocol buffer 'repeated' label.
-   */
-  public static final int REPEATED = 128;
-
-  /**
-   * Constant indicating the protocol buffer '[packed = true]' extension.
-   */
-  public static final int PACKED = 256;
-
-  static final int TYPE_MASK = 0x1f;
-  static final int LABEL_MASK = 0xe0;
-  static final int PACKED_MASK = 0x100;
+    public boolean isPacked() {
+      return this == PACKED;
+    }
+  }
 
   /** Use EMPTY_UNKNOWN_FIELD_MAP until a field is added. */
   transient UnknownFieldMap unknownFieldMap = EMPTY_UNKNOWN_FIELD_MAP;

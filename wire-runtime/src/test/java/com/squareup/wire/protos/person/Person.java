@@ -19,27 +19,27 @@ public final class Person extends Message {
 
   @ProtoField(
     tag = 1,
-    type = STRING,
-    label = REQUIRED
+    type = Datatype.STRING,
+    label = Label.REQUIRED
   )
   public final String name;
 
   @ProtoField(
     tag = 2,
-    type = INT32,
-    label = REQUIRED
+    type = Datatype.INT32,
+    label = Label.REQUIRED
   )
   public final Integer id;
 
   @ProtoField(
     tag = 3,
-    type = STRING
+    type = Datatype.STRING
   )
   public final String email;
 
   @ProtoField(
     tag = 4,
-    label = REPEATED
+    label = Label.REPEATED
   )
   public final List<PhoneNumber> phone;
 
@@ -137,14 +137,14 @@ public final class Person extends Message {
 
     @ProtoField(
       tag = 1,
-      type = STRING,
-      label = REQUIRED
+      type = Datatype.STRING,
+      label = Label.REQUIRED
     )
     public final String number;
 
     @ProtoField(
       tag = 2,
-      type = ENUM
+      type = Datatype.ENUM
     )
     public final PhoneType type;
 

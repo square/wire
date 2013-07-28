@@ -17,31 +17,31 @@ public final class VersionTwo extends Message {
 
   @ProtoField(
     tag = 1,
-    type = INT32
+    type = Datatype.INT32
   )
   public final Integer i;
 
   @ProtoField(
     tag = 2,
-    type = INT32
+    type = Datatype.INT32
   )
   public final Integer v2_i;
 
   @ProtoField(
     tag = 3,
-    type = STRING
+    type = Datatype.STRING
   )
   public final String v2_s;
 
   @ProtoField(
     tag = 4,
-    type = FIXED32
+    type = Datatype.FIXED32
   )
   public final Integer v2_f32;
 
   @ProtoField(
     tag = 5,
-    type = FIXED64
+    type = Datatype.FIXED64
   )
   public final Long v2_f64;
 

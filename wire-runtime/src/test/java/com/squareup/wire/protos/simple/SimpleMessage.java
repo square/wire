@@ -28,7 +28,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 1,
-    type = INT32
+    type = Datatype.INT32
   )
   public final Integer optional_int32;
 
@@ -50,7 +50,7 @@ public final class SimpleMessage extends Message {
 
   @ProtoField(
     tag = 4,
-    type = ENUM
+    type = Datatype.ENUM
   )
   public final NestedEnum default_nested_enum;
 
@@ -59,8 +59,8 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 5,
-    type = INT32,
-    label = REQUIRED
+    type = Datatype.INT32,
+    label = Label.REQUIRED
   )
   public final Integer required_int32;
 
@@ -69,8 +69,8 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 6,
-    type = DOUBLE,
-    label = REPEATED
+    type = Datatype.DOUBLE,
+    label = Label.REPEATED
   )
   public final List<Double> repeated_double;
 
@@ -79,7 +79,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 7,
-    type = ENUM
+    type = Datatype.ENUM
   )
   public final ForeignEnum default_foreign_enum;
 
@@ -88,7 +88,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 8,
-    type = ENUM
+    type = Datatype.ENUM
   )
   public final ForeignEnum no_default_foreign_enum;
 
@@ -97,7 +97,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 9,
-    type = STRING
+    type = Datatype.STRING
   )
   public final String _package;
 
@@ -238,7 +238,7 @@ public final class SimpleMessage extends Message {
      */
     @ProtoField(
       tag = 1,
-      type = INT32
+      type = Datatype.INT32
     )
     public final Integer bb;
 
