@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.squareup.wire.Message.Label;
+
 /**
  * An adapter than can check for the presence of required fields on a {@link Message.Builder}.
  *
@@ -54,7 +56,7 @@ class BuilderAdapter<B extends Message.Builder> {
     // Cache fields annotated with '@ProtoField(label = REQUIRED)'
     for (Field field : messageType.getDeclaredFields()) {
       ProtoField annotation = field.getAnnotation(ProtoField.class);
-      if (annotation != null && annotation.label() == Message.REQUIRED) {
+      if (annotation != null && annotation.label() == Label.REQUIRED) {
         try {
           requiredFields.add(builderType.getField(field.getName()));
         } catch (NoSuchFieldException e) {

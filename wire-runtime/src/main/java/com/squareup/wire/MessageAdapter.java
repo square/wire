@@ -30,7 +30,8 @@ import java.util.Set;
 
 import static com.squareup.wire.ExtendableMessage.ExtendableBuilder;
 import static com.squareup.wire.Message.Builder;
-
+import static com.squareup.wire.Message.Datatype;
+import static com.squareup.wire.Message.Label;
 /**
  * An adapter than can perform I/O on a given Message type.
  *
@@ -72,8 +73,7 @@ class MessageAdapter<M extends Message> {
 
         tags.add(tag);
         fieldMap.put(tag, field);
-        typeMap.put(tag, annotation.label() | annotation.type()
-            | (annotation.packed() ? Message.PACKED : 0));
+        typeMap.put(tag, annotation.label().value() | annotation.type().value());
 
         // Record setter methods on the builder class
         try {
@@ -171,13 +171,14 @@ class MessageAdapter<M extends Message> {
         continue;
       }
       int typeFlags = typeMap.get(tag);
-      int type = typeFlags & Message.TYPE_MASK;
+      Datatype datatype = Datatype.valueOf(typeFlags);
+      Label label = Label.valueOf(typeFlags);
 
-      if ((typeFlags & Message.LABEL_MASK) == Message.REPEATED) {
-        if (isPacked(typeFlags)) {
+      if (label.isRepeated()) {
+        if (label.isPacked()) {
           int packedLength = 0;
           for (Object o : (List<?>) value) {
-            packedLength += getSerializedSizeNoTag(o, type);
+            packedLength += getSerializedSizeNoTag(o, datatype);
           }
           // tag + length + value + value + ...
           size += WireOutput.varint32Size(
@@ -186,11 +187,11 @@ class MessageAdapter<M extends Message> {
           size += packedLength;
         } else {
           for (Object o : (List<?>) value) {
-            size += getSerializedSize(tag, o, type);
+            size += getSerializedSize(tag, o, datatype);
           }
         }
       } else {
-        size += getSerializedSize(tag, value, type);
+        size += getSerializedSize(tag, value, datatype);
       }
     }
 
@@ -204,22 +205,19 @@ class MessageAdapter<M extends Message> {
     return size;
   }
 
-  private boolean isPacked(int typeFlags) {
-    return (typeFlags & Message.PACKED_MASK) == Message.PACKED;
-  }
-
   private <T extends ExtendableMessage<?>> int getExtensionsSerializedSize(
       ExtensionMap<T> map) {
     int size = 0;
     for (Extension<T, ?> extension : map.getExtensions()) {
       Object value = map.get(extension);
       int tag = extension.getTag();
-      int type = extension.getType();
-      if (extension.getLabel() == Message.REPEATED) {
-        if (extension.getPacked()) {
+      Datatype datatype = extension.getDatatype();
+      Label label = extension.getLabel();
+      if (label.isRepeated()) {
+        if (label.isPacked()) {
           int packedLength = 0;
           for (Object o : (List<?>) value) {
-            packedLength += getSerializedSizeNoTag(o, type);
+            packedLength += getSerializedSizeNoTag(o, datatype);
           }
           size += WireOutput.varint32Size(
               WireOutput.makeTag(tag, WireOutput.WIRETYPE_LENGTH_DELIMITED));
@@ -227,11 +225,11 @@ class MessageAdapter<M extends Message> {
           size += packedLength;
         } else {
           for (Object o : (List<?>) value) {
-            size += getSerializedSize(tag, o, type);
+            size += getSerializedSize(tag, o, datatype);
           }
         }
       } else {
-        size += getSerializedSize(tag, value, type);
+        size += getSerializedSize(tag, value, datatype);
       }
     }
     return size;
@@ -254,26 +252,27 @@ class MessageAdapter<M extends Message> {
         continue;
       }
       int typeFlags = typeMap.get(tag);
-      int type = typeFlags & Message.TYPE_MASK;
+      Datatype datatype = Datatype.valueOf(typeFlags);
+      Label label = Label.valueOf(typeFlags);
 
-      if ((typeFlags & Message.LABEL_MASK) == Message.REPEATED) {
-        if (isPacked(typeFlags)) {
+      if (label.isRepeated()) {
+        if (label.isPacked()) {
           int packedLength = 0;
           for (Object o : (List<?>) value) {
-            packedLength += getSerializedSizeNoTag(o, type);
+            packedLength += getSerializedSizeNoTag(o, datatype);
           }
           output.writeTag(tag, 2);
           output.writeVarint32(packedLength);
           for (Object o : (List<?>) value) {
-            writeValueNoTag(output, o, type);
+            writeValueNoTag(output, o, datatype);
           }
         } else {
           for (Object o : (List<?>) value) {
-            writeValue(output, tag, o, type);
+            writeValue(output, tag, o, datatype);
           }
         }
       } else {
-        writeValue(output, tag, value, type);
+        writeValue(output, tag, value, datatype);
       }
     }
 
@@ -291,25 +290,26 @@ class MessageAdapter<M extends Message> {
     for (Extension<T, ?> extension: extensionMap.getExtensions()) {
       Object value = extensionMap.get(extension);
       int tag = extension.getTag();
-      int type = extension.getType();
-      if (extension.getLabel() == Message.REPEATED) {
-        if (extension.getPacked()) {
+      Datatype datatype = extension.getDatatype();
+      Label label = extension.getLabel();
+      if (label.isRepeated()) {
+        if (label.isPacked()) {
           int packedLength = 0;
           for (Object o : (List<?>) value) {
-            packedLength += getSerializedSizeNoTag(o, type);
+            packedLength += getSerializedSizeNoTag(o, datatype);
           }
           output.writeTag(tag, 2);
           output.writeVarint32(packedLength);
           for (Object o : (List<?>) value) {
-            writeValueNoTag(output, o, type);
+            writeValueNoTag(output, o, datatype);
           }
         } else {
           for (Object o : (List<?>) value) {
-            writeValue(output, tag, o, type);
+            writeValue(output, tag, o, datatype);
           }
         }
       } else {
-        writeValue(output, tag, value, type);
+        writeValue(output, tag, value, datatype);
       }
     }
   }
@@ -370,33 +370,33 @@ class MessageAdapter<M extends Message> {
   /**
    * Returns the serialized size in bytes of the given tag and value.
    */
-  private int getSerializedSize(int tag, Object value, int type) {
-    return WireOutput.tagSize(tag) + getSerializedSizeNoTag(value, type);
+  private int getSerializedSize(int tag, Object value, Datatype datatype) {
+    return WireOutput.tagSize(tag) + getSerializedSizeNoTag(value, datatype);
   }
 
   /**
    * Returns the serialized size in bytes of the given value without any prepended tag or length,
    * e.g., as it would be written as part of a 'packed' repeated field.
    */
-  private int getSerializedSizeNoTag(Object value, int type) {
-    switch (type) {
-      case Message.INT32: return WireOutput.int32Size((Integer) value);
-      case Message.INT64: case Message.UINT64: return WireOutput.varint64Size((Long) value);
-      case Message.UINT32: return WireOutput.varint32Size((Integer) value);
-      case Message.SINT32: return WireOutput.varint32Size(WireOutput.zigZag32((Integer) value));
-      case Message.SINT64: return WireOutput.varint64Size(WireOutput.zigZag64((Long) value));
-      case Message.BOOL: return 1;
-      case Message.ENUM: return getEnumSize((Enum) value);
-      case Message.STRING:
+  private int getSerializedSizeNoTag(Object value, Datatype datatype) {
+    switch (datatype) {
+      case INT32: return WireOutput.int32Size((Integer) value);
+      case INT64: case UINT64: return WireOutput.varint64Size((Long) value);
+      case UINT32: return WireOutput.varint32Size((Integer) value);
+      case SINT32: return WireOutput.varint32Size(WireOutput.zigZag32((Integer) value));
+      case SINT64: return WireOutput.varint64Size(WireOutput.zigZag64((Long) value));
+      case BOOL: return 1;
+      case ENUM: return getEnumSize((Enum) value);
+      case STRING:
         int utf8Length = utf8Length((String) value);
         return WireOutput.varint32Size(utf8Length) + utf8Length;
-      case Message.BYTES:
+      case BYTES:
         int length = ((ByteString) value).size();
         return WireOutput.varint32Size(length) + length;
-      case Message.MESSAGE: return getMessageSize((Message) value);
-      case Message.FIXED32: case Message.SFIXED32: case Message.FLOAT:
+      case MESSAGE: return getMessageSize((Message) value);
+      case FIXED32: case SFIXED32: case FLOAT:
         return WireOutput.FIXED_32_SIZE;
-      case Message.FIXED64: case Message.SFIXED64: case Message.DOUBLE:
+      case FIXED64: case SFIXED64: case DOUBLE:
         return WireOutput.FIXED_64_SIZE;
       default: throw new RuntimeException();
     }
@@ -432,56 +432,57 @@ class MessageAdapter<M extends Message> {
     return WireOutput.varint32Size(messageSize) + messageSize;
   }
 
-  private void writeValue(WireOutput output, int tag, Object value, int type)
+  private void writeValue(WireOutput output, int tag, Object value, Datatype datatype)
     throws IOException {
-    int wiretype = wiretype(type);
+    int wiretype = wiretype(datatype);
     output.writeTag(tag, wiretype);
-    writeValueNoTag(output, value, type);
+    writeValueNoTag(output, value, datatype);
   }
 
-  private int wiretype(int type) {
-    switch (type) {
-      case Message.INT32: case Message.INT64: case Message.UINT32: case Message.UINT64:
-      case Message.SINT32: case Message.SINT64: case Message.BOOL: case Message.ENUM:
+  private int wiretype(Datatype datatype) {
+    switch (datatype) {
+      case INT32: case INT64: case UINT32: case UINT64:
+      case SINT32: case SINT64: case BOOL: case ENUM:
         return WireOutput.WIRETYPE_VARINT;
-      case Message.STRING: case Message.BYTES: case Message.MESSAGE:
+      case STRING: case BYTES: case MESSAGE:
         return WireOutput.WIRETYPE_LENGTH_DELIMITED;
-      case Message.FIXED32: case Message.SFIXED32: case Message.FLOAT:
+      case FIXED32: case SFIXED32: case FLOAT:
         return WireOutput.WIRETYPE_FIXED32;
-      case Message.FIXED64: case Message.SFIXED64: case Message.DOUBLE:
+      case FIXED64: case SFIXED64: case DOUBLE:
         return WireOutput.WIRETYPE_FIXED64;
       default:
-        throw new IllegalArgumentException("type=" + type);
+        throw new IllegalArgumentException("datatype=" + datatype);
     }
   }
 
   /**
    * Writes a value with no tag.
    */
-  private void writeValueNoTag(WireOutput output, Object value, int type) throws IOException {
-    switch (type) {
-      case Message.INT32: output.writeSignedVarint32((Integer) value); break;
-      case Message.INT64: case Message.UINT64: output.writeVarint64((Long) value); break;
-      case Message.UINT32: output.writeVarint32((Integer) value); break;
-      case Message.SINT32: output.writeVarint32(WireOutput.zigZag32((Integer) value)); break;
-      case Message.SINT64: output.writeVarint64(WireOutput.zigZag64((Long) value)); break;
-      case Message.BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
-      case Message.ENUM: writeEnum((Enum) value, output); break;
-      case Message.STRING:
+  private void writeValueNoTag(WireOutput output, Object value, Datatype datatype)
+      throws IOException {
+    switch (datatype) {
+      case INT32: output.writeSignedVarint32((Integer) value); break;
+      case INT64: case UINT64: output.writeVarint64((Long) value); break;
+      case UINT32: output.writeVarint32((Integer) value); break;
+      case SINT32: output.writeVarint32(WireOutput.zigZag32((Integer) value)); break;
+      case SINT64: output.writeVarint64(WireOutput.zigZag64((Long) value)); break;
+      case BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
+      case ENUM: writeEnum((Enum) value, output); break;
+      case STRING:
         final byte[] bytes = ((String) value).getBytes("UTF-8");
         output.writeVarint32(bytes.length);
         output.writeRawBytes(bytes);
         break;
-      case Message.BYTES:
+      case BYTES:
         ByteString byteString = (ByteString) value;
         output.writeVarint32(byteString.size());
         output.writeRawBytes(byteString.toByteArray());
         break;
-      case Message.MESSAGE: writeMessage((Message) value, output); break;
-      case Message.FIXED32: case Message.SFIXED32: output.writeFixed32((Integer) value); break;
-      case Message.FIXED64: case Message.SFIXED64: output.writeFixed64((Long) value); break;
-      case Message.FLOAT: output.writeFixed32(Float.floatToIntBits((Float) value)); break;
-      case Message.DOUBLE: output.writeFixed64(Double.doubleToLongBits((Double) value)); break;
+      case MESSAGE: writeMessage((Message) value, output); break;
+      case FIXED32: case SFIXED32: output.writeFixed32((Integer) value); break;
+      case FIXED64: case SFIXED64: output.writeFixed64((Long) value); break;
+      case FLOAT: output.writeFixed32(Float.floatToIntBits((Float) value)); break;
+      case DOUBLE: output.writeFixed64(Double.doubleToLongBits((Double) value)); break;
       default: throw new RuntimeException();
     }
   }
@@ -526,33 +527,30 @@ class MessageAdapter<M extends Message> {
           return builder.build();
         }
 
-        int type;
-        int label;
-        boolean packed;
+        Datatype datatype;
+        Label label;
         if (typeMap.containsKey(tag)) {
-          type = typeMap.get(tag);
-          label = type & Message.LABEL_MASK;
-          packed = (type & Message.PACKED_MASK) == Message.PACKED;
-          type &= Message.TYPE_MASK;
+          int typeFlags = typeMap.get(tag);
+          datatype = Datatype.valueOf(typeFlags);
+          label = Label.valueOf(typeFlags);
         } else {
           extension = getExtension(tag);
           if (extension == null) {
             readUnknownField(builder, input, tag, wireType);
             continue;
           }
-          type = extension.getType();
+          datatype = extension.getDatatype();
           label = extension.getLabel();
-          packed = extension.getPacked();
         }
         Object value;
 
-        if (label == Message.REPEATED && packed && wireType == 2) {
+        if (label.isPacked() && wireType == 2) {
           // Decode packed format
           int length = input.readVarint32();
           int start = input.getPosition();
           int oldLimit = input.pushLimit(length);
           while (input.getPosition() < start + length) {
-            value = readValue(input, tag, type);
+            value = readValue(input, tag, datatype);
             storage.add(tag, value);
           }
           input.popLimit(oldLimit);
@@ -561,8 +559,8 @@ class MessageAdapter<M extends Message> {
           }
         } else {
           // Read a single value
-          value = readValue(input, tag, type);
-          if (label == Message.REPEATED) {
+          value = readValue(input, tag, datatype);
+          if (label.isRepeated()) {
             storage.add(tag, value);
           } else if (extension != null) {
             setExtension((ExtendableBuilder<?>) builder, extension, value);
@@ -578,23 +576,23 @@ class MessageAdapter<M extends Message> {
     }
   }
 
-  private Object readValue(WireInput input, int tag, int type) throws IOException {
-    switch (type) {
-      case Message.INT32: case Message.UINT32: return input.readVarint32();
-      case Message.INT64: case Message.UINT64: return input.readVarint64();
-      case Message.SINT32: return WireInput.decodeZigZag32(input.readVarint32());
-      case Message.SINT64: return WireInput.decodeZigZag64(input.readVarint64());
-      case Message.BOOL: return input.readVarint32() != 0;
-      case Message.ENUM:
+  private Object readValue(WireInput input, int tag, Datatype datatype) throws IOException {
+    switch (datatype) {
+      case INT32: case UINT32: return input.readVarint32();
+      case INT64: case UINT64: return input.readVarint64();
+      case SINT32: return WireInput.decodeZigZag32(input.readVarint32());
+      case SINT64: return WireInput.decodeZigZag64(input.readVarint64());
+      case BOOL: return input.readVarint32() != 0;
+      case ENUM:
         EnumAdapter<? extends Enum> adapter = wire.enumAdapter(getEnumClass(tag));
         return adapter.fromInt(input.readVarint32());
-      case Message.STRING: return input.readString();
-      case Message.BYTES: return input.readBytes();
-      case Message.MESSAGE: return readMessage(input, tag);
-      case Message.FIXED32: case Message.SFIXED32: return input.readFixed32();
-      case Message.FIXED64: case Message.SFIXED64: return input.readFixed64();
-      case Message.FLOAT: return Float.intBitsToFloat(input.readFixed32());
-      case Message.DOUBLE: return Double.longBitsToDouble(input.readFixed64());
+      case STRING: return input.readString();
+      case BYTES: return input.readBytes();
+      case MESSAGE: return readMessage(input, tag);
+      case FIXED32: case SFIXED32: return input.readFixed32();
+      case FIXED64: case SFIXED64: return input.readFixed64();
+      case FLOAT: return Float.intBitsToFloat(input.readFixed32());
+      case DOUBLE: return Double.longBitsToDouble(input.readFixed64());
       default: throw new RuntimeException();
     }
   }
@@ -618,7 +616,7 @@ class MessageAdapter<M extends Message> {
   private Class<Message> getMessageClass(int tag) {
     Class<Message> messageClass = (Class<Message>) messageTypeMap.get(tag);
     if (messageClass == null) {
-      Extension<ExtendableMessage, ?> extension = getExtension(tag);
+      Extension<ExtendableMessage<?>, ?> extension = getExtension(tag);
       if (extension != null) {
         messageClass = (Class<Message>) extension.getMessageType();
       }
@@ -674,10 +672,10 @@ class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private Extension<ExtendableMessage, ?> getExtension(int tag) {
+  private Extension<ExtendableMessage<?>, ?> getExtension(int tag) {
     ExtensionRegistry registry = wire.registry;
     return registry == null
-        ? null : registry.getExtension((Class<ExtendableMessage>) messageType, tag);
+        ? null : registry.getExtension((Class<ExtendableMessage<?>>) messageType, tag);
   }
 
   private void set(Builder builder, int tag, Object value) {
@@ -700,7 +698,7 @@ class MessageAdapter<M extends Message> {
   private Class<? extends Enum> getEnumClass(int tag) {
     Class<? extends Enum> enumType = enumTypeMap.get(tag);
     if (enumType == null) {
-      Extension<ExtendableMessage, ?> extension = getExtension(tag);
+      Extension<ExtendableMessage<?>, ?> extension = getExtension(tag);
       if (extension != null) {
         enumType = extension.getEnumType();
       }

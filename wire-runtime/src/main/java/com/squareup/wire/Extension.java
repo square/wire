@@ -17,36 +17,37 @@ package com.squareup.wire;
 
 import java.util.List;
 
+import static com.squareup.wire.Message.Datatype;
+import static com.squareup.wire.Message.Label;
+
 /**
- * An object describing a ProtocolBuffer extension, i.e., a (tag, type, label) tuple
+ * An object describing a ProtocolBuffer extension, i.e., a (tag, datatype, label) tuple
  * associated with a particular {@link com.squareup.wire.Message} type being extended.
  *
  * @param <T> the type of message being extended
  * @param <E> the (boxed) Java data type of the extension value
  */
-public final class Extension<T extends ExtendableMessage, E>
+public final class Extension<T extends ExtendableMessage<?>, E>
     implements Comparable<Extension<?, ?>> {
   private final Class<T> extendedType;
   private final Class<? extends Message> messageType;
   private final Class<? extends Enum> enumType;
   private final int tag;
-  private final int type;
-  private final int label;
-  private final boolean packed;
+  private final Datatype datatype;
+  private final Label label;
 
   /**
    * Returns an {@link Extension} instance for a built-in datatype.
    *
    * @param extendedType the type of message being extended
    * @param tag the tag number of the extension
-   * @param type one of {@code Wire.INT32}, etc.
-   * @param label one of {@code Wire.OPTIONAL} or {@code Wire.REQUIRED}
+   * @param label one of {@link Label#OPTIONAL} or {@link Label#REQUIRED}
    * @param <T> the type of message being extended
    * @param <E> the (boxed) Java data type of the {@link Extension} value
    */
-  public static <T extends ExtendableMessage, E> Extension<T, E>
-      getExtension(Class<T> extendedType, int tag, int type, int label) {
-    return new Extension<T, E>(extendedType, tag, type, label, false, null, null);
+  public static <T extends ExtendableMessage<?>, E> Extension<T, E>
+      getExtension(Class<T> extendedType, int tag, Datatype datatype, Label label) {
+    return new Extension<T, E>(extendedType, tag, datatype, label, null, null);
   }
 
   /**
@@ -54,15 +55,13 @@ public final class Extension<T extends ExtendableMessage, E>
    *
    * @param extendedType the type of message being extended
    * @param tag the tag number of the extension
-   * @param type one of {@code Wire.INT32}, etc.
-   * @param packed true if the '[packed = true]' extension is present
    * @param <T> the type of message being extended
    * @param <E> the (boxed) Java data type of the {@link Extension} value
    */
-  public static <T extends ExtendableMessage, E> Extension<T, List<E>>
-      getRepeatedExtension(Class<T> extendedType, int tag, int type, boolean packed) {
-    return new Extension<T, List<E>>(extendedType, tag, type, Message.REPEATED, packed, null,
-        null);
+  public static <T extends ExtendableMessage<?>, E> Extension<T, List<E>>
+      getRepeatedExtension(Class<T> extendedType, int tag, Datatype datatype, boolean packed) {
+    return new Extension<T, List<E>>(extendedType, tag, datatype,
+        packed ? Label.PACKED : Label.REPEATED, null, null);
   }
 
   /**
@@ -70,16 +69,15 @@ public final class Extension<T extends ExtendableMessage, E>
    *
    * @param extendedType the type of message being extended
    * @param tag the tag number of the extension
-   * @param label one of {@code Wire.OPTIONAL} or {@code Wire.REQUIRED}
+   * @param label one of {@code Label#OPTIONAL} or {@code Label#REQUIRED}
    * @param messageType the class type of the {@link Extension}'s message value
    * @param <T> the type of message being extended
    * @param <E> the Java data type of the {@link Extension} message value
    */
-  public static <T extends ExtendableMessage, E extends Message> Extension<T, E>
-      getMessageExtension(Class<T> extendedType, int tag, int label,
+  public static <T extends ExtendableMessage<?>, E extends Message> Extension<T, E>
+      getMessageExtension(Class<T> extendedType, int tag, Label label,
       Class<E> messageType) {
-    return new Extension<T, E>(extendedType, tag, Message.MESSAGE, label, false, messageType,
-        null);
+    return new Extension<T, E>(extendedType, tag, Datatype.MESSAGE, label, messageType, null);
   }
 
   /**
@@ -91,9 +89,9 @@ public final class Extension<T extends ExtendableMessage, E>
    * @param <T> the type of message being extended
    * @param <E> the Java data type of the {@link Extension} message value
    */
-  public static <T extends ExtendableMessage, E extends Message> Extension<T, List<E>>
+  public static <T extends ExtendableMessage<?>, E extends Message> Extension<T, List<E>>
       getRepeatedMessageExtension(Class<T> extendedType, int tag, Class<E> messageType) {
-    return new Extension<T, List<E>>(extendedType, tag, Message.MESSAGE, Message.REPEATED, false,
+    return new Extension<T, List<E>>(extendedType, tag, Datatype.MESSAGE, Label.REPEATED,
         messageType, null);
   }
 
@@ -102,18 +100,18 @@ public final class Extension<T extends ExtendableMessage, E>
    *
    * @param extendedType the type of message being extended
    * @param tag the tag number of the extension
-   * @param label one of {@code Wire.OPTIONAL} or {@code Wire.REQUIRED}
+   * @param label one of {@code Label#OPTIONAL} or {@code Label#REQUIRED}
    * @param enumType the class type of the {@link Extension}'s enum value
    * @param <T> the type of message being extended
    * @param <E> the Java data type of the {@link Extension} enum value
    */
-  public static <T extends ExtendableMessage, E extends Enum> Extension<T, E>
-      getEnumExtension(Class<T> extendedType, int tag, int label, Class<E> enumType) {
-    return new Extension<T, E>(extendedType, tag, Message.ENUM, label, false, null, enumType);
+  public static <T extends ExtendableMessage<?>, E extends Enum> Extension<T, E>
+      getEnumExtension(Class<T> extendedType, int tag, Label label, Class<E> enumType) {
+    return new Extension<T, E>(extendedType, tag, Datatype.ENUM, label, null, enumType);
   }
 
   /**
-   * Returns an {@link Extension} instance for an enum datatype.
+   * Returns an {@link Extension} instance for a repeated enum datatype.
    *
    * @param extendedType the type of message being extended
    * @param tag the tag number of the extension
@@ -122,20 +120,19 @@ public final class Extension<T extends ExtendableMessage, E>
    * @param <T> the type of message being extended
    * @param <E> the Java data type of the {@link Extension} enum value
    */
-  public static <T extends ExtendableMessage, E extends Enum> Extension<T, List<E>>
+  public static <T extends ExtendableMessage<?>, E extends Enum> Extension<T, List<E>>
       getRepeatedEnumExtension(Class<T> extendedType, int tag, boolean packed,
       Class<E> enumType) {
-    return new Extension<T, List<E>>(extendedType, tag, Message.ENUM, Message.REPEATED, packed,
-        null, enumType);
+    return new Extension<T, List<E>>(extendedType, tag, Datatype.ENUM,
+        packed ? Label.PACKED : Label.REPEATED, null, enumType);
   }
 
-  private Extension(Class<T> extendedType, int tag, int type, int label,
-      boolean packed, Class<? extends Message> messageType, Class<? extends Enum> enumType) {
+  private Extension(Class<T> extendedType, int tag, Datatype datatype, Label label,
+      Class<? extends Message> messageType, Class<? extends Enum> enumType) {
     this.extendedType = extendedType;
     this.tag = tag;
-    this.type = type;
+    this.datatype = datatype;
     this.label = label;
-    this.packed = packed;
     this.messageType = messageType;
     this.enumType = enumType;
   }
@@ -147,14 +144,11 @@ public final class Extension<T extends ExtendableMessage, E>
     if (tag != o.tag) {
       return tag - o.tag;
     }
-    if (type != o.type) {
-      return type - o.type;
+    if (datatype != o.datatype) {
+      return datatype.value() - o.datatype.value();
     }
     if (label != o.label) {
-      return label - o.label;
-    }
-    if (packed != o.packed) {
-      return packed ? 1 : -1;
+      return label.value() - o.label.value();
     }
     if (extendedType != null && !extendedType.equals(o.extendedType)) {
       return extendedType.getCanonicalName().compareTo(o.extendedType.getCanonicalName());
@@ -174,9 +168,8 @@ public final class Extension<T extends ExtendableMessage, E>
 
   @Override public int hashCode() {
     int hash = tag;
-    hash = hash * 37 + type;
-    hash = hash * 37 + label;
-    hash = hash * 37 + (packed ? 1 : 0);
+    hash = hash * 37 + datatype.value();
+    hash = hash * 37 + label.value();
     hash = hash * 37 + extendedType.getCanonicalName().hashCode();
     hash = hash * 37 + (messageType != null ? messageType.getCanonicalName().hashCode() : 0);
     hash = hash * 37 + (enumType != null ? enumType.getCanonicalName().hashCode() : 0);
@@ -199,15 +192,11 @@ public final class Extension<T extends ExtendableMessage, E>
     return tag;
   }
 
-  public int getType() {
-    return type;
+  public Datatype getDatatype() {
+    return datatype;
   }
 
-  public int getLabel() {
+  public Label getLabel() {
     return label;
-  }
-
-  public boolean getPacked() {
-    return packed;
   }
 }

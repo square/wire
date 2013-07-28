@@ -20,6 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static com.squareup.wire.Message.Label;
+
 /**
  * An annotation placed on {@link Message} fields in generated code to provide necessary
  * metadata for the protocol buffer runtime to perform serialization and deserialization.
@@ -31,19 +33,16 @@ public @interface ProtoField {
   int tag();
 
   /**
-   * The field's protocol buffer datatype, e.g., {@code Message.INT32},
-   * {@code Message.MESSAGE}, or {@code Message.ENUM}. Defaults to
-   * {@code Message.MESSAGE}.
+   * The field's protocol buffer datatype, e.g., {@code Datatype#INT32},
+   * {@code Datatype#MESSAGE}, or {@code Datatype#ENUM}. Defaults to
+   * {@code Datatype#MESSAGE}.
    */
-  int type() default Message.MESSAGE;
+  Message.Datatype type() default Message.Datatype.MESSAGE;
 
   /**
-   * The field's protocol buffer label, one of {@code Message.OPTIONAL},
-   * {@code Message.REQUIRED}, or {@code Message.REPEATED}. Defaults to
-   * {@code Message.OPTIONAL}.
+   * The field's protocol buffer label, one of {@link Label#OPTIONAL},
+   * {@link Label#REQUIRED}, {@link Label#REPEATED}, or {@link Label#PACKED}.
+   * Defaults to {@link Label#OPTIONAL}.
    */
-  int label() default Message.OPTIONAL;
-
-  /** True if the field has the '[packed = true]' extension. */
-  boolean packed() default false;
+  Label label() default Label.OPTIONAL;
 }
