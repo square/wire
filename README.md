@@ -139,10 +139,10 @@ wish to use as arguments to the `Wire` constructor:
         .build();
     int x = msg.getExtension(Ext_MessageWithExtensions.some_extension); // 3
 
-Future work
+Unsupported
 -----------
 
-Some things that aren't implemented:
+Wire does not support:
 
- * Groups
- * Services
+ * Groups - they are skipping when parsing binary input data
+ * Services - they are ignored by the compiler

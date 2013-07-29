@@ -29,9 +29,9 @@ import static com.squareup.wire.Message.Datatype.SINT64;
 import static com.squareup.wire.Message.Datatype.STRING;
 import static com.squareup.wire.Message.Datatype.UINT32;
 import static com.squareup.wire.Message.Datatype.UINT64;
-import static com.squareup.wire.Message.Label.PACKED;
-import static com.squareup.wire.Message.Label.REPEATED;
 import static com.squareup.wire.Message.Label.REQUIRED;
+import static com.squareup.wire.Message.Label.REPEATED;
+import static com.squareup.wire.Message.Label.PACKED;
 
 public final class AllTypes extends ExtendableMessage<AllTypes> {
 

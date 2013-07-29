@@ -7,13 +7,15 @@ package com.squareup.wire.protos.edgecases;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
+import static com.squareup.wire.Message.Datatype.INT32;
+
 public final class OneField extends Message {
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
 
   @ProtoField(
     tag = 1,
-    type = Datatype.INT32
+    type = INT32
   )
   public final Integer opt_int32;
 

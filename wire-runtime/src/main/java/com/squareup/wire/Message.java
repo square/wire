@@ -17,15 +17,17 @@ package com.squareup.wire;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Superclass for protocol buffer messages.
  */
 public abstract class Message {
-
-  private static final UnknownFieldMap EMPTY_UNKNOWN_FIELD_MAP = new UnknownFieldMap();
 
   // Hidden Wire instance that can perform work that does not require knowledge of extensions.
   private static final Wire WIRE = new Wire();
@@ -39,29 +41,31 @@ public abstract class Message {
     MESSAGE(11), FIXED32(12), SFIXED32(13), FIXED64(14),
     SFIXED64(15), FLOAT(16), DOUBLE(17);
 
-    private static final int TYPE_MASK = 0x1f;
-
-    public static Datatype valueOf(int value) {
-      switch (value & TYPE_MASK) {
-        case 1: return INT32;
-        case 2: return INT64;
-        case 3: return UINT32;
-        case 4: return UINT64;
-        case 5: return SINT32;
-        case 6: return SINT64;
-        case 7: return BOOL;
-        case 8: return ENUM;
-        case 9: return STRING;
-        case 10: return BYTES;
-        case 11: return MESSAGE;
-        case 12: return FIXED32;
-        case 13: return SFIXED32;
-        case 14: return FIXED64;
-        case 15: return SFIXED64;
-        case 16: return FLOAT;
-        case 17: return DOUBLE;
-        default: throw new IllegalArgumentException("value = " + value);
+    public static final Comparator<Datatype> ORDER_BY_NAME = new Comparator<Datatype>() {
+      @Override public int compare(Datatype o1, Datatype o2) {
+        return o1.name().compareTo(o2.name());
       }
+    };
+
+    private static Map<String, Datatype> typesByName = new LinkedHashMap<String, Datatype>();
+    static {
+      typesByName.put("int32", INT32);
+      typesByName.put("int64", INT64);
+      typesByName.put("uint32", UINT32);
+      typesByName.put("uint64", UINT64);
+      typesByName.put("sint32", SINT32);
+      typesByName.put("sint64", SINT64);
+      typesByName.put("bool", BOOL);
+      typesByName.put("enum", ENUM);
+      typesByName.put("string", STRING);
+      typesByName.put("bytes", BYTES);
+      typesByName.put("message", MESSAGE);
+      typesByName.put("fixed32", FIXED32);
+      typesByName.put("sfixed32", SFIXED32);
+      typesByName.put("fixed64", FIXED64);
+      typesByName.put("sfixed64", SFIXED64);
+      typesByName.put("float", FLOAT);
+      typesByName.put("double", DOUBLE);
     }
 
     private final int value;
@@ -73,6 +77,26 @@ public abstract class Message {
     public int value() {
       return value;
     }
+
+    public WireType wireType() {
+      switch (this) {
+        case INT32: case INT64: case UINT32: case UINT64:
+        case SINT32: case SINT64: case BOOL: case ENUM:
+          return WireType.VARINT;
+        case FIXED32: case SFIXED32: case FLOAT:
+          return WireType.FIXED32;
+        case FIXED64: case SFIXED64: case DOUBLE:
+          return WireType.FIXED64;
+        case STRING: case BYTES: case MESSAGE:
+          return WireType.LENGTH_DELIMITED;
+        default:
+          throw new AssertionError("No wiretype for datatype " + this);
+      }
+    }
+
+    public static Datatype of(String typeString) {
+      return typesByName.get(typeString);
+    }
   }
 
   /**
@@ -81,17 +105,11 @@ public abstract class Message {
   public enum Label {
     REQUIRED(32), OPTIONAL(64), REPEATED(128), PACKED(256);
 
-    private static final int LABEL_MASK = 0x1e0;
-
-    public static Label valueOf(int value) {
-      switch (value & LABEL_MASK) {
-        case 32: return REQUIRED;
-        case 64: return OPTIONAL;
-        case 128: return REPEATED;
-        case 256: return PACKED;
-        default: throw new IllegalArgumentException("value = " + value);
+    public static final Comparator<Label> ORDER_BY_NAME = new Comparator<Label>() {
+      @Override public int compare(Label o1, Label o2) {
+        return o1.name().compareTo(o2.name());
       }
-    }
+    };
 
     private final int value;
 
@@ -112,23 +130,28 @@ public abstract class Message {
     }
   }
 
-  /** Use EMPTY_UNKNOWN_FIELD_MAP until a field is added. */
-  transient UnknownFieldMap unknownFieldMap = EMPTY_UNKNOWN_FIELD_MAP;
-
-  /** If non-zero, the hash code of this message. */
-  protected transient int hashCode = 0;
+  /** Set to null until a field is added. */
+  private transient UnknownFieldMap unknownFields;
 
   /** If >= 0, the serialized size of this message. */
   private transient int cachedSerializedSize = -1;
+
+  /** If non-zero, the hash code of this message. Accessed by generated code. */
+  protected transient int hashCode = 0;
 
   /**
    * Constructs a Message, initialized with any unknown field data stored in the given
    * {@code Builder}.
    */
   protected Message(Builder builder) {
-    if (builder.unknownFieldMap != EMPTY_UNKNOWN_FIELD_MAP) {
-      unknownFieldMap = new UnknownFieldMap(builder.unknownFieldMap);
+    if (builder.unknownFieldMap != null) {
+      unknownFields = new UnknownFieldMap(builder.unknownFieldMap);
     }
+  }
+
+  Collection<List<UnknownFieldMap.FieldValue>> unknownFields() {
+    return unknownFields == null ? Collections.<List<UnknownFieldMap.FieldValue>>emptySet()
+        : unknownFields.fieldMap.values();
   }
 
   /**
@@ -204,6 +227,12 @@ public abstract class Message {
     }
   }
 
+  public void writeUnknownFieldMap(WireOutput output) throws IOException {
+    if (unknownFields != null) {
+      unknownFields.write(output);
+    }
+  }
+
   @SuppressWarnings("unchecked")
   public int getSerializedSize() {
     if (cachedSerializedSize < 0) {
@@ -211,6 +240,10 @@ public abstract class Message {
           WIRE.messageAdapter((Class<Message>) getClass()).getSerializedSize(this);
     }
     return cachedSerializedSize;
+  }
+
+  public int getUnknownFieldsSerializedSize() {
+    return unknownFields == null ? 0 : unknownFields.getSerializedSize();
   }
 
   protected boolean equals(Object a, Object b) {
@@ -227,10 +260,7 @@ public abstract class Message {
    */
   public abstract static class Builder<T extends Message> {
 
-    // Avoid call to accessor method for private field
-    private static final UnknownFieldMap EMPTY_UNKNOWN_FIELD_MAP = Message.EMPTY_UNKNOWN_FIELD_MAP;
-
-    UnknownFieldMap unknownFieldMap = EMPTY_UNKNOWN_FIELD_MAP;
+    UnknownFieldMap unknownFieldMap;
 
     /**
      * Constructs a Builder with no unknown field data.
@@ -243,8 +273,8 @@ public abstract class Message {
      * field data in the given {@link Message}.
      */
     public Builder(Message message) {
-      if (message != null && !message.unknownFieldMap.isEmpty()) {
-        this.unknownFieldMap = new UnknownFieldMap(message.unknownFieldMap);
+      if (message != null && message.unknownFields != null) {
+        this.unknownFieldMap = new UnknownFieldMap(message.unknownFields);
       }
     }
 
@@ -276,15 +306,8 @@ public abstract class Message {
       ensureUnknownFieldMap().addLengthDelimited(tag, value);
     }
 
-    /**
-     * Adds a group value to the unknown field set with the given tag number.
-     */
-    public void addGroup(int tag, ByteString value) {
-      ensureUnknownFieldMap().addGroup(tag, value);
-    }
-
     private UnknownFieldMap ensureUnknownFieldMap() {
-      if (unknownFieldMap == EMPTY_UNKNOWN_FIELD_MAP) {
+      if (unknownFieldMap == null) {
         unknownFieldMap = new UnknownFieldMap();
       }
       return unknownFieldMap;

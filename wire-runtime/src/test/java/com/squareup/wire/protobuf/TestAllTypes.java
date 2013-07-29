@@ -34,19 +34,13 @@ import static org.junit.Assert.fail;
 
 public class TestAllTypes {
 
-  // Return a two-element array with a given repeated value
-  private <T> List<T> array(T x) {
+  // Return a two-element list with a given repeated value
+  @SuppressWarnings("unchecked")
+  private static <T> List<T> list(T x) {
     return Arrays.asList(x, x);
   }
 
-  private final AllTypes allTypes = createAllTypes();
-  private final Wire wire = new Wire(Ext_all_types.class);
-
-  private AllTypes createAllTypes() {
-    return getBuilder().build();
-  }
-
-  private AllTypes.Builder getBuilder() {
+  private static AllTypes.Builder getBuilder() {
     ByteString bytes = ByteString.of((byte) 125, (byte) 225);
     AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
     return new AllTypes.Builder()
@@ -84,40 +78,47 @@ public class TestAllTypes {
         .req_bytes(bytes)
         .req_nested_enum(AllTypes.NestedEnum.A)
         .req_nested_message(nestedMessage)
-        .rep_int32(array(111))
-        .rep_uint32(array(112))
-        .rep_sint32(array(113))
-        .rep_fixed32(array(114))
-        .rep_sfixed32(array(115))
-        .rep_int64(array(116L))
-        .rep_uint64(array(117L))
-        .rep_sint64(array(118L))
-        .rep_fixed64(array(119L))
-        .rep_sfixed64(array(120L))
-        .rep_bool(array(true))
-        .rep_float(array(122.0F))
-        .rep_double(array(123.0))
-        .rep_string(array("124"))
-        .rep_bytes(array(bytes))
-        .rep_nested_enum(array(AllTypes.NestedEnum.A))
-        .rep_nested_message(array(nestedMessage))
-        .pack_int32(array(111))
-        .pack_uint32(array(112))
-        .pack_sint32(array(113))
-        .pack_fixed32(array(114))
-        .pack_sfixed32(array(115))
-        .pack_int64(array(116L))
-        .pack_uint64(array(117L))
-        .pack_sint64(array(118L))
-        .pack_fixed64(array(119L))
-        .pack_sfixed64(array(120L))
-        .pack_bool(array(true))
-        .pack_float(array(122.0F))
-        .pack_double(array(123.0))
-        .pack_nested_enum(array(AllTypes.NestedEnum.A))
+        .rep_int32(list(111))
+        .rep_uint32(list(112))
+        .rep_sint32(list(113))
+        .rep_fixed32(list(114))
+        .rep_sfixed32(list(115))
+        .rep_int64(list(116L))
+        .rep_uint64(list(117L))
+        .rep_sint64(list(118L))
+        .rep_fixed64(list(119L))
+        .rep_sfixed64(list(120L))
+        .rep_bool(list(true))
+        .rep_float(list(122.0F))
+        .rep_double(list(123.0))
+        .rep_string(list("124"))
+        .rep_bytes(list(bytes))
+        .rep_nested_enum(list(AllTypes.NestedEnum.A))
+        .rep_nested_message(list(nestedMessage))
+        .pack_int32(list(111))
+        .pack_uint32(list(112))
+        .pack_sint32(list(113))
+        .pack_fixed32(list(114))
+        .pack_sfixed32(list(115))
+        .pack_int64(list(116L))
+        .pack_uint64(list(117L))
+        .pack_sint64(list(118L))
+        .pack_fixed64(list(119L))
+        .pack_sfixed64(list(120L))
+        .pack_bool(list(true))
+        .pack_float(list(122.0F))
+        .pack_double(list(123.0))
+        .pack_nested_enum(list(AllTypes.NestedEnum.A))
         .setExtension(Ext_all_types.ext_opt_bool, true)
-        .setExtension(Ext_all_types.ext_rep_bool, array(true))
-        .setExtension(Ext_all_types.ext_pack_bool, array(true));
+        .setExtension(Ext_all_types.ext_rep_bool, list(true))
+        .setExtension(Ext_all_types.ext_pack_bool, list(true));
+  }
+
+  private final AllTypes allTypes = createAllTypes();
+  private final Wire wire = new Wire(Ext_all_types.class);
+
+  private AllTypes createAllTypes() {
+    return getBuilder().build();
   }
 
   @Test
@@ -273,16 +274,16 @@ public class TestAllTypes {
     assertEquals(AllTypes.NestedEnum.A, builder.pack_nested_enum.get(1));
 
     assertEquals(Boolean.TRUE, builder.getExtension(Ext_all_types.ext_opt_bool));
-    assertEquals(array(true), builder.getExtension(Ext_all_types.ext_rep_bool));
-    assertEquals(array(true), builder.getExtension(Ext_all_types.ext_pack_bool));
+    assertEquals(list(true), builder.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true), builder.getExtension(Ext_all_types.ext_pack_bool));
 
     builder.setExtension(Ext_all_types.ext_opt_bool, false);
-    builder.setExtension(Ext_all_types.ext_rep_bool, array(false));
-    builder.setExtension(Ext_all_types.ext_pack_bool, array(false));
+    builder.setExtension(Ext_all_types.ext_rep_bool, list(false));
+    builder.setExtension(Ext_all_types.ext_pack_bool, list(false));
 
     assertEquals(Boolean.FALSE, builder.getExtension(Ext_all_types.ext_opt_bool));
-    assertEquals(array(false), builder.getExtension(Ext_all_types.ext_rep_bool));
-    assertEquals(array(false), builder.getExtension(Ext_all_types.ext_pack_bool));
+    assertEquals(list(false), builder.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(false), builder.getExtension(Ext_all_types.ext_pack_bool));
   }
 
   @Test
@@ -318,8 +319,8 @@ public class TestAllTypes {
     assertEquals(allTypes, parsed);
 
     assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
-    assertEquals(array(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
-    assertEquals(array(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
 
     List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
     assertEquals(3, extensions.size());
@@ -389,5 +390,69 @@ public class TestAllTypes {
   public void testEnums() {
     assertEquals(AllTypes.NestedEnum.A, Message.enumFromInt(AllTypes.NestedEnum.class, 1));
     assertEquals(1, Message.intFromEnum(AllTypes.NestedEnum.A));
+  }
+
+  @Test
+  public void testSkipGroup() throws IOException {
+    byte[] data =  new byte[TestAllTypesData.expectedOutput.length + 27];
+    System.arraycopy(TestAllTypesData.expectedOutput, 0, data, 0, 17);
+    int index = 17;
+    data[index++] = (byte) 0xa3; // start group, tag = 20, type = 3
+    data[index++] = (byte) 0x01;
+    data[index++] = (byte) 0x08; // tag = 1, type = 0 (varint)
+    data[index++] = (byte) 0x81;
+    data[index++] = (byte) 0x82;
+    data[index++] = (byte) 0x6f;
+    data[index++] = (byte) 0x21; // tag = 2, type = 1 (fixed64)
+    data[index++] = (byte) 0x01;
+    data[index++] = (byte) 0x02;
+    data[index++] = (byte) 0x03;
+    data[index++] = (byte) 0x04;
+    data[index++] = (byte) 0x05;
+    data[index++] = (byte) 0x06;
+    data[index++] = (byte) 0x07;
+    data[index++] = (byte) 0x08;
+    data[index++] = (byte) 0x1a; // tag = 3, type = 2 (length-delimited)
+    data[index++] = (byte) 0x03; // length = 3
+    data[index++] = (byte) 0x01;
+    data[index++] = (byte) 0x02;
+    data[index++] = (byte) 0x03;
+    data[index++] = (byte) 0x25; // tag = 4, type = 5 (fixed32)
+    data[index++] = (byte) 0x01;
+    data[index++] = (byte) 0x02;
+    data[index++] = (byte) 0x03;
+    data[index++] = (byte) 0x04;
+    data[index++] = (byte) 0xa4; // end group, tag = 20, type = 4
+    data[index++] = (byte) 0x01;
+
+    System.arraycopy(TestAllTypesData.expectedOutput, 17, data, index,
+        TestAllTypesData.expectedOutput.length - 17);
+
+    AllTypes parsed = wire.parseFrom(AllTypes.class, data);
+    assertEquals(allTypes, parsed);
+  }
+
+  @Test
+  public void testUnknownFields() {
+    AllTypes.Builder builder = getBuilder();
+    builder.addVarint(10000, 1);
+    AllTypes withUnknownField = builder.build();
+    byte[] data = withUnknownField.toByteArray();
+    int count = TestAllTypesData.expectedOutput.length;
+    assertEquals(count + 4, data.length);
+    assertEquals((byte) 0x80, data[count]);
+    assertEquals((byte) 0xf1, data[count + 1]);
+    assertEquals((byte) 0x04, data[count + 2]);
+    assertEquals((byte) 0x01, data[count + 3]);
+
+    // Don't allow heterogeneous types for the same tag
+    try {
+      builder = getBuilder();
+      builder.addVarint(10000, 1);
+      builder.addFixed32(10000, 2);
+      fail();
+    } catch (IllegalStateException e) {
+      assertEquals("Wire type differs from previous type for tag", e.getMessage());
+    }
   }
 }

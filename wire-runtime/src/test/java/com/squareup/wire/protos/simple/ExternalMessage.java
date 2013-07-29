@@ -8,13 +8,15 @@ import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
 import com.squareup.wire.ProtoField;
 
+import static com.squareup.wire.Message.Datatype.FLOAT;
+
 public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
 
   public static final Float DEFAULT_F = 20F;
 
   @ProtoField(
     tag = 1,
-    type = Datatype.FLOAT
+    type = FLOAT
   )
   public final Float f;
 

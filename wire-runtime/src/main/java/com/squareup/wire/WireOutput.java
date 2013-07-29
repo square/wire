@@ -56,17 +56,6 @@ import java.io.IOException;
  */
 final class WireOutput {
 
-  public static final int FIXED_32_SIZE = 4;
-  public static final int FIXED_64_SIZE = 8;
-  public static final int TAG_TYPE_BITS = 3;
-  public static final int TAG_TYPE_MASK = (1 << TAG_TYPE_BITS) - 1;
-  public static final int WIRETYPE_VARINT           = 0;
-  public static final int WIRETYPE_FIXED64          = 1;
-  public static final int WIRETYPE_LENGTH_DELIMITED = 2;
-  public static final int WIRETYPE_START_GROUP      = 3;
-  public static final int WIRETYPE_END_GROUP        = 4;
-  public static final int WIRETYPE_FIXED32          = 5;
-
   private final byte[] buffer;
   private final int limit;
   private int position;
@@ -98,13 +87,13 @@ final class WireOutput {
   }
 
   /** Makes a tag value given a field number and wire type. */
-  public static int makeTag(int fieldNumber, int wireType) {
-    return (fieldNumber << TAG_TYPE_BITS) | wireType;
+  public static int makeTag(int fieldNumber, WireType wireType) {
+    return (fieldNumber << WireType.TAG_TYPE_BITS) | wireType.value();
   }
 
   /** Compute the number of bytes that would be needed to encode a tag. */
   public static int tagSize(int tag) {
-    return varint32Size(makeTag(tag, 0));
+    return varint32Size(makeTag(tag, WireType.VARINT));
   }
 
   /**
@@ -179,7 +168,7 @@ final class WireOutput {
   }
 
   /** Encode and write a tag. */
-  public void writeTag(int fieldNumber, int wireType) throws IOException {
+  public void writeTag(int fieldNumber, WireType wireType) throws IOException {
     writeVarint32(makeTag(fieldNumber, wireType));
   }
 
