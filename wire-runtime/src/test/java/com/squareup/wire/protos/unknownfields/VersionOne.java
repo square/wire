@@ -7,13 +7,15 @@ package com.squareup.wire.protos.unknownfields;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
+import static com.squareup.wire.Message.Datatype.INT32;
+
 public final class VersionOne extends Message {
 
   public static final Integer DEFAULT_I = 0;
 
   @ProtoField(
     tag = 1,
-    type = Datatype.INT32
+    type = INT32
   )
   public final Integer i;
 

@@ -8,13 +8,15 @@ import com.squareup.wire.ByteString;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
+import static com.squareup.wire.Message.Datatype.BYTES;
+
 public final class OneBytesField extends Message {
 
-  public static final ByteString DEFAULT_OPT_BYTES = ByteString.of("");
+  public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
 
   @ProtoField(
     tag = 1,
-    type = Datatype.BYTES
+    type = BYTES
   )
   public final ByteString opt_bytes;
 

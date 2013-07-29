@@ -18,7 +18,7 @@ package com.squareup.wire;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,13 +28,13 @@ import java.util.Map;
 public final class Wire {
 
   private final Map<Class<? extends Message>, MessageAdapter<? extends Message>> messageAdapters =
-      new HashMap<Class<? extends Message>, MessageAdapter<? extends Message>>();
+      new LinkedHashMap<Class<? extends Message>, MessageAdapter<? extends Message>>();
   private final Map<Class<? extends Message.Builder>,
       BuilderAdapter<? extends Message.Builder>> builderAdapters =
-          new HashMap<Class<? extends Message.Builder>,
+          new LinkedHashMap<Class<? extends Message.Builder>,
               BuilderAdapter<? extends Message.Builder>>();
   private final Map<Class<? extends Enum>, EnumAdapter<? extends Enum>> enumAdapters =
-      new HashMap<Class<? extends Enum>, EnumAdapter<? extends Enum>>();
+      new LinkedHashMap<Class<? extends Enum>, EnumAdapter<? extends Enum>>();
 
   // Visible to MessageAdapter
   final ExtensionRegistry registry;

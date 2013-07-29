@@ -15,9 +15,9 @@ public final class Ext_simple_message {
   private Ext_simple_message() {
   }
 
-  public static final Extension<ExternalMessage, List<Integer>> fooext = Extension.getRepeatedExtension(ExternalMessage.class, 125, Datatype.INT32, false);
-  public static final Extension<ExternalMessage, Integer> barext = Extension.getExtension(ExternalMessage.class, 126, Datatype.INT32, Label.OPTIONAL);
-  public static final Extension<ExternalMessage, Integer> bazext = Extension.getExtension(ExternalMessage.class, 127, Datatype.INT32, Label.REQUIRED);
-  public static final Extension<ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension.getMessageExtension(ExternalMessage.class, 128, Label.OPTIONAL, SimpleMessage.NestedMessage.class);
-  public static final Extension<ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext = Extension.getEnumExtension(ExternalMessage.class, 129, Label.OPTIONAL, SimpleMessage.NestedEnum.class);
+  public static final Extension<ExternalMessage, List<Integer>> fooext = Extension.getRepeatedExtension("squareup.protos.simple.fooext", ExternalMessage.class, 125, Datatype.INT32, false);
+  public static final Extension<ExternalMessage, Integer> barext = Extension.getExtension("squareup.protos.simple.barext", ExternalMessage.class, 126, Datatype.INT32, Label.OPTIONAL);
+  public static final Extension<ExternalMessage, Integer> bazext = Extension.getExtension("squareup.protos.simple.bazext", ExternalMessage.class, 127, Datatype.INT32, Label.REQUIRED);
+  public static final Extension<ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension.getMessageExtension("squareup.protos.simple.nested_message_ext", ExternalMessage.class, 128, Label.OPTIONAL, SimpleMessage.NestedMessage.class);
+  public static final Extension<ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext = Extension.getEnumExtension("squareup.protos.simple.nested_enum_ext", ExternalMessage.class, 129, Label.OPTIONAL, SimpleMessage.NestedEnum.class);
 }

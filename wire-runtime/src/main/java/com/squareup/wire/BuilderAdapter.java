@@ -28,7 +28,7 @@ import static com.squareup.wire.Message.Label;
  *
  * @param <B> the Builder class handled by this adapter.
  */
-class BuilderAdapter<B extends Message.Builder> {
+final class BuilderAdapter<B extends Message.Builder> {
 
   private static final int SUFFIX_LENGTH = "$Builder".length();
   private static final String INDENT = "  ";

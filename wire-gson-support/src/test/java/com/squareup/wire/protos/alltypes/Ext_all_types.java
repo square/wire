@@ -20,12 +20,12 @@ public final class Ext_all_types {
   public static final Extension<AllTypes, Integer> ext_opt_uint32 = Extension.getExtension("squareup.protos.alltypes.ext_opt_uint32", AllTypes.class, 1002, Datatype.UINT32, Label.OPTIONAL);
   public static final Extension<AllTypes, Integer> ext_opt_sint32 = Extension.getExtension("squareup.protos.alltypes.ext_opt_sint32", AllTypes.class, 1003, Datatype.SINT32, Label.OPTIONAL);
   public static final Extension<AllTypes, Integer> ext_opt_fixed32 = Extension.getExtension("squareup.protos.alltypes.ext_opt_fixed32", AllTypes.class, 1004, Datatype.FIXED32, Label.OPTIONAL);
-  public static final Extension<AllTypes, Integer> ext_opt_sfixed32 = Extension.getExtension("squareup.protos.alltypes.ext_opt_sfixed32", AllTypes.class, 1005, Datatype.SFIXED32, Label.OPTIONAL);
+  public static final Extension<AllTypes, Integer> ext_opt_sfixed32 = Extension.getExtension("squareup.protos.alltypes.ext_opt_fixed32", AllTypes.class, 1005, Datatype.SFIXED32, Label.OPTIONAL);
   public static final Extension<AllTypes, Long> ext_opt_int64 = Extension.getExtension("squareup.protos.alltypes.ext_opt_int64", AllTypes.class, 1006, Datatype.INT64, Label.OPTIONAL);
   public static final Extension<AllTypes, Long> ext_opt_uint64 = Extension.getExtension("squareup.protos.alltypes.ext_opt_uint64", AllTypes.class, 1007, Datatype.UINT64, Label.OPTIONAL);
   public static final Extension<AllTypes, Long> ext_opt_sint64 = Extension.getExtension("squareup.protos.alltypes.ext_opt_sint64", AllTypes.class, 1008, Datatype.SINT64, Label.OPTIONAL);
   public static final Extension<AllTypes, Long> ext_opt_fixed64 = Extension.getExtension("squareup.protos.alltypes.ext_opt_fixed64", AllTypes.class, 1009, Datatype.FIXED64, Label.OPTIONAL);
-  public static final Extension<AllTypes, Long> ext_opt_sfixed64 = Extension.getExtension("squareup.protos.alltypes.ext_opt_sfixed64", AllTypes.class, 1010, Datatype.SFIXED64, Label.OPTIONAL);
+  public static final Extension<AllTypes, Long> ext_opt_sfixed64 = Extension.getExtension("squareup.protos.alltypes.ext_opt_fixed64", AllTypes.class, 1010, Datatype.SFIXED64, Label.OPTIONAL);
   public static final Extension<AllTypes, Boolean> ext_opt_bool = Extension.getExtension("squareup.protos.alltypes.ext_opt_bool", AllTypes.class, 1011, Datatype.BOOL, Label.OPTIONAL);
   public static final Extension<AllTypes, Float> ext_opt_float = Extension.getExtension("squareup.protos.alltypes.ext_opt_float", AllTypes.class, 1012, Datatype.FLOAT, Label.OPTIONAL);
   public static final Extension<AllTypes, Double> ext_opt_double = Extension.getExtension("squareup.protos.alltypes.ext_opt_double", AllTypes.class, 1013, Datatype.DOUBLE, Label.OPTIONAL);

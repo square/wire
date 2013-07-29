@@ -22,8 +22,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,75 +32,158 @@ import static com.squareup.wire.ExtendableMessage.ExtendableBuilder;
 import static com.squareup.wire.Message.Builder;
 import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
+
 /**
  * An adapter than can perform I/O on a given Message type.
  *
  * @param <M> the Message class handled by this adapter.
  */
-class MessageAdapter<M extends Message> {
+final class MessageAdapter<M extends Message> {
+
+  public static final class FieldInfo {
+    final int tag;
+    final String name;
+    final Datatype datatype;
+    final Label label;
+    final Class<? extends Enum> enumType;
+    final Class<? extends Message> messageType;
+
+    private final Field messageField;
+    private final Method builderMethod;
+
+    @SuppressWarnings("unchecked")
+    private FieldInfo(int tag, String name, Datatype datatype, Label label,
+        Class<?> enumOrMessageType, Field messageField, Method builderMethod) {
+      this.tag = tag;
+      this.name = name;
+      this.datatype = datatype;
+      this.label = label;
+      if (datatype == Datatype.ENUM) {
+        this.enumType = (Class<? extends Enum>) enumOrMessageType;
+        this.messageType = null;
+      } else if (datatype == Datatype.MESSAGE) {
+        this.messageType = (Class<? extends Message>) enumOrMessageType;
+        this.enumType = null;
+      } else {
+        this.enumType = null;
+        this.messageType = null;
+      }
+
+      // private fields
+      this.messageField = messageField;
+      this.builderMethod = builderMethod;
+    }
+  }
+
+  /**
+   * Returns an instance of the message type of this {@link MessageAdapter} with all fields unset.
+   */
+  public synchronized M getDefaultInstance() {
+    if (defaultInstance == null) {
+      try {
+        defaultInstance = builderType.newInstance().build();
+      } catch (InstantiationException e) {
+        throw new RuntimeException(e);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return defaultInstance;
+  }
+
+  Builder<M> newBuilder() {
+    try {
+      return builderType.newInstance();
+    } catch (IllegalAccessException e) {
+      throw new AssertionError(e);
+    } catch (InstantiationException e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  Collection<FieldInfo> getFields() {
+    return fieldInfoMap.values();
+  }
+
+  FieldInfo getField(String name) {
+    Integer key = tagMap.get(name);
+    return key == null ? null : fieldInfoMap.get(key);
+  }
+
+  Object getFieldValue(M message, FieldInfo fieldInfo) {
+    if (fieldInfo.messageField == null) {
+      throw new AssertionError("Field is not of type \"Message\"");
+    }
+    try {
+      return fieldInfo.messageField.get(message);
+    } catch (IllegalAccessException e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  public void setBuilderField(Builder<M> builder, int tag, Object value) {
+    try {
+      fieldInfoMap.get(tag).builderMethod.invoke(builder, value);
+    } catch (IllegalAccessException e) {
+      throw new AssertionError(e);
+    } catch (InvocationTargetException e) {
+      throw new AssertionError(e);
+    }
+  }
 
   private final Wire wire;
   private final Class<M> messageType;
   private final Class<Builder<M>> builderType;
+  private final Map<String, Integer> tagMap = new LinkedHashMap<String, Integer>();
+  private final Map<Integer, FieldInfo> fieldInfoMap =
+      new LinkedHashMap<Integer, FieldInfo>();
+
   private M defaultInstance;
 
-  private final List<Integer> tags = new ArrayList<Integer>();
-  private final Map<Integer, Integer> typeMap = new HashMap<Integer, Integer>();
-  private final Map<Integer, Class<? extends Message>> messageTypeMap =
-      new HashMap<Integer, Class<? extends Message>>();
-  private final Map<Integer, Class<? extends Enum>> enumTypeMap =
-      new HashMap<Integer, Class<? extends Enum>>();
-  private final Map<Integer, Field> fieldMap = new HashMap<Integer, Field>();
-  private final Map<Integer, Method> builderMethodMap = new HashMap<Integer, Method>();
-
   /** Cache information about the Message class and its mapping to proto wire format. */
-  @SuppressWarnings("unchecked") MessageAdapter(Wire wire, Class<M> messageType) {
+  MessageAdapter(Wire wire, Class<M> messageType) {
     this.wire = wire;
     this.messageType = messageType;
+    this.builderType = getBuilderType(messageType);
+
+    for (Field messageField : messageType.getDeclaredFields()) {
+      // Process fields annotated with '@ProtoField'
+      ProtoField annotation = messageField.getAnnotation(ProtoField.class);
+      if (annotation != null) {
+        int tag = annotation.tag();
+
+        String name = messageField.getName();
+        tagMap.put(name, tag);
+        Class<?> enumOrMessageType = null;
+        Datatype datatype = annotation.type();
+        if (datatype == Datatype.ENUM) {
+          enumOrMessageType = getEnumType(messageField);
+        } else if (datatype == Datatype.MESSAGE) {
+          enumOrMessageType = getMessageType(messageField);
+        }
+        fieldInfoMap.put(tag, new FieldInfo(tag, name, datatype, annotation.label(),
+            enumOrMessageType, messageField, getBuilderMethod(name, messageField.getType())));
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private Class<Builder<M>> getBuilderType(Class<M> messageType) {
     try {
-      this.builderType = (Class<Message.Builder<M>>) Class.forName(messageType.getName()
-          + "$Builder");
+      return (Class<Builder<M>>) Class.forName(messageType.getName() + "$Builder");
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException("No builder class found for message type "
           + messageType.getName());
     }
+  }
 
-    for (Field field : messageType.getDeclaredFields()) {
-      // Process fields annotated with '@ProtoField'
-      if (field.isAnnotationPresent(ProtoField.class)) {
-        ProtoField annotation = field.getAnnotation(ProtoField.class);
-        int tag = annotation.tag();
-
-        tags.add(tag);
-        fieldMap.put(tag, field);
-        typeMap.put(tag, annotation.label().value() | annotation.type().value());
-
-        // Record setter methods on the builder class
-        try {
-          Method method = builderType.getMethod(field.getName(), field.getType());
-          builderMethodMap.put(tag, method);
-        } catch (NoSuchMethodException e) {
-          throw new IllegalArgumentException("No builder method "
-              + builderType.getName() + "." + field.getName() + "(" + field.getType() + ")");
-        }
-
-        // Record type for tags that store a Message
-        Class<Message> fieldAsMessage = getMessageType(field);
-        if (fieldAsMessage != null) {
-          messageTypeMap.put(tag, fieldAsMessage);
-          continue;
-        }
-
-        // Record type for tags that store an Enum
-        Class<Enum> fieldAsEnum = getEnumType(field);
-        if (fieldAsEnum != null) {
-          enumTypeMap.put(tag, fieldAsEnum);
-        }
-      }
+  private Method getBuilderMethod(String name, Class<?> type) {
+    try {
+      return builderType.getMethod(name, type);
+    } catch (NoSuchMethodException e) {
+      throw new AssertionError("No builder method "
+          + builderType.getName() + "." + name + "(" + type.getName() + ")");
     }
-
-    // Sort tags so we can process them in order
-    Collections.sort(tags);
   }
 
   @SuppressWarnings("unchecked")
@@ -133,22 +216,6 @@ class MessageAdapter<M extends Message> {
     return null;
   }
 
-  /**
-   * Returns an instance of the message type of this {@link MessageAdapter} with all fields unset.
-   */
-  public synchronized M getDefaultInstance() {
-    if (defaultInstance == null) {
-      try {
-        defaultInstance = builderType.newInstance().build();
-      } catch (InstantiationException e) {
-        throw new RuntimeException(e);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    return defaultInstance;
-  }
-
   // Writing
 
   /**
@@ -156,39 +223,20 @@ class MessageAdapter<M extends Message> {
    */
   int getSerializedSize(M message) {
     int size = 0;
-    for (int tag : tags) {
-      Field field = fieldMap.get(tag);
-      if (field == null) {
-        throw new IllegalArgumentException();
-      }
-      Object value;
-      try {
-        value = field.get(message);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
-      }
+    for (FieldInfo fieldInfo : getFields()) {
+      Object value = getFieldValue(message, fieldInfo);
       if (value == null) {
         continue;
       }
-      int typeFlags = typeMap.get(tag);
-      Datatype datatype = Datatype.valueOf(typeFlags);
-      Label label = Label.valueOf(typeFlags);
+      int tag = fieldInfo.tag;
+      Datatype datatype = fieldInfo.datatype;
+      Label label = fieldInfo.label;
 
       if (label.isRepeated()) {
         if (label.isPacked()) {
-          int packedLength = 0;
-          for (Object o : (List<?>) value) {
-            packedLength += getSerializedSizeNoTag(o, datatype);
-          }
-          // tag + length + value + value + ...
-          size += WireOutput.varint32Size(
-              WireOutput.makeTag(tag, WireOutput.WIRETYPE_LENGTH_DELIMITED));
-          size += WireOutput.varint32Size(packedLength);
-          size += packedLength;
+          size += getPackedSize((List<?>) value, tag, datatype);
         } else {
-          for (Object o : (List<?>) value) {
-            size += getSerializedSize(tag, o, datatype);
-          }
+          size += getRepeatedSize((List<?>) value, tag, datatype);
         }
       } else {
         size += getSerializedSize(tag, value, datatype);
@@ -201,12 +249,11 @@ class MessageAdapter<M extends Message> {
         size += getExtensionsSerializedSize(extendableMessage.extensionMap);
       }
     }
-    size += message.unknownFieldMap.getSerializedSize();
+    size += message.getUnknownFieldsSerializedSize();
     return size;
   }
 
-  private <T extends ExtendableMessage<?>> int getExtensionsSerializedSize(
-      ExtensionMap<T> map) {
+  private <T extends ExtendableMessage<?>> int getExtensionsSerializedSize(ExtensionMap<T> map) {
     int size = 0;
     for (Extension<T, ?> extension : map.getExtensions()) {
       Object value = map.get(extension);
@@ -215,18 +262,9 @@ class MessageAdapter<M extends Message> {
       Label label = extension.getLabel();
       if (label.isRepeated()) {
         if (label.isPacked()) {
-          int packedLength = 0;
-          for (Object o : (List<?>) value) {
-            packedLength += getSerializedSizeNoTag(o, datatype);
-          }
-          size += WireOutput.varint32Size(
-              WireOutput.makeTag(tag, WireOutput.WIRETYPE_LENGTH_DELIMITED));
-          size += WireOutput.varint32Size(packedLength);
-          size += packedLength;
+          size += getPackedSize((List<?>) value, tag, datatype);
         } else {
-          for (Object o : (List<?>) value) {
-            size += getSerializedSize(tag, o, datatype);
-          }
+          size += getRepeatedSize((List<?>) value, tag, datatype);
         }
       } else {
         size += getSerializedSize(tag, value, datatype);
@@ -235,41 +273,42 @@ class MessageAdapter<M extends Message> {
     return size;
   }
 
+  private int getRepeatedSize(List<?> value, int tag, Datatype datatype) {
+    int size = 0;
+    for (Object o : value) {
+      size += getSerializedSize(tag, o, datatype);
+    }
+    return size;
+  }
+
+  private int getPackedSize(List<?> value, int tag, Datatype datatype) {
+    int packedLength = 0;
+    for (Object o : value) {
+      packedLength += getSerializedSizeNoTag(o, datatype);
+    }
+    // tag + length + value + value + ...
+    int size = WireOutput.varint32Size(WireOutput.makeTag(tag, WireType.LENGTH_DELIMITED));
+    size += WireOutput.varint32Size(packedLength);
+    size += packedLength;
+    return size;
+  }
+
   /** Uses reflection to write {@code message} to {@code output} in serialized form. */
   void write(M message, WireOutput output) throws IOException {
-    for (int tag : tags) {
-      Field field = fieldMap.get(tag);
-      if (field == null) {
-        throw new IllegalArgumentException();
-      }
-      Object value;
-      try {
-        value = field.get(message);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
-      }
+    for (FieldInfo fieldInfo : getFields()) {
+      Object value = getFieldValue(message, fieldInfo);
       if (value == null) {
         continue;
       }
-      int typeFlags = typeMap.get(tag);
-      Datatype datatype = Datatype.valueOf(typeFlags);
-      Label label = Label.valueOf(typeFlags);
+      int tag = fieldInfo.tag;
+      Datatype datatype = fieldInfo.datatype;
+      Label label = fieldInfo.label;
 
       if (label.isRepeated()) {
         if (label.isPacked()) {
-          int packedLength = 0;
-          for (Object o : (List<?>) value) {
-            packedLength += getSerializedSizeNoTag(o, datatype);
-          }
-          output.writeTag(tag, 2);
-          output.writeVarint32(packedLength);
-          for (Object o : (List<?>) value) {
-            writeValueNoTag(output, o, datatype);
-          }
+          writePacked(output, (List<?>) value, tag, datatype);
         } else {
-          for (Object o : (List<?>) value) {
-            writeValue(output, tag, o, datatype);
-          }
+          writeRepeated(output, (List<?>) value, tag, datatype);
         }
       } else {
         writeValue(output, tag, value, datatype);
@@ -282,7 +321,7 @@ class MessageAdapter<M extends Message> {
         writeExtensions(output, extendableMessage.extensionMap);
       }
     }
-    message.unknownFieldMap.write(output);
+    message.writeUnknownFieldMap(output);
   }
 
   private <T extends ExtendableMessage<?>> void writeExtensions(WireOutput output,
@@ -294,23 +333,33 @@ class MessageAdapter<M extends Message> {
       Label label = extension.getLabel();
       if (label.isRepeated()) {
         if (label.isPacked()) {
-          int packedLength = 0;
-          for (Object o : (List<?>) value) {
-            packedLength += getSerializedSizeNoTag(o, datatype);
-          }
-          output.writeTag(tag, 2);
-          output.writeVarint32(packedLength);
-          for (Object o : (List<?>) value) {
-            writeValueNoTag(output, o, datatype);
-          }
+          writePacked(output, (List<?>) value, tag, datatype);
         } else {
-          for (Object o : (List<?>) value) {
-            writeValue(output, tag, o, datatype);
-          }
+          writeRepeated(output, (List<?>) value, tag, datatype);
         }
       } else {
         writeValue(output, tag, value, datatype);
       }
+    }
+  }
+
+  private void writeRepeated(WireOutput output, List<?> value, int tag, Datatype datatype)
+      throws IOException {
+    for (Object o : value) {
+      writeValue(output, tag, o, datatype);
+    }
+  }
+
+  private void writePacked(WireOutput output, List<?> value, int tag, Datatype datatype)
+      throws IOException {
+    int packedLength = 0;
+    for (Object o : value) {
+      packedLength += getSerializedSizeNoTag(o, datatype);
+    }
+    output.writeTag(tag, WireType.LENGTH_DELIMITED);
+    output.writeVarint32(packedLength);
+    for (Object o : value) {
+      writeValueNoTag(output, o, datatype);
     }
   }
 
@@ -336,23 +385,14 @@ class MessageAdapter<M extends Message> {
     sb.append("{");
 
     String sep = "";
-    for (int tag : tags) {
-      Field field = fieldMap.get(tag);
-      if (field == null) {
-        throw new AssertionError();
-      }
-      Object value;
-      try {
-        value = field.get(message);
-      } catch (IllegalAccessException e) {
-        throw new AssertionError(e);
-      }
+    for (FieldInfo fieldInfo : getFields()) {
+      Object value = getFieldValue(message, fieldInfo);
       if (value == null) {
         continue;
       }
       sb.append(sep);
       sep = ",";
-      sb.append(field.getName());
+      sb.append(fieldInfo.name);
       sb.append("=");
       sb.append(value);
     }
@@ -395,9 +435,9 @@ class MessageAdapter<M extends Message> {
         return WireOutput.varint32Size(length) + length;
       case MESSAGE: return getMessageSize((Message) value);
       case FIXED32: case SFIXED32: case FLOAT:
-        return WireOutput.FIXED_32_SIZE;
+        return WireType.FIXED_32_SIZE;
       case FIXED64: case SFIXED64: case DOUBLE:
-        return WireOutput.FIXED_64_SIZE;
+        return WireType.FIXED_64_SIZE;
       default: throw new RuntimeException();
     }
   }
@@ -434,25 +474,8 @@ class MessageAdapter<M extends Message> {
 
   private void writeValue(WireOutput output, int tag, Object value, Datatype datatype)
     throws IOException {
-    int wiretype = wiretype(datatype);
-    output.writeTag(tag, wiretype);
+    output.writeTag(tag, datatype.wireType());
     writeValueNoTag(output, value, datatype);
-  }
-
-  private int wiretype(Datatype datatype) {
-    switch (datatype) {
-      case INT32: case INT64: case UINT32: case UINT64:
-      case SINT32: case SINT64: case BOOL: case ENUM:
-        return WireOutput.WIRETYPE_VARINT;
-      case STRING: case BYTES: case MESSAGE:
-        return WireOutput.WIRETYPE_LENGTH_DELIMITED;
-      case FIXED32: case SFIXED32: case FLOAT:
-        return WireOutput.WIRETYPE_FIXED32;
-      case FIXED64: case SFIXED64: case DOUBLE:
-        return WireOutput.WIRETYPE_FIXED64;
-      default:
-        throw new IllegalArgumentException("datatype=" + datatype);
-    }
   }
 
   /**
@@ -512,13 +535,14 @@ class MessageAdapter<M extends Message> {
       while (true) {
         Extension<?, ?> extension = null;
         int tagAndType = input.readTag();
-        int tag = tagAndType >> WireOutput.TAG_TYPE_BITS;
-        int wireType = tagAndType & WireOutput.TAG_TYPE_MASK;
+        int tag = tagAndType >> WireType.TAG_TYPE_BITS;
+        WireType wireType = WireType.valueOf(tagAndType);
         if (tag == 0) {
           // Set repeated fields
           for (int storedTag : storage.getTags()) {
-            if (typeMap.containsKey(storedTag)) {
-              set(builder, storedTag, storage.get(storedTag));
+            FieldInfo fieldInfo = fieldInfoMap.get(storedTag);
+            if (fieldInfo != null) {
+              setBuilderField(builder, storedTag, storage.get(storedTag));
             } else {
               setExtension((ExtendableBuilder<?>) builder, getExtension(storedTag),
                   storage.get(storedTag));
@@ -529,10 +553,10 @@ class MessageAdapter<M extends Message> {
 
         Datatype datatype;
         Label label;
-        if (typeMap.containsKey(tag)) {
-          int typeFlags = typeMap.get(tag);
-          datatype = Datatype.valueOf(typeFlags);
-          label = Label.valueOf(typeFlags);
+        FieldInfo fieldInfo = fieldInfoMap.get(tag);
+        if (fieldInfo != null) {
+          datatype = fieldInfo.datatype;
+          label = fieldInfo.label;
         } else {
           extension = getExtension(tag);
           if (extension == null) {
@@ -544,7 +568,7 @@ class MessageAdapter<M extends Message> {
         }
         Object value;
 
-        if (label.isPacked() && wireType == 2) {
+        if (label.isPacked() && wireType == WireType.LENGTH_DELIMITED) {
           // Decode packed format
           int length = input.readVarint32();
           int start = input.getPosition();
@@ -565,7 +589,7 @@ class MessageAdapter<M extends Message> {
           } else if (extension != null) {
             setExtension((ExtendableBuilder<?>) builder, extension, value);
           } else {
-            set(builder, tag, value);
+            setBuilderField(builder, tag, value);
           }
         }
       }
@@ -614,7 +638,9 @@ class MessageAdapter<M extends Message> {
 
   @SuppressWarnings("unchecked")
   private Class<Message> getMessageClass(int tag) {
-    Class<Message> messageClass = (Class<Message>) messageTypeMap.get(tag);
+    FieldInfo fieldInfo = fieldInfoMap.get(tag);
+    Class<Message> messageClass = fieldInfo == null
+        ? null : (Class<Message>) fieldInfo.messageType;
     if (messageClass == null) {
       Extension<ExtendableMessage<?>, ?> extension = getExtension(tag);
       if (extension != null) {
@@ -624,34 +650,34 @@ class MessageAdapter<M extends Message> {
     return messageClass;
   }
 
-  private void readUnknownField(Builder builder, WireInput input,
-      int tag, int type) throws IOException {
+  private void readUnknownField(Builder builder, WireInput input, int tag, WireType type)
+      throws IOException {
     switch (type) {
-      case WireOutput.WIRETYPE_VARINT:
+      case VARINT:
         builder.addVarint(tag, input.readVarint64());
         break;
-      case WireOutput.WIRETYPE_FIXED64:
+      case FIXED32:
+        builder.addFixed32(tag, input.readFixed32());
+        break;
+      case FIXED64:
         builder.addFixed64(tag, input.readFixed64());
         break;
-      case WireOutput.WIRETYPE_LENGTH_DELIMITED:
+      case LENGTH_DELIMITED:
         int length = input.readVarint32();
         builder.addLengthDelimited(tag, ByteString.of(input.readRawBytes(length)));
         break;
-      case WireOutput.WIRETYPE_START_GROUP:
-        int groupLength = input.readVarint32();
-        builder.addGroup(tag, ByteString.of(input.readRawBytes(groupLength)));
+      /* Skip any groups found in the input */
+      case START_GROUP:
+        input.skipGroup();
         break;
-      case WireOutput.WIRETYPE_END_GROUP:
+      case END_GROUP:
         break;
-      case WireOutput.WIRETYPE_FIXED32:
-        builder.addFixed32(tag, input.readFixed32());
-        break;
-      default: throw new RuntimeException();
+      default: throw new RuntimeException("Unsupported wire type: " + type);
     }
   }
 
   private static class Storage {
-    private final Map<Integer, List<Object>> map = new HashMap<Integer, List<Object>>();
+    private final Map<Integer, List<Object>> map = new LinkedHashMap<Integer, List<Object>>();
 
     void add(int tag, Object value) {
       List<Object> list = map.get(tag);
@@ -678,17 +704,13 @@ class MessageAdapter<M extends Message> {
         ? null : registry.getExtension((Class<ExtendableMessage<?>>) messageType, tag);
   }
 
-  private void set(Builder builder, int tag, Object value) {
-    try {
-      builderMethodMap.get(tag).invoke(builder, value);
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
-    } catch (InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
+  @SuppressWarnings("unchecked")
+  Extension<ExtendableMessage<?>, ?> getExtension(String name) {
+    ExtensionRegistry registry = wire.registry;
+    return registry == null
+        ? null : registry.getExtension((Class<ExtendableMessage<?>>) messageType, name);
   }
 
-  // TODO - improve type safety
   @SuppressWarnings("unchecked")
   private void setExtension(ExtendableMessage.ExtendableBuilder builder, Extension<?, ?> extension,
       Object value) {
@@ -696,7 +718,8 @@ class MessageAdapter<M extends Message> {
   }
 
   private Class<? extends Enum> getEnumClass(int tag) {
-    Class<? extends Enum> enumType = enumTypeMap.get(tag);
+    FieldInfo fieldInfo = fieldInfoMap.get(tag);
+    Class<? extends Enum> enumType = fieldInfo == null ? null : fieldInfo.enumType;
     if (enumType == null) {
       Extension<ExtendableMessage<?>, ?> extension = getExtension(tag);
       if (extension != null) {
