@@ -311,10 +311,12 @@ public class WireCompiler {
       imports.add("com.squareup.wire.ByteString");
     }
     imports.add("com.squareup.wire.Extension");
-    imports.add("com.squareup.wire.Message");
     imports.add("java.util.List");
     imports.addAll(getExtensionTypes());
     writer.emitImports(imports);
+    writer.emitEmptyLine();
+    writer.emitStaticImports("com.squareup.wire.Message.Datatype",
+        "com.squareup.wire.Message.Label");
     writer.emitEmptyLine();
 
     String className = "Ext_" + protoFileName;
@@ -351,11 +353,11 @@ public class WireCompiler {
         if (isScalar(field.getType())) {
           if (isRepeated(field)) {
             initialValue =
-                String.format("Extension.getRepeatedExtension(%s.class, %s, Message.%s, %s)",
+                String.format("Extension.getRepeatedExtension(%s.class, %s, Datatype.%s, %s)",
                     className, tag, scalarTypeConstant(field.getType()), isPacked(field, false));
           } else {
             initialValue =
-                String.format("Extension.getExtension(%s.class, %s, Message.%s, Message.%s)",
+                String.format("Extension.getExtension(%s.class, %s, Datatype.%s, Label.%s)",
                     className, tag, scalarTypeConstant(field.getType()), field.getLabel());
           }
         } else if (isEnum) {
@@ -365,7 +367,7 @@ public class WireCompiler {
                     className, tag, isPacked(field, true), type);
           } else {
             initialValue =
-                String.format("Extension.getEnumExtension(%s.class, %s, Message.%s, %s.class)",
+                String.format("Extension.getEnumExtension(%s.class, %s, Label.%s, %s.class)",
                     className, tag, field.getLabel(), type);
           }
         } else {
@@ -375,7 +377,7 @@ public class WireCompiler {
                     className, tag, type);
           } else {
             initialValue =
-                String.format("Extension.getMessageExtension(%s.class, %s, Message.%s, %s.class)",
+                String.format("Extension.getMessageExtension(%s.class, %s, Label.%s, %s.class)",
                     className, tag, field.getLabel(), type);
           }
         }
@@ -545,15 +547,20 @@ public class WireCompiler {
       String type = field.getType();
       boolean isEnum = false;
       if (isScalar(field.getType())) {
-        map.put("type", scalarTypeConstant(type));
+        map.put("type", "Datatype." + scalarTypeConstant(type));
       } else {
         String fullyQualifiedName = fullyQualifiedName(messageType, type);
         isEnum = isEnum(fullyQualifiedName);
-        if (isEnum) map.put("type", "ENUM");
+        if (isEnum) map.put("type", "Datatype.ENUM");
       }
 
-      if (isPacked(field, isEnum)) map.put("packed", "true");
-      if (!isOptional(field)) map.put("label", field.getLabel().toString());
+      if (!isOptional(field)) {
+        if (isPacked(field, isEnum)) {
+          map.put("label", "Label.PACKED");
+        } else {
+          map.put("label", "Label." + field.getLabel());
+        }
+      }
 
       writer.emitEmptyLine();
       String documentation = field.getDocumentation();

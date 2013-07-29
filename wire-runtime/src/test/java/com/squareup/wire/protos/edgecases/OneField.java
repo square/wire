@@ -13,7 +13,7 @@ public final class OneField extends Message {
 
   @ProtoField(
     tag = 1,
-    type = INT32
+    type = Datatype.INT32
   )
   public final Integer opt_int32;
 

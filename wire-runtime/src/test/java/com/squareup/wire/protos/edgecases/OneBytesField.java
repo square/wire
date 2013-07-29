@@ -14,7 +14,7 @@ public final class OneBytesField extends Message {
 
   @ProtoField(
     tag = 1,
-    type = BYTES
+    type = Datatype.BYTES
   )
   public final ByteString opt_bytes;
 

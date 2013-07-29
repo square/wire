@@ -35,8 +35,6 @@ public class WireCompilerTest {
 
   @Before public void setUp() {
     System.out.println("cwd = " + new File(".").getAbsolutePath());
-    List<String> filesBefore;
-
     testPersonDir = makeTestDirectory("WireCompilerTest_testPerson");
     testSimpleDir = makeTestDirectory("WireCompilerTest_testSimple");
     testAllTypesDir = makeTestDirectory("WireCompilerTest_testAllTypes");

@@ -21,18 +21,23 @@ import com.squareup.wire.protos.simple.SimpleMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import static com.squareup.wire.protos.simple.Ext_simple_message.barext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.bazext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.fooext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.nested_message_ext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * Test Wire runtime.
  */
-public class WireTest extends TestCase {
+public class WireTest {
 
+  @Test
   public void testSimpleMessage() throws Exception {
     SimpleMessage msg = new SimpleMessage.Builder().required_int32(456).build();
     assertEquals(null, msg.optional_int32);
@@ -60,7 +65,7 @@ public class WireTest extends TestCase {
     msg = builder.build();
     assertEquals(new Integer(789), msg.optional_int32);
     assertEquals(new Integer(2), msg.optional_nested_msg.bb);
-    assertEquals(99.9f, msg.optional_external_msg.f);
+    assertEquals(new Float(99.9f), msg.optional_external_msg.f);
     assertEquals(SimpleMessage.NestedEnum.BAR, msg.default_nested_enum);
     assertEquals(new Integer(456), msg.required_int32);
     assertEquals(doubles, msg.repeated_double);
@@ -102,12 +107,13 @@ public class WireTest extends TestCase {
     SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, result);
     assertEquals(new Integer(789), newMsg.optional_int32);
     assertEquals(new Integer(2), newMsg.optional_nested_msg.bb);
-    assertEquals(99.9F, newMsg.optional_external_msg.f);
+    assertEquals(new Float(99.9F), newMsg.optional_external_msg.f);
     assertEquals(SimpleMessage.NestedEnum.BAR, newMsg.default_nested_enum);
     assertEquals(new Integer(456), newMsg.required_int32);
     assertEquals(doubles, msg.repeated_double);
   }
 
+  @Test
   public void testExtensions() throws Exception {
     ExternalMessage optional_external_msg =
         new ExternalMessage.Builder()
@@ -144,6 +150,7 @@ public class WireTest extends TestCase {
     assertEquals(new Integer(222), newMsg.optional_external_msg.getExtension(bazext));
   }
 
+  @Test
   public void testExtensionsNoRegistry() throws Exception {
     ExternalMessage optional_external_msg =
         new ExternalMessage.Builder()
