@@ -40,6 +40,7 @@
   <modules>
     <module>wire-compiler</module>
     <module>wire-runtime</module>
+    <module>wire-gson-support</module>
   </modules>
 
  <properties>

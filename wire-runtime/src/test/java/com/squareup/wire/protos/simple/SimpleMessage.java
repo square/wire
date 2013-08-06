@@ -11,6 +11,13 @@ import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.util.Collections;
 import java.util.List;
 
+import static com.squareup.wire.Message.Datatype.DOUBLE;
+import static com.squareup.wire.Message.Datatype.ENUM;
+import static com.squareup.wire.Message.Datatype.INT32;
+import static com.squareup.wire.Message.Datatype.STRING;
+import static com.squareup.wire.Message.Label.REPEATED;
+import static com.squareup.wire.Message.Label.REQUIRED;
+
 public final class SimpleMessage extends Message {
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
@@ -28,7 +35,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 1,
-    type = Datatype.INT32
+    type = INT32
   )
   public final Integer optional_int32;
 
@@ -50,7 +57,7 @@ public final class SimpleMessage extends Message {
 
   @ProtoField(
     tag = 4,
-    type = Datatype.ENUM
+    type = ENUM
   )
   public final NestedEnum default_nested_enum;
 
@@ -59,8 +66,8 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 5,
-    type = Datatype.INT32,
-    label = Label.REQUIRED
+    type = INT32,
+    label = REQUIRED
   )
   public final Integer required_int32;
 
@@ -69,8 +76,8 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 6,
-    type = Datatype.DOUBLE,
-    label = Label.REPEATED
+    type = DOUBLE,
+    label = REPEATED
   )
   public final List<Double> repeated_double;
 
@@ -79,7 +86,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 7,
-    type = Datatype.ENUM
+    type = ENUM
   )
   public final ForeignEnum default_foreign_enum;
 
@@ -88,7 +95,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 8,
-    type = Datatype.ENUM
+    type = ENUM
   )
   public final ForeignEnum no_default_foreign_enum;
 
@@ -97,7 +104,7 @@ public final class SimpleMessage extends Message {
    */
   @ProtoField(
     tag = 9,
-    type = Datatype.STRING
+    type = STRING
   )
   public final String _package;
 
@@ -238,7 +245,7 @@ public final class SimpleMessage extends Message {
      */
     @ProtoField(
       tag = 1,
-      type = Datatype.INT32
+      type = INT32
     )
     public final Integer bb;
 

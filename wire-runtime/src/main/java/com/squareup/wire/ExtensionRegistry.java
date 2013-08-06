@@ -15,29 +15,43 @@
  */
 package com.squareup.wire;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 final class ExtensionRegistry {
 
   private final Map<Class<? extends ExtendableMessage>, Map<Integer, Extension<?, ?>>>
-      extensions = new HashMap<Class<? extends ExtendableMessage>,
-          Map<Integer, Extension<?, ?>>>();
+      extensionsByTag = new LinkedHashMap<Class<? extends ExtendableMessage>,
+                Map<Integer, Extension<?, ?>>>();
+  private final Map<Class<? extends ExtendableMessage>, Map<String, Extension<?, ?>>>
+      extensionsByName = new LinkedHashMap<Class<? extends ExtendableMessage>,
+          Map<String, Extension<?, ?>>>();
 
   public <T extends ExtendableMessage<?>, E> void add(Extension<T, E> extension) {
     Class<? extends ExtendableMessage<?>> messageClass = extension.getExtendedType();
-    Map<Integer, Extension<?, ?>> map = extensions.get(messageClass);
-    if (map == null) {
-      map = new HashMap<Integer, Extension<?, ?>>();
-      extensions.put(messageClass, map);
+    Map<Integer, Extension<?, ?>> tagMap = extensionsByTag.get(messageClass);
+    Map<String, Extension<?, ?>> nameMap = extensionsByName.get(messageClass);
+    if (tagMap == null) {
+      tagMap = new LinkedHashMap<Integer, Extension<?, ?>>();
+      nameMap = new LinkedHashMap<String, Extension<?, ?>>();
+      extensionsByTag.put(messageClass, tagMap);
+      extensionsByName.put(messageClass, nameMap);
     }
-    map.put(extension.getTag(), extension);
+    tagMap.put(extension.getTag(), extension);
+    nameMap.put(extension.getName(), extension);
   }
 
   @SuppressWarnings("unchecked")
   public <T extends ExtendableMessage<?>, E> Extension<T, E>
       getExtension(Class<T> messageClass, int tag) {
-    Map<Integer, Extension<?, ?>> map = extensions.get(messageClass);
+    Map<Integer, Extension<?, ?>> map = extensionsByTag.get(messageClass);
     return map == null ? null : (Extension<T, E>) map.get(tag);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends ExtendableMessage<?>, E> Extension<T, E>
+      getExtension(Class<T> messageClass, String name) {
+    Map<String, Extension<?, ?>> nameMap = extensionsByName.get(messageClass);
+    return nameMap == null ? null : (Extension<T, E>) nameMap.get(name);
   }
 }

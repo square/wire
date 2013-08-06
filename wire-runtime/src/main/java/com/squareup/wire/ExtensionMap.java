@@ -67,17 +67,6 @@ final class ExtensionMap<T extends ExtendableMessage<?>> {
     map.put(extension, value);
   }
 
-  /**
-   * Removes any previous value associated with the given {@link Extension}.
-   */
-  public void clear(Extension<T, ?> extension) {
-    map.remove(extension);
-  }
-
-  public boolean isEmpty() {
-    return map.isEmpty();
-  }
-
   @Override
   public boolean equals(Object other) {
     return other instanceof ExtensionMap && map.equals(((ExtensionMap) other).map);

@@ -380,4 +380,30 @@ final class WireInput {
       throw new IOException(INPUT_ENDED_UNEXPECTEDLY);
     }
   }
+
+  public void skipGroup() throws IOException {
+    while (true) {
+      int tag = readTag();
+      if (tag == 0 || !skipField(tag)) {
+        return;
+      }
+    }
+  }
+
+  private boolean skipField(int tag) throws IOException {
+    switch (WireType.valueOf(tag)) {
+      case VARINT: readVarint64(); return true;
+      case FIXED32: readFixed32(); return true;
+      case FIXED64: readFixed64(); return true;
+      case LENGTH_DELIMITED: readRawBytes(readVarint32()); return true;
+      case START_GROUP:
+        skipGroup();
+        checkLastTagWas((tag & ~0x7) | WireType.END_GROUP.value());
+        return true;
+      case END_GROUP:
+        return false;
+      default:
+        throw new AssertionError();
+    }
+  }
 }

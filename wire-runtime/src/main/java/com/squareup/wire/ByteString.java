@@ -19,7 +19,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
@@ -34,10 +33,13 @@ import java.util.Arrays;
  * process.
  */
 public final class ByteString {
-  private static final Charset ISO_8859_1 = Charset.forName("ISO_8859_1");
-  private static final String HEX_DIGITS = "0123456789abcdef";
   private final byte[] data;
-  private volatile int hashCode;
+  private transient int hashCode;
+
+  /**
+   * A singleton empty {@code ByteString}.
+   */
+  public static final ByteString EMPTY = ByteString.of();
 
   /** Returns a new byte string containing the bytes of {@code data}. */
   public static ByteString of(byte... data) {
@@ -46,10 +48,10 @@ public final class ByteString {
 
   /**
    * Returns a new byte string containing the bytes of {@code data}, interpreted
-   * as {@code ISO_8859_1}.
+   * as Base64.
    */
   public static ByteString of(String data) {
-    return new ByteString(data.getBytes(ISO_8859_1));
+    return new ByteString(Base64.decode(data));
   }
 
   /**
@@ -111,15 +113,9 @@ public final class ByteString {
   }
 
   /**
-   * Returns a string containing the contents of this ByteString in hex.
+   * Returns a string containing the contents of this ByteString in Base64 format.
    */
   @Override public String toString() {
-    char[] result = new char[data.length * 2];
-    int c = 0;
-    for (byte b : data) {
-      result[c++] = HEX_DIGITS.charAt((b >> 4) & 0xf);
-      result[c++] = HEX_DIGITS.charAt(b & 0xf);
-    }
-    return new String(result);
+    return Base64.encode(data);
   }
 }

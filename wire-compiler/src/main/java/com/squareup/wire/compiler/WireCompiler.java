@@ -22,6 +22,7 @@ import com.squareup.protoparser.MessageType;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 import com.squareup.protoparser.Type;
+import com.squareup.wire.Base64;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import java.io.File;
@@ -32,8 +33,8 @@ import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,9 +42,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeSet;
 import javax.lang.model.element.Modifier;
 
 import static com.squareup.protoparser.MessageType.Field;
+import static com.squareup.wire.Message.Datatype;
+import static com.squareup.wire.Message.Label;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -53,7 +57,8 @@ import static javax.lang.model.element.Modifier.STATIC;
 public class WireCompiler {
 
   private static final Charset UTF_8 = Charset.forName("UTF8");
-  private static final Map<String, String> JAVA_TYPES = new HashMap<String, String>();
+  private static final Charset ISO_8859_1 = Charset.forName("ISO_8859_1");
+  private static final Map<String, String> JAVA_TYPES = new LinkedHashMap<String, String>();
   private static final Set<String> JAVA_KEYWORDS = new HashSet<String>(
       Arrays.asList("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
           "class", "const", "continue", "default", "do", "double", "else", "enum", "extends",
@@ -87,9 +92,9 @@ public class WireCompiler {
   private final String repoPath;
   private final ProtoFile protoFile;
   private final Set<String> loadedDependencies = new HashSet<String>();
-  private final Map<String, String> javaSymbolMap = new HashMap<String, String>();
+  private final Map<String, String> javaSymbolMap = new LinkedHashMap<String, String>();
   private final Set<String> enumTypes = new HashSet<String>();
-  private final Map<String, String> enumDefaults = new HashMap<String, String>();
+  private final Map<String, String> enumDefaults = new LinkedHashMap<String, String>();
   private String protoFileName;
   private String typeBeingGenerated = "";
   private JavaWriter writer;
@@ -255,6 +260,23 @@ public class WireCompiler {
       imports.addAll(externalTypes);
       writer.emitImports(imports);
 
+      // Emit static imports for Datatype. and Label. enums
+      Collection<Datatype> datatypes = new TreeSet<Datatype>(Datatype.ORDER_BY_NAME);
+      Collection<Label> labels = new TreeSet<Label>(Label.ORDER_BY_NAME);
+      getDatatypesAndLabels(type, datatypes, labels);
+      // No need to emit 'label = OPTIONAL' since it is the default
+      labels.remove(Label.OPTIONAL);
+
+      if (!datatypes.isEmpty() || !labels.isEmpty()) {
+        writer.emitEmptyLine();
+      }
+      for (Datatype datatype : datatypes) {
+        writer.emitStaticImports("com.squareup.wire.Message.Datatype." + datatype.toString());
+      }
+      for (Label label : labels) {
+        writer.emitStaticImports("com.squareup.wire.Message.Label." + label.toString());
+      }
+
       emitType(type, protoFile.getPackageName() + ".", true);
     } finally {
       writer.close();
@@ -290,7 +312,7 @@ public class WireCompiler {
       String javaName = javaName(null, fullyQualifiedName);
       String name = shortenJavaName(javaName);
       // Only include names outside our own package
-      if (typeIsQualified(name)) {
+      if (name.contains(".")) {
         extensionClasses.add(name);
       }
     }
@@ -311,12 +333,16 @@ public class WireCompiler {
       imports.add("com.squareup.wire.ByteString");
     }
     imports.add("com.squareup.wire.Extension");
-    imports.add("java.util.List");
+    if (hasRepeatedExtension()) {
+      imports.add("java.util.List");
+    }
     imports.addAll(getExtensionTypes());
     writer.emitImports(imports);
     writer.emitEmptyLine();
-    writer.emitStaticImports("com.squareup.wire.Message.Datatype",
-        "com.squareup.wire.Message.Label");
+    if (hasScalarExtension()) {
+      writer.emitStaticImports("com.squareup.wire.Message.Datatype");
+    }
+    writer.emitStaticImports("com.squareup.wire.Message.Label");
     writer.emitEmptyLine();
 
     String className = "Ext_" + protoFileName;
@@ -340,51 +366,53 @@ public class WireCompiler {
       for (MessageType.Field field : extend.getFields()) {
         String fieldType = field.getType();
         String type = javaName(null, fieldType);
-        boolean isEnum = isEnum(fieldType);
         if (type == null) {
-          String qualifiedFieldType = protoFile.getPackageName() + "." + fieldType;
-          isEnum = isEnum(qualifiedFieldType);
-          type = javaName(null, qualifiedFieldType);
+          type = javaName(null, protoFile.getPackageName() + "." + fieldType);
         }
         type = shortenJavaName(type);
         String initialValue;
         String className = writer.compressType(name);
+        String extensionName = field.getName();
+        String fqName = removeTrailingSegment(extend.getFullyQualifiedName()) + "."
+            + field.getName();
         int tag = field.getTag();
-        if (isScalar(field.getType())) {
+
+        if (isScalar(fieldType)) {
           if (isRepeated(field)) {
-            initialValue =
-                String.format("Extension.getRepeatedExtension(%s.class, %s, Datatype.%s, %s)",
-                    className, tag, scalarTypeConstant(field.getType()), isPacked(field, false));
+            initialValue = String.format(
+                "Extension.getRepeatedExtension(\"%s\", %s.class, %s, Datatype.%s, %s)",
+                fqName, className, tag, scalarTypeConstant(field.getType()),
+                    isPacked(field, false));
           } else {
-            initialValue =
-                String.format("Extension.getExtension(%s.class, %s, Datatype.%s, Label.%s)",
-                    className, tag, scalarTypeConstant(field.getType()), field.getLabel());
+            initialValue = String.format(
+                "Extension.getExtension(\"%s\", %s.class, %s, Datatype.%s, Label.%s)",
+                    fqName, className, tag, scalarTypeConstant(field.getType()), field.getLabel());
           }
-        } else if (isEnum) {
+        } else if (isEnum(fullyQualifiedName(null, fieldType))) {
           if (isRepeated(field)) {
-            initialValue =
-                String.format("Extension.getRepeatedEnumExtension(%s.class, %s, %s, %s.class)",
-                    className, tag, isPacked(field, true), type);
+            initialValue = String.format(
+                "Extension.getRepeatedEnumExtension(\"%s\", %s.class, %s, %s, %s.class)",
+                    fqName, className, tag, isPacked(field, true), type);
           } else {
-            initialValue =
-                String.format("Extension.getEnumExtension(%s.class, %s, Label.%s, %s.class)",
-                    className, tag, field.getLabel(), type);
+            initialValue = String.format(
+                "Extension.getEnumExtension(\"%s\", %s.class, %s, Label.%s, %s.class)",
+                    fqName, className, tag, field.getLabel(), type);
           }
         } else {
           if (isRepeated(field)) {
-            initialValue =
-                String.format("Extension.getRepeatedMessageExtension(%s.class, %s, %s.class)",
-                    className, tag, type);
+            initialValue = String.format(
+                "Extension.getRepeatedMessageExtension(\"%s\", %s.class, %s, %s.class)",
+                    fqName, className, tag, type);
           } else {
-            initialValue =
-                String.format("Extension.getMessageExtension(%s.class, %s, Label.%s, %s.class)",
-                    className, tag, field.getLabel(), type);
+            initialValue = String.format(
+                "Extension.getMessageExtension(\"%s\", %s.class, %s, Label.%s, %s.class)",
+                    fqName, className, tag, field.getLabel(), type);
           }
         }
         if (isRepeated(field)) {
           type = "List<" + type + ">";
         }
-        writer.emitField("Extension<" + name + ", " + type + ">", field.getName(),
+        writer.emitField("Extension<" + name + ", " + type + ">", extensionName,
             EnumSet.of(PUBLIC, STATIC, FINAL), initialValue);
       }
     }
@@ -395,6 +423,28 @@ public class WireCompiler {
       for (MessageType.Field field : extend.getFields()) {
         String fieldType = field.getType();
         if ("bytes".equals(fieldType)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean hasRepeatedExtension() {
+    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
+      for (MessageType.Field field : extend.getFields()) {
+        if (field.getLabel() == MessageType.Label.REPEATED) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean hasScalarExtension() {
+    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
+      for (MessageType.Field field : extend.getFields()) {
+        if (isScalar(field.getType())) {
           return true;
         }
       }
@@ -509,7 +559,11 @@ public class WireCompiler {
     } else if ("String".equals(javaTypeName)) {
       return quoteString(initialValue);
     } else if ("ByteString".equals(javaTypeName)) {
-      return "ByteString.of(" + quoteString(initialValue) + ")";
+      if (initialValue == null) {
+        return "ByteString.EMPTY";
+      } else {
+        return "ByteString.of(\"" + Base64.encode(initialValue.getBytes(ISO_8859_1)) + "\")";
+      }
     } else {
       throw new IllegalArgumentException(javaTypeName + " is not an allowed scalar type");
     }
@@ -547,18 +601,18 @@ public class WireCompiler {
       String type = field.getType();
       boolean isEnum = false;
       if (isScalar(field.getType())) {
-        map.put("type", "Datatype." + scalarTypeConstant(type));
+        map.put("type", scalarTypeConstant(type));
       } else {
         String fullyQualifiedName = fullyQualifiedName(messageType, type);
         isEnum = isEnum(fullyQualifiedName);
-        if (isEnum) map.put("type", "Datatype.ENUM");
+        if (isEnum) map.put("type", "ENUM");
       }
 
       if (!isOptional(field)) {
         if (isPacked(field, isEnum)) {
-          map.put("label", "Label.PACKED");
+          map.put("label", "PACKED");
         } else {
-          map.put("label", "Label." + field.getLabel());
+          map.put("label", field.getLabel().toString());
         }
       }
 
@@ -870,6 +924,45 @@ public class WireCompiler {
     return false;
   }
 
+  private void getDatatypesAndLabels(Type type, Collection<Datatype> types,
+      Collection<Label> labels) {
+    if (type instanceof MessageType) {
+      for (MessageType.Field field : ((MessageType) type).getFields()) {
+        String fieldType = field.getType();
+        Datatype datatype = Datatype.of(fieldType);
+        // If not scalar, determine whether it is an enum
+        if (datatype == null && isEnum(fullyQualifiedName((MessageType) type, field.getType()))) {
+          datatype = Datatype.ENUM;
+        }
+        if (datatype != null) types.add(datatype);
+
+        // Convert Protoparser label to Wire label
+        MessageType.Label label = field.getLabel();
+        switch (label) {
+          case OPTIONAL:
+            labels.add(Label.OPTIONAL);
+            break;
+          case REQUIRED:
+            labels.add(Label.REQUIRED);
+            break;
+          case REPEATED:
+            if (isPacked(field, false)) {
+              labels.add(Label.PACKED);
+            } else {
+              labels.add(Label.REPEATED);
+            }
+            break;
+          default:
+            throw new AssertionError("Unknown label " + label);
+        }
+      }
+
+      for (Type nestedType : type.getNestedTypes()) {
+        getDatatypesAndLabels(nestedType, types, labels);
+      }
+    }
+  }
+
   private boolean hasDocumentation(String documentation) {
     return documentation != null && !documentation.isEmpty();
   }
@@ -941,17 +1034,23 @@ public class WireCompiler {
   }
 
   private String fullyQualifiedName(MessageType messageType, String type) {
-    if (typeIsQualified(type)) {
+    if (typeIsComplete(type)) {
       return type;
     } else {
-      String prefix = messageType.getFullyQualifiedName();
+      String prefix = messageType == null
+          ? protoFile.getPackageName() : messageType.getFullyQualifiedName();
       while (prefix.contains(".")) {
         String fqname = prefix + "." + type;
         if (javaSymbolMap.containsKey(fqname)) return fqname;
         prefix = removeTrailingSegment(prefix);
       }
     }
-    throw new RuntimeException("Unknown type " + type + " in message " + messageType.getName());
+    throw new RuntimeException("Unknown type " + type + " in message "
+        + (messageType == null ? "<unknown>" : messageType.getName()));
+  }
+
+  private boolean typeIsComplete(String type) {
+    return javaSymbolMap.containsKey(type);
   }
 
   private String fullyQualifiedJavaName(MessageType messageType, String type) {
@@ -972,9 +1071,5 @@ public class WireCompiler {
 
   private String removePrefixIfPresent(String s, String prefix) {
     return s.startsWith(prefix) ? s.substring(prefix.length()) : s;
-  }
-
-  private boolean typeIsQualified(String type) {
-    return type.contains(".");
   }
 }

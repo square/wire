@@ -10,6 +10,12 @@ import com.squareup.wire.ProtoField;
 import java.util.Collections;
 import java.util.List;
 
+import static com.squareup.wire.Message.Datatype.ENUM;
+import static com.squareup.wire.Message.Datatype.INT32;
+import static com.squareup.wire.Message.Datatype.STRING;
+import static com.squareup.wire.Message.Label.REPEATED;
+import static com.squareup.wire.Message.Label.REQUIRED;
+
 public final class Person extends Message {
 
   public static final String DEFAULT_NAME = "";
@@ -19,27 +25,27 @@ public final class Person extends Message {
 
   @ProtoField(
     tag = 1,
-    type = Datatype.STRING,
-    label = Label.REQUIRED
+    type = STRING,
+    label = REQUIRED
   )
   public final String name;
 
   @ProtoField(
     tag = 2,
-    type = Datatype.INT32,
-    label = Label.REQUIRED
+    type = INT32,
+    label = REQUIRED
   )
   public final Integer id;
 
   @ProtoField(
     tag = 3,
-    type = Datatype.STRING
+    type = STRING
   )
   public final String email;
 
   @ProtoField(
     tag = 4,
-    label = Label.REPEATED
+    label = REPEATED
   )
   public final List<PhoneNumber> phone;
 
@@ -137,14 +143,14 @@ public final class Person extends Message {
 
     @ProtoField(
       tag = 1,
-      type = Datatype.STRING,
-      label = Label.REQUIRED
+      type = STRING,
+      label = REQUIRED
     )
     public final String number;
 
     @ProtoField(
       tag = 2,
-      type = Datatype.ENUM
+      type = ENUM
     )
     public final PhoneType type;
 
