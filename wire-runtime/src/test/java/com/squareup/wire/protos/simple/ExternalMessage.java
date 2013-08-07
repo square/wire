@@ -30,8 +30,7 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
     if (!(other instanceof ExternalMessage)) return false;
     ExternalMessage o = (ExternalMessage) other;
     if (!extensionsEqual(o)) return false;
-    if (!equals(f, o.f)) return false;
-    return true;
+    return equals(f, o.f);
   }
 
   @Override

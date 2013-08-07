@@ -818,8 +818,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     if (!equals(default_double, o.default_double)) return false;
     if (!equals(default_string, o.default_string)) return false;
     if (!equals(default_bytes, o.default_bytes)) return false;
-    if (!equals(default_nested_enum, o.default_nested_enum)) return false;
-    return true;
+    return equals(default_nested_enum, o.default_nested_enum);
   }
 
   @Override

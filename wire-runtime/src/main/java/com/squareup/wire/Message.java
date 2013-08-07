@@ -47,25 +47,26 @@ public abstract class Message {
       }
     };
 
-    private static Map<String, Datatype> typesByName = new LinkedHashMap<String, Datatype>();
+    private static final Map<String, Datatype> TYPES_BY_NAME =
+        new LinkedHashMap<String, Datatype>();
     static {
-      typesByName.put("int32", INT32);
-      typesByName.put("int64", INT64);
-      typesByName.put("uint32", UINT32);
-      typesByName.put("uint64", UINT64);
-      typesByName.put("sint32", SINT32);
-      typesByName.put("sint64", SINT64);
-      typesByName.put("bool", BOOL);
-      typesByName.put("enum", ENUM);
-      typesByName.put("string", STRING);
-      typesByName.put("bytes", BYTES);
-      typesByName.put("message", MESSAGE);
-      typesByName.put("fixed32", FIXED32);
-      typesByName.put("sfixed32", SFIXED32);
-      typesByName.put("fixed64", FIXED64);
-      typesByName.put("sfixed64", SFIXED64);
-      typesByName.put("float", FLOAT);
-      typesByName.put("double", DOUBLE);
+      TYPES_BY_NAME.put("int32", INT32);
+      TYPES_BY_NAME.put("int64", INT64);
+      TYPES_BY_NAME.put("uint32", UINT32);
+      TYPES_BY_NAME.put("uint64", UINT64);
+      TYPES_BY_NAME.put("sint32", SINT32);
+      TYPES_BY_NAME.put("sint64", SINT64);
+      TYPES_BY_NAME.put("bool", BOOL);
+      TYPES_BY_NAME.put("enum", ENUM);
+      TYPES_BY_NAME.put("string", STRING);
+      TYPES_BY_NAME.put("bytes", BYTES);
+      TYPES_BY_NAME.put("message", MESSAGE);
+      TYPES_BY_NAME.put("fixed32", FIXED32);
+      TYPES_BY_NAME.put("sfixed32", SFIXED32);
+      TYPES_BY_NAME.put("fixed64", FIXED64);
+      TYPES_BY_NAME.put("sfixed64", SFIXED64);
+      TYPES_BY_NAME.put("float", FLOAT);
+      TYPES_BY_NAME.put("double", DOUBLE);
     }
 
     private final int value;
@@ -95,7 +96,7 @@ public abstract class Message {
     }
 
     public static Datatype of(String typeString) {
-      return typesByName.get(typeString);
+      return TYPES_BY_NAME.get(typeString);
     }
   }
 

@@ -61,11 +61,10 @@ public final class Person extends Message {
   public boolean equals(Object other) {
     if (!(other instanceof Person)) return false;
     Person o = (Person) other;
-    if (!equals(name, o.name)) return false;
-    if (!equals(id, o.id)) return false;
-    if (!equals(email, o.email)) return false;
-    if (!equals(phone, o.phone)) return false;
-    return true;
+    return equals(name, o.name)
+        && equals(id, o.id)
+        && equals(email, o.email)
+        && equals(phone, o.phone);
   }
 
   @Override
@@ -164,9 +163,8 @@ public final class Person extends Message {
     public boolean equals(Object other) {
       if (!(other instanceof PhoneNumber)) return false;
       PhoneNumber o = (PhoneNumber) other;
-      if (!equals(number, o.number)) return false;
-      if (!equals(type, o.type)) return false;
-      return true;
+      return equals(number, o.number)
+          && equals(type, o.type);
     }
 
     @Override

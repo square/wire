@@ -117,7 +117,7 @@ public class WireCompiler {
   public static void main(String... args) throws Exception {
     String protoPath = null;
     String javaOut = null;
-    List<String> sourceFilenames = new ArrayList<String>();
+    List<String> sourceFileNames = new ArrayList<String>();
 
     int index = 0;
     while (index < args.length) {
@@ -127,10 +127,10 @@ public class WireCompiler {
         javaOut = args[index].substring(JAVA_OUT_FLAG.length());
       } else if (args[index].startsWith(FILES_FLAG)) {
         File files = new File(args[index].substring(FILES_FLAG.length()));
-        String[] filenames = new Scanner(files, "UTF8").useDelimiter("\\A").next().split("\n");
-        sourceFilenames.addAll(Arrays.asList(filenames));
+        String[] fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
+        sourceFileNames.addAll(Arrays.asList(fileNames));
       } else {
-        sourceFilenames.add(args[index]);
+        sourceFileNames.add(args[index]);
       }
       index++;
     }
@@ -142,7 +142,7 @@ public class WireCompiler {
       System.err.println("Must specify " + JAVA_OUT_FLAG + " flag");
       System.exit(1);
     }
-    for (String sourceFilename : sourceFilenames) {
+    for (String sourceFilename : sourceFileNames) {
       WireCompiler wireCompiler = new WireCompiler(protoPath, sourceFilename);
       wireCompiler.compile(javaOut);
     }
@@ -210,9 +210,9 @@ public class WireCompiler {
   }
 
   private String protoFileName(String path) {
-    int rindex = path.lastIndexOf('/');
-    if (rindex != -1) {
-      path = path.substring(rindex + 1);
+    int slashIndex = path.lastIndexOf('/');
+    if (slashIndex != -1) {
+      path = path.substring(slashIndex + 1);
     }
     if (path.endsWith(".proto")) {
       path = path.substring(0, path.length() - ".proto".length());
@@ -689,11 +689,14 @@ public class WireCompiler {
         if (hasExtensions(messageType)) {
           writer.emitStatement("if (!extensionsEqual(o)) return false");
         }
+        StringBuilder sb = new StringBuilder();
+        String prefix = "return ";
         for (Field field : fields) {
-          writer.emitStatement("if (!equals(%1$s, o.%1$s)) return false",
-              sanitize(field.getName()));
+          sb.append(prefix);
+          prefix = "\n&& ";
+          sb.append(String.format("equals(%1$s, o.%1$s)", sanitize(field.getName())));
         }
-        writer.emitStatement("return true");
+        writer.emitStatement(sb.toString());
       }
     }
     writer.endMethod();
