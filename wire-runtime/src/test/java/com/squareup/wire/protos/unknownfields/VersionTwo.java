@@ -63,12 +63,11 @@ public final class VersionTwo extends Message {
   public boolean equals(Object other) {
     if (!(other instanceof VersionTwo)) return false;
     VersionTwo o = (VersionTwo) other;
-    if (!equals(i, o.i)) return false;
-    if (!equals(v2_i, o.v2_i)) return false;
-    if (!equals(v2_s, o.v2_s)) return false;
-    if (!equals(v2_f32, o.v2_f32)) return false;
-    if (!equals(v2_f64, o.v2_f64)) return false;
-    return true;
+    return equals(i, o.i)
+        && equals(v2_i, o.v2_i)
+        && equals(v2_s, o.v2_s)
+        && equals(v2_f32, o.v2_f32)
+        && equals(v2_f64, o.v2_f64);
   }
 
   @Override

@@ -125,16 +125,15 @@ public final class SimpleMessage extends Message {
   public boolean equals(Object other) {
     if (!(other instanceof SimpleMessage)) return false;
     SimpleMessage o = (SimpleMessage) other;
-    if (!equals(optional_int32, o.optional_int32)) return false;
-    if (!equals(optional_nested_msg, o.optional_nested_msg)) return false;
-    if (!equals(optional_external_msg, o.optional_external_msg)) return false;
-    if (!equals(default_nested_enum, o.default_nested_enum)) return false;
-    if (!equals(required_int32, o.required_int32)) return false;
-    if (!equals(repeated_double, o.repeated_double)) return false;
-    if (!equals(default_foreign_enum, o.default_foreign_enum)) return false;
-    if (!equals(no_default_foreign_enum, o.no_default_foreign_enum)) return false;
-    if (!equals(_package, o._package)) return false;
-    return true;
+    return equals(optional_int32, o.optional_int32)
+        && equals(optional_nested_msg, o.optional_nested_msg)
+        && equals(optional_external_msg, o.optional_external_msg)
+        && equals(default_nested_enum, o.default_nested_enum)
+        && equals(required_int32, o.required_int32)
+        && equals(repeated_double, o.repeated_double)
+        && equals(default_foreign_enum, o.default_foreign_enum)
+        && equals(no_default_foreign_enum, o.no_default_foreign_enum)
+        && equals(_package, o._package);
   }
 
   @Override
