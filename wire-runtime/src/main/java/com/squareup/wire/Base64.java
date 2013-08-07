@@ -15,7 +15,7 @@
  */
 package com.squareup.wire;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 // Adapted from android.util.Base64, original copyright notice below:
 
@@ -43,11 +43,13 @@ import java.io.UnsupportedEncodingException;
  */
 public final class Base64 {
 
+  private static final Charset UTF_8 = Charset.forName("UTF-8");
+
   private Base64() {
   }
 
   public static byte[] decode(String str) {
-    byte[] input = str.getBytes();
+    byte[] input = str.getBytes(UTF_8);
     Decoder decoder = new Decoder(new byte[input.length * 3 / 4]);
     if (!decoder.process(input, 0, input.length, true)) {
       throw new IllegalArgumentException("bad base-64");
@@ -67,20 +69,10 @@ public final class Base64 {
     }
     Encoder encoder = new Encoder(new byte[outputLen]);
     encoder.process(input, 0, input.length, true);
-    try {
-      return new String(encoder.output, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      throw new AssertionError(e);
-    }
+    return new String(encoder.output, UTF_8);
   }
 
-  private abstract static class Coder {
-    public byte[] output;
-    public int op;
-    public abstract boolean process(byte[] input, int offset, int len, boolean finish);
-  }
-
-  private static class Decoder extends Coder {
+  private static class Decoder {
     private static final int[] DECODE = {
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -99,6 +91,9 @@ public final class Base64 {
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     };
+
+    private final byte[] output;
+    private int op;
 
     /** Non-data values in the DECODE arrays. */
     private static final int SKIP = -1;
@@ -251,7 +246,7 @@ public final class Base64 {
     }
   }
 
-  private static class Encoder extends Coder {
+  private static class Encoder {
     private static final byte[] ENCODE = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
         'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
@@ -259,6 +254,7 @@ public final class Base64 {
         'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/',
     };
 
+    private final byte[] output;
     private final byte[] tail;
     private int tailLen;
 
@@ -268,7 +264,7 @@ public final class Base64 {
       tailLen = 0;
     }
 
-    public boolean process(byte[] input, int offset, int len, boolean finish) {
+    public void process(byte[] input, int offset, int len, boolean finish) {
       final byte[] alphabet = ENCODE;
       final byte[] output = this.output;
       int op = 0;
@@ -325,21 +321,21 @@ public final class Base64 {
       if (finish) {
         if (p - tailLen == len - 1) {
           int t = 0;
-          v = ((tailLen > 0 ? tail[t++] : input[p++]) & 0xff) << 4;
+          v = ((tailLen > 0 ? tail[t++] : input[p]) & 0xff) << 4;
           tailLen -= t;
           output[op++] = alphabet[(v >> 6) & 0x3f];
           output[op++] = alphabet[v & 0x3f];
           output[op++] = '=';
-          output[op++] = '=';
+          output[op] = '=';
         } else if (p - tailLen == len - 2) {
           int t = 0;
           v = (((tailLen > 1 ? tail[t++] : input[p++]) & 0xff) << 10)
-              | (((tailLen > 0 ? tail[t++] : input[p++]) & 0xff) << 2);
+              | (((tailLen > 0 ? tail[t++] : input[p]) & 0xff) << 2);
           tailLen -= t;
           output[op++] = alphabet[(v >> 12) & 0x3f];
           output[op++] = alphabet[(v >> 6) & 0x3f];
           output[op++] = alphabet[v & 0x3f];
-          output[op++] = '=';
+          output[op] = '=';
         }
       } else {
         if (p == len - 1) {
@@ -349,9 +345,6 @@ public final class Base64 {
           tail[tailLen++] = input[p + 1];
         }
       }
-
-      this.op = op;
-      return true;
     }
   }
 }

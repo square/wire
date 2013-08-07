@@ -738,88 +738,87 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     if (!(other instanceof AllTypes)) return false;
     AllTypes o = (AllTypes) other;
     if (!extensionsEqual(o)) return false;
-    if (!equals(opt_int32, o.opt_int32)) return false;
-    if (!equals(opt_uint32, o.opt_uint32)) return false;
-    if (!equals(opt_sint32, o.opt_sint32)) return false;
-    if (!equals(opt_fixed32, o.opt_fixed32)) return false;
-    if (!equals(opt_sfixed32, o.opt_sfixed32)) return false;
-    if (!equals(opt_int64, o.opt_int64)) return false;
-    if (!equals(opt_uint64, o.opt_uint64)) return false;
-    if (!equals(opt_sint64, o.opt_sint64)) return false;
-    if (!equals(opt_fixed64, o.opt_fixed64)) return false;
-    if (!equals(opt_sfixed64, o.opt_sfixed64)) return false;
-    if (!equals(opt_bool, o.opt_bool)) return false;
-    if (!equals(opt_float, o.opt_float)) return false;
-    if (!equals(opt_double, o.opt_double)) return false;
-    if (!equals(opt_string, o.opt_string)) return false;
-    if (!equals(opt_bytes, o.opt_bytes)) return false;
-    if (!equals(opt_nested_enum, o.opt_nested_enum)) return false;
-    if (!equals(opt_nested_message, o.opt_nested_message)) return false;
-    if (!equals(req_int32, o.req_int32)) return false;
-    if (!equals(req_uint32, o.req_uint32)) return false;
-    if (!equals(req_sint32, o.req_sint32)) return false;
-    if (!equals(req_fixed32, o.req_fixed32)) return false;
-    if (!equals(req_sfixed32, o.req_sfixed32)) return false;
-    if (!equals(req_int64, o.req_int64)) return false;
-    if (!equals(req_uint64, o.req_uint64)) return false;
-    if (!equals(req_sint64, o.req_sint64)) return false;
-    if (!equals(req_fixed64, o.req_fixed64)) return false;
-    if (!equals(req_sfixed64, o.req_sfixed64)) return false;
-    if (!equals(req_bool, o.req_bool)) return false;
-    if (!equals(req_float, o.req_float)) return false;
-    if (!equals(req_double, o.req_double)) return false;
-    if (!equals(req_string, o.req_string)) return false;
-    if (!equals(req_bytes, o.req_bytes)) return false;
-    if (!equals(req_nested_enum, o.req_nested_enum)) return false;
-    if (!equals(req_nested_message, o.req_nested_message)) return false;
-    if (!equals(rep_int32, o.rep_int32)) return false;
-    if (!equals(rep_uint32, o.rep_uint32)) return false;
-    if (!equals(rep_sint32, o.rep_sint32)) return false;
-    if (!equals(rep_fixed32, o.rep_fixed32)) return false;
-    if (!equals(rep_sfixed32, o.rep_sfixed32)) return false;
-    if (!equals(rep_int64, o.rep_int64)) return false;
-    if (!equals(rep_uint64, o.rep_uint64)) return false;
-    if (!equals(rep_sint64, o.rep_sint64)) return false;
-    if (!equals(rep_fixed64, o.rep_fixed64)) return false;
-    if (!equals(rep_sfixed64, o.rep_sfixed64)) return false;
-    if (!equals(rep_bool, o.rep_bool)) return false;
-    if (!equals(rep_float, o.rep_float)) return false;
-    if (!equals(rep_double, o.rep_double)) return false;
-    if (!equals(rep_string, o.rep_string)) return false;
-    if (!equals(rep_bytes, o.rep_bytes)) return false;
-    if (!equals(rep_nested_enum, o.rep_nested_enum)) return false;
-    if (!equals(rep_nested_message, o.rep_nested_message)) return false;
-    if (!equals(pack_int32, o.pack_int32)) return false;
-    if (!equals(pack_uint32, o.pack_uint32)) return false;
-    if (!equals(pack_sint32, o.pack_sint32)) return false;
-    if (!equals(pack_fixed32, o.pack_fixed32)) return false;
-    if (!equals(pack_sfixed32, o.pack_sfixed32)) return false;
-    if (!equals(pack_int64, o.pack_int64)) return false;
-    if (!equals(pack_uint64, o.pack_uint64)) return false;
-    if (!equals(pack_sint64, o.pack_sint64)) return false;
-    if (!equals(pack_fixed64, o.pack_fixed64)) return false;
-    if (!equals(pack_sfixed64, o.pack_sfixed64)) return false;
-    if (!equals(pack_bool, o.pack_bool)) return false;
-    if (!equals(pack_float, o.pack_float)) return false;
-    if (!equals(pack_double, o.pack_double)) return false;
-    if (!equals(pack_nested_enum, o.pack_nested_enum)) return false;
-    if (!equals(default_int32, o.default_int32)) return false;
-    if (!equals(default_uint32, o.default_uint32)) return false;
-    if (!equals(default_sint32, o.default_sint32)) return false;
-    if (!equals(default_fixed32, o.default_fixed32)) return false;
-    if (!equals(default_sfixed32, o.default_sfixed32)) return false;
-    if (!equals(default_int64, o.default_int64)) return false;
-    if (!equals(default_uint64, o.default_uint64)) return false;
-    if (!equals(default_sint64, o.default_sint64)) return false;
-    if (!equals(default_fixed64, o.default_fixed64)) return false;
-    if (!equals(default_sfixed64, o.default_sfixed64)) return false;
-    if (!equals(default_bool, o.default_bool)) return false;
-    if (!equals(default_float, o.default_float)) return false;
-    if (!equals(default_double, o.default_double)) return false;
-    if (!equals(default_string, o.default_string)) return false;
-    if (!equals(default_bytes, o.default_bytes)) return false;
-    if (!equals(default_nested_enum, o.default_nested_enum)) return false;
-    return true;
+    return equals(opt_int32, o.opt_int32)
+        && equals(opt_uint32, o.opt_uint32)
+        && equals(opt_sint32, o.opt_sint32)
+        && equals(opt_fixed32, o.opt_fixed32)
+        && equals(opt_sfixed32, o.opt_sfixed32)
+        && equals(opt_int64, o.opt_int64)
+        && equals(opt_uint64, o.opt_uint64)
+        && equals(opt_sint64, o.opt_sint64)
+        && equals(opt_fixed64, o.opt_fixed64)
+        && equals(opt_sfixed64, o.opt_sfixed64)
+        && equals(opt_bool, o.opt_bool)
+        && equals(opt_float, o.opt_float)
+        && equals(opt_double, o.opt_double)
+        && equals(opt_string, o.opt_string)
+        && equals(opt_bytes, o.opt_bytes)
+        && equals(opt_nested_enum, o.opt_nested_enum)
+        && equals(opt_nested_message, o.opt_nested_message)
+        && equals(req_int32, o.req_int32)
+        && equals(req_uint32, o.req_uint32)
+        && equals(req_sint32, o.req_sint32)
+        && equals(req_fixed32, o.req_fixed32)
+        && equals(req_sfixed32, o.req_sfixed32)
+        && equals(req_int64, o.req_int64)
+        && equals(req_uint64, o.req_uint64)
+        && equals(req_sint64, o.req_sint64)
+        && equals(req_fixed64, o.req_fixed64)
+        && equals(req_sfixed64, o.req_sfixed64)
+        && equals(req_bool, o.req_bool)
+        && equals(req_float, o.req_float)
+        && equals(req_double, o.req_double)
+        && equals(req_string, o.req_string)
+        && equals(req_bytes, o.req_bytes)
+        && equals(req_nested_enum, o.req_nested_enum)
+        && equals(req_nested_message, o.req_nested_message)
+        && equals(rep_int32, o.rep_int32)
+        && equals(rep_uint32, o.rep_uint32)
+        && equals(rep_sint32, o.rep_sint32)
+        && equals(rep_fixed32, o.rep_fixed32)
+        && equals(rep_sfixed32, o.rep_sfixed32)
+        && equals(rep_int64, o.rep_int64)
+        && equals(rep_uint64, o.rep_uint64)
+        && equals(rep_sint64, o.rep_sint64)
+        && equals(rep_fixed64, o.rep_fixed64)
+        && equals(rep_sfixed64, o.rep_sfixed64)
+        && equals(rep_bool, o.rep_bool)
+        && equals(rep_float, o.rep_float)
+        && equals(rep_double, o.rep_double)
+        && equals(rep_string, o.rep_string)
+        && equals(rep_bytes, o.rep_bytes)
+        && equals(rep_nested_enum, o.rep_nested_enum)
+        && equals(rep_nested_message, o.rep_nested_message)
+        && equals(pack_int32, o.pack_int32)
+        && equals(pack_uint32, o.pack_uint32)
+        && equals(pack_sint32, o.pack_sint32)
+        && equals(pack_fixed32, o.pack_fixed32)
+        && equals(pack_sfixed32, o.pack_sfixed32)
+        && equals(pack_int64, o.pack_int64)
+        && equals(pack_uint64, o.pack_uint64)
+        && equals(pack_sint64, o.pack_sint64)
+        && equals(pack_fixed64, o.pack_fixed64)
+        && equals(pack_sfixed64, o.pack_sfixed64)
+        && equals(pack_bool, o.pack_bool)
+        && equals(pack_float, o.pack_float)
+        && equals(pack_double, o.pack_double)
+        && equals(pack_nested_enum, o.pack_nested_enum)
+        && equals(default_int32, o.default_int32)
+        && equals(default_uint32, o.default_uint32)
+        && equals(default_sint32, o.default_sint32)
+        && equals(default_fixed32, o.default_fixed32)
+        && equals(default_sfixed32, o.default_sfixed32)
+        && equals(default_int64, o.default_int64)
+        && equals(default_uint64, o.default_uint64)
+        && equals(default_sint64, o.default_sint64)
+        && equals(default_fixed64, o.default_fixed64)
+        && equals(default_sfixed64, o.default_sfixed64)
+        && equals(default_bool, o.default_bool)
+        && equals(default_float, o.default_float)
+        && equals(default_double, o.default_double)
+        && equals(default_string, o.default_string)
+        && equals(default_bytes, o.default_bytes)
+        && equals(default_nested_enum, o.default_nested_enum);
   }
 
   @Override
