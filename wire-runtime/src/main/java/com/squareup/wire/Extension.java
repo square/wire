@@ -22,13 +22,191 @@ import static com.squareup.wire.Message.Label;
 
 /**
  * An object describing a ProtocolBuffer extension, i.e., a (tag, datatype, label) tuple
- * associated with a particular {@link com.squareup.wire.Message} type being extended.
+ * associated with a particular {@link com.squareup.wire.ExtendableMessage} type being extended.
  *
  * @param <T> the type of message being extended
  * @param <E> the (boxed) Java data type of the extension value
  */
 public final class Extension<T extends ExtendableMessage<?>, E>
     implements Comparable<Extension<?, ?>> {
+
+  public static final class Builder<T extends ExtendableMessage<?>, E> {
+    private final Class<T> extendedType;
+    private final Class<? extends Message> messageType;
+    private final Class<? extends Enum> enumType;
+    private final Datatype datatype;
+    private String name = null;
+    private int tag = -1;
+    private Label label = null;
+
+    private Builder(Class<T> extendedType, Datatype datatype) {
+      this.extendedType = extendedType;
+      this.messageType = null;
+      this.enumType = null;
+      this.datatype = datatype;
+    }
+
+    private Builder(Class<T> extendedType, Class<? extends Message> messageType,
+        Class<? extends Enum> enumType, Datatype datatype) {
+      this.extendedType = extendedType;
+      this.messageType = messageType;
+      this.enumType = enumType;
+      this.datatype = datatype;
+    }
+
+    public Builder<T, E> setName(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder<T, E> setTag(int tag) {
+      this.tag = tag;
+      return this;
+    }
+
+    public Extension<T, E> buildOptional() {
+      this.label = Label.OPTIONAL;
+      validate();
+      return new Extension<T, E>(extendedType, messageType, enumType, name, tag, label, datatype);
+    }
+
+    public Extension<T, E> buildRequired() {
+      this.label = Label.REQUIRED;
+      validate();
+      return new Extension<T, E>(extendedType, messageType, enumType, name, tag, label, datatype);
+    }
+
+    public Extension<T, List<E>> buildRepeated() {
+      this.label = Label.REPEATED;
+      validate();
+      return new Extension<T, List<E>>(extendedType, messageType, enumType, name, tag, label,
+          datatype);
+    }
+
+    public Extension<T, List<E>> buildPacked() {
+      this.label = Label.PACKED;
+      validate();
+      return new Extension<T, List<E>>(extendedType, messageType, enumType, name, tag, label,
+          datatype);
+    }
+
+    private void validate() {
+      if (extendedType == null) {
+        throw new IllegalArgumentException("extendedType == null");
+      }
+      if (name == null) {
+        throw new IllegalArgumentException("name == null");
+      }
+      if (datatype == null) {
+        throw new IllegalArgumentException("datatype == null");
+      }
+      if (label == null) {
+        throw new IllegalArgumentException("label == null");
+      }
+      if (tag <= 0) {
+        throw new IllegalArgumentException("tag == " + tag);
+      }
+      if (datatype == Datatype.MESSAGE) {
+        if (messageType == null || enumType != null) {
+          throw new IllegalStateException("Message w/o messageType or w/ enumType");
+        }
+      } else if (datatype == Datatype.ENUM) {
+        if (messageType != null || enumType == null) {
+          throw new IllegalStateException("Enum w/ messageType or w/o enumType");
+        }
+      } else {
+        if (messageType != null || enumType != null) {
+          throw new IllegalStateException("Scalar w/ messageType or enumType");
+        }
+      }
+    }
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Integer> int32Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Integer>(extendedType, Datatype.INT32);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Integer> sint32Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Integer>(extendedType, Datatype.SINT32);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Integer> uint32Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Integer>(extendedType, Datatype.UINT32);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Integer> fixed32Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Integer>(extendedType, Datatype.FIXED32);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Integer> sfixed32Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Integer>(extendedType, Datatype.SFIXED32);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Long> int64Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Long>(extendedType, Datatype.INT64);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Long> sint64Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Long>(extendedType, Datatype.SINT64);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Long> uint64Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Long>(extendedType, Datatype.UINT64);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Long> fixed64Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Long>(extendedType, Datatype.FIXED64);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Long> sfixed64Extending(
+      Class<T> extendedType) {
+    return new Builder<T, Long>(extendedType, Datatype.SFIXED64);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Boolean> boolExtending(
+      Class<T> extendedType) {
+    return new Builder<T, Boolean>(extendedType, Datatype.BOOL);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, String> stringExtending(
+      Class<T> extendedType) {
+    return new Builder<T, String>(extendedType, Datatype.STRING);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, ByteString> bytesExtending(
+      Class<T> extendedType) {
+    return new Builder<T, ByteString>(extendedType, Datatype.BYTES);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Float> floatExtending(
+      Class<T> extendedType) {
+    return new Builder<T, Float>(extendedType, Datatype.FLOAT);
+  }
+
+  public static <T extends ExtendableMessage<?>> Builder<T, Double> doubleExtending(
+      Class<T> extendedType) {
+    return new Builder<T, Double>(extendedType, Datatype.DOUBLE);
+  }
+
+  public static <T extends ExtendableMessage<?>, E extends Enum> Builder<T, E> enumExtending(
+      Class<E> enumType, Class<T> extendedType) {
+    return new Builder<T, E>(extendedType, null, enumType, Datatype.ENUM);
+  }
+
+  public static <T extends ExtendableMessage<?>, M extends Message> Builder<T, M> messageExtending(
+      Class<M> messageType, Class<T> extendedType) {
+    return new Builder<T, M>(extendedType, messageType, null, Datatype.MESSAGE);
+  }
+
   private final Class<T> extendedType;
   private final Class<? extends Message> messageType;
   private final Class<? extends Enum> enumType;
@@ -37,102 +215,8 @@ public final class Extension<T extends ExtendableMessage<?>, E>
   private final Datatype datatype;
   private final Label label;
 
-  /**
-   * Returns an {@link Extension} instance for a built-in datatype.
-   *
-   * @param extendedType the type of message being extended
-   * @param tag the tag number of the extension
-   * @param label one of {@link Label#OPTIONAL} or {@link Label#REQUIRED}
-   * @param <T> the type of message being extended
-   * @param <E> the (boxed) Java data type of the {@link Extension} value
-   */
-  public static <T extends ExtendableMessage<?>, E> Extension<T, E>
-      getExtension(String name, Class<T> extendedType, int tag, Datatype datatype, Label label) {
-    return new Extension<T, E>(name, extendedType, tag, datatype, label, null, null);
-  }
-
-  /**
-   * Returns an {@link Extension} instance for a repeated built-in datatype.
-   *
-   * @param extendedType the type of message being extended
-   * @param tag the tag number of the extension
-   * @param <T> the type of message being extended
-   * @param <E> the (boxed) Java data type of the {@link Extension} value
-   */
-  public static <T extends ExtendableMessage<?>, E> Extension<T, List<E>>
-      getRepeatedExtension(String name, Class<T> extendedType, int tag, Datatype datatype,
-          boolean packed) {
-    return new Extension<T, List<E>>(name, extendedType, tag, datatype,
-        packed ? Label.PACKED : Label.REPEATED, null, null);
-  }
-
-  /**
-   * Returns an {@link Extension} instance for a message datatype.
-   *
-   * @param extendedType the type of message being extended
-   * @param tag the tag number of the extension
-   * @param label one of {@code Label#OPTIONAL} or {@code Label#REQUIRED}
-   * @param messageType the class type of the {@link Extension}'s message value
-   * @param <T> the type of message being extended
-   * @param <E> the Java data type of the {@link Extension} message value
-   */
-  public static <T extends ExtendableMessage<?>, E extends Message> Extension<T, E>
-      getMessageExtension(String name, Class<T> extendedType, int tag, Label label,
-      Class<E> messageType) {
-    return new Extension<T, E>(name, extendedType, tag, Datatype.MESSAGE, label, messageType, null);
-  }
-
-  /**
-   * Returns an {@link Extension} instance for a repeated message datatype.
-   *
-   * @param extendedType the type of message being extended
-   * @param tag the tag number of the extension
-   * @param messageType the class type of the {@link Extension}'s message value
-   * @param <T> the type of message being extended
-   * @param <E> the Java data type of the {@link Extension} message value
-   */
-  public static <T extends ExtendableMessage<?>, E extends Message> Extension<T, List<E>>
-      getRepeatedMessageExtension(String name, Class<T> extendedType, int tag,
-          Class<E> messageType) {
-    return new Extension<T, List<E>>(name, extendedType, tag, Datatype.MESSAGE, Label.REPEATED,
-        messageType, null);
-  }
-
-  /**
-   * Returns an {@link Extension} instance for an enum datatype.
-   *
-   * @param extendedType the type of message being extended
-   * @param tag the tag number of the extension
-   * @param label one of {@code Label#OPTIONAL} or {@code Label#REQUIRED}
-   * @param enumType the class type of the {@link Extension}'s enum value
-   * @param <T> the type of message being extended
-   * @param <E> the Java data type of the {@link Extension} enum value
-   */
-  public static <T extends ExtendableMessage<?>, E extends Enum> Extension<T, E>
-      getEnumExtension(String name, Class<T> extendedType, int tag, Label label,
-          Class<E> enumType) {
-    return new Extension<T, E>(name, extendedType, tag, Datatype.ENUM, label, null, enumType);
-  }
-
-  /**
-   * Returns an {@link Extension} instance for a repeated enum datatype.
-   *
-   * @param extendedType the type of message being extended
-   * @param tag the tag number of the extension
-   * @param packed true if the '[packed = true]' extension is present
-   * @param enumType the class type of the {@link Extension}'s enum value
-   * @param <T> the type of message being extended
-   * @param <E> the Java data type of the {@link Extension} enum value
-   */
-  public static <T extends ExtendableMessage<?>, E extends Enum> Extension<T, List<E>>
-      getRepeatedEnumExtension(String name, Class<T> extendedType, int tag, boolean packed,
-      Class<E> enumType) {
-    return new Extension<T, List<E>>(name, extendedType, tag, Datatype.ENUM,
-        packed ? Label.PACKED : Label.REPEATED, null, enumType);
-  }
-
-  Extension(String name, Class<T> extendedType, int tag, Datatype datatype, Label label,
-      Class<? extends Message> messageType, Class<? extends Enum> enumType) {
+  private Extension(Class<T> extendedType, Class<? extends Message> messageType,
+      Class<? extends Enum> enumType, String name, int tag, Label label, Datatype datatype) {
     this.extendedType = extendedType;
     this.name = name;
     this.tag = tag;
