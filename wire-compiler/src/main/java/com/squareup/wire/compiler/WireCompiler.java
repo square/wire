@@ -339,11 +339,6 @@ public class WireCompiler {
     imports.addAll(getExtensionTypes());
     writer.emitImports(imports);
     writer.emitEmptyLine();
-    if (hasScalarExtension()) {
-      writer.emitStaticImports("com.squareup.wire.Message.Datatype");
-    }
-    writer.emitStaticImports("com.squareup.wire.Message.Label");
-    writer.emitEmptyLine();
 
     String className = "Ext_" + protoFileName;
     writer.beginType(className, "class", EnumSet.of(PUBLIC, FINAL));
@@ -377,44 +372,49 @@ public class WireCompiler {
             + field.getName();
         int tag = field.getTag();
 
-        if (isScalar(fieldType)) {
-          if (isRepeated(field)) {
-            initialValue = String.format(
-                "Extension.getRepeatedExtension(\"%s\", %s.class, %s, Datatype.%s, %s)",
-                fqName, className, tag, scalarTypeConstant(field.getType()),
-                    isPacked(field, false));
-          } else {
-            initialValue = String.format(
-                "Extension.getExtension(\"%s\", %s.class, %s, Datatype.%s, Label.%s)",
-                    fqName, className, tag, scalarTypeConstant(field.getType()), field.getLabel());
-          }
-        } else if (isEnum(fullyQualifiedName(null, fieldType))) {
-          if (isRepeated(field)) {
-            initialValue = String.format(
-                "Extension.getRepeatedEnumExtension(\"%s\", %s.class, %s, %s, %s.class)",
-                    fqName, className, tag, isPacked(field, true), type);
-          } else {
-            initialValue = String.format(
-                "Extension.getEnumExtension(\"%s\", %s.class, %s, Label.%s, %s.class)",
-                    fqName, className, tag, field.getLabel(), type);
-          }
+        boolean isScalar = isScalar(fieldType);
+        boolean isEnum = !isScalar && isEnum(fullyQualifiedName(null, fieldType));
+        String labelString = getLabelString(field, isEnum);
+        if (isScalar) {
+          initialValue = String.format("Extension\n"
+              + "      .%sExtending(%s.class)\n"
+              + "      .setName(\"%s\")\n"
+              + "      .setTag(%d)\n"
+              + "      .build%s()",
+              field.getType(), className, fqName, tag, labelString);
+        } else if (isEnum) {
+          initialValue = String.format("Extension\n"
+              + "      .enumExtending(%s.class, %s.class)\n"
+              + "      .setName(\"%s\")\n"
+              + "      .setTag(%d)\n"
+              + "      .build%s()",
+              type, className, fqName, tag, labelString);
         } else {
-          if (isRepeated(field)) {
-            initialValue = String.format(
-                "Extension.getRepeatedMessageExtension(\"%s\", %s.class, %s, %s.class)",
-                    fqName, className, tag, type);
-          } else {
-            initialValue = String.format(
-                "Extension.getMessageExtension(\"%s\", %s.class, %s, Label.%s, %s.class)",
-                    fqName, className, tag, field.getLabel(), type);
-          }
+          initialValue = String.format("Extension\n"
+              + "      .messageExtending(%s.class, %s.class)\n"
+              + "      .setName(\"%s\")\n"
+              + "      .setTag(%d)\n"
+              + "      .build%s()",
+              type, className, fqName, tag, labelString);
         }
+
         if (isRepeated(field)) {
           type = "List<" + type + ">";
         }
         writer.emitField("Extension<" + name + ", " + type + ">", extensionName,
             EnumSet.of(PUBLIC, STATIC, FINAL), initialValue);
       }
+    }
+  }
+
+  private String getLabelString(Field field, boolean isEnum) {
+    switch (field.getLabel()) {
+      case OPTIONAL: return "Optional";
+      case REQUIRED: return "Required";
+      case REPEATED:
+        return isPacked(field, isEnum) ? "Packed" : "Repeated";
+      default:
+        throw new RuntimeException("Unknown extension label \"" + field.getLabel() + "\"");
     }
   }
 
