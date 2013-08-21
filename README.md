@@ -24,7 +24,7 @@ For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`,
 
     % mvn clean package
 
-    % java -jar wire-compiler/target/wire-compiler-0.3-SNAPSHOT-jar-with-dependencies.jar \
+    % java -jar wire-compiler/target/wire-compiler-0.6-SNAPSHOT-jar-with-dependencies.jar \
         --proto_path=protos-repo \
         --java_out=out google/protobuf/descriptor.proto
 
@@ -53,7 +53,7 @@ relative to the value given for the `--proto_path` flag.
     yourcompany/protos/stuff.proto
     ...
 
-    % java -jar wire-compiler/target/wire-compiler-0.3-SNAPSHOT-jar-with-dependencies.jar \
+    % java -jar wire-compiler/target/wire-compiler-0.6-SNAPSHOT-jar-with-dependencies.jar \
         --proto_path=protos-repo \
         --java_out=out \
         --files=protos.include
@@ -80,7 +80,7 @@ For Maven projects, simply add `wire-runtime` as a dependency:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>0.5-SNAPSHOT</version>
+  <version>0.6-SNAPSHOT</version>
 </dependency>
 ```
 

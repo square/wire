@@ -104,7 +104,7 @@ public class WireTest {
     msg.writeTo(result, 0, result.length);
     assertEquals(46, result.length);
 
-    SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, result);
+    SimpleMessage newMsg = wire.parseFrom(result, SimpleMessage.class);
     assertEquals(new Integer(789), newMsg.optional_int32);
     assertEquals(new Integer(2), newMsg.optional_nested_msg.bb);
     assertEquals(new Float(99.9F), newMsg.optional_external_msg.f);
@@ -144,7 +144,7 @@ public class WireTest {
     msg.writeTo(result);
     assertEquals(29, result.length);
 
-    SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, result);
+    SimpleMessage newMsg = wire.parseFrom(result, SimpleMessage.class);
     assertEquals(Arrays.asList(444, 555), newMsg.optional_external_msg.getExtension(fooext));
     assertEquals(new Integer(333), newMsg.optional_external_msg.getExtension(barext));
     assertEquals(new Integer(222), newMsg.optional_external_msg.getExtension(bazext));
@@ -189,7 +189,7 @@ public class WireTest {
     msg.writeTo(result);
     assertEquals(21, result.length);
 
-    SimpleMessage newMsg = wire.parseFrom(SimpleMessage.class, result);
+    SimpleMessage newMsg = wire.parseFrom(result, SimpleMessage.class);
     assertNull(newMsg.optional_external_msg.getExtension(fooext));
     assertNull(newMsg.optional_external_msg.getExtension(barext));
     assertNull(newMsg.optional_external_msg.getExtension(bazext));
