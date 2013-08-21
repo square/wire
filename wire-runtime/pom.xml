@@ -12,10 +12,7 @@
   </parent>
 
   <artifactId>wire-runtime</artifactId>
-
   <name>Wire Protocol Buffer Runtime</name>
-  <description>A lightweight protocol buffer implementation for mobile devices</description>
-  <inceptionYear>2013</inceptionYear>
 
   <dependencies>
     <dependency>

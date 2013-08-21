@@ -12,10 +12,7 @@
   </parent>
 
   <artifactId>wire-gson-support</artifactId>
-
   <name>Wire Protocol Buffer Gson Support</name>
-  <description>Gson Type adapter for Wire</description>
-  <inceptionYear>2013</inceptionYear>
 
   <dependencies>
     <dependency>
@@ -24,14 +21,14 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.2.4</version>
     </dependency>
   </dependencies>
 </project>

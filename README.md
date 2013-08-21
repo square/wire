@@ -80,7 +80,7 @@ For Maven projects, simply add `wire-runtime` as a dependency:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>0.6-SNAPSHOT</version>
+  <version>(latest version)</version>
 </dependency>
 ```
 
@@ -92,7 +92,7 @@ on the command line. Each message class has an associated Builder class that may
 an instance manually:
 
     MyMessage msg = new MyMessage.Builder().some_int_field(123).build();
-    
+
 Note that field names are not converted to camel case.
 
 Wire messages contain a `public final` field for each field of the protocol buffer message.
@@ -106,36 +106,44 @@ If a field is unset, its value is `null`. Wire does not generate methods such as
 A field `some_field` has a constant `DEFAULT_SOME_FIELD` containing the default value for that
 field. A convenience method `Wire.get` allows substitution of a default value for `null`:
 
-    // Equivalent to:
-    // x = msg.some_field != null ? msg.some_field :  MyMessage.DEFAULT_SOME_FIELD
-    
-    int x = Wire.get(msg.some_field, MyMessage.DEFAULT_SOME_FIELD);
-    
+```java
+// Equivalent to:
+// x = msg.some_field != null ? msg.some_field :  MyMessage.DEFAULT_SOME_FIELD
+
+int x = Wire.get(msg.some_field, MyMessage.DEFAULT_SOME_FIELD);
+```
+
 Builders contain a `public` field for each field of the protocol buffer message, as well as
 a method with the same name that sets the given value and returns the Builder instance for
 chaining.
 
 You can serialize a message by calling its `write` or `toByteArray` methods:
 
-    byte[] serializedMsg = msg.toByteArray();
+```java
+byte[] serializedMsg = msg.toByteArray();
+```
 
 To parse messages from their serialized representations, use the `Wire` class. Typically you
 will want to create a singleton instance of `Wire` for use throughout your application.
 
-    Wire wire = new Wire();
-    MyMessage newMsg = wire.parseFrom(MyMessage.class, serializedMsg);
-    int x = newMsg.some_int_field; // 123
-    
+```java
+Wire wire = new Wire();
+MyMessage newMsg = wire.parseFrom(MyMessage.class, serializedMsg);
+int x = newMsg.some_int_field; // 123
+```
+
 To use protocol buffer extensions, pass the classes that define the extensions you
 wish to use as arguments to the `Wire` constructor:
 
-    // Assume MessageWithExtensions contains a message SomeMessage that defines
-    // an extension field some_extension to the MyMessage message. 
-    Wire wire = new Wire(MessageWithExtensions.class);
-    MyMessage msg = new MyMessage.Builder()
-        .setExtension(Ext_SomeMessage.some_extension, 3)
-        .build();
-    int x = msg.getExtension(Ext_MessageWithExtensions.some_extension); // 3
+```java
+// Assume MessageWithExtensions contains a message SomeMessage that defines
+// an extension field some_extension to the MyMessage message.
+Wire wire = new Wire(MessageWithExtensions.class);
+MyMessage msg = new MyMessage.Builder()
+    .setExtension(Ext_SomeMessage.some_extension, 3)
+    .build();
+int x = msg.getExtension(Ext_MessageWithExtensions.some_extension); // 3
+```
 
 Unsupported
 -----------
