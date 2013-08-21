@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
 
 
 /**
- * An annotation placed on {@link Enum} values in generated code to provide necessary
- * metadata for the protocol buffer runtime to perform serialization and deserialization.
+ * Annotates generated {@link Enum} values with metadata for serialization and
+ * deserialization.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

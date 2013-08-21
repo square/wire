@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 import static com.squareup.wire.Message.Label;
 
 /**
- * An annotation placed on {@link Message} fields in generated code to provide necessary
- * metadata for the protocol buffer runtime to perform serialization and deserialization.
+ * Annotates generated {@link Message} fields with metadata for serialization and
+ * deserialization.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
