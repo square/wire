@@ -12,10 +12,7 @@
   </parent>
 
   <artifactId>wire-compiler</artifactId>
-
   <name>Wire Protocol Buffer Compiler</name>
-  <description>Compiler for the Wire protocol buffer implementation</description>
-  <inceptionYear>2013</inceptionYear>
 
   <dependencies>
     <dependency>
