@@ -315,7 +315,7 @@ public class TestAllTypes {
   public void testRead() throws IOException {
     byte[] data = new byte[TestAllTypesData.expectedOutput.length];
     allTypes.writeTo(data, 0, data.length);
-    AllTypes parsed = wire.parseFrom(AllTypes.class, data);
+    AllTypes parsed = wire.parseFrom(data, AllTypes.class);
     assertEquals(allTypes, parsed);
 
     assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
@@ -333,13 +333,13 @@ public class TestAllTypes {
   public void testReadNoExtension() throws IOException {
     byte[] data = new byte[TestAllTypesData.expectedOutput.length];
     allTypes.writeTo(data, 0, data.length);
-    AllTypes parsed = new Wire().parseFrom(AllTypes.class, data);
+    AllTypes parsed = new Wire().parseFrom(data, AllTypes.class);
     assertFalse(allTypes.equals(parsed));
   }
 
   @Test
   public void testReadNonPacked() throws IOException {
-    AllTypes parsed = wire.parseFrom(AllTypes.class, TestAllTypesData.nonPacked);
+    AllTypes parsed = wire.parseFrom(TestAllTypesData.nonPacked, AllTypes.class);
     assertEquals(allTypes, parsed);
   }
 
@@ -347,7 +347,7 @@ public class TestAllTypes {
   public void testToString() throws IOException {
     byte[] data = new byte[TestAllTypesData.expectedOutput.length];
     allTypes.writeTo(data, 0, data.length);
-    AllTypes parsed = wire.parseFrom(AllTypes.class, data);
+    AllTypes parsed = wire.parseFrom(data, AllTypes.class);
     assertEquals(TestAllTypesData.expectedToString, parsed.toString());
   }
 
@@ -428,7 +428,7 @@ public class TestAllTypes {
     System.arraycopy(TestAllTypesData.expectedOutput, 17, data, index,
         TestAllTypesData.expectedOutput.length - 17);
 
-    AllTypes parsed = wire.parseFrom(AllTypes.class, data);
+    AllTypes parsed = wire.parseFrom(data, AllTypes.class);
     assertEquals(allTypes, parsed);
   }
 
