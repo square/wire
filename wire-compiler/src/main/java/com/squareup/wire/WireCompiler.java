@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.compiler;
+package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.EnumType;
@@ -22,9 +22,6 @@ import com.squareup.protoparser.MessageType;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 import com.squareup.protoparser.Type;
-import com.squareup.wire.Base64;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -441,17 +438,6 @@ public class WireCompiler {
     return false;
   }
 
-  private boolean hasScalarExtension() {
-    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
-      for (MessageType.Field field : extend.getFields()) {
-        if (isScalar(field.getType())) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   private boolean hasExtensions(MessageType messageType) {
     return !messageType.getExtensions().isEmpty();
   }
@@ -562,7 +548,7 @@ public class WireCompiler {
       if (initialValue == null) {
         return "ByteString.EMPTY";
       } else {
-        return "ByteString.of(\"" + Base64.encode(initialValue.getBytes(ISO_8859_1)) + "\")";
+        return "ByteString.of(\"" + Stringer.encode(initialValue.getBytes(ISO_8859_1)) + "\")";
       }
     } else {
       throw new IllegalArgumentException(javaTypeName + " is not an allowed scalar type");

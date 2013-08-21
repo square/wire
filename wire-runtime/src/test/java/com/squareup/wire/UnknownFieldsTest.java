@@ -46,7 +46,7 @@ public class UnknownFieldsTest {
     byte[] v2Bytes = v2.toByteArray();
 
     // Parse
-    VersionOne v1 = wire.parseFrom(VersionOne.class, v2Bytes);
+    VersionOne v1 = wire.parseFrom(v2Bytes, VersionOne.class);
     // v.1 fields are visible, v.2 fields are in unknownFieldSet
     assertEquals(new Integer(111), v1.i);
     // Serialized output should still contain the v.2 fields
@@ -59,7 +59,7 @@ public class UnknownFieldsTest {
     assertNotSame(v1Simple.toByteArray(), v1.toByteArray());
 
     // Re-parse
-    VersionTwo v2B = wire.parseFrom(VersionTwo.class, v1Bytes);
+    VersionTwo v2B = wire.parseFrom(v1Bytes, VersionTwo.class);
     assertEquals(new Integer(111), v2B.i);
     assertEquals(new Integer(12345), v2B.v2_i);
     assertEquals("222", v2B.v2_s);
@@ -71,7 +71,7 @@ public class UnknownFieldsTest {
     assertEquals(new Integer(777), v1Modified.i);
     byte[] v1ModifiedBytes = v1Modified.toByteArray();
 
-    VersionTwo v2C = wire.parseFrom(VersionTwo.class, v1ModifiedBytes);
+    VersionTwo v2C = wire.parseFrom(v1ModifiedBytes, VersionTwo.class);
     assertEquals(new Integer(777), v2C.i);
     assertEquals(new Integer(12345), v2C.v2_i);
     assertEquals("222", v2C.v2_s);

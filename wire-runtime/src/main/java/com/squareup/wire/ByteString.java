@@ -51,7 +51,7 @@ public final class ByteString {
    * as Base64.
    */
   public static ByteString of(String data) {
-    return new ByteString(Base64.decode(data));
+    return new ByteString(Stringer.decode(data));
   }
 
   /**
@@ -116,6 +116,6 @@ public final class ByteString {
    * Returns a string containing the contents of this ByteString in Base64 format.
    */
   @Override public String toString() {
-    return Base64.encode(data);
+    return Stringer.encode(data);
   }
 }

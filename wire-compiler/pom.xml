@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.squareup.wire</groupId>
     <artifactId>wire</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
   </parent>
 
   <artifactId>wire-compiler</artifactId>
@@ -49,7 +49,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.squareup.wire.compiler.WireCompiler</mainClass>
+              <mainClass>com.squareup.wire.WireCompiler</mainClass>
             </manifest>
           </archive>
         </configuration>
