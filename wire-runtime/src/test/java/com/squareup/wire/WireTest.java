@@ -86,7 +86,7 @@ public class WireTest {
       builder.build();
       fail();
     } catch (IllegalStateException e) {
-      assertEquals("Required field not set:\n  required_int32\n", e.getMessage());
+      assertEquals("Required field not set:\n  required_int32", e.getMessage());
     }
 
     // The message list is immutable
@@ -148,6 +148,20 @@ public class WireTest {
     assertEquals(Arrays.asList(444, 555), newMsg.optional_external_msg.getExtension(fooext));
     assertEquals(new Integer(333), newMsg.optional_external_msg.getExtension(barext));
     assertEquals(new Integer(222), newMsg.optional_external_msg.getExtension(bazext));
+  }
+
+  @Test
+  public void extensionToString() {
+    assertEquals("[REPEATED INT32 squareup.protos.simple.fooext = 125]",
+        Ext_simple_message.fooext.toString());
+    assertEquals("[OPTIONAL INT32 squareup.protos.simple.barext = 126]",
+        Ext_simple_message.barext.toString());
+    assertEquals("[REQUIRED INT32 squareup.protos.simple.bazext = 127]",
+        Ext_simple_message.bazext.toString());
+    assertEquals("[OPTIONAL ENUM squareup.protos.simple.nested_enum_ext = 129]",
+        Ext_simple_message.nested_enum_ext.toString());
+    assertEquals("[OPTIONAL ENUM squareup.protos.simple.nested_enum_ext = 129]",
+        Ext_simple_message.nested_enum_ext.toString());
   }
 
   @Test

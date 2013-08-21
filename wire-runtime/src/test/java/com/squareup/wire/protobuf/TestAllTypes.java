@@ -361,7 +361,7 @@ public class TestAllTypes {
       builder.build();
       fail();
     } catch (IllegalStateException e) {
-      assertEquals("Required field not set:\n  req_bool\n", e.getMessage());
+      assertEquals("Required field not set:\n  req_bool", e.getMessage());
     }
 
     builder.req_int32(null);
@@ -370,7 +370,7 @@ public class TestAllTypes {
       builder.build();
       fail();
     } catch (IllegalStateException e) {
-      assertEquals("Required fields not set:\n  req_bool\n  req_int32\n  req_sfixed64\n",
+      assertEquals("Required fields not set:\n  req_bool\n  req_int32\n  req_sfixed64",
         e.getMessage());
     }
   }

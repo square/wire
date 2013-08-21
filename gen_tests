@@ -1,3 +1,3 @@
-mvn clean package -U
-java -jar compiler/target/wire-compiler-0.1-SNAPSHOT.jar --proto_path=runtime/src/main/proto --java_out=runtime/src/test/java all_types.proto
-java -jar compiler/target/wire-compiler-0.1-SNAPSHOT.jar --proto_path=runtime/src/main/proto --java_out=runtime/src/test/java simple_message.proto external_message.proto
+mvn clean package -U -DskipTests
+java -jar wire-compiler/target/wire-compiler-0.5-SNAPSHOT-jar-with-dependencies.jar --proto_path=wire-runtime/src/test/proto --java_out=wire-runtime/src/test/java all_types.proto
+java -jar wire-compiler/target/wire-compiler-0.5-SNAPSHOT-jar-with-dependencies.jar --proto_path=wire-runtime/src/test/proto --java_out=wire-runtime/src/test/java simple_message.proto external_message.proto

@@ -24,16 +24,14 @@ import java.util.List;
 import static com.squareup.wire.Message.Label;
 
 /**
- * An adapter than can check for the presence of required fields on a {@link Message.Builder}.
- *
- * @param <B> the Builder class handled by this adapter.
+ * An adapter than can check for the presence of required fields on a {@link
+ * Message.Builder}.
  */
 final class BuilderAdapter<B extends Message.Builder> {
 
   private static final int SUFFIX_LENGTH = "$Builder".length();
-  private static final String INDENT = "  ";
 
-  private static final Comparator<Field> FIELD_COMPARATOR = new Comparator<Field>() {
+  private static final Comparator<Field> ORDER_BY_FIELD_NAME = new Comparator<Field>() {
     @Override public int compare(Field field1, Field field2) {
       return field1.getName().compareTo(field2.getName());
     }
@@ -65,8 +63,8 @@ final class BuilderAdapter<B extends Message.Builder> {
         }
       }
     }
-    // Sort by name
-    Collections.sort(requiredFields, FIELD_COMPARATOR);
+
+    Collections.sort(requiredFields, ORDER_BY_FIELD_NAME);
   }
 
   public <B extends Message.Builder> void checkRequiredFields(B builder) {
@@ -83,13 +81,12 @@ final class BuilderAdapter<B extends Message.Builder> {
             // Found more than one missing field
             plural = "s";
           }
-          sb.append(INDENT);
+          sb.append("\n  ");
           sb.append(f.getName());
-          sb.append('\n');
         }
       }
       if (sb != null) {
-        throw new IllegalStateException("Required field" + plural + " not set:\n" + sb.toString());
+        throw new IllegalStateException("Required field" + plural + " not set:" + sb);
       }
     } catch (IllegalAccessException e) {
       throw new AssertionError("Unable to access required fields");
