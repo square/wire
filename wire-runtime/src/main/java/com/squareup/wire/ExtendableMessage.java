@@ -19,18 +19,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Superclass for protocol buffer messages that declare an extension range.
+ * A message that declares an extension range.
  *
  * @param <T> the message type being extended.
  */
 public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends Message {
 
   @SuppressWarnings("unchecked")
-  transient ExtensionMap<T> extensionMap;
+  transient ExtensionMap<T> extensionMap; // Null if empty.
 
-  /**
-   * Constructs an ExtendableMessage initialized to the current builder state.
-   */
   protected ExtendableMessage(ExtendableBuilder<T> builder) {
     super(builder);
     if (builder.extensionMap != null) {
@@ -39,7 +36,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
   }
 
   /**
-   * Returns a {@link List} of extensions that are present on this message instance in tag order.
+   * Returns an immutable list of the extensions on this message in tag order.
    */
   public List<Extension<T, ?>> getExtensions() {
     return extensionMap == null ? Collections.<Extension<T, ?>>emptyList()
@@ -47,19 +44,16 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
   }
 
   /**
-   * Returns the value of an extension field set on this message.
-   *
-   * @param extension the {@link Extension}
-   * @param <E> the (boxed) Java datatype of the extension value
-   * @return the extension value, or null
+   * Returns the value for {@code extension} on this message, or null if no
+   * value is set.
    */
   public <E> E getExtension(Extension<T, E> extension) {
     return extensionMap == null ? null : extensionMap.get(extension);
   }
 
   /**
-   * Returns true if the set of extensions on this message is equal to the set of extensions
-   * on the given message.
+   * Returns true if the extensions on this message equals the extensions of
+   * {@code other}.
    */
   protected boolean extensionsEqual(ExtendableMessage<T> other) {
     if (extensionMap == null) {
@@ -69,27 +63,27 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
   }
 
   /**
-   * Returns a hash code for the current set of extensions.
+   * Returns a hash code for the extensions on this message.
    */
   protected int extensionsHashCode() {
     return extensionMap == null ? 0 : extensionMap.hashCode();
   }
 
   /**
-   * Returns a human-readable dump of the current set of extensions.
+   * Returns a string describing the extensions on this message.
    */
   String extensionsToString() {
     return extensionMap == null ? "{}" : extensionMap.toString();
   }
 
   /**
-   * Superclass for builders of extensible protocol buffer messages.
+   * Builds a message that declares an extension range.
    */
   public abstract static class ExtendableBuilder<T extends ExtendableMessage<?>>
       extends Builder<T> {
 
     @SuppressWarnings("unchecked")
-    ExtensionMap<T> extensionMap;
+    ExtensionMap<T> extensionMap; // Null if empty.
 
     protected ExtendableBuilder() {
     }
@@ -102,23 +96,15 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
     }
 
     /**
-     * Returns the value of an extension field set on this builder.
-     *
-     * @param extension the {@link Extension}
-     * @param <E> the (boxed) Java datatype of the extension value
-     * @return the extension value, or null
+     * Returns the value for {@code extension} on this message, or null if no
+     * value is set.
      */
     public <E> E getExtension(Extension<T, E> extension) {
       return extensionMap == null ? null : extensionMap.get(extension);
     }
 
     /**
-     * Sets the value of an extension field on this builder.
-     *
-     * @param extension the {@link Extension}
-     * @param value the extension value
-     * @param <E> the (boxed) Java datatype of the extension value
-     * @return a reference to this builder
+     * Sets the value of {@code extension} on this builder to {@code value}.
      */
     public <E> ExtendableBuilder<T> setExtension(Extension<T, E> extension, E value) {
       if (extensionMap == null) {

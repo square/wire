@@ -391,7 +391,7 @@ final class MessageAdapter<M extends Message> {
         continue;
       }
       sb.append(sep);
-      sep = ",";
+      sep = ", ";
       sb.append(fieldInfo.name);
       sb.append("=");
       sb.append(value);

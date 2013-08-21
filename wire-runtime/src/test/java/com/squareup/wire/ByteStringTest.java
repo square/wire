@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

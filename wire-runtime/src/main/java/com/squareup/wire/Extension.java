@@ -21,8 +21,33 @@ import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
 
 /**
- * An object describing a ProtocolBuffer extension, i.e., a (tag, datatype, label) tuple
- * associated with a particular {@link com.squareup.wire.ExtendableMessage} type being extended.
+ * An extended attribute of on a protocol buffer message. Extensions are used to
+ * declare additional fields for a message beyond the message's original
+ * declaration. For example, this declaration defines two extended attributes
+ * for a {@code MenuItem} message: <pre>   {@code
+ *
+ *   extend MenuItem {
+ *     optional int32 calorie_count = 10001;
+ *     optional int32 fat_grams = 10002;
+ *   }
+ * }</pre>
+ *
+ * <p>An extension instance is a key; it names the attribute. Use it to set a
+ * value on a message's builder, or to get the value on a message. <pre>   {@code
+ *
+ *   MenuItem sandwich = new MenuItem.Builder()
+ *       .setBread(Bread.SOURDOUGH)
+ *       .setExtension(Ext_nutrition.calorie_count, 300)
+ *       .setExtension(Ext_nutrition.fat_grams, 6)
+ *       .build();
+ *   int calorieCount = sandwich.getExtension(Ext_nutrition.calorie_count));
+ *   int fatGrams = sandwich.getExtension(Ext_nutrition.fat_grams));
+ * }</pre>
+ *
+ * <p>Application code shouldn't create extension instances directly; instead
+ * they should use the generated instances created with {@code Ext_} prefixes.
+ * To serialize and deserialize extensions, specify all of your {@code Ext_}
+ * classes when creating a {@link Wire} instance.
  *
  * @param <T> the type of message being extended
  * @param <E> the (boxed) Java data type of the extension value
@@ -230,6 +255,9 @@ public final class Extension<T extends ExtendableMessage<?>, E>
    * Orders Extensions in ascending tag order.
    */
   @Override public int compareTo(Extension<?, ?> o) {
+    if (o == this) {
+      return 0;
+    }
     if (tag != o.tag) {
       return tag - o.tag;
     }
@@ -240,13 +268,13 @@ public final class Extension<T extends ExtendableMessage<?>, E>
       return label.value() - o.label.value();
     }
     if (extendedType != null && !extendedType.equals(o.extendedType)) {
-      return extendedType.getCanonicalName().compareTo(o.extendedType.getCanonicalName());
+      return extendedType.getName().compareTo(o.extendedType.getName());
     }
     if (messageType != null && !messageType.equals(o.messageType)) {
-      return messageType.getCanonicalName().compareTo(o.messageType.getCanonicalName());
+      return messageType.getName().compareTo(o.messageType.getName());
     }
     if (enumType != null && !enumType.equals(o.enumType)) {
-      return enumType.getCanonicalName().compareTo(o.enumType.getCanonicalName());
+      return enumType.getName().compareTo(o.enumType.getName());
     }
     return 0;
   }
@@ -259,10 +287,14 @@ public final class Extension<T extends ExtendableMessage<?>, E>
     int hash = tag;
     hash = hash * 37 + datatype.value();
     hash = hash * 37 + label.value();
-    hash = hash * 37 + extendedType.getCanonicalName().hashCode();
-    hash = hash * 37 + (messageType != null ? messageType.getCanonicalName().hashCode() : 0);
-    hash = hash * 37 + (enumType != null ? enumType.getCanonicalName().hashCode() : 0);
+    hash = hash * 37 + extendedType.hashCode();
+    hash = hash * 37 + (messageType != null ? messageType.hashCode() : 0);
+    hash = hash * 37 + (enumType != null ? enumType.hashCode() : 0);
     return hash;
+  }
+
+  @Override public String toString() {
+    return String.format("[%s %s %s = %d]", label, datatype, name, tag);
   }
 
   public Class<T> getExtendedType() {

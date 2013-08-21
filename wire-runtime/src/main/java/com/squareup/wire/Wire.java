@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main class for Wire mobile protocol buffers.
+ * Encode and decode Wire protocol buffers.
  */
 public final class Wire {
 
@@ -40,18 +40,18 @@ public final class Wire {
   final ExtensionRegistry registry;
 
   /**
-   * Register all {@link Extension} objects defined as static fields on the given classes.
-   *
-   * @param extensionClasses an array of zero or more classes to search
+   * Creates a new Wire that can encode and decode the extensions specified in
+   * {@code extensionClasses}. Typically the classes in this list are generated
+   * and start with the "Ext_" prefix.
    */
   public Wire(Class<?>... extensionClasses) {
     this(Arrays.asList(extensionClasses));
   }
 
   /**
-   * Register all {@link Extension} objects defined as static fields on the given classes.
-   *
-   * @param extensionClasses a list of zero or more classes to search
+   * Creates a new Wire that can encode and decode the extensions specified in
+   * {@code extensionClasses}. Typically the classes in this list are generated
+   * and start with the "Ext_" prefix.
    */
   public Wire(List<Class<?>> extensionClasses) {
     this.registry = new ExtensionRegistry();
@@ -62,7 +62,7 @@ public final class Wire {
             Extension extension = (Extension) field.get(null);
             registry.add(extension);
           } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
           }
         }
       }
@@ -70,9 +70,7 @@ public final class Wire {
   }
 
   /**
-   * Returns a {@link MessageAdapter} for the given message type.
-   *
-   * @param messageType the {@link Message} class
+   * Returns a message adapter for {@code messageType}.
    */
   @SuppressWarnings("unchecked")
   synchronized <M extends Message> MessageAdapter<M> messageAdapter(Class<M> messageType) {
@@ -85,9 +83,7 @@ public final class Wire {
   }
 
   /**
-   * Returns a {@link BuilderAdapter} for the given message type.
-   *
-   * @param builderType the {@link Message.Builder} class
+   * Returns a builder adapter for {@code builderType}.
    */
   @SuppressWarnings("unchecked")
   synchronized <B extends Message.Builder> BuilderAdapter<B>
@@ -101,9 +97,7 @@ public final class Wire {
   }
 
   /**
-   * Returns an {@link EnumAdapter} for the given enum class.
-   *
-   * @param enumClass the enum class
+   * Returns an enum adapter for {@code enumClass}.
    */
   @SuppressWarnings("unchecked")
   synchronized <E extends Enum> EnumAdapter<E> enumAdapter(Class<E> enumClass) {
@@ -116,29 +110,16 @@ public final class Wire {
   }
 
   /**
-   * Parse an entire byte array into a {@link Message} of the given message class.
-   * Equivalent to {@code parseFrom(messageClass, bytes, 0, bytes.length)}.
-   *
-   * @param messageClass the class of the outermost {@link Message}
-   * @param bytes an array of bytes
-   * @param <M> the outermost {@link Message} class
-   * @return an instance of the desired message class
-   * @throws IOException if parsing fails
+   * Reads a message of type {@code messageClass} from {@code bytes} and returns
+   * it.
    */
   public <M extends Message> M parseFrom(Class<M> messageClass, byte[] bytes) throws IOException {
     return parseFrom(messageClass, bytes, 0, bytes.length);
   }
 
   /**
-   * Parses a given range of bytes into a {@link Message} of the given message class.
-   *
-   * @param messageClass the class of the outermost {@link Message}
-   * @param bytes an array of bytes
-   * @param offset the starting offset within the array
-   * @param count the number of bytes to use
-   * @param <M> the outermost {@link Message} class
-   * @return an instance of the desired message class
-   * @throws IOException if parsing fails
+   * Reads a message of type {@code messageClass} from the given range of {@code
+   * bytes} and returns it.
    */
   public <M extends Message> M parseFrom(Class<M> messageClass,
       byte[] bytes, int offset, int count) throws IOException {
@@ -146,13 +127,7 @@ public final class Wire {
   }
 
   /**
-   * Parse from a {@link WireInput} instance into a {@link Message} of the given message class.
-   *
-   * @param messageClass the class of the outermost {@link Message}
-   * @param input an instance of {@link WireInput}
-   * @param <M> the outermost {@link Message} class
-   * @return an instance of the desired message class
-   * @throws IOException if parsing fails
+   * Reads a message of type {@code messageClass} from {@code input} and returns it.
    */
   private <M extends Message> M parseFrom(Class<M> messageClass, WireInput input)
       throws IOException {
@@ -161,7 +136,8 @@ public final class Wire {
   }
 
   /**
-   * Utility to return a default value when a protobuf value is null.
+   * Returns {@code value} if it is not null; {@code defaultValue} otherwise.
+   * This is used to conveniently return a default value when a value is null.
    * For example,
    *
    * <pre>
@@ -173,11 +149,6 @@ public final class Wire {
    * If the field is null (i.e., unset), <code>get</code> will return its
    * second argument, which in this case is the default value for the field
    * 'f'.
-   *
-   * @param value the value to return if non-null
-   * @param defaultValue the value to return if value is null
-   * @param <T> the value type
-   * @return one of value or defaultValue
    */
   public static <T> T get(T value, T defaultValue) {
     return value != null ? value : defaultValue;

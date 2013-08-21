@@ -20,10 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * An adapter than can convert values of a given Enum to and from integers, based on
- * {@link ProtoEnum} annotations.
- *
- * @param <E> the Enum class handled by this adapter.
+ * Converts values of an enum to and from integers using {@link ProtoEnum}
+ * annotations.
  */
 final class EnumAdapter<E extends Enum> {
   private final Map<Integer, E> fromInt = new LinkedHashMap<Integer, E>();

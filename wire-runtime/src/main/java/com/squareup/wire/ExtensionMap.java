@@ -67,18 +67,15 @@ final class ExtensionMap<T extends ExtendableMessage<?>> {
     map.put(extension, value);
   }
 
-  @Override
-  public boolean equals(Object other) {
+  @Override public boolean equals(Object other) {
     return other instanceof ExtensionMap && map.equals(((ExtensionMap) other).map);
   }
 
-  @Override
-  public int hashCode() {
+  @Override public int hashCode() {
     return map.hashCode();
   }
 
-  @Override
-  public String toString() {
+  @Override public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
     String sep = "";
@@ -87,7 +84,7 @@ final class ExtensionMap<T extends ExtendableMessage<?>> {
       sb.append(entry.getKey().getTag());
       sb.append("=");
       sb.append(entry.getValue());
-      sep = ",";
+      sep = ", ";
     }
     sb.append("}");
     return sb.toString();

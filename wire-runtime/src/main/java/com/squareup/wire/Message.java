@@ -156,16 +156,16 @@ public abstract class Message {
   }
 
   /**
-   * Utility method to return a copy of a given List. Used by generated code.
+   * Utility method to return a mutable copy of a given List. Used by generated code.
    */
   protected static <T> List<T> copyOf(List<T> source) {
     return source == null ? null : new ArrayList<T>(source);
   }
 
   /**
-   * Utility method to return an unmodifiable copy of a given List. Used by generated code.
+   * Utility method to return an immutable copy of a given List. Used by generated code.
    */
-  protected static <T> List<T> unmodifiableCopyOf(List<T> source) {
+  protected static <T> List<T> immutableCopyOf(List<T> source) {
     return source == null ? null : Collections.unmodifiableList(new ArrayList<T>(source));
   }
 

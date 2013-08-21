@@ -34,7 +34,7 @@ import java.util.Arrays;
  */
 public final class ByteString {
   private final byte[] data;
-  private transient int hashCode;
+  private transient int hashCode; // Lazily computed; 0 if unknown.
 
   /**
    * A singleton empty {@code ByteString}.
