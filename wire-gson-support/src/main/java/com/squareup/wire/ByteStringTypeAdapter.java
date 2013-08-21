@@ -32,7 +32,7 @@ class ByteStringTypeAdapter extends TypeAdapter<ByteString> {
     if (value == null) {
       out.nullValue();
     } else {
-      out.value(Base64.encode(value.toByteArray()));
+      out.value(Stringer.encode(value.toByteArray()));
     }
   }
 
@@ -41,6 +41,6 @@ class ByteStringTypeAdapter extends TypeAdapter<ByteString> {
       in.nextNull();
       return null;
     }
-    return ByteString.of(Base64.decode(in.nextString()));
+    return ByteString.of(Stringer.decode(in.nextString()));
   }
 }

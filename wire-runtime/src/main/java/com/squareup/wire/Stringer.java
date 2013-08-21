@@ -23,11 +23,11 @@ import java.nio.charset.Charset;
  * href="http://www.ietf.org/rfc/rfc2045.txt">2045</a> and <a
  * href="http://www.ietf.org/rfc/rfc3548.txt">3548</a>.
  */
-public final class Base64 {
+final class Stringer {
 
   private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-  private Base64() {
+  private Stringer() {
   }
 
   public static byte[] decode(String str) {

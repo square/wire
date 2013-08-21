@@ -113,23 +113,23 @@ public final class Wire {
    * Reads a message of type {@code messageClass} from {@code bytes} and returns
    * it.
    */
-  public <M extends Message> M parseFrom(Class<M> messageClass, byte[] bytes) throws IOException {
-    return parseFrom(messageClass, bytes, 0, bytes.length);
+  public <M extends Message> M parseFrom(byte[] bytes, Class<M> messageClass) throws IOException {
+    return parseFrom(bytes, 0, bytes.length, messageClass);
   }
 
   /**
    * Reads a message of type {@code messageClass} from the given range of {@code
    * bytes} and returns it.
    */
-  public <M extends Message> M parseFrom(Class<M> messageClass,
-      byte[] bytes, int offset, int count) throws IOException {
-    return parseFrom(messageClass, WireInput.newInstance(bytes, offset, count));
+  public <M extends Message> M parseFrom(byte[] bytes, int offset, int count, Class<M> messageClass)
+      throws IOException {
+    return parseFrom(WireInput.newInstance(bytes, offset, count), messageClass);
   }
 
   /**
    * Reads a message of type {@code messageClass} from {@code input} and returns it.
    */
-  private <M extends Message> M parseFrom(Class<M> messageClass, WireInput input)
+  private <M extends Message> M parseFrom(WireInput input, Class<M> messageClass)
       throws IOException {
     MessageAdapter<M> adapter = messageAdapter(messageClass);
     return adapter.read(input);
