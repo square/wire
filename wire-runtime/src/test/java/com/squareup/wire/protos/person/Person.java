@@ -21,15 +21,27 @@ public final class Person extends Message {
   public static final String DEFAULT_EMAIL = "";
   public static final List<PhoneNumber> DEFAULT_PHONE = Collections.emptyList();
 
+  /**
+   * The customer's full name.
+   */
   @ProtoField(tag = 1, type = STRING, label = REQUIRED)
   public final String name;
 
+  /**
+   * The customer's ID number.
+   */
   @ProtoField(tag = 2, type = INT32, label = REQUIRED)
   public final Integer id;
 
+  /**
+   * Email address for the customer.
+   */
   @ProtoField(tag = 3, type = STRING)
   public final String email;
 
+  /**
+   * A list of the user's phone numbers.
+   */
   @ProtoField(tag = 4, label = REPEATED)
   public final List<PhoneNumber> phone;
 
@@ -124,9 +136,15 @@ public final class Person extends Message {
     public static final String DEFAULT_NUMBER = "";
     public static final PhoneType DEFAULT_TYPE = PhoneType.HOME;
 
+    /**
+     * The user's phone number.
+     */
     @ProtoField(tag = 1, type = STRING, label = REQUIRED)
     public final String number;
 
+    /**
+     * The type of phone stored here.
+     */
     @ProtoField(tag = 2, type = ENUM)
     public final PhoneType type;
 
