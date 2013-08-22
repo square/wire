@@ -27,19 +27,11 @@ import org.junit.Test;
 
 public class WireCompilerTest {
 
-  private File testPersonDir;
-  private File testSimpleDir;
-  private File testAllTypesDir;
-  private File testEdgeCasesDir;
-  private File testUnknownFieldsDir;
+  private File testDir;
 
   @Before public void setUp() {
     System.out.println("cwd = " + new File(".").getAbsolutePath());
-    testPersonDir = makeTestDirectory("WireCompilerTest_testPerson");
-    testSimpleDir = makeTestDirectory("WireCompilerTest_testSimple");
-    testAllTypesDir = makeTestDirectory("WireCompilerTest_testAllTypes");
-    testEdgeCasesDir = makeTestDirectory("WireCompilerTest_testEdgeCases");
-    testUnknownFieldsDir = makeTestDirectory("WireCompilerTest_testUnknownFields");
+    testDir = makeTestDirectory("WireCompilerTest");
   }
 
   private File makeTestDirectory(String path) {
@@ -52,11 +44,7 @@ public class WireCompilerTest {
   }
 
   @After public void tearDown() {
-    cleanupAndDelete(testPersonDir);
-    cleanupAndDelete(testSimpleDir);
-    cleanupAndDelete(testAllTypesDir);
-    cleanupAndDelete(testEdgeCasesDir);
-    cleanupAndDelete(testUnknownFieldsDir);
+    cleanupAndDelete(testDir);
   }
 
   private void cleanupAndDelete(File dir) {
@@ -66,19 +54,37 @@ public class WireCompilerTest {
     }
   }
 
-  private void testProto(File dir, String[] sources, String[] outputs) throws Exception {
+  private void testProto(String[] sources, String[] outputs) throws Exception {
     String[] args = new String[2 + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
-    args[1] = "--java_out=" + dir.getAbsolutePath();
+    args[1] = "--java_out=" + testDir.getAbsolutePath();
     System.arraycopy(sources, 0, args, 2, sources.length);
 
     WireCompiler.main(args);
 
-    List<String> filesAfter = getAllFiles(dir);
+    List<String> filesAfter = getAllFiles(testDir);
     Assert.assertEquals(outputs.length, filesAfter.size());
 
     for (String output : outputs) {
-      assertFilesMatch(dir, output);
+      assertFilesMatch(testDir, output);
+    }
+  }
+
+  private void testProtoWithRoots(String[] sources, String roots, String[] outputs)
+      throws Exception {
+    String[] args = new String[3 + sources.length];
+    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[1] = "--java_out=" + testDir.getAbsolutePath();
+    args[2] = "--roots=" + roots;
+    System.arraycopy(sources, 0, args, 3, sources.length);
+
+    WireCompiler.main(args);
+
+    List<String> filesAfter = getAllFiles(testDir);
+    Assert.assertEquals(outputs.length, filesAfter.size());
+
+    for (String output : outputs) {
+      assertFilesMatch(testDir, output);
     }
   }
 
@@ -89,7 +95,7 @@ public class WireCompilerTest {
     String[] outputs = {
         "com/squareup/wire/protos/person/Person.java"
     };
-    testProto(testPersonDir, sources, outputs);
+    testProto(sources, outputs);
   }
 
   @Test public void testSimple() throws Exception {
@@ -104,7 +110,7 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/simple/ExternalMessage.java",
         "com/squareup/wire/protos/foreign/ForeignEnum.java"
     };
-    testProto(testSimpleDir, sources, outputs);
+    testProto(sources, outputs);
   }
 
   @Test public void testAllTypes() throws Exception {
@@ -115,7 +121,7 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/alltypes/Ext_all_types.java",
         "com/squareup/wire/protos/alltypes/AllTypes.java"
     };
-    testProto(testAllTypesDir, sources, outputs);
+    testProto(sources, outputs);
   }
 
   @Test public void testEdgeCases() throws Exception {
@@ -127,7 +133,7 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/edgecases/OneField.java",
         "com/squareup/wire/protos/edgecases/OneBytesField.java"
     };
-    testProto(testEdgeCasesDir, sources, outputs);
+    testProto(sources, outputs);
   }
 
   @Test public void testUnknownFields() throws Exception {
@@ -138,7 +144,86 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/unknownfields/VersionOne.java",
         "com/squareup/wire/protos/unknownfields/VersionTwo.java"
     };
-    testProto(testUnknownFieldsDir, sources, outputs);
+    testProto(sources, outputs);
+  }
+
+  @Test public void testNoRoots() throws Exception {
+    String[] sources = {
+        "roots.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/roots/A.java",
+        "com/squareup/wire/protos/roots/B.java",
+        "com/squareup/wire/protos/roots/C.java",
+        "com/squareup/wire/protos/roots/D.java",
+        "com/squareup/wire/protos/roots/E.java",
+        "com/squareup/wire/protos/roots/G.java",
+        "com/squareup/wire/protos/roots/H.java",
+        "com/squareup/wire/protos/roots/I.java"
+    };
+    testProto(sources, outputs);
+  }
+
+  @Test public void testRootsA() throws Exception {
+    String[] sources = {
+        "roots.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/roots/A.java",
+        "com/squareup/wire/protos/roots/B.java",
+        "com/squareup/wire/protos/roots/C.java",
+        "com/squareup/wire/protos/roots/D.java"
+    };
+    String roots = "squareup.protos.roots.A";
+    testProtoWithRoots(sources, roots, outputs);
+  }
+
+  @Test public void testRootsB() throws Exception {
+    String[] sources = {
+        "roots.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/roots/B.java",
+        "com/squareup/wire/protos/roots/C.java"
+    };
+    String roots = "squareup.protos.roots.B";
+    testProtoWithRoots(sources, roots, outputs);
+  }
+
+  @Test public void testRootsE() throws Exception {
+    String[] sources = {
+        "roots.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/roots/E.java",
+        "com/squareup/wire/protos/roots/G.java"
+    };
+    String roots = "squareup.protos.roots.E";
+    testProtoWithRoots(sources, roots, outputs);
+  }
+
+  @Test public void testRootsH() throws Exception {
+    String[] sources = {
+        "roots.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/roots/E.java",
+        "com/squareup/wire/protos/roots/G.java",
+        "com/squareup/wire/protos/roots/H.java"
+    };
+    String roots = "squareup.protos.roots.H";
+    testProtoWithRoots(sources, roots, outputs);
+  }
+
+  @Test public void testRootsI() throws Exception {
+    String[] sources = {
+        "roots.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/roots/I.java"
+    };
+    String roots = "squareup.protos.roots.I";
+    testProtoWithRoots(sources, roots, outputs);
   }
 
   private void cleanup(File dir) {
