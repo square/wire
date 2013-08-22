@@ -11,10 +11,7 @@ public final class VersionOne extends Message {
 
   public static final Integer DEFAULT_I = 0;
 
-  @ProtoField(
-    tag = 1,
-    type = INT32
-  )
+  @ProtoField(tag = 1, type = INT32)
   public final Integer i;
 
   private VersionOne(Builder builder) {
