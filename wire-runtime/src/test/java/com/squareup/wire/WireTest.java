@@ -15,14 +15,18 @@
  */
 package com.squareup.wire;
 
+import com.squareup.wire.protos.person.Person;
 import com.squareup.wire.protos.simple.Ext_simple_message;
 import com.squareup.wire.protos.simple.ExternalMessage;
 import com.squareup.wire.protos.simple.SimpleMessage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 
+import static com.squareup.wire.protos.person.Person.PhoneNumber;
+import static com.squareup.wire.protos.person.Person.PhoneType;
 import static com.squareup.wire.protos.simple.Ext_simple_message.barext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.bazext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.fooext;
@@ -111,6 +115,23 @@ public class WireTest {
     assertEquals(SimpleMessage.NestedEnum.BAR, newMsg.default_nested_enum);
     assertEquals(new Integer(456), newMsg.required_int32);
     assertEquals(doubles, msg.repeated_double);
+  }
+
+  @Test
+  public void testPerson() throws IOException {
+    Person person = new Person.Builder()
+        .name("Omar")
+        .id(1234)
+        .email("omar@wire.com")
+        .phone(Arrays.asList(new PhoneNumber.Builder()
+            .number("410-555-0909")
+            .type(PhoneType.MOBILE)
+            .build()))
+        .build();
+
+    byte[] data = person.toByteArray();
+    Wire wire = new Wire();
+    wire.parseFrom(data, Person.class);
   }
 
   @Test
