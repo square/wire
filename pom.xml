@@ -14,9 +14,9 @@
   <inceptionYear>2013</inceptionYear>
 
   <scm>
-    <url>https://git.squareup.com/android/wire</url>
-    <connection>scm:git:https://git.squareup.com/android/wire.git</connection>
-    <developerConnection>scm:git:git@git.squareup.com:android/wire.git</developerConnection>
+    <url>https://github.com/square/wire</url>
+    <connection>scm:git:https://github.com/square/wire.git</connection>
+    <developerConnection>scm:git:git@github.com:square/wire.git</developerConnection>
   </scm>
 
   <organization>
@@ -26,7 +26,7 @@
 
  <issueManagement>
     <system>GitHub Issues</system>
-    <url>http://git.squareup.com/android/wire/issues</url>
+    <url>http://github.com/square/wire/issues</url>
   </issueManagement>
 
   <licenses>
@@ -59,6 +59,11 @@
         <groupId>com.squareup</groupId>
         <artifactId>javawriter</artifactId>
         <version>2.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.2.4</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
@@ -100,11 +105,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <repositories>
-    <repository>
-      <id>square-android-public</id>
-      <url>https://nexus.corp.squareup.com/content/repositories/android-public</url>
-    </repository>
-  </repositories>
 </project>
