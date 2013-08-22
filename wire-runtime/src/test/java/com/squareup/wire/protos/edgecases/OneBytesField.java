@@ -12,10 +12,7 @@ public final class OneBytesField extends Message {
 
   public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
 
-  @ProtoField(
-    tag = 1,
-    type = BYTES
-  )
+  @ProtoField(tag = 1, type = BYTES)
   public final ByteString opt_bytes;
 
   private OneBytesField(Builder builder) {
