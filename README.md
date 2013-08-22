@@ -24,7 +24,7 @@ For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`,
 
     % mvn clean package
 
-    % java -jar wire-compiler/target/wire-compiler-0.6-SNAPSHOT-jar-with-dependencies.jar \
+    % java -jar wire-compiler/target/wire-compiler-1.0-SNAPSHOT-jar-with-dependencies.jar \
         --proto_path=protos-repo \
         --java_out=out google/protobuf/descriptor.proto
 
@@ -53,7 +53,7 @@ relative to the value given for the `--proto_path` flag.
     yourcompany/protos/stuff.proto
     ...
 
-    % java -jar wire-compiler/target/wire-compiler-0.6-SNAPSHOT-jar-with-dependencies.jar \
+    % java -jar wire-compiler/target/wire-compiler-1.0-SNAPSHOT-jar-with-dependencies.jar \
         --proto_path=protos-repo \
         --java_out=out \
         --files=protos.include
@@ -138,11 +138,11 @@ wish to use as arguments to the `Wire` constructor:
 ```java
 // Assume MessageWithExtensions contains a message SomeMessage that defines
 // an extension field some_extension to the MyMessage message.
-Wire wire = new Wire(MessageWithExtensions.class);
+Wire wire = new Wire(Ext_SomeMessage.class);
 MyMessage msg = new MyMessage.Builder()
     .setExtension(Ext_SomeMessage.some_extension, 3)
     .build();
-int x = msg.getExtension(Ext_MessageWithExtensions.some_extension); // 3
+int x = msg.getExtension(Ext_SomeMessage.some_extension); // 3
 ```
 
 Unsupported
@@ -152,3 +152,4 @@ Wire does not support:
 
  * Groups - they are skipping when parsing binary input data
  * Services - they are ignored by the compiler
+ * Custom options - they are ignored
