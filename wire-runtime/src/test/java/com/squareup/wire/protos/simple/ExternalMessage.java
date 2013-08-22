@@ -12,10 +12,7 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
 
   public static final Float DEFAULT_F = 20F;
 
-  @ProtoField(
-    tag = 1,
-    type = FLOAT
-  )
+  @ProtoField(tag = 1, type = FLOAT)
   public final Float f;
 
   private ExternalMessage(Builder builder) {

@@ -115,535 +115,247 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   public static final ByteString DEFAULT_DEFAULT_BYTES = ByteString.of("529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs");
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.A;
 
-  @ProtoField(
-    tag = 1,
-    type = INT32
-  )
+  @ProtoField(tag = 1, type = INT32)
   public final Integer opt_int32;
 
-  @ProtoField(
-    tag = 2,
-    type = UINT32
-  )
+  @ProtoField(tag = 2, type = UINT32)
   public final Integer opt_uint32;
 
-  @ProtoField(
-    tag = 3,
-    type = SINT32
-  )
+  @ProtoField(tag = 3, type = SINT32)
   public final Integer opt_sint32;
 
-  @ProtoField(
-    tag = 4,
-    type = FIXED32
-  )
+  @ProtoField(tag = 4, type = FIXED32)
   public final Integer opt_fixed32;
 
-  @ProtoField(
-    tag = 5,
-    type = SFIXED32
-  )
+  @ProtoField(tag = 5, type = SFIXED32)
   public final Integer opt_sfixed32;
 
-  @ProtoField(
-    tag = 6,
-    type = INT64
-  )
+  @ProtoField(tag = 6, type = INT64)
   public final Long opt_int64;
 
-  @ProtoField(
-    tag = 7,
-    type = UINT64
-  )
+  @ProtoField(tag = 7, type = UINT64)
   public final Long opt_uint64;
 
-  @ProtoField(
-    tag = 8,
-    type = SINT64
-  )
+  @ProtoField(tag = 8, type = SINT64)
   public final Long opt_sint64;
 
-  @ProtoField(
-    tag = 9,
-    type = FIXED64
-  )
+  @ProtoField(tag = 9, type = FIXED64)
   public final Long opt_fixed64;
 
-  @ProtoField(
-    tag = 10,
-    type = SFIXED64
-  )
+  @ProtoField(tag = 10, type = SFIXED64)
   public final Long opt_sfixed64;
 
-  @ProtoField(
-    tag = 11,
-    type = BOOL
-  )
+  @ProtoField(tag = 11, type = BOOL)
   public final Boolean opt_bool;
 
-  @ProtoField(
-    tag = 12,
-    type = FLOAT
-  )
+  @ProtoField(tag = 12, type = FLOAT)
   public final Float opt_float;
 
-  @ProtoField(
-    tag = 13,
-    type = DOUBLE
-  )
+  @ProtoField(tag = 13, type = DOUBLE)
   public final Double opt_double;
 
-  @ProtoField(
-    tag = 14,
-    type = STRING
-  )
+  @ProtoField(tag = 14, type = STRING)
   public final String opt_string;
 
-  @ProtoField(
-    tag = 15,
-    type = BYTES
-  )
+  @ProtoField(tag = 15, type = BYTES)
   public final ByteString opt_bytes;
 
-  @ProtoField(
-    tag = 16,
-    type = ENUM
-  )
+  @ProtoField(tag = 16, type = ENUM)
   public final NestedEnum opt_nested_enum;
 
-  @ProtoField(
-    tag = 17
-  )
+  @ProtoField(tag = 17)
   public final NestedMessage opt_nested_message;
 
-  @ProtoField(
-    tag = 101,
-    type = INT32,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 101, type = INT32, label = REQUIRED)
   public final Integer req_int32;
 
-  @ProtoField(
-    tag = 102,
-    type = UINT32,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 102, type = UINT32, label = REQUIRED)
   public final Integer req_uint32;
 
-  @ProtoField(
-    tag = 103,
-    type = SINT32,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 103, type = SINT32, label = REQUIRED)
   public final Integer req_sint32;
 
-  @ProtoField(
-    tag = 104,
-    type = FIXED32,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 104, type = FIXED32, label = REQUIRED)
   public final Integer req_fixed32;
 
-  @ProtoField(
-    tag = 105,
-    type = SFIXED32,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 105, type = SFIXED32, label = REQUIRED)
   public final Integer req_sfixed32;
 
-  @ProtoField(
-    tag = 106,
-    type = INT64,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 106, type = INT64, label = REQUIRED)
   public final Long req_int64;
 
-  @ProtoField(
-    tag = 107,
-    type = UINT64,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 107, type = UINT64, label = REQUIRED)
   public final Long req_uint64;
 
-  @ProtoField(
-    tag = 108,
-    type = SINT64,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 108, type = SINT64, label = REQUIRED)
   public final Long req_sint64;
 
-  @ProtoField(
-    tag = 109,
-    type = FIXED64,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 109, type = FIXED64, label = REQUIRED)
   public final Long req_fixed64;
 
-  @ProtoField(
-    tag = 110,
-    type = SFIXED64,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 110, type = SFIXED64, label = REQUIRED)
   public final Long req_sfixed64;
 
-  @ProtoField(
-    tag = 111,
-    type = BOOL,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 111, type = BOOL, label = REQUIRED)
   public final Boolean req_bool;
 
-  @ProtoField(
-    tag = 112,
-    type = FLOAT,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 112, type = FLOAT, label = REQUIRED)
   public final Float req_float;
 
-  @ProtoField(
-    tag = 113,
-    type = DOUBLE,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 113, type = DOUBLE, label = REQUIRED)
   public final Double req_double;
 
-  @ProtoField(
-    tag = 114,
-    type = STRING,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 114, type = STRING, label = REQUIRED)
   public final String req_string;
 
-  @ProtoField(
-    tag = 115,
-    type = BYTES,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 115, type = BYTES, label = REQUIRED)
   public final ByteString req_bytes;
 
-  @ProtoField(
-    tag = 116,
-    type = ENUM,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 116, type = ENUM, label = REQUIRED)
   public final NestedEnum req_nested_enum;
 
-  @ProtoField(
-    tag = 117,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 117, label = REQUIRED)
   public final NestedMessage req_nested_message;
 
-  @ProtoField(
-    tag = 201,
-    type = INT32,
-    label = REPEATED
-  )
+  @ProtoField(tag = 201, type = INT32, label = REPEATED)
   public final List<Integer> rep_int32;
 
-  @ProtoField(
-    tag = 202,
-    type = UINT32,
-    label = REPEATED
-  )
+  @ProtoField(tag = 202, type = UINT32, label = REPEATED)
   public final List<Integer> rep_uint32;
 
-  @ProtoField(
-    tag = 203,
-    type = SINT32,
-    label = REPEATED
-  )
+  @ProtoField(tag = 203, type = SINT32, label = REPEATED)
   public final List<Integer> rep_sint32;
 
-  @ProtoField(
-    tag = 204,
-    type = FIXED32,
-    label = REPEATED
-  )
+  @ProtoField(tag = 204, type = FIXED32, label = REPEATED)
   public final List<Integer> rep_fixed32;
 
-  @ProtoField(
-    tag = 205,
-    type = SFIXED32,
-    label = REPEATED
-  )
+  @ProtoField(tag = 205, type = SFIXED32, label = REPEATED)
   public final List<Integer> rep_sfixed32;
 
-  @ProtoField(
-    tag = 206,
-    type = INT64,
-    label = REPEATED
-  )
+  @ProtoField(tag = 206, type = INT64, label = REPEATED)
   public final List<Long> rep_int64;
 
-  @ProtoField(
-    tag = 207,
-    type = UINT64,
-    label = REPEATED
-  )
+  @ProtoField(tag = 207, type = UINT64, label = REPEATED)
   public final List<Long> rep_uint64;
 
-  @ProtoField(
-    tag = 208,
-    type = SINT64,
-    label = REPEATED
-  )
+  @ProtoField(tag = 208, type = SINT64, label = REPEATED)
   public final List<Long> rep_sint64;
 
-  @ProtoField(
-    tag = 209,
-    type = FIXED64,
-    label = REPEATED
-  )
+  @ProtoField(tag = 209, type = FIXED64, label = REPEATED)
   public final List<Long> rep_fixed64;
 
-  @ProtoField(
-    tag = 210,
-    type = SFIXED64,
-    label = REPEATED
-  )
+  @ProtoField(tag = 210, type = SFIXED64, label = REPEATED)
   public final List<Long> rep_sfixed64;
 
-  @ProtoField(
-    tag = 211,
-    type = BOOL,
-    label = REPEATED
-  )
+  @ProtoField(tag = 211, type = BOOL, label = REPEATED)
   public final List<Boolean> rep_bool;
 
-  @ProtoField(
-    tag = 212,
-    type = FLOAT,
-    label = REPEATED
-  )
+  @ProtoField(tag = 212, type = FLOAT, label = REPEATED)
   public final List<Float> rep_float;
 
-  @ProtoField(
-    tag = 213,
-    type = DOUBLE,
-    label = REPEATED
-  )
+  @ProtoField(tag = 213, type = DOUBLE, label = REPEATED)
   public final List<Double> rep_double;
 
-  @ProtoField(
-    tag = 214,
-    type = STRING,
-    label = REPEATED
-  )
+  @ProtoField(tag = 214, type = STRING, label = REPEATED)
   public final List<String> rep_string;
 
-  @ProtoField(
-    tag = 215,
-    type = BYTES,
-    label = REPEATED
-  )
+  @ProtoField(tag = 215, type = BYTES, label = REPEATED)
   public final List<ByteString> rep_bytes;
 
-  @ProtoField(
-    tag = 216,
-    type = ENUM,
-    label = REPEATED
-  )
+  @ProtoField(tag = 216, type = ENUM, label = REPEATED)
   public final List<NestedEnum> rep_nested_enum;
 
-  @ProtoField(
-    tag = 217,
-    label = REPEATED
-  )
+  @ProtoField(tag = 217, label = REPEATED)
   public final List<NestedMessage> rep_nested_message;
 
-  @ProtoField(
-    tag = 301,
-    type = INT32,
-    label = PACKED
-  )
+  @ProtoField(tag = 301, type = INT32, label = PACKED)
   public final List<Integer> pack_int32;
 
-  @ProtoField(
-    tag = 302,
-    type = UINT32,
-    label = PACKED
-  )
+  @ProtoField(tag = 302, type = UINT32, label = PACKED)
   public final List<Integer> pack_uint32;
 
-  @ProtoField(
-    tag = 303,
-    type = SINT32,
-    label = PACKED
-  )
+  @ProtoField(tag = 303, type = SINT32, label = PACKED)
   public final List<Integer> pack_sint32;
 
-  @ProtoField(
-    tag = 304,
-    type = FIXED32,
-    label = PACKED
-  )
+  @ProtoField(tag = 304, type = FIXED32, label = PACKED)
   public final List<Integer> pack_fixed32;
 
-  @ProtoField(
-    tag = 305,
-    type = SFIXED32,
-    label = PACKED
-  )
+  @ProtoField(tag = 305, type = SFIXED32, label = PACKED)
   public final List<Integer> pack_sfixed32;
 
-  @ProtoField(
-    tag = 306,
-    type = INT64,
-    label = PACKED
-  )
+  @ProtoField(tag = 306, type = INT64, label = PACKED)
   public final List<Long> pack_int64;
 
-  @ProtoField(
-    tag = 307,
-    type = UINT64,
-    label = PACKED
-  )
+  @ProtoField(tag = 307, type = UINT64, label = PACKED)
   public final List<Long> pack_uint64;
 
-  @ProtoField(
-    tag = 308,
-    type = SINT64,
-    label = PACKED
-  )
+  @ProtoField(tag = 308, type = SINT64, label = PACKED)
   public final List<Long> pack_sint64;
 
-  @ProtoField(
-    tag = 309,
-    type = FIXED64,
-    label = PACKED
-  )
+  @ProtoField(tag = 309, type = FIXED64, label = PACKED)
   public final List<Long> pack_fixed64;
 
-  @ProtoField(
-    tag = 310,
-    type = SFIXED64,
-    label = PACKED
-  )
+  @ProtoField(tag = 310, type = SFIXED64, label = PACKED)
   public final List<Long> pack_sfixed64;
 
-  @ProtoField(
-    tag = 311,
-    type = BOOL,
-    label = PACKED
-  )
+  @ProtoField(tag = 311, type = BOOL, label = PACKED)
   public final List<Boolean> pack_bool;
 
-  @ProtoField(
-    tag = 312,
-    type = FLOAT,
-    label = PACKED
-  )
+  @ProtoField(tag = 312, type = FLOAT, label = PACKED)
   public final List<Float> pack_float;
 
-  @ProtoField(
-    tag = 313,
-    type = DOUBLE,
-    label = PACKED
-  )
+  @ProtoField(tag = 313, type = DOUBLE, label = PACKED)
   public final List<Double> pack_double;
 
-  @ProtoField(
-    tag = 316,
-    type = ENUM,
-    label = PACKED
-  )
+  @ProtoField(tag = 316, type = ENUM, label = PACKED)
   public final List<NestedEnum> pack_nested_enum;
 
-  @ProtoField(
-    tag = 401,
-    type = INT32
-  )
+  @ProtoField(tag = 401, type = INT32)
   public final Integer default_int32;
 
-  @ProtoField(
-    tag = 402,
-    type = UINT32
-  )
+  @ProtoField(tag = 402, type = UINT32)
   public final Integer default_uint32;
 
-  @ProtoField(
-    tag = 403,
-    type = SINT32
-  )
+  @ProtoField(tag = 403, type = SINT32)
   public final Integer default_sint32;
 
-  @ProtoField(
-    tag = 404,
-    type = FIXED32
-  )
+  @ProtoField(tag = 404, type = FIXED32)
   public final Integer default_fixed32;
 
-  @ProtoField(
-    tag = 405,
-    type = SFIXED32
-  )
+  @ProtoField(tag = 405, type = SFIXED32)
   public final Integer default_sfixed32;
 
-  @ProtoField(
-    tag = 406,
-    type = INT64
-  )
+  @ProtoField(tag = 406, type = INT64)
   public final Long default_int64;
 
-  @ProtoField(
-    tag = 407,
-    type = UINT64
-  )
+  @ProtoField(tag = 407, type = UINT64)
   public final Long default_uint64;
 
-  @ProtoField(
-    tag = 408,
-    type = SINT64
-  )
+  @ProtoField(tag = 408, type = SINT64)
   public final Long default_sint64;
 
-  @ProtoField(
-    tag = 409,
-    type = FIXED64
-  )
+  @ProtoField(tag = 409, type = FIXED64)
   public final Long default_fixed64;
 
-  @ProtoField(
-    tag = 410,
-    type = SFIXED64
-  )
+  @ProtoField(tag = 410, type = SFIXED64)
   public final Long default_sfixed64;
 
-  @ProtoField(
-    tag = 411,
-    type = BOOL
-  )
+  @ProtoField(tag = 411, type = BOOL)
   public final Boolean default_bool;
 
-  @ProtoField(
-    tag = 412,
-    type = FLOAT
-  )
+  @ProtoField(tag = 412, type = FLOAT)
   public final Float default_float;
 
-  @ProtoField(
-    tag = 413,
-    type = DOUBLE
-  )
+  @ProtoField(tag = 413, type = DOUBLE)
   public final Double default_double;
 
-  @ProtoField(
-    tag = 414,
-    type = STRING
-  )
+  @ProtoField(tag = 414, type = STRING)
   public final String default_string;
 
-  @ProtoField(
-    tag = 415,
-    type = BYTES
-  )
+  @ProtoField(tag = 415, type = BYTES)
   public final ByteString default_bytes;
 
-  @ProtoField(
-    tag = 416,
-    type = ENUM
-  )
+  @ProtoField(tag = 416, type = ENUM)
   public final NestedEnum default_nested_enum;
 
   private AllTypes(Builder builder) {
@@ -1510,10 +1222,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
     public static final Integer DEFAULT_A = 0;
 
-    @ProtoField(
-      tag = 1,
-      type = INT32
-    )
+    @ProtoField(tag = 1, type = INT32)
     public final Integer a;
 
     private NestedMessage(Builder builder) {

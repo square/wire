@@ -11,10 +11,7 @@ public final class OneField extends Message {
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
 
-  @ProtoField(
-    tag = 1,
-    type = INT32
-  )
+  @ProtoField(tag = 1, type = INT32)
   public final Integer opt_int32;
 
   private OneField(Builder builder) {

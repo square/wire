@@ -31,79 +31,52 @@ public final class SimpleMessage extends Message {
   /**
    * An optional int32
    */
-  @ProtoField(
-    tag = 1,
-    type = INT32
-  )
+  @ProtoField(tag = 1, type = INT32)
   public final Integer optional_int32;
 
   /**
    * An optional NestedMessage
    */
-  @ProtoField(
-    tag = 2
-  )
+  @ProtoField(tag = 2)
   public final NestedMessage optional_nested_msg;
 
   /**
    * An optional ExternalMessage
    */
-  @ProtoField(
-    tag = 3
-  )
+  @ProtoField(tag = 3)
   public final ExternalMessage optional_external_msg;
 
-  @ProtoField(
-    tag = 4,
-    type = ENUM
-  )
+  @ProtoField(tag = 4, type = ENUM)
   public final NestedEnum default_nested_enum;
 
   /**
    * A required int32
    */
-  @ProtoField(
-    tag = 5,
-    type = INT32,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 5, type = INT32, label = REQUIRED)
   public final Integer required_int32;
 
   /**
    * A repeated double
    */
-  @ProtoField(
-    tag = 6,
-    type = DOUBLE,
-    label = REPEATED
-  )
+  @ProtoField(tag = 6, type = DOUBLE, label = REPEATED)
   public final List<Double> repeated_double;
 
   /**
    * enum from another package with an explicit default
    */
-  @ProtoField(
-    tag = 7,
-    type = ENUM
-  )
+  @ProtoField(tag = 7, type = ENUM)
   public final ForeignEnum default_foreign_enum;
 
   /**
    * enum from another package without an explicit default
    */
-  @ProtoField(
-    tag = 8,
-    type = ENUM
-  )
+  @ProtoField(tag = 8, type = ENUM)
   public final ForeignEnum no_default_foreign_enum;
 
   /**
    * field with the same name as a Java keyword
    */
-  @ProtoField(
-    tag = 9,
-    type = STRING
-  )
+  @ProtoField(tag = 9, type = STRING)
   public final String _package;
 
   private SimpleMessage(Builder builder) {
@@ -240,10 +213,7 @@ public final class SimpleMessage extends Message {
     /**
      * An optional int32
      */
-    @ProtoField(
-      tag = 1,
-      type = INT32
-    )
+    @ProtoField(tag = 1, type = INT32)
     public final Integer bb;
 
     private NestedMessage(Builder builder) {
