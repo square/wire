@@ -18,34 +18,19 @@ public final class VersionTwo extends Message {
   public static final Integer DEFAULT_V2_F32 = 0;
   public static final Long DEFAULT_V2_F64 = 0L;
 
-  @ProtoField(
-    tag = 1,
-    type = INT32
-  )
+  @ProtoField(tag = 1, type = INT32)
   public final Integer i;
 
-  @ProtoField(
-    tag = 2,
-    type = INT32
-  )
+  @ProtoField(tag = 2, type = INT32)
   public final Integer v2_i;
 
-  @ProtoField(
-    tag = 3,
-    type = STRING
-  )
+  @ProtoField(tag = 3, type = STRING)
   public final String v2_s;
 
-  @ProtoField(
-    tag = 4,
-    type = FIXED32
-  )
+  @ProtoField(tag = 4, type = FIXED32)
   public final Integer v2_f32;
 
-  @ProtoField(
-    tag = 5,
-    type = FIXED64
-  )
+  @ProtoField(tag = 5, type = FIXED64)
   public final Long v2_f64;
 
   private VersionTwo(Builder builder) {

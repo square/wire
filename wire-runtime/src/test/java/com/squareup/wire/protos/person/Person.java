@@ -21,30 +21,16 @@ public final class Person extends Message {
   public static final String DEFAULT_EMAIL = "";
   public static final List<PhoneNumber> DEFAULT_PHONE = Collections.emptyList();
 
-  @ProtoField(
-    tag = 1,
-    type = STRING,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 1, type = STRING, label = REQUIRED)
   public final String name;
 
-  @ProtoField(
-    tag = 2,
-    type = INT32,
-    label = REQUIRED
-  )
+  @ProtoField(tag = 2, type = INT32, label = REQUIRED)
   public final Integer id;
 
-  @ProtoField(
-    tag = 3,
-    type = STRING
-  )
+  @ProtoField(tag = 3, type = STRING)
   public final String email;
 
-  @ProtoField(
-    tag = 4,
-    label = REPEATED
-  )
+  @ProtoField(tag = 4, label = REPEATED)
   public final List<PhoneNumber> phone;
 
   private Person(Builder builder) {
@@ -138,17 +124,10 @@ public final class Person extends Message {
     public static final String DEFAULT_NUMBER = "";
     public static final PhoneType DEFAULT_TYPE = PhoneType.HOME;
 
-    @ProtoField(
-      tag = 1,
-      type = STRING,
-      label = REQUIRED
-    )
+    @ProtoField(tag = 1, type = STRING, label = REQUIRED)
     public final String number;
 
-    @ProtoField(
-      tag = 2,
-      type = ENUM
-    )
+    @ProtoField(tag = 2, type = ENUM)
     public final PhoneType type;
 
     private PhoneNumber(Builder builder) {
