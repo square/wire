@@ -159,7 +159,10 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/roots/E.java",
         "com/squareup/wire/protos/roots/G.java",
         "com/squareup/wire/protos/roots/H.java",
-        "com/squareup/wire/protos/roots/I.java"
+        "com/squareup/wire/protos/roots/I.java",
+        "com/squareup/wire/protos/roots/J.java",
+        "com/squareup/wire/protos/roots/K.java",
+        "com/squareup/wire/protos/roots/Ext_roots.java"
     };
     testProto(sources, outputs);
   }
@@ -172,7 +175,11 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/roots/A.java",
         "com/squareup/wire/protos/roots/B.java",
         "com/squareup/wire/protos/roots/C.java",
-        "com/squareup/wire/protos/roots/D.java"
+        "com/squareup/wire/protos/roots/D.java",
+        "com/squareup/wire/protos/roots/I.java",
+        "com/squareup/wire/protos/roots/J.java",
+        "com/squareup/wire/protos/roots/K.java",
+        "com/squareup/wire/protos/roots/Ext_roots.java"
     };
     String roots = "squareup.protos.roots.A";
     testProtoWithRoots(sources, roots, outputs);
@@ -184,7 +191,11 @@ public class WireCompilerTest {
     };
     String[] outputs = {
         "com/squareup/wire/protos/roots/B.java",
-        "com/squareup/wire/protos/roots/C.java"
+        "com/squareup/wire/protos/roots/C.java",
+        "com/squareup/wire/protos/roots/I.java",
+        "com/squareup/wire/protos/roots/J.java",
+        "com/squareup/wire/protos/roots/K.java",
+        "com/squareup/wire/protos/roots/Ext_roots.java"
     };
     String roots = "squareup.protos.roots.B";
     testProtoWithRoots(sources, roots, outputs);
@@ -196,7 +207,11 @@ public class WireCompilerTest {
     };
     String[] outputs = {
         "com/squareup/wire/protos/roots/E.java",
-        "com/squareup/wire/protos/roots/G.java"
+        "com/squareup/wire/protos/roots/G.java",
+        "com/squareup/wire/protos/roots/I.java",
+        "com/squareup/wire/protos/roots/J.java",
+        "com/squareup/wire/protos/roots/K.java",
+        "com/squareup/wire/protos/roots/Ext_roots.java"
     };
     String roots = "squareup.protos.roots.E";
     testProtoWithRoots(sources, roots, outputs);
@@ -209,7 +224,11 @@ public class WireCompilerTest {
     String[] outputs = {
         "com/squareup/wire/protos/roots/E.java",
         "com/squareup/wire/protos/roots/G.java",
-        "com/squareup/wire/protos/roots/H.java"
+        "com/squareup/wire/protos/roots/H.java",
+        "com/squareup/wire/protos/roots/I.java",
+        "com/squareup/wire/protos/roots/J.java",
+        "com/squareup/wire/protos/roots/K.java",
+        "com/squareup/wire/protos/roots/Ext_roots.java"
     };
     String roots = "squareup.protos.roots.H";
     testProtoWithRoots(sources, roots, outputs);
@@ -220,7 +239,10 @@ public class WireCompilerTest {
         "roots.proto"
     };
     String[] outputs = {
-        "com/squareup/wire/protos/roots/I.java"
+        "com/squareup/wire/protos/roots/I.java",
+        "com/squareup/wire/protos/roots/J.java",
+        "com/squareup/wire/protos/roots/K.java",
+        "com/squareup/wire/protos/roots/Ext_roots.java"
     };
     String roots = "squareup.protos.roots.I";
     testProtoWithRoots(sources, roots, outputs);
