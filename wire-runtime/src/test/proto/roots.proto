@@ -68,6 +68,20 @@ message H {
 
 message I {
   optional int32 i = 1;
+
+  extensions 1000 to max;
+}
+
+message J {
+  optional K k = 1;
+}
+
+message K {
+  optional int32 i = 1;
+}
+
+extend I {
+  optional J j = 1000;
 }
 
 
