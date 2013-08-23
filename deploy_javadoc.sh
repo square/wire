@@ -4,7 +4,7 @@ set -ex
 
 REPO="git@github.com:square/wire.git"
 GROUP_ID="com.squareup.wire"
-ARTIFACT_ID="wire"
+ARTIFACT_ID="wire-runtime"
 
 DIR=temp-clone
 
