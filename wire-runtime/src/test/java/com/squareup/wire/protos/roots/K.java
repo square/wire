@@ -2,51 +2,43 @@
 // Source file: ../wire-runtime/src/test/proto/roots.proto
 package com.squareup.wire.protos.roots;
 
-import com.squareup.wire.ExtendableMessage;
-import com.squareup.wire.Extension;
+import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 import static com.squareup.wire.Message.Datatype.INT32;
 
-public final class I extends ExtendableMessage<I> {
+public final class K extends Message {
 
   public static final Integer DEFAULT_I = 0;
 
   @ProtoField(tag = 1, type = INT32)
   public final Integer i;
 
-  private I(Builder builder) {
+  private K(Builder builder) {
     super(builder);
     this.i = builder.i;
   }
 
   @Override
   public boolean equals(Object other) {
-    if (!(other instanceof I)) return false;
-    I o = (I) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(i, o.i);
+    if (!(other instanceof K)) return false;
+    return equals(i, ((K) other).i);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    if (result == 0) {
-      result = extensionsHashCode();
-      result = result * 37 + (i != null ? i.hashCode() : 0);
-      hashCode = result;
-    }
-    return result;
+    return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
   }
 
-  public static final class Builder extends ExtendableBuilder<I> {
+  public static final class Builder extends Message.Builder<K> {
 
     public Integer i;
 
     public Builder() {
     }
 
-    public Builder(I message) {
+    public Builder(K message) {
       super(message);
       if (message == null) return;
       this.i = message.i;
@@ -58,14 +50,8 @@ public final class I extends ExtendableMessage<I> {
     }
 
     @Override
-    public <E> Builder setExtension(Extension<I, E> extension, E value) {
-      super.setExtension(extension, value);
-      return this;
-    }
-
-    @Override
-    public I build() {
-      return new I(this);
+    public K build() {
+      return new K(this);
     }
   }
 }
