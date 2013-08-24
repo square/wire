@@ -24,6 +24,7 @@ public final class A extends Message {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof A)) return false;
     A o = (A) other;
     return equals(c, o.c)

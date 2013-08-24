@@ -762,6 +762,7 @@ public class WireCompiler {
   //
   // @Override
   // public boolean equals(Object other) {
+  //   if (other == this) return true;
   //   if (!(other instanceof SimpleMessage)) return false;
   //   SimpleMessage o = (SimpleMessage) other;
   //   if (!Wire.equals(optional_int32, o.optional_int32)) return false;
@@ -776,6 +777,7 @@ public class WireCompiler {
     if (fields.isEmpty()) {
       writer.emitStatement("return other instanceof %s", messageType.getName());
     } else {
+      writer.emitStatement("if (other == this) return true");
       writer.emitStatement("if (!(other instanceof %s)) return false", messageType.getName());
       if (hasOnlyOneField(messageType)) {
         writer.emitStatement("return equals(%1$s, ((%2$s) other).%1$s)",

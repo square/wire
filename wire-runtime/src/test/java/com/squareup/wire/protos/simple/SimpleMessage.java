@@ -94,6 +94,7 @@ public final class SimpleMessage extends Message {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof SimpleMessage)) return false;
     SimpleMessage o = (SimpleMessage) other;
     return equals(optional_int32, o.optional_int32)
@@ -223,6 +224,7 @@ public final class SimpleMessage extends Message {
 
     @Override
     public boolean equals(Object other) {
+      if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
       return equals(bb, ((NestedMessage) other).bb);
     }

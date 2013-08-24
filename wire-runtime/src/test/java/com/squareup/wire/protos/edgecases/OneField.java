@@ -21,6 +21,7 @@ public final class OneField extends Message {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof OneField)) return false;
     return equals(opt_int32, ((OneField) other).opt_int32);
   }

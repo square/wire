@@ -19,6 +19,7 @@ public final class B extends Message {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof B)) return false;
     return equals(c, ((B) other).c);
   }

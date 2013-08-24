@@ -27,6 +27,7 @@ public final class E extends Message {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof E)) return false;
     E o = (E) other;
     return equals(f, o.f)
@@ -89,6 +90,7 @@ public final class E extends Message {
 
     @Override
     public boolean equals(Object other) {
+      if (other == this) return true;
       if (!(other instanceof F)) return false;
       return equals(i, ((F) other).i);
     }
