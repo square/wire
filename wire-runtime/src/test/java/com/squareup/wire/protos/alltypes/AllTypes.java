@@ -445,6 +445,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof AllTypes)) return false;
     AllTypes o = (AllTypes) other;
     if (!extensionsEqual(o)) return false;
@@ -1232,6 +1233,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
     @Override
     public boolean equals(Object other) {
+      if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
       return equals(a, ((NestedMessage) other).a);
     }
