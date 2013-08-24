@@ -55,6 +55,7 @@ public final class Person extends Message {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof Person)) return false;
     Person o = (Person) other;
     return equals(name, o.name)
@@ -156,6 +157,7 @@ public final class Person extends Message {
 
     @Override
     public boolean equals(Object other) {
+      if (other == this) return true;
       if (!(other instanceof PhoneNumber)) return false;
       PhoneNumber o = (PhoneNumber) other;
       return equals(number, o.number)

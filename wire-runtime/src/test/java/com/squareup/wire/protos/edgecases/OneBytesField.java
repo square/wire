@@ -22,6 +22,7 @@ public final class OneBytesField extends Message {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof OneBytesField)) return false;
     return equals(opt_bytes, ((OneBytesField) other).opt_bytes);
   }
