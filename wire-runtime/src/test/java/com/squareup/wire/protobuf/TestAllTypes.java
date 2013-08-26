@@ -21,8 +21,10 @@ import com.squareup.wire.Message;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import com.squareup.wire.Wire;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 
@@ -35,12 +37,23 @@ import static org.junit.Assert.fail;
 public class TestAllTypes {
 
   // Return a two-element list with a given repeated value
-  @SuppressWarnings("unchecked")
   private static <T> List<T> list(T x) {
-    return Arrays.asList(x, x);
+    return list(x, 2);
+  }
+
+  private static <T> List<T> list(T x, int numRepeated) {
+    List<T> data = new ArrayList<T>(numRepeated);
+    for (int i = 0; i < numRepeated; i++) {
+      data.add(x);
+    }
+    return data;
   }
 
   private static AllTypes.Builder getBuilder() {
+    return getBuilder(2);
+  }
+
+  private static AllTypes.Builder getBuilder(int numRepeated) {
     ByteString bytes = ByteString.of((byte) 125, (byte) 225);
     AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
     return new AllTypes.Builder()
@@ -78,44 +91,48 @@ public class TestAllTypes {
         .req_bytes(bytes)
         .req_nested_enum(AllTypes.NestedEnum.A)
         .req_nested_message(nestedMessage)
-        .rep_int32(list(111))
-        .rep_uint32(list(112))
-        .rep_sint32(list(113))
-        .rep_fixed32(list(114))
-        .rep_sfixed32(list(115))
-        .rep_int64(list(116L))
-        .rep_uint64(list(117L))
-        .rep_sint64(list(118L))
-        .rep_fixed64(list(119L))
-        .rep_sfixed64(list(120L))
-        .rep_bool(list(true))
-        .rep_float(list(122.0F))
-        .rep_double(list(123.0))
-        .rep_string(list("124"))
-        .rep_bytes(list(bytes))
-        .rep_nested_enum(list(AllTypes.NestedEnum.A))
-        .rep_nested_message(list(nestedMessage))
-        .pack_int32(list(111))
-        .pack_uint32(list(112))
-        .pack_sint32(list(113))
-        .pack_fixed32(list(114))
-        .pack_sfixed32(list(115))
-        .pack_int64(list(116L))
-        .pack_uint64(list(117L))
-        .pack_sint64(list(118L))
-        .pack_fixed64(list(119L))
-        .pack_sfixed64(list(120L))
-        .pack_bool(list(true))
-        .pack_float(list(122.0F))
-        .pack_double(list(123.0))
-        .pack_nested_enum(list(AllTypes.NestedEnum.A))
+        .rep_int32(list(111, numRepeated))
+        .rep_uint32(list(112, numRepeated))
+        .rep_sint32(list(113, numRepeated))
+        .rep_fixed32(list(114, numRepeated))
+        .rep_sfixed32(list(115, numRepeated))
+        .rep_int64(list(116L, numRepeated))
+        .rep_uint64(list(117L, numRepeated))
+        .rep_sint64(list(118L, numRepeated))
+        .rep_fixed64(list(119L, numRepeated))
+        .rep_sfixed64(list(120L, numRepeated))
+        .rep_bool(list(true, numRepeated))
+        .rep_float(list(122.0F, numRepeated))
+        .rep_double(list(123.0, numRepeated))
+        .rep_string(list("124", numRepeated))
+        .rep_bytes(list(bytes, numRepeated))
+        .rep_nested_enum(list(AllTypes.NestedEnum.A, numRepeated))
+        .rep_nested_message(list(nestedMessage, numRepeated))
+        .pack_int32(list(111, numRepeated))
+        .pack_uint32(list(112, numRepeated))
+        .pack_sint32(list(113, numRepeated))
+        .pack_fixed32(list(114, numRepeated))
+        .pack_sfixed32(list(115, numRepeated))
+        .pack_int64(list(116L, numRepeated))
+        .pack_uint64(list(117L, numRepeated))
+        .pack_sint64(list(118L, numRepeated))
+        .pack_fixed64(list(119L, numRepeated))
+        .pack_sfixed64(list(120L, numRepeated))
+        .pack_bool(list(true, numRepeated))
+        .pack_float(list(122.0F, numRepeated))
+        .pack_double(list(123.0, numRepeated))
+        .pack_nested_enum(list(AllTypes.NestedEnum.A, numRepeated))
         .setExtension(Ext_all_types.ext_opt_bool, true)
-        .setExtension(Ext_all_types.ext_rep_bool, list(true))
-        .setExtension(Ext_all_types.ext_pack_bool, list(true));
+        .setExtension(Ext_all_types.ext_rep_bool, list(true, numRepeated))
+        .setExtension(Ext_all_types.ext_pack_bool, list(true, numRepeated));
   }
 
   private final AllTypes allTypes = createAllTypes();
   private final Wire wire = new Wire(Ext_all_types.class);
+
+  private AllTypes createAllTypes(int numRepeated) {
+    return getBuilder(numRepeated).build();
+  }
 
   private AllTypes createAllTypes() {
     return getBuilder().build();
@@ -316,6 +333,113 @@ public class TestAllTypes {
     byte[] data = new byte[TestAllTypesData.expectedOutput.length];
     allTypes.writeTo(data, 0, data.length);
     AllTypes parsed = wire.parseFrom(data, AllTypes.class);
+    assertEquals(allTypes, parsed);
+
+    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
+
+    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    assertEquals(3, extensions.size());
+    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  }
+
+  @Test
+  public void testReadWithOffset() throws IOException {
+    byte[] data = new byte[TestAllTypesData.expectedOutput.length + 100];
+    allTypes.writeTo(data, 50, TestAllTypesData.expectedOutput.length);
+    AllTypes parsed = wire.parseFrom(data, 50, TestAllTypesData.expectedOutput.length, AllTypes.class);
+    assertEquals(allTypes, parsed);
+
+    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
+
+    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    assertEquals(3, extensions.size());
+    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  }
+
+  @Test
+  public void testReadFromInputStream() throws IOException {
+    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
+    allTypes.writeTo(data, 0, data.length);
+
+    InputStream input = new ByteArrayInputStream(data);
+    AllTypes parsed = wire.parseFrom(input, AllTypes.class);
+    assertEquals(allTypes, parsed);
+
+    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
+
+    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    assertEquals(3, extensions.size());
+    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  }
+
+  @Test
+  public void testReadLongMessagesFromInputStream() throws IOException {
+    AllTypes allTypes = createAllTypes(50);
+    byte[] data = new byte[allTypes.getSerializedSize()];
+    allTypes.writeTo(data, 0, data.length);
+
+    InputStream input = new ByteArrayInputStream(data);
+    AllTypes parsed = wire.parseFrom(input, AllTypes.class);
+    assertEquals(allTypes, parsed);
+
+    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
+    assertEquals(list(true, 50), allTypes.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true, 50), allTypes.getExtension(Ext_all_types.ext_pack_bool));
+
+    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    assertEquals(3, extensions.size());
+    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  }
+
+  // An input stream that returns 1, 2, 3, or 4 bytes at a time
+  private static class SlowInputStream extends InputStream {
+    private final byte[] data;
+    private int pos;
+
+    public SlowInputStream(byte[] data) {
+      this.data = data;
+    }
+
+    @Override public int read(byte[] output, int offset, int count) {
+      if (pos == data.length) {
+        return -1;
+      }
+      int bytesToReturn = Math.min(data.length - pos, (pos % 4) + 1);
+      for (int i = 0; i < bytesToReturn; i++) {
+        output[offset++] = data[pos++];
+      }
+      return bytesToReturn;
+    }
+
+    @Override public int read() {
+      if (pos == data.length) {
+        return -1;
+      }
+      return (int) data[pos++];
+    }
+  }
+
+  @Test
+  public void testReadFromSlowInputStream() throws IOException {
+    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
+    allTypes.writeTo(data, 0, data.length);
+
+    InputStream input = new SlowInputStream(data);
+    AllTypes parsed = wire.parseFrom(input, AllTypes.class);
     assertEquals(allTypes, parsed);
 
     assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));

@@ -33,7 +33,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.squareup.wire;
 
+import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Reads and decodes protocol message fields.
@@ -59,7 +61,7 @@ final class WireInput {
    * Create a new WireInput wrapping the given byte array.
    */
   public static WireInput newInstance(byte[] buf) {
-    return newInstance(buf, 0, buf.length);
+    return new WireInput(buf, 0, buf.length);
   }
 
   /**
@@ -67,6 +69,10 @@ final class WireInput {
    */
   public static WireInput newInstance(byte[] buf, int offset, int count) {
     return new WireInput(buf, offset, count);
+  }
+
+  public static WireInput newInstance(InputStream input) {
+    return new WireInput(input);
   }
 
   // -----------------------------------------------------------------
@@ -105,33 +111,39 @@ final class WireInput {
 
   /** Read a {@code string} field value from the stream. */
   public String readString() throws IOException {
-    int size = readVarint32();
-    if (size <= (bufferSize - bufferPos) && size > 0) {
-      // Fast path:  We already have the bytes in a contiguous buffer, so
-      //   just copy directly from it.
-      String result = new String(buffer, bufferPos, size, UTF_8);
-      bufferPos += size;
+    int count = readVarint32();
+    // Optimization: avoid an extra copy if the needed bytes are present in the buffer
+    if (bytesRemaining() >= count) {
+      String result = new String(buffer, pos, count, UTF_8);
+      pos += count;
       return result;
-    } else {
-      // Slow path:  Build a byte array first then copy it.
-      return new String(readRawBytes(size), UTF_8);
     }
+    return new String(readRawBytes(count), UTF_8);
   }
 
-  /** Read a {@code bytes} field value from the stream. */
+  /** Returns the number of unconsumed bytes in the current buffer. */
+  private int bytesRemaining() {
+    return limit - pos;
+  }
+
+  /**
+   * Reads a {@code bytes} field value from the stream. The length is read from the
+   * stream prior to the actual data.
+   */
   public ByteString readBytes() throws IOException {
-    int size = readVarint32();
-    if (size <= (bufferSize - bufferPos) && size > 0) {
-      // Fast path:  We already have the bytes in a contiguous buffer, so
-      //   just copy directly from it.
-      byte[] result = new byte[size];
-      System.arraycopy(buffer, bufferPos, result, 0, size);
-      bufferPos += size;
-      return ByteString.of(result);
-    } else {
-      // Slow path:  Build a byte array first then copy it.
-      return ByteString.of(readRawBytes(size));
+    int count = readVarint32();
+    return readBytes(count);
+  }
+
+  /** Reads a {@code bytes} field value from the stream with a known length. */
+  public ByteString readBytes(int count) throws IOException {
+    // Optimization: avoid an extra copy if the needed bytes are present in the buffer
+    if (bytesRemaining() >= count) {
+      ByteString result = ByteString.of(buffer, pos, count);
+      pos += count;
+      return result;
     }
+    return ByteString.of(readRawBytes(count));
   }
 
   /**
@@ -249,11 +261,38 @@ final class WireInput {
 
   // -----------------------------------------------------------------
 
+  private static final int BUFFER_SIZE = 1024;
+
+  private final InputStream input;
+
+  /**
+   * A buffer containing a subset of bytes from the input, running from position
+   * {@code bufferOffset} to {@code bufferOffset + limit}.
+   */
   private final byte[] buffer;
-  private final int bufferStart;
-  private int bufferSize;
-  private int bufferSizeAfterLimit;
-  private int bufferPos;
+
+  /**
+   * The input position associated with index 0 of {@code buffer}. This will be negative if the
+   * input begins at a non-zero offset within the buffer.
+   */
+  private long bufferOffset = 0L;
+
+  /**
+   * The current position in the input buffer, starting at 0 and increasing monotonically.
+   */
+  private int pos = 0;
+
+  /**
+   * The number of readable bytes in the buffer. Indices 0 through limit - 1 contain
+   * readable input bytes.
+   */
+  private int limit;
+
+  /**
+   * True if the end of the input has already been read into {@code buffer}.
+   */
+  private boolean inputStreamAtEof;
+
   private int lastTag;
 
   /** The absolute position of the end of the current message. */
@@ -262,11 +301,65 @@ final class WireInput {
   public static final int RECURSION_LIMIT = 64;
   public int recursionDepth;
 
-  private WireInput(byte[] buffer, int offset, int count) {
+  private WireInput(InputStream input) {
+    // Read the input stream as needed
+    this.input = input;
+    this.buffer = new byte[BUFFER_SIZE];
+  }
+
+  private WireInput(byte[] buffer, int start, int count) {
+    this.input = null;
+
+    // Keep a reference to the supplied buffer
     this.buffer = buffer;
-    bufferStart = offset;
-    bufferSize = offset + count;
-    bufferPos = offset;
+    this.bufferOffset = -start;
+    this.pos = start;
+    this.limit = start + count;
+    this.inputStreamAtEof = true;
+  }
+
+  /**
+   * Refills the buffer if all bytes have been consumed. If unconsumed bytes
+   * are present, or end-of-stream has been reached, does nothing.
+   *
+   * This method does not perform any buffer compaction. Consumers may call this method at
+   * any time, but no new data will be read until all available bytes have been consumed.
+   *
+   * The {@code bytesRequested} parameter is a hint as to how many bytes to
+   * request from the input stream when new data is required.
+   * {@link InputStream#read(byte[], int, int)} will be called
+   * repeatedly in an attempt to obtain the desired number of bytes. However,
+   * we will never ask for more than {@link #BUFFER_SIZE} bytes.
+   *
+   * When end-of-stream is reached, the {@link #inputStreamAtEof} flag will be set.
+   */
+  private void refillBuffer(int bytesRequested) throws IOException {
+    // If there is still data in the buffer, do nothing.
+    // If there is no more data in the input stream, do nothing.
+    if (pos < limit || inputStreamAtEof) {
+      return;
+    }
+
+    bufferOffset += pos;
+    pos = 0;
+    int offset = 0;
+
+    // Try to read at least bytesRequested bytes, but not more than BUFFER_SIZE.
+    bytesRequested = Math.min(bytesRequested, BUFFER_SIZE);
+    while (offset < bytesRequested) {
+      int bytesRead = input.read(buffer, offset, BUFFER_SIZE - offset);
+      if (bytesRead == -1) {
+        // We reached end-of-stream
+        limit = offset;
+        inputStreamAtEof = true;
+        return;
+      }
+      offset += bytesRead;
+    }
+
+    // There are still more bytes in the stream to read when these are consumed
+    limit = offset;
+    inputStreamAtEof = false;
   }
 
   /**
@@ -279,26 +372,13 @@ final class WireInput {
     if (byteLimit < 0) {
       throw new IOException(ENCOUNTERED_A_NEGATIVE_SIZE);
     }
-    byteLimit += bufferPos;
+    byteLimit += bufferOffset + pos;
     int oldLimit = currentLimit;
     if (byteLimit > oldLimit) {
-      throw new IOException(INPUT_ENDED_UNEXPECTEDLY);
+      throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
     }
     currentLimit = byteLimit;
-    recomputeBufferSizeAfterLimit();
     return oldLimit;
-  }
-
-  private void recomputeBufferSizeAfterLimit() {
-    bufferSize += bufferSizeAfterLimit;
-    int bufferEnd = bufferSize;
-    if (bufferEnd > currentLimit) {
-      // Limit is in current buffer.
-      bufferSizeAfterLimit = bufferEnd - currentLimit;
-      bufferSize -= bufferSizeAfterLimit;
-    } else {
-      bufferSizeAfterLimit = 0;
-    }
   }
 
   /**
@@ -308,7 +388,6 @@ final class WireInput {
    */
   public void popLimit(int oldLimit) {
     currentLimit = oldLimit;
-    recomputeBufferSizeAfterLimit();
   }
 
   /**
@@ -316,15 +395,21 @@ final class WireInput {
    * case if either the end of the underlying input source has been reached or
    * if the stream has reached a limit created using {@link #pushLimit(int)}.
    */
-  public boolean isAtEnd() {
-    return bufferPos == bufferSize;
+  public boolean isAtEnd() throws IOException {
+    // Treat the end of the current message (as specified by the message length field in the
+    // protocol buffer wire encoding) as though it were end-of-stream.
+    if (getPosition() == currentLimit) {
+      return true;
+    }
+    refillBuffer(1);
+    return bytesRemaining() == 0 && inputStreamAtEof;
   }
 
   /**
    * Get current position in buffer relative to beginning offset.
    */
-  public int getPosition() {
-    return bufferPos - bufferStart;
+  public long getPosition() {
+    return bufferOffset + pos;
   }
 
   /**
@@ -333,10 +418,11 @@ final class WireInput {
    * @throws IOException The end of the stream or the current limit was reached.
    */
   public byte readRawByte() throws IOException {
-    if (bufferPos == bufferSize) {
-      throw new IOException(INPUT_ENDED_UNEXPECTEDLY);
+    refillBuffer(1);
+    if (bytesRemaining() == 0) {
+      throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
     }
-    return buffer[bufferPos++];
+    return buffer[pos++];
   }
 
   /**
@@ -349,20 +435,19 @@ final class WireInput {
       throw new IOException(ENCOUNTERED_A_NEGATIVE_SIZE);
     }
 
-    if (bufferPos + size > currentLimit) {
-      bufferPos = currentLimit;
-      throw new IOException(INPUT_ENDED_UNEXPECTEDLY);
+    byte[] bytes = new byte[size];
+    int offset = 0;
+    while (offset < size) {
+      refillBuffer(size - offset);
+      if (bytesRemaining() == 0) {
+        throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
+      }
+      int count = Math.min(size - offset, bytesRemaining());
+      System.arraycopy(buffer, pos, bytes, offset, count);
+      pos += count;
+      offset += count;
     }
-
-    if (size <= bufferSize - bufferPos) {
-      // We have all the bytes we need already.
-      byte[] bytes = new byte[size];
-      System.arraycopy(buffer, bufferPos, bytes, 0, size);
-      bufferPos += size;
-      return bytes;
-    } else {
-      throw new IOException(INPUT_ENDED_UNEXPECTEDLY);
-    }
+    return bytes;
   }
 
   public void skipGroup() throws IOException {
