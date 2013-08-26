@@ -21,6 +21,7 @@ public final class VersionOne extends Message {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof VersionOne)) return false;
     return equals(i, ((VersionOne) other).i);
   }

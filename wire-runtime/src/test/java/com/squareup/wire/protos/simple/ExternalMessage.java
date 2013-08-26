@@ -22,6 +22,7 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof ExternalMessage)) return false;
     ExternalMessage o = (ExternalMessage) other;
     if (!extensionsEqual(o)) return false;
