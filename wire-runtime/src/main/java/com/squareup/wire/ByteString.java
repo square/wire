@@ -47,6 +47,16 @@ public final class ByteString {
   }
 
   /**
+   * Returns a new byte string containing the bytes of {@code data}
+   * from {@code offset} to {@code offset + count - 1}, inclusive.
+   */
+  public static ByteString of(byte[] data, int offset, int count) {
+    byte[] bytes = new byte[count];
+    System.arraycopy(data, offset, bytes, 0, count);
+    return new ByteString(bytes);
+  }
+
+  /**
    * Returns a new byte string containing the bytes of {@code data}, interpreted
    * as Base64.
    */
