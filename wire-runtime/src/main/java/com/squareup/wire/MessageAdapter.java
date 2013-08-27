@@ -571,7 +571,7 @@ final class MessageAdapter<M extends Message> {
         if (label.isPacked() && wireType == WireType.LENGTH_DELIMITED) {
           // Decode packed format
           int length = input.readVarint32();
-          int start = input.getPosition();
+          long start = input.getPosition();
           int oldLimit = input.pushLimit(length);
           while (input.getPosition() < start + length) {
             value = readValue(input, tag, datatype);
@@ -664,7 +664,7 @@ final class MessageAdapter<M extends Message> {
         break;
       case LENGTH_DELIMITED:
         int length = input.readVarint32();
-        builder.addLengthDelimited(tag, ByteString.of(input.readRawBytes(length)));
+        builder.addLengthDelimited(tag, input.readBytes(length));
         break;
       /* Skip any groups found in the input */
       case START_GROUP:
