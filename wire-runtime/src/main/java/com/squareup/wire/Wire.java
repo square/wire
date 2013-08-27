@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -114,7 +115,7 @@ public final class Wire {
    * it.
    */
   public <M extends Message> M parseFrom(byte[] bytes, Class<M> messageClass) throws IOException {
-    return parseFrom(bytes, 0, bytes.length, messageClass);
+    return parseFrom(WireInput.newInstance(bytes), messageClass);
   }
 
   /**
@@ -124,6 +125,14 @@ public final class Wire {
   public <M extends Message> M parseFrom(byte[] bytes, int offset, int count, Class<M> messageClass)
       throws IOException {
     return parseFrom(WireInput.newInstance(bytes, offset, count), messageClass);
+  }
+
+  /**
+   * Reads a message of type {@code messageClass} from the given {@link InputStream} and returns it.
+   */
+  public <M extends Message> M parseFrom(InputStream input, Class<M> messageClass)
+      throws IOException {
+    return parseFrom(WireInput.newInstance(input), messageClass);
   }
 
   /**
