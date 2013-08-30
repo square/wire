@@ -402,7 +402,8 @@ public class WireCompiler {
       MessageType messageType = (MessageType) parent;
       for (Field field : messageType.getFields()) {
         String fqName = fullyQualifiedJavaName(messageType, field.getType());
-        if (fqName != null && !fqName.startsWith(protoFile.getJavaPackage())) {
+        if (fqName != null
+            && !protoFile.getJavaPackage().equals(getPackageFromFullyQualifiedJavaName(fqName))) {
           types.add(fqName);
         }
       }
@@ -410,6 +411,13 @@ public class WireCompiler {
     for (Type nestedType : parent.getNestedTypes()) {
       getExternalTypes(nestedType, types);
     }
+  }
+
+  private String getPackageFromFullyQualifiedJavaName(String fqName) {
+    while (javaSymbolMap.containsValue(fqName)) {
+      fqName = removeTrailingSegment(fqName);
+    }
+    return fqName;
   }
 
   private List<String> getExtensionTypes() {
@@ -1168,13 +1176,21 @@ public class WireCompiler {
 
   private String shortenJavaName(String fullyQualifiedName) {
     if (fullyQualifiedName == null) return null;
-    String javaPackage = protoFile.getJavaPackage() + ".";
-    fullyQualifiedName = removePrefixIfPresent(fullyQualifiedName, javaPackage);
-    fullyQualifiedName = removePrefixIfPresent(fullyQualifiedName, typeBeingGenerated);
-    return fullyQualifiedName;
-  }
 
-  private String removePrefixIfPresent(String s, String prefix) {
-    return s.startsWith(prefix) ? s.substring(prefix.length()) : s;
+    String javaTypeBeingGenerated = protoFile.getJavaPackage() + "." + typeBeingGenerated;
+    if (fullyQualifiedName.startsWith(javaTypeBeingGenerated)) {
+      return fullyQualifiedName.substring(javaTypeBeingGenerated.length());
+    }
+
+    // Dependencies in javaSymbolMap are already imported.
+    for (String javaSymbol : javaSymbolMap.values()) {
+      if (fullyQualifiedName.startsWith(javaSymbol)) {
+        // omit package part
+        String pkgPrefix = getPackageFromFullyQualifiedJavaName(fullyQualifiedName) + '.';
+        return fullyQualifiedName.substring(pkgPrefix.length());
+      }
+    }
+
+    return fullyQualifiedName;
   }
 }
