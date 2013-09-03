@@ -24,8 +24,8 @@ public final class SimpleMessage extends Message {
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.BAZ;
   public static final Integer DEFAULT_REQUIRED_INT32 = 456;
   public static final List<Double> DEFAULT_REPEATED_DOUBLE = Collections.emptyList();
-  public static final ForeignEnum DEFAULT_DEFAULT_FOREIGN_ENUM = com.squareup.wire.protos.foreign.ForeignEnum.BAX;
-  public static final ForeignEnum DEFAULT_NO_DEFAULT_FOREIGN_ENUM = com.squareup.wire.protos.foreign.ForeignEnum.BAV;
+  public static final ForeignEnum DEFAULT_DEFAULT_FOREIGN_ENUM = ForeignEnum.BAX;
+  public static final ForeignEnum DEFAULT_NO_DEFAULT_FOREIGN_ENUM = ForeignEnum.BAV;
   public static final String DEFAULT_PACKAGE = "";
 
   /**
