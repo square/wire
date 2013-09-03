@@ -1140,7 +1140,7 @@ public class WireCompiler {
     } else {
       String prefix = messageType == null
           ? protoFile.getPackageName() : messageType.getFullyQualifiedName();
-      while (prefix.contains(".")) {
+      while (!prefix.isEmpty()) {
         String fqname = prefix + "." + type;
         if (typeIsComplete(fqname)) return fqname;
         prefix = removeTrailingSegment(prefix);
