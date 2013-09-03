@@ -62,3 +62,7 @@ extend ExternalMessage {
   optional SimpleMessage.NestedMessage nested_message_ext = 128;
   optional SimpleMessage.NestedEnum nested_enum_ext = 129;
 }
+
+extend squareup.protos.foreign.ForeignMessage {
+  optional int32 j = 100;
+}

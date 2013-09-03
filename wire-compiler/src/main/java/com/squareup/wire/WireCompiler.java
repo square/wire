@@ -402,8 +402,7 @@ public class WireCompiler {
       MessageType messageType = (MessageType) parent;
       for (Field field : messageType.getFields()) {
         String fqName = fullyQualifiedJavaName(messageType, field.getType());
-        if (fqName != null
-            && !protoFile.getJavaPackage().equals(getPackageFromFullyQualifiedJavaName(fqName))) {
+        if (fullyQualifiedNameIsOutsidePackage(fqName)) {
           types.add(fqName);
         }
       }
@@ -423,15 +422,17 @@ public class WireCompiler {
   private List<String> getExtensionTypes() {
     List<String> extensionClasses = new ArrayList<String>();
     for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
-      String fullyQualifiedName = extend.getFullyQualifiedName();
-      String javaName = javaName(null, fullyQualifiedName);
-      String name = shortenJavaName(javaName);
-      // Only include names outside our own package
-      if (name.contains(".")) {
-        extensionClasses.add(name);
+      String fqName = fullyQualifiedJavaName(null, extend.getFullyQualifiedName());
+      if (fullyQualifiedNameIsOutsidePackage(fqName)) {
+        extensionClasses.add(fqName);
       }
     }
     return extensionClasses;
+  }
+
+  private boolean fullyQualifiedNameIsOutsidePackage(String fqName) {
+    return fqName != null
+        && !protoFile.getJavaPackage().equals(getPackageFromFullyQualifiedJavaName(fqName));
   }
 
   private boolean hasExtends() {
