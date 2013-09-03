@@ -22,3 +22,9 @@ enum ForeignEnum {
   BAV = 0;
   BAX = 1;
 }
+
+message ForeignMessage {
+  extensions 100 to 200;
+
+  optional int32 i = 1;
+}

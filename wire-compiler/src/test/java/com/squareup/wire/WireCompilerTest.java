@@ -108,7 +108,8 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/simple/Ext_simple_message.java",
         "com/squareup/wire/protos/simple/SimpleMessage.java",
         "com/squareup/wire/protos/simple/ExternalMessage.java",
-        "com/squareup/wire/protos/foreign/ForeignEnum.java"
+        "com/squareup/wire/protos/foreign/ForeignEnum.java",
+        "com/squareup/wire/protos/foreign/ForeignMessage.java"
     };
     testProto(sources, outputs);
   }
