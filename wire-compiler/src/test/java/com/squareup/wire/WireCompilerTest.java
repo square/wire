@@ -317,6 +317,9 @@ public class WireCompilerTest {
     String expected = new Scanner(expectedFile).useDelimiter("\\A").next();
     File actualFile = new File(outputDir, path);
     String actual = new Scanner(actualFile).useDelimiter("\\A").next();
+    // Normalize CRLF -> LF
+    expected = expected.replace("\r\n", "\n");
+    actual = actual.replace("\r\n", "\n");
     Assert.assertEquals(expected, actual);
   }
 }
