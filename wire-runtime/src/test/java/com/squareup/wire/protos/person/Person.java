@@ -40,7 +40,7 @@ public final class Person extends Message {
   public final String email;
 
   /**
-   * A list of the user's phone numbers.
+   * A list of the customer's phone numbers.
    */
   @ProtoField(tag = 4, label = REPEATED)
   public final List<PhoneNumber> phone;
@@ -138,7 +138,7 @@ public final class Person extends Message {
     public static final PhoneType DEFAULT_TYPE = PhoneType.HOME;
 
     /**
-     * The user's phone number.
+     * The customer's phone number.
      */
     @ProtoField(tag = 1, type = STRING, label = REQUIRED)
     public final String number;
