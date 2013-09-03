@@ -145,8 +145,7 @@ public class WireCompiler {
     wireCompiler.compile(javaOut);
   }
 
-  public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots)
-      throws IOException {
+  public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots) {
     this.repoPath = protoPath;
     this.typesToEmit.addAll(roots);
     this.sourceFileNames = sourceFileNames;
@@ -492,24 +491,24 @@ public class WireCompiler {
         boolean isEnum = !isScalar && isEnum(fullyQualifiedName(null, fieldType));
         String labelString = getLabelString(field, isEnum);
         if (isScalar) {
-          initialValue = String.format("Extension\n"
-              + "      .%sExtending(%s.class)\n"
-              + "      .setName(\"%s\")\n"
-              + "      .setTag(%d)\n"
+          initialValue = String.format("Extension%n"
+              + "      .%sExtending(%s.class)%n"
+              + "      .setName(\"%s\")%n"
+              + "      .setTag(%d)%n"
               + "      .build%s()",
               field.getType(), className, fqName, tag, labelString);
         } else if (isEnum) {
-          initialValue = String.format("Extension\n"
-              + "      .enumExtending(%s.class, %s.class)\n"
-              + "      .setName(\"%s\")\n"
-              + "      .setTag(%d)\n"
+          initialValue = String.format("Extension%n"
+              + "      .enumExtending(%s.class, %s.class)%n"
+              + "      .setName(\"%s\")%n"
+              + "      .setTag(%d)%n"
               + "      .build%s()",
               type, className, fqName, tag, labelString);
         } else {
-          initialValue = String.format("Extension\n"
-              + "      .messageExtending(%s.class, %s.class)\n"
-              + "      .setName(\"%s\")\n"
-              + "      .setTag(%d)\n"
+          initialValue = String.format("Extension%n"
+              + "      .messageExtending(%s.class, %s.class)%n"
+              + "      .setName(\"%s\")%n"
+              + "      .setTag(%d)%n"
               + "      .build%s()",
               type, className, fqName, tag, labelString);
         }
