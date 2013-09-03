@@ -113,6 +113,17 @@ public class WireCompilerTest {
     testProto(sources, outputs);
   }
 
+  @Test public void testSingleLevel() throws Exception {
+    String[] sources = {
+        "single_level.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/single_level/Foo.java",
+        "com/squareup/wire/protos/single_level/Foos.java",
+    };
+    testProto(sources, outputs);
+  }
+
   @Test public void testAllTypes() throws Exception {
     String[] sources = {
         "all_types.proto"
