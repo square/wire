@@ -14,21 +14,24 @@ public final class MessageType implements Type {
   private final List<Field> fields;
   private final List<Type> nestedTypes;
   private final List<Extensions> extensions;
+  private final List<Option> options;
 
   MessageType(String name, String fqname, String documentation, List<Field> fields,
-      List<Type> nestedTypes, List<Extensions> extensions) {
+      List<Type> nestedTypes, List<Extensions> extensions, List<Option> options) {
     if (name == null) throw new NullPointerException("name");
     if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
     if (fields == null) throw new NullPointerException("fields");
     if (nestedTypes == null) throw new NullPointerException("nestedTypes");
     if (extensions == null) throw new NullPointerException("extensions");
+    if (options == null) throw new NullPointerException("options");
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
     this.fields = Collections.unmodifiableList(new ArrayList<Field>(fields));
     this.nestedTypes = Collections.unmodifiableList(new ArrayList<Type>(nestedTypes));
     this.extensions = Collections.unmodifiableList(new ArrayList<Extensions>(extensions));
+    this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
   }
 
   @Override public String getName() {
@@ -55,13 +58,18 @@ public final class MessageType implements Type {
     return extensions;
   }
 
+  public List<Option> getOptions() {
+    return options;
+  }
+
   @Override public boolean equals(Object other) {
     if (other instanceof MessageType) {
       MessageType that = (MessageType) other;
       return name.equals(that.name)
           && documentation.equals(that.documentation)
           && fields.equals(that.fields)
-          && nestedTypes.equals(that.nestedTypes);
+          && nestedTypes.equals(that.nestedTypes)
+          && options.equals(that.options);
     }
     return false;
   }
@@ -73,6 +81,9 @@ public final class MessageType implements Type {
   @Override public String toString() {
     StringBuilder result = new StringBuilder();
     result.append(name);
+    for (Option option : options) {
+      result.append("\n  option: ").append(option);
+    }
     for (Field field : fields) {
       result.append("\n  ").append(field);
     }

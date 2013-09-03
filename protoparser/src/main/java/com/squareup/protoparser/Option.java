@@ -5,7 +5,7 @@ public final class Option {
   private final String name;
   private final Object value;
 
-  Option(String name, Object value) {
+  public Option(String name, Object value) {
     if (name == null) throw new NullPointerException("name");
     if (value == null) throw new NullPointerException("value");
 
