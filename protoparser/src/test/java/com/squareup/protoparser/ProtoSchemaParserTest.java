@@ -20,6 +20,7 @@ public final class ProtoSchemaParserTest {
   private static final List<String> NO_STRINGS = Collections.emptyList();
   private static final List<ExtendDeclaration> NO_EXTEND_DECLARATIONs = Collections.emptyList();
   private static final List<Extensions> NO_EXTENSIONS = Collections.emptyList();
+  private static final List<Option> NO_OPTIONS = Collections.emptyList();
 
   @Test public void field() throws Exception {
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
@@ -39,7 +40,7 @@ public final class ProtoSchemaParserTest {
         Arrays.asList(new MessageType.Field(Label.REQUIRED, "string", "query", 1, "", map()),
             new MessageType.Field(Label.OPTIONAL, "int32", "page_number", 2, "", map()),
             new MessageType.Field(Label.OPTIONAL, "int32", "result_per_page", 3, "", map())),
-        NO_TYPES, NO_EXTENSIONS);
+        NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         new ProtoFile("search.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
@@ -81,7 +82,8 @@ public final class ProtoSchemaParserTest {
         + "}\n";
     Type message = new MessageType("FileDescriptorSet", "FileDescriptorSet", ""
         + "The protocol compiler can output a FileDescriptorSet containing the .proto\n"
-        + "files it parses.", Arrays.<MessageType.Field>asList(), NO_TYPES, NO_EXTENSIONS);
+        + "files it parses.", Arrays.<MessageType.Field>asList(), NO_TYPES, NO_EXTENSIONS,
+        NO_OPTIONS);
     ProtoFile expected =
         new ProtoFile("descriptor.proto", "google.protobuf", NO_STRINGS, Arrays.asList(message),
             NO_SERVICES, map("java_package", "com.google.protobuf"), NO_EXTEND_DECLARATIONs);
@@ -104,7 +106,7 @@ public final class ProtoSchemaParserTest {
     Type messageType = new MessageType("FieldOptions", "FieldOptions", "", Arrays.asList(
         new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
             map("default", "STRING", "deprecated", "true"))), Arrays.asList(enumType),
-            NO_EXTENSIONS);
+            NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, Arrays.asList(messageType), NO_SERVICES,
             map(), NO_EXTEND_DECLARATIONs);
@@ -143,7 +145,7 @@ public final class ProtoSchemaParserTest {
         + "}";
     Type messageType = new MessageType("Foo", "Foo", "", Arrays.asList(
         new MessageType.Field(Label.OPTIONAL, "string", "claim_token", 2, "",
-            map("squareup.redacted", "true"))), NO_TYPES, NO_EXTENSIONS);
+            map("squareup.redacted", "true"))), NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, Arrays.<Type>asList(messageType),
             NO_SERVICES, map(), NO_EXTEND_DECLARATIONs);
@@ -162,7 +164,7 @@ public final class ProtoSchemaParserTest {
         new MessageType.Field(Label.OPTIONAL, "string", "name", 1, "",
             map("default",
             "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"))),
-            NO_TYPES, NO_EXTENSIONS);
+            NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected =
         new ProtoFile("foo.proto", null, NO_STRINGS, Arrays.<Type>asList(messageType),
             NO_SERVICES, map(), NO_EXTEND_DECLARATIONs);
@@ -210,7 +212,7 @@ public final class ProtoSchemaParserTest {
         + "}";
     Type expected = new MessageType("HexTag", "HexTag", "",
         Arrays.asList(new MessageType.Field(Label.REQUIRED, "string", "hex", 16, "", map())),
-        NO_TYPES, NO_EXTENSIONS);
+        NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         new ProtoFile("hex.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
@@ -223,9 +225,19 @@ public final class ProtoSchemaParserTest {
         + "  option (squareup.one) = {name: \"Name\", class_name:\"ClassName\"};\n"
         + "  option (squareup.two.a) = {[squareup.options.type]: EXOTIC};\n"
         + "}";
+
+    List<Option> options = new ArrayList<Option>();
+    Map<String, String> option_one_map = new LinkedHashMap<String, String>();
+    option_one_map.put("name", "Name");
+    option_one_map.put("class_name", "ClassName");
+    options.add(new Option("squareup.one", option_one_map));
+    Map<String, String> option_two_map = new LinkedHashMap<String, String>();
+    option_two_map.put("squareup.options.type", "EXOTIC");
+    options.add(new Option("squareup.two.a", option_two_map));
+
     Type expected =
         new MessageType("ExoticOptions", "ExoticOptions", "", Arrays.<MessageType.Field>asList(),
-            NO_TYPES, NO_EXTENSIONS);
+            NO_TYPES, NO_EXTENSIONS, options);
     ProtoFile protoFile =
         new ProtoFile("exotic.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
@@ -246,7 +258,7 @@ public final class ProtoSchemaParserTest {
         Arrays.<MessageType.Field>asList(new MessageType.Field(Label.OPTIONAL, "field.type",
             "has_options", 3, "", map("option_map", map("nested_map",
             map("key", "value", "key2", "value2")), "option_string", "string"))), NO_TYPES,
-            NO_EXTENSIONS);
+            NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         new ProtoFile("nestedmaps.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES,
             map(), NO_EXTEND_DECLARATIONs);
@@ -266,7 +278,7 @@ public final class ProtoSchemaParserTest {
     Type expected = new MessageType("Foo", "Foo", "", Arrays.asList(
         new MessageType.Field(Label.OPTIONAL, "int32", "bar", 1, "",
             map("validation.range", map("min", "1", "max", "100"), "default", "20"))), NO_TYPES,
-        NO_EXTENSIONS);
+        NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         new ProtoFile("foo.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);

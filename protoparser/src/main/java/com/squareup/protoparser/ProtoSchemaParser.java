@@ -171,6 +171,7 @@ public final class ProtoSchemaParser {
     List<MessageType.Field> fields = new ArrayList<MessageType.Field>();
     List<Type> nestedTypes = new ArrayList<Type>();
     List<Extensions> extensions = new ArrayList<Extensions>();
+    List<Option> options = new ArrayList<Option>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -185,10 +186,13 @@ public final class ProtoSchemaParser {
         nestedTypes.add((Type) declared);
       } else if (declared instanceof Extensions) {
         extensions.add((Extensions) declared);
+      } else if (declared instanceof Option) {
+        options.add((Option) declared);
       }
     }
     prefix = previousPrefix;
-    return new MessageType(name, prefix + name, documentation, fields, nestedTypes, extensions);
+    return new MessageType(name, prefix + name, documentation, fields, nestedTypes, extensions,
+        options);
   }
 
   /** Reads an extend declaration. */
