@@ -124,6 +124,16 @@ public class WireCompilerTest {
     testProto(sources, outputs);
   }
 
+  @Test public void testChildPackage() throws Exception {
+    String[] sources = {
+        "child_pkg.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/ChildPackage.java",
+    };
+    testProto(sources, outputs);
+  }
+
   @Test public void testAllTypes() throws Exception {
     String[] sources = {
         "all_types.proto"
