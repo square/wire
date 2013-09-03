@@ -3,6 +3,7 @@
 package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Extension;
+import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.util.List;
 
 public final class Ext_simple_message {
@@ -34,5 +35,10 @@ public final class Ext_simple_message {
       .enumExtending(SimpleMessage.NestedEnum.class, ExternalMessage.class)
       .setName("squareup.protos.simple.nested_enum_ext")
       .setTag(129)
+      .buildOptional();
+  public static final Extension<ForeignMessage, Integer> j = Extension
+      .int32Extending(ForeignMessage.class)
+      .setName("squareup.protos.foreign.j")
+      .setTag(100)
       .buildOptional();
 }
