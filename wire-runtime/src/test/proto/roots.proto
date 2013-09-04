@@ -37,7 +37,7 @@ message A {
 }
 
 message B {
-  optional C c = 1;
+  required C c = 1;
 }
 
 message C {

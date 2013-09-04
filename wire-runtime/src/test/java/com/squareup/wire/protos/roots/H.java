@@ -7,8 +7,6 @@ import com.squareup.wire.ProtoField;
 
 public final class H extends Message {
 
-  public static final E.F DEFAULT_EF = getDefaultInstance(E.F.class);
-
   @ProtoField(tag = 1)
   public final E.F ef;
 

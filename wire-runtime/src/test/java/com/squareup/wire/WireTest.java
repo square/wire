@@ -15,18 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.protos.person.Person;
-import com.squareup.wire.protos.simple.Ext_simple_message;
-import com.squareup.wire.protos.simple.ExternalMessage;
-import com.squareup.wire.protos.simple.SimpleMessage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.junit.Test;
-
-import static com.squareup.wire.protos.person.Person.PhoneNumber;
-import static com.squareup.wire.protos.person.Person.PhoneType;
 import static com.squareup.wire.protos.simple.Ext_simple_message.barext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.bazext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.fooext;
@@ -35,6 +23,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+
+import com.squareup.wire.protos.person.Person;
+import com.squareup.wire.protos.person.Person.PhoneNumber;
+import com.squareup.wire.protos.person.Person.PhoneType;
+import com.squareup.wire.protos.simple.Ext_simple_message;
+import com.squareup.wire.protos.simple.ExternalMessage;
+import com.squareup.wire.protos.simple.SimpleMessage;
 
 /**
  * Test Wire runtime.
@@ -179,8 +181,8 @@ public class WireTest {
         Ext_simple_message.barext.toString());
     assertEquals("[REQUIRED INT32 squareup.protos.simple.bazext = 127]",
         Ext_simple_message.bazext.toString());
-    assertEquals("[OPTIONAL ENUM squareup.protos.simple.nested_enum_ext = 129]",
-        Ext_simple_message.nested_enum_ext.toString());
+    assertEquals("[OPTIONAL MESSAGE squareup.protos.simple.nested_message_ext = 128]",
+        Ext_simple_message.nested_message_ext.toString());
     assertEquals("[OPTIONAL ENUM squareup.protos.simple.nested_enum_ext = 129]",
         Ext_simple_message.nested_enum_ext.toString());
   }
