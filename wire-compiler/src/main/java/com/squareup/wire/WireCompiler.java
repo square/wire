@@ -19,6 +19,7 @@ import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.ExtendDeclaration;
 import com.squareup.protoparser.MessageType;
+import com.squareup.protoparser.Option;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 import com.squareup.protoparser.Type;
@@ -93,6 +94,9 @@ public class WireCompiler {
   private final Map<String, String> javaSymbolMap = new LinkedHashMap<String, String>();
   private final Set<String> enumTypes = new LinkedHashSet<String>();
   private final Map<String, String> enumDefaults = new LinkedHashMap<String, String>();
+  private final Map<String, String> extensionTypes = new LinkedHashMap<String, String>();
+  private final Map<String, String> fieldMap = new LinkedHashMap<String, String>();
+  private final Map<String, String> fqFieldMap = new LinkedHashMap<String, String>();
   private ProtoFile protoFile;
   private String protoFileName;
   private String typeBeingGenerated = "";
@@ -269,37 +273,95 @@ public class WireCompiler {
     }
   }
 
-  private void loadSymbols(ProtoFile protoFile) throws IOException {
-    Set<String> loadedDependencies = new LinkedHashSet<String>();
-    loadSymbolsHelper(protoFile, loadedDependencies);
+  private enum LoadSymbolsPass {
+    LOAD_TYPES, LOAD_FIELDS
   }
 
-  private void loadSymbolsHelper(ProtoFile protoFile, Set<String> loadedDependencies)
-      throws IOException {
+  private void loadSymbols(ProtoFile protoFile) throws IOException {
+    // Make two passes through the input files. In the first pass we collect message and enum types,
+    // and in the second pass we collect field types.
+    loadSymbolsHelper(protoFile, new LinkedHashSet<String>(), LoadSymbolsPass.LOAD_TYPES);
+    loadSymbolsHelper(protoFile, new LinkedHashSet<String>(), LoadSymbolsPass.LOAD_FIELDS);
+  }
+
+  // Call with pass == LOAD_TYPES, then pass == LOAD_FIELDS
+  private void loadSymbolsHelper(ProtoFile protoFile, Set<String> loadedDependencies,
+      LoadSymbolsPass pass) throws IOException {
     // Load symbols from imports
     for (String dependency : protoFile.getDependencies()) {
       if (!loadedDependencies.contains(dependency)) {
         File dep = new File(repoPath + "/" + dependency);
         ProtoFile dependencyFile = ProtoSchemaParser.parse(dep);
-        loadSymbols(dependencyFile);
+        loadSymbolsHelper(dependencyFile, loadedDependencies, pass);
         loadedDependencies.add(dependency);
       }
     }
 
-    addTypes(protoFile.getTypes(), protoFile.getJavaPackage() + ".");
+    addTypes(protoFile, protoFile.getTypes(), protoFile.getJavaPackage() + ".", pass);
   }
 
-  private void addTypes(List<Type> types, String javaPrefix) {
+  private void addTypes(ProtoFile protoFile, List<Type> types, String javaPrefix,
+      LoadSymbolsPass pass) {
     for (Type type : types) {
       String name = type.getName();
-      String fqName = type.getFullyQualifiedName();
-      javaSymbolMap.put(fqName, javaPrefix + name);
-      if (type instanceof EnumType) {
-        enumTypes.add(fqName);
-        enumDefaults.put(fqName, ((EnumType) type).getValues().get(0).getName());
+      if (pass == LoadSymbolsPass.LOAD_TYPES) {
+        String fqName = type.getFullyQualifiedName();
+        javaSymbolMap.put(fqName, javaPrefix + name);
+        if (type instanceof EnumType) {
+          enumTypes.add(fqName);
+          enumDefaults.put(fqName, ((EnumType) type).getValues().get(0).getName());
+        }
+      } else {
+        if (type instanceof MessageType) {
+          addFields(protoFile, (MessageType) type);
+        }
       }
-      addTypes(type.getNestedTypes(), javaPrefix + name + ".");
+      addTypes(protoFile, type.getNestedTypes(), javaPrefix + name + ".", pass);
     }
+  }
+
+  private void addFields(ProtoFile protoFile, MessageType messageType) {
+    for (MessageType.Field field : messageType.getFields()) {
+      String javaName = getJavaFieldType(protoFile, messageType, field);
+      String shortName = shortenJavaName(protoFile, javaName(messageType.getFullyQualifiedName()));
+      String fieldType = field.getType();
+      fieldMap.put(shortName + "$" + field.getName(), isScalar(fieldType) ? fieldType : javaName);
+      if (!isScalar(fieldType)) {
+        String fqName = fullyQualifiedName(messageType, fieldType);
+        fqFieldMap.put(shortName + "$" + field.getName(), fqName);
+      }
+    }
+  }
+
+  private String getJavaFieldType(ProtoFile protoFile, MessageType messageType, Field field) {
+    String javaName = javaName(protoFile, messageType, field.getType());
+    if (isRepeated(field)) javaName = "List<" + javaName + ">";
+    return javaName;
+  }
+
+  private String javaName(ProtoFile protoFile, MessageType messageType, String type) {
+    String scalarType = scalarType(type);
+    return scalarType != null
+        ? scalarType : shortenJavaName(protoFile, javaName(fullyQualifiedName(messageType, type)));
+  }
+
+  private String shortenJavaName(ProtoFile protoFile, String fullyQualifiedName) {
+    if (fullyQualifiedName == null) return null;
+    String javaTypeBeingGenerated = protoFile.getJavaPackage() + "." + typeBeingGenerated;
+    if (fullyQualifiedName.startsWith(javaTypeBeingGenerated)) {
+      return fullyQualifiedName.substring(javaTypeBeingGenerated.length());
+    }
+
+    // Dependencies in javaSymbolMap are already imported.
+    for (String javaSymbol : javaSymbolMap.values()) {
+      if (fullyQualifiedName.startsWith(javaSymbol)) {
+        // omit package part
+        String pkgPrefix = getPackageFromFullyQualifiedJavaName(fullyQualifiedName) + '.';
+        return fullyQualifiedName.substring(pkgPrefix.length());
+      }
+    }
+
+    return fullyQualifiedName;
   }
 
   private String protoFileName(String path) {
@@ -348,6 +410,9 @@ public class WireCompiler {
         imports.add("com.squareup.wire.ExtendableMessage");
         imports.add("com.squareup.wire.Extension");
       }
+      if (hasMessageOption(types)) {
+        imports.add("com.google.protobuf.MessageOptions");
+      }
       List<String> externalTypes = new ArrayList<String>();
       getExternalTypes(type, externalTypes);
       imports.addAll(externalTypes);
@@ -374,6 +439,15 @@ public class WireCompiler {
     } finally {
       writer.close();
     }
+  }
+
+  private boolean hasMessageOption(List<Type> types) {
+    for (Type type : types) {
+      if (type instanceof MessageType && !((MessageType) type).getOptions().isEmpty()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public JavaWriter getJavaWriter(String javaOut, String className) throws IOException {
@@ -497,6 +571,7 @@ public class WireCompiler {
               + "      .setTag(%d)%n"
               + "      .build%s()",
               field.getType(), className, fqName, tag, labelString);
+          extensionTypes.put(fullyQualifiedName + "$" + field.getName(), field.getType());
         } else if (isEnum) {
           initialValue = String.format("Extension%n"
               + "      .enumExtending(%s.class, %s.class)%n"
@@ -504,6 +579,9 @@ public class WireCompiler {
               + "      .setTag(%d)%n"
               + "      .build%s()",
               type, className, fqName, tag, labelString);
+          // Store fully-qualified name for enumerations so we can identify them later
+          extensionTypes.put(fullyQualifiedName + "$" + field.getName(),
+              fullyQualifiedName(null, fieldType));
         } else {
           initialValue = String.format("Extension%n"
               + "      .messageExtending(%s.class, %s.class)%n"
@@ -511,6 +589,7 @@ public class WireCompiler {
               + "      .setTag(%d)%n"
               + "      .build%s()",
               type, className, fqName, tag, labelString);
+          extensionTypes.put(fullyQualifiedName + "$" + field.getName(), type);
         }
 
         if (isRepeated(field)) {
@@ -571,6 +650,7 @@ public class WireCompiler {
       String name = messageType.getName();
       writer.beginType(name, "class", modifiers,
           hasExtensions(messageType) ? "ExtendableMessage<" + name + ">" : "Message");
+      emitMessageOptions(messageType);
       emitMessageDefaults(messageType);
       emitMessageFields(messageType);
       emitMessageConstructor(messageType);
@@ -592,6 +672,225 @@ public class WireCompiler {
       }
       writer.endType();
     }
+  }
+
+  private void emitMessageOptions(MessageType messageType) throws IOException {
+    Map<String, ?> optionsMap = createOptionsMap(messageType);
+    if (optionsMap != null) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("new MessageOptions.Builder()");
+      for (Map.Entry<String, ?> entry : optionsMap.entrySet()) {
+        sb.append(String.format("%n      .setExtension(Ext_%s.%s, %s)",
+            protoFileName, entry.getKey(), createOptionInitializer(entry.getValue(), 1)));
+      }
+      sb.append("\n      .build()");
+      writer.emitEmptyLine();
+      writer.emitField("MessageOptions", "MESSAGE_OPTIONS", EnumSet.of(PUBLIC, STATIC, FINAL),
+          sb.toString());
+    }
+  }
+
+  private Map<String, ?> createOptionsMap(MessageType type) {
+    List<Option> options = type.getOptions();
+    if (options.isEmpty()) {
+      return null;
+    }
+
+    Map<String, Object> map = new LinkedHashMap<String, Object>();
+    for (Option option : options) {
+      insertOption(option.getName(), option.getValue(), type.getName(), map);
+    }
+    return map;
+  }
+
+  /**
+   * Builds a nested map from a set of options. Each level of the map corresponding to
+   * a message has an extra key "class" whose value is the Java type name for the
+   * message. For example, consider the following options:
+   *
+   * <pre>
+   *
+   * extend google.protobuf.MessageOptions {
+   *   optional FooBar my_message_option_one = 50001;
+   *   optional float my_message_option_two = 50002;
+   *   optional FooBar my_message_option_three = 50003;
+   *   optional FooBar.FooBarBazEnum my_message_option_four = 50004;
+   * }
+   *
+   * message MessageWithOptions {
+   *   option (my_message_option_one).foo = 1234;
+   *   option (my_message_option_one).bar = "5678";
+   *   option (my_message_option_one).baz.value = BAZ;
+   *   option (my_message_option_one).qux = 18446744073709551615;
+   *   option (my_message_option_one).fred = 123.0;
+   *   option (my_message_option_one).daisy = 456.0;
+   *   option (my_message_option_two) = 91011.0;
+   *   option (my_message_option_three) = { foo: 11, bar: "22", baz: { value: BAR }};
+   * }
+   *
+   * message FooBar {
+   *   optional int32 foo = 1;
+   *   optional string bar = 2;
+   *   optional Nested baz = 3;
+   *   optional uint64 qux = 4;
+   *   optional float fred = 5;
+   *   optional double daisy = 6;
+   *
+   *   message Nested {
+   *    optional FooBarBazEnum value = 1;
+   *   }
+   *
+   *   enum FooBarBazEnum {
+   *    FOO = 1;
+   *    BAR = 2;
+   *    BAZ = 3;
+   *   }
+   * }
+   * </pre>
+   *
+   * The generated map has the following structure:
+   *
+   * <pre>
+   * {
+   *   "my_message_option_one": {
+   *     "class": "FooBar",
+   *     "foo": "1234",
+   *     "bar": "\"5678\"",
+   *     "baz": {
+   *       "class": "FooBar.FooBarBazEnum",
+   *       "value": "FooBar.FooBarBazEnum.BAZ"
+   *     }
+   *     "qux": "-1L", // note: wrapped to signed 64-bits
+   *     "fred": "123.0F",
+   *     "daisy": "456.0D"
+   *   }
+   *   "my_message_option_two": "91011.0",
+   *   "my_message_option_three": {
+   *     "class": "FooBar",
+   *     "foo": "11",
+   *     "bar": "\"22\"",
+   *     "baz": {
+   *       "class": "FooBar.FooBarBazEnum",
+   *       "value": "FooBar.FooBarBazEnum.BAR"
+   *     }
+   *   }
+   * }
+   * </pre>
+   */
+  @SuppressWarnings("unchecked")
+  private void insertOption(String name, Object value, String enclosingType,
+      Map<String, Object> map) {
+    // If the option name has dots in it, break off the first level and recurse
+    int index = name.indexOf('.');
+    if (index != -1) {
+      String prefix = name.substring(0, index);
+      String suffix = name.substring(index + 1);
+      String fieldType = getFieldType(enclosingType, prefix);
+      insertOption(prefix, new Option(suffix, value), fieldType, map);
+      return;
+    }
+
+    // Look up top-level extension type
+    String extensionType = extensionTypes.get("google.protobuf.MessageOptions$" + name);
+    if (extensionType != null) {
+      enclosingType = extensionType;
+    }
+
+    // Place simple entries into the map, recurse on nested entries
+    if (value instanceof String) {
+      String fieldType = extensionType == null ? getFieldType(enclosingType, name) : extensionType;
+      if (isScalar(fieldType)) {
+        String javaTypeName = scalarType(fieldType);
+        value = getInitializerForType((String) value, javaTypeName);
+      } else if (isEnum(fieldType)) {
+        value = shortenJavaName(javaName(fieldType)) + "." + value;
+      }
+      map.put(name, value);
+    } else {
+      Object entry = map.get(name);
+      if (entry == null) {
+        entry = new LinkedHashMap<String, Object>();
+        map.put(name, entry);
+      }
+      Map<String, Object> entryMap = (Map<String, Object>) entry;
+      // Add a "class" entry for each nested type encountered
+      entryMap.put("class", enclosingType);
+
+      // Nested values may be represented as a single option (possibly nesting multiple levels),
+      // or as a map.
+      if (value instanceof Option) {
+        Option optionValue = (Option) value;
+        String nestedName = optionValue.getName();
+        String fieldType = getFieldType(enclosingType, nestedName);
+        // Only rewrite enum initializers, others will be rewritten at the final insertion level
+        Object val = qualifyEnum(enclosingType, nestedName, fieldType, optionValue.getValue());
+        insertOption(nestedName, val, enclosingType, entryMap);
+      } else if (value instanceof Map) {
+        Map<String, Object> mapValue = (Map<String, Object>) value;
+        for (Map.Entry<String, Object> valueEntry : mapValue.entrySet()) {
+          String nestedName = valueEntry.getKey();
+          String fieldType = getFieldType(enclosingType, nestedName);
+          Object val = qualifyValue(enclosingType, nestedName, fieldType, valueEntry.getValue());
+          insertOption(nestedName, val, fieldType, entryMap);
+        }
+      } else {
+        throw new RuntimeException(value.getClass().getName());
+      }
+    }
+  }
+
+  private String getFieldType(String enclosingType, String nestedName) {
+    return fieldMap.get(enclosingType + "$" + nestedName);
+  }
+
+  private Object qualifyEnum(String enclosingType, String optionValueName, String fieldType,
+      Object value) {
+    String fqName = fqFieldMap.get(enclosingType + "$" + optionValueName);
+    if (isEnum(fqName)) {
+      return fieldType + "." + value;
+    }
+    return value;
+  }
+
+  private Object qualifyValue(String enclosingType, String optionValueName, String fieldType,
+      Object value) {
+    if (isScalar(fieldType)) {
+      return getInitializerForType((String) value, scalarType(fieldType));
+    }
+    return qualifyEnum(enclosingType, optionValueName, fieldType, value);
+  }
+
+  @SuppressWarnings("unchecked")
+  private String createOptionInitializer(Object stringOrMap, int level) {
+    StringBuilder sb = new StringBuilder();
+    if (stringOrMap instanceof Map) {
+      Map<String, Object> map = (Map<String, Object>) stringOrMap;
+      sb.append("new ")
+          .append(map.get("class"))
+          .append(".Builder()");
+      for (Map.Entry<String, ?> entry : map.entrySet()) {
+        if ("class".equals(entry.getKey())) {
+          continue;
+        }
+        sb.append("\n  ");
+        for (int i = 0; i < level + 1; i++) {
+          sb.append("    ");
+        }
+        sb.append(".")
+            .append(entry.getKey())
+            .append("(")
+            .append(createOptionInitializer(entry.getValue(), level + 1))
+            .append(")");
+      }
+      sb.append("\n  ");
+      for (int i = 0; i < level + 1; i++) {
+        sb.append("    ");
+      }
+      sb.append(".build()");
+    } else {
+      sb.append((String) stringOrMap);
+    }
+    return sb.toString();
   }
 
   // Example:
@@ -617,9 +916,7 @@ public class WireCompiler {
   }
 
   private String getJavaFieldType(MessageType messageType, Field field) {
-    String javaName = javaName(messageType, field.getType());
-    if (isRepeated(field)) javaName = "List<" + javaName + ">";
-    return javaName;
+    return getJavaFieldType(protoFile, messageType, field);
   }
 
   private String sanitize(String name) {
@@ -1175,22 +1472,6 @@ public class WireCompiler {
   }
 
   private String shortenJavaName(String fullyQualifiedName) {
-    if (fullyQualifiedName == null) return null;
-
-    String javaTypeBeingGenerated = protoFile.getJavaPackage() + "." + typeBeingGenerated;
-    if (fullyQualifiedName.startsWith(javaTypeBeingGenerated)) {
-      return fullyQualifiedName.substring(javaTypeBeingGenerated.length());
-    }
-
-    // Dependencies in javaSymbolMap are already imported.
-    for (String javaSymbol : javaSymbolMap.values()) {
-      if (fullyQualifiedName.startsWith(javaSymbol)) {
-        // omit package part
-        String pkgPrefix = getPackageFromFullyQualifiedJavaName(fullyQualifiedName) + '.';
-        return fullyQualifiedName.substring(pkgPrefix.length());
-      }
-    }
-
-    return fullyQualifiedName;
+    return shortenJavaName(protoFile, fullyQualifiedName);
   }
 }

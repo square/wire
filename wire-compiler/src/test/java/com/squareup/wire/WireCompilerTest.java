@@ -169,6 +169,18 @@ public class WireCompilerTest {
     testProto(sources, outputs);
   }
 
+  @Test public void testCustomOptions() throws Exception {
+    String[] sources = {
+        "custom_options.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/custom_options/FooBar.java",
+        "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
+        "com/squareup/wire/protos/custom_options/Ext_custom_options.java"
+    };
+    testProto(sources, outputs);
+  }
+
   @Test public void testNoRoots() throws Exception {
     String[] sources = {
         "roots.proto"
