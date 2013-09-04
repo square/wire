@@ -10,7 +10,6 @@ import static com.squareup.wire.Message.Datatype.INT32;
 
 public final class E extends Message {
 
-  public static final F DEFAULT_F = getDefaultInstance(F.class);
   public static final G DEFAULT_G = G.FOO;
 
   @ProtoField(tag = 1)

@@ -599,11 +599,18 @@ public class WireCompiler {
   // public static final Integer DEFAULT_OPT_INT32 = 123;
   //
   private void emitMessageDefaults(MessageType messageType) throws IOException {
-    List<Field> fields = messageType.getFields();
-    if (!fields.isEmpty()) {
+    List<Field> defaultFields = new ArrayList<Field>();
+    for (Field field : messageType.getFields()) {
+      // Message types are not defaulted
+      if (!isMessageType(messageType, field))
+        defaultFields.add(field);
+    }
+
+    if (!defaultFields.isEmpty()) {
       writer.emitEmptyLine();
     }
-    for (Field field : fields) {
+
+    for (Field field : defaultFields) {
       String javaName = getJavaFieldType(messageType, field);
       if (javaName == null) {
         throw new IllegalArgumentException(
@@ -1120,6 +1127,12 @@ public class WireCompiler {
 
   private boolean isRequired(Field field) {
     return field.getLabel() == MessageType.Label.REQUIRED;
+  }
+
+  private boolean isMessageType(MessageType messageType, Field field) {
+    return !isScalar(field.getType())
+        && !isEnum(fullyQualifiedName(messageType, field.getType()))
+        && !isRepeated(field);
   }
 
   private boolean isPacked(Field field, boolean isEnum) {
