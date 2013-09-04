@@ -2,13 +2,10 @@ mvn clean package -U -DskipTests
 cd wire-runtime
 java -jar ../wire-compiler/target/wire-compiler-1.0-SNAPSHOT-jar-with-dependencies.jar --proto_path=../wire-runtime/src/test/proto --java_out=../wire-runtime/src/test/java \
   all_types.proto \
-  child_pkg.proto \
-  custom_options.proto \
   edge_cases.proto \
   external_message.proto \
   foreign.proto \
   person.proto \
   roots.proto \
   simple_message.proto \
-  single_level.proto \
   unknown_fields.proto
