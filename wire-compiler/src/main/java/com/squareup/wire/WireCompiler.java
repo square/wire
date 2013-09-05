@@ -155,9 +155,8 @@ public class WireCompiler {
     Map<String, ProtoFile> parsedFiles = new LinkedHashMap<String, ProtoFile>();
 
     for (String sourceFilename : sourceFileNames) {
-      ProtoFile protoFile = ProtoSchemaParser.parse(new File(repoPath + "/" + sourceFilename));
-      String protoFileName = protoFileName(protoFile.getFileName());
-      parsedFiles.put(protoFileName, protoFile);
+      ProtoFile protoFile = ProtoSchemaParser.parse(new File(repoPath, sourceFilename));
+      parsedFiles.put(sourceFilename, protoFile);
 
       loadSymbols(protoFile);
     }
@@ -168,9 +167,10 @@ public class WireCompiler {
     }
 
     for (Map.Entry<String, ProtoFile> entry : parsedFiles.entrySet()) {
-      this.protoFileName = entry.getKey();
+      String sourceFilename = entry.getKey();
       this.protoFile = entry.getValue();
-      System.out.println("Compiling proto source file " + protoFileName + ".proto");
+      this.protoFileName = protoFileName(protoFile.getFileName());
+      System.out.println("Compiling proto source file " + sourceFilename);
       compileOne(javaOut);
     }
   }
