@@ -75,22 +75,6 @@ final class MessageAdapter<M extends Message> {
     }
   }
 
-  /**
-   * Returns an instance of the message type of this {@link MessageAdapter} with all fields unset.
-   */
-  public synchronized M getDefaultInstance() {
-    if (defaultInstance == null) {
-      try {
-        defaultInstance = builderType.newInstance().build();
-      } catch (InstantiationException e) {
-        throw new RuntimeException(e);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    return defaultInstance;
-  }
-
   Builder<M> newBuilder() {
     try {
       return builderType.newInstance();
