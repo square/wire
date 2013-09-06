@@ -5,6 +5,7 @@ import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -25,12 +26,22 @@ public final class ProtoSchemaParser {
 
   /** Parse a {@code .proto} definition file. */
   public static ProtoFile parse(File file) throws IOException {
-    return new ProtoSchemaParser(file).readProtoFile();
+    return new ProtoSchemaParser(file.getName(), fileToCharArray(file)).readProtoFile();
+  }
+
+  /** Parse a named {@code .proto} schema. The {@code InputStream} is not closed. */
+  public static ProtoFile parseUtf8(String name, InputStream is) throws IOException {
+    return new ProtoSchemaParser(name, streamToCharArray(is)).readProtoFile();
+  }
+
+  /** Parse a named {@code .proto} schema. The {@code Reader} is not closed. */
+  public static ProtoFile parse(String name, Reader reader) throws IOException {
+    return new ProtoSchemaParser(name, readerToCharArray(reader)).readProtoFile();
   }
 
   /** Parse a named {@code .proto} schema. */
   public static ProtoFile parse(String name, String data) {
-    return new ProtoSchemaParser(name, data).readProtoFile();
+    return new ProtoSchemaParser(name, data.toCharArray()).readProtoFile();
   }
 
   /** The path to the {@code .proto} file. */
@@ -69,18 +80,25 @@ public final class ProtoSchemaParser {
   /** Global options. */
   private Map<String, Object> options = new LinkedHashMap<String, Object>();
 
-  ProtoSchemaParser(String fileName, String data) {
+  ProtoSchemaParser(String fileName, char[] data) {
     this.fileName = fileName;
-    this.data = data.toCharArray();
+    this.data = data;
   }
 
-  ProtoSchemaParser(File file) throws IOException {
-    this.fileName = file.getPath();
-    this.data = fileToCharArray(file);
+  private static char[] fileToCharArray(File file) throws IOException {
+    FileInputStream is = new FileInputStream(file);
+    try {
+      return streamToCharArray(is);
+    } finally {
+      is.close();
+    }
   }
 
-  private char[] fileToCharArray(File file) throws IOException {
-    Reader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+  private static char[] streamToCharArray(InputStream is) throws IOException {
+    return readerToCharArray(new InputStreamReader(is, "UTF-8"));
+  }
+
+  private static char[] readerToCharArray(Reader reader) throws IOException {
     CharArrayWriter writer = new CharArrayWriter();
     char[] buffer = new char[1024];
     int count;

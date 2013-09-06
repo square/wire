@@ -3,6 +3,8 @@ package com.squareup.protoparser;
 
 import com.squareup.protoparser.EnumType.Value;
 import com.squareup.protoparser.MessageType.Label;
+
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +46,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile protoFile =
         new ProtoFile("search.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("search.proto", proto).readProtoFile()).isEqualTo(protoFile);
+    assertThat(ProtoSchemaParser.parse("search.proto", new StringReader(proto))).isEqualTo(protoFile);
   }
 
   @Test public void parseEnum() throws Exception {
@@ -67,7 +69,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile protoFile =
         new ProtoFile("waffles.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES,
             map(), NO_EXTEND_DECLARATIONs);
-    ProtoFile actual = new ProtoSchemaParser("waffles.proto", proto).readProtoFile();
+    ProtoFile actual = ProtoSchemaParser.parse("waffles.proto", proto);
     assertThat(actual).isEqualTo(protoFile);
   }
 
@@ -87,7 +89,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile expected =
         new ProtoFile("descriptor.proto", "google.protobuf", NO_STRINGS, Arrays.asList(message),
             NO_SERVICES, map("java_package", "com.google.protobuf"), NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+    assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
 
@@ -110,7 +112,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, Arrays.asList(messageType), NO_SERVICES,
             map(), NO_EXTEND_DECLARATIONs);
-    ProtoFile actual = new ProtoSchemaParser("descriptor.proto", proto).readProtoFile();
+    ProtoFile actual = ProtoSchemaParser.parse("descriptor.proto", proto);
     assertThat(actual).isEqualTo(expected);
   }
 
@@ -119,7 +121,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Arrays.asList("src/test/resources/unittest_import.proto"), NO_TYPES, NO_SERVICES, map(),
         NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+    assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
 
@@ -134,7 +136,7 @@ public final class ProtoSchemaParserTest {
         Arrays.asList(new MessageType.Field(Label.OPTIONAL, "int32", "bar", 126, "", map()))));
     ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, NO_SERVICES,
         map(), extendDeclarations);
-    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+    assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
 
@@ -149,7 +151,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, Arrays.<Type>asList(messageType),
             NO_SERVICES, map(), NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+    assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
 
@@ -168,7 +170,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile expected =
         new ProtoFile("foo.proto", null, NO_STRINGS, Arrays.<Type>asList(messageType),
             NO_SERVICES, map(), NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("foo.proto", proto).readProtoFile())
+    assertThat(ProtoSchemaParser.parse("foo.proto", proto))
         .isEqualTo(expected);
   }
 
@@ -179,7 +181,7 @@ public final class ProtoSchemaParserTest {
         + "[default = \"\\xW\"];\n"
         + "}";
     try {
-      new ProtoSchemaParser("foo.proto", proto).readProtoFile();
+      ProtoSchemaParser.parse("foo.proto", proto);
       Fail.fail("Expected parse error");
     } catch (IllegalStateException e) {
       assertThat(e.getMessage().contains("expected a digit after \\x or \\X"));
@@ -202,7 +204,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile protoFile =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, Arrays.asList(expected),
             map(), NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("descriptor.proto", proto).readProtoFile())
+    assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(protoFile);
   }
 
@@ -217,7 +219,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile protoFile =
         new ProtoFile("hex.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("hex.proto", proto).readProtoFile()).isEqualTo(protoFile);
+    assertThat(ProtoSchemaParser.parse("hex.proto", proto)).isEqualTo(protoFile);
   }
 
   @Test public void structuredOption() throws Exception {
@@ -242,7 +244,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile protoFile =
         new ProtoFile("exotic.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("exotic.proto", proto).readProtoFile()).isEqualTo(protoFile);
+    assertThat(ProtoSchemaParser.parse("exotic.proto", proto)).isEqualTo(protoFile);
   }
 
   @Test public void optionsWithNestedMapsAndTrailingCommas() throws Exception {
@@ -263,7 +265,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile protoFile =
         new ProtoFile("nestedmaps.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES,
             map(), NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("nestedmaps.proto", proto).readProtoFile())
+    assertThat(ProtoSchemaParser.parse("nestedmaps.proto", proto))
         .isEqualTo(protoFile);
   }
 
@@ -283,7 +285,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile protoFile =
         new ProtoFile("foo.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES, map(),
             NO_EXTEND_DECLARATIONs);
-    assertThat(new ProtoSchemaParser("foo.proto", proto).readProtoFile()).isEqualTo(protoFile);
+    assertThat(ProtoSchemaParser.parse("foo.proto", proto)).isEqualTo(protoFile);
   }
 
   private Map<String, Object> map(Object... keysAndValues) {
