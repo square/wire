@@ -305,8 +305,20 @@ public final class ProtoSchemaParser {
     if (c != keyValueSeparator) {
       throw unexpected("expected '" + keyValueSeparator + "' in option");
     }
-    Object value = peekChar() == '{' ? readMap('{', '}', ':') : readString();
+    Object value = readValue();
     return new Option(name, subName != null ? new Option(subName, value) : value);
+  }
+
+  /** Reads a value that can be a map, list or string. */
+  private Object readValue() {
+    switch (peekChar()) {
+      case '{':
+        return readMap('{', '}', ':');
+      case '[':
+        return readList();
+      default:
+        return readString();
+    }
   }
 
   /**
@@ -345,6 +357,31 @@ public final class ProtoSchemaParser {
         pos++;
       } else if (c != closeBrace) {
         throw unexpected("expected ',' or '" + closeBrace + "'");
+      }
+    }
+  }
+
+  /**
+   * Returns a list of values. This is similar to JSON with '[' and ']'
+   * surrounding the list and ',' separating values.
+   */
+  private List<Object> readList() {
+    if (readChar() != '[') throw new AssertionError();
+    List<Object> result = new ArrayList<Object>();
+    while (true) {
+      if (peekChar() == ']') {
+        // If we see the close brace, finish immediately. This handles [] and ,] cases.
+        pos++;
+        return result;
+      }
+
+      result.add(readValue());
+
+      char c = peekChar();
+      if (c == ',') {
+        pos++;
+      } else if (c != ']') {
+        throw unexpected("expected ',' or ']'");
       }
     }
   }

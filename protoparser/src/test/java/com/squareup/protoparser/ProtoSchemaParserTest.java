@@ -192,12 +192,13 @@ public final class ProtoSchemaParserTest {
         + "  rpc Search (SearchRequest) returns (SearchResponse);"
         + "  rpc Purchase (PurchaseRequest) returns (PurchaseResponse) {\n"
         + "    option (squareup.sake.timeout) = 15; \n"
+        + "    option (squareup.a.b) = { value: [FOO, BAR] };\n"
         + "  }\n"
         + "}";
     Service expected = new Service("SearchService", "", Arrays.asList(
         new Service.Method("Search", "", "SearchRequest", "SearchResponse", map()),
         new Service.Method("Purchase", "", "PurchaseRequest", "PurchaseResponse",
-            map("squareup.sake.timeout", "15"))));
+            map("squareup.sake.timeout", "15", "squareup.a.b", map("value", list("FOO", "BAR"))))));
     ProtoFile protoFile =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_TYPES, Arrays.asList(expected),
             map(), NO_EXTEND_DECLARATIONs);
@@ -291,5 +292,9 @@ public final class ProtoSchemaParserTest {
       result.put((String) keysAndValues[i], keysAndValues[i + 1]);
     }
     return result;
+  }
+
+  private List<Object> list(Object... values) {
+    return Arrays.asList(values);
   }
 }
