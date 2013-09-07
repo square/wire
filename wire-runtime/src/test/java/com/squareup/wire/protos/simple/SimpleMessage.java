@@ -19,8 +19,6 @@ import static com.squareup.wire.Message.Label.REQUIRED;
 public final class SimpleMessage extends Message {
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
-  public static final NestedMessage DEFAULT_OPTIONAL_NESTED_MSG = getDefaultInstance(NestedMessage.class);
-  public static final ExternalMessage DEFAULT_OPTIONAL_EXTERNAL_MSG = getDefaultInstance(ExternalMessage.class);
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.BAZ;
   public static final Integer DEFAULT_REQUIRED_INT32 = 456;
   public static final List<Double> DEFAULT_REPEATED_DOUBLE = Collections.emptyList();

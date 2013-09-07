@@ -49,7 +49,6 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   public static final String DEFAULT_OPT_STRING = "";
   public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
   public static final NestedEnum DEFAULT_OPT_NESTED_ENUM = NestedEnum.A;
-  public static final NestedMessage DEFAULT_OPT_NESTED_MESSAGE = getDefaultInstance(NestedMessage.class);
   public static final Integer DEFAULT_REQ_INT32 = 0;
   public static final Integer DEFAULT_REQ_UINT32 = 0;
   public static final Integer DEFAULT_REQ_SINT32 = 0;
@@ -66,7 +65,6 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   public static final String DEFAULT_REQ_STRING = "";
   public static final ByteString DEFAULT_REQ_BYTES = ByteString.EMPTY;
   public static final NestedEnum DEFAULT_REQ_NESTED_ENUM = NestedEnum.A;
-  public static final NestedMessage DEFAULT_REQ_NESTED_MESSAGE = getDefaultInstance(NestedMessage.class);
   public static final List<Integer> DEFAULT_REP_INT32 = Collections.emptyList();
   public static final List<Integer> DEFAULT_REP_UINT32 = Collections.emptyList();
   public static final List<Integer> DEFAULT_REP_SINT32 = Collections.emptyList();

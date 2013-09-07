@@ -5,11 +5,11 @@ package com.squareup.wire.protos.roots;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
+import static com.squareup.wire.Message.Label.REQUIRED;
+
 public final class B extends Message {
 
-  public static final C DEFAULT_C = getDefaultInstance(C.class);
-
-  @ProtoField(tag = 1)
+  @ProtoField(tag = 1, label = REQUIRED)
   public final C c;
 
   private B(Builder builder) {
@@ -50,6 +50,7 @@ public final class B extends Message {
 
     @Override
     public B build() {
+      checkRequiredFields();
       return new B(this);
     }
   }

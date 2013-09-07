@@ -599,11 +599,19 @@ public class WireCompiler {
   // public static final Integer DEFAULT_OPT_INT32 = 123;
   //
   private void emitMessageDefaults(MessageType messageType) throws IOException {
-    List<Field> fields = messageType.getFields();
-    if (!fields.isEmpty()) {
+    List<Field> defaultFields = new ArrayList<Field>();
+    for (Field field : messageType.getFields()) {
+      // Message types cannot have defaults
+      if (!isMessageType(messageType, field) || isRepeated(field)) {
+        defaultFields.add(field);
+      }
+    }
+
+    if (!defaultFields.isEmpty()) {
       writer.emitEmptyLine();
     }
-    for (Field field : fields) {
+
+    for (Field field : defaultFields) {
       String javaName = getJavaFieldType(messageType, field);
       if (javaName == null) {
         throw new IllegalArgumentException(
@@ -628,7 +636,6 @@ public class WireCompiler {
 
   private String getDefaultValue(MessageType messageType, Field field) {
     String initialValue = field.getDefault();
-    // Qualify message and enum values
     if (isRepeated(field)) return "Collections.emptyList()";
     String javaName = javaName(messageType, field.getType());
     if (isScalar(field.getType())) {
@@ -641,7 +648,8 @@ public class WireCompiler {
         if (isEnum(fullyQualifiedName)) {
           return javaName + "." + enumDefaults.get(fullyQualifiedName);
         } else {
-          return "getDefaultInstance(" + writer.compressType(javaName) + ".class)";
+          throw new IllegalArgumentException(
+              "Field " + field + " cannot have default value");
         }
       }
     }
@@ -1120,6 +1128,11 @@ public class WireCompiler {
 
   private boolean isRequired(Field field) {
     return field.getLabel() == MessageType.Label.REQUIRED;
+  }
+
+  private boolean isMessageType(MessageType messageType, Field field) {
+    return !isScalar(field.getType())
+        && !isEnum(fullyQualifiedName(messageType, field.getType()));
   }
 
   private boolean isPacked(Field field, boolean isEnum) {
