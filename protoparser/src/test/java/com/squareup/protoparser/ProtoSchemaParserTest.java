@@ -227,6 +227,7 @@ public final class ProtoSchemaParserTest {
         + "message ExoticOptions {\n"
         + "  option (squareup.one) = {name: \"Name\", class_name:\"ClassName\"};\n"
         + "  option (squareup.two.a) = {[squareup.options.type]: EXOTIC};\n"
+        + "  option (squareup.two.b) = {names: [\"Foo\", \"Bar\"]};\n"
         + "}";
 
     List<Option> options = new ArrayList<Option>();
@@ -234,9 +235,12 @@ public final class ProtoSchemaParserTest {
     option_one_map.put("name", "Name");
     option_one_map.put("class_name", "ClassName");
     options.add(new Option("squareup.one", option_one_map));
-    Map<String, String> option_two_map = new LinkedHashMap<String, String>();
-    option_two_map.put("squareup.options.type", "EXOTIC");
-    options.add(new Option("squareup.two.a", option_two_map));
+    Map<String, String> option_two_a_map = new LinkedHashMap<String, String>();
+    option_two_a_map.put("[squareup.options.type]", "EXOTIC");
+    options.add(new Option("squareup.two.a", option_two_a_map));
+    Map<String, List<String>> option_two_b_map = new LinkedHashMap<String, List<String>>();
+    option_two_b_map.put("names", Arrays.asList("Foo", "Bar"));
+    options.add(new Option("squareup.two.b", option_two_b_map));
 
     Type expected =
         new MessageType("ExoticOptions", "ExoticOptions", "", Arrays.<MessageType.Field>asList(),

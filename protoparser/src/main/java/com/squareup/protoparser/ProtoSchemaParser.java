@@ -312,7 +312,11 @@ public final class ProtoSchemaParser {
 
   /** Reads a option containing a name, an '=' or ':', and a value. */
   private Option readOption(char keyValueSeparator) {
+    boolean isExtension = (peekChar() == '[');
     String name = readName(); // Option name.
+    if (isExtension) {
+      name = "[" + name + "]";
+    }
     String subName = null;
     char c = readChar();
     if (c == '.') {
