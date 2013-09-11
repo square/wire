@@ -15,6 +15,18 @@
  */
 package com.squareup.wire;
 
+import com.squareup.wire.protos.person.Person;
+import com.squareup.wire.protos.person.Person.PhoneNumber;
+import com.squareup.wire.protos.person.Person.PhoneType;
+import com.squareup.wire.protos.simple.Ext_simple_message;
+import com.squareup.wire.protos.simple.ExternalMessage;
+import com.squareup.wire.protos.simple.SimpleMessage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
+
 import static com.squareup.wire.protos.simple.Ext_simple_message.barext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.bazext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.fooext;
@@ -23,20 +35,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
-
-import com.squareup.wire.protos.person.Person;
-import com.squareup.wire.protos.person.Person.PhoneNumber;
-import com.squareup.wire.protos.person.Person.PhoneType;
-import com.squareup.wire.protos.simple.Ext_simple_message;
-import com.squareup.wire.protos.simple.ExternalMessage;
-import com.squareup.wire.protos.simple.SimpleMessage;
 
 /**
  * Test Wire runtime.
