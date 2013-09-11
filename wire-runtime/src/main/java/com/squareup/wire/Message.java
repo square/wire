@@ -170,17 +170,6 @@ public abstract class Message {
   }
 
   /**
-   * Returns an instance of the given message class, with all fields unset.
-   *
-   * @param messageClass the class of the desired {@link Message}
-   * @param <M> the Message type
-   * @return an instance of the desired Message class
-   */
-  public static <M extends Message> M getDefaultInstance(Class<M> messageClass) {
-    return WIRE.messageAdapter(messageClass).getDefaultInstance();
-  }
-
-  /**
    * Returns the integer value tagged associated with the given enum instance.
    * If the enum value is not annotated with a {@link ProtoEnum} annotation, an exception
    * will be thrown.
