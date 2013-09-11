@@ -228,6 +228,8 @@ public final class ProtoSchemaParserTest {
         + "  option (squareup.one) = {name: \"Name\", class_name:\"ClassName\"};\n"
         + "  option (squareup.two.a) = {[squareup.options.type]: EXOTIC};\n"
         + "  option (squareup.two.b) = {names: [\"Foo\", \"Bar\"]};\n"
+        + "  option (squareup.three) = {x: {y: 1, y: 2}};\n"
+        + "  option (squareup.four) = {x: {y: {z: 1}, y: {z: 2}}};\n"
         + "}";
 
     List<Option> options = new ArrayList<Option>();
@@ -241,6 +243,21 @@ public final class ProtoSchemaParserTest {
     Map<String, List<String>> option_two_b_map = new LinkedHashMap<String, List<String>>();
     option_two_b_map.put("names", Arrays.asList("Foo", "Bar"));
     options.add(new Option("squareup.two.b", option_two_b_map));
+    Map<String, Map<String, ?>> option_three_map = new LinkedHashMap<String, Map<String, ?>>();
+    Map<String, List<String>> option_three_nested_map = new LinkedHashMap<String, List<String>>();
+    option_three_nested_map.put("y", Arrays.asList("1", "2"));
+    option_three_map.put("x", option_three_nested_map);
+    options.add(new Option("squareup.three", option_three_map));
+
+    Map<String, Map<String, ?>> option_four_map = new LinkedHashMap<String, Map<String, ?>>();
+    Map<String, Object> option_four_map_1 = new LinkedHashMap<String, Object>();
+    Map<String, String> option_four_map_2_a = new LinkedHashMap<String, String>();
+    option_four_map_2_a.put("z", "1");
+    Map<String, String> option_four_map_2_b = new LinkedHashMap<String, String>();
+    option_four_map_2_b.put("z", "2");
+    option_four_map_1.put("y", Arrays.asList(option_four_map_2_a, option_four_map_2_b));
+    option_four_map.put("x", option_four_map_1);
+    options.add(new Option("squareup.four", option_four_map));
 
     Type expected =
         new MessageType("ExoticOptions", "ExoticOptions", "", Arrays.<MessageType.Field>asList(),

@@ -348,6 +348,7 @@ public final class ProtoSchemaParser {
    * with '{' and '}' surrounding the map, ':' separating keys from values, and
    * ',' separating entries.
    */
+  @SuppressWarnings("unchecked")
   private Map<String, Object> readMap(char openBrace, char closeBrace, char keyValueSeparator) {
     if (readChar() != openBrace) throw new AssertionError();
     Map<String, Object> result = new LinkedHashMap<String, Object>();
@@ -371,7 +372,19 @@ public final class ProtoSchemaParser {
         Option valueOption = (Option) value;
         nested.put(valueOption.getName(), valueOption.getValue());
       } else {
-        result.put(name, value);
+        // Add the value(s) to any previous values with the same key
+        Object previous = result.get(name);
+        if (previous == null) {
+          result.put(name, value);
+        } else if (previous instanceof List) {
+          // Add to previous List
+          addToList((List<Object>) previous, value);
+        } else {
+          List<Object> newList = new ArrayList<Object>();
+          newList.add(previous);
+          addToList(newList, value);
+          result.put(name, newList);
+        }
       }
 
       char c = peekChar();
@@ -380,6 +393,17 @@ public final class ProtoSchemaParser {
       } else if (c != closeBrace) {
         throw unexpected("expected ',' or '" + closeBrace + "'");
       }
+    }
+  }
+
+  /**
+   * Adds an object or objects to a List.
+   */
+  private void addToList(List<Object> list, Object value) {
+    if (value instanceof List) {
+      list.addAll((List) value);
+    } else {
+      list.add(value);
     }
   }
 
