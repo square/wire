@@ -122,8 +122,6 @@ final class MessageAdapter<M extends Message> {
   private final Map<Integer, FieldInfo> fieldInfoMap =
       new LinkedHashMap<Integer, FieldInfo>();
 
-  private M defaultInstance;
-
   /** Cache information about the Message class and its mapping to proto wire format. */
   MessageAdapter(Wire wire, Class<M> messageType) {
     this.wire = wire;
