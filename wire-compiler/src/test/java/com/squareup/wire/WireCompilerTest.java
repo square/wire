@@ -108,6 +108,7 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/simple/Ext_simple_message.java",
         "com/squareup/wire/protos/simple/SimpleMessage.java",
         "com/squareup/wire/protos/simple/ExternalMessage.java",
+        "com/squareup/wire/protos/foreign/Ext_foreign.java",
         "com/squareup/wire/protos/foreign/ForeignEnum.java",
         "com/squareup/wire/protos/foreign/ForeignMessage.java"
     };
@@ -178,6 +179,18 @@ public class WireCompilerTest {
     String[] outputs = {
         "com/squareup/wire/protos/unknownfields/VersionOne.java",
         "com/squareup/wire/protos/unknownfields/VersionTwo.java"
+    };
+    testProto(sources, outputs);
+  }
+
+  @Test public void testCustomOptions() throws Exception {
+    String[] sources = {
+        "custom_options.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/custom_options/FooBar.java",
+        "com/squareup/wire/protos/custom_options/Ext_custom_options.java",
+        "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
     };
     testProto(sources, outputs);
   }

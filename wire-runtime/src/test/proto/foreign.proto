@@ -18,6 +18,8 @@ package squareup.protos.foreign;
 option java_package = "com.squareup.wire.protos.foreign";
 option java_outer_classname = "Foreign";
 
+import "google/protobuf/descriptor.proto";
+
 enum ForeignEnum {
   BAV = 0;
   BAX = 1;
@@ -27,4 +29,8 @@ message ForeignMessage {
   extensions 100 to 200;
 
   optional int32 i = 1;
+}
+
+extend google.protobuf.MessageOptions {
+  optional ForeignMessage foreign_message_option = 50005;
 }

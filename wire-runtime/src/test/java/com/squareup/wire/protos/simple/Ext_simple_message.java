@@ -38,7 +38,7 @@ public final class Ext_simple_message {
       .buildOptional();
   public static final Extension<ForeignMessage, Integer> j = Extension
       .int32Extending(ForeignMessage.class)
-      .setName("squareup.protos.foreign.j")
+      .setName("squareup.protos.simple.j")
       .setTag(100)
       .buildOptional();
 }
