@@ -170,13 +170,13 @@ public class WireCompiler {
       }
       index++;
     }
-    if (protoPath == null) {
-      System.err.println("Must specify " + PROTO_PATH_FLAG + " flag");
-      System.exit(1);
-    }
     if (javaOut == null) {
       System.err.println("Must specify " + JAVA_OUT_FLAG + " flag");
       System.exit(1);
+    }
+    if (protoPath == null) {
+      protoPath = System.getProperty("user.dir");
+      System.err.println(PROTO_PATH_FLAG + " flag not specified, using current dir " + protoPath);
     }
     WireCompiler wireCompiler = new WireCompiler(protoPath, sourceFileNames, roots);
     wireCompiler.compile(javaOut);
