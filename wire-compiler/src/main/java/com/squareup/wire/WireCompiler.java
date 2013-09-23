@@ -621,6 +621,12 @@ public class WireCompiler {
       if (fullyQualifiedNameIsOutsidePackage(fqName)) {
         extensionClasses.add(fqName);
       }
+      for (Field field : extend.getFields()) {
+        String fqFieldType = fullyQualifiedJavaName(null, field.getType());
+        if (fullyQualifiedNameIsOutsidePackage(fqFieldType)) {
+          extensionClasses.add(fqFieldType);
+        }
+      }
     }
     return extensionClasses;
   }
