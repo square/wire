@@ -1417,8 +1417,10 @@ public class WireCompiler {
       writer.emitStatement("if (other == this) return true");
       writer.emitStatement("if (!(other instanceof %s)) return false", messageType.getName());
       if (hasOnlyOneField(messageType)) {
-        writer.emitStatement("return equals(%1$s, ((%2$s) other).%1$s)",
-            sanitize(fields.get(0).getName()), messageType.getName());
+        String name = sanitize(fields.get(0).getName());
+        // If the field is named "other" or "o", qualify the field reference with 'this'
+        writer.emitStatement("return equals(%1$s, ((%2$s) other).%3$s)",
+            addThisIfOneOf(name, "other", "o"), messageType.getName(), name);
       } else {
         writer.emitStatement("%1$s o = (%1$s) other", messageType.getName());
         if (hasExtensions(messageType)) {
@@ -1429,12 +1431,24 @@ public class WireCompiler {
         for (Field field : fields) {
           sb.append(prefix);
           prefix = "\n&& ";
-          sb.append(String.format("equals(%1$s, o.%1$s)", sanitize(field.getName())));
+          // If the field is named "other" or "o", qualify the field reference with 'this'
+          String name = sanitize(field.getName());
+          sb.append(String.format("equals(%1$s, o.%2$s)",
+              addThisIfOneOf(name, "other", "o"), name));
         }
         writer.emitStatement(sb.toString());
       }
     }
     writer.endMethod();
+  }
+
+  private String addThisIfOneOf(String name, String... matches) {
+    for (String match : matches) {
+      if (match.equals(name)) {
+        return "this." + name;
+      }
+    }
+    return name;
   }
 
   private boolean hasOnlyOneField(MessageType messageType) {
@@ -1463,6 +1477,8 @@ public class WireCompiler {
     } else if (hasOnlyOneField(messageType)) {
       Field field = messageType.getFields().get(0);
       String name = sanitize(field.getName());
+      // If the field is named "result", qualify the field reference with 'this'
+      name = addThisIfOneOf(name, "result");
       writer.emitStatement("int result = hashCode");
       writer.emitStatement(
           "return result != 0 ? result : (hashCode = %1$s != null ? %1$s.hashCode() : 0)", name);
@@ -1476,6 +1492,8 @@ public class WireCompiler {
       }
       for (Field field : messageType.getFields()) {
         String name = sanitize(field.getName());
+        // If the field is named "result", qualify the field reference with 'this'
+        name = addThisIfOneOf(name, "result");
         if (afterFirstAssignment) {
           writer.emitStatement("result = result * 37 + (%1$s != null ? %1$s.hashCode() : 0)", name);
         } else {
