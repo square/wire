@@ -72,7 +72,8 @@ public class WireCompiler {
     private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
     private static final String INDENT = "  ";
     private static final String LINE_WRAP_INDENT = "    ";
-  static {
+
+    static {
     JAVA_TYPES.put("bool", "Boolean");
     JAVA_TYPES.put("bytes", "ByteString");
     JAVA_TYPES.put("double", "Double");
@@ -127,7 +128,7 @@ public class WireCompiler {
     private final Set<String> typesToEmit = new LinkedHashSet<String>();
     private final Map<String, String> javaSymbolMap = new LinkedHashMap<String, String>();
     private final Set<String> enumTypes = new LinkedHashSet<String>();
-  private final Map<String, String> enumDefaults = new LinkedHashMap<String, String>();
+    private final Map<String, String> enumDefaults = new LinkedHashMap<String, String>();
   private final Map<String, ExtensionInfo> extensionInfo =
       new LinkedHashMap<String, ExtensionInfo>();
   private final Map<String, FieldInfo> fieldMap = new LinkedHashMap<String, FieldInfo>();
@@ -159,15 +160,15 @@ public class WireCompiler {
       int index = 0;
       while (index < args.length) {
           if (args[index].startsWith(PROTO_PATH_FLAG)) {
-        protoPath = args[index].substring(PROTO_PATH_FLAG.length());
-      } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
-        javaOut = args[index].substring(JAVA_OUT_FLAG.length());
-      } else if (args[index].startsWith(FILES_FLAG)) {
-        File files = new File(args[index].substring(FILES_FLAG.length()));
-        String[] fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
-        sourceFileNames.addAll(Arrays.asList(fileNames));
-      } else if (args[index].startsWith(ROOTS_FLAG)) {
-        roots.addAll(Arrays.asList(args[index].substring(ROOTS_FLAG.length()).split(",")));
+              protoPath = args[index].substring(PROTO_PATH_FLAG.length());
+          } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
+              javaOut = args[index].substring(JAVA_OUT_FLAG.length());
+          } else if (args[index].startsWith(FILES_FLAG)) {
+              File files = new File(args[index].substring(FILES_FLAG.length()));
+              String[] fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
+              sourceFileNames.addAll(Arrays.asList(fileNames));
+          } else if (args[index].startsWith(ROOTS_FLAG)) {
+              roots.addAll(Arrays.asList(args[index].substring(ROOTS_FLAG.length()).split(",")));
           } else if (args[index].startsWith(INCLUDES_FLAG)) {
               File includesFile = new File(args[index].substring(INCLUDES_FLAG.length()));
               String[] includePaths = new Scanner(includesFile, "UTF-8").useDelimiter("\\A").next().
@@ -186,8 +187,8 @@ public class WireCompiler {
                   }
               }
           } else {
-        sourceFileNames.add(args[index]);
-      }
+              sourceFileNames.add(args[index]);
+          }
       index++;
     }
     if (javaOut == null) {
@@ -213,12 +214,11 @@ public class WireCompiler {
     public void compile(String javaOut) throws IOException {
         Map<String, ProtoFile> parsedFiles = new LinkedHashMap<String, ProtoFile>();
 
-    for (String sourceFilename : sourceFileNames) {
+        for (String sourceFilename : sourceFileNames) {
       File sourceFile = new File(repoPath, sourceFilename);
       ProtoFile protoFile = ProtoSchemaParser.parse(sourceFile);
       String sourcePath = sourceFile.getPath();
       parsedFiles.put(sourcePath, protoFile);
-
       loadSymbols(protoFile);
     }
 
