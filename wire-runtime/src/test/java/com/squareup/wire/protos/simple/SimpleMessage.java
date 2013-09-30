@@ -25,6 +25,9 @@ public final class SimpleMessage extends Message {
   public static final ForeignEnum DEFAULT_DEFAULT_FOREIGN_ENUM = ForeignEnum.BAX;
   public static final ForeignEnum DEFAULT_NO_DEFAULT_FOREIGN_ENUM = ForeignEnum.BAV;
   public static final String DEFAULT_PACKAGE = "";
+  public static final String DEFAULT_RESULT = "";
+  public static final String DEFAULT_OTHER = "";
+  public static final String DEFAULT_O = "";
 
   /**
    * An optional int32
@@ -77,6 +80,24 @@ public final class SimpleMessage extends Message {
   @ProtoField(tag = 9, type = STRING)
   public final String _package;
 
+  /**
+   * field with the name "result"
+   */
+  @ProtoField(tag = 10, type = STRING)
+  public final String result;
+
+  /**
+   * field with the name "other"
+   */
+  @ProtoField(tag = 11, type = STRING)
+  public final String other;
+
+  /**
+   * field with the name "o"
+   */
+  @ProtoField(tag = 12, type = STRING)
+  public final String o;
+
   private SimpleMessage(Builder builder) {
     super(builder);
     this.optional_int32 = builder.optional_int32;
@@ -88,6 +109,9 @@ public final class SimpleMessage extends Message {
     this.default_foreign_enum = builder.default_foreign_enum;
     this.no_default_foreign_enum = builder.no_default_foreign_enum;
     this._package = builder._package;
+    this.result = builder.result;
+    this.other = builder.other;
+    this.o = builder.o;
   }
 
   @Override
@@ -103,7 +127,10 @@ public final class SimpleMessage extends Message {
         && equals(repeated_double, o.repeated_double)
         && equals(default_foreign_enum, o.default_foreign_enum)
         && equals(no_default_foreign_enum, o.no_default_foreign_enum)
-        && equals(_package, o._package);
+        && equals(_package, o._package)
+        && equals(result, o.result)
+        && equals(this.other, o.other)
+        && equals(this.o, o.o);
   }
 
   @Override
@@ -119,6 +146,9 @@ public final class SimpleMessage extends Message {
       result = result * 37 + (default_foreign_enum != null ? default_foreign_enum.hashCode() : 0);
       result = result * 37 + (no_default_foreign_enum != null ? no_default_foreign_enum.hashCode() : 0);
       result = result * 37 + (_package != null ? _package.hashCode() : 0);
+      result = result * 37 + (this.result != null ? this.result.hashCode() : 0);
+      result = result * 37 + (other != null ? other.hashCode() : 0);
+      result = result * 37 + (o != null ? o.hashCode() : 0);
       hashCode = result;
     }
     return result;
@@ -135,6 +165,9 @@ public final class SimpleMessage extends Message {
     public ForeignEnum default_foreign_enum;
     public ForeignEnum no_default_foreign_enum;
     public String _package;
+    public String result;
+    public String other;
+    public String o;
 
     public Builder() {
     }
@@ -151,6 +184,9 @@ public final class SimpleMessage extends Message {
       this.default_foreign_enum = message.default_foreign_enum;
       this.no_default_foreign_enum = message.no_default_foreign_enum;
       this._package = message._package;
+      this.result = message.result;
+      this.other = message.other;
+      this.o = message.o;
     }
 
     public Builder optional_int32(Integer optional_int32) {
@@ -195,6 +231,21 @@ public final class SimpleMessage extends Message {
 
     public Builder _package(String _package) {
       this._package = _package;
+      return this;
+    }
+
+    public Builder result(String result) {
+      this.result = result;
+      return this;
+    }
+
+    public Builder other(String other) {
+      this.other = other;
+      return this;
+    }
+
+    public Builder o(String o) {
+      this.o = o;
       return this;
     }
 
