@@ -310,14 +310,7 @@ public class WireCompilerTest {
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
     }
-
-//    String[] libArgs = {"--proto_path=../wire-runtime/src/test/proto/import",
-//        "--java_out=" + testDir.getAbsolutePath(),
-//        "imported_message.proto"};
-//    WireCompiler.main(libArgs);
-
   }
-
 
   private void cleanup(File dir) {
     Assert.assertNotNull(dir);

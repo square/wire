@@ -24,6 +24,7 @@ import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 import com.squareup.protoparser.Type;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -163,19 +164,19 @@ public class WireCompiler {
       } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
         javaOut = args[index].substring(JAVA_OUT_FLAG.length());
       } else if (args[index].startsWith(FILES_FLAG)) {
-        File files = new File(args[index].substring(FILES_FLAG.length()));
-        String[] fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
+        String[] fileNames = getStringsFromFile(args[index].substring(FILES_FLAG.length()));
         sourceFileNames.addAll(Arrays.asList(fileNames));
       } else if (args[index].startsWith(ROOTS_FLAG)) {
         roots.addAll(Arrays.asList(args[index].substring(ROOTS_FLAG.length()).split(",")));
       } else if (args[index].startsWith(INCLUDES_FLAG)) {
-        File includesFile = new File(args[index].substring(INCLUDES_FLAG.length()));
-        String[] includePaths = new Scanner(includesFile, "UTF-8").useDelimiter("\\A").next().
-                split("\n");
+        String[] includePaths = getStringsFromFile(args[index].substring(INCLUDES_FLAG.length()));
         for (String path : includePaths) {
           File include;
-          if (path.startsWith("/")) include = new File(path);
-          else include = new File(protoPath, path);
+          if (path.startsWith("/")) {
+            include = new File(path);
+          } else {
+            include = new File(protoPath, path);
+          }
           if (include.exists() && include.isDirectory()) {
             System.out.println("Adding Include path " + include.getAbsolutePath());
             includes.add(include);
@@ -202,8 +203,13 @@ public class WireCompiler {
     wireCompiler.compile(javaOut);
   }
 
+  private static String[] getStringsFromFile(String filename) throws FileNotFoundException {
+    File files = new File(filename);
+    return new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
+  }
+
   public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
-                      List<File> includes) {
+      List<File> includes) {
     this.repoPath = protoPath;
     this.typesToEmit.addAll(roots);
     this.sourceFileNames = sourceFileNames;
@@ -319,7 +325,7 @@ public class WireCompiler {
       if (!depFile.exists()) {
         for (File includeDir : includes) {
           depFile = new File(includeDir, dependency);
-            if (depFile.exists()) break;
+          if (depFile.exists()) break;
         }
       }
     }
