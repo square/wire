@@ -58,12 +58,12 @@ public class WireCompiler {
   private static final Charset ISO_8859_1 = Charset.forName("ISO_8859_1");
   private static final Map<String, String> JAVA_TYPES = new LinkedHashMap<String, String>();
   private static final Set<String> JAVA_KEYWORDS = new LinkedHashSet<String>(
-    Arrays.asList("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
-      "class", "const", "continue", "default", "do", "double", "else", "enum", "extends",
-      "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof",
-      "int", "interface", "long", "native", "new", "package", "private", "protected", "public",
-      "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this",
-      "throw", "throws", "transient", "try", "void", "volatile", "while"));
+      Arrays.asList("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
+          "class", "const", "continue", "default", "do", "double", "else", "enum", "extends",
+          "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof",
+          "int", "interface", "long", "native", "new", "package", "private", "protected", "public",
+          "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this",
+          "throw", "throws", "transient", "try", "void", "volatile", "while"));
   private static final String PROTO_PATH_FLAG = "--proto_path=";
   private static final String JAVA_OUT_FLAG = "--java_out=";
   private static final String FILES_FLAG = "--files=";
@@ -186,7 +186,7 @@ public class WireCompiler {
           }
         }
       } else {
-          sourceFileNames.add(args[index]);
+        sourceFileNames.add(args[index]);
       }
       index++;
     }
