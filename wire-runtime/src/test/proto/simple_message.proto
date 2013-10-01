@@ -53,6 +53,15 @@ message SimpleMessage {
 
   // field with the same name as a Java keyword
   optional string package = 9;
+
+  // field with the name "result"
+  optional string result = 10;
+
+  // field with the name "other"
+  optional string other = 11;
+
+  // field with the name "o"
+  optional string o = 12;
 }
 
 extend ExternalMessage {
