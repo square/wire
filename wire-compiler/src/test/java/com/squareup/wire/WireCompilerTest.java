@@ -296,6 +296,29 @@ public class WireCompilerTest {
     testProtoWithRoots(sources, roots, outputs);
   }
 
+  @Test public void testProtoImport() throws Exception {
+    String[] args = {"--proto_path=../wire-runtime/src/test/proto",
+        "--java_out=" + testDir.getAbsolutePath(),
+        "--includes=src/test/data/import.txt", "import_other.proto"};
+    String[] outputs = {
+        "com/squareup/wire/protos/importother/ReceivingMessage.java" };
+    WireCompiler.main(args);
+
+    List<String> filesAfter = getAllFiles(testDir);
+    Assert.assertEquals(outputs.length, filesAfter.size());
+
+    for (String output : outputs) {
+      assertFilesMatch(testDir, output);
+    }
+
+//    String[] libArgs = {"--proto_path=../wire-runtime/src/test/proto/import",
+//        "--java_out=" + testDir.getAbsolutePath(),
+//        "imported_message.proto"};
+//    WireCompiler.main(libArgs);
+
+  }
+
+
   private void cleanup(File dir) {
     Assert.assertNotNull(dir);
     Assert.assertTrue(dir.isDirectory());

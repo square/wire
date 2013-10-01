@@ -1,0 +1,11 @@
+package squareup.protos.importother;
+
+import "imported_message.proto";
+
+option java_package = "com.squareup.wire.protos.importother";
+option java_outer_classname = "ImportOther";
+
+message ReceivingMessage {
+  // Pulled in by the import.
+  required ImportedMessage item = 1;
+}
