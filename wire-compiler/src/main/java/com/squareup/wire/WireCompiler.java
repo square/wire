@@ -798,6 +798,10 @@ public class WireCompiler {
       EnumType enumType = (EnumType) type;
       writer.beginType(enumType.getName(), "enum", EnumSet.of(PUBLIC));
       for (EnumType.Value value : enumType.getValues()) {
+        String documentation = value.getDocumentation();
+        if (hasDocumentation(documentation)) {
+          writer.emitJavadoc(sanitizeJavadoc(documentation));
+        }
         writer.emitAnnotation(ProtoEnum.class, value.getTag());
         writer.emitEnumValue(value.getName());
       }
