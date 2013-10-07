@@ -29,6 +29,7 @@ message Person {
   enum PhoneType {
     MOBILE = 0;
     HOME = 1;
+    /** Could be phone or fax. */
     WORK = 2;
   }
 
