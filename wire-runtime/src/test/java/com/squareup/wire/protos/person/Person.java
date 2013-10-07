@@ -128,6 +128,9 @@ public final class Person extends Message {
     MOBILE,
     @ProtoEnum(1)
     HOME,
+    /**
+     * Could be phone or fax.
+     */
     @ProtoEnum(2)
     WORK,
   }
