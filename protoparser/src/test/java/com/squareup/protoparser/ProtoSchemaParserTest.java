@@ -57,6 +57,7 @@ public final class ProtoSchemaParserTest {
         + " */\n"
         + "enum Topping {\n"
         + "  FRUIT = 1;\n"
+        + "  /** Yummy, yummy cream. */\n"
         + "  CREAM = 2;\n"
         + "\n"
         + "  // Quebec Maple syrup\n"
@@ -64,7 +65,7 @@ public final class ProtoSchemaParserTest {
         + "}\n";
     Type expected = new EnumType("Topping", "Topping",
        "What's on my waffles.\nAlso works on pancakes.",
-        Arrays.asList(new Value("FRUIT", 1, ""), new Value("CREAM", 2, ""),
+        Arrays.asList(new Value("FRUIT", 1, ""), new Value("CREAM", 2, "Yummy, yummy cream."),
             new Value("SYRUP", 3, "Quebec Maple syrup")));
     ProtoFile protoFile =
         new ProtoFile("waffles.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES,
