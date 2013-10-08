@@ -393,7 +393,7 @@ final class MessageAdapter<M extends Message> {
    * Returns the serialized size in bytes of the given tag and value.
    */
   private int getSerializedSize(int tag, Object value, Datatype datatype) {
-    return WireOutput.tagSize(tag) + getSerializedSizeNoTag(value, datatype);
+    return WireOutput.varintTagSize(tag) + getSerializedSizeNoTag(value, datatype);
   }
 
   /**
