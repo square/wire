@@ -147,6 +147,11 @@ public final class WireOutput {
     return bufferOffset - start;
   }
 
+  /** Makes a tag value given a field number and wire type. */
+  public static int makeTag(int fieldNumber, WireType wireType) {
+    return (fieldNumber << WireType.TAG_TYPE_BITS) | wireType.value();
+  }
+
   private final byte[] buffer;
   private final int limit;
   private int position;
@@ -175,11 +180,6 @@ public final class WireOutput {
    */
   static WireOutput newInstance(byte[] flatArray, int offset, int length) {
     return new WireOutput(flatArray, offset, length);
-  }
-
-  /** Makes a tag value given a field number and wire type. */
-  static int makeTag(int fieldNumber, WireType wireType) {
-    return (fieldNumber << WireType.TAG_TYPE_BITS) | wireType.value();
   }
 
   /** Compute the number of bytes that would be needed to encode a tag. */
