@@ -310,6 +310,19 @@ public final class ProtoSchemaParserTest {
     assertThat(ProtoSchemaParser.parse("foo.proto", proto)).isEqualTo(protoFile);
   }
 
+  @Test public void parseBadTagNumber() throws Exception {
+    String proto = ""
+        + "message BadTagNumber {\n"
+        + "  required int32 a = 0;\n"
+        + "}";
+    try {
+      ProtoSchemaParser.parse("badtag.proto", proto);
+      Fail.fail("Expected parse error");
+    } catch (Exception e) {
+      assertThat(e.getMessage().contains("expected tag > 0"));
+    }
+  }
+
   private Map<String, Object> map(Object... keysAndValues) {
     Map<String, Object> result = new LinkedHashMap<String, Object>();
     for (int i = 0; i < keysAndValues.length; i += 2) {
