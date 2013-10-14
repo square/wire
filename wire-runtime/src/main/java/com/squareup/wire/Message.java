@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +29,7 @@ import java.util.Map;
 /**
  * Superclass for protocol buffer messages.
  */
-public abstract class Message {
+public abstract class Message implements Serializable {
 
   // Hidden Wire instance that can perform work that does not require knowledge of extensions.
   private static final Wire WIRE = new Wire();
