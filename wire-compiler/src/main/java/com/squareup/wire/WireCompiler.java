@@ -24,6 +24,7 @@ import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 import com.squareup.protoparser.Type;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -68,6 +69,7 @@ public class WireCompiler {
   private static final String JAVA_OUT_FLAG = "--java_out=";
   private static final String FILES_FLAG = "--files=";
   private static final String ROOTS_FLAG = "--roots=";
+  private static final String INCLUDES_FLAG = "--includes=";
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
   private static final String INDENT = "  ";
   private static final String LINE_WRAP_INDENT = "    ";
@@ -122,6 +124,7 @@ public class WireCompiler {
 
   private final String repoPath;
   private final List<String> sourceFileNames;
+  private List<File> includes;
   private final Set<String> typesToEmit = new LinkedHashSet<String>();
   private final Map<String, String> javaSymbolMap = new LinkedHashMap<String, String>();
   private final Set<String> enumTypes = new LinkedHashSet<String>();
@@ -140,7 +143,7 @@ public class WireCompiler {
    *
    * <pre>
    * java WireCompiler --proto_path=<path> --java_out=<path> [--files=<protos.include>]
-   *     [--roots=<message_name>[,<message_name>...]] [file [file...]]
+   *     [--roots=<message_name>[,<message_name>...]] [--includes=<include.path>] [file [file...]]
    * </pre>
    *
    * If the {@code --roots} flag is present, its argument must be a comma-separated list
@@ -152,6 +155,7 @@ public class WireCompiler {
     String javaOut = null;
     List<String> sourceFileNames = new ArrayList<String>();
     List<String> roots = new ArrayList<String>();
+    List<File> includes = new ArrayList<File>();
 
     int index = 0;
     while (index < args.length) {
@@ -160,11 +164,28 @@ public class WireCompiler {
       } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
         javaOut = args[index].substring(JAVA_OUT_FLAG.length());
       } else if (args[index].startsWith(FILES_FLAG)) {
-        File files = new File(args[index].substring(FILES_FLAG.length()));
-        String[] fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
+        String[] fileNames = getStringsFromFile(args[index].substring(FILES_FLAG.length()));
         sourceFileNames.addAll(Arrays.asList(fileNames));
       } else if (args[index].startsWith(ROOTS_FLAG)) {
         roots.addAll(Arrays.asList(args[index].substring(ROOTS_FLAG.length()).split(",")));
+      } else if (args[index].startsWith(INCLUDES_FLAG)) {
+        String[] includePaths = getStringsFromFile(args[index].substring(INCLUDES_FLAG.length()));
+        for (String path : includePaths) {
+          File include;
+          if (path.startsWith("/")) {
+            include = new File(path);
+          } else {
+            include = new File(protoPath, path);
+          }
+          if (include.exists() && include.isDirectory()) {
+            System.out.println("Adding Include path " + include.getAbsolutePath());
+            includes.add(include);
+          } else {
+            System.err.println("Include path " + include.getAbsolutePath()
+                + " is not a directory.");
+            System.exit(1);
+          }
+        }
       } else {
         sourceFileNames.add(args[index]);
       }
@@ -178,14 +199,21 @@ public class WireCompiler {
       protoPath = System.getProperty("user.dir");
       System.err.println(PROTO_PATH_FLAG + " flag not specified, using current dir " + protoPath);
     }
-    WireCompiler wireCompiler = new WireCompiler(protoPath, sourceFileNames, roots);
+    WireCompiler wireCompiler = new WireCompiler(protoPath, sourceFileNames, roots, includes);
     wireCompiler.compile(javaOut);
   }
 
-  public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots) {
+  private static String[] getStringsFromFile(String filename) throws FileNotFoundException {
+    File files = new File(filename);
+    return new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
+  }
+
+  public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
+      List<File> includes) {
     this.repoPath = protoPath;
     this.typesToEmit.addAll(roots);
     this.sourceFileNames = sourceFileNames;
+    this.includes = includes;
   }
 
   public void compile(String javaOut) throws IOException {
@@ -260,7 +288,7 @@ public class WireCompiler {
     // Load symbols from imports
     for (String dependency : protoFile.getDependencies()) {
       if (!loadedDependencies.contains(dependency)) {
-        File dep = new File(repoPath + "/" + dependency);
+        File dep = findDep(dependency);
         ProtoFile dependencyFile = ProtoSchemaParser.parse(dep);
         loadSymbols(dependencyFile);
         loadedDependencies.add(dependency);
@@ -280,6 +308,30 @@ public class WireCompiler {
     }
 
     addDependencies(protoFile.getTypes(), protoFile.getJavaPackage() + ".");
+  }
+
+  /**
+   * Iterate over the lists of include directories until the file is found.
+   *
+   * @param dependency Filename
+   * @return the full path as a File to the dependency found in an include direcotry
+   * or the file local to the current directory.
+   */
+  private File findDep(String dependency) {
+    File localFile = new File(dependency);
+    File depFile = localFile;
+    if (!localFile.exists()) {
+      depFile = new File(repoPath + "/" + dependency);
+      if (!depFile.exists()) {
+        for (File includeDir : includes) {
+          depFile = new File(includeDir, dependency);
+          if (depFile.exists()) break;
+        }
+      }
+    }
+    // not found set back to local for reasonable error message
+    if (!depFile.exists()) depFile = localFile;
+    return depFile;
   }
 
   /** Expands the set of types to emit to include types of fields of current emittable types. */
@@ -330,7 +382,7 @@ public class WireCompiler {
     // Load symbols from imports
     for (String dependency : protoFile.getDependencies()) {
       if (!loadedDependencies.contains(dependency)) {
-        File dep = new File(repoPath + "/" + dependency);
+        File dep = findDep(dependency);
         ProtoFile dependencyFile = ProtoSchemaParser.parse(dep);
         loadSymbolsHelper(dependencyFile, loadedDependencies, pass);
         loadedDependencies.add(dependency);
