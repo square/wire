@@ -22,9 +22,8 @@ import com.squareup.wire.protos.simple.Ext_simple_message;
 import com.squareup.wire.protos.simple.ExternalMessage;
 import com.squareup.wire.protos.simple.SimpleMessage;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -123,12 +122,12 @@ public class WireTest {
     assertEquals(doubles, msg.repeated_double);
 
     // Test java.io.Serializable
-    ByteOutputStream bos = new ByteOutputStream();
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ObjectOutputStream oos = new ObjectOutputStream(bos);
     oos.writeObject(msg);
-    byte[] serializableResult = bos.getBytes();
+    byte[] serializableResult = bos.toByteArray();
     bos.close();
-    ByteInputStream bis = new ByteInputStream(serializableResult, serializableResult.length);
+    ByteArrayInputStream bis = new ByteArrayInputStream(serializableResult);
     ObjectInputStream ois = new ObjectInputStream(bis);
     SimpleMessage serializableMsg = (SimpleMessage) ois.readObject();
     ois.close();
