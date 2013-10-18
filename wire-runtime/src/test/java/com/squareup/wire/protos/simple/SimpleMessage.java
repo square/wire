@@ -189,16 +189,25 @@ public final class SimpleMessage extends Message {
       this.o = message.o;
     }
 
+    /**
+     * An optional int32
+     */
     public Builder optional_int32(Integer optional_int32) {
       this.optional_int32 = optional_int32;
       return this;
     }
 
+    /**
+     * An optional NestedMessage
+     */
     public Builder optional_nested_msg(NestedMessage optional_nested_msg) {
       this.optional_nested_msg = optional_nested_msg;
       return this;
     }
 
+    /**
+     * An optional ExternalMessage
+     */
     public Builder optional_external_msg(ExternalMessage optional_external_msg) {
       this.optional_external_msg = optional_external_msg;
       return this;
@@ -209,41 +218,65 @@ public final class SimpleMessage extends Message {
       return this;
     }
 
+    /**
+     * A required int32
+     */
     public Builder required_int32(Integer required_int32) {
       this.required_int32 = required_int32;
       return this;
     }
 
+    /**
+     * A repeated double
+     */
     public Builder repeated_double(List<Double> repeated_double) {
       this.repeated_double = repeated_double;
       return this;
     }
 
+    /**
+     * enum from another package with an explicit default
+     */
     public Builder default_foreign_enum(ForeignEnum default_foreign_enum) {
       this.default_foreign_enum = default_foreign_enum;
       return this;
     }
 
+    /**
+     * enum from another package without an explicit default
+     */
     public Builder no_default_foreign_enum(ForeignEnum no_default_foreign_enum) {
       this.no_default_foreign_enum = no_default_foreign_enum;
       return this;
     }
 
+    /**
+     * field with the same name as a Java keyword
+     */
     public Builder _package(String _package) {
       this._package = _package;
       return this;
     }
 
+    /**
+     * field with the name "result"
+     */
     public Builder result(String result) {
       this.result = result;
       return this;
     }
 
+    /**
+     * field with the name "other"
+     */
     public Builder other(String other) {
       this.other = other;
       return this;
     }
 
+    /**
+     * field with the name "o"
+     */
     public Builder o(String o) {
       this.o = o;
       return this;
@@ -297,6 +330,9 @@ public final class SimpleMessage extends Message {
         this.bb = message.bb;
       }
 
+      /**
+       * An optional int32
+       */
       public Builder bb(Integer bb) {
         this.bb = bb;
         return this;

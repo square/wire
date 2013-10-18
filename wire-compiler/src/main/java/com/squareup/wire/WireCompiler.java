@@ -1552,6 +1552,12 @@ public class WireCompiler {
       args.add(sanitized);
 
       writer.emitEmptyLine();
+
+      String documentation = field.getDocumentation();
+      if (hasDocumentation(documentation)) {
+        writer.emitJavadoc(sanitizeJavadoc(documentation));
+      }
+
       writer.beginMethod("Builder", sanitized, EnumSet.of(PUBLIC), args, null);
       writer.emitStatement("this.%1$s = %1$s", sanitized);
       writer.emitStatement("return this");

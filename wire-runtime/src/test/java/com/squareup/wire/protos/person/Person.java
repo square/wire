@@ -96,21 +96,33 @@ public final class Person extends Message {
       this.phone = copyOf(message.phone);
     }
 
+    /**
+     * The customer's full name.
+     */
     public Builder name(String name) {
       this.name = name;
       return this;
     }
 
+    /**
+     * The customer's ID number.
+     */
     public Builder id(Integer id) {
       this.id = id;
       return this;
     }
 
+    /**
+     * Email address for the customer.
+     */
     public Builder email(String email) {
       this.email = email;
       return this;
     }
 
+    /**
+     * A list of the customer's phone numbers.
+     */
     public Builder phone(List<PhoneNumber> phone) {
       this.phone = phone;
       return this;
@@ -193,11 +205,17 @@ public final class Person extends Message {
         this.type = message.type;
       }
 
+      /**
+       * The customer's phone number.
+       */
       public Builder number(String number) {
         this.number = number;
         return this;
       }
 
+      /**
+       * The type of phone stored here.
+       */
       public Builder type(PhoneType type) {
         this.type = type;
         return this;
