@@ -16,6 +16,9 @@ import static com.squareup.wire.Message.Datatype.STRING;
 import static com.squareup.wire.Message.Label.REPEATED;
 import static com.squareup.wire.Message.Label.REQUIRED;
 
+/**
+ * A message for testing.
+ */
 public final class SimpleMessage extends Message {
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
