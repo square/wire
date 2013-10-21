@@ -5,6 +5,17 @@ package com.squareup.wire.protos.roots;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
+/**
+ * Used to test --roots flag of WireCompiler
+ * A -> B -> C
+ * \
+ * -> D
+ * E -> E.F
+ * \
+ * -> G
+ * H -> E.F
+ * I -> nothing
+ */
 public final class A extends Message {
 
   @ProtoField(tag = 1)

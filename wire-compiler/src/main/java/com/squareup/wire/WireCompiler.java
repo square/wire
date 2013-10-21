@@ -744,6 +744,7 @@ public class WireCompiler {
         modifiers.add(STATIC);
       }
       String name = messageType.getName();
+      emitDocumentation(messageType.getDocumentation());
       writer.beginType(name, "class", modifiers,
           hasExtensions(messageType) ? "ExtendableMessage<" + name + ">" : "Message");
       emitMessageOptions(optionsMap);
@@ -763,15 +764,32 @@ public class WireCompiler {
       EnumType enumType = (EnumType) type;
       writer.beginType(enumType.getName(), "enum", EnumSet.of(PUBLIC));
       for (EnumType.Value value : enumType.getValues()) {
-        String documentation = value.getDocumentation();
-        if (hasDocumentation(documentation)) {
-          writer.emitJavadoc(sanitizeJavadoc(documentation));
-        }
+        emitDocumentation(value.getDocumentation());
         writer.emitAnnotation(ProtoEnum.class, value.getTag());
         writer.emitEnumValue(value.getName());
       }
       writer.endType();
     }
+  }
+
+  private void emitDocumentation(String documentation) throws IOException {
+    if (hasDocumentation(documentation)) {
+      writer.emitJavadoc(sanitizeJavadoc(documentation));
+    }
+  }
+
+  /**
+   * A grab-bag of fixes for things that can go wrong when converting to javadoc.
+   */
+  private String sanitizeJavadoc(String documentation) {
+    // JavaWriter will pass the doc through String.format, so escape all '%' chars
+    documentation = documentation.replace("%", "%%");
+    // Remove trailing whitespace
+    documentation = documentation.replaceAll("\\s+\n", "\n");
+    // Rewrite '@see <url>' to use an html anchor tag
+    documentation =
+        documentation.replaceAll("@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
+    return documentation;
   }
 
   private void emitMessageOptions(Map<String, ?> optionsMap) throws IOException {
@@ -1327,29 +1345,12 @@ public class WireCompiler {
       }
 
       writer.emitEmptyLine();
-      String documentation = field.getDocumentation();
-      if (hasDocumentation(documentation)) {
-        writer.emitJavadoc(sanitizeJavadoc(documentation));
-      }
+      emitDocumentation(field.getDocumentation());
       writer.emitAnnotation(ProtoField.class, map);
 
       if (isRepeated(field)) javaName = "List<" + javaName + ">";
       writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC, FINAL));
     }
-  }
-
-  /**
-   * A grab-bag of fixes for things that can go wrong when converting to javadoc.
-   */
-  private String sanitizeJavadoc(String documentation) {
-    // JavaWriter will pass the doc through String.format, so escape all '%' chars
-    documentation = documentation.replace("%", "%%");
-    // Remove trailing whitespace
-    documentation = documentation.replaceAll("\\s+\n", "\n");
-    // Rewrite '@see <url>' to use an html anchor tag
-    documentation =
-        documentation.replaceAll("@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
-    return documentation;
   }
 
   // Example:
@@ -1553,11 +1554,7 @@ public class WireCompiler {
 
       writer.emitEmptyLine();
 
-      String documentation = field.getDocumentation();
-      if (hasDocumentation(documentation)) {
-        writer.emitJavadoc(sanitizeJavadoc(documentation));
-      }
-
+      emitDocumentation(field.getDocumentation());
       writer.beginMethod("Builder", sanitized, EnumSet.of(PUBLIC), args, null);
       writer.emitStatement("this.%1$s = %1$s", sanitized);
       writer.emitStatement("return this");
