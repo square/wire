@@ -20,6 +20,7 @@ option java_package = "com.squareup.wire.protos.simple";
 import "external_message.proto";
 import "foreign.proto";
 
+/** A message for testing. */
 message SimpleMessage {
   message NestedMessage {
     // An optional int32
