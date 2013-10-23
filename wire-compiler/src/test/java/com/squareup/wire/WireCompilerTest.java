@@ -25,6 +25,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class WireCompilerTest {
 
   private File testDir;
@@ -39,7 +41,7 @@ public class WireCompilerTest {
     dir.mkdir();
     cleanup(dir);
     List<String> filesBefore = getAllFiles(dir);
-    Assert.assertEquals(0, filesBefore.size());
+    assertEquals(0, filesBefore.size());
     return dir;
   }
 
@@ -63,7 +65,7 @@ public class WireCompilerTest {
     WireCompiler.main(args);
 
     List<String> filesAfter = getAllFiles(testDir);
-    Assert.assertEquals(outputs.length, filesAfter.size());
+    assertEquals(outputs.length, filesAfter.size());
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
@@ -81,7 +83,7 @@ public class WireCompilerTest {
     WireCompiler.main(args);
 
     List<String> filesAfter = getAllFiles(testDir);
-    Assert.assertEquals(outputs.length, filesAfter.size());
+    assertEquals(outputs.length, filesAfter.size());
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
@@ -296,6 +298,24 @@ public class WireCompilerTest {
     testProtoWithRoots(sources, roots, outputs);
   }
 
+  @Test public void sanitizeJavadocStripsTrailingWhitespace() {
+    String input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog";
+    String expected = "The quick brown fox\nJumps over\n\nThe lazy dog";
+    assertEquals(expected, WireCompiler.sanitizeJavadoc(input));
+  }
+
+  @Test public void sanitizeJavadocGuardsFormatCharacters() {
+    String input = "This is 12% of %s%d%f%c!";
+    String expected = "This is 12%% of %%s%%d%%f%%c!";
+    assertEquals(expected, WireCompiler.sanitizeJavadoc(input));
+  }
+
+  @Test public void sanitizeJavadocWrapsSeeLinks() {
+    String input = "Google query.\n\n@see http://google.com";
+    String expected = "Google query.\n\n@see <a href=\"http://google.com\">http://google.com</a>";
+    assertEquals(expected, WireCompiler.sanitizeJavadoc(input));
+  }
+
   private void cleanup(File dir) {
     Assert.assertNotNull(dir);
     Assert.assertTrue(dir.isDirectory());
@@ -348,6 +368,6 @@ public class WireCompilerTest {
     // Normalize CRLF -> LF
     expected = expected.replace("\r\n", "\n");
     actual = actual.replace("\r\n", "\n");
-    Assert.assertEquals(expected, actual);
+    assertEquals(expected, actual);
   }
 }
