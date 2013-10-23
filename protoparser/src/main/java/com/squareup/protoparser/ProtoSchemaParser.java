@@ -613,7 +613,7 @@ public final class ProtoSchemaParser {
     while (true) {
       skipWhitespace(false);
       if (pos == data.length || data[pos] != '/') {
-        return result != null ? cleanUpDocumentation(result) : "";
+        return result != null ? result : "";
       }
       String comment = readComment();
       result = (result == null) ? comment : (result + "\n" + comment);
@@ -626,18 +626,36 @@ public final class ProtoSchemaParser {
     pos++;
     int commentType = pos < data.length ? data[pos++] : -1;
     if (commentType == '*') {
-      int start = pos;
-      while (pos + 1 < data.length) {
-        if (data[pos] == '*' && data[pos + 1] == '/') {
+      StringBuilder result = new StringBuilder();
+      boolean startOfLine = true;
+
+      for (; pos + 1 < data.length; pos++) {
+        char c = data[pos];
+        if (c == '*' && data[pos + 1] == '/') {
           pos += 2;
-          return new String(data, start, pos - 2 - start);
-        } else {
-          char c = data[pos++];
-          if (c == '\n') newline();
+          return result.toString().trim();
+        }
+        if (c == '\n') {
+          result.append('\n');
+          newline();
+          startOfLine = true;
+        } else if (!startOfLine) {
+          result.append(c);
+        } else if (c == '*') {
+          if (data[pos + 1] == ' ') {
+            pos += 1; // Skip a single leading space, if present.
+          }
+          startOfLine = false;
+        } else if (!Character.isWhitespace(c)) {
+          result.append(c);
+          startOfLine = false;
         }
       }
       throw unexpected("unterminated comment");
     } else if (commentType == '/') {
+      if (pos < data.length && data[pos] == ' ') {
+        pos += 1; // Skip a single leading space, if present.
+      }
       int start = pos;
       while (pos < data.length) {
         char c = data[pos++];
@@ -650,26 +668,6 @@ public final class ProtoSchemaParser {
     } else {
       throw unexpected("unexpected '/'");
     }
-  }
-
-  /**
-   * Returns a string like {@code comment}, but without leading whitespace or
-   * asterisks.
-   */
-  private String cleanUpDocumentation(String comment) {
-    StringBuilder result = new StringBuilder();
-    boolean beginningOfLine = true;
-    for (int i = 0; i < comment.length(); i++) {
-      char c = comment.charAt(i);
-      if (!beginningOfLine || (c != ' ' && c != '\t' && c != '*')) {
-        result.append(c);
-        beginningOfLine = false;
-      }
-      if (c == '\n') {
-        beginningOfLine = true;
-      }
-    }
-    return result.toString().trim();
   }
 
   /**
