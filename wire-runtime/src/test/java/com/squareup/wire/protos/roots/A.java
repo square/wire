@@ -7,13 +7,17 @@ import com.squareup.wire.ProtoField;
 
 /**
  * Used to test --roots flag of WireCompiler
+ *
  * A -> B -> C
- * \
- * -> D
+ *  \
+ *   -> D
+ *
  * E -> E.F
- * \
- * -> G
+ *  \
+ *   -> G
+ *
  * H -> E.F
+ *
  * I -> nothing
  */
 public final class A extends Message {
