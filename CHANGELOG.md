@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 1.1.1 *(2013-10-23)*
+----------------------------
+
+ * Fix: Correct parsing and emission of multi-line documentation.
+
+
 Version 1.1.0 *(2013-10-22)*
 ----------------------------
 
