@@ -12,7 +12,7 @@
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire</artifactId>
   <packaging>pom</packaging>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.1.1</version>
 
   <name>Wire Protocol Buffers</name>
   <description>Parent module for Wire protocol buffers</description>
@@ -22,7 +22,7 @@
     <url>https://github.com/square/wire</url>
     <connection>scm:git:https://github.com/square/wire.git</connection>
     <developerConnection>scm:git:git@github.com:square/wire.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>wire-1.1.1</tag>
   </scm>
 
   <organization>
