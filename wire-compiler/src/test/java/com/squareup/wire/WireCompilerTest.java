@@ -299,7 +299,7 @@ public class WireCompilerTest {
   }
 
   @Test public void sanitizeJavadocStripsTrailingWhitespace() {
-    String input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog";
+    String input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  ";
     String expected = "The quick brown fox\nJumps over\n\nThe lazy dog";
     assertEquals(expected, WireCompiler.sanitizeJavadoc(input));
   }
