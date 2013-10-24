@@ -781,11 +781,11 @@ public class WireCompiler {
   /**
    * A grab-bag of fixes for things that can go wrong when converting to javadoc.
    */
-  private String sanitizeJavadoc(String documentation) {
+  static String sanitizeJavadoc(String documentation) {
     // JavaWriter will pass the doc through String.format, so escape all '%' chars
     documentation = documentation.replace("%", "%%");
     // Remove trailing whitespace
-    documentation = documentation.replaceAll("\\s+\n", "\n");
+    documentation = documentation.replaceAll("[^\\S\n]+\n", "\n");
     // Rewrite '@see <url>' to use an html anchor tag
     documentation =
         documentation.replaceAll("@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
