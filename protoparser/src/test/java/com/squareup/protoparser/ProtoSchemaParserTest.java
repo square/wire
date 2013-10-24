@@ -3,7 +3,6 @@ package com.squareup.protoparser;
 
 import com.squareup.protoparser.EnumType.Value;
 import com.squareup.protoparser.MessageType.Label;
-
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +28,105 @@ public final class ProtoSchemaParserTest {
         map("default", "STRING", "deprecated", "true"));
     assertThat(field.isDeprecated()).isTrue();
     assertThat(field.getDefault()).isEqualTo("STRING");
+  }
+
+  @Test public void documentationFormats() {
+    // Single-line comment.
+    String proto1 = ""
+        + "// Test all the things!\n"
+        + "message Test {}";
+    ProtoFile parsed1 = ProtoSchemaParser.parse("test.proto", proto1);
+    MessageType type1 = (MessageType) parsed1.getTypes().get(0);
+    assertThat(type1.getDocumentation()).isEqualTo("Test all the things!");
+
+    // Multiple, single-line comment.
+    String proto2 = ""
+        + "// Test all\n"
+        + "// the things!\n"
+        + "message Test {}";
+    String expected2 = ""
+        + "Test all\n"
+        + "the things!";
+    ProtoFile parsed2 = ProtoSchemaParser.parse("test.proto", proto2);
+    MessageType type2 = (MessageType) parsed2.getTypes().get(0);
+    assertThat(type2.getDocumentation()).isEqualTo(expected2);
+
+    // Single-line, Javadoc-esque comment.
+    String proto3 = ""
+        + "/** Test */\n"
+        + "message Test {}";
+    ProtoFile parsed3 = ProtoSchemaParser.parse("test.proto", proto3);
+    MessageType type3 = (MessageType) parsed3.getTypes().get(0);
+    assertThat(type3.getDocumentation()).isEqualTo("Test");
+
+    // Multi-line, Javadoc-esque comment.
+    String proto4 = ""
+        + "/**\n"
+        + " * Test\n"
+        + " *\n"
+        + " * Foo\n"
+        + " */\n"
+        + "message Test {}";
+    String expected4 = ""
+        + "Test\n"
+        + "\n"
+        + "Foo";
+    ProtoFile parsed4 = ProtoSchemaParser.parse("test.proto", proto4);
+    MessageType type4 = (MessageType) parsed4.getTypes().get(0);
+    assertThat(type4.getDocumentation()).isEqualTo(expected4);
+
+    // Multiple, single-line comment with leading whitespace
+    String proto5 = ""
+        + "// Test\n"
+        + "//   All\n"
+        + "//     The\n"
+        + "//       Things!\n"
+        + "message Test {}";
+    String expected5 = ""
+        + "Test\n"
+        + "  All\n"
+        + "    The\n"
+        + "      Things!";
+    ProtoFile parsed5 = ProtoSchemaParser.parse("test.proto", proto5);
+    MessageType type5 = (MessageType) parsed5.getTypes().get(0);
+    assertThat(type5.getDocumentation()).isEqualTo(expected5);
+
+    // Multi-line, Javadoc-esque comment.
+    String proto6 = ""
+        + "/**\n"
+        + " * Test\n"
+        + " *   All\n"
+        + " *     The\n"
+        + " *       Things!\n"
+        + " */\n"
+        + "message Test {}";
+    String expected6 = ""
+        + "Test\n"
+        + "  All\n"
+        + "    The\n"
+        + "      Things!";
+    ProtoFile parsed6 = ProtoSchemaParser.parse("test.proto", proto6);
+    MessageType type6 = (MessageType) parsed6.getTypes().get(0);
+    assertThat(type6.getDocumentation()).isEqualTo(expected6);
+
+    // Multi-line, poorly-formatted Javadoc-esque comment. The lack of leading asterisks prevents
+    // us from preserving any leading whitespace.
+    String proto7 = ""
+        + "/**\n"
+        + " Test\n"
+        + "   All\n"
+        + "     The\n"
+        + "       Things!\n"
+        + " */\n"
+        + "message Test {}";
+    String expected7 = ""
+        + "Test\n"
+        + "All\n"
+        + "The\n"
+        + "Things!";
+    ProtoFile parsed7 = ProtoSchemaParser.parse("test.proto", proto7);
+    MessageType type7 = (MessageType) parsed7.getTypes().get(0);
+    assertThat(type7.getDocumentation()).isEqualTo(expected7);
   }
 
   @Test public void parseMessageAndFields() throws Exception {
