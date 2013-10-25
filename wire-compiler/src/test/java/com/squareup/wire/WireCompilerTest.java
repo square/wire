@@ -72,6 +72,24 @@ public class WireCompilerTest {
     }
   }
 
+  private void testProtoWithRegistry(String[] sources, String registryClass, String[] outputs)
+      throws Exception {
+    String[] args = new String[3 + sources.length];
+    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[1] = "--java_out=" + testDir.getAbsolutePath();
+    args[2] = "--registry_class=" + registryClass;
+    System.arraycopy(sources, 0, args, 3, sources.length);
+
+    WireCompiler.main(args);
+
+    List<String> filesAfter = getAllFiles(testDir);
+    assertEquals(outputs.length, filesAfter.size());
+
+    for (String output : outputs) {
+      assertFilesMatch(testDir, output);
+    }
+  }
+
   private void testProtoWithRoots(String[] sources, String roots, String[] outputs)
       throws Exception {
     String[] args = new String[3 + sources.length];
@@ -115,6 +133,25 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/foreign/ForeignMessage.java"
     };
     testProto(sources, outputs);
+  }
+
+  @Test public void testRegistry() throws Exception {
+    String[] sources = {
+        "simple_message.proto",
+        "external_message.proto",
+        "foreign.proto"
+    };
+    String registry = "com.squareup.wire.protos.ProtoRegistry";
+    String[] outputs = {
+        "com/squareup/wire/protos/ProtoRegistry.java",
+        "com/squareup/wire/protos/simple/Ext_simple_message.java",
+        "com/squareup/wire/protos/simple/SimpleMessage.java",
+        "com/squareup/wire/protos/simple/ExternalMessage.java",
+        "com/squareup/wire/protos/foreign/Ext_foreign.java",
+        "com/squareup/wire/protos/foreign/ForeignEnum.java",
+        "com/squareup/wire/protos/foreign/ForeignMessage.java"
+    };
+    testProtoWithRegistry(sources, registry, outputs);
   }
 
   @Test public void testSingleLevel() throws Exception {
