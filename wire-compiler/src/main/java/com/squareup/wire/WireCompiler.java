@@ -64,6 +64,7 @@ public class WireCompiler {
   private static final String PROTO_PATH_FLAG = "--proto_path=";
   private static final String JAVA_OUT_FLAG = "--java_out=";
   private static final String FILES_FLAG = "--files=";
+  private static final String REGISTRY_CLASS_FLAG = "--registry_class=";
   private static final String ROOTS_FLAG = "--roots=";
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
   private static final String INDENT = "  ";
@@ -99,27 +100,37 @@ public class WireCompiler {
       new LinkedHashMap<String, ExtensionInfo>();
   private final Map<String, FieldInfo> fieldMap = new LinkedHashMap<String, FieldInfo>();
   private final String outputDirectory;
+  private final String registryClass;
   private ProtoFile protoFile;
   private String sourceFileName;
   private String protoFileName;
   private String typeBeingGenerated = "";
   private JavaWriter writer;
+  private final List<String> extensionClasses = new ArrayList<String>();
 
   /**
    * Runs the compiler. Usage:
    *
    * <pre>
    * java WireCompiler --proto_path=<path> --java_out=<path> [--files=<protos.include>]
-   *     [--roots=<message_name>[,<message_name>...]] [file [file...]]
+   *     [--roots=<message_name>[,<message_name>...]] [--registry_class=<class_name>]
+   *     [file [file...]]
    * </pre>
    *
    * If the {@code --roots} flag is present, its argument must be a comma-separated list
    * of fully-qualified message or enum names. The output will be limited to those messages
    * and enums that are (transitive) dependencies of the listed names.
+   * <p>
+   * If the {@code --registry_class} flag is present, its argument must be a Java class name. A
+   * class with the given name will be generated, containing a constant list of all extension
+   * classes generated during the compile. This list is suitable for passing to Wire's constructor
+   * at runtime for constructing its internal extension registry.
+   *
    */
   public static void main(String... args) throws Exception {
     String protoPath = null;
     String javaOut = null;
+    String registryClass = null;
     List<String> sourceFileNames = new ArrayList<String>();
     List<String> roots = new ArrayList<String>();
 
@@ -135,6 +146,8 @@ public class WireCompiler {
         sourceFileNames.addAll(Arrays.asList(fileNames));
       } else if (args[index].startsWith(ROOTS_FLAG)) {
         roots.addAll(Arrays.asList(args[index].substring(ROOTS_FLAG.length()).split(",")));
+      } else if (args[index].startsWith(REGISTRY_CLASS_FLAG)) {
+        registryClass = args[index].substring(REGISTRY_CLASS_FLAG.length());
       } else {
         sourceFileNames.add(args[index]);
       }
@@ -148,21 +161,23 @@ public class WireCompiler {
       protoPath = System.getProperty("user.dir");
       System.err.println(PROTO_PATH_FLAG + " flag not specified, using current dir " + protoPath);
     }
-    WireCompiler wireCompiler = new WireCompiler(protoPath, sourceFileNames, roots, javaOut);
+    WireCompiler wireCompiler =
+        new WireCompiler(protoPath, sourceFileNames, roots, javaOut, registryClass);
     wireCompiler.compile();
   }
 
   public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
-      String outputDirectory) {
-    this(protoPath, sourceFileNames, roots, outputDirectory, new FileIO());
+      String outputDirectory, String registryClass) {
+    this(protoPath, sourceFileNames, roots, outputDirectory, registryClass, new FileIO());
   }
 
    WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
-      String outputDirectory, IO io) {
+      String outputDirectory, String registryClass, IO io) {
     this.repoPath = protoPath;
     this.typesToEmit.addAll(roots);
     this.sourceFileNames = sourceFileNames;
     this.outputDirectory = outputDirectory;
+    this.registryClass = registryClass;
     this.io = io;
   }
 
@@ -189,6 +204,10 @@ public class WireCompiler {
       System.out.println("Compiling proto source file " + sourceFileName);
       compileOne();
     }
+
+    if (registryClass != null) {
+      emitRegistry();
+    }
   }
 
   private void compileOne() throws IOException {
@@ -196,9 +215,14 @@ public class WireCompiler {
 
     if (hasExtends()) {
       try {
-        writer = io.getJavaWriter(outputDirectory, protoFile.getJavaPackage(),
-            "Ext_" + protoFileName);
+        String className = "Ext_" + protoFileName;
+        String javaPackage = protoFile.getJavaPackage();
+        writer = io.getJavaWriter(outputDirectory, javaPackage, className);
         emitExtensionClass();
+
+        String extensionClass = javaPackage + "." + className;
+        System.out.println("wrote extension class " + extensionClass);
+        extensionClasses.add(extensionClass);
       } finally {
         writer.close();
       }
@@ -211,6 +235,44 @@ public class WireCompiler {
         emitMessageClass(type);
         typeBeingGenerated = savedType;
       }
+    }
+  }
+
+
+  private void emitRegistry() throws IOException {
+    int packageClassSep = registryClass.lastIndexOf(".");
+    String javaPackage = registryClass.substring(0, packageClassSep);
+    String className = registryClass.substring(packageClassSep + 1);
+    try {
+      writer = io.getJavaWriter(outputDirectory, javaPackage, className);
+      writer.emitSingleLineComment(CODE_GENERATED_BY_WIRE);
+      writer.emitPackage(javaPackage);
+
+      writer.emitImports("java.util.List");
+      writer.emitEmptyLine();
+      writer.emitStaticImports("java.util.Arrays.asList", "java.util.Collections.unmodifiableList");
+      writer.emitEmptyLine();
+      writer.beginType(className, "class", EnumSet.of(PUBLIC, FINAL));
+      writer.emitEmptyLine();
+
+      StringBuilder classes = new StringBuilder("unmodifiableList(asList(\n");
+      int extensionsCount = extensionClasses.size();
+      for (int i = 0; i < extensionsCount; i++) {
+        String format = (i < extensionsCount - 1) ? "%1$s%2$s.class,%n" : "%1$s%2$s.class";
+        String extensionClass = extensionClasses.get(i);
+        classes.append(String.format(format, INDENT + LINE_WRAP_INDENT, extensionClass));
+      }
+      classes.append("))");
+      writer.emitField("List<Class<?>>", "EXTENSIONS", EnumSet.of(PUBLIC, STATIC, FINAL),
+          classes.toString());
+      writer.emitEmptyLine();
+
+      // Private no-args constructor
+      writer.beginMethod(null, className, EnumSet.of(PRIVATE));
+      writer.endMethod();
+      writer.endType();
+    } finally {
+      writer.close();
     }
   }
 

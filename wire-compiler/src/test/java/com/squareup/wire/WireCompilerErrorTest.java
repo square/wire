@@ -78,7 +78,7 @@ public class WireCompilerErrorTest {
     StringIO io = new StringIO("test.proto", source);
 
     WireCompiler compiler =
-        new WireCompiler(".", Arrays.asList("test.proto"), new ArrayList<String>(), ".", io);
+        new WireCompiler(".", Arrays.asList("test.proto"), new ArrayList<String>(), ".", null, io);
     compiler.compile();
     return io.getOutput();
   }
