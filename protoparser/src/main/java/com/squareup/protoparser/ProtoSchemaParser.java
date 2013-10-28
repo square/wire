@@ -172,10 +172,25 @@ public final class ProtoSchemaParser {
       if (!context.permitsExtensions()) throw unexpected("extensions must be nested");
       return readExtensions(documentation);
     } else if (context == Context.ENUM) {
+      List<Option> options = new ArrayList<Option>();
+
       if (readChar() != '=') throw unexpected("expected '='");
       int tag = readInt();
+      if (peekChar() == '[') {
+        readChar();
+        while (true) {
+          options.add(readOption('='));
+          char c = readChar();
+          if (c == ']') {
+            break;
+          }
+          if (c != ',') {
+            throw unexpected("Expected ',' or ']");
+          }
+        }
+      }
       if (readChar() != ';') throw unexpected("expected ';'");
-      return new EnumType.Value(label, tag, documentation);
+      return new EnumType.Value(label, tag, documentation, options);
     } else {
       throw unexpected("unexpected label: " + label);
     }

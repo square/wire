@@ -71,13 +71,16 @@ public final class EnumType implements Type {
     private final String name;
     private final int tag;
     private final String documentation;
+    private final List<Option> options;
 
-    Value(String name, int tag, String documentation) {
+    Value(String name, int tag, String documentation, List<Option> options) {
       if (name == null) throw new NullPointerException("name");
       if (documentation == null) throw new NullPointerException("documentation");
+      if (options == null) throw new NullPointerException("options");
       this.name = name;
       this.tag = tag;
       this.documentation = documentation;
+      this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
     }
 
     public String getName() {
@@ -92,12 +95,17 @@ public final class EnumType implements Type {
       return documentation;
     }
 
+    public List<Option> getOptions() {
+      return options;
+    }
+
     @Override public boolean equals(Object other) {
       if (other instanceof Value) {
         Value that = (Value) other;
         return name.equals(that.name) //
             && tag == that.tag //
-            && documentation.equals(that.documentation);
+            && documentation.equals(that.documentation) //
+            && options.equals(that.options);
       }
       return false;
     }
@@ -107,7 +115,11 @@ public final class EnumType implements Type {
     }
 
     @Override public String toString() {
-      return String.format("%s = %d", name, tag);
+      StringBuilder sb = new StringBuilder(String.format("%s = %d", name, tag));
+      for (Option option : options) {
+        sb.append("\n    option: ").append(option);
+      }
+      return sb.toString();
     }
   }
 }
