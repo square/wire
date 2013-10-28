@@ -403,11 +403,9 @@ public final class ProtoSchemaParser {
         }
       }
 
-      char c = peekChar();
-      if (c == ',') {
+      // ',' separator is optional, skip if present
+      if (peekChar() == ',') {
         pos++;
-      } else if (c != closeBrace) {
-        throw unexpected("expected ',' or '" + closeBrace + "'");
       }
     }
   }

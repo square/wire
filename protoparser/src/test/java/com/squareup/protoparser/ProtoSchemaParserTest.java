@@ -329,7 +329,7 @@ public final class ProtoSchemaParserTest {
         + "  option (squareup.one) = {name: \"Name\", class_name:\"ClassName\"};\n"
         + "  option (squareup.two.a) = {[squareup.options.type]: EXOTIC};\n"
         + "  option (squareup.two.b) = {names: [\"Foo\", \"Bar\"]};\n"
-        + "  option (squareup.three) = {x: {y: 1, y: 2}};\n"
+        + "  option (squareup.three) = {x: {y: 1 y: 2}};\n" // NOTE: Omitted optional comma
         + "  option (squareup.four) = {x: {y: {z: 1}, y: {z: 2}}};\n"
         + "}";
 
