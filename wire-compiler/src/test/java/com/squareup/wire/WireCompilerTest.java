@@ -338,19 +338,19 @@ public class WireCompilerTest {
   @Test public void sanitizeJavadocStripsTrailingWhitespace() {
     String input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  ";
     String expected = "The quick brown fox\nJumps over\n\nThe lazy dog";
-    assertEquals(expected, WireCompiler.sanitizeJavadoc(input));
+    assertEquals(expected, MessageWriter.sanitizeJavadoc(input));
   }
 
   @Test public void sanitizeJavadocGuardsFormatCharacters() {
     String input = "This is 12% of %s%d%f%c!";
     String expected = "This is 12%% of %%s%%d%%f%%c!";
-    assertEquals(expected, WireCompiler.sanitizeJavadoc(input));
+    assertEquals(expected, MessageWriter.sanitizeJavadoc(input));
   }
 
   @Test public void sanitizeJavadocWrapsSeeLinks() {
     String input = "Google query.\n\n@see http://google.com";
     String expected = "Google query.\n\n@see <a href=\"http://google.com\">http://google.com</a>";
-    assertEquals(expected, WireCompiler.sanitizeJavadoc(input));
+    assertEquals(expected, MessageWriter.sanitizeJavadoc(input));
   }
 
   private void cleanup(File dir) {
