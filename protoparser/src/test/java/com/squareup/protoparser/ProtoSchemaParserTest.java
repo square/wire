@@ -163,8 +163,8 @@ public final class ProtoSchemaParserTest {
         + "}\n";
     Type expected = new EnumType("Topping", "Topping",
        "What's on my waffles.\nAlso works on pancakes.",
-        Arrays.asList(new Value("FRUIT", 1, ""), new Value("CREAM", 2, "Yummy, yummy cream."),
-            new Value("SYRUP", 3, "Quebec Maple syrup")));
+        Arrays.asList(new Value("FRUIT", 1, "", NO_OPTIONS), new Value("CREAM", 2, "Yummy, yummy cream.",
+            NO_OPTIONS), new Value("SYRUP", 3, "Quebec Maple syrup", NO_OPTIONS)));
     ProtoFile protoFile =
         new ProtoFile("waffles.proto", null, NO_STRINGS, Arrays.asList(expected), NO_SERVICES,
             map(), NO_EXTEND_DECLARATIONs);
@@ -197,13 +197,15 @@ public final class ProtoSchemaParserTest {
         + "message FieldOptions {\n"
         + "  optional CType ctype = 1 [default = STRING, deprecated=true];\n"
         + "  enum CType {\n"
-        + "    STRING = 0;\n"
+        + "    STRING = 0[(opt_a) = 1, (opt_b) = 2];\n"
         + "  };\n"
         + "  // Clients can define custom options in extensions of this message. See above.\n"
         + "  extensions 500;\n"
         + "  extensions 1000 to max;\n"
         + "}\n";
-    Type enumType = new EnumType("CType", "CType", "", Arrays.asList(new Value("STRING", 0, "")));
+    Type enumType = new EnumType("CType", "CType", "",
+        Arrays.asList(new Value("STRING", 0, "",
+            Arrays.asList(new Option("opt_a", "1"), new Option("opt_b", "2")))));
     Type messageType = new MessageType("FieldOptions", "FieldOptions", "", Arrays.asList(
         new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
             map("default", "STRING", "deprecated", "true"))), Arrays.asList(enumType),
@@ -327,7 +329,7 @@ public final class ProtoSchemaParserTest {
         + "  option (squareup.one) = {name: \"Name\", class_name:\"ClassName\"};\n"
         + "  option (squareup.two.a) = {[squareup.options.type]: EXOTIC};\n"
         + "  option (squareup.two.b) = {names: [\"Foo\", \"Bar\"]};\n"
-        + "  option (squareup.three) = {x: {y: 1, y: 2}};\n"
+        + "  option (squareup.three) = {x: {y: 1 y: 2}};\n" // NOTE: Omitted optional comma
         + "  option (squareup.four) = {x: {y: {z: 1}, y: {z: 2}}};\n"
         + "}";
 
