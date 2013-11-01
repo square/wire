@@ -8,18 +8,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MessageOptionsMapMaker {
+public class OptionsMapMaker {
 
   private final WireCompiler compiler;
 
-  public MessageOptionsMapMaker(WireCompiler compiler) {
+  public OptionsMapMaker(WireCompiler compiler) {
     this.compiler = compiler;
   }
 
   /**
    * Builds a nested map from the options defined on a {@link MessageType}.
    */
-  public Map<String, ?> createOptionsMap(MessageType type) {
+  public Map<String, ?> createMessageOptionsMap(MessageType type) {
     List<Option> options = type.getOptions();
     if (options.isEmpty()) {
       return null;
@@ -28,6 +28,22 @@ public class MessageOptionsMapMaker {
     Map<String, Object> map = new LinkedHashMap<String, Object>();
     for (Option option : options) {
       insertOption(option.getName(), option.getValue(), type.getFullyQualifiedName(), map);
+    }
+    return map;
+  }
+
+  public Map<String, ?> createFieldOptionsMap(MessageType type, List<Option> options) {
+    if (options.isEmpty()) {
+      return null;
+    }
+
+    Map<String, Object> map = new LinkedHashMap<String, Object>();
+    for (Option option : options) {
+      String key = option.getName();
+      if (WireCompiler.DEFAULT_FIELD_OPTION_KEYS.contains(key)) {
+        continue;
+      }
+      insertOption(key, option.getValue(), type.getFullyQualifiedName(), map);
     }
     return map;
   }
@@ -138,7 +154,8 @@ public class MessageOptionsMapMaker {
       return;
     }
 
-    ExtensionInfo info = getExtensionInfo(name);
+    // See if the name refers to an extension
+    ExtensionInfo info = compiler.isEnum(enclosingType) ? null : getExtensionInfo(name);
 
     // Deal with names that start with a suffix of the package name
     if (info == null && compiler.getProtoFile().getPackageName().endsWith("." + name)
@@ -261,8 +278,16 @@ public class MessageOptionsMapMaker {
       String javaTypeName = TypeInfo.scalarType(fieldType);
       return compiler.getInitializerForType(stringValue, javaTypeName);
     } else if (compiler.isEnum(fieldType)) {
-      String shortName = compiler.shortenJavaName(compiler.javaName(fieldType));
-      return shortName + "." + compiler.getTrailingSegment(stringValue);
+      String javaName = compiler.javaName(fieldType);
+      String javaPackage = compiler.getProtoFile().getJavaPackage();
+      if (javaName.startsWith(javaPackage + ".")) {
+        javaName = javaName.substring(javaPackage.length() + 1);
+      }
+      String typeBeingGenerated = compiler.getTypeBeingGenerated();
+      if (javaName.startsWith(typeBeingGenerated + ".")) {
+        javaName = javaName.substring(typeBeingGenerated.length() + 1);
+      }
+      return javaName + "." + compiler.getTrailingSegment(stringValue);
     } else {
       return stringValue;
     }
@@ -405,13 +430,16 @@ public class MessageOptionsMapMaker {
 
   @SuppressWarnings("unchecked")
   public void getOptionTypes(Map<String, ?> optionsMap, List<String> types) {
+    if (optionsMap == null) return;
     for (Map.Entry<String, ?> entry : optionsMap.entrySet()) {
-      ExtensionInfo info = compiler.getExtension(entry.getKey());
+      String key = entry.getKey();
+
+      ExtensionInfo info = compiler.getExtension(key);
       if (info != null && !info.fqLocation.startsWith(compiler.getProtoFile().getJavaPackage())) {
         types.add(info.fqLocation);
       }
 
-      if ("@type".equals(entry.getKey())) {
+      if ("@type".equals(key)) {
         String type = (String) entry.getValue();
         String javaName = compiler.javaName(type);
         if (compiler.fullyQualifiedNameIsOutsidePackage(javaName)) {

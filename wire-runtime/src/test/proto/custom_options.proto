@@ -23,12 +23,15 @@ import "foreign.proto";
 message FooBar {
   extensions 100 to 200;
 
-  optional int32 foo = 1;
-  optional string bar = 2;
-  optional Nested baz = 3;
-  optional uint64 qux = 4;
-  repeated float fred = 5;
-  optional double daisy = 6;
+  optional int32 foo = 1 [my_field_option_one = 17];
+  optional string bar = 2 [my_field_option_two = 33.5];
+  optional Nested baz = 3 [my_field_option_three = BAR];
+  optional uint64 qux = 4 [my_field_option_one = 18, my_field_option_two = 34.5];
+  repeated float fred = 5 [my_field_option_four = {
+      foo: 11, bar: "22", baz: { value: BAR }, fred : [444.0, 555.0],
+      nested: { foo: 33, fred: [100.0, 200.0] }
+  }, my_field_option_two = 99.9];
+  optional double daisy = 6 [my_field_option_four.baz.value = FOO];
 
   repeated FooBar nested = 7;
 
@@ -50,6 +53,13 @@ extend google.protobuf.MessageOptions {
   optional FooBar.FooBarBazEnum my_message_option_four = 50004;
   optional FooBar my_message_option_five = 50005;
   optional FooBar my_message_option_six = 50006;
+}
+
+extend google.protobuf.FieldOptions {
+  optional int32 my_field_option_one = 60001;
+  optional float my_field_option_two = 60002;
+  optional FooBar.FooBarBazEnum my_field_option_three = 60003;
+  optional FooBar my_field_option_four = 60004;
 }
 
 extend FooBar {

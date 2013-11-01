@@ -45,4 +45,9 @@ public @interface ProtoField {
    * Defaults to {@link Label#OPTIONAL}.
    */
   Label label() default Label.OPTIONAL;
+
+  /**
+   * True if the field is marked as deprecated.
+   */
+  boolean deprecated() default false;
 }

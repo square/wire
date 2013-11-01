@@ -3,9 +3,11 @@ package com.squareup.wire;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.MessageType;
+import com.squareup.protoparser.Option;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.Type;
 
+import java.util.Iterator;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -114,7 +116,8 @@ public class MessageWriter {
         compiler.hasExtensions(messageType) ? "ExtendableMessage<" + name + ">" : "Message");
 
     emitMessageOptions(optionsMap);
-    emitMessageDefaults(messageType);
+    emitMessageFieldOptions(messageType);
+    emitMessageFieldDefaults(messageType);
     emitMessageFields(messageType);
     emitMessageConstructor(messageType);
     emitMessageEquals(messageType);
@@ -129,25 +132,76 @@ public class MessageWriter {
       for (Map.Entry<String, ?> entry : optionsMap.entrySet()) {
         String fqName = entry.getKey();
         ExtensionInfo info = compiler.getExtension(fqName);
-        sb.append(String.format("%n%s.setExtension(Ext_%s.%s, %s)",
-            WireCompiler.INDENT + WireCompiler.LINE_WRAP_INDENT,
+        sb.append(WireCompiler.NEW_LINE_INDENT_LINE_WRAP_INDENT);
+        sb.append(String.format(".setExtension(Ext_%s.%s, %s)",
             info.location, compiler.getTrailingSegment(fqName),
-            compiler.getMessageOptionsMapMaker().createOptionInitializer(entry.getValue(), "", "",
+            compiler.getOptionsMapMaker().createOptionInitializer(entry.getValue(), "", "",
                 info.fqType, false, 1)));
       }
-      sb.append("\n").append(WireCompiler.INDENT)
-          .append(WireCompiler.LINE_WRAP_INDENT).append(".build()");
+      sb.append(WireCompiler.NEW_LINE_INDENT_LINE_WRAP_INDENT);
+      sb.append(".build()");
       writer.emitEmptyLine();
       writer.emitField("MessageOptions", "MESSAGE_OPTIONS", EnumSet.of(PUBLIC, STATIC, FINAL),
           sb.toString());
     }
   }
 
+  private void emitMessageFieldOptions(MessageType messageType) throws IOException {
+    Map<String, List<Option>> fieldOptions = new LinkedHashMap<String, List<Option>>();
+
+    for (Field field : messageType.getFields()) {
+      List<Option> options = new ArrayList<Option>(field.getOptions());
+      for (Iterator<Option> iterator = options.iterator(); iterator.hasNext();) {
+        // Remove non-custom key
+        String name = iterator.next().getName();
+        if (WireCompiler.DEFAULT_FIELD_OPTION_KEYS.contains(name)) {
+          iterator.remove();
+        }
+      }
+      if (!options.isEmpty()) {
+        fieldOptions.put(field.getName(), options);
+      }
+    }
+
+    if (!fieldOptions.isEmpty()) {
+      writer.emitEmptyLine();
+    }
+
+    for (Map.Entry<String, List<Option>> entry : fieldOptions.entrySet()) {
+      Map<String, ?> fieldOptionsMap =
+          compiler.getOptionsMapMaker().createFieldOptionsMap(messageType, entry.getValue());
+      emitFieldOptions(entry.getKey(), fieldOptionsMap);
+    }
+  }
+
+  private void emitFieldOptions(String fieldName, Map<String, ?> optionsMap) throws IOException {
+    if (optionsMap == null) return;
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("new FieldOptions.Builder()");
+    for (Map.Entry<String, ?> entry : optionsMap.entrySet()) {
+      String fqName = entry.getKey();
+      ExtensionInfo info = compiler.getExtension(fqName);
+      if (info == null) {
+        throw new RuntimeException("No extension info for " + fqName);
+      }
+      sb.append(WireCompiler.NEW_LINE_INDENT_LINE_WRAP_INDENT);
+      sb.append(String.format(".setExtension(Ext_%s.%s, %s)",
+          info.location,
+          compiler.getTrailingSegment(fqName), compiler.getOptionsMapMaker()
+          .createOptionInitializer(entry.getValue(), "", "", info.fqType, false, 1)));
+    }
+    sb.append(WireCompiler.NEW_LINE_INDENT_LINE_WRAP_INDENT);
+    sb.append(".build()");
+    writer.emitField("FieldOptions", "FIELD_OPTIONS_" + fieldName.toUpperCase(Locale.US),
+        EnumSet.of(PUBLIC, STATIC, FINAL), sb.toString());
+  }
+
   // Example:
   //
   // public static final Integer DEFAULT_OPT_INT32 = 123;
   //
-  private void emitMessageDefaults(MessageType messageType) throws IOException {
+  private void emitMessageFieldDefaults(MessageType messageType) throws IOException {
     List<Field> defaultFields = new ArrayList<Field>();
     for (Field field : messageType.getFields()) {
       // Message types cannot have defaults
@@ -216,6 +270,10 @@ public class MessageWriter {
         } else {
           map.put("label", field.getLabel().toString());
         }
+      }
+
+      if (field.isDeprecated()) {
+        map.put("deprecated", "true");
       }
 
       writer.emitEmptyLine();
