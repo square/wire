@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 1.2.0 *(2013-11-01)*
+----------------------------
+
+ * New: `--registry_class` compiler argument emits a class with a list of extensions suitable for
+   passing to the `Wire` constructor.
+ * Fix: Ensure all trailing whitespace is trimmed on documentation.
+
+
 Version 1.1.1 *(2013-10-23)*
 ----------------------------
 
