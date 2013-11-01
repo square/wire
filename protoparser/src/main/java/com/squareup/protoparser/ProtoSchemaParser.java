@@ -66,19 +66,19 @@ public final class ProtoSchemaParser {
   private String prefix;
 
   /** Imported files. */
-  private List<String> dependencies = new ArrayList<String>();
+  private final List<String> dependencies = new ArrayList<String>();
 
   /** Declared message types and enum types. */
-  private List<Type> types = new ArrayList<Type>();
+  private final List<Type> types = new ArrayList<Type>();
 
   /** Declared services. */
-  private List<Service> services = new ArrayList<Service>();
+  private final List<Service> services = new ArrayList<Service>();
 
   /** Declared 'extend's. */
-  private List<ExtendDeclaration> extendDeclarations = new ArrayList<ExtendDeclaration>();
+  private final List<ExtendDeclaration> extendDeclarations = new ArrayList<ExtendDeclaration>();
 
   /** Global options. */
-  private Map<String, Object> options = new LinkedHashMap<String, Object>();
+  private final Map<String, Object> options = new LinkedHashMap<String, Object>();
 
   ProtoSchemaParser(String fileName, char[] data) {
     this.fileName = fileName;
@@ -294,15 +294,24 @@ public final class ProtoSchemaParser {
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
     if (tag <= 0) throw unexpected("expected tag > 0");
-    char c = peekChar();
-    Map<String, Object> options;
-    if (c == '[') {
-      options = readMap('[', ']', '=');
-      c = peekChar();
-    } else {
-      options = new LinkedHashMap<String, Object>();
+    List<Option> options = new ArrayList<Option>();
+
+    if (peekChar() == '[') {
+      pos++;
+      while (true) {
+        options.add(readOption('='));
+
+        // Check for optional ',' or closing ']'
+        char c = peekChar();
+        if (c == ']') {
+          pos++;
+          break;
+        } else if (c == ',') {
+          pos++;
+        }
+      }
     }
-    if (c == ';') {
+    if (readChar() == ';') {
       pos++;
       return new MessageType.Field(labelEnum, type, name, tag, documentation, options);
     }
@@ -701,7 +710,7 @@ public final class ProtoSchemaParser {
     }
   }
 
-  /** Call this everytime a '\n' is encountered. */
+  /** Call this every time a '\n' is encountered. */
   private void newline() {
     line++;
     lineStart = pos;

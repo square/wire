@@ -2,6 +2,7 @@
 package com.squareup.protoparser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -102,23 +103,23 @@ public final class MessageType implements Type {
     private final String type;
     private final String name;
     private final int tag;
-    private final Map<String, Object> extensions;
+    private final List<Option> options;
     private final String documentation;
 
     Field(Label label, String type, String name, int tag, String documentation,
-        Map<String, Object> extensions) {
+        List<Option> options) {
       if (label == null) throw new NullPointerException("label");
       if (type == null) throw new NullPointerException("type");
       if (name == null) throw new NullPointerException("name");
       if (documentation == null) throw new NullPointerException("documentation");
-      if (extensions == null) throw new NullPointerException("extensions");
+      if (options == null) throw new NullPointerException("options");
 
       this.label = label;
       this.type = type;
       this.name = name;
       this.tag = tag;
       this.documentation = documentation;
-      this.extensions = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(extensions));
+      this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
     }
 
     public Label getLabel() {
@@ -142,8 +143,48 @@ public final class MessageType implements Type {
       return tag;
     }
 
+    public List<Option> getOptions() {
+      return options;
+    }
+
+    // Retain for compatibility
     public Map<String, Object> getExtensions() {
-      return extensions;
+      return optionsToMap(options);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> optionsToMap(List<Option> options) {
+      Map<String, Object> map = new LinkedHashMap<String, Object>();
+      for (Option option : options) {
+        String name = option.getName();
+        Object value = option.getValue();
+
+        if (value instanceof String || value instanceof List) {
+          map.put(name, value);
+        } else if (value instanceof Option) {
+          Map<String, Object> newMap = optionsToMap(Arrays.asList(((Option) value)));
+
+          Object oldValue = map.get(name);
+          if (oldValue instanceof Map) {
+            Map<String, Object> oldMap = (Map<String, Object>) oldValue;
+            for (Map.Entry<String, Object> entry : newMap.entrySet()) {
+              oldMap.put(entry.getKey(), entry.getValue());
+            }
+          } else {
+            map.put(name, newMap);
+          }
+        } else if (value instanceof Map) {
+          Object oldValue = map.get(name);
+          if (oldValue instanceof Map) {
+            ((Map<String, Object>) oldValue).putAll((Map<String, Object>) value);
+          } else {
+            map.put(name, value);
+          }
+        } else {
+          throw new AssertionError("Option value must be String, List, or Map<String, ?>");
+        }
+      }
+      return map;
     }
 
     public String getDocumentation() {
@@ -151,11 +192,24 @@ public final class MessageType implements Type {
     }
 
     public boolean isDeprecated() {
-      return "true".equals(extensions.get("deprecated"));
+      return "true".equals(getOptionValue("deprecated"));
+    }
+
+    public boolean isPacked() {
+      return "true".equals(getOptionValue("packed"));
     }
 
     public String getDefault() {
-      return (String) extensions.get("default");
+      return (String) getOptionValue("default");
+    }
+
+    private Object getOptionValue(String name) {
+      for (Option option : options) {
+        if (option.getName().equals(name)) {
+          return option.getValue();
+        }
+      }
+      return null;
     }
 
     @Override public boolean equals(Object other) {
@@ -165,7 +219,7 @@ public final class MessageType implements Type {
             && type.equals(that.type)
             && name.equals(that.name)
             && tag == that.tag
-            && extensions.equals(that.extensions)
+            && options.equals(that.options)
             && documentation.equals(that.documentation);
       }
       return false;
@@ -176,7 +230,7 @@ public final class MessageType implements Type {
     }
 
     @Override public String toString() {
-      return String.format("%s %s %s = %d %s", label, type, name, tag, extensions);
+      return String.format("%s %s %s = %d %s", label, type, name, tag, options);
     }
   }
 }
