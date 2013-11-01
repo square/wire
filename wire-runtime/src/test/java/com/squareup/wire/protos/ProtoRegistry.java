@@ -8,6 +8,7 @@ import static java.util.Collections.unmodifiableList;
 
 public final class ProtoRegistry {
 
+  @SuppressWarnings("unchecked")
   public static final List<Class<?>> EXTENSIONS = unmodifiableList(asList(
       com.squareup.wire.protos.simple.Ext_simple_message.class,
       com.squareup.wire.protos.foreign.Ext_foreign.class));

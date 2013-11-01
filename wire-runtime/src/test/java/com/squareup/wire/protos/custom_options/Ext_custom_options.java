@@ -2,6 +2,7 @@
 // Source file: ../wire-runtime/src/test/proto/custom_options.proto
 package com.squareup.wire.protos.custom_options;
 
+import com.google.protobuf.FieldOptions;
 import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Extension;
 import java.util.List;
@@ -40,6 +41,26 @@ public final class Ext_custom_options {
       .messageExtending(FooBar.class, MessageOptions.class)
       .setName("squareup.protos.custom_options.my_message_option_six")
       .setTag(50006)
+      .buildOptional();
+  public static final Extension<FieldOptions, Integer> my_field_option_one = Extension
+      .int32Extending(FieldOptions.class)
+      .setName("squareup.protos.custom_options.my_field_option_one")
+      .setTag(60001)
+      .buildOptional();
+  public static final Extension<FieldOptions, Float> my_field_option_two = Extension
+      .floatExtending(FieldOptions.class)
+      .setName("squareup.protos.custom_options.my_field_option_two")
+      .setTag(60002)
+      .buildOptional();
+  public static final Extension<FieldOptions, FooBar.FooBarBazEnum> my_field_option_three = Extension
+      .enumExtending(FooBar.FooBarBazEnum.class, FieldOptions.class)
+      .setName("squareup.protos.custom_options.my_field_option_three")
+      .setTag(60003)
+      .buildOptional();
+  public static final Extension<FieldOptions, FooBar> my_field_option_four = Extension
+      .messageExtending(FooBar.class, FieldOptions.class)
+      .setName("squareup.protos.custom_options.my_field_option_four")
+      .setTag(60004)
       .buildOptional();
   public static final Extension<FooBar, FooBar.FooBarBazEnum> ext = Extension
       .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)
