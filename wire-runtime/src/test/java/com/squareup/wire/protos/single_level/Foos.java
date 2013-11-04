@@ -31,7 +31,7 @@ public final class Foos extends Message {
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = foos != null ? foos.hashCode() : 0);
+    return result != 0 ? result : (hashCode = foos != null ? foos.hashCode() : 1);
   }
 
   public static final class Builder extends Message.Builder<Foos> {

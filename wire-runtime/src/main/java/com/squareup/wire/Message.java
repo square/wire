@@ -241,6 +241,13 @@ public abstract class Message {
     return a == b || (a != null && a.equals(b));
   }
 
+  protected boolean equals(List<?> a, List<?> b) {
+    // Canonicalize empty -> null
+    if (a != null && a.isEmpty()) a = null;
+    if (b != null && b.isEmpty()) b = null;
+    return a == b || (a != null && a.equals(b));
+  }
+
   protected static <T> List<T> asList(T... a) {
     return Arrays.asList(a);
   }

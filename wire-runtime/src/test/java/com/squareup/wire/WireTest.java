@@ -32,8 +32,12 @@ import static com.squareup.wire.protos.simple.Ext_simple_message.bazext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.fooext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.nested_message_ext;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -214,5 +218,45 @@ public class WireTest {
     assertNull(newMsg.optional_external_msg.getExtension(fooext));
     assertNull(newMsg.optional_external_msg.getExtension(barext));
     assertNull(newMsg.optional_external_msg.getExtension(bazext));
+  }
+
+  @Test
+  public void testEmptyList() throws IOException {
+    SimpleMessage noListMessage = new SimpleMessage.Builder()
+        .required_int32(1)
+        .build();
+    SimpleMessage emptyListMessage = new SimpleMessage.Builder()
+        .required_int32(1)
+        .repeated_double(new ArrayList<Double>())
+        .build();
+
+    assertNull(noListMessage.repeated_double);
+    assertNotNull(emptyListMessage.repeated_double);
+    assertEquals(0, emptyListMessage.repeated_double.size());
+
+    // Empty lists and null lists compare as equals()
+    assertTrue(noListMessage.equals(emptyListMessage));
+
+    // Empty lists and null lists have the same hashCode()
+    int noListHashCode = noListMessage.hashCode();
+    int emptyListHashCode = emptyListMessage.hashCode();
+    assertTrue(noListHashCode == emptyListHashCode);
+
+    // Empty lists and null lists occupy 0 bytes in the wire encoding
+    byte[] noListBytes = noListMessage.toByteArray();
+    byte[] emptyListBytes = emptyListMessage.toByteArray();
+
+    assertEquals(2, noListBytes.length);
+    assertEquals(2, emptyListBytes.length);
+
+    assertEquals(noListBytes[0], emptyListBytes[0]);
+    assertEquals(noListBytes[1], emptyListBytes[1]);
+
+    // Parsed results have a null list
+    SimpleMessage noListParsed = new Wire().parseFrom(noListBytes, SimpleMessage.class);
+    SimpleMessage emptyListParsed = new Wire().parseFrom(emptyListBytes, SimpleMessage.class);
+
+    assertNull(noListParsed.repeated_double);
+    assertNull(emptyListParsed.repeated_double);
   }
 }
