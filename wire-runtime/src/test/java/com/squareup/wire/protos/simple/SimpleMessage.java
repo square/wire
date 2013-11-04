@@ -145,7 +145,7 @@ public final class SimpleMessage extends Message {
       result = result * 37 + (optional_external_msg != null ? optional_external_msg.hashCode() : 0);
       result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
       result = result * 37 + (required_int32 != null ? required_int32.hashCode() : 0);
-      result = result * 37 + (repeated_double != null ? repeated_double.hashCode() : 0);
+      result = result * 37 + (repeated_double != null ? repeated_double.hashCode() : 1);
       result = result * 37 + (default_foreign_enum != null ? default_foreign_enum.hashCode() : 0);
       result = result * 37 + (no_default_foreign_enum != null ? no_default_foreign_enum.hashCode() : 0);
       result = result * 37 + (_package != null ? _package.hashCode() : 0);
