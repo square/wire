@@ -78,6 +78,8 @@ public class WireCompiler {
   private final Set<String> javaSymbols = new LinkedHashSet<String>();
   private final Set<String> enumTypes = new LinkedHashSet<String>();
   private final Map<String, String> enumDefaults = new LinkedHashMap<String, String>();
+  private final Map<String, Set<String>> enumValuesByScope =
+      new LinkedHashMap<String, Set<String>>();
   private final Map<String, ExtensionInfo> extensionInfo =
       new LinkedHashMap<String, ExtensionInfo>();
   private final Map<String, FieldInfo> fieldMap = new LinkedHashMap<String, FieldInfo>();
@@ -286,7 +288,7 @@ public class WireCompiler {
         return "ByteString.of(\"" + Stringer.encode(initialValue.getBytes(ISO_8859_1)) + "\")";
       }
     } else {
-      throw new IllegalArgumentException(javaTypeName + " is not an allowed scalar type");
+      throw new WireCompilerException(javaTypeName + " is not an allowed scalar type");
     }
   }
 
@@ -569,13 +571,33 @@ public class WireCompiler {
         String fqName = type.getFullyQualifiedName();
         javaSymbolMap.put(fqName, javaPrefix + name);
         if (type instanceof EnumType) {
-          enumTypes.add(fqName);
-          enumDefaults.put(fqName, ((EnumType) type).getValues().get(0).getName());
+          EnumType enumType = (EnumType) type;
+          if (!enumTypes.contains(fqName)) {
+            enumTypes.add(fqName);
+            enumDefaults.put(fqName, enumType.getValues().get(0).getName());
+            checkForDuplicateEnumValue(javaPrefix, enumType);
+          }
         }
       } else if (type instanceof MessageType) {
         addFields((MessageType) type);
       }
       addTypes(type.getNestedTypes(), javaPrefix + name + ".", pass);
+    }
+  }
+
+  // Associate each enum value with the enum type's parent scope and check for duplicates
+  private void checkForDuplicateEnumValue(String javaPrefix, EnumType type) {
+    Set<String> enumValues = enumValuesByScope.get(javaPrefix);
+    if (enumValues == null) {
+      enumValues = new LinkedHashSet<String>();
+      enumValuesByScope.put(javaPrefix, enumValues);
+    }
+    for (EnumType.Value value : type.getValues()) {
+      if (!enumValues.add(value.getName())) {
+        throw new WireCompilerException("Duplicate enum value " + value.getName() + " in "
+            + type.getFullyQualifiedName() + ", must be unique in parent namespace "
+            + javaPrefix.substring(0, javaPrefix.length() - 1));
+      }
     }
   }
 
@@ -601,7 +623,7 @@ public class WireCompiler {
         prefix = removeTrailingSegment(prefix);
       }
     }
-    throw new RuntimeException("Unknown type " + type + " in message "
+    throw new WireCompilerException("Unknown type " + type + " in message "
         + (messageType == null ? "<unknown>" : messageType.getName()));
   }
 
@@ -855,7 +877,7 @@ public class WireCompiler {
       case REPEATED:
         return FieldInfo.isPacked(field, isEnum) ? "Packed" : "Repeated";
       default:
-        throw new RuntimeException("Unknown extension label \"" + field.getLabel() + "\"");
+        throw new WireCompilerException("Unknown extension label \"" + field.getLabel() + "\"");
     }
   }
 
