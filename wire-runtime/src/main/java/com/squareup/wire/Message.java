@@ -165,9 +165,13 @@ public abstract class Message {
 
   /**
    * Utility method to return an immutable copy of a given List. Used by generated code.
+   * If {@code source} is null, {@link Collections#emptyList()} is returned.
    */
   protected static <T> List<T> immutableCopyOf(List<T> source) {
-    return source == null ? null : Collections.unmodifiableList(new ArrayList<T>(source));
+    if (source == null) {
+      return Collections.emptyList();
+    }
+    return Collections.unmodifiableList(new ArrayList<T>(source));
   }
 
   /**
