@@ -32,11 +32,9 @@ import static com.squareup.wire.protos.simple.Ext_simple_message.bazext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.fooext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.nested_message_ext;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -53,7 +51,8 @@ public class WireTest {
     assertEquals(null, msg.optional_external_msg);
     assertEquals(null, msg.default_nested_enum);
     assertEquals(new Integer(456), msg.required_int32);
-    assertEquals(null, msg.repeated_double);
+    assertNotNull(msg.repeated_double);
+    assertEquals(0, msg.repeated_double.size());
 
     SimpleMessage.Builder builder = new SimpleMessage.Builder();
     builder.optional_int32(789);
@@ -230,7 +229,8 @@ public class WireTest {
         .repeated_double(new ArrayList<Double>())
         .build();
 
-    assertNull(noListMessage.repeated_double);
+    assertNotNull(noListMessage.repeated_double);
+    assertEquals(0, noListMessage.repeated_double.size());
     assertNotNull(emptyListMessage.repeated_double);
     assertEquals(0, emptyListMessage.repeated_double.size());
 
@@ -256,7 +256,9 @@ public class WireTest {
     SimpleMessage noListParsed = new Wire().parseFrom(noListBytes, SimpleMessage.class);
     SimpleMessage emptyListParsed = new Wire().parseFrom(emptyListBytes, SimpleMessage.class);
 
-    assertNull(noListParsed.repeated_double);
-    assertNull(emptyListParsed.repeated_double);
+    assertNotNull(noListParsed.repeated_double);
+    assertEquals(0, noListParsed.repeated_double.size());
+    assertNotNull(emptyListParsed.repeated_double);
+    assertEquals(0, emptyListParsed.repeated_double.size());
   }
 }
