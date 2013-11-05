@@ -83,9 +83,9 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
       result = result * 37 + (baz != null ? baz.hashCode() : 0);
       result = result * 37 + (qux != null ? qux.hashCode() : 0);
-      result = result * 37 + (fred != null ? fred.hashCode() : 0);
+      result = result * 37 + (fred != null ? fred.hashCode() : 1);
       result = result * 37 + (daisy != null ? daisy.hashCode() : 0);
-      result = result * 37 + (nested != null ? nested.hashCode() : 0);
+      result = result * 37 + (nested != null ? nested.hashCode() : 1);
       hashCode = result;
     }
     return result;

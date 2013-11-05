@@ -71,7 +71,7 @@ public final class Person extends Message {
       result = name != null ? name.hashCode() : 0;
       result = result * 37 + (id != null ? id.hashCode() : 0);
       result = result * 37 + (email != null ? email.hashCode() : 0);
-      result = result * 37 + (phone != null ? phone.hashCode() : 0);
+      result = result * 37 + (phone != null ? phone.hashCode() : 1);
       hashCode = result;
     }
     return result;

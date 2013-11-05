@@ -81,7 +81,7 @@ public final class UninterpretedOption extends Message {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
+      result = name != null ? name.hashCode() : 1;
       result = result * 37 + (identifier_value != null ? identifier_value.hashCode() : 0);
       result = result * 37 + (positive_int_value != null ? positive_int_value.hashCode() : 0);
       result = result * 37 + (negative_int_value != null ? negative_int_value.hashCode() : 0);

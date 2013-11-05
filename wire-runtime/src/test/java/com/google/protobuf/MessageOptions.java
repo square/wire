@@ -79,7 +79,7 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
       result = extensionsHashCode();
       result = result * 37 + (message_set_wire_format != null ? message_set_wire_format.hashCode() : 0);
       result = result * 37 + (no_standard_descriptor_accessor != null ? no_standard_descriptor_accessor.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 0);
+      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
       hashCode = result;
     }
     return result;

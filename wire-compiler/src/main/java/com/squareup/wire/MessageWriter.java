@@ -308,6 +308,9 @@ public class MessageWriter {
   //   return hashCode;
   // }
   //
+  // For repeated fields, the final "0" in the example above changes to a "1"
+  // in order to be the same as the system hash code for an empty list.
+  //
   private void emitMessageHashCode(MessageType messageType) throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
@@ -322,7 +325,8 @@ public class MessageWriter {
       name = addThisIfOneOf(name, "result");
       writer.emitStatement("int result = hashCode");
       writer.emitStatement(
-          "return result != 0 ? result : (hashCode = %1$s != null ? %1$s.hashCode() : 0)", name);
+          "return result != 0 ? result : (hashCode = %1$s != null ? %1$s.hashCode() : %2$s)", name,
+          nullHashValue(field));
     } else {
       writer.emitStatement("int result = hashCode");
       writer.beginControlFlow("if (result == 0)");
@@ -336,9 +340,11 @@ public class MessageWriter {
         // If the field is named "result", qualify the field reference with 'this'
         name = addThisIfOneOf(name, "result");
         if (afterFirstAssignment) {
-          writer.emitStatement("result = result * 37 + (%1$s != null ? %1$s.hashCode() : 0)", name);
+          writer.emitStatement("result = result * 37 + (%1$s != null ? %1$s.hashCode() : %2$s)",
+              name, nullHashValue(field));
         } else {
-          writer.emitStatement("result = %1$s != null ? %1$s.hashCode() : 0", name);
+          writer.emitStatement("result = %1$s != null ? %1$s.hashCode() : %2$s", name,
+              nullHashValue(field));
           afterFirstAssignment = true;
         }
       }
@@ -347,6 +353,10 @@ public class MessageWriter {
       writer.emitStatement("return result");
     }
     writer.endMethod();
+  }
+
+  private int nullHashValue(Field field) {
+    return FieldInfo.isRepeated(field) ? 1 : 0;
   }
 
   private void emitBuilder(MessageType messageType) throws IOException {
