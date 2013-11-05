@@ -35,8 +35,8 @@ message SimpleMessage {
 
   // An optional int32
   optional int32 optional_int32 = 1 [default = 123];
-  // An optional NestedMessage
-  optional NestedMessage optional_nested_msg = 2;
+  // An optional NestedMessage, deprecated
+  optional NestedMessage optional_nested_msg = 2 [deprecated = true];
   // An optional ExternalMessage
   optional ExternalMessage optional_external_msg = 3;
   optional NestedEnum default_nested_enum = 4 [default = BAZ];
@@ -44,8 +44,8 @@ message SimpleMessage {
   // A required int32
   required int32 required_int32 = 5 [default = 456];
 
-  // A repeated double
-  repeated double repeated_double = 6;
+  // A repeated double, deprecated
+  repeated double repeated_double = 6 [deprecated = true];
 
   // enum from another package with an explicit default
   optional squareup.protos.foreign.ForeignEnum default_foreign_enum = 7 [default = BAX];

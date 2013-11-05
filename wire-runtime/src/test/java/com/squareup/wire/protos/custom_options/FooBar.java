@@ -2,6 +2,7 @@
 // Source file: ../wire-runtime/src/test/proto/custom_options.proto
 package com.squareup.wire.protos.custom_options;
 
+import com.google.protobuf.FieldOptions;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
@@ -19,6 +20,46 @@ import static com.squareup.wire.Message.Datatype.UINT64;
 import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class FooBar extends ExtendableMessage<FooBar> {
+
+  public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
+      .setExtension(Ext_custom_options.my_field_option_one, 17)
+      .build();
+  public static final FieldOptions FIELD_OPTIONS_BAR = new FieldOptions.Builder()
+      .setExtension(Ext_custom_options.my_field_option_two, 33.5F)
+      .build();
+  public static final FieldOptions FIELD_OPTIONS_BAZ = new FieldOptions.Builder()
+      .setExtension(Ext_custom_options.my_field_option_three, FooBarBazEnum.BAR)
+      .build();
+  public static final FieldOptions FIELD_OPTIONS_QUX = new FieldOptions.Builder()
+      .setExtension(Ext_custom_options.my_field_option_one, 18)
+      .setExtension(Ext_custom_options.my_field_option_two, 34.5F)
+      .build();
+  public static final FieldOptions FIELD_OPTIONS_FRED = new FieldOptions.Builder()
+      .setExtension(Ext_custom_options.my_field_option_four, new FooBar.Builder()
+          .foo(11)
+          .bar("22")
+          .baz(new Nested.Builder()
+              .value(FooBarBazEnum.BAR)
+              .build())
+          .fred(asList(
+              444.0F,
+              555.0F))
+          .nested(asList(new FooBar.Builder()
+              .foo(33)
+              .fred(asList(
+                  100.0F,
+                  200.0F))
+              .build()))
+          .build())
+      .setExtension(Ext_custom_options.my_field_option_two, 99.9F)
+      .build();
+  public static final FieldOptions FIELD_OPTIONS_DAISY = new FieldOptions.Builder()
+      .setExtension(Ext_custom_options.my_field_option_four, new FooBar.Builder()
+          .baz(new Nested.Builder()
+              .value(FooBarBazEnum.FOO)
+              .build())
+          .build())
+      .build();
 
   public static final Integer DEFAULT_FOO = 0;
   public static final String DEFAULT_BAR = "";

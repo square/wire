@@ -20,8 +20,7 @@ final class FieldInfo {
   }
 
   public static boolean isPacked(Field field, boolean isEnum) {
-    return "true".equals(field.getExtensions().get("packed"))
-        && (isEnum || isPackableScalar(field));
+    return field.isPacked() && (isEnum || isPackableScalar(field));
   }
 
   private static boolean isPackableScalar(Field field) {

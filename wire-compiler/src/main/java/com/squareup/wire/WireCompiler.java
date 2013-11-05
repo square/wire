@@ -19,6 +19,7 @@ import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.ExtendDeclaration;
 import com.squareup.protoparser.MessageType;
+import com.squareup.protoparser.Option;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.Type;
 import java.io.File;
@@ -50,6 +51,14 @@ public class WireCompiler {
 
   static final String INDENT = "  ";
   static final String LINE_WRAP_INDENT = "    ";
+  static final String INDENT_LINE_WRAP_INDENT = INDENT + LINE_WRAP_INDENT;
+  static final String NEW_LINE_INDENT_LINE_WRAP_INDENT = "\n" + INDENT_LINE_WRAP_INDENT;
+
+  /**
+   * Field options that don't trigger generation of a FIELD_OPTIONS_* field.
+   */
+  static final Set<String> DEFAULT_FIELD_OPTION_KEYS =
+      new LinkedHashSet<String>(Arrays.asList("default", "deprecated", "packed"));
 
   private static final Charset ISO_8859_1 = Charset.forName("ISO_8859_1");
   private static final String PROTO_PATH_FLAG = "--proto_path=";
@@ -65,6 +74,7 @@ public class WireCompiler {
   private final IO io;
   private final Set<String> typesToEmit = new LinkedHashSet<String>();
   private final Map<String, String> javaSymbolMap = new LinkedHashMap<String, String>();
+  private final Set<String> javaSymbols = new LinkedHashSet<String>();
   private final Set<String> enumTypes = new LinkedHashSet<String>();
   private final Map<String, String> enumDefaults = new LinkedHashMap<String, String>();
   private final Map<String, ExtensionInfo> extensionInfo =
@@ -73,7 +83,7 @@ public class WireCompiler {
   private final String outputDirectory;
   private final String registryClass;
   private final List<String> extensionClasses = new ArrayList<String>();
-  private final MessageOptionsMapMaker messageOptionsMapMaker = new MessageOptionsMapMaker(this);
+  private final OptionsMapMaker optionsMapMaker = new OptionsMapMaker(this);
 
   private ProtoFile protoFile;
   private JavaWriter writer;
@@ -186,8 +196,8 @@ public class WireCompiler {
     return protoFile;
   }
 
-  MessageOptionsMapMaker getMessageOptionsMapMaker() {
-    return messageOptionsMapMaker;
+  OptionsMapMaker getOptionsMapMaker() {
+    return optionsMapMaker;
   }
 
   JavaWriter getWriter() {
@@ -315,6 +325,21 @@ public class WireCompiler {
     }
   }
 
+  private boolean hasFieldOption(List<Type> types) {
+    for (Type type : types) {
+      if (type instanceof MessageType) {
+        for (Field field : ((MessageType) type).getFields()) {
+          for (Option option : field.getOptions()) {
+            if (!WireCompiler.DEFAULT_FIELD_OPTION_KEYS.contains(option.getName())) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   private boolean hasMessageOption(List<Type> types) {
     for (Type type : types) {
       if (type instanceof MessageType && !((MessageType) type).getOptions().isEmpty()) {
@@ -350,11 +375,17 @@ public class WireCompiler {
       StringBuilder classes = new StringBuilder("unmodifiableList(asList(\n");
       int extensionsCount = extensionClasses.size();
       for (int i = 0; i < extensionsCount; i++) {
-        String format = (i < extensionsCount - 1) ? "%1$s%2$s.class,%n" : "%1$s%2$s.class";
         String extensionClass = extensionClasses.get(i);
-        classes.append(String.format(format, INDENT + LINE_WRAP_INDENT, extensionClass));
+        classes.append(INDENT_LINE_WRAP_INDENT);
+        classes.append(extensionClass);
+        classes.append(".class");
+        if (i < extensionsCount - 1) {
+          classes.append(",\n");
+        }
       }
       classes.append("))");
+
+      writer.emitAnnotation("SuppressWarnings(\"unchecked\")");
       writer.emitField("List<Class<?>>", "EXTENSIONS", EnumSet.of(PUBLIC, STATIC, FINAL),
           classes.toString());
       writer.emitEmptyLine();
@@ -443,6 +474,11 @@ public class WireCompiler {
   private String removeTrailingSegment(String name) {
     int index = name.lastIndexOf('.');
     return index == -1 ? "" :  name.substring(0, index);
+  }
+
+  public String getTypeBeingGenerated() {
+    // Strip trailing '.'
+    return typeBeingGenerated.substring(0, typeBeingGenerated.length() - 1);
   }
 
   private enum LoadSymbolsPass {
@@ -616,6 +652,9 @@ public class WireCompiler {
         imports.add("com.squareup.wire.ExtendableMessage");
         imports.add("com.squareup.wire.Extension");
       }
+      if (hasFieldOption(types)) {
+        imports.add("com.google.protobuf.FieldOptions");
+      }
       if (hasMessageOption(types)) {
         imports.add("com.google.protobuf.MessageOptions");
       }
@@ -625,10 +664,14 @@ public class WireCompiler {
 
       Map<String, ?> optionsMap = null;
       if (type instanceof MessageType) {
-        optionsMap = messageOptionsMapMaker.createOptionsMap((MessageType) type);
-      }
-      if (optionsMap != null) {
-        messageOptionsMapMaker.getOptionTypes(optionsMap, externalTypes);
+        optionsMap = optionsMapMaker.createMessageOptionsMap((MessageType) type);
+
+        optionsMapMaker.getOptionTypes(optionsMap, externalTypes);
+        for (Field field : ((MessageType) type).getFields()) {
+          Map<String, ?> fieldOptionsMap =
+              optionsMapMaker.createFieldOptionsMap((MessageType) type, field.getOptions());
+          optionsMapMaker.getOptionTypes(fieldOptionsMap, externalTypes);
+        }
       }
       imports.addAll(externalTypes);
 
@@ -652,8 +695,15 @@ public class WireCompiler {
       MessageType messageType = (MessageType) parent;
       for (Field field : messageType.getFields()) {
         String fqName = fullyQualifiedJavaName(messageType, field.getType());
+        if (fqName == null) {
+          continue;
+        }
         if (fullyQualifiedNameIsOutsidePackage(fqName)) {
           types.add(fqName);
+        }
+        String parentType = removeTrailingSegment(fqName);
+        if (javaTypeIsComplete(parentType) && fullyQualifiedNameIsOutsidePackage(parentType)) {
+          types.add(parentType);
         }
       }
     }
@@ -746,21 +796,21 @@ public class WireCompiler {
               + "%1$s.%2$sExtending(%3$s.class)%n"
               + "%1$s.setName(\"%4$s\")%n"
               + "%1$s.setTag(%5$d)%n"
-              + "%1$s.build%6$s()", INDENT + LINE_WRAP_INDENT, field.getType(), className, fqName,
+              + "%1$s.build%6$s()", INDENT_LINE_WRAP_INDENT, field.getType(), className, fqName,
               tag, labelString);
         } else if (isEnum) {
           initialValue = String.format("Extension%n"
               + "%1$s.enumExtending(%2$s.class, %3$s.class)%n"
               + "%1$s.setName(\"%4$s\")%n"
               + "%1$s.setTag(%5$d)%n"
-              + "%1$s.build%6$s()", INDENT + LINE_WRAP_INDENT, type, className, fqName, tag,
+              + "%1$s.build%6$s()", INDENT_LINE_WRAP_INDENT, type, className, fqName, tag,
               labelString);
         } else {
           initialValue = String.format("Extension%n"
               + "%1$s.messageExtending(%2$s.class, %3$s.class)%n"
               + "%1$s.setName(\"%4$s\")%n"
               + "%1$s.setTag(%5$d)%n"
-              + "%1$s.build%6$s()", INDENT + LINE_WRAP_INDENT, type, className, fqName, tag,
+              + "%1$s.build%6$s()", INDENT_LINE_WRAP_INDENT, type, className, fqName, tag,
               labelString);
         }
 
@@ -911,6 +961,13 @@ public class WireCompiler {
 
   private boolean typeIsComplete(String type) {
     return javaSymbolMap.containsKey(type);
+  }
+
+  private boolean javaTypeIsComplete(String type) {
+    if (javaSymbols.isEmpty()) {
+      javaSymbols.addAll(javaSymbolMap.values());
+    }
+    return javaSymbols.contains(type);
   }
 
   private String fullyQualifiedJavaName(MessageType messageType, String type) {
