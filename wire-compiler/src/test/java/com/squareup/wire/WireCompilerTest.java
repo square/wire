@@ -57,10 +57,11 @@ public class WireCompilerTest {
   }
 
   private void testProto(String[] sources, String[] outputs) throws Exception {
-    String[] args = new String[2 + sources.length];
+    int numFlags = 2;
+    String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--java_out=" + testDir.getAbsolutePath();
-    System.arraycopy(sources, 0, args, 2, sources.length);
+    System.arraycopy(sources, 0, args, numFlags, sources.length);
 
     WireCompiler.main(args);
 
@@ -72,13 +73,32 @@ public class WireCompilerTest {
     }
   }
 
+  private void testProtoNoFieldOptions(String[] sources, String[] outputs) throws Exception {
+    int numFlags = 3;
+    String[] args = new String[numFlags + sources.length];
+    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[1] = "--no_field_options";
+    args[2] = "--java_out=" + testDir.getAbsolutePath();
+    System.arraycopy(sources, 0, args, numFlags, sources.length);
+
+    WireCompiler.main(args);
+
+    List<String> filesAfter = getAllFiles(testDir);
+    assertEquals(outputs.length, filesAfter.size());
+
+    for (String output : outputs) {
+      assertFilesMatchNoFieldOptions(testDir, output);
+    }
+  }
+
   private void testProtoWithRegistry(String[] sources, String registryClass, String[] outputs)
       throws Exception {
-    String[] args = new String[3 + sources.length];
+    int numFlags = 3;
+    String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--java_out=" + testDir.getAbsolutePath();
     args[2] = "--registry_class=" + registryClass;
-    System.arraycopy(sources, 0, args, 3, sources.length);
+    System.arraycopy(sources, 0, args, numFlags, sources.length);
 
     WireCompiler.main(args);
 
@@ -92,11 +112,12 @@ public class WireCompilerTest {
 
   private void testProtoWithRoots(String[] sources, String roots, String[] outputs)
       throws Exception {
-    String[] args = new String[3 + sources.length];
+    int numFlags = 3;
+    String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--java_out=" + testDir.getAbsolutePath();
     args[2] = "--roots=" + roots;
-    System.arraycopy(sources, 0, args, 3, sources.length);
+    System.arraycopy(sources, 0, args, numFlags, sources.length);
 
     WireCompiler.main(args);
 
@@ -232,6 +253,18 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
     };
     testProto(sources, outputs);
+  }
+
+  @Test public void testCustomOptionsNoFieldOptions() throws Exception {
+    String[] sources = {
+        "custom_options.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/custom_options/FooBar.java",
+        "com/squareup/wire/protos/custom_options/Ext_custom_options.java",
+        "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
+    };
+    testProtoNoFieldOptions(sources, outputs);
   }
 
   @Test public void testNoRoots() throws Exception {
@@ -399,9 +432,27 @@ public class WireCompilerTest {
 
   private void assertFilesMatch(File outputDir, String path) throws FileNotFoundException {
     File expectedFile = new File("../wire-runtime/src/test/java/" + path);
-    String expected = new Scanner(expectedFile).useDelimiter("\\A").next();
     File actualFile = new File(outputDir, path);
+    assertFilesMatch(expectedFile, actualFile);
+  }
+
+  private void assertFilesMatchNoFieldOptions(File outputDir, String path)
+      throws FileNotFoundException {
+    // Compare against file with .noFieldOptions suffix if present
+    File expectedFile = new File("../wire-runtime/src/test/java/" + path + ".noFieldOptions");
+    if (expectedFile.exists()) {
+      System.out.println("Comparing against expected output " + expectedFile.getName());
+    } else {
+      expectedFile = new File("../wire-runtime/src/test/java/" + path);
+    }
+    File actualFile = new File(outputDir, path);
+    assertFilesMatch(expectedFile, actualFile);
+  }
+
+  private void assertFilesMatch(File expectedFile, File actualFile) throws FileNotFoundException {
+    String expected = new Scanner(expectedFile).useDelimiter("\\A").next();
     String actual = new Scanner(actualFile).useDelimiter("\\A").next();
+
     // Normalize CRLF -> LF
     expected = expected.replace("\r\n", "\n");
     actual = actual.replace("\r\n", "\n");
