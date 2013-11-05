@@ -77,8 +77,8 @@ public class WireCompilerErrorTest {
   private Map<String, String> compile(String source) throws IOException {
     StringIO io = new StringIO("test.proto", source);
 
-    WireCompiler compiler =
-        new WireCompiler(".", Arrays.asList("test.proto"), new ArrayList<String>(), ".", null, io);
+    WireCompiler compiler = new WireCompiler(".", Arrays.asList("test.proto"),
+        new ArrayList<String>(), ".", null, true, io);
     compiler.compile();
     return io.getOutput();
   }
