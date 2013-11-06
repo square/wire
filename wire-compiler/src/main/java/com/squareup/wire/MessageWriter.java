@@ -185,7 +185,7 @@ public class MessageWriter {
       String fqName = entry.getKey();
       ExtensionInfo info = compiler.getExtension(fqName);
       if (info == null) {
-        throw new RuntimeException("No extension info for " + fqName);
+        throw new WireCompilerException("No extension info for " + fqName);
       }
       sb.append(WireCompiler.NEW_LINE_INDENT_LINE_WRAP_INDENT);
       sb.append(String.format(".setExtension(Ext_%s.%s, %s)",
@@ -219,7 +219,7 @@ public class MessageWriter {
     for (Field field : defaultFields) {
       String javaName = getJavaFieldType(messageType, field);
       if (javaName == null) {
-        throw new IllegalArgumentException(
+        throw new WireCompilerException(
             "Unknown type for field " + field + " in message " + messageType.getName());
       }
       String defaultValue = getDefaultValue(messageType, field);
@@ -247,7 +247,7 @@ public class MessageWriter {
       // Check for duplicate tags
       int tag = field.getTag();
       if (tags.contains(tag)) {
-        throw new RuntimeException("Duplicate tag value for field "
+        throw new WireCompilerException("Duplicate tag value for field "
             + messageType.getFullyQualifiedName() + "." + field.getName());
       }
       tags.add(tag);
@@ -557,7 +557,7 @@ public class MessageWriter {
         if (compiler.isEnum(fullyQualifiedName)) {
           return javaName + "." + compiler.getEnumDefault(fullyQualifiedName);
         } else {
-          throw new IllegalArgumentException(
+          throw new WireCompilerException(
               "Field " + field + " cannot have default value");
         }
       }

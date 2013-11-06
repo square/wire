@@ -74,12 +74,16 @@ public class WireCompilerErrorTest {
    * Compile a .proto containing in a String and returns the contents of each output file,
    * indexed by class name.
    */
-  private Map<String, String> compile(String source) throws IOException {
+  private Map<String, String> compile(String source) {
     StringIO io = new StringIO("test.proto", source);
 
     WireCompiler compiler = new WireCompiler(".", Arrays.asList("test.proto"),
         new ArrayList<String>(), ".", null, true, io);
-    compiler.compile();
+    try {
+      compiler.compile();
+    } catch (IOException e) {
+      fail();
+    }
     return io.getOutput();
   }
 
@@ -99,7 +103,7 @@ public class WireCompilerErrorTest {
           + "  optional int32 f = 0;\n"
           + "}\n");
       fail();
-    } catch (Exception e) {
+    } catch (IllegalStateException e) {
       assertTrue(e.getMessage().contains("expected tag > 0"));
     }
   }
@@ -112,8 +116,28 @@ public class WireCompilerErrorTest {
           + "  optional int32 g = 1;\n"
           + "}\n");
       fail();
-    } catch (Exception e) {
+    } catch (WireCompilerException e) {
       assertTrue(e.getMessage().toLowerCase(Locale.US).contains("duplicate tag"));
+    }
+  }
+
+  @Test public void testEnumNamespace() {
+    try {
+      compile("package com.squareup.protos.test;\n"
+          + "  message Foo {\n"
+          + "    enum Bar {\n"
+          + "      QUIX = 0;\n"
+          + "      FOO = 1;\n"
+          + "    }\n"
+          + "\n"
+          + "    enum Bar2 {\n"
+          + "      BAZ = 0;\n"
+          + "      QUIX = 1;\n"
+          + "    }\n"
+          + "}\n");
+      fail();
+    } catch (WireCompilerException e) {
+      assertTrue(e.getMessage().toLowerCase(Locale.US).contains("duplicate enum value quix"));
     }
   }
 }
