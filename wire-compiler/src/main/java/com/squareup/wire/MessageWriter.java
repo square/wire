@@ -116,7 +116,7 @@ public class MessageWriter {
         compiler.hasExtensions(messageType) ? "ExtendableMessage<" + name + ">" : "Message");
 
     emitMessageOptions(optionsMap);
-    if (compiler.emitFieldOptions()) {
+    if (compiler.emitOptions()) {
       emitMessageFieldOptions(messageType);
     }
     emitMessageFieldDefaults(messageType);
