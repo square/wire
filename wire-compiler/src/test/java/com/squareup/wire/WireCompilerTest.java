@@ -73,11 +73,11 @@ public class WireCompilerTest {
     }
   }
 
-  private void testProtoNoFieldOptions(String[] sources, String[] outputs) throws Exception {
+  private void testProtoNoOptions(String[] sources, String[] outputs) throws Exception {
     int numFlags = 3;
     String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
-    args[1] = "--no_field_options";
+    args[1] = "--no_options";
     args[2] = "--java_out=" + testDir.getAbsolutePath();
     System.arraycopy(sources, 0, args, numFlags, sources.length);
 
@@ -87,7 +87,7 @@ public class WireCompilerTest {
     assertEquals(outputs.length, filesAfter.size());
 
     for (String output : outputs) {
-      assertFilesMatchNoFieldOptions(testDir, output);
+      assertFilesMatchNoOptions(testDir, output);
     }
   }
 
@@ -255,7 +255,7 @@ public class WireCompilerTest {
     testProto(sources, outputs);
   }
 
-  @Test public void testCustomOptionsNoFieldOptions() throws Exception {
+  @Test public void testCustomOptionsNoOptions() throws Exception {
     String[] sources = {
         "custom_options.proto"
     };
@@ -264,7 +264,8 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/custom_options/Ext_custom_options.java",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
     };
-    testProtoNoFieldOptions(sources, outputs);
+
+    testProtoNoOptions(sources, outputs);
   }
 
   @Test public void testNoRoots() throws Exception {
@@ -436,10 +437,10 @@ public class WireCompilerTest {
     assertFilesMatch(expectedFile, actualFile);
   }
 
-  private void assertFilesMatchNoFieldOptions(File outputDir, String path)
+  private void assertFilesMatchNoOptions(File outputDir, String path)
       throws FileNotFoundException {
-    // Compare against file with .noFieldOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path + ".noFieldOptions");
+    // Compare against file with .noOptions suffix if present
+    File expectedFile = new File("../wire-runtime/src/test/java/" + path + ".noOptions");
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {
