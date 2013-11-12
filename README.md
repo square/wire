@@ -12,6 +12,7 @@ fewer methods than standard protocol buffer code, which helps applications avoid
 limit on methods in Android applications. Wire also generates clean, human-readable code for
 protocol buffer messages.
 
+Wire is built using the [Maven](http://maven.apache.org) build system.
 
 Compiling .proto files
 ----------------------
