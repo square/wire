@@ -75,7 +75,7 @@ Using Wire in your application
 The `wire-runtime` package contains runtime support libraries that must be included in applications
 that use Wire-generated code.
 
-For Maven projects, simply add `wire-runtime` as a dependency:
+Download [the latest runtime .jar][dl] or depend via Maven:
 
 ```xml
 <dependency>
@@ -154,3 +154,6 @@ Wire does not support:
  * Groups - they are skipping when parsing binary input data
  * Services - they are ignored by the compiler
  * Custom options - they are ignored
+
+
+ [dl]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
