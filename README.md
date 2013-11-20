@@ -17,15 +17,19 @@ Wire is built using the [Maven](http://maven.apache.org) build system.
 Compiling .proto files
 ----------------------
 
+Build the wire-compiler using Maven (alternatively you can just download 
+[the wire-compiler .jar][dl_all] with or without dependencies):
+
+    % mvn clean package
+
 The `wire-compiler` package contains the `WireCompiler` class, which compiles standard `.proto` files
 into Java source code.
 
 For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`, which may
-(recursively) import other `.proto` files within the `protos-repo/` directory:
+(recursively) import other `.proto` files within the `protos-repo/` directory (replace
+<VERSION> with the Wire version you are using):
 
-    % mvn clean package
-
-    % java -jar wire-compiler/target/wire-compiler-1.0-SNAPSHOT-jar-with-dependencies.jar \
+    % java -jar wire-compiler/target/wire-compiler-<VERSION>-jar-with-dependencies.jar \
         --proto_path=protos-repo \
         --java_out=out google/protobuf/descriptor.proto
 
@@ -157,3 +161,4 @@ Wire does not support:
 
 
  [dl]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
+ [dl_all]: http://search.maven.org/#search%7Cga%7C1%7Cg%3Acom.squareup.wire
