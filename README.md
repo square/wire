@@ -18,7 +18,7 @@ Compiling .proto files
 ----------------------
 
 Build the wire-compiler using Maven (alternatively you can just download 
-[the wire-compiler .jar][dl_all] with or without dependencies):
+[the wire-compiler .jar][dl_compiler]):
 
     % mvn clean package
 
@@ -27,7 +27,7 @@ into Java source code.
 
 For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`, which may
 (recursively) import other `.proto` files within the `protos-repo/` directory (replace
-<VERSION> with the Wire version you are using):
+"<VERSION>" with the Wire version you are using):
 
     % java -jar wire-compiler/target/wire-compiler-<VERSION>-jar-with-dependencies.jar \
         --proto_path=protos-repo \
@@ -79,7 +79,7 @@ Using Wire in your application
 The `wire-runtime` package contains runtime support libraries that must be included in applications
 that use Wire-generated code.
 
-Download [the latest runtime .jar][dl] or depend via Maven:
+Download [the latest runtime .jar][dl_runtime] or depend via Maven:
 
 ```xml
 <dependency>
@@ -160,5 +160,5 @@ Wire does not support:
  * Custom options - they are ignored
 
 
- [dl]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
- [dl_all]: http://search.maven.org/#search%7Cga%7C1%7Cg%3Acom.squareup.wire
+ [dl_runtime]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
+ [dl_compiler]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
