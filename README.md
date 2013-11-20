@@ -27,9 +27,9 @@ into Java source code.
 
 For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`, which may
 (recursively) import other `.proto` files within the `protos-repo/` directory (replace
-"<VERSION>" with the Wire version you are using):
+"VERSION" with the Wire version you are using):
 
-    % java -jar wire-compiler/target/wire-compiler-<VERSION>-jar-with-dependencies.jar \
+    % java -jar wire-compiler/target/wire-compiler-VERSION-jar-with-dependencies.jar \
         --proto_path=protos-repo \
         --java_out=out google/protobuf/descriptor.proto
 
