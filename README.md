@@ -129,7 +129,7 @@ will want to create a singleton instance of `Wire` for use throughout your appli
 
 ```java
 Wire wire = new Wire();
-MyMessage newMsg = wire.parseFrom(MyMessage.class, serializedMsg);
+MyMessage newMsg = wire.parseFrom(serializedMsg, MyMessage.class);
 int x = newMsg.some_int_field; // 123
 ```
 
