@@ -23,6 +23,11 @@ interface IO {
   ProtoFile parse(String filename) throws IOException;
 
   /**
+   * Tests whether the file or directory denoted by this abstract pathname exists.
+   */
+  boolean exists(String filename);
+
+  /**
    * Returns a JavaWriter for a given class. The output will be written to:
    *
    * <pre>{@code
@@ -42,6 +47,10 @@ interface IO {
     public ProtoFile parse(String filename) throws IOException {
       return ProtoSchemaParser.parse(filename,
           new InputStreamReader(new FileInputStream(filename), UTF_8));
+    }
+
+    @Override public boolean exists(String filename) {
+      return new File(filename).exists();
     }
 
     @Override
