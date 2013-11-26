@@ -53,6 +53,10 @@ public class WireCompilerErrorTest {
       }
     }
 
+    @Override public boolean exists(String filename) {
+      return true;
+    }
+
     @Override
     public JavaWriter getJavaWriter(String javaOut, String javaPackage, String className)
         throws IOException {
@@ -77,7 +81,7 @@ public class WireCompilerErrorTest {
   private Map<String, String> compile(String source) {
     StringIO io = new StringIO("test.proto", source);
 
-    WireCompiler compiler = new WireCompiler(".", Arrays.asList("test.proto"),
+    WireCompiler compiler = new WireCompiler(Arrays.asList("."), Arrays.asList("test.proto"),
         new ArrayList<String>(), ".", null, true, io);
     try {
       compiler.compile();
