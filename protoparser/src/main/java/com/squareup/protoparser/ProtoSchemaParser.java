@@ -68,6 +68,9 @@ public final class ProtoSchemaParser {
   /** Imported files. */
   private final List<String> dependencies = new ArrayList<String>();
 
+  /** Public imported files. */
+  private final List<String> publicDependencies = new ArrayList<String>();
+
   /** Declared message types and enum types. */
   private final List<Type> types = new ArrayList<Type>();
 
@@ -112,8 +115,8 @@ public final class ProtoSchemaParser {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return new ProtoFile(fileName, packageName, dependencies, types, services, options,
-            extendDeclarations);
+        return new ProtoFile(fileName, packageName, dependencies, publicDependencies, types,
+            services, options, extendDeclarations);
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
       if (declaration instanceof Type) {
@@ -147,7 +150,12 @@ public final class ProtoSchemaParser {
       return null;
     } else if (label.equals("import")) {
       if (!context.permitsImport()) throw unexpected("import in " + context);
-      dependencies.add(readString());
+      String importString = readString();
+      if ("public".equals(importString)) {
+        publicDependencies.add(readString());
+      } else {
+        dependencies.add(importString);
+      }
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
     } else if (label.equals("option")) {
