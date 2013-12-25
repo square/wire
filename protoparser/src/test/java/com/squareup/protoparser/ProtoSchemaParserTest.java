@@ -182,7 +182,7 @@ public final class ProtoSchemaParserTest {
         + "// files it parses.\n"
         + "message FileDescriptorSet {\n"
         + "}\n";
-    Type message = new MessageType("FileDescriptorSet", "FileDescriptorSet", ""
+    Type message = new MessageType("FileDescriptorSet", "google.protobuf.FileDescriptorSet", ""
         + "The protocol compiler can output a FileDescriptorSet containing the .proto\n"
         + "files it parses.", Arrays.<MessageType.Field>asList(), NO_TYPES, NO_EXTENSIONS,
         NO_OPTIONS);
@@ -205,7 +205,7 @@ public final class ProtoSchemaParserTest {
         + "  extensions 500;\n"
         + "  extensions 1000 to max;\n"
         + "}\n";
-    Type enumType = new EnumType("CType", "CType", "",
+    Type enumType = new EnumType("CType", "FieldOptions.CType", "",
         Arrays.asList(new Value("STRING", 0, "",
             Arrays.asList(new Option("opt_a", "1"), new Option("opt_b", "2")))));
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",

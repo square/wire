@@ -47,6 +47,7 @@ public final class EnumType implements Type {
     if (other instanceof EnumType) {
       EnumType that = (EnumType) other;
       return name.equals(that.name) //
+          && fqname.equals(that.fqname) //
           && documentation.equals(that.documentation) //
           && values.equals(that.values);
     }
@@ -54,7 +55,11 @@ public final class EnumType implements Type {
   }
 
   @Override public int hashCode() {
-    return name.hashCode();
+    int result = name.hashCode();
+    result = 31 * result + fqname.hashCode();
+    result = 31 * result + documentation.hashCode();
+    result = 31 * result + values.hashCode();
+    return result;
   }
 
   @Override public String toString() {

@@ -39,6 +39,7 @@ public final class ExtendDeclaration {
     if (other instanceof ExtendDeclaration) {
       ExtendDeclaration that = (ExtendDeclaration) other;
       return name.equals(that.name)
+          && fqname.equals(that.fqname)
           && documentation.equals(that.documentation)
           && fields.equals(that.fields);
     }
@@ -46,7 +47,11 @@ public final class ExtendDeclaration {
   }
 
   @Override public int hashCode() {
-    return name.hashCode();
+    int result = name.hashCode();
+    result = 31 * result + fqname.hashCode();
+    result = 31 * result + documentation.hashCode();
+    result = 31 * result + fields.hashCode();
+    return result;
   }
 
   @Override public String toString() {

@@ -44,6 +44,7 @@ public final class Service {
     if (other instanceof Service) {
       Service that = (Service) other;
       return name.equals(that.name)
+          && fqname.equals(that.fqname)
           && documentation.equals(that.documentation)
           && methods.equals(that.methods);
     }
@@ -51,7 +52,11 @@ public final class Service {
   }
 
   @Override public int hashCode() {
-    return name.hashCode();
+    int result = name.hashCode();
+    result = 31 * result + fqname.hashCode();
+    result = 31 * result + documentation.hashCode();
+    result = 31 * result + methods.hashCode();
+    return result;
   }
 
   @Override public String toString() {
