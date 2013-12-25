@@ -264,7 +264,7 @@ public final class ProtoSchemaParser {
         methods.add((Service.Method) declared);
       }
     }
-    return new Service(name, documentation, methods);
+    return new Service(name, prefix + name, documentation, methods);
   }
 
   /** Reads an enumerated type declaration and returns it. */

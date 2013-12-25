@@ -307,7 +307,7 @@ public final class ProtoSchemaParserTest {
         + "    option (squareup.a.b) = { value: [FOO, BAR] };\n"
         + "  }\n"
         + "}";
-    Service expected = new Service("SearchService", "", Arrays.asList(
+    Service expected = new Service("SearchService", "SearchService", "", Arrays.asList(
         new Service.Method("Search", "", "SearchRequest", "SearchResponse", map()),
         new Service.Method("Purchase", "", "PurchaseRequest", "PurchaseResponse",
             map("squareup.sake.timeout", "15", "squareup.a.b", map("value", list("FOO", "BAR"))))));
