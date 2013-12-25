@@ -28,6 +28,10 @@ public final class Service {
     return name;
   }
 
+  public String getFullyQualifiedName() {
+    return fqname;
+  }
+
   public String getDocumentation() {
     return documentation;
   }
