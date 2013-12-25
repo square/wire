@@ -9,14 +9,17 @@ import java.util.Map;
 
 public final class Service {
   private final String name;
+  private final String fqname;
   private final String documentation;
   private final List<Method> methods;
 
-  Service(String name, String documentation, List<Method> methods) {
+  Service(String name, String fqname, String documentation, List<Method> methods) {
     if (name == null) throw new NullPointerException("name");
+    if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
     if (methods == null) throw new NullPointerException("methods");
     this.name = name;
+    this.fqname = fqname;
     this.documentation = documentation;
     this.methods = Collections.unmodifiableList(new ArrayList<Method>(methods));
   }
