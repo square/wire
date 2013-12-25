@@ -44,6 +44,7 @@ public final class Service {
     if (other instanceof Service) {
       Service that = (Service) other;
       return name.equals(that.name)
+          && fqname.equals(that.fqname)
           && documentation.equals(that.documentation)
           && methods.equals(that.methods);
     }
