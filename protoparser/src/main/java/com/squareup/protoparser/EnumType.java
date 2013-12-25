@@ -12,7 +12,7 @@ public final class EnumType implements Type {
   private final String documentation;
   private final List<Value> values;
 
-  EnumType(String name, String fqname, String documentation, List<Value> values) {
+  public EnumType(String name, String fqname, String documentation, List<Value> values) {
     if (name == null) throw new NullPointerException("name");
     if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
@@ -73,7 +73,7 @@ public final class EnumType implements Type {
     private final String documentation;
     private final List<Option> options;
 
-    Value(String name, int tag, String documentation, List<Option> options) {
+    public Value(String name, int tag, String documentation, List<Option> options) {
       if (name == null) throw new NullPointerException("name");
       if (documentation == null) throw new NullPointerException("documentation");
       if (options == null) throw new NullPointerException("options");
