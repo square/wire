@@ -17,7 +17,7 @@ public final class MessageType implements Type {
   private final List<Extensions> extensions;
   private final List<Option> options;
 
-  MessageType(String name, String fqname, String documentation, List<Field> fields,
+  public MessageType(String name, String fqname, String documentation, List<Field> fields,
       List<Type> nestedTypes, List<Extensions> extensions, List<Option> options) {
     if (name == null) throw new NullPointerException("name");
     if (fqname == null) throw new NullPointerException("fqname");
@@ -106,7 +106,7 @@ public final class MessageType implements Type {
     private final List<Option> options;
     private final String documentation;
 
-    Field(Label label, String type, String name, int tag, String documentation,
+    public Field(Label label, String type, String name, int tag, String documentation,
         List<Option> options) {
       if (label == null) throw new NullPointerException("label");
       if (type == null) throw new NullPointerException("type");

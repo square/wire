@@ -13,7 +13,7 @@ public final class Service {
   private final String documentation;
   private final List<Method> methods;
 
-  Service(String name, String fqname, String documentation, List<Method> methods) {
+  public Service(String name, String fqname, String documentation, List<Method> methods) {
     if (name == null) throw new NullPointerException("name");
     if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
