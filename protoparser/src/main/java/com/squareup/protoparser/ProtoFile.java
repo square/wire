@@ -86,6 +86,7 @@ public final class ProtoFile {
       return eq(fileName, that.fileName)
           && eq(packageName, that.packageName)
           && eq(dependencies, that.dependencies)
+          && eq(publicDependencies, that.publicDependencies)
           && eq(types, that.types)
           && eq(services, that.services)
           && eq(options, that.options)
@@ -99,7 +100,15 @@ public final class ProtoFile {
   }
 
   @Override public int hashCode() {
-    return fileName.hashCode();
+    int result = fileName.hashCode();
+    result = 31 * result + (packageName != null ? packageName.hashCode() : 0);
+    result = 31 * result + dependencies.hashCode();
+    result = 31 * result + publicDependencies.hashCode();
+    result = 31 * result + types.hashCode();
+    result = 31 * result + services.hashCode();
+    result = 31 * result + options.hashCode();
+    result = 31 * result + extendDeclarations.hashCode();
+    return result;
   }
 
   @Override public String toString() {

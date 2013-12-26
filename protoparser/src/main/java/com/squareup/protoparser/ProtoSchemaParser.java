@@ -63,7 +63,7 @@ public final class ProtoSchemaParser {
   private String packageName;
 
   /** The current package name + nested type names, separated by dots. */
-  private String prefix;
+  private String prefix = "";
 
   /** Imported files. */
   private final List<String> dependencies = new ArrayList<String>();
