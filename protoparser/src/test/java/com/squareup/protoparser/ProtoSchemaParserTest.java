@@ -13,6 +13,8 @@ import java.util.Map;
 import org.fest.assertions.api.Fail;
 import org.junit.Test;
 
+import static com.squareup.protoparser.TestUtils.list;
+import static com.squareup.protoparser.TestUtils.map;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public final class ProtoSchemaParserTest {
@@ -28,7 +30,9 @@ public final class ProtoSchemaParserTest {
         list(new Option("default", "STRING"), new Option("deprecated", "true")));
     assertThat(field.isDeprecated()).isTrue();
     assertThat(field.getDefault()).isEqualTo("STRING");
-    assertThat(field.getExtensions()).isEqualTo(map("default", "STRING", "deprecated", "true"));
+    assertThat(field.getOptions()).containsOnly( //
+        new Option("default", "STRING"), //
+        new Option("deprecated", "true"));
   }
 
   @Test public void documentationFormats() {
@@ -144,7 +148,7 @@ public final class ProtoSchemaParserTest {
         NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         new ProtoFile("search.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("search.proto", new StringReader(proto))).isEqualTo(protoFile);
   }
 
@@ -168,7 +172,7 @@ public final class ProtoSchemaParserTest {
             NO_OPTIONS), new Value("SYRUP", 3, "Quebec Maple syrup", NO_OPTIONS)));
     ProtoFile protoFile =
         new ProtoFile("waffles.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     ProtoFile actual = ProtoSchemaParser.parse("waffles.proto", proto);
     assertThat(actual).isEqualTo(protoFile);
   }
@@ -188,8 +192,8 @@ public final class ProtoSchemaParserTest {
         NO_OPTIONS);
     ProtoFile expected =
         new ProtoFile("descriptor.proto", "google.protobuf", NO_STRINGS, NO_STRINGS,
-            Arrays.asList(message), NO_SERVICES, map("java_package", "com.google.protobuf"),
-            NO_EXTEND_DECLARATIONS);
+            Arrays.asList(message), NO_SERVICES,
+            list(new Option("java_package", "com.google.protobuf")), NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -210,13 +214,15 @@ public final class ProtoSchemaParserTest {
             Arrays.asList(new Option("opt_a", "1"), new Option("opt_b", "2")))));
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
         list(new Option("default", "STRING"), new Option("deprecated", "true")));
-    assertThat(field.getExtensions()).isEqualTo(map("default", "STRING", "deprecated", "true"));
+    assertThat(field.getOptions()).containsOnly( //
+        new Option("default", "STRING"), //
+        new Option("deprecated", "true"));
 
     Type messageType = new MessageType("FieldOptions", "FieldOptions", "", Arrays.asList(field),
             Arrays.asList(enumType), NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(messageType),
-            NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     ProtoFile actual = ProtoSchemaParser.parse("descriptor.proto", proto);
     assertThat(actual).isEqualTo(expected);
   }
@@ -225,7 +231,7 @@ public final class ProtoSchemaParserTest {
     String proto = "import \"src/test/resources/unittest_import.proto\";\n";
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         Arrays.asList("src/test/resources/unittest_import.proto"), NO_STRINGS, NO_TYPES,
-        NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+        NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -234,7 +240,7 @@ public final class ProtoSchemaParserTest {
     String proto = "import public \"src/test/resources/unittest_import.proto\";\n";
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
         NO_STRINGS, Arrays.asList("src/test/resources/unittest_import.proto"), NO_TYPES,
-        NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+        NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -250,7 +256,7 @@ public final class ProtoSchemaParserTest {
         Arrays.asList(new MessageType.Field(Label.OPTIONAL, "int32", "bar", 126, "", NO_OPTIONS))));
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_STRINGS, NO_TYPES, NO_SERVICES,
-            map(), extendDeclarations);
+            NO_OPTIONS, extendDeclarations);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -262,12 +268,12 @@ public final class ProtoSchemaParserTest {
         + "}";
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "string", "claim_token", 2, "",
         list(new Option("squareup.redacted", "true")));
-    assertThat(field.getExtensions()).isEqualTo(map("squareup.redacted", "true"));
+    assertThat(field.getOptions()).containsOnly(new Option("squareup.redacted", "true"));
 
     Type messageType = new MessageType("Foo", "Foo", "", Arrays.asList(field), NO_TYPES,
         NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_STRINGS,
-        Arrays.<Type>asList(messageType), NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+        Arrays.<Type>asList(messageType), NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -282,14 +288,14 @@ public final class ProtoSchemaParserTest {
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "string", "name", 1, "", list(
         new Option("default",
             "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA")));
-    assertThat(field.getExtensions()).isEqualTo(map("default",
+    assertThat(field.getOptions()).containsOnly(new Option("default",
         "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"));
 
     Type messageType = new MessageType("Foo", "Foo", "", Arrays.asList(field),
             NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected =
         new ProtoFile("foo.proto", null, NO_STRINGS, NO_STRINGS, Arrays.<Type>asList(messageType),
-            NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("foo.proto", proto))
         .isEqualTo(expected);
   }
@@ -318,11 +324,12 @@ public final class ProtoSchemaParserTest {
         + "  }\n"
         + "}";
     Service expected = new Service("SearchService", "SearchService", "", Arrays.asList(
-        new Service.Method("Search", "", "SearchRequest", "SearchResponse", map()),
-        new Service.Method("Purchase", "", "PurchaseRequest", "PurchaseResponse",
-            map("squareup.sake.timeout", "15", "squareup.a.b", map("value", list("FOO", "BAR"))))));
+        new Service.Method("Search", "", "SearchRequest", "SearchResponse", NO_OPTIONS),
+        new Service.Method("Purchase", "", "PurchaseRequest", "PurchaseResponse", list( //
+            new Option("squareup.sake.timeout", "15"), //
+            new Option("squareup.a.b", map("value", list("FOO", "BAR")))))));
     ProtoFile protoFile = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_STRINGS, NO_TYPES,
-        Arrays.asList(expected), map(), NO_EXTEND_DECLARATIONS);
+        Arrays.asList(expected), NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(protoFile);
   }
@@ -337,7 +344,7 @@ public final class ProtoSchemaParserTest {
         NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         new ProtoFile("hex.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("hex.proto", proto)).isEqualTo(protoFile);
   }
 
@@ -383,7 +390,7 @@ public final class ProtoSchemaParserTest {
             NO_TYPES, NO_EXTENSIONS, options);
     ProtoFile protoFile =
         new ProtoFile("exotic.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("exotic.proto", proto)).isEqualTo(protoFile);
   }
 
@@ -400,15 +407,16 @@ public final class ProtoSchemaParserTest {
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "field.type", "has_options", 3,
         "", list(new Option("option_map", map("nested_map", map("key", "value", "key2",
         list("value2a", "value2b")))), new Option("option_string", list("string1","string2"))));
-    assertThat(field.getExtensions())
-        .isEqualTo(map("option_map", map("nested_map", map("key", "value", "key2",
-            list("value2a", "value2b"))), "option_string", list("string1", "string2")));
+    assertThat(field.getOptions()).containsOnly( //
+        new Option("option_map",
+            map("nested_map", map("key", "value", "key2", list("value2a", "value2b")))),
+        new Option("option_string", list("string1", "string2")));
 
     Type expected = new MessageType("StructuredOption", "StructuredOption", "",
         Arrays.<MessageType.Field>asList(field), NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         new ProtoFile("nestedmaps.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("nestedmaps.proto", proto))
         .isEqualTo(protoFile);
   }
@@ -425,14 +433,16 @@ public final class ProtoSchemaParserTest {
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "int32", "bar", 1, "",
         list(new Option("validation.range", new Option("min", "1")),
             new Option("validation.range", new Option("max", "100")), new Option("default", "20")));
-    assertThat(field.getExtensions())
-        .isEqualTo(map("validation.range", map("min", "1", "max", "100"), "default", "20"));
+    assertThat(field.getOptions()).containsOnly( //
+        new Option("validation.range", new Option("min", "1")), //
+        new Option("validation.range", new Option("max", "100")), //
+        new Option("default", "20"));
 
     Type expected = new MessageType("Foo", "Foo", "", Arrays.asList(field), NO_TYPES, NO_EXTENSIONS,
         NO_OPTIONS);
     ProtoFile protoFile =
         new ProtoFile("foo.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, map(), NO_EXTEND_DECLARATIONS);
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("foo.proto", proto)).isEqualTo(protoFile);
   }
 
@@ -447,17 +457,5 @@ public final class ProtoSchemaParserTest {
     } catch (Exception e) {
       assertThat(e.getMessage().contains("expected tag > 0"));
     }
-  }
-
-  private Map<String, Object> map(Object... keysAndValues) {
-    Map<String, Object> result = new LinkedHashMap<String, Object>();
-    for (int i = 0; i < keysAndValues.length; i += 2) {
-      result.put((String) keysAndValues[i], keysAndValues[i + 1]);
-    }
-    return result;
-  }
-
-  private <T> List<T> list(T... values) {
-    return Arrays.asList(values);
   }
 }
