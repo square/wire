@@ -44,14 +44,14 @@ public final class EnumType implements Type {
   }
 
   @Override public boolean equals(Object other) {
-    if (other instanceof EnumType) {
-      EnumType that = (EnumType) other;
-      return name.equals(that.name) //
-          && fqname.equals(that.fqname) //
-          && documentation.equals(that.documentation) //
-          && values.equals(that.values);
-    }
-    return false;
+    if (this == other) return true;
+    if (!(other instanceof EnumType)) return false;
+
+    EnumType that = (EnumType) other;
+    return name.equals(that.name) //
+        && fqname.equals(that.fqname) //
+        && documentation.equals(that.documentation) //
+        && values.equals(that.values);
   }
 
   @Override public int hashCode() {
@@ -105,18 +105,22 @@ public final class EnumType implements Type {
     }
 
     @Override public boolean equals(Object other) {
-      if (other instanceof Value) {
-        Value that = (Value) other;
-        return name.equals(that.name) //
-            && tag == that.tag //
-            && documentation.equals(that.documentation) //
-            && options.equals(that.options);
-      }
-      return false;
+      if (this == other) return true;
+      if (!(other instanceof Value)) return false;
+
+      Value that = (Value) other;
+      return name.equals(that.name) //
+          && tag == that.tag //
+          && documentation.equals(that.documentation) //
+          && options.equals(that.options);
     }
 
     @Override public int hashCode() {
-      return name.hashCode();
+      int result = name.hashCode();
+      result = 31 * result + tag;
+      result = 31 * result + documentation.hashCode();
+      result = 31 * result + options.hashCode();
+      return result;
     }
 
     @Override public String toString() {

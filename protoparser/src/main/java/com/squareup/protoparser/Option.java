@@ -22,11 +22,11 @@ public final class Option {
   }
 
   @Override public boolean equals(Object other) {
-    if (other instanceof Option) {
-      Option that = (Option) other;
-      return name.equals(that.name) && value.equals(that.value);
-    }
-    return false;
+    if (this == other) return true;
+    if (!(other instanceof Option)) return false;
+
+    Option that = (Option) other;
+    return name.equals(that.name) && value.equals(that.value);
   }
 
   @Override public int hashCode() {

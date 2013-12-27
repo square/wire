@@ -36,14 +36,14 @@ public final class ExtendDeclaration {
   }
 
   @Override public boolean equals(Object other) {
-    if (other instanceof ExtendDeclaration) {
-      ExtendDeclaration that = (ExtendDeclaration) other;
-      return name.equals(that.name)
-          && fqname.equals(that.fqname)
-          && documentation.equals(that.documentation)
-          && fields.equals(that.fields);
-    }
-    return false;
+    if (this == other) return true;
+    if (!(other instanceof ExtendDeclaration)) return false;
+
+    ExtendDeclaration that = (ExtendDeclaration) other;
+    return name.equals(that.name)
+        && fqname.equals(that.fqname)
+        && documentation.equals(that.documentation)
+        && fields.equals(that.fields);
   }
 
   @Override public int hashCode() {

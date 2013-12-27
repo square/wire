@@ -80,23 +80,19 @@ public final class ProtoFile {
     return extendDeclarations;
   }
 
-  @Override public boolean equals(Object other) {
-    if (other instanceof ProtoFile) {
-      ProtoFile that = (ProtoFile) other;
-      return eq(fileName, that.fileName)
-          && eq(packageName, that.packageName)
-          && eq(dependencies, that.dependencies)
-          && eq(publicDependencies, that.publicDependencies)
-          && eq(types, that.types)
-          && eq(services, that.services)
-          && eq(options, that.options)
-          && eq(extendDeclarations, that.extendDeclarations);
-    }
-    return false;
-  }
+  @Override public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof ProtoFile)) return false;
 
-  private static boolean eq(Object a, Object b) {
-    return a == b || a != null && a.equals(b);
+    ProtoFile that = (ProtoFile) o;
+    return dependencies.equals(that.dependencies)
+        && extendDeclarations.equals(that.extendDeclarations)
+        && fileName.equals(that.fileName)
+        && options.equals(that.options)
+        && packageName == null ? that.packageName == null : packageName.equals(that.packageName)
+        && publicDependencies.equals(that.publicDependencies)
+        && services.equals(that.services)
+        && types.equals(that.types);
   }
 
   @Override public int hashCode() {
