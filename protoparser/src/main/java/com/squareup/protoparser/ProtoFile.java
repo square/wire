@@ -122,6 +122,9 @@ public final class ProtoFile {
     for (String dependency : dependencies) {
       result.append("import ").append(dependency).append('\n');
     }
+    for (String publicDependency : publicDependencies) {
+      result.append("import public ").append(publicDependency).append('\n');
+    }
     for (Type type : types) {
       result.append(type).append('\n');
     }
