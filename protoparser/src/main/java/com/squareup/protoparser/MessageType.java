@@ -61,16 +61,16 @@ public final class MessageType implements Type {
   }
 
   @Override public boolean equals(Object other) {
-    if (other instanceof MessageType) {
-      MessageType that = (MessageType) other;
-      return name.equals(that.name)
-          && fqname.equals(that.fqname)
-          && documentation.equals(that.documentation)
-          && fields.equals(that.fields)
-          && nestedTypes.equals(that.nestedTypes)
-          && options.equals(that.options);
-    }
-    return false;
+    if (this == other) return true;
+    if (!(other instanceof MessageType)) return false;
+
+    MessageType that = (MessageType) other;
+    return name.equals(that.name)
+        && fqname.equals(that.fqname)
+        && documentation.equals(that.documentation)
+        && fields.equals(that.fields)
+        && nestedTypes.equals(that.nestedTypes)
+        && options.equals(that.options);
   }
 
   @Override public int hashCode() {
@@ -178,20 +178,26 @@ public final class MessageType implements Type {
     }
 
     @Override public boolean equals(Object other) {
-      if (other instanceof Field) {
-        Field that = (Field) other;
-        return label.equals(that.label)
-            && type.equals(that.type)
-            && name.equals(that.name)
-            && tag == that.tag
-            && options.equals(that.options)
-            && documentation.equals(that.documentation);
-      }
-      return false;
+      if (this == other) return true;
+      if (!(other instanceof Field)) return false;
+
+      Field that = (Field) other;
+      return label.equals(that.label)
+          && type.equals(that.type)
+          && name.equals(that.name)
+          && tag == that.tag
+          && options.equals(that.options)
+          && documentation.equals(that.documentation);
     }
 
     @Override public int hashCode() {
-      return name.hashCode() + (37 * type.hashCode());
+      int result = label.hashCode();
+      result = 31 * result + type.hashCode();
+      result = 31 * result + name.hashCode();
+      result = 31 * result + tag;
+      result = 31 * result + options.hashCode();
+      result = 31 * result + documentation.hashCode();
+      return result;
     }
 
     @Override public String toString() {

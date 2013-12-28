@@ -39,14 +39,14 @@ public final class Service {
   }
 
   @Override public boolean equals(Object other) {
-    if (other instanceof Service) {
-      Service that = (Service) other;
-      return name.equals(that.name)
-          && fqname.equals(that.fqname)
-          && documentation.equals(that.documentation)
-          && methods.equals(that.methods);
-    }
-    return false;
+    if (this == other) return true;
+    if (!(other instanceof Service)) return false;
+
+    Service that = (Service) other;
+    return name.equals(that.name)
+        && fqname.equals(that.fqname)
+        && documentation.equals(that.documentation)
+        && methods.equals(that.methods);
   }
 
   @Override public int hashCode() {
@@ -108,19 +108,24 @@ public final class Service {
     }
 
     @Override public boolean equals(Object other) {
-      if (other instanceof Method) {
-        Method that = (Method) other;
-        return name.equals(that.name)
-            && documentation.equals(that.documentation)
-            && requestType.equals(that.requestType)
-            && responseType.equals(that.responseType)
-            && options.equals(that.options);
-      }
-      return false;
+      if (this == other) return true;
+      if (!(other instanceof Method)) return false;
+
+      Method that = (Method) other;
+      return name.equals(that.name)
+          && documentation.equals(that.documentation)
+          && requestType.equals(that.requestType)
+          && responseType.equals(that.responseType)
+          && options.equals(that.options);
     }
 
     @Override public int hashCode() {
-      return name.hashCode();
+      int result = name.hashCode();
+      result = 31 * result + documentation.hashCode();
+      result = 31 * result + requestType.hashCode();
+      result = 31 * result + responseType.hashCode();
+      result = 31 * result + options.hashCode();
+      return result;
     }
 
     @Override public String toString() {
