@@ -3,9 +3,7 @@ package com.squareup.protoparser;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public final class Service {
   private final String name;
@@ -73,10 +71,10 @@ public final class Service {
     private final String documentation;
     private final String requestType;
     private final String responseType;
-    private final Map<String, Object> options;
+    private final List<Option> options;
 
     public Method(String name, String documentation, String requestType, String responseType,
-        Map<String, Object> options) {
+        List<Option> options) {
       if (name == null) throw new NullPointerException("name");
       if (documentation == null) throw new NullPointerException("documentation");
       if (requestType == null) throw new NullPointerException("requestType");
@@ -86,7 +84,7 @@ public final class Service {
       this.documentation = documentation;
       this.requestType = requestType;
       this.responseType = responseType;
-      this.options = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(options));
+      this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
     }
 
     public String getName() {
@@ -105,7 +103,7 @@ public final class Service {
       return responseType;
     }
 
-    public Map<String, Object> getOptions() {
+    public List<Option> getOptions() {
       return options;
     }
 

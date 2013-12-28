@@ -81,7 +81,7 @@ public final class ProtoSchemaParser {
   private final List<ExtendDeclaration> extendDeclarations = new ArrayList<ExtendDeclaration>();
 
   /** Global options. */
-  private final Map<String, Object> options = new LinkedHashMap<String, Object>();
+  private final List<Option> options = new ArrayList<Option>();
 
   ProtoSchemaParser(String fileName, char[] data) {
     this.fileName = fileName;
@@ -124,8 +124,7 @@ public final class ProtoSchemaParser {
       } else if (declaration instanceof Service) {
         services.add((Service) declaration);
       } else if (declaration instanceof Option) {
-        Option option = (Option) declaration;
-        options.put(option.getName(), option.getValue());
+        options.add((Option) declaration);
       } else if (declaration instanceof ExtendDeclaration) {
         extendDeclarations.add((ExtendDeclaration) declaration);
       }
@@ -477,7 +476,7 @@ public final class ProtoSchemaParser {
     String responseType = readName();
     if (readChar() != ')') throw unexpected("expected ')'");
 
-    Map<String, Object> options = new LinkedHashMap<String, Object>();
+    List<Option> options = new ArrayList<Option>();
     if (peekChar() == '{') {
       pos++;
       while (true) {
@@ -488,8 +487,7 @@ public final class ProtoSchemaParser {
         }
         Object declared = readDeclaration(methodDocumentation, Context.RPC);
         if (declared instanceof Option) {
-          Option option = (Option) declared;
-          options.put(option.getName(), option.getValue());
+          options.add((Option) declared);
         }
       }
     } else if (readChar() != ';') throw unexpected("expected ';'");

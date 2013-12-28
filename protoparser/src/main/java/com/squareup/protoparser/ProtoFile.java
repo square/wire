@@ -2,10 +2,7 @@
 package com.squareup.protoparser;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.unmodifiableList;
 
@@ -17,12 +14,12 @@ public final class ProtoFile {
   private final List<String> publicDependencies;
   private final List<Type> types;
   private final List<Service> services;
-  private final Map<String, Object> options;
+  private final List<Option> options;
   private final List<ExtendDeclaration> extendDeclarations;
 
   ProtoFile(String fileName, String packageName, List<String> dependencies,
       List<String> publicDependencies, List<Type> types, List<Service> services,
-      Map<String, Object> options, List<ExtendDeclaration> extendDeclarations) {
+      List<Option> options, List<ExtendDeclaration> extendDeclarations) {
     if (fileName == null) throw new NullPointerException("fileName");
     if (dependencies == null) throw new NullPointerException("dependencies");
     if (publicDependencies == null) throw new NullPointerException("publicDependencies");
@@ -37,15 +34,9 @@ public final class ProtoFile {
     this.publicDependencies = unmodifiableList(new ArrayList<String>(publicDependencies));
     this.types = unmodifiableList(new ArrayList<Type>(types));
     this.services = unmodifiableList(new ArrayList<Service>(services));
-    this.options = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(options));
+    this.options = unmodifiableList(new ArrayList<Option>(options));
     this.extendDeclarations =
         unmodifiableList(new ArrayList<ExtendDeclaration>(extendDeclarations));
-  }
-
-  /** Returns the Java package, or the default package if no Java package is specified. */
-  public String getJavaPackage() {
-    Object javaPackage = options.get("java_package");
-    return javaPackage != null ? (String) javaPackage : packageName;
   }
 
   public String getFileName() {
@@ -72,7 +63,7 @@ public final class ProtoFile {
     return services;
   }
 
-  public Map<String, Object> getOptions() {
+  public List<Option> getOptions() {
     return options;
   }
 
@@ -115,8 +106,11 @@ public final class ProtoFile {
     StringBuilder result = new StringBuilder();
     result.append("fileName: ").append(fileName).append('\n');
     result.append("packageName: ").append(packageName).append('\n');
-    for (Map.Entry<String, Object> option : options.entrySet()) {
-      result.append("option ").append(option.getKey()).append(" = ").append(option.getValue())
+    for (Option option : options) {
+      result.append("option ")
+          .append(option.getName())
+          .append(" = ")
+          .append(option.getValue())
           .append('\n');
     }
     for (String dependency : dependencies) {
