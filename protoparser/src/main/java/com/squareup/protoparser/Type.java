@@ -7,6 +7,7 @@ import java.util.List;
 public interface Type {
   String getName();
   String getFullyQualifiedName();
+  String getDocumentation();
 
   List<Type> getNestedTypes();
 }

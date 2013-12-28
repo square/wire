@@ -43,7 +43,7 @@ public final class MessageType implements Type {
     return fqname;
   }
 
-  public String getDocumentation() {
+  @Override public String getDocumentation() {
     return documentation;
   }
 

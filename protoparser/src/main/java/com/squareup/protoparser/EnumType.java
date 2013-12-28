@@ -31,7 +31,7 @@ public final class EnumType implements Type {
     return fqname;
   }
 
-  public String getDocumentation() {
+  @Override public String getDocumentation() {
     return documentation;
   }
 
