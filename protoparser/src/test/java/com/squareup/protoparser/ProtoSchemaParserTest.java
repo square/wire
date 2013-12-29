@@ -167,8 +167,37 @@ public final class ProtoSchemaParserTest {
         + "  SYRUP = 3;\n"
         + "}\n";
     Type expected = new EnumType("Topping", "Topping",
-       "What's on my waffles.\nAlso works on pancakes.",
+       "What's on my waffles.\nAlso works on pancakes.", NO_OPTIONS,
         Arrays.asList(new Value("FRUIT", 1, "", NO_OPTIONS), new Value("CREAM", 2, "Yummy, yummy cream.",
+            NO_OPTIONS), new Value("SYRUP", 3, "Quebec Maple syrup", NO_OPTIONS)));
+    ProtoFile protoFile =
+        new ProtoFile("waffles.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
+    ProtoFile actual = ProtoSchemaParser.parse("waffles.proto", proto);
+    assertThat(actual).isEqualTo(protoFile);
+  }
+
+  @Test public void parseEnumWithOptions() throws Exception {
+    String proto = ""
+        + "/**\n"
+        + " * What's on my waffles.\n"
+        + " * Also works on pancakes.\n"
+        + " */\n"
+        + "enum Topping {\n"
+        + "  option (max_choices) = 2;\n"
+        + "\n"
+        + "  FRUIT = 1 [(healthy) = true];\n"
+        + "  /** Yummy, yummy cream. */\n"
+        + "  CREAM = 2;\n"
+        + "\n"
+        + "  // Quebec Maple syrup\n"
+        + "  SYRUP = 3;\n"
+        + "}\n";
+    List<Option> fruitOptions = list(new Option("healthy", "true"));
+    List<Option> toppingOptions = list(new Option("max_choices", "2"));
+    Type expected = new EnumType("Topping", "Topping",
+        "What's on my waffles.\nAlso works on pancakes.", toppingOptions,
+        list(new Value("FRUIT", 1, "", fruitOptions), new Value("CREAM", 2, "Yummy, yummy cream.",
             NO_OPTIONS), new Value("SYRUP", 3, "Quebec Maple syrup", NO_OPTIONS)));
     ProtoFile protoFile =
         new ProtoFile("waffles.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
@@ -209,7 +238,7 @@ public final class ProtoSchemaParserTest {
         + "  extensions 500;\n"
         + "  extensions 1000 to max;\n"
         + "}\n";
-    Type enumType = new EnumType("CType", "FieldOptions.CType", "",
+    Type enumType = new EnumType("CType", "FieldOptions.CType", "", NO_OPTIONS,
         Arrays.asList(new Value("STRING", 0, "",
             Arrays.asList(new Option("opt_a", "1"), new Option("opt_b", "2")))));
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
@@ -317,13 +346,16 @@ public final class ProtoSchemaParserTest {
   @Test public void service() throws Exception {
     String proto = ""
         + "service SearchService {\n"
+        + "  option (default_timeout) = 30;\n"
+        + "\n"
         + "  rpc Search (SearchRequest) returns (SearchResponse);"
         + "  rpc Purchase (PurchaseRequest) returns (PurchaseResponse) {\n"
         + "    option (squareup.sake.timeout) = 15; \n"
         + "    option (squareup.a.b) = { value: [FOO, BAR] };\n"
         + "  }\n"
         + "}";
-    Service expected = new Service("SearchService", "SearchService", "", Arrays.asList(
+    List<Option> options = list(new Option("default_timeout", "30"));
+    Service expected = new Service("SearchService", "SearchService", "", options, list(
         new Service.Method("Search", "", "SearchRequest", "SearchResponse", NO_OPTIONS),
         new Service.Method("Purchase", "", "PurchaseRequest", "PurchaseResponse", list( //
             new Option("squareup.sake.timeout", "15"), //
