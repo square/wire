@@ -10,16 +10,20 @@ public final class EnumType implements Type {
   private final String name;
   private final String fqname;
   private final String documentation;
+  private final List<Option> options;
   private final List<Value> values;
 
-  public EnumType(String name, String fqname, String documentation, List<Value> values) {
+  public EnumType(String name, String fqname, String documentation, List<Option> options,
+      List<Value> values) {
     if (name == null) throw new NullPointerException("name");
     if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
+    if (options == null) throw new NullPointerException("options");
     if (values == null) throw new NullPointerException("values");
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
+    this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
     this.values = Collections.unmodifiableList(new ArrayList<Value>(values));
   }
 
@@ -33,6 +37,10 @@ public final class EnumType implements Type {
 
   @Override public String getDocumentation() {
     return documentation;
+  }
+
+  public List<Option> getOptions() {
+    return options;
   }
 
   public List<Value> getValues() {
@@ -51,6 +59,7 @@ public final class EnumType implements Type {
     return name.equals(that.name) //
         && fqname.equals(that.fqname) //
         && documentation.equals(that.documentation) //
+        && options.equals(that.options) //
         && values.equals(that.values);
   }
 
@@ -58,6 +67,7 @@ public final class EnumType implements Type {
     int result = name.hashCode();
     result = 31 * result + fqname.hashCode();
     result = 31 * result + documentation.hashCode();
+    result = 31 * result + options.hashCode();
     result = 31 * result + values.hashCode();
     return result;
   }
@@ -65,6 +75,9 @@ public final class EnumType implements Type {
   @Override public String toString() {
     StringBuilder result = new StringBuilder();
     result.append(name);
+    for (Option option : options) {
+      result.append("\n  option: ").append(option.getName()).append('=').append(option.getValue());
+    }
     for (Value value : values) {
       result.append("\n  ").append(value);
     }

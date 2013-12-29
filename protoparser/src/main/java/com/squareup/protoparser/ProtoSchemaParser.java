@@ -258,6 +258,7 @@ public final class ProtoSchemaParser {
   /** Reads a service declaration and returns it. */
   private Service readService(String documentation) {
     String name = readName();
+    List<Option> options = new ArrayList<Option>();
     List<Service.Method> methods = new ArrayList<Service.Method>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
@@ -269,14 +270,17 @@ public final class ProtoSchemaParser {
       Object declared = readDeclaration(methodDocumentation, Context.SERVICE);
       if (declared instanceof Service.Method) {
         methods.add((Service.Method) declared);
+      } else if (declared instanceof Option) {
+        options.add((Option) declared);
       }
     }
-    return new Service(name, prefix + name, documentation, methods);
+    return new Service(name, prefix + name, documentation, options, methods);
   }
 
   /** Reads an enumerated type declaration and returns it. */
   private EnumType readEnumType(String documentation) {
     String name = readName();
+    List<Option> options = new ArrayList<Option>();
     List<EnumType.Value> values = new ArrayList<EnumType.Value>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
@@ -288,9 +292,11 @@ public final class ProtoSchemaParser {
       Object declared = readDeclaration(valueDocumentation, Context.ENUM);
       if (declared instanceof EnumType.Value) {
         values.add((EnumType.Value) declared);
+      } else if (declared instanceof Option) {
+        options.add((Option) declared);
       }
     }
-    return new EnumType(name, prefix + name, documentation, values);
+    return new EnumType(name, prefix + name, documentation, options, values);
   }
 
   /** Reads an field declaration and returns it. */

@@ -9,16 +9,20 @@ public final class Service {
   private final String name;
   private final String fqname;
   private final String documentation;
+  private final List<Option> options;
   private final List<Method> methods;
 
-  public Service(String name, String fqname, String documentation, List<Method> methods) {
+  public Service(String name, String fqname, String documentation, List<Option> options,
+      List<Method> methods) {
     if (name == null) throw new NullPointerException("name");
     if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
+    if (options == null) throw new NullPointerException("options");
     if (methods == null) throw new NullPointerException("methods");
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
+    this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
     this.methods = Collections.unmodifiableList(new ArrayList<Method>(methods));
   }
 
@@ -34,6 +38,10 @@ public final class Service {
     return documentation;
   }
 
+  public List<Option> getOptions() {
+    return options;
+  }
+
   public List<Method> getMethods() {
     return methods;
   }
@@ -46,6 +54,7 @@ public final class Service {
     return name.equals(that.name)
         && fqname.equals(that.fqname)
         && documentation.equals(that.documentation)
+        && options.equals(that.options)
         && methods.equals(that.methods);
   }
 
@@ -53,6 +62,7 @@ public final class Service {
     int result = name.hashCode();
     result = 31 * result + fqname.hashCode();
     result = 31 * result + documentation.hashCode();
+    result = 31 * result + options.hashCode();
     result = 31 * result + methods.hashCode();
     return result;
   }
@@ -60,6 +70,9 @@ public final class Service {
   @Override public String toString() {
     StringBuilder result = new StringBuilder();
     result.append(name);
+    for (Option option : options) {
+      result.append("\n  option: ").append(option.getName()).append('=').append(option.getValue());
+    }
     for (Method method : methods) {
       result.append("\n  ").append(method);
     }
