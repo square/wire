@@ -4,6 +4,8 @@ package com.squareup.protoparser;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.squareup.protoparser.Utils.appendDocumentation;
+import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
 public final class ExtendDeclaration {
@@ -56,11 +58,17 @@ public final class ExtendDeclaration {
   }
 
   @Override public String toString() {
-    StringBuilder result = new StringBuilder();
-    result.append(String.format("extend %s %s %s", name, fqname, documentation));
-    for (MessageType.Field field : fields) {
-      result.append("\n  ").append(field);
+    StringBuilder builder = new StringBuilder();
+    appendDocumentation(builder, documentation);
+    builder.append("extend ")
+        .append(name)
+        .append(" {");
+    if (!fields.isEmpty()) {
+      builder.append('\n');
+      for (MessageType.Field field : fields) {
+        appendIndented(builder, field.toString());
+      }
     }
-    return result.toString();
+    return builder.append("}\n").toString();
   }
 }

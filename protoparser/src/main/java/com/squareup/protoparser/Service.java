@@ -4,6 +4,8 @@ package com.squareup.protoparser;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.squareup.protoparser.Utils.appendDocumentation;
+import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
 public final class Service {
@@ -69,15 +71,24 @@ public final class Service {
   }
 
   @Override public String toString() {
-    StringBuilder result = new StringBuilder();
-    result.append(name);
-    for (Option option : options) {
-      result.append("\n  option: ").append(option.getName()).append('=').append(option.getValue());
+    StringBuilder builder = new StringBuilder();
+    appendDocumentation(builder, documentation);
+    builder.append("service ")
+        .append(name)
+        .append(" {");
+    if (!options.isEmpty()) {
+      builder.append('\n');
+      for (Option option : options) {
+        appendIndented(builder, option.toDeclaration());
+      }
     }
-    for (Method method : methods) {
-      result.append("\n  ").append(method);
+    if (!methods.isEmpty()) {
+      builder.append('\n');
+      for (Method method : methods) {
+        appendIndented(builder, method.toString());
+      }
     }
-    return result.toString();
+    return builder.append("}\n").toString();
   }
 
   public static final class Method {
@@ -143,7 +154,23 @@ public final class Service {
     }
 
     @Override public String toString() {
-      return String.format("rpc %s (%s) returns (%s) %s", name, requestType, responseType, options);
+      StringBuilder builder = new StringBuilder();
+      appendDocumentation(builder, documentation);
+      builder.append("rpc ")
+          .append(name)
+          .append(" (")
+          .append(requestType)
+          .append(") returns (")
+          .append(responseType)
+          .append(')');
+      if (!options.isEmpty()) {
+        builder.append(" {\n");
+        for (Option option : options) {
+          appendIndented(builder, option.toDeclaration());
+        }
+        builder.append("}");
+      }
+      return builder.append(";\n").toString();
     }
   }
 }

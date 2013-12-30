@@ -3,8 +3,11 @@ package com.squareup.protoparser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.squareup.protoparser.ProtoFile.isValidTag;
+import static com.squareup.protoparser.Utils.appendDocumentation;
+import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
 public final class MessageType implements Type {
@@ -88,18 +91,36 @@ public final class MessageType implements Type {
   }
 
   @Override public String toString() {
-    StringBuilder result = new StringBuilder();
-    result.append(name);
-    for (Option option : options) {
-      result.append("\n  option: ").append(option);
+    StringBuilder builder = new StringBuilder();
+    appendDocumentation(builder, documentation);
+    builder.append("message ")
+        .append(name)
+        .append(" {");
+    if (!options.isEmpty()) {
+      builder.append('\n');
+      for (Option option : options) {
+        appendIndented(builder, option.toDeclaration());
+      }
     }
-    for (Field field : fields) {
-      result.append("\n  ").append(field);
+    if (!fields.isEmpty()) {
+      builder.append('\n');
+      for (Field field : fields) {
+        appendIndented(builder, field.toString());
+      }
     }
-    for (Type type : nestedTypes) {
-      result.append(type).append("\n");
+    if (!extensions.isEmpty()) {
+      builder.append('\n');
+      for (Extensions extension : extensions) {
+        appendIndented(builder, extension.toString());
+      }
     }
-    return result.toString();
+    if (!nestedTypes.isEmpty()) {
+      builder.append('\n');
+      for (Type type : nestedTypes) {
+        appendIndented(builder, type.toString());
+      }
+    }
+    return builder.append("}\n").toString();
   }
 
   public enum Label {
@@ -205,7 +226,23 @@ public final class MessageType implements Type {
     }
 
     @Override public String toString() {
-      return String.format("%s %s %s = %d %s", label, type, name, tag, options);
+      StringBuilder builder = new StringBuilder();
+      appendDocumentation(builder, documentation);
+      builder.append(label.toString().toLowerCase(Locale.US))
+          .append(' ')
+          .append(type)
+          .append(' ')
+          .append(name)
+          .append(" = ")
+          .append(tag);
+      if (!options.isEmpty()) {
+        builder.append(" [\n");
+        for (Option option : options) {
+          appendIndented(builder, option.toString());
+        }
+        builder.append(']');
+      }
+      return builder.append(";\n").toString();
     }
   }
 }

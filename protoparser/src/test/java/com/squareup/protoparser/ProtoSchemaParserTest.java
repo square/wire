@@ -6,7 +6,6 @@ import com.squareup.protoparser.MessageType.Label;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,16 +14,15 @@ import org.junit.Test;
 
 import static com.squareup.protoparser.TestUtils.list;
 import static com.squareup.protoparser.TestUtils.map;
+import static com.squareup.protoparser.TestUtils.NO_EXTEND_DECLARATIONS;
+import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
+import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
+import static com.squareup.protoparser.TestUtils.NO_SERVICES;
+import static com.squareup.protoparser.TestUtils.NO_STRINGS;
+import static com.squareup.protoparser.TestUtils.NO_TYPES;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public final class ProtoSchemaParserTest {
-  private static final List<Type> NO_TYPES = Collections.emptyList();
-  private static final List<Service> NO_SERVICES = Collections.emptyList();
-  private static final List<String> NO_STRINGS = Collections.emptyList();
-  private static final List<ExtendDeclaration> NO_EXTEND_DECLARATIONS = Collections.emptyList();
-  private static final List<Extensions> NO_EXTENSIONS = Collections.emptyList();
-  private static final List<Option> NO_OPTIONS = Collections.emptyList();
-
   @Test public void field() throws Exception {
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
         list(new Option("default", "STRING"), new Option("deprecated", "true")));
