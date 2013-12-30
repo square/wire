@@ -2,8 +2,9 @@
 package com.squareup.protoparser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
 
 public final class ExtendDeclaration {
   private final String name;
@@ -16,7 +17,7 @@ public final class ExtendDeclaration {
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
-    this.fields = Collections.unmodifiableList(new ArrayList<MessageType.Field>(fields));
+    this.fields = unmodifiableList(new ArrayList<MessageType.Field>(fields));
   }
 
   public String getName() {

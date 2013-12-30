@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.unmodifiableList;
+
 /** An enumerated type declaration. */
 public final class EnumType implements Type {
   private final String name;
@@ -23,8 +25,8 @@ public final class EnumType implements Type {
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
-    this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
-    this.values = Collections.unmodifiableList(new ArrayList<Value>(values));
+    this.options = unmodifiableList(new ArrayList<Option>(options));
+    this.values = unmodifiableList(new ArrayList<Value>(values));
   }
 
   @Override public String getName() {
@@ -98,7 +100,7 @@ public final class EnumType implements Type {
       this.name = name;
       this.tag = tag;
       this.documentation = documentation;
-      this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
+      this.options = unmodifiableList(new ArrayList<Option>(options));
     }
 
     public String getName() {

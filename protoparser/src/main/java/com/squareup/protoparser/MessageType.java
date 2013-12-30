@@ -2,8 +2,9 @@
 package com.squareup.protoparser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
 
 public final class MessageType implements Type {
   private final String name;
@@ -26,10 +27,10 @@ public final class MessageType implements Type {
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
-    this.fields = Collections.unmodifiableList(new ArrayList<Field>(fields));
-    this.nestedTypes = Collections.unmodifiableList(new ArrayList<Type>(nestedTypes));
-    this.extensions = Collections.unmodifiableList(new ArrayList<Extensions>(extensions));
-    this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
+    this.fields = unmodifiableList(new ArrayList<Field>(fields));
+    this.nestedTypes = unmodifiableList(new ArrayList<Type>(nestedTypes));
+    this.extensions = unmodifiableList(new ArrayList<Extensions>(extensions));
+    this.options = unmodifiableList(new ArrayList<Option>(options));
   }
 
   @Override public String getName() {
@@ -124,7 +125,7 @@ public final class MessageType implements Type {
       this.name = name;
       this.tag = tag;
       this.documentation = documentation;
-      this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
+      this.options = unmodifiableList(new ArrayList<Option>(options));
     }
 
     public Label getLabel() {

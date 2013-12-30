@@ -2,8 +2,9 @@
 package com.squareup.protoparser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
 
 public final class Service {
   private final String name;
@@ -22,8 +23,8 @@ public final class Service {
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
-    this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
-    this.methods = Collections.unmodifiableList(new ArrayList<Method>(methods));
+    this.options = unmodifiableList(new ArrayList<Option>(options));
+    this.methods = unmodifiableList(new ArrayList<Method>(methods));
   }
 
   public String getName() {
@@ -97,7 +98,7 @@ public final class Service {
       this.documentation = documentation;
       this.requestType = requestType;
       this.responseType = responseType;
-      this.options = Collections.unmodifiableList(new ArrayList<Option>(options));
+      this.options = unmodifiableList(new ArrayList<Option>(options));
     }
 
     public String getName() {
