@@ -8,6 +8,6 @@ public interface Type {
   String getName();
   String getFullyQualifiedName();
   String getDocumentation();
-
+  List<Option> getOptions();
   List<Type> getNestedTypes();
 }

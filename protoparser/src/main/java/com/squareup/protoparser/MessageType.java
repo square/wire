@@ -56,7 +56,7 @@ public final class MessageType implements Type {
     return extensions;
   }
 
-  public List<Option> getOptions() {
+  @Override public List<Option> getOptions() {
     return options;
   }
 
