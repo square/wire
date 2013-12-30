@@ -21,9 +21,9 @@ public class OptionTest {
         new Option("wire", map( //
             "omar", "little", //
             "proposition", "joe" //
-        )) //
-        // TODO new Option("(nested.option).one", "two"), //
-        // TODO new Option("(nested.option).three", "four") //
+        )), //
+        new Option("nested.option", new Option("one", "two")), //
+        new Option("nested.option", new Option("three", "four")) //
     );
     Map<String, Object> optionMap = Option.optionsAsMap(options);
     assertThat(optionMap).contains( //
@@ -36,11 +36,11 @@ public class OptionTest {
         entry("wire", map( //
             "omar", "little", //
             "proposition", "joe" //
+        )), //
+        entry("nested.option", map( //
+            "one", "two", //
+            "three", "four" //
         )) //
-        // TODO entry("nested.option", map( //
-        // TODO     "one", "two", //
-        // TODO     "three", "four" //
-        // TODO )) //
     );
   }
 }

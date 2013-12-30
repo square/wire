@@ -2,10 +2,11 @@
 package com.squareup.protoparser;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.unmodifiableMap;
 
 public final class Option {
   @SuppressWarnings("unchecked")
@@ -23,9 +24,10 @@ public final class Option {
         Object oldValue = map.get(name);
         if (oldValue instanceof Map) {
           Map<String, Object> oldMap = (Map<String, Object>) oldValue;
-          for (Map.Entry<String, Object> entry : newMap.entrySet()) {
-            oldMap.put(entry.getKey(), entry.getValue());
-          }
+          // Existing nested maps are immutable. Make a mutable copy, update, and replace.
+          oldMap = new LinkedHashMap<String, Object>(oldMap);
+          oldMap.putAll(newMap);
+          map.put(name, oldMap);
         } else {
           map.put(name, newMap);
         }
@@ -37,10 +39,10 @@ public final class Option {
           map.put(name, value);
         }
       } else {
-        throw new AssertionError("Option value must be String, List, or Map<String, ?>");
+        throw new AssertionError("Option value must be String, Option, List, or Map<String, ?>");
       }
     }
-    return Collections.unmodifiableMap(map);
+    return unmodifiableMap(map);
   }
 
   private final String name;
