@@ -22,8 +22,6 @@ import java.util.Map;
  * within types.
  */
 public final class ProtoSchemaParser {
-  private static final int MAX_TAG_VALUE = (1 << 29) - 1; // 536,870,911
-
   /** Parse a {@code .proto} definition file. */
   public static ProtoFile parse(File file) throws IOException {
     return new ProtoSchemaParser(file.getName(), fileToCharArray(file)).readProtoFile();
@@ -336,10 +334,10 @@ public final class ProtoSchemaParser {
     int start = readInt(); // Range start.
     int end = start;
     if (peekChar() != ';') {
-      readWord(); // Literal 'to'
+      if (!"to".equals(readWord())) throw unexpected("expected ';' or 'to'");
       String s = readWord(); // Range end.
       if (s.equals("max")) {
-        end = MAX_TAG_VALUE;
+        end = ProtoFile.MAX_TAG_VALUE;
       } else {
         end = Integer.parseInt(s);
       }
