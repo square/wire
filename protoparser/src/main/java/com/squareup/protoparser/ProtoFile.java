@@ -8,6 +8,17 @@ import static java.util.Collections.unmodifiableList;
 
 /** A single {@code .proto} file. */
 public final class ProtoFile {
+  public static final int MIN_TAG_VALUE = 1;
+  public static final int MAX_TAG_VALUE = (1 << 29) - 1; // 536,870,911
+  private static final int RESERVED_TAG_VALUE_START = 19000;
+  private static final int RESERVED_TAG_VALUE_END = 19999;
+
+  /** True if the supplied value is in the valid tag range and not reserved. */
+  public static boolean isValidTag(int value) {
+    return (value >= MIN_TAG_VALUE && value < RESERVED_TAG_VALUE_START)
+        || (value > RESERVED_TAG_VALUE_END && value <= MAX_TAG_VALUE);
+  }
+
   private final String fileName;
   private final String packageName;
   private final List<String> dependencies;
@@ -80,7 +91,7 @@ public final class ProtoFile {
         && extendDeclarations.equals(that.extendDeclarations)
         && fileName.equals(that.fileName)
         && options.equals(that.options)
-        && packageName == null ? that.packageName == null : packageName.equals(that.packageName)
+        && (packageName == null ? that.packageName == null : packageName.equals(that.packageName))
         && publicDependencies.equals(that.publicDependencies)
         && services.equals(that.services)
         && types.equals(that.types);

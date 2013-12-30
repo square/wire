@@ -248,7 +248,9 @@ public final class ProtoSchemaParserTest {
         new Option("deprecated", "true"));
 
     Type messageType = new MessageType("FieldOptions", "FieldOptions", "", Arrays.asList(field),
-            Arrays.asList(enumType), NO_EXTENSIONS, NO_OPTIONS);
+        Arrays.asList(enumType), list(new Extensions(
+        "Clients can define custom options in extensions of this message. See above.", 500, 500),
+        new Extensions("", 1000, ProtoFile.MAX_TAG_VALUE)), NO_OPTIONS);
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(messageType),
             NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);

@@ -1,6 +1,8 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.protoparser;
 
+import static com.squareup.protoparser.ProtoFile.isValidTag;
+
 public final class Extensions {
   private final String documentation;
   private final int start;
@@ -8,6 +10,8 @@ public final class Extensions {
 
   public Extensions(String documentation, int start, int end) {
     if (documentation == null) throw new NullPointerException("documentation");
+    if (!isValidTag(start)) throw new IllegalArgumentException("Invalid start value: " + start);
+    if (!isValidTag(end)) throw new IllegalArgumentException("Invalid end value: " + end);
 
     this.documentation = documentation;
     this.start = start;

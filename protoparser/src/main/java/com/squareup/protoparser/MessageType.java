@@ -4,6 +4,7 @@ package com.squareup.protoparser;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static java.util.Collections.unmodifiableList;
 
 public final class MessageType implements Type {
@@ -71,6 +72,7 @@ public final class MessageType implements Type {
         && documentation.equals(that.documentation)
         && fields.equals(that.fields)
         && nestedTypes.equals(that.nestedTypes)
+        && extensions.equals(that.extensions)
         && options.equals(that.options);
   }
 
@@ -116,6 +118,7 @@ public final class MessageType implements Type {
         List<Option> options) {
       if (label == null) throw new NullPointerException("label");
       if (type == null) throw new NullPointerException("type");
+      if (!isValidTag(tag)) throw new IllegalArgumentException("Illegal tag value: " + tag);
       if (name == null) throw new NullPointerException("name");
       if (documentation == null) throw new NullPointerException("documentation");
       if (options == null) throw new NullPointerException("options");
