@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.unmodifiableMap;
+import static com.squareup.protoparser.Utils.appendIndented;
 
 public final class Option {
   @SuppressWarnings("unchecked")
@@ -77,6 +78,37 @@ public final class Option {
   }
 
   @Override public String toString() {
-    return String.format("%s=%s", name, value);
+    StringBuilder builder = new StringBuilder();
+    if (value instanceof String) {
+      String stringValue = (String) value;
+      builder.append(name).append(" = \"").append(escape(stringValue)).append('"');
+    } else if (value instanceof Option) {
+      Option optionValue = (Option) value;
+      builder.append('(').append(name).append(").").append(optionValue.toString());
+    } else if (value instanceof List) {
+      builder.append(name).append(" = [\n");
+      //noinspection unchecked
+      List<Option> optionList = (List<Option>) value;
+      for (int i = 0, count = optionList.size(); i < count; i++) {
+        String endl = (i < count - 1) ? "," : "";
+        appendIndented(builder, optionList.get(i).toString() + endl);
+      }
+      builder.append(']');
+    } else {
+      throw new IllegalStateException("Unknown value type " + value.getClass().getCanonicalName());
+    }
+    return builder.toString();
+  }
+
+  public String toDeclaration() {
+    return "option " + toString() + ";\n";
+  }
+
+  static String escape(String string) {
+    return string.replace("\\", "\\\\")
+        .replace("\t", "\\t")
+        .replace("\"", "\\\"")
+        .replace("\r", "\\r")
+        .replace("\n", "\\n");
   }
 }

@@ -110,31 +110,46 @@ public final class ProtoFile {
   }
 
   @Override public String toString() {
-    StringBuilder result = new StringBuilder();
-    result.append("fileName: ").append(fileName).append('\n');
-    result.append("packageName: ").append(packageName).append('\n');
-    for (Option option : options) {
-      result.append("option ")
-          .append(option.getName())
-          .append(" = ")
-          .append(option.getValue())
-          .append('\n');
+    StringBuilder builder = new StringBuilder();
+    if (!fileName.isEmpty()) {
+      builder.append("// ").append(fileName).append('\n');
     }
-    for (String dependency : dependencies) {
-      result.append("import ").append(dependency).append('\n');
+    if (packageName != null) {
+      builder.append("package ").append(packageName).append(";\n");
     }
-    for (String publicDependency : publicDependencies) {
-      result.append("import public ").append(publicDependency).append('\n');
+    if (!dependencies.isEmpty() || !publicDependencies.isEmpty()) {
+      builder.append('\n');
+      for (String dependency : dependencies) {
+        builder.append("import \"").append(dependency).append("\";\n");
+      }
+      for (String publicDependency : publicDependencies) {
+        builder.append("import public \"").append(publicDependency).append("\";\n");
+      }
     }
-    for (Type type : types) {
-      result.append(type).append('\n');
+    if (!options.isEmpty()) {
+      builder.append('\n');
+      for (Option option : options) {
+        builder.append(option.toDeclaration());
+      }
     }
-    for (Service service : services) {
-      result.append(service).append('\n');
+    if (!types.isEmpty()) {
+      builder.append('\n');
+      for (Type type : types) {
+        builder.append(type);
+      }
     }
-    for (ExtendDeclaration extendDeclaration : extendDeclarations) {
-      result.append(extendDeclaration).append('\n');
+    if (!extendDeclarations.isEmpty()) {
+      builder.append('\n');
+      for (ExtendDeclaration extendDeclaration : extendDeclarations) {
+        builder.append(extendDeclaration);
+      }
     }
-    return result.toString();
+    if (!services.isEmpty()) {
+      builder.append('\n');
+      for (Service service : services) {
+        builder.append(service);
+      }
+    }
+    return builder.toString();
   }
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.squareup.protoparser.Utils.appendDocumentation;
+import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
 /** An enumerated type declaration. */
@@ -75,15 +77,24 @@ public final class EnumType implements Type {
   }
 
   @Override public String toString() {
-    StringBuilder result = new StringBuilder();
-    result.append(name);
-    for (Option option : options) {
-      result.append("\n  option: ").append(option.getName()).append('=').append(option.getValue());
+    StringBuilder builder = new StringBuilder();
+    appendDocumentation(builder, documentation);
+    builder.append("enum ")
+        .append(name)
+        .append(" {");
+    if (!options.isEmpty()) {
+      builder.append('\n');
+      for (Option option : options) {
+        appendIndented(builder, option.toDeclaration());
+      }
     }
-    for (Value value : values) {
-      result.append("\n  ").append(value);
+    if (!values.isEmpty()) {
+      builder.append('\n');
+      for (Value value : values) {
+        appendIndented(builder, value.toString());
+      }
     }
-    return result.toString();
+    return builder.append("}\n").toString();
   }
 
   /** An enum constant. */
@@ -139,11 +150,19 @@ public final class EnumType implements Type {
     }
 
     @Override public String toString() {
-      StringBuilder sb = new StringBuilder(String.format("%s = %d", name, tag));
-      for (Option option : options) {
-        sb.append("\n    option: ").append(option);
+      StringBuilder builder = new StringBuilder();
+      appendDocumentation(builder, documentation);
+      builder.append(name)
+          .append(" = ")
+          .append(tag);
+      if (!options.isEmpty()) {
+        builder.append(" [\n");
+        for (Option option : options) {
+          appendIndented(builder, option.toString());
+        }
+        builder.append(']');
       }
-      return sb.toString();
+      return builder.append(";\n").toString();
     }
   }
 }

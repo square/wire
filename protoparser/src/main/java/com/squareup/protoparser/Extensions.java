@@ -2,6 +2,7 @@
 package com.squareup.protoparser;
 
 import static com.squareup.protoparser.ProtoFile.isValidTag;
+import static com.squareup.protoparser.Utils.appendDocumentation;
 
 public final class Extensions {
   private final String documentation;
@@ -48,6 +49,18 @@ public final class Extensions {
   }
 
   @Override public String toString() {
-    return String.format("extensions %s to %s", start, end);
+    StringBuilder builder = new StringBuilder();
+    appendDocumentation(builder, documentation);
+    builder.append("extensions ")
+        .append(start);
+    if (start != end) {
+      builder.append(" to ");
+      if (end < ProtoFile.MAX_TAG_VALUE) {
+        builder.append(end);
+      } else {
+        builder.append("max");
+      }
+    }
+    return builder.append(";\n").toString();
   }
 }
