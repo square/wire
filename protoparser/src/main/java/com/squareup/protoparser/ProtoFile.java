@@ -28,7 +28,7 @@ public final class ProtoFile {
   private final List<Option> options;
   private final List<ExtendDeclaration> extendDeclarations;
 
-  ProtoFile(String fileName, String packageName, List<String> dependencies,
+  public ProtoFile(String fileName, String packageName, List<String> dependencies,
       List<String> publicDependencies, List<Type> types, List<Service> services,
       List<Option> options, List<ExtendDeclaration> extendDeclarations) {
     if (fileName == null) throw new NullPointerException("fileName");
