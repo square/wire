@@ -12,6 +12,17 @@ import static java.util.Collections.unmodifiableList;
 
 /** An enumerated type declaration. */
 public final class EnumType implements Type {
+  static void validateTagUniqueness(String type, List<Value> values) {
+    BitSet tags = new BitSet();
+    for (Value value : values) {
+      int tag = value.getTag();
+      if (tags.get(tag)) {
+        throw new IllegalStateException("Duplicate tag " + tag + " in " + type);
+      }
+      tags.set(tag);
+    }
+  }
+
   static void validateValueUniquenessInScope(String type, List<Type> nestedTypes) {
     BitSet tags = new BitSet();
     for (Type nestedType : nestedTypes) {
@@ -41,6 +52,8 @@ public final class EnumType implements Type {
     if (documentation == null) throw new NullPointerException("documentation");
     if (options == null) throw new NullPointerException("options");
     if (values == null) throw new NullPointerException("values");
+    validateTagUniqueness(fqname, values);
+
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;

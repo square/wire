@@ -155,6 +155,7 @@ public class MessageTypeTest {
     try {
       new MessageType("Message", "example.Message", "", NO_FIELDS, list(enum1, enum2),
           NO_EXTENSIONS, NO_OPTIONS);
+      fail("Duplicate tag not allowed.");
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Duplicate enum tag 1 in scope example.Message");
     }

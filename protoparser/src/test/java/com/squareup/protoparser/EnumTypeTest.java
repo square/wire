@@ -7,6 +7,7 @@ import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.NO_VALUES;
 import static com.squareup.protoparser.TestUtils.list;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.fail;
 
 public class EnumTypeTest {
   @Test public void emptyToString() {
@@ -81,5 +82,16 @@ public class EnumTypeTest {
         + "  kit = \"kat\"\n"
         + "];\n";
     assertThat(value.toString()).isEqualTo(expected);
+  }
+
+  @Test public void duplicateValueTagThrows() {
+    Value value1 = new Value("VALUE1", 1, "", NO_OPTIONS);
+    Value value2 = new Value("VALUE2", 1, "", NO_OPTIONS);
+    try {
+      new EnumType("Enum1", "example.Enum", "", NO_OPTIONS, list(value1, value2));
+      fail("Duplicate tags not allowed.");
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Duplicate tag 1 in example.Enum");
+    }
   }
 }
