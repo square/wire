@@ -12,6 +12,17 @@ import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
 public final class MessageType implements Type {
+  static void validateFieldTagUniqueness(String type, List<Field> fields) {
+    BitSet tags = new BitSet();
+    for (Field field : fields) {
+      int tag = field.getTag();
+      if (tags.get(tag)) {
+        throw new IllegalStateException("Duplicate tag " + tag + " in " + type);
+      }
+      tags.set(tag);
+    }
+  }
+
   private final String name;
   private final String fqname;
   private final String documentation;
@@ -29,7 +40,8 @@ public final class MessageType implements Type {
     if (nestedTypes == null) throw new NullPointerException("nestedTypes");
     if (extensions == null) throw new NullPointerException("extensions");
     if (options == null) throw new NullPointerException("options");
-    Field.validateTagUniqueness(fqname, fields);
+    validateFieldTagUniqueness(fqname, fields);
+    EnumType.validateValueUniquenessInScope(fqname, nestedTypes);
 
     this.name = name;
     this.fqname = fqname;
@@ -131,17 +143,6 @@ public final class MessageType implements Type {
   }
 
   public static final class Field {
-    static void validateTagUniqueness(String type, List<Field> fields) {
-      BitSet tags = new BitSet();
-      for (Field field : fields) {
-        int tag = field.getTag();
-        if (tags.get(tag)) {
-          throw new IllegalStateException("Duplicate tag " + tag + " in " + type);
-        }
-        tags.set(tag);
-      }
-    }
-
     private final Label label;
     private final String type;
     private final String name;

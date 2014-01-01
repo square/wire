@@ -16,7 +16,7 @@ public final class ExtendDeclaration {
   private final List<Field> fields;
 
   public ExtendDeclaration(String name, String fqname, String documentation, List<Field> fields) {
-    Field.validateTagUniqueness(fqname, fields);
+    MessageType.validateFieldTagUniqueness(fqname, fields);
 
     this.name = name;
     this.fqname = fqname;

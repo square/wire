@@ -2,6 +2,7 @@
 package com.squareup.protoparser;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +12,22 @@ import static java.util.Collections.unmodifiableList;
 
 /** An enumerated type declaration. */
 public final class EnumType implements Type {
+  static void validateValueUniquenessInScope(String type, List<Type> nestedTypes) {
+    BitSet tags = new BitSet();
+    for (Type nestedType : nestedTypes) {
+      if (nestedType instanceof EnumType) {
+        EnumType enumType = (EnumType) nestedType;
+        for (Value value : enumType.getValues()) {
+          int tag = value.getTag();
+          if (tags.get(tag)) {
+            throw new IllegalStateException("Duplicate enum tag " + tag + " in scope " + type);
+          }
+          tags.set(tag);
+        }
+      }
+    }
+  }
+
   private final String name;
   private final String fqname;
   private final String documentation;

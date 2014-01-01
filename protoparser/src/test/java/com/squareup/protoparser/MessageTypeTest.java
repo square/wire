@@ -2,6 +2,7 @@ package com.squareup.protoparser;
 
 import org.junit.Test;
 
+import static com.squareup.protoparser.EnumType.Value;
 import static com.squareup.protoparser.MessageType.Field;
 import static com.squareup.protoparser.MessageType.Label.REQUIRED;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
@@ -144,6 +145,18 @@ public class MessageTypeTest {
       fail("Duplicate tag values are not allowed.");
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Duplicate tag 1 in example.Message");
+    }
+  }
+
+  @Test public void duplicateEnumValueTagInScopeThrows() {
+    Value value = new Value("VALUE", 1, "", NO_OPTIONS);
+    Type enum1 = new EnumType("Enum1", "example.Enum1", "", NO_OPTIONS, list(value));
+    Type enum2 = new EnumType("Enum2", "example.Enum2", "", NO_OPTIONS, list(value));
+    try {
+      new MessageType("Message", "example.Message", "", NO_FIELDS, list(enum1, enum2),
+          NO_EXTENSIONS, NO_OPTIONS);
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Duplicate enum tag 1 in scope example.Message");
     }
   }
 }
