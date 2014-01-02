@@ -12,14 +12,15 @@ import java.util.Map;
 import org.fest.assertions.api.Fail;
 import org.junit.Test;
 
-import static com.squareup.protoparser.TestUtils.list;
-import static com.squareup.protoparser.TestUtils.map;
+import static com.squareup.protoparser.MessageType.Label.OPTIONAL;
 import static com.squareup.protoparser.TestUtils.NO_EXTEND_DECLARATIONS;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.NO_SERVICES;
 import static com.squareup.protoparser.TestUtils.NO_STRINGS;
 import static com.squareup.protoparser.TestUtils.NO_TYPES;
+import static com.squareup.protoparser.TestUtils.list;
+import static com.squareup.protoparser.TestUtils.map;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public final class ProtoSchemaParserTest {
@@ -476,5 +477,18 @@ public final class ProtoSchemaParserTest {
         new ProtoFile("foo.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
             NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("foo.proto", proto)).isEqualTo(protoFile);
+  }
+
+  @Test public void noWhitespace() {
+    String proto = "message C {optional A.B ab = 1;}";
+    ProtoFile parse = ProtoSchemaParser.parse("test.proto", proto);
+
+    MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "A.B", "ab", 1, "", NO_OPTIONS);
+    Type type = new MessageType("C", "C", "", list(field), NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    ProtoFile expected =
+        new ProtoFile("test.proto", null, NO_STRINGS, NO_STRINGS, list(type), NO_SERVICES,
+            NO_OPTIONS, NO_EXTEND_DECLARATIONS);
+
+    assertThat(parse).isEqualTo(expected);
   }
 }
