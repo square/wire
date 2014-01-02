@@ -477,17 +477,4 @@ public final class ProtoSchemaParserTest {
             NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("foo.proto", proto)).isEqualTo(protoFile);
   }
-
-  @Test public void parseBadTagNumber() throws Exception {
-    String proto = ""
-        + "message BadTagNumber {\n"
-        + "  required int32 a = 0;\n"
-        + "}";
-    try {
-      ProtoSchemaParser.parse("badtag.proto", proto);
-      Fail.fail("Expected parse error");
-    } catch (Exception e) {
-      assertThat(e.getMessage().contains("expected tag > 0"));
-    }
-  }
 }

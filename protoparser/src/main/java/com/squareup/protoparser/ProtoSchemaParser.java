@@ -304,7 +304,6 @@ public final class ProtoSchemaParser {
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
-    if (tag <= 0) throw unexpected("expected tag > 0");
     List<Option> options = new ArrayList<Option>();
 
     if (peekChar() == '[') {
