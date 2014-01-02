@@ -12,7 +12,6 @@ import java.util.Map;
 import org.fest.assertions.api.Fail;
 import org.junit.Test;
 
-import static com.squareup.protoparser.MessageType.Label.OPTIONAL;
 import static com.squareup.protoparser.TestUtils.NO_EXTEND_DECLARATIONS;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
