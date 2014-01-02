@@ -197,24 +197,15 @@ public final class MessageType implements Type {
     }
 
     public boolean isDeprecated() {
-      return "true".equals(getOptionValue("deprecated"));
+      return "true".equals(Option.findByName(options, "deprecated").getValue());
     }
 
     public boolean isPacked() {
-      return "true".equals(getOptionValue("packed"));
+      return "true".equals(Option.findByName(options, "packed").getValue());
     }
 
     public String getDefault() {
-      return (String) getOptionValue("default");
-    }
-
-    private Object getOptionValue(String name) {
-      for (Option option : options) {
-        if (option.getName().equals(name)) {
-          return option.getValue();
-        }
-      }
-      return null;
+      return (String) Option.findByName(options, "default").getValue();
     }
 
     @Override public boolean equals(Object other) {
