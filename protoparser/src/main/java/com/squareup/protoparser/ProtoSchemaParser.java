@@ -322,7 +322,6 @@ public final class ProtoSchemaParser {
       }
     }
     if (readChar() == ';') {
-      pos++;
       return new MessageType.Field(labelEnum, type, name, tag, documentation, options);
     }
     throw unexpected("expected ';'");
