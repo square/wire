@@ -2,9 +2,10 @@
 package com.squareup.protoparser;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static com.squareup.protoparser.Utils.appendDocumentation;
@@ -13,13 +14,12 @@ import static java.util.Collections.unmodifiableList;
 
 public final class MessageType implements Type {
   static void validateFieldTagUniqueness(String type, List<Field> fields) {
-    BitSet tags = new BitSet();
+    Set<Integer> tags = new LinkedHashSet<Integer>();
     for (Field field : fields) {
       int tag = field.getTag();
-      if (tags.get(tag)) {
+      if (!tags.add(tag)) {
         throw new IllegalStateException("Duplicate tag " + tag + " in " + type);
       }
-      tags.set(tag);
     }
   }
 

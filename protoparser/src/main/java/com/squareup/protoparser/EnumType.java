@@ -2,9 +2,10 @@
 package com.squareup.protoparser;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
@@ -13,27 +14,29 @@ import static java.util.Collections.unmodifiableList;
 /** An enumerated type declaration. */
 public final class EnumType implements Type {
   static void validateTagUniqueness(String type, List<Value> values) {
-    BitSet tags = new BitSet();
+    Set<Integer> tags = new LinkedHashSet<Integer>();
     for (Value value : values) {
       int tag = value.getTag();
-      if (tags.get(tag)) {
+      if (!tags.add(tag)) {
         throw new IllegalStateException("Duplicate tag " + tag + " in " + type);
       }
-      tags.set(tag);
     }
   }
 
+  /**
+   * Though not mentioned in the spec, enum values use C++ scoping rules, meaning that enum values
+   * are siblings of their type, not children of it.
+   */
   static void validateValueUniquenessInScope(String type, List<Type> nestedTypes) {
-    BitSet tags = new BitSet();
+    Set<Integer> tags = new LinkedHashSet<Integer>();
     for (Type nestedType : nestedTypes) {
       if (nestedType instanceof EnumType) {
         EnumType enumType = (EnumType) nestedType;
         for (Value value : enumType.getValues()) {
           int tag = value.getTag();
-          if (tags.get(tag)) {
+          if (!tags.add(tag)) {
             throw new IllegalStateException("Duplicate enum tag " + tag + " in scope " + type);
           }
-          tags.set(tag);
         }
       }
     }
