@@ -4,6 +4,7 @@ package com.squareup.protoparser;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.squareup.protoparser.MessageType.Field;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
@@ -12,14 +13,15 @@ public final class ExtendDeclaration {
   private final String name;
   private final String fqname;
   private final String documentation;
-  private final List<MessageType.Field> fields;
+  private final List<Field> fields;
 
-  public ExtendDeclaration(String name, String fqname, String documentation,
-      List<MessageType.Field> fields) {
+  public ExtendDeclaration(String name, String fqname, String documentation, List<Field> fields) {
+    MessageType.validateFieldTagUniqueness(fqname, fields);
+
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
-    this.fields = unmodifiableList(new ArrayList<MessageType.Field>(fields));
+    this.fields = unmodifiableList(new ArrayList<Field>(fields));
   }
 
   public String getName() {
@@ -34,7 +36,7 @@ public final class ExtendDeclaration {
     return documentation;
   }
 
-  public List<MessageType.Field> getFields() {
+  public List<Field> getFields() {
     return fields;
   }
 
@@ -65,7 +67,7 @@ public final class ExtendDeclaration {
         .append(" {");
     if (!fields.isEmpty()) {
       builder.append('\n');
-      for (MessageType.Field field : fields) {
+      for (Field field : fields) {
         appendIndented(builder, field.toString());
       }
     }

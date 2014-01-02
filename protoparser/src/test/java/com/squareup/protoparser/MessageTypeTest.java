@@ -2,6 +2,7 @@ package com.squareup.protoparser;
 
 import org.junit.Test;
 
+import static com.squareup.protoparser.EnumType.Value;
 import static com.squareup.protoparser.MessageType.Field;
 import static com.squareup.protoparser.MessageType.Label.REQUIRED;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
@@ -10,6 +11,7 @@ import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.NO_TYPES;
 import static com.squareup.protoparser.TestUtils.list;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.fail;
 
 public class MessageTypeTest {
   @Test public void emptyToString() {
@@ -132,5 +134,30 @@ public class MessageTypeTest {
         + "  kit = \"kat\"\n"
         + "];\n";
     assertThat(field.toString()).isEqualTo(expected);
+  }
+
+  @Test public void duplicateTagValueThrows() {
+    Field field1 = new Field(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
+    Field field2 = new Field(REQUIRED, "Type", "name2", 1, "", NO_OPTIONS);
+    try {
+      new MessageType("Message", "example.Message", "", list(field1, field2), NO_TYPES,
+          NO_EXTENSIONS, NO_OPTIONS);
+      fail("Duplicate tag values are not allowed.");
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Duplicate tag 1 in example.Message");
+    }
+  }
+
+  @Test public void duplicateEnumValueTagInScopeThrows() {
+    Value value = new Value("VALUE", 1, "", NO_OPTIONS);
+    Type enum1 = new EnumType("Enum1", "example.Enum1", "", NO_OPTIONS, list(value));
+    Type enum2 = new EnumType("Enum2", "example.Enum2", "", NO_OPTIONS, list(value));
+    try {
+      new MessageType("Message", "example.Message", "", NO_FIELDS, list(enum1, enum2),
+          NO_EXTENSIONS, NO_OPTIONS);
+      fail("Duplicate tag not allowed.");
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Duplicate enum tag 1 in scope example.Message");
+    }
   }
 }

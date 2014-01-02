@@ -2,8 +2,10 @@
 package com.squareup.protoparser;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static com.squareup.protoparser.Utils.appendDocumentation;
@@ -11,6 +13,16 @@ import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
 public final class MessageType implements Type {
+  static void validateFieldTagUniqueness(String type, List<Field> fields) {
+    Set<Integer> tags = new LinkedHashSet<Integer>();
+    for (Field field : fields) {
+      int tag = field.getTag();
+      if (!tags.add(tag)) {
+        throw new IllegalStateException("Duplicate tag " + tag + " in " + type);
+      }
+    }
+  }
+
   private final String name;
   private final String fqname;
   private final String documentation;
@@ -28,6 +40,9 @@ public final class MessageType implements Type {
     if (nestedTypes == null) throw new NullPointerException("nestedTypes");
     if (extensions == null) throw new NullPointerException("extensions");
     if (options == null) throw new NullPointerException("options");
+    validateFieldTagUniqueness(fqname, fields);
+    EnumType.validateValueUniquenessInScope(fqname, nestedTypes);
+
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
