@@ -46,6 +46,23 @@ public final class Option {
     return unmodifiableMap(map);
   }
 
+  /** Return the option with the specified name from the supplied list or null. */
+  public static Option findByName(List<Option> options, String name) {
+    if (options == null) throw new NullPointerException("options");
+    if (name == null) throw new NullPointerException("name");
+
+    Option found = null;
+    for (Option option : options) {
+      if (option.getName().equals(name)) {
+        if (found != null) {
+          throw new IllegalStateException("Multiple options match name: " + name);
+        }
+        found = option;
+      }
+    }
+    return found;
+  }
+
   private final String name;
   private final Object value;
 
