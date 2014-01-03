@@ -122,13 +122,13 @@ public class WireParser {
   void validateInputFiles() {
     // Validate all directories exist and are actually directories.
     for (File directory : directories) {
-      checkState(fs.exists(directory), "Directory \"" + directory + "\" does not exist.");
-      checkState(fs.isDirectory(directory), "\"" + directory + "\" is not a directory.");
+      checkState(fs.exists(directory), "Directory \"%s\" does not exist.", directory);
+      checkState(fs.isDirectory(directory), "\"%s\" is not a directory.", directory);
     }
     // Validate all protos exist and are files.
     for (File proto : protos) {
-      checkState(fs.exists(proto), "Proto \"" + proto + "\" does not exist.");
-      checkState(fs.isFile(proto), "Proto \"" + proto + "\" is not a file.");
+      checkState(fs.exists(proto), "Proto \"%s\" does not exist.", proto);
+      checkState(fs.isFile(proto), "Proto \"%s\" is not a file.", proto);
     }
   }
 
