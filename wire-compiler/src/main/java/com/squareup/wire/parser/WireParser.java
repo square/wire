@@ -9,6 +9,7 @@ import com.squareup.protoparser.Type;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -24,15 +25,18 @@ import static java.util.Collections.unmodifiableSet;
  * Intelligently parse {@code .proto} files into an object model which represents a set of types
  * and all of their transitive dependencies.
  * <p>
- * There are three methods which control parsing:
+ * There are three sets of methods which control parsing:
  * <ul>
- * <li>{@link #addDirectory(File) addDirectory} specifies a directory under which proto files
- * reside. Directories are used to resolve {@code include} declarations. If no directories are
- * specified, the current working directory will be used.</li>
- * <li>{@link #addProto(File) addProto} specifies which proto files to parse. If no proto files are
- * specified, all files under every directory will be used.</li>
- * <li>{@link #addTypeRoot(String) addTypeRoot} specifies which types to include. If no types are
- * specified, all types in every proto file will be used.</li>
+ * <li>{@link #addDirectory(File) addDirectory} or {@link #addDirectories(Collection)
+ * addDirectories} specifies a directory under which proto files reside. Directories are used to
+ * resolve {@code include} declarations. If no directories are specified, the current working
+ * directory will be used.</li>
+ * <li>{@link #addProto(File) addProto} or {@link #addProtos(Collection) addProtos} specifies which
+ * proto files to parse. If no proto files are specified, all files under every directory will be
+ * used.</li>
+ * <li>{@link #addTypeRoot(String) addTypeRoot} or {@link #addTypeRoots(Collection) addTypeRoots}
+ * specifies which types to include. If no types are specified, all types in every proto file will
+ * be used.</li>
  * </ul>
  * Given no data, an instance of this class will recursively find all files in the current working
  * directory, attempt to parse them as protocol buffer definitions, and verify that all of the
@@ -58,8 +62,6 @@ public class WireParser {
   /**
    * Add a directory under which proto files reside. {@code include} declarations will be resolved
    * from these directories.
-   * <p>
-   * If no directories are specified, the current working directory will be used.
    */
   public WireParser addDirectory(File directory) {
     checkNotNull(directory, "Directory must not be null.");
@@ -68,16 +70,32 @@ public class WireParser {
   }
 
   /**
-   * Add a proto file to parse.
-   * <p>
-   * If no proto files are specified, every file in the specified directories will be used.
-   * <p>
-   * It is an error to call this method with a proto path that is not contained in one of the
-   * specified directories.
+   * Add directories under which proto files reside. {@code include} declarations will be resolved
+   * from these directories.
    */
+  public WireParser addDirectories(Collection<File> directories) {
+    checkNotNull(directories, "Directories must not be null.");
+    checkArgument(!directories.isEmpty(), "Directories must not be empty.");
+    for (File directory : directories) {
+      addDirectory(directory);
+    }
+    return this;
+  }
+
+  /** Add a proto file to parse. */
   public WireParser addProto(File proto) {
     checkNotNull(proto, "Proto must not be null.");
     protos.add(proto);
+    return this;
+  }
+
+  /** Add proto files to parse. */
+  public WireParser addProtos(Collection<File> protos) {
+    checkNotNull(protos, "Protos must not be null.");
+    checkArgument(!protos.isEmpty(), "Protos must not be empty.");
+    for (File proto : protos) {
+      addProto(proto);
+    }
     return this;
   }
 
@@ -85,11 +103,6 @@ public class WireParser {
    * Add a fully-qualified type to include in the parsed data. If specified, only these types and
    * their dependencies will be included. This allows for filtering message-heavy proto files such
    * that only desired message types are generated.
-   * <p>
-   * If no types are specified, every type in the specified proto files will be used.
-   * <p>
-   * It is an error to call this method with a type that is not contained in one of the proto files
-   * being parsed.
    */
   public WireParser addTypeRoot(String type) {
     checkNotNull(type, "Type must not be null.");
@@ -99,8 +112,26 @@ public class WireParser {
   }
 
   /**
-   * Parse the supplied protos into an object model using the supplied information (or their
-   * respective defaults).
+   * Add fully-qualified types to include in the parsed data. If specified, only these types and
+   * their dependencies will be included. This allows for filtering message-heavy proto files such
+   * that only desired message types are generated.
+   */
+  public WireParser addTypeRoots(Collection<String> types) {
+    checkNotNull(types, "Types must not be null.");
+    checkArgument(!types.isEmpty(), "Types must not be empty.");
+    for (String type : types) {
+      addTypeRoot(type);
+    }
+    return this;
+  }
+
+  /**
+   * Parse the supplied protos into an object model using the supplied information or their
+   * respective defaults.
+   * <p>
+   * If no directories have been specified, the current working directory will be used. If no proto
+   * files have been specified, every file in the specified directories will be used. If no types
+   * have been specified, every type in the specified proto files will be used.
    */
   public Set<ProtoFile> parse() throws IOException {
     validateInputFiles();
