@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.squareup.wire.parser.ProtoUtils.isPrimitiveType;
+import static com.squareup.protoparser.ScalarTypes.isScalarType;
 
 /**
  * Filter a set of proto file objects to only include the specified types and their transitive
@@ -159,11 +159,11 @@ final class RootsFilter {
 
       for (Service.Method method : obj.getMethods()) {
         String requestType = method.getRequestType();
-        if (!isPrimitiveType(requestType)) {
+        if (!isScalarType(requestType)) {
           nodeMap.get(requestType).keepNodes(typesToKeep, nodeMap);
         }
         String responseType = method.getResponseType();
-        if (!isPrimitiveType(responseType)) {
+        if (!isScalarType(responseType)) {
           nodeMap.get(responseType).keepNodes(typesToKeep, nodeMap);
         }
       }
@@ -188,7 +188,7 @@ final class RootsFilter {
 
       for (MessageType.Field field : obj.getFields()) {
         String fieldType = field.getType();
-        if (!isPrimitiveType(fieldType)) {
+        if (!isScalarType(fieldType)) {
           nodeMap.get(fieldType).keepNodes(typesToKeep, nodeMap);
         }
       }

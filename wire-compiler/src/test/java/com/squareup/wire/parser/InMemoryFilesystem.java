@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkState;
+
 /** A {@link Filesystem} representation which exists only in memory. */
 final class InMemoryFilesystem implements Filesystem {
   private static final String ROOT = "/";
@@ -95,9 +97,9 @@ final class InMemoryFilesystem implements Filesystem {
     }
 
     void addFile(String name, String contents) {
-      Preconditions.checkArgument(!files.containsKey(name),
+      checkState(!files.containsKey(name),
           "File \"" + name + "\" already exists in " + getPath());
-      Preconditions.checkArgument(!directories.containsKey(name),
+      checkState(!directories.containsKey(name),
           "Directory exists with same name \"" + name + "\" in " + getPath());
 
       files.put(name, contents);
@@ -115,7 +117,7 @@ final class InMemoryFilesystem implements Filesystem {
       if (directories.containsKey(name)) {
         return directories.get(name);
       }
-      Preconditions.checkArgument(!files.containsKey(name),
+      checkState(!files.containsKey(name),
           "File exists with same name \"" + name + "\" in " + getPath());
 
       Folder directory = new Folder(name, this);

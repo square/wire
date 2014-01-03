@@ -1,6 +1,8 @@
 package com.squareup.wire.parser;
 
 import com.google.common.collect.ImmutableSet;
+import com.squareup.protoparser.ProtoFile;
+import com.squareup.protoparser.ProtoSchemaParser;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
@@ -75,13 +77,13 @@ public class WireParserTest {
     try {
       parser.addTypeRoot("");
       fail("Empty string is not a valid type.");
-    } catch (IllegalStateException e) {
+    } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Type must not be blank.");
     }
     try {
       parser.addTypeRoot("      ");
       fail("Blank string is not a valid type.");
-    } catch (IllegalStateException e) {
+    } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Type must not be blank.");
     }
   }
@@ -143,5 +145,40 @@ public class WireParserTest {
     assertThat(dependency1).isEqualTo(new File("/foo/bar/two.proto"));
     File dependency2 = parser.resolveDependency(proto, directories, "three.proto");
     assertThat(dependency2).isEqualTo(new File("/kit/kat/three.proto"));
+  }
+
+  @Test public void collectAllTypesRecursesToNestedTypes() {
+    String proto = ""
+        + "package wire;"
+        + ""
+        + "message Person {"
+        + "  enum PhoneType {}"
+        + "  message PhoneNumber {}"
+        + "}";
+
+    ProtoFile protoFile = ProtoSchemaParser.parse("test.proto", proto);
+    Set<ProtoFile> protos = ImmutableSet.of(protoFile);
+    Set<String> types = WireParser.collectAllTypes(protos);
+    assertThat(types).containsOnly( //
+        "wire.Person", //
+        "wire.Person.PhoneType", //
+        "wire.Person.PhoneNumber");
+  }
+
+  @Test public void collectAllTypesFailsOnDuplicates() {
+    String proto = ""
+        + "package wire;"
+        + ""
+        + "message Message {}";
+    ProtoFile file1 = ProtoSchemaParser.parse("test1.proto", proto);
+    ProtoFile file2 = ProtoSchemaParser.parse("test2.proto", proto);
+    Set<ProtoFile> files = ImmutableSet.of(file1, file2);
+
+    try {
+      WireParser.collectAllTypes(files);
+      fail("Duplicate types are not allowed.");
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Duplicate type wire.Message defined in test1.proto, test2.proto");
+    }
   }
 }

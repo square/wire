@@ -7,7 +7,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import static com.squareup.wire.parser.ProtoQualifier.fullyQualifyProtos;
-import static com.squareup.wire.parser.ProtoUtils.collectAllTypes;
+import static com.squareup.wire.parser.WireParser.collectAllTypes;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class RootsFilterTest {
@@ -23,19 +23,18 @@ public class RootsFilterTest {
   }
 
   @Test public void transitive() {
-    // Newlines needed until this is fixed: https://github.com/square/protoparser/issues/46
     String proto = ""
-        + "package wire;\n"
-        + "\n"
-        + "message A {\n"
-        + "  optional B b = 1;\n"
-        + "  optional D d = 2;\n"
-        + "}\n"
-        + "message B {\n"
-        + "  optional C c = 1;\n"
-        + "}\n"
-        + "message C {}\n"
-        + "message D {}\n";
+        + "package wire;"
+        + ""
+        + "message A {"
+        + "  optional B b = 1;"
+        + "  optional D d = 2;"
+        + "}"
+        + "message B {"
+        + "  optional C c = 1;"
+        + "}"
+        + "message C {}"
+        + "message D {}";
     assertThat(filter(proto, "wire.A")) //
         .containsOnly("wire.A", "wire.B", "wire.C", "wire.D");
   }
@@ -56,16 +55,15 @@ public class RootsFilterTest {
   }
 
   @Test public void parents() {
-    // Newlines needed until this is fixed: https://github.com/square/protoparser/issues/46
     String proto = ""
-        + "package wire;\n"
-        + "\n"
-        + "message A {\n"
-        + "  message B {}\n"
-        + "}\n"
-        + "message C {\n"
-        + "  optional A.B ab = 1;\n"
-        + "}\n";
+        + "package wire;"
+        + ""
+        + "message A {"
+        + "  message B {}"
+        + "}"
+        + "message C {"
+        + "  optional A.B ab = 1;"
+        + "}";
     assertThat(filter(proto, "wire.C")) //
         .containsOnly("wire.A", "wire.A.B", "wire.C");
   }
