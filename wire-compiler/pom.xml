@@ -54,7 +54,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.squareup.wire.WireCompiler</mainClass>
+              <mainClass>com.squareup.wire.cli.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
