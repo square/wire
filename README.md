@@ -151,9 +151,9 @@ Unsupported
 
 Wire does not support:
 
- * Groups - they are skipping when parsing binary input data
+ * Groups - they are skipped when parsing binary input data
  * Services - they are ignored by the compiler
- * Custom options - they are ignored
 
+Wire supports custom options on messages and fields. Other custom options are ignored. Use the `--no_options` flag to omit option information from the generated code.
 
  [dl]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
