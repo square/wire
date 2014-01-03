@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 /** A {@link Filesystem} representation which exists only in memory. */
@@ -56,9 +57,7 @@ final class InMemoryFilesystem implements Filesystem {
   }
 
   @Override public File[] listFiles(File file) {
-    if (!isDirectory(file)) {
-      throw new IllegalArgumentException("File \"" + file + "\" is not a directory.");
-    }
+    checkArgument(isDirectory(file), "File \"%s\" is not a directory", file);
     Set<String> fileNames = folderOf(file).getFiles();
     File[] files = new File[fileNames.size()];
     int i = 0;
@@ -97,10 +96,9 @@ final class InMemoryFilesystem implements Filesystem {
     }
 
     void addFile(String name, String contents) {
-      checkState(!files.containsKey(name),
-          "File \"" + name + "\" already exists in " + getPath());
-      checkState(!directories.containsKey(name),
-          "Directory exists with same name \"" + name + "\" in " + getPath());
+      checkState(!files.containsKey(name), "File \"%s\" already exists in %s.", name, getPath());
+      checkState(!directories.containsKey(name), "Directory exists with same name \"%s\" in %s.",
+          name, getPath());
 
       files.put(name, contents);
     }
@@ -117,8 +115,8 @@ final class InMemoryFilesystem implements Filesystem {
       if (directories.containsKey(name)) {
         return directories.get(name);
       }
-      checkState(!files.containsKey(name),
-          "File exists with same name \"" + name + "\" in " + getPath());
+      checkState(!files.containsKey(name), "File exists with same name \"%s\" in %s.", name,
+          getPath());
 
       Folder directory = new Folder(name, this);
       directories.put(name, directory);
