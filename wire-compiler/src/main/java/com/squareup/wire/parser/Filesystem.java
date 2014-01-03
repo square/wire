@@ -1,10 +1,9 @@
 package com.squareup.wire.parser;
 
-import java.io.ByteArrayOutputStream;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 interface Filesystem {
   /** Equivalent to {@link File#exists()}. */
@@ -41,21 +40,7 @@ interface Filesystem {
     }
 
     @Override public String contentsUtf8(File file) throws IOException {
-      InputStream is = null;
-      try {
-        is = new FileInputStream(file);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[4096];
-        int count;
-        while ((count = is.read(buffer)) != -1) {
-          baos.write(buffer, 0, count);
-        }
-        return new String(baos.toByteArray(), "UTF-8");
-      } finally {
-        if (is != null) {
-          is.close();
-        }
-      }
+      return Files.toString(file, Charsets.UTF_8);
     }
   };
 }

@@ -1,7 +1,11 @@
 package com.squareup.wire.parser;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
+import com.squareup.protoparser.Type;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -9,10 +13,10 @@ import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static com.squareup.wire.parser.Preconditions.checkArgument;
-import static com.squareup.wire.parser.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static com.squareup.wire.parser.ProtoQualifier.fullyQualifyProtos;
-import static com.squareup.wire.parser.ProtoUtils.collectAllTypes;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableSet;
 
@@ -118,13 +122,13 @@ public class WireParser {
   void validateInputFiles() {
     // Validate all directories exist and are actually directories.
     for (File directory : directories) {
-      checkArgument(fs.exists(directory), "Directory \"" + directory + "\" does not exist.");
-      checkArgument(fs.isDirectory(directory), "\"" + directory + "\" is not a directory.");
+      checkState(fs.exists(directory), "Directory \"" + directory + "\" does not exist.");
+      checkState(fs.isDirectory(directory), "\"" + directory + "\" is not a directory.");
     }
     // Validate all protos exist and are files.
     for (File proto : protos) {
-      checkArgument(fs.exists(proto), "Proto \"" + proto + "\" does not exist.");
-      checkArgument(fs.isFile(proto), "Proto \"" + proto + "\" is not a file.");
+      checkState(fs.exists(proto), "Proto \"" + proto + "\" does not exist.");
+      checkState(fs.isFile(proto), "Proto \"" + proto + "\" is not a file.");
     }
   }
 
@@ -215,5 +219,37 @@ public class WireParser {
       error.append("\n  * ").append(directory.getAbsolutePath());
     }
     throw new IllegalStateException(error.toString());
+  }
+
+  /** Aggregate a set of all fully-qualified types contained in the supplied proto files. */
+  static Set<String> collectAllTypes(Set<ProtoFile> protoFiles) {
+    Set<String> types = new LinkedHashSet<String>();
+
+    // Seed the type resolution queue with all the top-level types from each proto file.
+    Deque<Type> typeQueue = new ArrayDeque<Type>();
+    for (ProtoFile protoFile : protoFiles) {
+      typeQueue.addAll(protoFile.getTypes());
+    }
+
+    while (!typeQueue.isEmpty()) {
+      Type type = typeQueue.removeFirst();
+      String typeFqName = type.getFullyQualifiedName();
+
+      // Check for fully-qualified type name collisions.
+      if (types.contains(typeFqName)) {
+        throw new IllegalStateException(
+            "Duplicate type " + typeFqName + " defined in " + Joiner.on(", ")
+                .join(Iterables.transform(protoFiles, new Function<ProtoFile, String>() {
+                  @Override public String apply(ProtoFile input) {
+                    return input.getFileName();
+                  }
+                })));
+      }
+      types.add(typeFqName);
+
+      typeQueue.addAll(type.getNestedTypes());
+    }
+
+    return unmodifiableSet(types);
   }
 }

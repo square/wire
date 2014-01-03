@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.squareup.protoparser.MessageType.Field;
+import static com.squareup.protoparser.ScalarTypes.isScalarType;
 import static com.squareup.protoparser.Service.Method;
 import static java.util.Collections.unmodifiableSet;
 
@@ -85,10 +86,8 @@ final class ProtoQualifier {
     List<Method> methods = service.getMethods();
     List<Method> qualifiedMethods = new ArrayList<Method>(methods.size());
     for (Method method : methods) {
-      String newRequestType =
-          resolveType(allTypes, qualifiedName, method.getRequestType());
-      String newResponseType =
-          resolveType(allTypes, qualifiedName, method.getResponseType());
+      String newRequestType = resolveType(allTypes, qualifiedName, method.getRequestType());
+      String newResponseType = resolveType(allTypes, qualifiedName, method.getResponseType());
 
       qualifiedMethods.add(
           new Method(method.getName(), method.getDocumentation(), newRequestType, newResponseType,
@@ -134,7 +133,7 @@ final class ProtoQualifier {
    * outermost scope instead.
    */
   static String resolveType(Set<String> allTypes, String scope, String type) {
-    if (ProtoUtils.isPrimitiveType(type) || allTypes.contains(type)) {
+    if (isScalarType(type) || allTypes.contains(type)) {
       return type;
     }
     if (type.startsWith(".")) {
