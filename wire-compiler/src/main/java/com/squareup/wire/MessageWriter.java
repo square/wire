@@ -93,12 +93,30 @@ public class MessageWriter {
       writer.endType();
     } else if (type instanceof EnumType) {
       EnumType enumType = (EnumType) type;
-      writer.beginType(enumType.getName(), "enum", EnumSet.of(PUBLIC));
-      for (EnumType.Value value : enumType.getValues()) {
+      writer.beginType(enumType.getName(), "enum", EnumSet.of(PUBLIC), null, "ProtoEnum");
+      List<EnumType.Value> values = enumType.getValues();
+      for (int i = 0, count = values.size(); i < count; i++) {
+        EnumType.Value value = values.get(i);
         MessageWriter.emitDocumentation(writer, value.getDocumentation());
-        writer.emitAnnotation(ProtoEnum.class, value.getTag());
-        writer.emitEnumValue(value.getName());
+        writer.emitEnumValue(value.getName() + "(" + value.getTag() + ")", (i == count - 1));
       }
+
+      // Output Private tag field
+      writer.emitEmptyLine();
+      writer.emitField("int", "value", EnumSet.of(PRIVATE, FINAL));
+      writer.emitEmptyLine();
+
+      // Private Constructor
+      writer.beginConstructor(EnumSet.of(PRIVATE), "int", "value");
+      writer.emitStatement("this.value = value");
+      writer.endConstructor();
+      writer.emitEmptyLine();
+
+      // Public Getter
+      writer.emitAnnotation(Override.class);
+      writer.beginMethod("int", "getValue", EnumSet.of(PUBLIC));
+      writer.emitStatement("return value");
+      writer.endMethod();
       writer.endType();
     }
   }
