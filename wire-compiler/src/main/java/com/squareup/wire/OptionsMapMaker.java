@@ -363,7 +363,7 @@ public class OptionsMapMaker {
         if (isMetadata(key)) {
           continue;
         }
-        sb.append("\n  ");
+        sb.append("\n");
         indent(sb, level);
         sb.append(".");
 
@@ -391,15 +391,15 @@ public class OptionsMapMaker {
             nestedFieldType, false, level);
         sb.append(optionInitializer).append(")");
       }
-      sb.append("\n  ");
+      sb.append("\n");
       indent(sb, level);
       sb.append(".build()");
       if (emitAsList) {
         sb.append(")");
       }
     } else if (listOrMap instanceof List) {
-      sb.append("asList(\n");
-      String sep = "  ";
+      sb.append("asList(");
+      String sep = "\n";
       for (Object objectValue : (List<Object>) listOrMap) {
         sb.append(sep);
         indent(sb, level);
@@ -409,7 +409,7 @@ public class OptionsMapMaker {
           sb.append(createOptionInitializer(objectValue, parentType, parentField, fieldType, true,
               level));
         }
-        sep = ",\n  ";
+        sep = ",\n";
       }
       sb.append(")");
     } else {
