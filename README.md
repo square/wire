@@ -162,4 +162,3 @@ Wire supports custom options on messages and fields. Other custom options are ig
 
  [dl_runtime]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
- 
