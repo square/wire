@@ -17,15 +17,19 @@ Wire is built using the [Maven](http://maven.apache.org) build system.
 Compiling .proto files
 ----------------------
 
+Build the wire-compiler using Maven (alternatively you can just download 
+[the wire-compiler .jar][dl_compiler]):
+
+    % mvn clean package
+
 The `wire-compiler` package contains the `WireCompiler` class, which compiles standard `.proto` files
 into Java source code.
 
 For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`, which may
-(recursively) import other `.proto` files within the `protos-repo/` directory:
+(recursively) import other `.proto` files within the `protos-repo/` directory (replace
+"VERSION" with the Wire version you are using):
 
-    % mvn clean package
-
-    % java -jar wire-compiler/target/wire-compiler-1.0-SNAPSHOT-jar-with-dependencies.jar \
+    % java -jar wire-compiler/target/wire-compiler-VERSION-jar-with-dependencies.jar \
         --proto_path=protos-repo \
         --java_out=out google/protobuf/descriptor.proto
 
@@ -75,7 +79,7 @@ Using Wire in your application
 The `wire-runtime` package contains runtime support libraries that must be included in applications
 that use Wire-generated code.
 
-Download [the latest runtime .jar][dl] or depend via Maven:
+Download [the latest runtime .jar][dl_runtime] or depend via Maven:
 
 ```xml
 <dependency>
@@ -156,4 +160,5 @@ Wire does not support:
 
 Wire supports custom options on messages and fields. Other custom options are ignored. Use the `--no_options` flag to omit option information from the generated code.
 
- [dl]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
+ [dl_runtime]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
+ [dl_compiler]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
