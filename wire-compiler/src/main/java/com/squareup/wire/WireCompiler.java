@@ -334,7 +334,9 @@ public class WireCompiler {
         System.out.println("wrote extension class " + extensionClass);
         extensionClasses.add(extensionClass);
       } finally {
-        writer.close();
+        if (writer != null) {
+          writer.close();
+        }
       }
     }
 
@@ -418,7 +420,9 @@ public class WireCompiler {
       writer.endMethod();
       writer.endType();
     } finally {
-      writer.close();
+      if (writer != null) {
+        writer.close();
+      }
     }
   }
 
@@ -733,7 +737,9 @@ public class WireCompiler {
       messageWriter.emitHeader(imports, datatypes, labels);
       messageWriter.emitType(type, protoFile.getPackageName() + ".", optionsMap, true);
     } finally {
-      writer.close();
+      if (writer != null) {
+        writer.close();
+      }
     }
   }
 
