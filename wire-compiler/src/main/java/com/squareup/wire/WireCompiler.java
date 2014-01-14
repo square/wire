@@ -49,10 +49,7 @@ import static javax.lang.model.element.Modifier.STATIC;
 /** Compiler for Wire protocol buffers. */
 public class WireCompiler {
 
-  static final String INDENT = "  ";
   static final String LINE_WRAP_INDENT = "    ";
-  static final String INDENT_LINE_WRAP_INDENT = INDENT + LINE_WRAP_INDENT;
-  static final String NEW_LINE_INDENT_LINE_WRAP_INDENT = "\n" + INDENT_LINE_WRAP_INDENT;
 
   /**
    * Field options that don't trigger generation of a FIELD_OPTIONS_* field.
@@ -400,9 +397,7 @@ public class WireCompiler {
       StringBuilder classes = new StringBuilder("unmodifiableList(asList(\n");
       int extensionsCount = extensionClasses.size();
       for (int i = 0; i < extensionsCount; i++) {
-        String extensionClass = extensionClasses.get(i);
-        classes.append(INDENT_LINE_WRAP_INDENT);
-        classes.append(extensionClass);
+        classes.append(extensionClasses.get(i));
         classes.append(".class");
         if (i < extensionsCount - 1) {
           classes.append(",\n");
@@ -868,25 +863,22 @@ public class WireCompiler {
         String labelString = getLabelString(field, isEnum);
         if (isScalar) {
           initialValue = String.format("Extension%n"
-              + "%1$s.%2$sExtending(%3$s.class)%n"
-              + "%1$s.setName(\"%4$s\")%n"
-              + "%1$s.setTag(%5$d)%n"
-              + "%1$s.build%6$s()", INDENT_LINE_WRAP_INDENT, field.getType(), className, fqName,
-              tag, labelString);
+              + ".%1$sExtending(%2$s.class)%n"
+              + ".setName(\"%3$s\")%n"
+              + ".setTag(%4$d)%n"
+              + ".build%5$s()", field.getType(), className, fqName, tag, labelString);
         } else if (isEnum) {
           initialValue = String.format("Extension%n"
-              + "%1$s.enumExtending(%2$s.class, %3$s.class)%n"
-              + "%1$s.setName(\"%4$s\")%n"
-              + "%1$s.setTag(%5$d)%n"
-              + "%1$s.build%6$s()", INDENT_LINE_WRAP_INDENT, type, className, fqName, tag,
-              labelString);
+              + ".enumExtending(%1$s.class, %2$s.class)%n"
+              + ".setName(\"%3$s\")%n"
+              + ".setTag(%4$d)%n"
+              + ".build%5$s()", type, className, fqName, tag, labelString);
         } else {
           initialValue = String.format("Extension%n"
-              + "%1$s.messageExtending(%2$s.class, %3$s.class)%n"
-              + "%1$s.setName(\"%4$s\")%n"
-              + "%1$s.setTag(%5$d)%n"
-              + "%1$s.build%6$s()", INDENT_LINE_WRAP_INDENT, type, className, fqName, tag,
-              labelString);
+              + ".messageExtending(%1$s.class, %2$s.class)%n"
+              + ".setName(\"%3$s\")%n"
+              + ".setTag(%4$d)%n"
+              + ".build%5$s()", type, className, fqName, tag, labelString);
         }
 
         if (FieldInfo.isRepeated(field)) {

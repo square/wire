@@ -134,14 +134,12 @@ public class MessageWriter {
       for (Map.Entry<String, ?> entry : optionsMap.entrySet()) {
         String fqName = entry.getKey();
         ExtensionInfo info = compiler.getExtension(fqName);
-        sb.append(WireCompiler.NEW_LINE_INDENT_LINE_WRAP_INDENT);
-        sb.append(String.format(".setExtension(Ext_%s.%s, %s)",
+        sb.append(String.format("%n.setExtension(Ext_%s.%s, %s)",
             info.location, compiler.getTrailingSegment(fqName),
             compiler.getOptionsMapMaker().createOptionInitializer(entry.getValue(), "", "",
-                info.fqType, false, 1)));
+                info.fqType, false, 0)));
       }
-      sb.append(WireCompiler.NEW_LINE_INDENT_LINE_WRAP_INDENT);
-      sb.append(".build()");
+      sb.append("\n.build()");
       writer.emitEmptyLine();
       writer.emitField("MessageOptions", "MESSAGE_OPTIONS", EnumSet.of(PUBLIC, STATIC, FINAL),
           sb.toString());
@@ -187,14 +185,12 @@ public class MessageWriter {
       if (info == null) {
         throw new WireCompilerException("No extension info for " + fqName);
       }
-      sb.append(WireCompiler.NEW_LINE_INDENT_LINE_WRAP_INDENT);
-      sb.append(String.format(".setExtension(Ext_%s.%s, %s)",
+      sb.append(String.format("%n.setExtension(Ext_%s.%s, %s)",
           info.location,
           compiler.getTrailingSegment(fqName), compiler.getOptionsMapMaker()
-          .createOptionInitializer(entry.getValue(), "", "", info.fqType, false, 1)));
+          .createOptionInitializer(entry.getValue(), "", "", info.fqType, false, 0)));
     }
-    sb.append(WireCompiler.NEW_LINE_INDENT_LINE_WRAP_INDENT);
-    sb.append(".build()");
+    sb.append("\n.build()");
     writer.emitField("FieldOptions", "FIELD_OPTIONS_" + fieldName.toUpperCase(Locale.US),
         EnumSet.of(PUBLIC, STATIC, FINAL), sb.toString());
   }
