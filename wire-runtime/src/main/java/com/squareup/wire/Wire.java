@@ -34,8 +34,8 @@ public final class Wire {
       BuilderAdapter<? extends Message.Builder>> builderAdapters =
           new LinkedHashMap<Class<? extends Message.Builder>,
               BuilderAdapter<? extends Message.Builder>>();
-  private final Map<Class<? extends Enum>, EnumAdapter<? extends Enum>> enumAdapters =
-      new LinkedHashMap<Class<? extends Enum>, EnumAdapter<? extends Enum>>();
+  private final Map<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>> enumAdapters =
+      new LinkedHashMap<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>>();
 
   // Visible to MessageAdapter
   final ExtensionRegistry registry;
@@ -101,7 +101,7 @@ public final class Wire {
    * Returns an enum adapter for {@code enumClass}.
    */
   @SuppressWarnings("unchecked")
-  synchronized <E extends Enum> EnumAdapter<E> enumAdapter(Class<E> enumClass) {
+  synchronized <E extends ProtoEnum> EnumAdapter<E> enumAdapter(Class<E> enumClass) {
     EnumAdapter<E> adapter = (EnumAdapter<E>) enumAdapters.get(enumClass);
     if (adapter == null) {
       adapter = new EnumAdapter<E>(enumClass);
