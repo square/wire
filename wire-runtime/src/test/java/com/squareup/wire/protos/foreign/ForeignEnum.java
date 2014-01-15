@@ -4,9 +4,19 @@ package com.squareup.wire.protos.foreign;
 
 import com.squareup.wire.ProtoEnum;
 
-public enum ForeignEnum {
-  @ProtoEnum(0)
-  BAV,
-  @ProtoEnum(1)
-  BAX,
+public enum ForeignEnum
+    implements ProtoEnum {
+  BAV(0),
+  BAX(1);
+
+  private final int value;
+
+  private ForeignEnum(int value) {
+    this.value = value;
+  }
+
+  @Override
+  public int getValue() {
+    return value;
+  }
 }

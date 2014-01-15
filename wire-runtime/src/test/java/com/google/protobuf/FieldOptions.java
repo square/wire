@@ -202,15 +202,24 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     }
   }
 
-  public enum CType {
+  public enum CType
+      implements ProtoEnum {
     /**
      * Default mode.
      */
-    @ProtoEnum(0)
-    STRING,
-    @ProtoEnum(1)
-    CORD,
-    @ProtoEnum(2)
-    STRING_PIECE,
+    STRING(0),
+    CORD(1),
+    STRING_PIECE(2);
+
+    private final int value;
+
+    private CType(int value) {
+      this.value = value;
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
   }
 }

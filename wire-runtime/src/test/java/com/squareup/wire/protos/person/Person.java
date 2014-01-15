@@ -135,16 +135,25 @@ public final class Person extends Message {
     }
   }
 
-  public enum PhoneType {
-    @ProtoEnum(0)
-    MOBILE,
-    @ProtoEnum(1)
-    HOME,
+  public enum PhoneType
+      implements ProtoEnum {
+    MOBILE(0),
+    HOME(1),
     /**
      * Could be phone or fax.
      */
-    @ProtoEnum(2)
-    WORK,
+    WORK(2);
+
+    private final int value;
+
+    private PhoneType(int value) {
+      this.value = value;
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
   }
 
   public static final class PhoneNumber extends Message {

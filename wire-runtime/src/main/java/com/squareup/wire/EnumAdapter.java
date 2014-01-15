@@ -15,32 +15,21 @@
  */
 package com.squareup.wire;
 
-import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Converts values of an enum to and from integers using {@link ProtoEnum}
- * annotations.
+ * Converts values of an enum to and from integers.
  */
 final class EnumAdapter<E extends Enum> {
   private final Map<Integer, E> fromInt = new LinkedHashMap<Integer, E>();
   private final Map<E, Integer> toInt = new LinkedHashMap<E, Integer>();
 
   EnumAdapter(Class<E> type) {
-    // Record values for each constant annotated with '@ProtoEnum'.
     for (E value : type.getEnumConstants()) {
-      try {
-        Field f = type.getField(value.name());
-        if (f.isAnnotationPresent(ProtoEnum.class)) {
-          ProtoEnum annotation = f.getAnnotation(ProtoEnum.class);
-          int tag = annotation.value();
-          fromInt.put(tag, value);
-          toInt.put(value, tag);
-        }
-      } catch (NoSuchFieldException e) {
-        throw new RuntimeException(e);
-      }
+      int tag = ((ProtoEnum) value).getValue();
+      fromInt.put(tag, value);
+      toInt.put(value, tag);
     }
   }
 

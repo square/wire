@@ -1211,9 +1211,20 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
   }
 
-  public enum NestedEnum {
-    @ProtoEnum(1)
-    A,
+  public enum NestedEnum
+      implements ProtoEnum {
+    A(1);
+
+    private final int value;
+
+    private NestedEnum(int value) {
+      this.value = value;
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
   }
 
   public static final class NestedMessage extends Message {

@@ -254,12 +254,21 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
-  public enum FooBarBazEnum {
-    @ProtoEnum(1)
-    FOO,
-    @ProtoEnum(2)
-    BAR,
-    @ProtoEnum(3)
-    BAZ,
+  public enum FooBarBazEnum
+      implements ProtoEnum {
+    FOO(1),
+    BAR(2),
+    BAZ(3);
+
+    private final int value;
+
+    private FooBarBazEnum(int value) {
+      this.value = value;
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
   }
 }
