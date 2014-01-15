@@ -21,20 +21,17 @@ import java.util.Map;
 /**
  * Converts values of an enum to and from integers.
  */
-final class EnumAdapter<E extends Enum> {
+final class EnumAdapter<E extends ProtoEnum> {
   private final Map<Integer, E> fromInt = new LinkedHashMap<Integer, E>();
-  private final Map<E, Integer> toInt = new LinkedHashMap<E, Integer>();
 
   EnumAdapter(Class<E> type) {
     for (E value : type.getEnumConstants()) {
-      int tag = ((ProtoEnum) value).getValue();
-      fromInt.put(tag, value);
-      toInt.put(value, tag);
+      fromInt.put(value.getValue(), value);
     }
   }
 
   public int toInt(E e) {
-    return toInt.get(e);
+    return e.getValue();
   }
 
   public E fromInt(int value) {

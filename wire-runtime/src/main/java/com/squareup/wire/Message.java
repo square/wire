@@ -182,7 +182,7 @@ public abstract class Message {
    * @param <E> the enum class type
    */
   @SuppressWarnings("unchecked")
-  public static <E extends Enum> int intFromEnum(E value) {
+  public static <E extends Enum & ProtoEnum> int intFromEnum(E value) {
     EnumAdapter<E> adapter = WIRE.enumAdapter((Class<E>) value.getClass());
     return adapter.toInt(value);
   }
@@ -194,7 +194,7 @@ public abstract class Message {
    *
    * @param <E> the enum class type
    */
-  public static <E extends Enum> E enumFromInt(Class<E> enumClass, int value) {
+  public static <E extends Enum & ProtoEnum> E enumFromInt(Class<E> enumClass, int value) {
     EnumAdapter<E> adapter = WIRE.enumAdapter(enumClass);
     return adapter.fromInt(value);
   }

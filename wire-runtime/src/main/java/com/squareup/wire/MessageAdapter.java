@@ -45,7 +45,7 @@ final class MessageAdapter<M extends Message> {
     final String name;
     final Datatype datatype;
     final Label label;
-    final Class<? extends Enum> enumType;
+    final Class<? extends ProtoEnum> enumType;
     final Class<? extends Message> messageType;
 
     private final Field messageField;
@@ -59,7 +59,7 @@ final class MessageAdapter<M extends Message> {
       this.datatype = datatype;
       this.label = label;
       if (datatype == Datatype.ENUM) {
-        this.enumType = (Class<? extends Enum>) enumOrMessageType;
+        this.enumType = (Class<? extends ProtoEnum>) enumOrMessageType;
         this.messageType = null;
       } else if (datatype == Datatype.MESSAGE) {
         this.messageType = (Class<? extends Message>) enumOrMessageType;
@@ -408,7 +408,7 @@ final class MessageAdapter<M extends Message> {
       case SINT32: return WireOutput.varint32Size(WireOutput.zigZag32((Integer) value));
       case SINT64: return WireOutput.varint64Size(WireOutput.zigZag64((Long) value));
       case BOOL: return 1;
-      case ENUM: return getEnumSize((Enum) value);
+      case ENUM: return getEnumSize((ProtoEnum) value);
       case STRING:
         int utf8Length = utf8Length((String) value);
         return WireOutput.varint32Size(utf8Length) + utf8Length;
@@ -443,7 +443,7 @@ final class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private <E extends Enum> int getEnumSize(E value) {
+  private <E extends ProtoEnum> int getEnumSize(E value) {
     EnumAdapter<E> adapter = (EnumAdapter<E>) wire.enumAdapter(value.getClass());
     return WireOutput.varint32Size(adapter.toInt(value));
   }
@@ -472,7 +472,7 @@ final class MessageAdapter<M extends Message> {
       case SINT32: output.writeVarint32(WireOutput.zigZag32((Integer) value)); break;
       case SINT64: output.writeVarint64(WireOutput.zigZag64((Long) value)); break;
       case BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
-      case ENUM: writeEnum((Enum) value, output); break;
+      case ENUM: writeEnum((ProtoEnum) value, output); break;
       case STRING:
         final byte[] bytes = ((String) value).getBytes("UTF-8");
         output.writeVarint32(bytes.length);
@@ -500,7 +500,7 @@ final class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private <E extends Enum> void writeEnum(E value, WireOutput output)
+  private <E extends ProtoEnum> void writeEnum(E value, WireOutput output)
       throws IOException {
     EnumAdapter<E> adapter = (EnumAdapter<E>) wire.enumAdapter(value.getClass());
     output.writeVarint32(adapter.toInt(value));
@@ -590,7 +590,7 @@ final class MessageAdapter<M extends Message> {
       case SINT64: return WireInput.decodeZigZag64(input.readVarint64());
       case BOOL: return input.readVarint32() != 0;
       case ENUM:
-        EnumAdapter<? extends Enum> adapter = wire.enumAdapter(getEnumClass(tag));
+        EnumAdapter<? extends ProtoEnum> adapter = wire.enumAdapter(getEnumClass(tag));
         return adapter.fromInt(input.readVarint32());
       case STRING: return input.readString();
       case BYTES: return input.readBytes();
@@ -699,9 +699,9 @@ final class MessageAdapter<M extends Message> {
     builder.setExtension(extension, value);
   }
 
-  private Class<? extends Enum> getEnumClass(int tag) {
+  private Class<? extends ProtoEnum> getEnumClass(int tag) {
     FieldInfo fieldInfo = fieldInfoMap.get(tag);
-    Class<? extends Enum> enumType = fieldInfo == null ? null : fieldInfo.enumType;
+    Class<? extends ProtoEnum> enumType = fieldInfo == null ? null : fieldInfo.enumType;
     if (enumType == null) {
       Extension<ExtendableMessage<?>, ?> extension = getExtension(tag);
       if (extension != null) {
