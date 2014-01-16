@@ -557,7 +557,12 @@ final class MessageAdapter<M extends Message> {
           int oldLimit = input.pushLimit(length);
           while (input.getPosition() < start + length) {
             value = readValue(input, tag, datatype);
-            storage.add(tag, value);
+            if (datatype == Datatype.ENUM && value instanceof Integer) {
+              // An unknown Enum value was encountered, store it as an unknown field
+              builder.addVarint(tag, (Integer) value);
+            } else {
+              storage.add(tag, value);
+            }
           }
           input.popLimit(oldLimit);
           if (input.getPosition() != start + length) {
@@ -566,12 +571,17 @@ final class MessageAdapter<M extends Message> {
         } else {
           // Read a single value
           value = readValue(input, tag, datatype);
-          if (label.isRepeated()) {
-            storage.add(tag, value);
-          } else if (extension != null) {
-            setExtension((ExtendableBuilder<?>) builder, extension, value);
+          if (datatype == Datatype.ENUM && value instanceof Integer) {
+            // An unknown Enum value was encountered, store it as an unknown field
+            builder.addVarint(tag, (Integer) value);
           } else {
-            setBuilderField(builder, tag, value);
+            if (label.isRepeated()) {
+              storage.add(tag, value);
+            } else if (extension != null) {
+              setExtension((ExtendableBuilder<?>) builder, extension, value);
+            } else {
+              setBuilderField(builder, tag, value);
+            }
           }
         }
       }
@@ -591,7 +601,13 @@ final class MessageAdapter<M extends Message> {
       case BOOL: return input.readVarint32() != 0;
       case ENUM:
         EnumAdapter<? extends ProtoEnum> adapter = wire.enumAdapter(getEnumClass(tag));
-        return adapter.fromInt(input.readVarint32());
+        int value = input.readVarint32();
+        try {
+          return adapter.fromInt(value);
+        } catch (IllegalArgumentException e) {
+          // Return the raw value as an Integer
+          return value;
+        }
       case STRING: return input.readString();
       case BYTES: return input.readBytes();
       case MESSAGE: return readMessage(input, tag);

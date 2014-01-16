@@ -32,6 +32,7 @@ final class EnumAdapter<E extends ProtoEnum> {
 
   private final int[] values;
   private final E[] constants;
+  private final boolean isDense;
 
   EnumAdapter(Class<E> type) {
     this.type = type;
@@ -39,9 +40,17 @@ final class EnumAdapter<E extends ProtoEnum> {
     constants = type.getEnumConstants();
     Arrays.sort(constants, COMPARATOR);
 
-    values = new int[constants.length];
-    for (int i = 0; i < constants.length; i++) {
-      values[i] = constants[i].getValue();
+    int length = constants.length;
+    if (constants[0].getValue() == 1 && constants[length - 1].getValue() == length) {
+      // Values completely fill the range from 1..length
+      isDense = true;
+      values = null;
+    } else {
+      isDense = false;
+      values = new int[length];
+      for (int i = 0; i < length; i++) {
+        values[i] = constants[i].getValue();
+      }
     }
   }
 
@@ -50,11 +59,12 @@ final class EnumAdapter<E extends ProtoEnum> {
   }
 
   public E fromInt(int value) {
-    int index = Arrays.binarySearch(values, value);
-    if (index < 0) {
+    int index = isDense ? value - 1 : Arrays.binarySearch(values, value);
+    try {
+      return constants[index];
+    } catch (IndexOutOfBoundsException e) {
       throw new IllegalArgumentException(
           "Unknown enum tag " + value + " for " + type.getCanonicalName());
     }
-    return constants[index];
   }
 }
