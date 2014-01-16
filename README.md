@@ -89,6 +89,11 @@ Download [the latest runtime .jar][dl_runtime] or depend via Maven:
 </dependency>
 ```
 
+If you use Proguard, then you need to add `keep` rules.  The simplest option is to tell Proguard not to touch the Wire library and your generated protocol buffers (of course these simple rules will miss opportunities to shrink and optimize the code):
+
+    -keep class com.squareup.wire.** { *; }    
+    -keep class com.yourcompany.yourgeneratedcode.** { *; }
+ 
 How Wire works
 --------------
 
