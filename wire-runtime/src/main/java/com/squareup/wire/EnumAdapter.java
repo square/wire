@@ -15,18 +15,33 @@
  */
 package com.squareup.wire;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Converts values of an enum to and from integers.
  */
 final class EnumAdapter<E extends ProtoEnum> {
-  private final Map<Integer, E> fromInt = new LinkedHashMap<Integer, E>();
+  private static final Comparator<ProtoEnum> COMPARATOR = new Comparator<ProtoEnum>() {
+    @Override public int compare(ProtoEnum o1, ProtoEnum o2) {
+      return o1.getValue() - o2.getValue();
+    }
+  };
+
+  private final Class<E> type;
+
+  private final int[] values;
+  private final E[] constants;
 
   EnumAdapter(Class<E> type) {
-    for (E value : type.getEnumConstants()) {
-      fromInt.put(value.getValue(), value);
+    this.type = type;
+
+    constants = type.getEnumConstants();
+    Arrays.sort(constants, COMPARATOR);
+
+    values = new int[constants.length];
+    for (int i = 0; i < constants.length; i++) {
+      values[i] = constants[i].getValue();
     }
   }
 
@@ -35,6 +50,11 @@ final class EnumAdapter<E extends ProtoEnum> {
   }
 
   public E fromInt(int value) {
-    return fromInt.get(value);
+    int index = Arrays.binarySearch(values, value);
+    if (index < 0) {
+      throw new IllegalArgumentException(
+          "Unknown enum tag " + value + " for " + type.getCanonicalName());
+    }
+    return constants[index];
   }
 }
