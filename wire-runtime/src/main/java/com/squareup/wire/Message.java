@@ -151,7 +151,8 @@ public abstract class Message {
     }
   }
 
-  Collection<List<UnknownFieldMap.FieldValue>> unknownFields() {
+  // Increase visibility for testing
+  protected Collection<List<UnknownFieldMap.FieldValue>> unknownFields() {
     return unknownFields == null ? Collections.<List<UnknownFieldMap.FieldValue>>emptySet()
         : unknownFields.fieldMap.values();
   }
