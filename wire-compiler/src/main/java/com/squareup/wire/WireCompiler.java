@@ -1026,7 +1026,7 @@ public class WireCompiler {
             labels.add(Label.REQUIRED);
             break;
           case REPEATED:
-            if (FieldInfo.isPacked(field, false)) {
+            if (FieldInfo.isPacked(field, datatype == Datatype.ENUM)) {
               labels.add(Label.PACKED);
             } else {
               labels.add(Label.REPEATED);
