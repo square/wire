@@ -502,7 +502,11 @@ public class MessageWriter {
 
       emitDocumentation(writer, field.getDocumentation());
       writer.beginMethod("Builder", sanitized, EnumSet.of(PUBLIC), args, null);
-      writer.emitStatement("this.%1$s = %1$s", sanitized);
+      if (FieldInfo.isRepeated(field)) {
+        writer.emitStatement("this.%1$s = checkForNulls(%1$s)", sanitized);
+      } else {
+        writer.emitStatement("this.%1$s = %1$s", sanitized);
+      }
       writer.emitStatement("return this");
       writer.endMethod();
     }
