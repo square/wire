@@ -124,7 +124,7 @@ public final class Person extends Message {
      * A list of the customer's phone numbers.
      */
     public Builder phone(List<PhoneNumber> phone) {
-      this.phone = phone;
+      this.phone = checkForNulls(phone);
       return this;
     }
 

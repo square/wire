@@ -965,157 +965,157 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     public Builder rep_int32(List<Integer> rep_int32) {
-      this.rep_int32 = rep_int32;
+      this.rep_int32 = checkForNulls(rep_int32);
       return this;
     }
 
     public Builder rep_uint32(List<Integer> rep_uint32) {
-      this.rep_uint32 = rep_uint32;
+      this.rep_uint32 = checkForNulls(rep_uint32);
       return this;
     }
 
     public Builder rep_sint32(List<Integer> rep_sint32) {
-      this.rep_sint32 = rep_sint32;
+      this.rep_sint32 = checkForNulls(rep_sint32);
       return this;
     }
 
     public Builder rep_fixed32(List<Integer> rep_fixed32) {
-      this.rep_fixed32 = rep_fixed32;
+      this.rep_fixed32 = checkForNulls(rep_fixed32);
       return this;
     }
 
     public Builder rep_sfixed32(List<Integer> rep_sfixed32) {
-      this.rep_sfixed32 = rep_sfixed32;
+      this.rep_sfixed32 = checkForNulls(rep_sfixed32);
       return this;
     }
 
     public Builder rep_int64(List<Long> rep_int64) {
-      this.rep_int64 = rep_int64;
+      this.rep_int64 = checkForNulls(rep_int64);
       return this;
     }
 
     public Builder rep_uint64(List<Long> rep_uint64) {
-      this.rep_uint64 = rep_uint64;
+      this.rep_uint64 = checkForNulls(rep_uint64);
       return this;
     }
 
     public Builder rep_sint64(List<Long> rep_sint64) {
-      this.rep_sint64 = rep_sint64;
+      this.rep_sint64 = checkForNulls(rep_sint64);
       return this;
     }
 
     public Builder rep_fixed64(List<Long> rep_fixed64) {
-      this.rep_fixed64 = rep_fixed64;
+      this.rep_fixed64 = checkForNulls(rep_fixed64);
       return this;
     }
 
     public Builder rep_sfixed64(List<Long> rep_sfixed64) {
-      this.rep_sfixed64 = rep_sfixed64;
+      this.rep_sfixed64 = checkForNulls(rep_sfixed64);
       return this;
     }
 
     public Builder rep_bool(List<Boolean> rep_bool) {
-      this.rep_bool = rep_bool;
+      this.rep_bool = checkForNulls(rep_bool);
       return this;
     }
 
     public Builder rep_float(List<Float> rep_float) {
-      this.rep_float = rep_float;
+      this.rep_float = checkForNulls(rep_float);
       return this;
     }
 
     public Builder rep_double(List<Double> rep_double) {
-      this.rep_double = rep_double;
+      this.rep_double = checkForNulls(rep_double);
       return this;
     }
 
     public Builder rep_string(List<String> rep_string) {
-      this.rep_string = rep_string;
+      this.rep_string = checkForNulls(rep_string);
       return this;
     }
 
     public Builder rep_bytes(List<ByteString> rep_bytes) {
-      this.rep_bytes = rep_bytes;
+      this.rep_bytes = checkForNulls(rep_bytes);
       return this;
     }
 
     public Builder rep_nested_enum(List<NestedEnum> rep_nested_enum) {
-      this.rep_nested_enum = rep_nested_enum;
+      this.rep_nested_enum = checkForNulls(rep_nested_enum);
       return this;
     }
 
     public Builder rep_nested_message(List<NestedMessage> rep_nested_message) {
-      this.rep_nested_message = rep_nested_message;
+      this.rep_nested_message = checkForNulls(rep_nested_message);
       return this;
     }
 
     public Builder pack_int32(List<Integer> pack_int32) {
-      this.pack_int32 = pack_int32;
+      this.pack_int32 = checkForNulls(pack_int32);
       return this;
     }
 
     public Builder pack_uint32(List<Integer> pack_uint32) {
-      this.pack_uint32 = pack_uint32;
+      this.pack_uint32 = checkForNulls(pack_uint32);
       return this;
     }
 
     public Builder pack_sint32(List<Integer> pack_sint32) {
-      this.pack_sint32 = pack_sint32;
+      this.pack_sint32 = checkForNulls(pack_sint32);
       return this;
     }
 
     public Builder pack_fixed32(List<Integer> pack_fixed32) {
-      this.pack_fixed32 = pack_fixed32;
+      this.pack_fixed32 = checkForNulls(pack_fixed32);
       return this;
     }
 
     public Builder pack_sfixed32(List<Integer> pack_sfixed32) {
-      this.pack_sfixed32 = pack_sfixed32;
+      this.pack_sfixed32 = checkForNulls(pack_sfixed32);
       return this;
     }
 
     public Builder pack_int64(List<Long> pack_int64) {
-      this.pack_int64 = pack_int64;
+      this.pack_int64 = checkForNulls(pack_int64);
       return this;
     }
 
     public Builder pack_uint64(List<Long> pack_uint64) {
-      this.pack_uint64 = pack_uint64;
+      this.pack_uint64 = checkForNulls(pack_uint64);
       return this;
     }
 
     public Builder pack_sint64(List<Long> pack_sint64) {
-      this.pack_sint64 = pack_sint64;
+      this.pack_sint64 = checkForNulls(pack_sint64);
       return this;
     }
 
     public Builder pack_fixed64(List<Long> pack_fixed64) {
-      this.pack_fixed64 = pack_fixed64;
+      this.pack_fixed64 = checkForNulls(pack_fixed64);
       return this;
     }
 
     public Builder pack_sfixed64(List<Long> pack_sfixed64) {
-      this.pack_sfixed64 = pack_sfixed64;
+      this.pack_sfixed64 = checkForNulls(pack_sfixed64);
       return this;
     }
 
     public Builder pack_bool(List<Boolean> pack_bool) {
-      this.pack_bool = pack_bool;
+      this.pack_bool = checkForNulls(pack_bool);
       return this;
     }
 
     public Builder pack_float(List<Float> pack_float) {
-      this.pack_float = pack_float;
+      this.pack_float = checkForNulls(pack_float);
       return this;
     }
 
     public Builder pack_double(List<Double> pack_double) {
-      this.pack_double = pack_double;
+      this.pack_double = checkForNulls(pack_double);
       return this;
     }
 
     public Builder pack_nested_enum(List<NestedEnum> pack_nested_enum) {
-      this.pack_nested_enum = pack_nested_enum;
+      this.pack_nested_enum = checkForNulls(pack_nested_enum);
       return this;
     }
 

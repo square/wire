@@ -328,6 +328,24 @@ public abstract class Message {
     }
 
     /**
+     * Checks incoming {@code List}s for null elements and throws an exception if one is
+     * present. A null list is allowed.
+     *
+     * @return the incoming list.
+     * @throws NullPointerException if a null element is present in the list.
+     */
+    protected static <T> List<T> checkForNulls(List<T> elements) {
+      if (elements != null) {
+        for (T element : elements) {
+          if (element == null) {
+            throw new NullPointerException();
+          }
+        }
+      }
+      return elements;
+    }
+
+    /**
      * Returns an immutable {@link com.squareup.wire.Message} based on the fields that have been set
      * in this builder.
      */

@@ -48,7 +48,7 @@ public final class Bars extends Message {
     }
 
     public Builder bars(List<Bar> bars) {
-      this.bars = bars;
+      this.bars = checkForNulls(bars);
       return this;
     }
 

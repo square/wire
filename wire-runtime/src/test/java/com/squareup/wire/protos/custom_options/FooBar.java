@@ -178,7 +178,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     public Builder fred(List<Float> fred) {
-      this.fred = fred;
+      this.fred = checkForNulls(fred);
       return this;
     }
 
@@ -188,7 +188,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     public Builder nested(List<FooBar> nested) {
-      this.nested = nested;
+      this.nested = checkForNulls(nested);
       return this;
     }
 

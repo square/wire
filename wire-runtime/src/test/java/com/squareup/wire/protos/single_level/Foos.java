@@ -48,7 +48,7 @@ public final class Foos extends Message {
     }
 
     public Builder foos(List<Foo> foos) {
-      this.foos = foos;
+      this.foos = checkForNulls(foos);
       return this;
     }
 

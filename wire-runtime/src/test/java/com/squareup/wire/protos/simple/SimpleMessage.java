@@ -238,7 +238,7 @@ public final class SimpleMessage extends Message {
      * A repeated double, deprecated
      */
     public Builder repeated_double(List<Double> repeated_double) {
-      this.repeated_double = repeated_double;
+      this.repeated_double = checkForNulls(repeated_double);
       return this;
     }
 
