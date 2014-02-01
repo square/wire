@@ -42,6 +42,7 @@ public final class SimpleMessage extends Message {
    * An optional NestedMessage, deprecated
    */
   @ProtoField(tag = 2, deprecated = true)
+  @Deprecated
   public final NestedMessage optional_nested_msg;
 
   /**
@@ -68,6 +69,7 @@ public final class SimpleMessage extends Message {
     label = REPEATED,
     deprecated = true
   )
+  @Deprecated
   public final List<Double> repeated_double;
 
   /**
@@ -208,6 +210,7 @@ public final class SimpleMessage extends Message {
     /**
      * An optional NestedMessage, deprecated
      */
+    @Deprecated
     public Builder optional_nested_msg(NestedMessage optional_nested_msg) {
       this.optional_nested_msg = optional_nested_msg;
       return this;
@@ -237,6 +240,7 @@ public final class SimpleMessage extends Message {
     /**
      * A repeated double, deprecated
      */
+    @Deprecated
     public Builder repeated_double(List<Double> repeated_double) {
       this.repeated_double = checkForNulls(repeated_double);
       return this;

@@ -296,6 +296,10 @@ public class MessageWriter {
       emitDocumentation(writer, field.getDocumentation());
       writer.emitAnnotation(ProtoField.class, map);
 
+      if (field.isDeprecated()) {
+        writer.emitAnnotation(Deprecated.class);
+      }
+
       if (FieldInfo.isRepeated(field)) javaName = "List<" + javaName + ">";
       writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC, FINAL));
     }
@@ -501,6 +505,11 @@ public class MessageWriter {
       writer.emitEmptyLine();
 
       emitDocumentation(writer, field.getDocumentation());
+
+      if (field.isDeprecated()) {
+        writer.emitAnnotation(Deprecated.class);
+      }
+
       writer.beginMethod("Builder", sanitized, EnumSet.of(PUBLIC), args, null);
       if (FieldInfo.isRepeated(field)) {
         writer.emitStatement("this.%1$s = checkForNulls(%1$s)", sanitized);
