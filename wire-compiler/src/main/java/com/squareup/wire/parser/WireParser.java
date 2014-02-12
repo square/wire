@@ -1,5 +1,6 @@
 package com.squareup.wire.parser;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
@@ -9,7 +10,6 @@ import com.squareup.protoparser.Type;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -27,14 +27,14 @@ import static java.util.Collections.unmodifiableSet;
  * <p>
  * There are three sets of methods which control parsing:
  * <ul>
- * <li>{@link #addDirectory(File) addDirectory} or {@link #addDirectories(Collection)
+ * <li>{@link #addDirectory(File) addDirectory} or {@link #addDirectories(Iterable)
  * addDirectories} specifies a directory under which proto files reside. Directories are used to
  * resolve {@code include} declarations. If no directories are specified, the current working
  * directory will be used.</li>
- * <li>{@link #addProto(File) addProto} or {@link #addProtos(Collection) addProtos} specifies which
+ * <li>{@link #addProto(File) addProto} or {@link #addProtos(Iterable) addProtos} specifies which
  * proto files to parse. If no proto files are specified, all files under every directory will be
  * used.</li>
- * <li>{@link #addTypeRoot(String) addTypeRoot} or {@link #addTypeRoots(Collection) addTypeRoots}
+ * <li>{@link #addTypeRoot(String) addTypeRoot} or {@link #addTypeRoots(Iterable) addTypeRoots}
  * specifies which types to include. If no types are specified, all types in every proto file will
  * be used.</li>
  * </ul>
@@ -55,6 +55,7 @@ public class WireParser {
     this(Filesystem.SYSTEM);
   }
 
+  @VisibleForTesting
   WireParser(Filesystem fs) {
     this.fs = fs;
   }
@@ -73,9 +74,8 @@ public class WireParser {
    * Add directories under which proto files reside. {@code include} declarations will be resolved
    * from these directories.
    */
-  public WireParser addDirectories(Collection<File> directories) {
+  public WireParser addDirectories(Iterable<File> directories) {
     checkNotNull(directories, "Directories must not be null.");
-    checkArgument(!directories.isEmpty(), "Directories must not be empty.");
     for (File directory : directories) {
       addDirectory(directory);
     }
@@ -90,9 +90,8 @@ public class WireParser {
   }
 
   /** Add proto files to parse. */
-  public WireParser addProtos(Collection<File> protos) {
+  public WireParser addProtos(Iterable<File> protos) {
     checkNotNull(protos, "Protos must not be null.");
-    checkArgument(!protos.isEmpty(), "Protos must not be empty.");
     for (File proto : protos) {
       addProto(proto);
     }
@@ -116,9 +115,8 @@ public class WireParser {
    * their dependencies will be included. This allows for filtering message-heavy proto files such
    * that only desired message types are generated.
    */
-  public WireParser addTypeRoots(Collection<String> types) {
+  public WireParser addTypeRoots(Iterable<String> types) {
     checkNotNull(types, "Types must not be null.");
-    checkArgument(!types.isEmpty(), "Types must not be empty.");
     for (String type : types) {
       addTypeRoot(type);
     }
