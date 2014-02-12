@@ -1,14 +1,21 @@
 package com.squareup.wire.parser;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 import com.squareup.protoparser.Type;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedHashSet;
@@ -18,8 +25,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.squareup.wire.parser.ProtoQualifier.fullyQualifyProtos;
-import static java.util.Collections.singleton;
-import static java.util.Collections.unmodifiableSet;
 
 /**
  * Intelligently parse {@code .proto} files into an object model which represents a set of types
@@ -27,11 +32,11 @@ import static java.util.Collections.unmodifiableSet;
  * <p>
  * There are three sets of methods which control parsing:
  * <ul>
- * <li>{@link #addDirectory(File) addDirectory} or {@link #addDirectories(Iterable)
+ * <li>{@link #addDirectory(Path) addDirectory} or {@link #addDirectories(Iterable)
  * addDirectories} specifies a directory under which proto files reside. Directories are used to
  * resolve {@code include} declarations. If no directories are specified, the current working
  * directory will be used.</li>
- * <li>{@link #addProto(File) addProto} or {@link #addProtos(Iterable) addProtos} specifies which
+ * <li>{@link #addProto(Path) addProto} or {@link #addProtos(Iterable) addProtos} specifies which
  * proto files to parse. If no proto files are specified, all files under every directory will be
  * used.</li>
  * <li>{@link #addTypeRoot(String) addTypeRoot} or {@link #addTypeRoots(Iterable) addTypeRoots}
@@ -44,19 +49,26 @@ import static java.util.Collections.unmodifiableSet;
  * <p>
  * The API of this class is meant to mimic the builder pattern and should be used as such.
  */
-public class WireParser {
-  private final Set<File> directories = new LinkedHashSet<File>();
-  private final Set<File> protos = new LinkedHashSet<File>();
-  private final Set<String> types = new LinkedHashSet<String>();
-
-  private final Filesystem fs;
-
-  public WireParser() {
-    this(Filesystem.SYSTEM);
+public final class WireParser {
+  /**
+   * Create an instance of {@link WireParser} using the {@link FileSystems#getDefault() default
+   * file system}.
+   */
+  public static WireParser create() {
+    return new WireParser(FileSystems.getDefault());
   }
 
-  @VisibleForTesting
-  WireParser(Filesystem fs) {
+  /** Create an instance of {@link WireParser} using the supplied {@link FileSystem file system}. */
+  public static WireParser createWithFileSystem(FileSystem fs) {
+    return new WireParser(fs);
+  }
+
+  private final FileSystem fs;
+  private final Set<Path> directories = new LinkedHashSet<>();
+  private final Set<Path> protos = new LinkedHashSet<>();
+  private final Set<String> types = new LinkedHashSet<>();
+
+  private WireParser(FileSystem fs) {
     this.fs = fs;
   }
 
@@ -64,7 +76,7 @@ public class WireParser {
    * Add a directory under which proto files reside. {@code include} declarations will be resolved
    * from these directories.
    */
-  public WireParser addDirectory(File directory) {
+  public WireParser addDirectory(Path directory) {
     checkNotNull(directory, "Directory must not be null.");
     directories.add(directory);
     return this;
@@ -74,25 +86,25 @@ public class WireParser {
    * Add directories under which proto files reside. {@code include} declarations will be resolved
    * from these directories.
    */
-  public WireParser addDirectories(Iterable<File> directories) {
+  public WireParser addDirectories(Iterable<Path> directories) {
     checkNotNull(directories, "Directories must not be null.");
-    for (File directory : directories) {
+    for (Path directory : directories) {
       addDirectory(directory);
     }
     return this;
   }
 
   /** Add a proto file to parse. */
-  public WireParser addProto(File proto) {
+  public WireParser addProto(Path proto) {
     checkNotNull(proto, "Proto must not be null.");
     protos.add(proto);
     return this;
   }
 
   /** Add proto files to parse. */
-  public WireParser addProtos(Iterable<File> protos) {
+  public WireParser addProtos(Iterable<Path> protos) {
     checkNotNull(protos, "Protos must not be null.");
-    for (File proto : protos) {
+    for (Path proto : protos) {
       addProto(proto);
     }
     return this;
@@ -134,8 +146,8 @@ public class WireParser {
   public Set<ProtoFile> parse() throws IOException {
     validateInputFiles();
 
-    Set<File> directories = getOrFindDirectories();
-    Set<File> protos = getOrFindProtos(directories);
+    Set<Path> directories = getOrFindDirectories();
+    Set<Path> protos = getOrFindProtos(directories);
 
     Set<ProtoFile> protoFiles = loadProtos(directories, protos);
     Set<String> allTypes = collectAllTypes(protoFiles);
@@ -150,77 +162,69 @@ public class WireParser {
   /** Verify all directories and protos exist and are valid file types. */
   void validateInputFiles() {
     // Validate all directories exist and are actually directories.
-    for (File directory : directories) {
-      checkState(fs.exists(directory), "Directory \"%s\" does not exist.", directory);
-      checkState(fs.isDirectory(directory), "\"%s\" is not a directory.", directory);
+    for (Path directory : directories) {
+      checkState(Files.exists(directory), "Directory \"%s\" does not exist.", directory);
+      checkState(Files.isDirectory(directory), "\"%s\" is not a directory.", directory);
     }
     // Validate all protos exist and are files.
-    for (File proto : protos) {
-      checkState(fs.exists(proto), "Proto \"%s\" does not exist.", proto);
-      checkState(fs.isFile(proto), "Proto \"%s\" is not a file.", proto);
+    for (Path proto : protos) {
+      checkState(Files.exists(proto), "Proto \"%s\" does not exist.", proto);
+      checkState(Files.isRegularFile(proto), "Proto \"%s\" is not a file.", proto);
     }
   }
 
   /** Returns the set of supplied directories or only the current working directory. */
-  Set<File> getOrFindDirectories() {
+  Set<Path> getOrFindDirectories() {
     if (!directories.isEmpty()) {
-      return unmodifiableSet(directories);
+      return ImmutableSet.copyOf(directories);
     }
 
-    // No directories given. Grab the user's working directory as the sole directory.
-    String userDir = System.getProperty("user.dir");
-    checkNotNull(userDir, "Unable to determine working directory.");
-    return unmodifiableSet(singleton(new File(userDir)));
+    // No directories given. Use the current directory.
+    return ImmutableSet.of(fs.getPath("."));
   }
 
   /** Returns the set of supplied proto files or all files under every directory. */
-  Set<File> getOrFindProtos(Set<File> directories) {
+  Set<Path> getOrFindProtos(Set<Path> directories) throws IOException {
     if (!protos.isEmpty()) {
-      return unmodifiableSet(protos);
+      return ImmutableSet.copyOf(protos);
     }
 
     // No protos were explicitly given. Find all .proto files in each available directory.
-    Set<File> protos = new LinkedHashSet<File>();
-
-    Set<File> seenDirs = new LinkedHashSet<File>();
-    Deque<File> dirQueue = new ArrayDeque<File>(directories);
-    while (!dirQueue.isEmpty()) {
-      File visitDir = dirQueue.removeLast();
-      File[] files = fs.listFiles(visitDir);
-      if (files != null) {
-        for (File file : files) {
-          if (fs.isDirectory(file) && !seenDirs.contains(file)) {
-            seenDirs.add(file); // Prevent infinite recursion due to links.
-            dirQueue.addLast(file);
-          } else if (file.getName().endsWith(".proto")) {
+    final Set<Path> protos = new LinkedHashSet<>();
+    for (Path directory : directories) {
+      Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+        @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+            throws IOException {
+          if (file.getFileName().toString().endsWith(".proto")) {
             protos.add(file);
           }
+          return FileVisitResult.CONTINUE;
         }
-      }
+      });
     }
-    return unmodifiableSet(protos);
+    return ImmutableSet.copyOf(protos);
   }
 
   /**
    * Returns a set of all protos from the supplied set parsed into an object model, searching in
    * the supplied directories for any dependencies.
    */
-  private Set<ProtoFile> loadProtos(Set<File> directories, Set<File> protos) throws IOException {
-    Set<ProtoFile> protoFiles = new LinkedHashSet<ProtoFile>();
+  private Set<ProtoFile> loadProtos(Set<Path> directories, Set<Path> protos) throws IOException {
+    Set<ProtoFile> protoFiles = new LinkedHashSet<>();
 
-    Deque<File> protoQueue = new ArrayDeque<File>(protos);
-    Set<File> seenProtos = new LinkedHashSet<File>();
+    Deque<Path> protoQueue = new ArrayDeque<>(protos);
+    Set<Path> seenProtos = new LinkedHashSet<>();
     while (!protoQueue.isEmpty()) {
-      File proto = protoQueue.removeFirst();
+      Path proto = protoQueue.removeFirst();
       seenProtos.add(proto);
 
-      String protoContent = fs.contentsUtf8(proto);
-      ProtoFile protoFile = ProtoSchemaParser.parse(proto.getName(), protoContent);
+      String protoContent = new String(Files.readAllBytes(proto), Charsets.UTF_8);
+      ProtoFile protoFile = ProtoSchemaParser.parse(proto.getFileName().toString(), protoContent);
       protoFiles.add(protoFile);
 
       // Queue all unseen dependencies to be resolved.
       for (String dependency : protoFile.getDependencies()) {
-        File dependencyFile = resolveDependency(proto, directories, dependency);
+        Path dependencyFile = resolveDependency(proto, directories, dependency);
         if (!seenProtos.contains(dependencyFile)) {
           protoQueue.addLast(dependencyFile);
         }
@@ -230,11 +234,11 @@ public class WireParser {
   }
 
   /** Attempts to find a dependency's proto file in the supplied directories. */
-  File resolveDependency(File proto, Set<File> directories, String dependency) {
-    for (File directory : directories) {
-      File dependencyFile = new File(directory, dependency);
-      if (fs.exists(dependencyFile)) {
-        return dependencyFile;
+  Path resolveDependency(Path proto, Set<Path> directories, String dependency) {
+    for (Path directory : directories) {
+      Path dependencyPath = directory.resolve(dependency);
+      if (Files.exists(dependencyPath)) {
+        return dependencyPath;
       }
     }
 
@@ -242,20 +246,20 @@ public class WireParser {
         .append("Cannot resolve dependency \"")
         .append(dependency)
         .append("\" from \"")
-        .append(proto.getAbsolutePath())
+        .append(proto.toAbsolutePath())
         .append("\" in:");
-    for (File directory : directories) {
-      error.append("\n  * ").append(directory.getAbsolutePath());
+    for (Path directory : directories) {
+      error.append("\n  * ").append(directory.toAbsolutePath());
     }
     throw new IllegalStateException(error.toString());
   }
 
   /** Aggregate a set of all fully-qualified types contained in the supplied proto files. */
   static Set<String> collectAllTypes(Set<ProtoFile> protoFiles) {
-    Set<String> types = new LinkedHashSet<String>();
+    Set<String> types = new LinkedHashSet<>();
 
     // Seed the type resolution queue with all the top-level types from each proto file.
-    Deque<Type> typeQueue = new ArrayDeque<Type>();
+    Deque<Type> typeQueue = new ArrayDeque<>();
     for (ProtoFile protoFile : protoFiles) {
       typeQueue.addAll(protoFile.getTypes());
     }
@@ -272,13 +276,14 @@ public class WireParser {
                   @Override public String apply(ProtoFile input) {
                     return input.getFileName();
                   }
-                })));
+                }))
+        );
       }
       types.add(typeFqName);
 
       typeQueue.addAll(type.getNestedTypes());
     }
 
-    return unmodifiableSet(types);
+    return ImmutableSet.copyOf(types);
   }
 }

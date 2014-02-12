@@ -82,9 +82,14 @@
         <version>2.0M10</version>
       </dependency>
       <dependency>
+        <groupId>com.github.marschall</groupId>
+        <artifactId>memoryfilesystem</artifactId>
+        <version>0.3.1</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>15.0</version>
+        <version>16.0.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
