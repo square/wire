@@ -8,8 +8,8 @@ import com.squareup.protoparser.ProtoFile;
 import com.squareup.wire.parser.WireParser;
 import com.squareup.wire.plugin.WireJavaPlugin;
 import com.squareup.wire.plugin.WirePlugin;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -54,7 +54,7 @@ public final class Main {
   private static final Pattern PLUGIN_PREFIX = Pattern.compile("^[a-z]+$");
 
   public static void main(String... args) throws IOException {
-    WireParser parser = new WireParser();
+    WireParser parser = WireParser.create();
     Set<String> pluginClassNames = new LinkedHashSet<String>();
     List<String> unusedArgs = new ArrayList<String>();
 
@@ -64,12 +64,12 @@ public final class Main {
         pluginClassNames.add(pluginArg);
       } else if (arg.startsWith(ARG_PATH)) {
         String pathArg = arg.substring(ARG_PATH.length());
-        parser.addDirectory(new File(pathArg));
+        parser.addDirectory(Paths.get(pathArg));
       } else if (arg.startsWith(ARG_ROOT)) {
         String rootsArg = arg.substring(ARG_ROOT.length());
         parser.addTypeRoot(rootsArg);
       } else if (!arg.startsWith("--")) {
-        parser.addProto(new File(arg));
+        parser.addProto(Paths.get(arg));
       } else {
         unusedArgs.add(arg);
       }

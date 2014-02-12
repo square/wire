@@ -1,29 +1,35 @@
 package com.squareup.wire.parser;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;
 
 public class WireParserTest {
-  private InMemoryFilesystem fs;
+  @Rule public FileSystemRule fileSystemRule = new FileSystemRule();
+
+  private FileSystem fs;
   private WireParser parser;
 
   @Before public void setUp() {
-    fs = new InMemoryFilesystem();
-    parser = new WireParser(fs);
+    fs = fileSystemRule.get();
+    parser = WireParser.createWithFileSystem(fs);
   }
 
-  @Test public void fileIsNotValidDirectory() {
-    fs.addFile("/foo/bar", "baz");
-    parser.addDirectory(new File("/foo/bar"));
+  @Test public void fileIsNotValidDirectory() throws IOException {
+    addFile(fs.getPath("/foo/bar"), "baz");
+    parser.addDirectory(fs.getPath("/foo/bar"));
 
     try {
       parser.validateInputFiles();
@@ -34,7 +40,7 @@ public class WireParserTest {
   }
 
   @Test public void directoryMustExist() {
-    parser.addDirectory(new File("/foo/bar"));
+    parser.addDirectory(fs.getPath("/foo/bar/"));
 
     try {
       parser.validateInputFiles();
@@ -44,9 +50,9 @@ public class WireParserTest {
     }
   }
 
-  @Test public void directoryIsNotValidProto() {
-    fs.addFile("/foo/bar/baz.txt", "");
-    parser.addProto(new File("/foo/bar"));
+  @Test public void directoryIsNotValidProto() throws IOException {
+    addFile(fs.getPath("/foo/bar/baz.txt"), "");
+    parser.addProto(fs.getPath("/foo/bar"));
 
     try {
       parser.validateInputFiles();
@@ -57,7 +63,7 @@ public class WireParserTest {
   }
 
   @Test public void protoFileMustExist() {
-    parser.addProto(new File("/foo/bar"));
+    parser.addProto(fs.getPath("/foo/bar"));
 
     try {
       parser.validateInputFiles();
@@ -89,62 +95,62 @@ public class WireParserTest {
   }
 
   @Test public void specifiedRootsAreReturned() {
-    parser.addDirectory(new File("/foo/bar"));
-    parser.addDirectory(new File("/ping/pong"));
+    parser.addDirectory(fs.getPath("/foo/bar"));
+    parser.addDirectory(fs.getPath("/ping/pong"));
 
-    Set<File> directories = parser.getOrFindDirectories();
-    assertThat(directories).containsOnly(new File("/foo/bar"), new File("/ping/pong"));
+    Set<Path> directories = parser.getOrFindDirectories();
+    assertThat(directories).containsOnly(fs.getPath("/foo/bar"), fs.getPath("/ping/pong"));
   }
 
   @Test public void noSpecifiedRootsReturnsWorkingDir() {
-    Set<File> directories = parser.getOrFindDirectories();
-    assertThat(directories).containsOnly(new File(System.getProperty("user.dir")));
+    Set<Path> directories = parser.getOrFindDirectories();
+    assertThat(directories).containsOnly(fs.getPath("."));
   }
 
-  @Test public void specifiedProtosAreReturned() {
-    parser.addProto(new File("/foo/bar.proto"));
-    parser.addProto(new File("/foo/baz.proto"));
+  @Test public void specifiedProtosAreReturned() throws IOException {
+    parser.addProto(fs.getPath("/foo/bar.proto"));
+    parser.addProto(fs.getPath("/foo/baz.proto"));
 
-    Set<File> directories = ImmutableSet.of(new File("/foo"));
-    Set<File> protos = parser.getOrFindProtos(directories);
-    assertThat(protos).containsOnly(new File("/foo/bar.proto"), new File("/foo/baz.proto"));
+    Set<Path> directories = ImmutableSet.of(fs.getPath("/foo"));
+    Set<Path> protos = parser.getOrFindProtos(directories);
+    assertThat(protos).containsOnly(fs.getPath("/foo/bar.proto"), fs.getPath("/foo/baz.proto"));
   }
 
-  @Test public void noSpecifiedProtosSearchesRoots() {
-    fs.addFile("/foo/bar/one.proto", "one");
-    fs.addFile("/foo/bar/two.proto", "two");
-    fs.addFile("/ping/pong/three.proto", "three");
+  @Test public void noSpecifiedProtosSearchesRoots() throws IOException {
+    addFile(fs.getPath("/foo/bar/one.proto"), "one");
+    addFile(fs.getPath("/foo/bar/two.proto"), "two");
+    addFile(fs.getPath("/ping/pong/three.proto"), "three");
 
-    Set<File> directories = ImmutableSet.of(new File("/"));
-    Set<File> protos = parser.getOrFindProtos(directories);
+    Set<Path> directories = ImmutableSet.of(fs.getPath("/"));
+    Set<Path> protos = parser.getOrFindProtos(directories);
     assertThat(protos).containsOnly( //
-        new File("/foo/bar/one.proto"), //
-        new File("/foo/bar/two.proto"), //
-        new File("/ping/pong/three.proto"));
+        fs.getPath("/foo/bar/one.proto"), //
+        fs.getPath("/foo/bar/two.proto"), //
+        fs.getPath("/ping/pong/three.proto"));
   }
 
-  @Test public void directorySearchIgnoresNonProtos() {
-    fs.addFile("/foo/bar/baz.txt", "one");
-    fs.addFile("/ping/pong", "ball");
-    fs.addFile("/kit/kat.proto.txt", "nom");
+  @Test public void directorySearchIgnoresNonProtos() throws IOException {
+    addFile(fs.getPath("/foo/bar", "baz.txt"), "one");
+    addFile(fs.getPath("/ping/pong"), "ball");
+    addFile(fs.getPath("/kit/kat.proto.txt"), "nom");
 
-    Set<File> directories = ImmutableSet.of(new File("/"));
-    Set<File> protos = parser.getOrFindProtos(directories);
+    Set<Path> directories = ImmutableSet.of(fs.getPath("/"));
+    Set<Path> protos = parser.getOrFindProtos(directories);
     assertThat(protos).isEmpty();
   }
 
   @Test public void parseFindsDependencies() throws IOException {
-    fs.addFile("/foo/bar/one.proto", "one");
-    fs.addFile("/foo/bar/two.proto", "two");
-    fs.addFile("/kit/kat/three.proto", "three");
+    addFile(fs.getPath("/foo/bar/one.proto"), "one");
+    addFile(fs.getPath("/foo/bar/two.proto"), "two");
+    addFile(fs.getPath("/kit/kat/three.proto"), "three");
 
-    File proto = new File("/foo/bar/one.proto");
-    Set<File> directories = ImmutableSet.of(new File("/foo/bar"), new File("/kit/kat"));
+    Path proto = fs.getPath("/foo/bar/one.proto");
+    Set<Path> directories = ImmutableSet.of(fs.getPath("/foo/bar/"), fs.getPath("/kit/kat/"));
 
-    File dependency1 = parser.resolveDependency(proto, directories, "two.proto");
-    assertThat(dependency1).isEqualTo(new File("/foo/bar/two.proto"));
-    File dependency2 = parser.resolveDependency(proto, directories, "three.proto");
-    assertThat(dependency2).isEqualTo(new File("/kit/kat/three.proto"));
+    Path dependency1 = parser.resolveDependency(proto, directories, "two.proto");
+    assertThat(dependency1).isEqualTo(fs.getPath("/foo/bar/two.proto"));
+    Path dependency2 = parser.resolveDependency(proto, directories, "three.proto");
+    assertThat(dependency2).isEqualTo(fs.getPath("/kit/kat/three.proto"));
   }
 
   @Test public void collectAllTypesRecursesToNestedTypes() {
@@ -180,5 +186,11 @@ public class WireParserTest {
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Duplicate type wire.Message defined in test1.proto, test2.proto");
     }
+  }
+
+  private void addFile(Path path, String content) throws IOException {
+    Files.createDirectories(path.getParent());
+    Files.createFile(path);
+    Files.write(path, content.getBytes(Charsets.UTF_8));
   }
 }
