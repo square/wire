@@ -63,7 +63,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.squareup.wire.cli.Main</mainClass>
+              <mainClass>com.squareup.wire.compiler.Main</mainClass>
             </manifest>
           </archive>
         </configuration>

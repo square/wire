@@ -1,4 +1,4 @@
-package com.squareup.wire.parser;
+package com.squareup.wire.compiler.parser;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;

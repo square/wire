@@ -1,4 +1,4 @@
-package com.squareup.wire.parser;
+package com.squareup.wire.compiler.parser;
 
 import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.ExtendDeclaration;

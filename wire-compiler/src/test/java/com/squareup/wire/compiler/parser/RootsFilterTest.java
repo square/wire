@@ -1,4 +1,4 @@
-package com.squareup.wire.parser;
+package com.squareup.wire.compiler.parser;
 
 import com.google.common.collect.ImmutableSet;
 import com.squareup.protoparser.ProtoFile;
@@ -6,8 +6,8 @@ import com.squareup.protoparser.ProtoSchemaParser;
 import java.util.Set;
 import org.junit.Test;
 
-import static com.squareup.wire.parser.ProtoQualifier.fullyQualifyProtos;
-import static com.squareup.wire.parser.WireParser.collectAllTypes;
+import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyProtos;
+import static com.squareup.wire.compiler.parser.WireParser.collectAllTypes;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class RootsFilterTest {

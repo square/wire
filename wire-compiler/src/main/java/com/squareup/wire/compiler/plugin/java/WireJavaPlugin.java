@@ -1,6 +1,7 @@
-package com.squareup.wire.plugin;
+package com.squareup.wire.compiler.plugin.java;
 
 import com.squareup.protoparser.ProtoFile;
+import com.squareup.wire.compiler.plugin.WirePlugin;
 import java.nio.file.FileSystem;
 import java.util.Set;
 

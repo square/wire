@@ -1,4 +1,4 @@
-package com.squareup.wire.plugin;
+package com.squareup.wire.compiler.plugin;
 
 import com.squareup.protoparser.ProtoFile;
 import java.nio.file.FileSystem;

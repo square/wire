@@ -1,10 +1,10 @@
-package com.squareup.wire.cli;
+package com.squareup.wire.compiler;
 
 import com.google.common.collect.ImmutableSet;
 import com.squareup.protoparser.ProtoFile;
-import com.squareup.wire.parser.WireParser;
-import com.squareup.wire.plugin.WireJavaPlugin;
-import com.squareup.wire.plugin.WirePlugin;
+import com.squareup.wire.compiler.parser.WireParser;
+import com.squareup.wire.compiler.plugin.WirePlugin;
+import com.squareup.wire.compiler.plugin.java.WireJavaPlugin;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -16,7 +16,7 @@ import java.util.Set;
  * <p>
  * Usage:
  * <pre>
- * java com.squareup.wire.cli.Main [argument ..] [file ..]
+ * java com.squareup.wire.compiler.Main [argument ..] [file ..]
  * </pre>
  * Optional arguments:
  * <ul>

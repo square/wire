@@ -1,4 +1,4 @@
-package com.squareup.wire.parser;
+package com.squareup.wire.compiler.parser;
 
 import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 import java.nio.file.FileSystem;
