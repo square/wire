@@ -1,6 +1,5 @@
 package com.squareup.wire.compiler.parser;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
@@ -13,6 +12,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;
 
@@ -191,6 +191,6 @@ public class WireParserTest {
   private void addFile(Path path, String content) throws IOException {
     Files.createDirectories(path.getParent());
     Files.createFile(path);
-    Files.write(path, content.getBytes(Charsets.UTF_8));
+    Files.write(path, content.getBytes(UTF_8));
   }
 }
