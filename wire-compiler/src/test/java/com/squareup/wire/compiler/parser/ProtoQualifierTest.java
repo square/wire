@@ -1,4 +1,4 @@
-package com.squareup.wire.parser;
+package com.squareup.wire.compiler.parser;
 
 import com.google.common.collect.ImmutableSet;
 import com.squareup.protoparser.EnumType;
@@ -14,10 +14,10 @@ import java.util.Set;
 import org.junit.Test;
 
 import static com.squareup.protoparser.MessageType.Label.REQUIRED;
-import static com.squareup.wire.parser.ProtoQualifier.fullyQualifyExtendDeclaration;
-import static com.squareup.wire.parser.ProtoQualifier.fullyQualifyService;
-import static com.squareup.wire.parser.ProtoQualifier.fullyQualifyType;
-import static com.squareup.wire.parser.ProtoQualifier.resolveType;
+import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyExtendDeclaration;
+import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyService;
+import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyType;
+import static com.squareup.wire.compiler.parser.ProtoQualifier.resolveType;
 import static java.util.Arrays.asList;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;

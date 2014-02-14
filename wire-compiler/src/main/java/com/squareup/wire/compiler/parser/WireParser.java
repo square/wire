@@ -1,4 +1,4 @@
-package com.squareup.wire.parser;
+package com.squareup.wire.compiler.parser;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
@@ -24,7 +24,7 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static com.squareup.wire.parser.ProtoQualifier.fullyQualifyProtos;
+import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyProtos;
 
 /**
  * Intelligently parse {@code .proto} files into an object model which represents a set of types

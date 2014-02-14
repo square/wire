@@ -1,4 +1,4 @@
-package com.squareup.wire.parser;
+package com.squareup.wire.compiler.parser;
 
 import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.ExtendDeclaration;
@@ -19,18 +19,18 @@ import static java.util.Collections.unmodifiableSet;
 final class ProtoQualifier {
   /** Update a set of profo files to only refer to fully-qualified or primitive types. */
   static Set<ProtoFile> fullyQualifyProtos(Set<ProtoFile> protoFiles, Set<String> allTypes) {
-    Set<ProtoFile> qualifiedProtoFiles = new LinkedHashSet<ProtoFile>(protoFiles.size());
+    Set<ProtoFile> qualifiedProtoFiles = new LinkedHashSet<>(protoFiles.size());
     for (ProtoFile protoFile : protoFiles) {
       // Replace all types (including nested ones) with fully-qualified references.
       List<Type> types = protoFile.getTypes();
-      List<Type> qualifiedTypes = new ArrayList<Type>(types.size());
+      List<Type> qualifiedTypes = new ArrayList<>(types.size());
       for (Type type : types) {
         qualifiedTypes.add(fullyQualifyType(type, allTypes));
       }
 
       // Replace all services with fully-qualified references.
       List<Service> services = protoFile.getServices();
-      List<Service> qualifiedServices = new ArrayList<Service>(services.size());
+      List<Service> qualifiedServices = new ArrayList<>(services.size());
       for (Service service : services) {
         qualifiedServices.add(fullyQualifyService(service, allTypes));
       }
@@ -38,7 +38,7 @@ final class ProtoQualifier {
       // Replace all extend declarations with fully-qualified references.
       List<ExtendDeclaration> extendDeclarations = protoFile.getExtendDeclarations();
       List<ExtendDeclaration> qualifiedExtendDeclarations =
-          new ArrayList<ExtendDeclaration>(extendDeclarations.size());
+          new ArrayList<>(extendDeclarations.size());
       for (ExtendDeclaration extendDeclaration : extendDeclarations) {
         qualifiedExtendDeclarations.add(
             fullyQualifyExtendDeclaration(protoFile.getPackageName(), extendDeclaration, allTypes));
@@ -60,7 +60,7 @@ final class ProtoQualifier {
 
       // Recurse to fully-qualify and nested types.
       List<Type> nestedTypes = type.getNestedTypes();
-      List<Type> qualifiedNestedTypes = new ArrayList<Type>(nestedTypes.size());
+      List<Type> qualifiedNestedTypes = new ArrayList<>(nestedTypes.size());
       for (Type nestedType : nestedTypes) {
         qualifiedNestedTypes.add(fullyQualifyType(nestedType, allTypes));
       }
@@ -85,7 +85,7 @@ final class ProtoQualifier {
   static Service fullyQualifyService(Service service, Set<String> allTypes) {
     String qualifiedName = service.getFullyQualifiedName();
     List<Method> methods = service.getMethods();
-    List<Method> qualifiedMethods = new ArrayList<Method>(methods.size());
+    List<Method> qualifiedMethods = new ArrayList<>(methods.size());
     for (Method method : methods) {
       String newRequestType = resolveType(allTypes, qualifiedName, method.getRequestType());
       String newResponseType = resolveType(allTypes, qualifiedName, method.getResponseType());
@@ -113,7 +113,7 @@ final class ProtoQualifier {
   /** Update a list of fields to only refer to fully-qualified or primitive types. */
   private static List<Field> fullyQualifyFields(List<Field> fields, String scope,
       Set<String> allTypes) {
-    List<Field> qualifiedFields = new ArrayList<Field>(fields.size());
+    List<Field> qualifiedFields = new ArrayList<>(fields.size());
     for (Field field : fields) {
       String newType = resolveType(allTypes, scope, field.getType());
 

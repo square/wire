@@ -1,4 +1,4 @@
-package com.squareup.wire.parser;
+package com.squareup.wire.compiler.parser;
 
 import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.MessageType;
@@ -35,7 +35,7 @@ final class RootsFilter {
     Map<String, Node<?>> nodeMap = rootNode.asNodeMap();
 
     // Collect nodes to keep by starting at the supplied roots and transitively iterating out.
-    Set<Node<?>> nodesToKeep = new LinkedHashSet<Node<?>>();
+    Set<Node<?>> nodesToKeep = new LinkedHashSet<>();
     for (String root : roots) {
       if (!nodeMap.containsKey(root)) {
         throw new IllegalStateException("Unknown type " + root);
@@ -68,12 +68,12 @@ final class RootsFilter {
       this.type = type;
       this.obj = obj;
 
-      children = new ArrayList<Node<?>>();
+      children = new ArrayList<>();
     }
 
     /** Flatten this type and the types of any children into a map to their corresponding nodes. */
     final Map<String, Node<?>> asNodeMap() {
-      Map<String, Node<?>> typeMap = new LinkedHashMap<String, Node<?>>();
+      Map<String, Node<?>> typeMap = new LinkedHashMap<>();
       if (type != null) {
         typeMap.put(type, this);
       }
@@ -109,7 +109,7 @@ final class RootsFilter {
     }
 
     @Override public Set<ProtoFile> collectKeptNodes(Set<Node<?>> typesToKeep) {
-      Set<ProtoFile> protoFiles = new LinkedHashSet<ProtoFile>();
+      Set<ProtoFile> protoFiles = new LinkedHashSet<>();
       for (Node<?> child : children) {
         if (typesToKeep.contains(child)) {
           protoFiles.add((ProtoFile) child.collectKeptNodes(typesToKeep));
@@ -132,8 +132,8 @@ final class RootsFilter {
     }
 
     @Override ProtoFile collectKeptNodes(Set<Node<?>> typesToKeep) {
-      List<Type> markedTypes = new ArrayList<Type>();
-      List<Service> markedServices = new ArrayList<Service>();
+      List<Type> markedTypes = new ArrayList<>();
+      List<Service> markedServices = new ArrayList<>();
       for (Node<?> child : children) {
         if (typesToKeep.contains(child)) {
           if (child instanceof ServiceNode) {
@@ -195,7 +195,7 @@ final class RootsFilter {
     }
 
     @Override MessageType collectKeptNodes(Set<Node<?>> typesToKeep) {
-      List<Type> markedNestedTypes = new ArrayList<Type>();
+      List<Type> markedNestedTypes = new ArrayList<>();
       for (Node<?> child : children) {
         if (typesToKeep.contains(child)) {
           markedNestedTypes.add((Type) child.collectKeptNodes(typesToKeep));
