@@ -28,6 +28,11 @@ public final class EnumType implements Type {
    * are siblings of their type, not children of it.
    */
   static void validateValueUniquenessInScope(String type, List<Type> nestedTypes) {
+    // Look for types directly in the proto package but not beneath (e.g., google.protobuf.foo.Bar).
+    if (type.startsWith("google.protobuf.") && type.indexOf('.', 16) == -1) {
+      // Google violates this constraint inside their proto descriptors which never generate code.
+      return;
+    }
     Set<Integer> tags = new LinkedHashSet<Integer>();
     for (Type nestedType : nestedTypes) {
       if (nestedType instanceof EnumType) {
