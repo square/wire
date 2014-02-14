@@ -40,7 +40,8 @@ final class ProtoQualifier {
       List<ExtendDeclaration> qualifiedExtendDeclarations =
           new ArrayList<ExtendDeclaration>(extendDeclarations.size());
       for (ExtendDeclaration extendDeclaration : extendDeclarations) {
-        qualifiedExtendDeclarations.add(fullyQualifyExtendDeclaration(extendDeclaration, allTypes));
+        qualifiedExtendDeclarations.add(
+            fullyQualifyExtendDeclaration(protoFile.getPackageName(), extendDeclaration, allTypes));
       }
 
       // Create a new proto file using our new types, services, and extends.
@@ -99,11 +100,10 @@ final class ProtoQualifier {
   }
 
   /** Update an extend declaration to only refer to fully-qualified or primitive types. */
-  static ExtendDeclaration fullyQualifyExtendDeclaration(ExtendDeclaration extendDeclaration,
-      Set<String> allTypes) {
-    String qualifiedName = extendDeclaration.getFullyQualifiedName();
+  static ExtendDeclaration fullyQualifyExtendDeclaration(String scope,
+      ExtendDeclaration extendDeclaration, Set<String> allTypes) {
     List<Field> fields = extendDeclaration.getFields();
-    List<Field> qualifiedFields = fullyQualifyFields(fields, qualifiedName, allTypes);
+    List<Field> qualifiedFields = fullyQualifyFields(fields, scope, allTypes);
 
     return new ExtendDeclaration(extendDeclaration.getName(),
         extendDeclaration.getFullyQualifiedName(), extendDeclaration.getDocumentation(),

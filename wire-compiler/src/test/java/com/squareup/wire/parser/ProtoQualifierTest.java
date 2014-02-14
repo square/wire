@@ -127,6 +127,22 @@ public class ProtoQualifierTest {
         new MessageType.Field(REQUIRED, "wire.Foo", "foo", 1, "", NO_OPTIONS);
     ExtendDeclaration expected = new ExtendDeclaration("Bar", "wire.Bar", "", asList(expected1));
 
-    assertThat(fullyQualifyExtendDeclaration(extend, allTypes)).isEqualTo(expected);
+    assertThat(fullyQualifyExtendDeclaration("wire", extend, allTypes)).isEqualTo(expected);
+  }
+
+  @Test public void fullyQualifyExtendDescriptorTest() {
+    Set<String> allTypes = ImmutableSet.of("wire.Foo");
+
+    MessageType.Field f1 = new MessageType.Field(REQUIRED, "Foo", "foo", 1, "", NO_OPTIONS);
+    ExtendDeclaration extend =
+        new ExtendDeclaration("FieldOptions", "google.protobuf.FieldOptions", "", asList(f1));
+
+    MessageType.Field expected1 =
+        new MessageType.Field(REQUIRED, "wire.Foo", "foo", 1, "", NO_OPTIONS);
+    ExtendDeclaration expected =
+        new ExtendDeclaration("FieldOptions", "google.protobuf.FieldOptions", "",
+            asList(expected1));
+
+    assertThat(fullyQualifyExtendDeclaration("wire", extend, allTypes)).isEqualTo(expected);
   }
 }
