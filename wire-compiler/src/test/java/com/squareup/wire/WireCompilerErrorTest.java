@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -139,5 +140,12 @@ public class WireCompilerErrorTest {
     } catch (WireCompilerException e) {
       assertTrue(e.getMessage().toLowerCase(Locale.US).contains("duplicate enum value quix"));
     }
+  }
+
+  @Test public void testNoPackageNameIsLegal() {
+    Map<String, String> output = compile("message Simple { optional int32 f = 1; }");
+    assertTrue(output.containsKey(".Simple"));
+    // Output should not have a 'package' declaration.
+    assertFalse(output.get(".Simple").contains("package"));
   }
 }

@@ -279,7 +279,7 @@ public class OptionsMapMaker {
       return compiler.getInitializerForType(stringValue, javaTypeName);
     } else if (compiler.isEnum(fieldType)) {
       String javaName = compiler.javaName(fieldType);
-      String javaPackage = compiler.getProtoFile().getJavaPackage();
+      String javaPackage = compiler.getJavaPackage();
       if (javaName.startsWith(javaPackage + ".")) {
         javaName = javaName.substring(javaPackage.length() + 1);
       }
@@ -435,7 +435,7 @@ public class OptionsMapMaker {
       String key = entry.getKey();
 
       ExtensionInfo info = compiler.getExtension(key);
-      if (info != null && !info.fqLocation.startsWith(compiler.getProtoFile().getJavaPackage())) {
+      if (info != null && !info.fqLocation.startsWith(compiler.getJavaPackage())) {
         types.add(info.fqLocation);
       }
 
