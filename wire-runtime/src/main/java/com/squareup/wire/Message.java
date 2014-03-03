@@ -135,8 +135,11 @@ public abstract class Message {
   /** Set to null until a field is added. */
   private transient UnknownFieldMap unknownFields;
 
-  /** If >= 0, the serialized size of this message. */
-  private transient int cachedSerializedSize = -1;
+  /** False upon construction or deserialization. */
+  private transient boolean haveCachedSerializedSize;
+
+  /** If {@code haveCachedSerializedSize} is true, the serialized size of this message. */
+  private transient int cachedSerializedSize;
 
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected transient int hashCode = 0;
@@ -231,9 +234,10 @@ public abstract class Message {
 
   @SuppressWarnings("unchecked")
   public int getSerializedSize() {
-    if (cachedSerializedSize < 0) {
-      cachedSerializedSize =
-          WIRE.messageAdapter((Class<Message>) getClass()).getSerializedSize(this);
+    if (!haveCachedSerializedSize) {
+      MessageAdapter<Message> adapter = WIRE.messageAdapter((Class<Message>) getClass());
+      cachedSerializedSize = adapter.getSerializedSize(this);
+      haveCachedSerializedSize = true;
     }
     return cachedSerializedSize;
   }
