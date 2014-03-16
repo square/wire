@@ -672,9 +672,6 @@ public class WireCompiler {
       boolean hasExtensions = hasExtensions(Arrays.asList(type));
 
       Set<String> imports = new LinkedHashSet<String>();
-      if (hasMessage) {
-        imports.add("com.squareup.wire.Message");
-      }
       if (hasMessage || hasExtensions) {
         if (hasFields(type)) {
           imports.add("com.squareup.wire.ProtoField");
