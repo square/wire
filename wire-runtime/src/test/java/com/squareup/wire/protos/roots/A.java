@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/roots.proto
 package com.squareup.wire.protos.roots;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 /**
@@ -20,7 +19,7 @@ import com.squareup.wire.ProtoField;
  *
  * I -> nothing
  */
-public final class A extends Message {
+public final class A extends com.squareup.wire.Message {
 
   @ProtoField(tag = 1)
   public final B c;
@@ -54,7 +53,7 @@ public final class A extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<A> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<A> {
 
     public B c;
     public D d;

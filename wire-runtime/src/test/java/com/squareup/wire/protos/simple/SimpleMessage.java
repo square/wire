@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/simple_message.proto
 package com.squareup.wire.protos.simple;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
@@ -19,7 +18,7 @@ import static com.squareup.wire.Message.Label.REQUIRED;
 /**
  * A message for testing.
  */
-public final class SimpleMessage extends Message {
+public final class SimpleMessage extends com.squareup.wire.Message {
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.BAZ;
@@ -164,7 +163,7 @@ public final class SimpleMessage extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<SimpleMessage> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<SimpleMessage> {
 
     public Integer optional_int32;
     public NestedMessage optional_nested_msg;
@@ -301,7 +300,7 @@ public final class SimpleMessage extends Message {
     }
   }
 
-  public static final class NestedMessage extends Message {
+  public static final class NestedMessage extends com.squareup.wire.Message {
 
     public static final Integer DEFAULT_BB = 0;
 
@@ -329,7 +328,7 @@ public final class SimpleMessage extends Message {
       return result != 0 ? result : (hashCode = bb != null ? bb.hashCode() : 0);
     }
 
-    public static final class Builder extends Message.Builder<NestedMessage> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage> {
 
       public Integer bb;
 

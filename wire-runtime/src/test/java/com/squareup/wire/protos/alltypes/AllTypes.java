@@ -5,7 +5,6 @@ package com.squareup.wire.protos.alltypes;
 import com.squareup.wire.ByteString;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import java.util.Collections;
@@ -1228,7 +1227,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
   }
 
-  public static final class NestedMessage extends Message {
+  public static final class NestedMessage extends com.squareup.wire.Message {
 
     public static final Integer DEFAULT_A = 0;
 
@@ -1253,7 +1252,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
       return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
     }
 
-    public static final class Builder extends Message.Builder<NestedMessage> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage> {
 
       public Integer a;
 

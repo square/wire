@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/person.proto
 package com.squareup.wire.protos.person;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import java.util.Collections;
@@ -14,7 +13,7 @@ import static com.squareup.wire.Message.Datatype.STRING;
 import static com.squareup.wire.Message.Label.REPEATED;
 import static com.squareup.wire.Message.Label.REQUIRED;
 
-public final class Person extends Message {
+public final class Person extends com.squareup.wire.Message {
 
   public static final String DEFAULT_NAME = "";
   public static final Integer DEFAULT_ID = 0;
@@ -77,7 +76,7 @@ public final class Person extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<Person> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<Person> {
 
     public String name;
     public Integer id;
@@ -156,7 +155,7 @@ public final class Person extends Message {
     }
   }
 
-  public static final class PhoneNumber extends Message {
+  public static final class PhoneNumber extends com.squareup.wire.Message {
 
     public static final String DEFAULT_NUMBER = "";
     public static final PhoneType DEFAULT_TYPE = PhoneType.HOME;
@@ -199,7 +198,7 @@ public final class Person extends Message {
       return result;
     }
 
-    public static final class Builder extends Message.Builder<PhoneNumber> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<PhoneNumber> {
 
       public String number;
       public PhoneType type;

@@ -5,7 +5,6 @@ package com.squareup.wire.protos.custom_options;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import java.util.Collections;
@@ -204,7 +203,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
-  public static final class Nested extends Message {
+  public static final class Nested extends com.squareup.wire.Message {
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
 
@@ -229,7 +228,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       return result != 0 ? result : (hashCode = value != null ? value.hashCode() : 0);
     }
 
-    public static final class Builder extends Message.Builder<Nested> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<Nested> {
 
       public FooBarBazEnum value;
 

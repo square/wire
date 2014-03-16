@@ -2,12 +2,11 @@
 // Source file: ../wire-runtime/src/test/proto/edge_cases.proto
 package com.squareup.wire.protos.edgecases;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 import static com.squareup.wire.Message.Datatype.INT32;
 
-public final class OneField extends Message {
+public final class OneField extends com.squareup.wire.Message {
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
 
@@ -32,7 +31,7 @@ public final class OneField extends Message {
     return result != 0 ? result : (hashCode = opt_int32 != null ? opt_int32.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<OneField> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<OneField> {
 
     public Integer opt_int32;
 

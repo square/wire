@@ -2,13 +2,12 @@
 // Source file: ../wire-runtime/src/test/proto/child_pkg.proto
 package com.squareup.wire.protos;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 
 import static com.squareup.wire.Message.Datatype.ENUM;
 
-public final class ChildPackage extends Message {
+public final class ChildPackage extends com.squareup.wire.Message {
 
   public static final ForeignEnum DEFAULT_INNER_FOREIGN_ENUM = ForeignEnum.BAV;
 
@@ -33,7 +32,7 @@ public final class ChildPackage extends Message {
     return result != 0 ? result : (hashCode = inner_foreign_enum != null ? inner_foreign_enum.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<ChildPackage> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<ChildPackage> {
 
     public ForeignEnum inner_foreign_enum;
 

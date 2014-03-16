@@ -2,9 +2,8 @@
 // Source file: ../wire-runtime/src/test/proto/custom_options.proto
 package com.squareup.wire.protos.custom_options;
 
-import com.squareup.wire.Message;
 
-public final class MessageWithOptions extends Message {
+public final class MessageWithOptions extends com.squareup.wire.Message {
 
   private MessageWithOptions(Builder builder) {
     super(builder);
@@ -20,7 +19,7 @@ public final class MessageWithOptions extends Message {
     return 0;
   }
 
-  public static final class Builder extends Message.Builder<MessageWithOptions> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions> {
 
     public Builder() {
     }

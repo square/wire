@@ -2,12 +2,11 @@
 // Source file: ../wire-runtime/src/test/proto/roots.proto
 package com.squareup.wire.protos.roots;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 import static com.squareup.wire.Message.Datatype.INT32;
 
-public final class K extends Message {
+public final class K extends com.squareup.wire.Message {
 
   public static final Integer DEFAULT_I = 0;
 
@@ -32,7 +31,7 @@ public final class K extends Message {
     return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<K> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<K> {
 
     public Integer i;
 
