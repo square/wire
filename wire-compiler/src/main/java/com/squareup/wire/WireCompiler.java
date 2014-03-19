@@ -240,8 +240,7 @@ public class WireCompiler {
   }
 
   boolean fullyQualifiedNameIsOutsidePackage(String fqName) {
-    return fqName != null
-        && !protoFile.getJavaPackage().equals(getPackageFromFullyQualifiedJavaName(fqName));
+    return fqName != null && !getJavaPackage().equals(getPackageFromFullyQualifiedJavaName(fqName));
   }
 
   String prefixWithPackageName(String name) {
@@ -323,7 +322,7 @@ public class WireCompiler {
     if (hasExtends()) {
       try {
         String className = "Ext_" + protoFileName;
-        String javaPackage = protoFile.getJavaPackage();
+        String javaPackage = getJavaPackage();
         writer = io.getJavaWriter(outputDirectory, javaPackage, className);
         emitExtensionClass();
 
@@ -464,7 +463,7 @@ public class WireCompiler {
       }
     }
 
-    addDependencies(protoFile.getTypes(), protoFile.getJavaPackage() + ".");
+    addDependencies(protoFile.getTypes(), getJavaPackage(protoFile) + ".");
   }
 
   /** Expands the set of types to emit to include types of fields of current emittable types. */
@@ -527,7 +526,7 @@ public class WireCompiler {
       }
     }
 
-    addTypes(protoFile.getTypes(), protoFile.getJavaPackage() + ".", pass);
+    addTypes(protoFile.getTypes(), getJavaPackage(protoFile) + ".", pass);
     addExtensions(protoFile);
   }
 
@@ -557,12 +556,22 @@ public class WireCompiler {
         }
 
         String location = protoFileName(protoFile.getFileName());
-        String fqLocation = protoFile.getJavaPackage() + ".Ext_" + location;
+        String fqLocation = getJavaPackage(protoFile) + ".Ext_" + location;
         ExtensionInfo info = new ExtensionInfo(type, fqType, location, fqLocation,
             field.getLabel());
         extensionInfo.put(fqName, info);
       }
     }
+  }
+
+  // Ensure a non-null value for the Java package name.
+  String getJavaPackage(ProtoFile protoFile) {
+    String javaPackage = protoFile.getJavaPackage();
+    return javaPackage == null ? "" : javaPackage;
+  }
+
+  String getJavaPackage() {
+    return getJavaPackage(protoFile);
   }
 
   private void addTypes(List<Type> types, String javaPrefix, LoadSymbolsPass pass) {
@@ -631,7 +640,7 @@ public class WireCompiler {
 
   private String shortenJavaName(ProtoFile protoFile, String fullyQualifiedName) {
     if (fullyQualifiedName == null) return null;
-    String javaTypeBeingGenerated = protoFile.getJavaPackage() + "." + typeBeingGenerated;
+    String javaTypeBeingGenerated = getJavaPackage(protoFile) + "." + typeBeingGenerated;
     if (fullyQualifiedName.startsWith(javaTypeBeingGenerated)) {
       return fullyQualifiedName.substring(javaTypeBeingGenerated.length());
     }
@@ -661,10 +670,10 @@ public class WireCompiler {
 
   private void emitMessageClass(Type type) throws IOException {
     try {
-      writer = io.getJavaWriter(outputDirectory, protoFile.getJavaPackage(), type.getName());
+      writer = io.getJavaWriter(outputDirectory, getJavaPackage(), type.getName());
       writer.emitSingleLineComment(CODE_GENERATED_BY_WIRE);
       writer.emitSingleLineComment("Source file: %s", sourceFileName);
-      writer.emitPackage(protoFile.getJavaPackage());
+      writer.emitPackage(getJavaPackage());
 
       List<Type> types = new ArrayList<Type>();
       getTypes(type, types);
@@ -800,7 +809,7 @@ public class WireCompiler {
   private void emitExtensionClass() throws IOException {
     writer.emitSingleLineComment(CODE_GENERATED_BY_WIRE);
     writer.emitSingleLineComment("Source file: %s", sourceFileName);
-    writer.emitPackage(protoFile.getJavaPackage());
+    writer.emitPackage(getJavaPackage());
 
     Set<String> imports = new LinkedHashSet<String>();
     if (hasByteStringExtension()) {
