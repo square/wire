@@ -1,8 +1,9 @@
-package com.squareup.wire.maven;
+package com.squareup.wire.mojo;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.squareup.wire.WireCompiler;
+import java.util.Collections;
 import java.util.List;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -25,6 +26,15 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
       property = "wire.protoSourceDirectory",
       defaultValue = "${project.basedir}/src/main/proto")
   private String protoSourceDirectory;
+
+  @Parameter(property = "wire.noOptions")
+  private boolean noOptions;
+
+  @Parameter(property = "wire.roots")
+  private String[] roots;
+
+  @Parameter(property = "wire.registryClass")
+  private String registryClass;
 
   /**
    * List of proto files to compile relative to ${protoSourceDirectory}.
@@ -51,37 +61,29 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   }
 
   private void compileProtos() throws MojoExecutionException {
-    List<String> args = Lists.newLinkedList();
+    List<String> args = Lists.newArrayList();
     args.add("--proto_path=" + protoSourceDirectory);
     args.add("--java_out=" + generatedSourceDirectory);
-    args.add(Joiner.on(" ").join(protoFiles));
+    if (noOptions) {
+      args.add("--no-options");
+    }
+    if (registryClass != null) {
+      args.add("--registry_class=" + registryClass);
+    }
+    if (roots != null && roots.length > 0) {
+      args.add("--roots=" + Joiner.on(',').join(roots));
+    }
+    Collections.addAll(args, protoFiles);
 
-    getLog().info("Invoking wire compiler with options:");
-    getLog().info(args.toString());
+    getLog().info("Invoking wire compiler with arguments:");
+    getLog().info(Joiner.on('\n').join(args));
     try {
       // TODO(shawn) we don't have a great programatic interface to the compiler.
       // Not all exceptions should result in MojoFailureExceptions (i.e. bugs in this plugin that
       // invoke the compiler incorrectly).
-      String[] strArgs = new String[args.size()];
-      WireCompiler.main(args.toArray(strArgs));
+      WireCompiler.main(args.toArray(new String[args.size()]));
     } catch (Exception e) {
       throw new MojoExecutionException("Wire Plugin: Failure compiling proto sources.", e);
     }
-  }
-
-  public void setProtoSourceDirectory(String protoSourceDirectory) {
-    this.protoSourceDirectory = protoSourceDirectory;
-  }
-
-  public void setProtoFiles(String[] protoFiles) {
-    this.protoFiles = protoFiles;
-  }
-
-  public void setGeneratedSourceDirectory(String generatedSourceDirectory) {
-    this.generatedSourceDirectory = generatedSourceDirectory;
-  }
-
-  public void setProject(MavenProject project) {
-    this.project = project;
   }
 }
