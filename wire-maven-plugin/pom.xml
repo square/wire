@@ -9,7 +9,6 @@
     <version>1.3.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>com.squareup.wire</groupId>
   <artifactId>wire-maven-plugin</artifactId>
   <name>Wire Protocol Buffer Maven Plugin</name>
   <packaging>maven-plugin</packaging>
