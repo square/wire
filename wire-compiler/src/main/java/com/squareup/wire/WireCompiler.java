@@ -96,9 +96,9 @@ public class WireCompiler {
    * Runs the compiler. Usage:
    *
    * <pre>
-   * java WireCompiler --proto_path=<path> --java_out=<path> [--files=<protos.include>]
-   *     [--roots=<message_name>[,<message_name>...]] [--registry_class=<class_name>]
-   *     [--no_options]
+   * java WireCompiler --proto_path=&lt;path&gt; --java_out=&lt;path&gt;
+   *     [--files=&lt;protos.include&gt;] [--roots=&lt;message_name&gt;[,&lt;message_name&gt;...]]
+  *      [--registry_class=&lt;class_name&gt;] [--no_options]
    *     [file [file...]]
    * </pre>
    *

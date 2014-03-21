@@ -36,9 +36,9 @@ import com.google.gson.reflect.TypeToken;
  * The resulting {@link Gson} instance will be able to serialize and deserialize any Wire
  * {@link Message} type, including extensions and unknown field values. The JSON encoding is
  * intended to be compatible with the
- * {@link <a href="https://code.google.com/p/protobuf-java-format/">protobuf-java-format</a>}
+ * <a href="https://code.google.com/p/protobuf-java-format/">protobuf-java-format</a>
  * library. Note that version 1.2 of that API has a
- * {@link <a href="https://code.google.com/p/protobuf-java-format/issues/detail?id=47">bug</a>}
+ * <a href="https://code.google.com/p/protobuf-java-format/issues/detail?id=47">bug</a>
  * in the way it serializes unknown fields, so we use our own approach for this case.
  */
 public final class WireTypeAdapterFactory implements TypeAdapterFactory {
