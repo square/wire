@@ -2,12 +2,11 @@
 // Source file: ../wire-runtime/src/test/proto/unknown_fields.proto
 package com.squareup.wire.protos.unknownfields;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 import static com.squareup.wire.Message.Datatype.INT32;
 
-public final class VersionOne extends Message {
+public final class VersionOne extends com.squareup.wire.Message {
 
   public static final Integer DEFAULT_I = 0;
 
@@ -32,7 +31,7 @@ public final class VersionOne extends Message {
     return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<VersionOne> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<VersionOne> {
 
     public Integer i;
 

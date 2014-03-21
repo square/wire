@@ -2,12 +2,11 @@
 // Source file: ../wire-runtime/src/test/proto/roots.proto
 package com.squareup.wire.protos.roots;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 import static com.squareup.wire.Message.Label.REQUIRED;
 
-public final class B extends Message {
+public final class B extends com.squareup.wire.Message {
 
   @ProtoField(tag = 1, label = REQUIRED)
   public final C c;
@@ -30,7 +29,7 @@ public final class B extends Message {
     return result != 0 ? result : (hashCode = c != null ? c.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<B> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<B> {
 
     public C c;
 

@@ -2,9 +2,8 @@
 // Source file: ../wire-runtime/src/test/proto/edge_cases.proto
 package com.squareup.wire.protos.edgecases;
 
-import com.squareup.wire.Message;
 
-public final class NoFields extends Message {
+public final class NoFields extends com.squareup.wire.Message {
 
   private NoFields(Builder builder) {
     super(builder);
@@ -20,7 +19,7 @@ public final class NoFields extends Message {
     return 0;
   }
 
-  public static final class Builder extends Message.Builder<NoFields> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<NoFields> {
 
     public Builder() {
     }

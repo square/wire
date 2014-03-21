@@ -131,7 +131,8 @@ public class MessageWriter {
     String name = messageType.getName();
     emitDocumentation(writer, messageType.getDocumentation());
     writer.beginType(name, "class", modifiers,
-        compiler.hasExtensions(messageType) ? "ExtendableMessage<" + name + ">" : "Message");
+        compiler.hasExtensions(messageType)
+                ? "ExtendableMessage<" + name + ">" : "com.squareup.wire.Message");
 
     emitMessageOptions(optionsMap);
     if (compiler.emitOptions()) {
@@ -440,7 +441,8 @@ public class MessageWriter {
   private void emitBuilder(MessageType messageType) throws IOException {
     writer.emitEmptyLine();
     writer.beginType("Builder", "class", EnumSet.of(PUBLIC, STATIC, FINAL),
-        (compiler.hasExtensions(messageType) ? "ExtendableBuilder<" : "Message.Builder<")
+        (compiler.hasExtensions(messageType)
+                ? "ExtendableBuilder<" : "com.squareup.wire.Message.Builder<")
             + messageType.getName()
             + ">");
     emitBuilderFields(messageType);

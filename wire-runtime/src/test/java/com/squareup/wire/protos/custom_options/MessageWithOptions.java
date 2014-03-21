@@ -3,11 +3,10 @@
 package com.squareup.wire.protos.custom_options;
 
 import com.google.protobuf.MessageOptions;
-import com.squareup.wire.Message;
 import com.squareup.wire.protos.foreign.Ext_foreign;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 
-public final class MessageWithOptions extends Message {
+public final class MessageWithOptions extends com.squareup.wire.Message {
 
   public static final MessageOptions MESSAGE_OPTIONS = new MessageOptions.Builder()
       .setExtension(Ext_custom_options.my_message_option_one, new FooBar.Builder()
@@ -78,7 +77,7 @@ public final class MessageWithOptions extends Message {
     return 0;
   }
 
-  public static final class Builder extends Message.Builder<MessageWithOptions> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions> {
 
     public Builder() {
     }

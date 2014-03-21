@@ -2,14 +2,13 @@
 // Source file: ../wire-runtime/src/test/proto/samebasename/single_level.proto
 package com.squareup.wire.protos.single_level;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.util.Collections;
 import java.util.List;
 
 import static com.squareup.wire.Message.Label.REPEATED;
 
-public final class Bars extends Message {
+public final class Bars extends com.squareup.wire.Message {
 
   public static final List<Bar> DEFAULT_BARS = Collections.emptyList();
 
@@ -34,7 +33,7 @@ public final class Bars extends Message {
     return result != 0 ? result : (hashCode = bars != null ? bars.hashCode() : 1);
   }
 
-  public static final class Builder extends Message.Builder<Bars> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<Bars> {
 
     public List<Bar> bars;
 

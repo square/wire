@@ -2,12 +2,11 @@
 // Source file: ../wire-runtime/src/test/proto/single_level.proto
 package com.squareup.wire.protos.single_level;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 import static com.squareup.wire.Message.Datatype.INT32;
 
-public final class Foo extends Message {
+public final class Foo extends com.squareup.wire.Message {
 
   public static final Integer DEFAULT_BAR = 0;
 
@@ -32,7 +31,7 @@ public final class Foo extends Message {
     return result != 0 ? result : (hashCode = bar != null ? bar.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<Foo> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<Foo> {
 
     public Integer bar;
 

@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/unknown_fields.proto
 package com.squareup.wire.protos.unknownfields;
 
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 import static com.squareup.wire.Message.Datatype.FIXED32;
@@ -10,7 +9,7 @@ import static com.squareup.wire.Message.Datatype.FIXED64;
 import static com.squareup.wire.Message.Datatype.INT32;
 import static com.squareup.wire.Message.Datatype.STRING;
 
-public final class VersionTwo extends Message {
+public final class VersionTwo extends com.squareup.wire.Message {
 
   public static final Integer DEFAULT_I = 0;
   public static final Integer DEFAULT_V2_I = 0;
@@ -68,7 +67,7 @@ public final class VersionTwo extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<VersionTwo> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<VersionTwo> {
 
     public Integer i;
     public Integer v2_i;
