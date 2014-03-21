@@ -339,7 +339,7 @@ public abstract class Message {
      * @throws NullPointerException if a null element is present in the list.
      */
     protected static <T> List<T> checkForNulls(List<T> elements) {
-      if (elements != null) {
+      if (elements != null && !elements.isEmpty()) {
         for (T element : elements) {
           if (element == null) {
             throw new NullPointerException();
