@@ -1,6 +1,18 @@
 Change Log
 ==========
 
+Version 1.3.0 *(2013-03-21)*
+----------------------------
+
+ * New: Empty repeated fields are now initialized to an empty collection.
+ * New: Emit field options. Use `--no_options` flag to disable.
+ * New: `@Deprecated` is now added to fields and setters on the builder.
+ * New: Maven plugin for running the compiler as part of a build.
+ * Fix: Treat empty and null repeated fields the same in `equals()` and `hashCode()`.
+
+Note: This version is not backwards compatible with code generated from previous versions.
+
+
 Version 1.2.0 *(2013-11-01)*
 ----------------------------
 

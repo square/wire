@@ -17,7 +17,7 @@ Wire is built using the [Maven](http://maven.apache.org) build system.
 Compiling .proto files
 ----------------------
 
-Build the wire-compiler using Maven (alternatively you can just download 
+Build the wire-compiler using Maven (alternatively you can just download
 [the wire-compiler .jar][dl_compiler]):
 
     % mvn clean package
@@ -80,13 +80,16 @@ The `wire-runtime` package contains runtime support libraries that must be inclu
 that use Wire-generated code.
 
 Download [the latest runtime .jar][dl_runtime] or depend via Maven:
-
 ```xml
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>(latest version)</version>
+  <version>1.3.0</version>
 </dependency>
+```
+or Gradle:
+```groovy
+compile 'com.squareup.wire:wire-runtime:1.3.0'
 ```
 
 How Wire works
