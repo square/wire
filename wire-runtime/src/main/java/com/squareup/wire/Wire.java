@@ -23,6 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.squareup.wire.Preconditions.checkArgument;
+import static com.squareup.wire.Preconditions.checkNotNull;
+
 /**
  * Encode and decode Wire protocol buffers.
  */
@@ -115,8 +118,8 @@ public final class Wire {
    * it.
    */
   public <M extends Message> M parseFrom(byte[] bytes, Class<M> messageClass) throws IOException {
-    if (bytes == null) throw new IllegalArgumentException("bytes == null");
-    if (messageClass == null) throw new IllegalArgumentException("messageClass == null");
+    checkNotNull(bytes, "bytes");
+    checkNotNull(messageClass, "messageClass");
     return parseFrom(WireInput.newInstance(bytes), messageClass);
   }
 
@@ -126,10 +129,11 @@ public final class Wire {
    */
   public <M extends Message> M parseFrom(byte[] bytes, int offset, int count, Class<M> messageClass)
       throws IOException {
-    if (bytes == null) throw new IllegalArgumentException("bytes == null");
-    if (offset < 0) throw new IllegalArgumentException("offset < 0");
-    if (count < 0) throw new IllegalArgumentException("count < 0");
-    if (messageClass == null) throw new IllegalArgumentException("messageClass == null");
+    checkNotNull(bytes, "bytes");
+    checkArgument(offset >= 0, "offset < 0");
+    checkArgument(count >= 0, "count < 0");
+    checkArgument(offset + count <= bytes.length, "offset + count > bytes");
+    checkNotNull(messageClass, "messageClass");
     return parseFrom(WireInput.newInstance(bytes, offset, count), messageClass);
   }
 
@@ -138,8 +142,8 @@ public final class Wire {
    */
   public <M extends Message> M parseFrom(InputStream input, Class<M> messageClass)
       throws IOException {
-    if (input == null) throw new IllegalArgumentException("input == null");
-    if (messageClass == null) throw new IllegalArgumentException("messageClass == null");
+    checkNotNull(input, "input");
+    checkNotNull(messageClass, "messageClass");
     return parseFrom(WireInput.newInstance(input), messageClass);
   }
 
