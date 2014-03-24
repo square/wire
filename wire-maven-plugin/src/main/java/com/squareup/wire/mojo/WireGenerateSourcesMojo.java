@@ -82,6 +82,9 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
       // Not all exceptions should result in MojoFailureExceptions (i.e. bugs in this plugin that
       // invoke the compiler incorrectly).
       WireCompiler.main(args.toArray(new String[args.size()]));
+
+      // Add the directory into which generated sources are placed as a compiled source root.
+      project.addCompileSourceRoot(generatedSourceDirectory);
     } catch (Exception e) {
       throw new MojoExecutionException("Wire Plugin: Failure compiling proto sources.", e);
     }
