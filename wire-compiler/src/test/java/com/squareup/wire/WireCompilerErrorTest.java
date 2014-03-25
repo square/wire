@@ -25,10 +25,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -104,8 +104,8 @@ public class WireCompilerErrorTest {
           + "  optional int32 f = 0;\n"
           + "}\n");
       fail();
-    } catch (IllegalStateException e) {
-      assertTrue(e.getMessage().contains("expected tag > 0"));
+    } catch (IllegalArgumentException e) {
+      assertEquals("Illegal tag value: 0", e.getMessage());
     }
   }
 
@@ -117,8 +117,8 @@ public class WireCompilerErrorTest {
           + "  optional int32 g = 1;\n"
           + "}\n");
       fail();
-    } catch (WireCompilerException e) {
-      assertTrue(e.getMessage().toLowerCase(Locale.US).contains("duplicate tag"));
+    } catch (IllegalStateException e) {
+      assertEquals("Duplicate tag 1 in com.squareup.protos.test.Simple", e.getMessage());
     }
   }
 
@@ -137,8 +137,8 @@ public class WireCompilerErrorTest {
           + "    }\n"
           + "}\n");
       fail();
-    } catch (WireCompilerException e) {
-      assertTrue(e.getMessage().toLowerCase(Locale.US).contains("duplicate enum value quix"));
+    } catch (IllegalStateException e) {
+      assertEquals("Duplicate enum tag 0 in scope com.squareup.protos.test.Foo", e.getMessage());
     }
   }
 

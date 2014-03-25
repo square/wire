@@ -6,21 +6,19 @@ import com.squareup.protoparser.MessageType;
 import com.squareup.protoparser.Option;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.Type;
-
-import java.util.Iterator;
-import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import javax.lang.model.element.Modifier;
 
 import static com.squareup.protoparser.MessageType.Field;
 import static javax.lang.model.element.Modifier.FINAL;
@@ -255,16 +253,8 @@ public class MessageWriter {
   // public final Integer optional_int32;
   //
   private void emitMessageFields(MessageType messageType) throws IOException {
-    Set<Integer> tags = new HashSet<Integer>();
-
     for (Field field : messageType.getFields()) {
-      // Check for duplicate tags
       int tag = field.getTag();
-      if (tags.contains(tag)) {
-        throw new WireCompilerException("Duplicate tag value for field "
-            + messageType.getFullyQualifiedName() + "." + field.getName());
-      }
-      tags.add(tag);
 
       String fieldType = field.getType();
       String javaName = compiler.javaName(messageType, fieldType);

@@ -75,8 +75,6 @@ public class WireCompiler {
   private final Set<String> javaSymbols = new LinkedHashSet<String>();
   private final Set<String> enumTypes = new LinkedHashSet<String>();
   private final Map<String, String> enumDefaults = new LinkedHashMap<String, String>();
-  private final Map<String, Set<String>> enumValuesByScope =
-      new LinkedHashMap<String, Set<String>>();
   private final Map<String, ExtensionInfo> extensionInfo =
       new LinkedHashMap<String, ExtensionInfo>();
   private final Map<String, FieldInfo> fieldMap = new LinkedHashMap<String, FieldInfo>();
@@ -363,7 +361,7 @@ public class WireCompiler {
 
   private boolean hasMessageOption(List<Type> types) {
     for (Type type : types) {
-      if (type instanceof MessageType && !((MessageType) type).getOptions().isEmpty()) {
+      if (type instanceof MessageType && !type.getOptions().isEmpty()) {
         return true;
       }
     }
@@ -566,8 +564,11 @@ public class WireCompiler {
 
   // Ensure a non-null value for the Java package name.
   String getJavaPackage(ProtoFile protoFile) {
-    String javaPackage = protoFile.getJavaPackage();
-    return javaPackage == null ? "" : javaPackage;
+    Option javaPackage = Option.findByName(protoFile.getOptions(), "java_package");
+    if (javaPackage != null) {
+      return (String) javaPackage.getValue();
+    }
+    return protoFile.getPackageName() == null ? "" : protoFile.getPackageName();
   }
 
   String getJavaPackage() {
@@ -585,29 +586,12 @@ public class WireCompiler {
           if (!enumTypes.contains(fqName)) {
             enumTypes.add(fqName);
             enumDefaults.put(fqName, enumType.getValues().get(0).getName());
-            checkForDuplicateEnumValue(javaPrefix, enumType);
           }
         }
       } else if (type instanceof MessageType) {
         addFields((MessageType) type);
       }
       addTypes(type.getNestedTypes(), javaPrefix + name + ".", pass);
-    }
-  }
-
-  // Associate each enum value with the enum type's parent scope and check for duplicates
-  private void checkForDuplicateEnumValue(String javaPrefix, EnumType type) {
-    Set<String> enumValues = enumValuesByScope.get(javaPrefix);
-    if (enumValues == null) {
-      enumValues = new LinkedHashSet<String>();
-      enumValuesByScope.put(javaPrefix, enumValues);
-    }
-    for (EnumType.Value value : type.getValues()) {
-      if (!enumValues.add(value.getName())) {
-        throw new WireCompilerException("Duplicate enum value " + value.getName() + " in "
-            + type.getFullyQualifiedName() + ", must be unique in parent namespace "
-            + javaPrefix.substring(0, javaPrefix.length() - 1));
-      }
     }
   }
 
