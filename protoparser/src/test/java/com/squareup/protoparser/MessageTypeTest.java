@@ -168,4 +168,46 @@ public class MessageTypeTest {
     new MessageType("Message", "google.protobuf.Message", "", NO_FIELDS, list(enum1, enum2),
         NO_EXTENSIONS, NO_OPTIONS);
   }
+
+  @Test public void deprecatedTrue() {
+    Field field =
+        new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("deprecated", "true")));
+    assertThat(field.isDeprecated()).isTrue();
+  }
+
+  @Test public void deprecatedFalse() {
+    Field field =
+        new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("deprecated", "false")));
+    assertThat(field.isDeprecated()).isFalse();
+  }
+
+  @Test public void deprecatedMissing() {
+    Field field = new Field(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
+    assertThat(field.isDeprecated()).isFalse();
+  }
+
+  @Test public void packedTrue() {
+    Field field = new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("packed", "true")));
+    assertThat(field.isPacked()).isTrue();
+  }
+
+  @Test public void packedFalse() {
+    Field field = new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("packed", "false")));
+    assertThat(field.isPacked()).isFalse();
+  }
+
+  @Test public void packedMissing() {
+    Field field = new Field(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
+    assertThat(field.isPacked()).isFalse();
+  }
+
+  @Test public void defaultValue() {
+    Field field = new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("default", "foo")));
+    assertThat(field.getDefault()).isEqualTo("foo");
+  }
+
+  @Test public void defaultMissing() {
+    Field field = new Field(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
+    assertThat(field.getDefault()).isNull();
+  }
 }
