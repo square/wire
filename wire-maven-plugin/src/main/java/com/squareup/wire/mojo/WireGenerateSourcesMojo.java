@@ -65,7 +65,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     args.add("--proto_path=" + protoSourceDirectory);
     args.add("--java_out=" + generatedSourceDirectory);
     if (noOptions) {
-      args.add("--no-options");
+      args.add("--no_options");
     }
     if (registryClass != null) {
       args.add("--registry_class=" + registryClass);
