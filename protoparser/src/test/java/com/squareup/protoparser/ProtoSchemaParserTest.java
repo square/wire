@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import static com.squareup.protoparser.TestUtils.NO_EXTEND_DECLARATIONS;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
+import static com.squareup.protoparser.TestUtils.NO_FIELDS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.NO_SERVICES;
 import static com.squareup.protoparser.TestUtils.NO_STRINGS;
@@ -195,8 +196,9 @@ public final class ProtoSchemaParserTest {
     List<Option> toppingOptions = list(new Option("max_choices", "2"));
     Type expected = new EnumType("Topping", "Topping",
         "What's on my waffles.\nAlso works on pancakes.", toppingOptions,
-        list(new Value("FRUIT", 1, "", fruitOptions), new Value("CREAM", 2, "Yummy, yummy cream.",
-            NO_OPTIONS), new Value("SYRUP", 3, "Quebec Maple syrup", NO_OPTIONS)));
+        list(new Value("FRUIT", 1, "", fruitOptions),
+            new Value("CREAM", 2, "Yummy, yummy cream.", NO_OPTIONS),
+            new Value("SYRUP", 3, "Quebec Maple syrup", NO_OPTIONS)));
     ProtoFile protoFile =
         new ProtoFile("waffles.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
             NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
@@ -286,6 +288,86 @@ public final class ProtoSchemaParserTest {
     ProtoFile expected =
         new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_STRINGS, NO_TYPES, NO_SERVICES,
             NO_OPTIONS, extendDeclarations);
+    assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
+        .isEqualTo(expected);
+  }
+
+  @Test public void extendInMessage() throws Exception {
+    String proto = ""
+        + "message Bar {\n"
+        + "  extend Foo {\n"
+        + "    optional Bar bar = 126;\n"
+        + "  }\n"
+        + "}";
+    List<ExtendDeclaration> extendDeclarations = new ArrayList<ExtendDeclaration>();
+    extendDeclarations.add(new ExtendDeclaration("Foo", "Foo", "",
+        Arrays.asList(new MessageType.Field(Label.OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+    Type messageType =
+        new MessageType("Bar", "Bar", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    ProtoFile expected =
+        new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(messageType),
+            NO_SERVICES, NO_OPTIONS, extendDeclarations);
+    assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
+        .isEqualTo(expected);
+  }
+
+  @Test public void extendInMessageWithPackage() throws Exception {
+    String proto = ""
+        + "package kit.kat;\n"
+        + ""
+        + "message Bar {\n"
+        + "  extend Foo {\n"
+        + "    optional Bar bar = 126;\n"
+        + "  }\n"
+        + "}";
+    List<ExtendDeclaration> extendDeclarations = new ArrayList<ExtendDeclaration>();
+    extendDeclarations.add(new ExtendDeclaration("Foo", "kit.kat.Foo", "",
+        Arrays.asList(new MessageType.Field(Label.OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+    Type messageType =
+        new MessageType("Bar", "kit.kat.Bar", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    ProtoFile expected =
+        new ProtoFile("descriptor.proto", "kit.kat", NO_STRINGS, NO_STRINGS,
+            Arrays.asList(messageType), NO_SERVICES, NO_OPTIONS, extendDeclarations);
+    assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
+        .isEqualTo(expected);
+  }
+
+  @Test public void fqcnExtendInMessage() throws Exception {
+    String proto = ""
+        + "message Bar {\n"
+        + "  extend example.Foo {\n"
+        + "    optional Bar bar = 126;\n"
+        + "  }\n"
+        + "}";
+    List<ExtendDeclaration> extendDeclarations = new ArrayList<ExtendDeclaration>();
+    extendDeclarations.add(new ExtendDeclaration("example.Foo", "example.Foo", "",
+        Arrays.asList(new MessageType.Field(Label.OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+    Type messageType =
+        new MessageType("Bar", "Bar", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    ProtoFile expected =
+        new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(messageType),
+            NO_SERVICES, NO_OPTIONS, extendDeclarations);
+    assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
+        .isEqualTo(expected);
+  }
+
+  @Test public void fqcnExtendInMessageWithPackage() throws Exception {
+    String proto = ""
+        + "package kit.kat;\n"
+        + ""
+        + "message Bar {\n"
+        + "  extend example.Foo {\n"
+        + "    optional Bar bar = 126;\n"
+        + "  }\n"
+        + "}";
+    List<ExtendDeclaration> extendDeclarations = new ArrayList<ExtendDeclaration>();
+    extendDeclarations.add(new ExtendDeclaration("example.Foo", "example.Foo", "",
+        Arrays.asList(new MessageType.Field(Label.OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+    Type messageType =
+        new MessageType("Bar", "kit.kat.Bar", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    ProtoFile expected =
+        new ProtoFile("descriptor.proto", "kit.kat", NO_STRINGS, NO_STRINGS,
+            Arrays.asList(messageType), NO_SERVICES, NO_OPTIONS, extendDeclarations);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }

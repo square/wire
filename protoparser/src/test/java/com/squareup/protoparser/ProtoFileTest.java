@@ -132,7 +132,7 @@ public class ProtoFileTest {
 
   @Test public void simpleWithExtendsToString() {
     Type type = new MessageType("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    ExtendDeclaration extend = new ExtendDeclaration("Extend", "", "", NO_FIELDS);
+    ExtendDeclaration extend = new ExtendDeclaration("Extend", "Extend", "", NO_FIELDS);
     ProtoFile file =
         new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(type),
             NO_SERVICES, NO_OPTIONS, list(extend));

@@ -12,14 +12,14 @@ import static org.fest.assertions.api.Assertions.fail;
 
 public class ExtendDeclarationTest {
   @Test public void emptyToString() {
-    ExtendDeclaration extend = new ExtendDeclaration("Name", "", "", NO_FIELDS);
+    ExtendDeclaration extend = new ExtendDeclaration("Name", "Name", "", NO_FIELDS);
     String expected = "extend Name {}\n";
     assertThat(extend.toString()).isEqualTo(expected);
   }
 
   @Test public void simpleToString() {
     Field field = new Field(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    ExtendDeclaration extend = new ExtendDeclaration("Name", "", "", list(field));
+    ExtendDeclaration extend = new ExtendDeclaration("Name", "Name", "", list(field));
     String expected = ""
         + "extend Name {\n"
         + "  required Type name = 1;\n"
@@ -29,7 +29,7 @@ public class ExtendDeclarationTest {
 
   @Test public void simpleWithDocumentationToString() {
     Field field = new Field(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    ExtendDeclaration extend = new ExtendDeclaration("Name", "", "Hello", list(field));
+    ExtendDeclaration extend = new ExtendDeclaration("Name", "Name", "Hello", list(field));
     String expected = ""
         + "// Hello\n"
         + "extend Name {\n"

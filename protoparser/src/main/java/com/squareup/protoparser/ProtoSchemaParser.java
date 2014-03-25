@@ -226,6 +226,9 @@ public final class ProtoSchemaParser {
         extensions.add((Extensions) declared);
       } else if (declared instanceof Option) {
         options.add((Option) declared);
+      } else if (declared instanceof ExtendDeclaration) {
+        // Extend declarations always add in a global scope regardless of nesting.
+        extendDeclarations.add((ExtendDeclaration) declared);
       }
     }
     prefix = previousPrefix;
@@ -249,8 +252,11 @@ public final class ProtoSchemaParser {
         fields.add((MessageType.Field) declared);
       }
     }
-    return new ExtendDeclaration(name, name.contains(".") ? name : prefix + name, documentation,
-        fields);
+    String fqname = name;
+    if (!name.contains(".") && packageName != null) {
+      fqname = packageName + "." + name;
+    }
+    return new ExtendDeclaration(name, fqname, documentation, fields);
   }
 
   /** Reads a service declaration and returns it. */
