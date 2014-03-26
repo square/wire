@@ -1,7 +1,15 @@
 Change Log
 ==========
 
-Version 1.3.0 *(2013-03-21)*
+Version 1.3.1 *(2014-03-25)*
+----------------------------
+
+ * New: Automatically add Maven plugin's generated source as a compilation root.
+ * Fix: Correct Maven plugin's 'no arguments' flag to work properly.
+ * Fix: Support extend declarations nested inside message types. 
+
+
+Version 1.3.0 *(2014-03-21)*
 ----------------------------
 
  * New: Empty repeated fields are now initialized to an empty collection.
