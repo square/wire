@@ -24,23 +24,18 @@ public final class EnumType implements Type {
   }
 
   /**
-   * Though not mentioned in the spec, enum values use C++ scoping rules, meaning that enum values
+   * Though not mentioned in the spec, enum names use C++ scoping rules, meaning that enum values
    * are siblings of their type, not children of it.
    */
   static void validateValueUniquenessInScope(String type, List<Type> nestedTypes) {
-    // Look for types directly in the proto package but not beneath (e.g., google.protobuf.foo.Bar).
-    if (type.startsWith("google.protobuf.") && type.indexOf('.', 16) == -1) {
-      // Google violates this constraint inside their proto descriptors which never generate code.
-      return;
-    }
-    Set<Integer> tags = new LinkedHashSet<Integer>();
+    Set<String> names = new LinkedHashSet<String>();
     for (Type nestedType : nestedTypes) {
       if (nestedType instanceof EnumType) {
         EnumType enumType = (EnumType) nestedType;
         for (Value value : enumType.getValues()) {
-          int tag = value.getTag();
-          if (!tags.add(tag)) {
-            throw new IllegalStateException("Duplicate enum tag " + tag + " in scope " + type);
+          String name = value.getName();
+          if (!names.add(name)) {
+            throw new IllegalStateException("Duplicate enum name " + name + " in scope " + type);
           }
         }
       }

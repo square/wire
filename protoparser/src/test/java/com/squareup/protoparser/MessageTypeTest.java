@@ -155,18 +155,10 @@ public class MessageTypeTest {
     try {
       new MessageType("Message", "example.Message", "", NO_FIELDS, list(enum1, enum2),
           NO_EXTENSIONS, NO_OPTIONS);
-      fail("Duplicate tag not allowed.");
+      fail("Duplicate name not allowed.");
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Duplicate enum tag 1 in scope example.Message");
+      assertThat(e).hasMessage("Duplicate enum name VALUE in scope example.Message");
     }
-  }
-
-  @Test public void duplicateEnumValueTagInDescriptorDoesNotThrow() {
-    Value value = new Value("VALUE", 1, "", NO_OPTIONS);
-    Type enum1 = new EnumType("E1", "google.protobuf.Message.E1", "", NO_OPTIONS, list(value));
-    Type enum2 = new EnumType("E2", "google.protobuf.Message.E2", "", NO_OPTIONS, list(value));
-    new MessageType("Message", "google.protobuf.Message", "", NO_FIELDS, list(enum1, enum2),
-        NO_EXTENSIONS, NO_OPTIONS);
   }
 
   @Test public void deprecatedTrue() {
