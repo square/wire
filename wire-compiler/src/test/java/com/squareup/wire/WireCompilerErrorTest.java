@@ -138,7 +138,7 @@ public class WireCompilerErrorTest {
           + "}\n");
       fail();
     } catch (IllegalStateException e) {
-      assertEquals("Duplicate enum tag 0 in scope com.squareup.protos.test.Foo", e.getMessage());
+      assertEquals("Duplicate enum name QUIX in scope com.squareup.protos.test.Foo", e.getMessage());
     }
   }
 
