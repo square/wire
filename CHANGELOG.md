@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 1.3.2 *(2014-03-27)*
+----------------------------
+
+ * Fix: Enum value duplicate check now correctly looks at names instead of values.
+
+
 Version 1.3.1 *(2014-03-25)*
 ----------------------------
 
