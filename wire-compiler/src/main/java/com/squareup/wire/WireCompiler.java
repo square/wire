@@ -21,6 +21,7 @@ import com.squareup.protoparser.ExtendDeclaration;
 import com.squareup.protoparser.MessageType;
 import com.squareup.protoparser.Option;
 import com.squareup.protoparser.ProtoFile;
+import com.squareup.protoparser.Service;
 import com.squareup.protoparser.Type;
 import java.io.File;
 import java.io.IOException;
@@ -306,8 +307,13 @@ public class WireCompiler {
     return javaSymbolMap.get(fqName);
   }
 
-  String fullyQualifiedName(MessageType messageType, String type) {
-    return fullyQualifiedName(protoFile, messageType, type);
+  String fullyQualifiedName(Type scope, String type) {
+    String fqName = scope == null ? null : scope.getFullyQualifiedName();
+    return fullyQualifiedName(protoFile, fqName, type);
+  }
+
+  String fullyQualifiedName(String fqName, String type) {
+    return fullyQualifiedName(protoFile, fqName, type);
   }
 
   String shortenJavaName(String fullyQualifiedName) {
@@ -462,6 +468,18 @@ public class WireCompiler {
     }
 
     addDependencies(protoFile.getTypes(), getJavaPackage(protoFile) + ".");
+    addDependencies(protoFile.getServices());
+  }
+
+  /** Expands the set of types to emit to include the request/response types of service methods. */
+  private void addDependencies(List<Service> services) {
+    for (Service service : services) {
+      String fqName = service.getFullyQualifiedName();
+      for (Service.Method method : service.getMethods()) {
+        addDependencyBranch(fullyQualifiedName(fqName, method.getRequestType()));
+        addDependencyBranch(fullyQualifiedName(fqName, method.getResponseType()));
+      }
+    }
   }
 
   /** Expands the set of types to emit to include types of fields of current emittable types. */
@@ -473,7 +491,7 @@ public class WireCompiler {
         for (MessageType.Field field : ((MessageType) type).getFields()) {
           String fieldType = field.getType();
           if (!TypeInfo.isScalar(fieldType)) {
-            String fqFieldType = fullyQualifiedName((MessageType) type, field.getType());
+            String fqFieldType = fullyQualifiedName(fqName, field.getType());
             addDependencyBranch(fqFieldType);
           }
         }
@@ -541,16 +559,17 @@ public class WireCompiler {
         String fqType;
 
         boolean isScalar = TypeInfo.isScalar(fieldType);
-        boolean isEnum = !isScalar && isEnum(fullyQualifiedName(protoFile, null, fieldType));
+        boolean isEnum =
+            !isScalar && isEnum(fullyQualifiedName(protoFile, (String) null, fieldType));
         if (isScalar) {
           type = field.getType();
           fqType = type;
         } else if (isEnum) {
           // Store fully-qualified name for enumerations so we can identify them later
-          type = fullyQualifiedName(protoFile, null, fieldType);
+          type = fullyQualifiedName(protoFile, (String) null, fieldType);
           fqType = type;
         } else {
-          fqType = fullyQualifiedName(protoFile, null, fieldType);
+          fqType = fullyQualifiedName(protoFile, (String) null, fieldType);
         }
 
         String location = protoFileName(protoFile.getFileName());
@@ -601,24 +620,28 @@ public class WireCompiler {
       String fqMessageName = messageType.getFullyQualifiedName();
       String key = fqMessageName + "$" + field.getName();
       fieldMap.put(key, new FieldInfo(TypeInfo.isScalar(fieldType)
-          ? fieldType : fullyQualifiedName(messageType, fieldType), field.getLabel()));
+          ? fieldType : fullyQualifiedName(fqMessageName, fieldType), field.getLabel()));
     }
   }
 
-  private String fullyQualifiedName(ProtoFile protoFile, MessageType messageType, String type) {
+  private String fullyQualifiedName(ProtoFile protoFile, Type scope, String type) {
+    String fqName = scope == null ? null : scope.getFullyQualifiedName();
+    return fullyQualifiedName(protoFile, fqName, type);
+  }
+
+  private String fullyQualifiedName(ProtoFile protoFile, String fqName, String type) {
     if (typeIsComplete(type)) {
       return type;
     } else {
-      String prefix = messageType == null
-          ? protoFile.getPackageName() : messageType.getFullyQualifiedName();
+      String prefix = fqName == null ? protoFile.getPackageName() : fqName;
       while (!prefix.isEmpty()) {
         String fqname = prefix + "." + type;
         if (typeIsComplete(fqname)) return fqname;
         prefix = removeTrailingSegment(prefix);
       }
     }
-    throw new WireCompilerException("Unknown type " + type + " in message "
-        + (messageType == null ? "<unknown>" : messageType.getName()));
+    throw new WireCompilerException("Unknown type " + type + " in type "
+        + (fqName == null ? "<unknown>" : fqName));
   }
 
 
@@ -852,7 +875,7 @@ public class WireCompiler {
         int tag = field.getTag();
 
         boolean isScalar = TypeInfo.isScalar(fieldType);
-        boolean isEnum = !isScalar && isEnum(fullyQualifiedName(null, fieldType));
+        boolean isEnum = !isScalar && isEnum(fullyQualifiedName((String) null, fieldType));
         String labelString = getLabelString(field, isEnum);
         if (isScalar) {
           initialValue = String.format("Extension%n"
@@ -1004,7 +1027,7 @@ public class WireCompiler {
         String fieldType = field.getType();
         Datatype datatype = Datatype.of(fieldType);
         // If not scalar, determine whether it is an enum
-        if (datatype == null && isEnum(fullyQualifiedName((MessageType) type, field.getType()))) {
+        if (datatype == null && isEnum(fullyQualifiedName(type, field.getType()))) {
           datatype = Datatype.ENUM;
         }
         if (datatype != null) types.add(datatype);

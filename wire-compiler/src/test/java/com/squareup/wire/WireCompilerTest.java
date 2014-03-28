@@ -369,6 +369,18 @@ public class WireCompilerTest {
     testProtoWithRoots(sources, roots, outputs);
   }
 
+  @Test public void testServiceRoots() throws Exception {
+    String[] sources = {
+        "service_root.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/roots/TheRequest.java",
+        "com/squareup/wire/protos/roots/TheResponse.java"
+    };
+    String roots = "squareup.protos.roots.TheService";
+    testProtoWithRoots(sources, roots, outputs);
+  }
+
   @Test public void sanitizeJavadocStripsTrailingWhitespace() {
     String input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  ";
     String expected = "The quick brown fox\nJumps over\n\nThe lazy dog";

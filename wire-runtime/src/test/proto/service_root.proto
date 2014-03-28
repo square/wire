@@ -1,0 +1,10 @@
+package squareup.wire.protos.roots;
+
+option java_package = "com.squareup.wire.protos.roots";
+
+message TheRequest {}
+message TheResponse {}
+
+service TheService {
+  rpc TheMethod (TheRequest) returns (TheResponse);
+}
