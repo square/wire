@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 1.3.3 *(2014-03-28)*
+----------------------------
+
+ * New: Support service declarations as roots. The request and response types of their methods will
+   be included.
+
+
 Version 1.3.2 *(2014-03-27)*
 ----------------------------
 
@@ -12,7 +19,7 @@ Version 1.3.1 *(2014-03-25)*
 
  * New: Automatically add Maven plugin's generated source as a compilation root.
  * Fix: Correct Maven plugin's 'no arguments' flag to work properly.
- * Fix: Support extend declarations nested inside message types. 
+ * Fix: Support extend declarations nested inside message types.
 
 
 Version 1.3.0 *(2014-03-21)*

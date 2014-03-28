@@ -84,12 +84,12 @@ Download [the latest runtime .jar][dl_runtime] or depend via Maven:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>1.3.2</version>
+  <version>1.3.3</version>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'com.squareup.wire:wire-runtime:1.3.2'
+compile 'com.squareup.wire:wire-runtime:1.3.3'
 ```
 
 How Wire works
