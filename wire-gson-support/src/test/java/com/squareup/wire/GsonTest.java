@@ -21,6 +21,7 @@ import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.util.Arrays;
 import java.util.List;
+import okio.ByteString;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

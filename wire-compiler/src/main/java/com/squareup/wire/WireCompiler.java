@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import okio.ByteString;
 
 import static com.squareup.protoparser.MessageType.Field;
 import static com.squareup.wire.Message.Datatype;
@@ -282,7 +283,8 @@ public class WireCompiler {
       if (initialValue == null) {
         return "ByteString.EMPTY";
       } else {
-        return "ByteString.of(\"" + Stringer.encode(initialValue.getBytes(ISO_8859_1)) + "\")";
+        return "ByteString.decodeBase64(\""
+            + ByteString.of(initialValue.getBytes(ISO_8859_1)).base64() + "\")";
       }
     } else {
       throw new WireCompilerException(javaTypeName + " is not an allowed scalar type");
@@ -697,7 +699,7 @@ public class WireCompiler {
         }
       }
       if (hasBytesField(types)) {
-        imports.add("com.squareup.wire.ByteString");
+        imports.add("okio.ByteString");
       }
       if (hasEnum(types)) {
         imports.add("com.squareup.wire.ProtoEnum");
@@ -820,7 +822,7 @@ public class WireCompiler {
 
     Set<String> imports = new LinkedHashSet<String>();
     if (hasByteStringExtension()) {
-      imports.add("com.squareup.wire.ByteString");
+      imports.add("okio.ByteString");
     }
     imports.add("com.squareup.wire.Extension");
     if (hasRepeatedExtension()) {

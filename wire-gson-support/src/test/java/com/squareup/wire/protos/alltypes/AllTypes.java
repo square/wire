@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/all_types.proto
 package com.squareup.wire.protos.alltypes;
 
-import com.squareup.wire.ByteString;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
@@ -10,6 +9,7 @@ import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import java.util.Collections;
 import java.util.List;
+import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype.BOOL;
 import static com.squareup.wire.Message.Datatype.BYTES;
@@ -110,7 +110,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   public static final Float DEFAULT_DEFAULT_FLOAT = 123.456e7F;
   public static final Double DEFAULT_DEFAULT_DOUBLE = 123.456e78D;
   public static final String DEFAULT_DEFAULT_STRING = "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel";
-  public static final ByteString DEFAULT_DEFAULT_BYTES = ByteString.of("529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs");
+  public static final ByteString DEFAULT_DEFAULT_BYTES = ByteString.decodeBase64("529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs");
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.A;
 
   @ProtoField(tag = 1, type = INT32)

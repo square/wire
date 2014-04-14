@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.squareup.wire</groupId>
     <artifactId>wire</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>wire-compiler</artifactId>
@@ -26,6 +26,10 @@
       <groupId>com.squareup</groupId>
       <artifactId>javawriter</artifactId>
     </dependency>
+    <dependency>
+    <groupId>com.squareup.okio</groupId>
+    <artifactId>okio</artifactId>
+  </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

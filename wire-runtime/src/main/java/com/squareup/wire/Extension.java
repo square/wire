@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.util.List;
+import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
