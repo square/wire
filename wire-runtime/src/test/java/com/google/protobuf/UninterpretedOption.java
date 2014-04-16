@@ -2,11 +2,11 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto
 package com.google.protobuf;
 
-import com.squareup.wire.ByteString;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.util.Collections;
 import java.util.List;
+import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype.BOOL;
 import static com.squareup.wire.Message.Datatype.BYTES;

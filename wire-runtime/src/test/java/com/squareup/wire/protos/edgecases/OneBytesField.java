@@ -2,9 +2,9 @@
 // Source file: ../wire-runtime/src/test/proto/edge_cases.proto
 package com.squareup.wire.protos.edgecases;
 
-import com.squareup.wire.ByteString;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype.BYTES;
 

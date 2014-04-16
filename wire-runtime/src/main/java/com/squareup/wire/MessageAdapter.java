@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import okio.ByteString;
 
 import static com.squareup.wire.ExtendableMessage.ExtendableBuilder;
 import static com.squareup.wire.Message.Builder;

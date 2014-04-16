@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
+import okio.ByteString;
 
 /**
  * A {@link TypeAdapterFactory} that allows Wire messages to be serialized and deserialized

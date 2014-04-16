@@ -20,6 +20,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import okio.ByteString;
 
 /**
  * A {@link com.google.gson.TypeAdapter} that may be used to serialize and deserialize
@@ -32,7 +33,7 @@ class ByteStringTypeAdapter extends TypeAdapter<ByteString> {
     if (value == null) {
       out.nullValue();
     } else {
-      out.value(Stringer.encode(value.toByteArray()));
+      out.value(value.base64());
     }
   }
 
@@ -41,6 +42,6 @@ class ByteStringTypeAdapter extends TypeAdapter<ByteString> {
       in.nextNull();
       return null;
     }
-    return ByteString.of(Stringer.decode(in.nextString()));
+    return ByteString.decodeBase64(in.nextString());
   }
 }

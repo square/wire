@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import okio.ByteString;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -27,10 +28,10 @@ import static org.junit.Assert.assertTrue;
 
 public class ByteStringTest {
   @Test
-  public void byteStringToString() throws Exception {
+  public void byteStringBase64() throws Exception {
     ByteString byteString = ByteString.of((byte) 0x0, (byte) 0x1, (byte) 0x2, (byte) 0xf,
         (byte) 0x10, (byte) 0x11, (byte) 0x7f, (byte) 0x80, (byte) 0x81, (byte) 0xfe, (byte) 0xff);
-    assertEquals("AAECDxARf4CB/v8=", byteString.toString());
+    assertEquals("AAECDxARf4CB/v8=", byteString.base64());
   }
 
   @Test
@@ -62,13 +63,6 @@ public class ByteStringTest {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ByteString.of((byte) 0x61, (byte) 0x62, (byte) 0x63).write(out);
     assertByteArraysEquals(new byte[] { 0x61, 0x62, 0x63 }, out.toByteArray());
-  }
-
-  @Test
-  public void writeWithOffset() throws Exception {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    ByteString.of((byte) 0x61, (byte) 0x62, (byte) 0x63).write(out, 1, 2);
-    assertByteArraysEquals(new byte[] { 0x62, 0x63 }, out.toByteArray());
   }
 
   private static void assertByteArraysEquals(byte[] a, byte[] b) {

@@ -28,6 +28,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
@@ -94,7 +95,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
               break;
             case LENGTH_DELIMITED:
               if (first) out.value("length-delimited");
-              out.value(unknownField.getAsBytes().toString());
+              out.value(unknownField.getAsBytes().base64());
               break;
             default:
               throw new AssertionError("Unknown wire type " + unknownField.getWireType());
@@ -239,7 +240,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
           builder.addFixed64(tag, in.nextInt());
           break;
         case LENGTH_DELIMITED:
-          builder.addLengthDelimited(tag, ByteString.of(in.nextString()));
+          builder.addLengthDelimited(tag, ByteString.decodeBase64(in.nextString()));
           break;
         default:
           throw new AssertionError("Unknown field type " + type);

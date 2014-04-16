@@ -36,11 +36,10 @@ package com.squareup.wire;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import okio.ByteString;
 
 /**
  * Reads and decodes protocol message fields.
- *
- * <p>See GOOGLE_COPYRIGHT.txt for original copyright notice.</p>
  */
 final class WireInput {
 
