@@ -4,8 +4,12 @@ Change Log
 Version 1.4.0 *(In Progress)*
 -----------------------------
 
- * Replace Wire's ByteBuffer class with the one from Okio (https://github.com/square/okio).
+ * Replace Wire's ByteString class with the one from Okio (https://github.com/square/okio).
    This is a breaking API change.
+
+ * Add new static method `Wire.parseFrom(okio.Source input, Class<M> messageClass)`.
+
+ * Reimplement Wire's input handling to use Okio internally.
 
 Version 1.3.3 *(2014-03-28)*
 ----------------------------

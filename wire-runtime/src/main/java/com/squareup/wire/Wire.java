@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import okio.Source;
 
 import static com.squareup.wire.Preconditions.checkArgument;
 import static com.squareup.wire.Preconditions.checkNotNull;
@@ -141,6 +142,16 @@ public final class Wire {
    * Reads a message of type {@code messageClass} from the given {@link InputStream} and returns it.
    */
   public <M extends Message> M parseFrom(InputStream input, Class<M> messageClass)
+      throws IOException {
+    checkNotNull(input, "input");
+    checkNotNull(messageClass, "messageClass");
+    return parseFrom(WireInput.newInstance(input), messageClass);
+  }
+
+  /**
+   * Reads a message of type {@code messageClass} from the given {@link Source} and returns it.
+   */
+  public <M extends Message> M parseFrom(Source input, Class<M> messageClass)
       throws IOException {
     checkNotNull(input, "input");
     checkNotNull(messageClass, "messageClass");
