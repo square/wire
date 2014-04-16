@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import okio.Buffer;
 import okio.ByteString;
 import org.junit.Test;
 
@@ -372,6 +373,26 @@ public class TestAllTypes {
     allTypes.writeTo(data, 0, data.length);
 
     InputStream input = new ByteArrayInputStream(data);
+    AllTypes parsed = wire.parseFrom(input, AllTypes.class);
+    assertEquals(allTypes, parsed);
+
+    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
+
+    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    assertEquals(3, extensions.size());
+    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  }
+
+  @Test
+  public void testReadFromOkioBuffer() throws IOException {
+    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
+    allTypes.writeTo(data, 0, data.length);
+
+    Buffer input = new Buffer().write(data);
     AllTypes parsed = wire.parseFrom(input, AllTypes.class);
     assertEquals(allTypes, parsed);
 
