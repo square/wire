@@ -62,15 +62,15 @@ final class WireInput {
       "WireInput encountered a malformed varint.";
 
   /**
-  * Create a new WireInput wrapping the given byte array.
-  */
+   * Create a new WireInput wrapping the given byte array.
+   */
   public static WireInput newInstance(byte[] buf) {
     return new WireInput(new Buffer().write(buf));
   }
 
   /**
-  * Create a new WireInput wrapping the given byte array slice.
-  */
+   * Create a new WireInput wrapping the given byte array slice.
+   */
   public static WireInput newInstance(byte[] buf, int offset, int count) {
     return new WireInput(new Buffer().write(buf, offset, count));
   }

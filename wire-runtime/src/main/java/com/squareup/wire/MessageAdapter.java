@@ -17,12 +17,11 @@ package com.squareup.wire;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +48,16 @@ final class MessageAdapter<M extends Message> {
     final Class<? extends ProtoEnum> enumType;
     final Class<? extends Message> messageType;
 
+    // Cached values
+    MessageAdapter<? extends Message> messageAdapter;
+    EnumAdapter<? extends ProtoEnum> enumAdapter;
+
     private final Field messageField;
-    private final Method builderMethod;
+    private final Field builderField;
 
     @SuppressWarnings("unchecked")
     private FieldInfo(int tag, String name, Datatype datatype, Label label,
-        Class<?> enumOrMessageType, Field messageField, Method builderMethod) {
+        Class<?> enumOrMessageType, Field messageField, Field builderField) {
       this.tag = tag;
       this.name = name;
       this.datatype = datatype;
@@ -72,7 +75,7 @@ final class MessageAdapter<M extends Message> {
 
       // private fields
       this.messageField = messageField;
-      this.builderMethod = builderMethod;
+      this.builderField = builderField;
     }
   }
 
@@ -108,10 +111,8 @@ final class MessageAdapter<M extends Message> {
 
   public void setBuilderField(Builder<M> builder, int tag, Object value) {
     try {
-      fieldInfoMap.get(tag).builderMethod.invoke(builder, value);
+      fieldInfoMap.get(tag).builderField.set(builder, value);
     } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    } catch (InvocationTargetException e) {
       throw new AssertionError(e);
     }
   }
@@ -120,8 +121,7 @@ final class MessageAdapter<M extends Message> {
   private final Class<M> messageType;
   private final Class<Builder<M>> builderType;
   private final Map<String, Integer> tagMap = new LinkedHashMap<String, Integer>();
-  private final Map<Integer, FieldInfo> fieldInfoMap =
-      new LinkedHashMap<Integer, FieldInfo>();
+  private final TagMap<FieldInfo> fieldInfoMap;
 
   /** Cache information about the Message class and its mapping to proto wire format. */
   MessageAdapter(Wire wire, Class<M> messageType) {
@@ -129,6 +129,7 @@ final class MessageAdapter<M extends Message> {
     this.messageType = messageType;
     this.builderType = getBuilderType(messageType);
 
+    Map<Integer, FieldInfo> map = new LinkedHashMap<Integer, FieldInfo>();
     for (Field messageField : messageType.getDeclaredFields()) {
       // Process fields annotated with '@ProtoField'
       ProtoField annotation = messageField.getAnnotation(ProtoField.class);
@@ -144,10 +145,12 @@ final class MessageAdapter<M extends Message> {
         } else if (datatype == Datatype.MESSAGE) {
           enumOrMessageType = getMessageType(messageField);
         }
-        fieldInfoMap.put(tag, new FieldInfo(tag, name, datatype, annotation.label(),
-            enumOrMessageType, messageField, getBuilderMethod(name, messageField.getType())));
+        map.put(tag, new FieldInfo(tag, name, datatype, annotation.label(),
+            enumOrMessageType, messageField, getBuilderField(name)));
       }
     }
+
+    fieldInfoMap = TagMap.of(map);
   }
 
   @SuppressWarnings("unchecked")
@@ -160,12 +163,12 @@ final class MessageAdapter<M extends Message> {
     }
   }
 
-  private Method getBuilderMethod(String name, Class<?> type) {
+  private Field getBuilderField(String name) {
     try {
-      return builderType.getMethod(name, type);
-    } catch (NoSuchMethodException e) {
-      throw new AssertionError("No builder method "
-          + builderType.getName() + "." + name + "(" + type.getName() + ")");
+      return builderType.getField(name);
+    } catch (NoSuchFieldException e) {
+      throw new AssertionError("No builder field "
+          + builderType.getName() + "." + name);
     }
   }
 
@@ -523,8 +526,8 @@ final class MessageAdapter<M extends Message> {
         if (tag == 0) {
           // Set repeated fields
           for (int storedTag : storage.getTags()) {
-            FieldInfo fieldInfo = fieldInfoMap.get(storedTag);
-            if (fieldInfo != null) {
+            boolean hasField = fieldInfoMap.containsKey(storedTag);
+            if (hasField) {
               setBuilderField(builder, storedTag, storage.get(storedTag));
             } else {
               setExtension((ExtendableBuilder<?>) builder, getExtension(storedTag),
@@ -601,7 +604,7 @@ final class MessageAdapter<M extends Message> {
       case SINT64: return WireInput.decodeZigZag64(input.readVarint64());
       case BOOL: return input.readVarint32() != 0;
       case ENUM:
-        EnumAdapter<? extends ProtoEnum> adapter = wire.enumAdapter(getEnumClass(tag));
+        EnumAdapter<? extends ProtoEnum> adapter = getEnumAdapter(tag);
         int value = input.readVarint32();
         try {
           return adapter.fromInt(value);
@@ -627,12 +630,36 @@ final class MessageAdapter<M extends Message> {
     }
     final int oldLimit = input.pushLimit(length);
     ++input.recursionDepth;
-    MessageAdapter<? extends Message> adapter = wire.messageAdapter(getMessageClass(tag));
+    MessageAdapter<? extends Message> adapter = getMessageAdapter(tag);
     Message message = adapter.read(input);
     input.checkLastTagWas(0);
     --input.recursionDepth;
     input.popLimit(oldLimit);
     return message;
+  }
+
+  private MessageAdapter<? extends Message> getMessageAdapter(int tag) {
+    FieldInfo fieldInfo = fieldInfoMap.get(tag);
+    if (fieldInfo != null && fieldInfo.messageAdapter != null) {
+      return fieldInfo.messageAdapter;
+    }
+    MessageAdapter<? extends Message> result = wire.messageAdapter(getMessageClass(tag));
+    if (fieldInfo != null) {
+      fieldInfo.messageAdapter = result;
+    }
+    return result;
+  }
+
+  private EnumAdapter<? extends ProtoEnum> getEnumAdapter(int tag) {
+    FieldInfo fieldInfo = fieldInfoMap.get(tag);
+    if (fieldInfo != null && fieldInfo.enumAdapter != null) {
+      return fieldInfo.enumAdapter;
+    }
+    EnumAdapter<? extends ProtoEnum> result = wire.enumAdapter(getEnumClass(tag));
+    if (fieldInfo != null) {
+      fieldInfo.enumAdapter = result;
+    }
+    return result;
   }
 
   @SuppressWarnings("unchecked")
@@ -676,23 +703,27 @@ final class MessageAdapter<M extends Message> {
   }
 
   private static class Storage {
-    private final Map<Integer, List<Object>> map = new LinkedHashMap<Integer, List<Object>>();
+    private Map<Integer, List<Object>> map;
 
     void add(int tag, Object value) {
-      List<Object> list = map.get(tag);
+      List<Object> list = map == null ? null : map.get(tag);
       if (list == null) {
         list = new ArrayList<Object>();
+        if (map == null) {
+          map = new LinkedHashMap<Integer, List<Object>>();
+        }
         map.put(tag, list);
       }
       list.add(value);
     }
 
     Set<Integer> getTags() {
+      if (map == null) return Collections.emptySet();
       return map.keySet();
     }
 
     List<Object> get(int tag) {
-      return map.get(tag);
+      return map == null ? null : map.get(tag);
     }
   }
 
