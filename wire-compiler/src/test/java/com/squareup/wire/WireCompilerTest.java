@@ -15,17 +15,23 @@
  */
 package com.squareup.wire;
 
+import com.squareup.javawriter.JavaWriter;
+import com.squareup.protoparser.Service;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class WireCompilerTest {
 
@@ -57,10 +63,25 @@ public class WireCompilerTest {
   }
 
   private void testProto(String[] sources, String[] outputs) throws Exception {
+    testProto(sources, outputs, null);
+  }
+
+  private void testProto(String[] sources, String[] outputs, String serviceWriter,
+      String... serviceWriterOption) throws Exception {
     int numFlags = 2;
+    if (serviceWriter != null) ++numFlags;
+    if (serviceWriterOption != null) numFlags += serviceWriterOption.length;
     String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--java_out=" + testDir.getAbsolutePath();
+    if (serviceWriter != null) {
+      args[2] = "--service_writer=" + serviceWriter;
+      if (serviceWriterOption != null) {
+        for (int i = 0; i < serviceWriterOption.length; i++) {
+          args[3 + i] = "--service_writer_opt=" + serviceWriterOption[i];
+        }
+      }
+    }
     System.arraycopy(sources, 0, args, numFlags, sources.length);
 
     WireCompiler.main(args);
@@ -112,11 +133,12 @@ public class WireCompilerTest {
 
   private void testProtoWithRoots(String[] sources, String roots, String[] outputs)
       throws Exception {
-    int numFlags = 3;
+    int numFlags = 4;
     String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--java_out=" + testDir.getAbsolutePath();
-    args[2] = "--roots=" + roots;
+    args[2] = "--service_writer=com.squareup.wire.SimpleServiceWriter";
+    args[3] = "--roots=" + roots;
     System.arraycopy(sources, 0, args, numFlags, sources.length);
 
     WireCompiler.main(args);
@@ -154,6 +176,75 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/foreign/ForeignMessage.java"
     };
     testProto(sources, outputs);
+  }
+
+  @Test public void testSimpleService() throws Exception {
+    String[] sources = {
+        "request_response.proto",
+        "service.proto"
+    };
+    String[] outputs = {
+        "com/squareup/services/anotherpackage/SendDataRequest.java",
+        "com/squareup/services/anotherpackage/SendDataResponse.java",
+        "com/squareup/services/ExampleService.java"
+    };
+    testProto(sources, outputs, "com.squareup.wire.SimpleServiceWriter");
+  }
+
+  @Test public void testRetrofitService() throws Exception {
+    String[] sources = {
+        "request_response.proto",
+        "retrofit_service.proto"
+    };
+    String[] outputs = {
+        "com/squareup/services/anotherpackage/SendDataRequest.java",
+        "com/squareup/services/anotherpackage/SendDataResponse.java",
+        "com/squareup/services/RetrofitService.java"
+    };
+    testProto(sources, outputs, "com.squareup.wire.RetrofitServiceWriter");
+  }
+
+  @Test public void testRxJavaService() throws Exception {
+    String[] sources = {
+        "request_response.proto",
+        "rxjava_service.proto"
+    };
+    String[] outputs = {
+        "com/squareup/services/anotherpackage/SendDataRequest.java",
+        "com/squareup/services/anotherpackage/SendDataResponse.java",
+        "com/squareup/services/RxJavaService.java"
+    };
+    testProto(sources, outputs, "com.squareup.wire.RxJavaServiceWriter");
+  }
+
+  // Verify that the --service_writer_opt flag works correctly.
+  public static class TestServiceWriter extends SimpleServiceWriter {
+
+    public TestServiceWriter(JavaWriter writer, List<String> options) {
+      super(writer, options);
+      if (!Arrays.asList("OPTION1", "OPTION2").equals(options)) {
+        fail();
+      }
+    }
+
+    @Override public void emitService(Service service, Set<String> importedTypes)
+        throws IOException {
+      super.emitService(service, importedTypes);
+    }
+  }
+
+  @Test public void testSimpleServiceOption() throws Exception {
+    String[] sources = {
+        "request_response.proto",
+        "service.proto"
+    };
+    String[] outputs = {
+        "com/squareup/services/anotherpackage/SendDataRequest.java",
+        "com/squareup/services/anotherpackage/SendDataResponse.java",
+        "com/squareup/services/ExampleService.java"
+    };
+    testProto(sources, outputs, "com.squareup.wire.WireCompilerTest$TestServiceWriter",
+        "OPTION1", "OPTION2");
   }
 
   @Test public void testRegistry() throws Exception {
@@ -369,15 +460,32 @@ public class WireCompilerTest {
     testProtoWithRoots(sources, roots, outputs);
   }
 
-  @Test public void testServiceRoots() throws Exception {
+  @Test public void testServiceRoots1() throws Exception {
     String[] sources = {
         "service_root.proto"
     };
     String[] outputs = {
         "com/squareup/wire/protos/roots/TheRequest.java",
-        "com/squareup/wire/protos/roots/TheResponse.java"
+        "com/squareup/wire/protos/roots/TheResponse.java",
+        "com/squareup/wire/protos/roots/UnnecessaryResponse.java",
+        "com/squareup/wire/protos/roots/TheService.java",
+        "com/squareup/wire/protos/roots/UnnecessaryService.java"
     };
-    String roots = "squareup.protos.roots.TheService";
+    String roots =
+        "squareup.wire.protos.roots.TheService,squareup.wire.protos.roots.UnnecessaryService";
+    testProtoWithRoots(sources, roots, outputs);
+  }
+
+  @Test public void testServiceRoots2() throws Exception {
+    String[] sources = {
+        "service_root.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/roots/TheRequest.java",
+        "com/squareup/wire/protos/roots/TheResponse.java",
+        "com/squareup/wire/protos/roots/TheService.java"
+    };
+    String roots = "squareup.wire.protos.roots.TheService";
     testProtoWithRoots(sources, roots, outputs);
   }
 

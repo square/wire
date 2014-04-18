@@ -1,0 +1,9 @@
+package com.squareup.services.anotherpackage;
+
+message SendDataRequest {
+  optional bytes data = 1;
+}
+
+message SendDataResponse {
+  optional bytes data = 1;
+}

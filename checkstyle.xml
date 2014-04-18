@@ -66,7 +66,10 @@
       <property name="max" value="100"/>
     </module>
     <module name="MethodLength"/>
-    <module name="ParameterNumber"/>
+    <module name="ParameterNumber">
+      <property name="max" value="10"/>
+      <property name="tokens" value="CTOR_DEF"/>
+    </module>
 
 
     <!-- Checks for whitespace                               -->

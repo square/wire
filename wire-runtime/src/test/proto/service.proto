@@ -1,0 +1,10 @@
+package com.squareup.services;
+
+import "request_response.proto";
+
+/** An example service. */
+service ExampleService {
+  /** Sends some data. */
+  rpc SendSomeData (com.squareup.services.anotherpackage.SendDataRequest)
+      returns (com.squareup.services.anotherpackage.SendDataResponse);
+}

@@ -3,7 +3,6 @@ Wire Mobile Protocol Buffers
 
 *“A man got to have a code!”* - Omar Little
 
-
 Introduction
 ------------
 
@@ -69,9 +68,105 @@ relative to the value given for the `--proto_path` flag.
     Writing generated code to out/com/yourcompany/protos/stuff/Stuff.java
     ...
 
-The compiler will (recursively) import any needed `.proto` files from the `protos-repo/` directory, but
-will only generate output for the `.proto` files listed on the command line or in the file specified
-by the `--files` flag.
+The compiler will (recursively) import any needed `.proto` files from the `protos-repo/` directory,
+but will only generate output for the `.proto` files listed on the command line or in the file
+specified by the `--files` flag.
+
+Generating service interfaces
+-----------------------------
+
+To generate interface definitions for `service` definitions in your `.proto` files, use the
+following compiler flag:
+
+`--service_writer=`*fully_qualified_class_name*
+	
+The named class must be on the classpath, must extend the `com.squareup.wire.ServiceWriter` class,
+and must have a public constructor taking a first argument of type `JavaWriter` and a second
+argument of type `List<String>` which will contain user-specified options.
+
+Three experimental sample implementations are currenly bundled with the compiler,
+`com.squareup.wire.SimpleServiceWriter`, `com.squareup.wire.RetrofitServiceWriter`, and
+`com.squareup.wire.RxJavaServiceWriter`. If the `--service_writer` flag is not present,
+`service` definitions are ignored.
+
+A list of options may be passed to the `ServiceWriter` using one or more instances of the
+following compiler flag:
+
+`--service_writer_opt=`*option*
+
+The options from each instance of the flag will be placed into a `List` and passed as the
+second parameter of the `ServiceWriter`'s constructor.
+
+Given the following service definition:
+
+```protobuf
+service ExampleService {
+  /* Sends some data. */
+  rpc SendSomeData (SendDataRequest) returns (SendDataResponse);
+}
+```
+
+`com.squareup.wire.SimpleServiceWriter` will generate:
+
+```java
+public interface ExampleService {
+  /**
+   * Sends some data.
+   */
+  SendDataResponse sendSomeData(SendDataRequest sendDataRequest)
+      throws IOException;
+}
+```
+
+`com.squareup.wire.RetrofitServiceWriter` will generate:
+
+```java
+public interface ExampleService {
+  /**
+   * Sends some data.
+   */
+  @POST("/com.squareup.services.ExampleService/SendSomeData")
+  SendDataResponse sendSomeData(@Body SendDataRequest request);
+}
+```
+
+and `com.squareup.wire.RxJavaServiceWriter` will generate:
+
+```java
+public final class RxJavaService {
+
+  public interface Endpoint {
+
+    /**
+     * Sends some data.
+     */
+    @POST("/com.squareup.services.RxJavaService/SendSomeData")
+    SendDataResponse sendSomeData(@Body SendDataRequest request);
+  }
+
+  private final Func1<SendDataRequest, SendDataResponse> sendSomeData =
+      new Func1<SendDataRequest, SendDataResponse>() {
+        @Override
+        public SendDataResponse call(SendDataRequest request) {
+          return endpoint.sendSomeData(request);
+        }
+      };
+
+  private final Endpoint endpoint;
+
+  @Inject
+  public RxJavaService(Endpoint endpoint) {
+    this.endpoint = endpoint;
+  }
+
+  public Func1<SendDataRequest, SendDataResponse> getSendSomeData() {
+    return sendSomeData;
+  }
+}
+
+```
+
+(omitting the generated file comment, package declaration, and imports for clarity).
 
 Using Wire in your application
 ------------------------------
@@ -84,22 +179,26 @@ Download [the latest runtime .jar][dl_runtime] or depend via Maven:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>1.3.3</version>
+  <version>VERSION</version>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'com.squareup.wire:wire-runtime:1.3.3'
+compile 'com.squareup.wire:wire-runtime:VERSION'
 ```
+
+where `VERSION` is replaced by an actual version number such as `1.5.0`.
 
 How Wire works
 --------------
 
-The Wire compiler generates a Java class for each message or enum defined in a `.proto file` specified
-on the command line. Each message class has an associated Builder class that may be used to construct
-an instance manually:
+The Wire compiler generates a Java class for each message or enum defined in a `.proto file`
+specified on the command line. Each message class has an associated Builder class that may be used
+to construct an instance manually:
 
+```java
     MyMessage msg = new MyMessage.Builder().some_int_field(123).build();
+```
 
 Note that field names are not converted to camel case.
 
@@ -159,9 +258,9 @@ Unsupported
 Wire does not support:
 
  * Groups - they are skipped when parsing binary input data
- * Services - they are ignored by the compiler
 
-Wire supports custom options on messages and fields. Other custom options are ignored. Use the `--no_options` flag to omit option information from the generated code.
+Wire supports custom options on messages and fields. Other custom options are ignored. Use the
+`--no_options` flag to omit option information from the generated code.
 
  [dl_runtime]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
