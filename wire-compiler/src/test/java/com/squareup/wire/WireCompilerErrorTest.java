@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.Test;
@@ -78,8 +79,9 @@ public class WireCompilerErrorTest {
   private Map<String, String> compile(String source) {
     StringIO io = new StringIO("test.proto", source);
 
+    @SuppressWarnings("unchecked")
     WireCompiler compiler = new WireCompiler(".", Arrays.asList("test.proto"),
-        new ArrayList<String>(), ".", null, true, io);
+        new ArrayList<String>(), ".", null, true, null, Collections.EMPTY_LIST, io);
     try {
       compiler.compile();
     } catch (IOException e) {

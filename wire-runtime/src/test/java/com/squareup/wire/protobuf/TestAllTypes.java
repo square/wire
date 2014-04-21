@@ -525,7 +525,7 @@ public class TestAllTypes {
   @Test
   public void testDefaults() throws Exception {
     assertEquals(true, AllTypes.DEFAULT_DEFAULT_BOOL);
-    // original: "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel"
+    // original: "<c-cedilla>ok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11g<u umlaut>zel"
     assertEquals(
         "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel",
         AllTypes.DEFAULT_DEFAULT_STRING);

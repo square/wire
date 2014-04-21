@@ -1,0 +1,14 @@
+package com.squareup.services;
+
+import "request_response.proto";
+
+/** An example service. */
+service RxJavaService {
+  /** Sends some data. */
+  rpc SendSomeData (com.squareup.services.anotherpackage.SendDataRequest)
+      returns (com.squareup.services.anotherpackage.SendDataResponse);
+
+  /** Sends some more data. */
+  rpc SendSomeMoreData (com.squareup.services.anotherpackage.SendDataRequest)
+      returns (com.squareup.services.anotherpackage.SendDataResponse);
+}
