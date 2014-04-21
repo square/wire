@@ -515,9 +515,10 @@ public class WireCompiler {
       typesToEmit.add(typeName);
       for (Field field : extend.getFields()) {
         // FIXME: we need to determine the fully-qualified name of the extension field.
-        // Perhaps this should be handled by protoparser.
-        // For now, just prepend the proto file's package name
-        String fieldTypeName = prefixWithPackageName(protoFile, field.getType());
+        // For now, just prepend the proto file's package name unless the type already appears
+        // to be complete.
+        String fieldTypeName = typeIsComplete(field.getType())
+            ? field.getType() : prefixWithPackageName(protoFile, field.getType());
         typesToEmit.add(fieldTypeName);
       }
     }
