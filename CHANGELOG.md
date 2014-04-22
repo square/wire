@@ -1,15 +1,21 @@
 Change Log
 ==========
 
-Version 1.4.0 *(In Progress)*
------------------------------
+Version 1.4.0 *(2014-04-22)*
+----------------------------
 
  * Replace Wire's ByteString class with the one from Okio (https://github.com/square/okio).
-   This is a breaking API change.
+   **This is a breaking API change**.
 
- * Add new static method `Wire.parseFrom(okio.Source input, Class<M> messageClass)`.
+ * Add a new static method `Wire.parseFrom(okio.Source input, Class<M> messageClass)`.
 
  * Reimplement Wire's input handling to use Okio internally.
+
+ * Provide basic support for generating code from service declarations (see README.md).
+
+ * Improve deserialization performance.
+
+ * Fix a bug where no some extension dependencies were not detected.
 
 Version 1.3.3 *(2014-03-28)*
 ----------------------------

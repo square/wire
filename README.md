@@ -187,7 +187,7 @@ or Gradle:
 compile 'com.squareup.wire:wire-runtime:VERSION'
 ```
 
-where `VERSION` is replaced by an actual version number such as `1.5.0`.
+where `VERSION` is replaced by an actual version number such as `1.4.0`.
 
 How Wire works
 --------------
