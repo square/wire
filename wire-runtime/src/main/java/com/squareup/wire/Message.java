@@ -175,6 +175,8 @@ public abstract class Message {
   protected static <T> List<T> immutableCopyOf(List<T> source) {
     if (source == null) {
       return Collections.emptyList();
+    } else if (source instanceof MessageAdapter.ImmutableList) {
+      return source;
     }
     return Collections.unmodifiableList(new ArrayList<T>(source));
   }
