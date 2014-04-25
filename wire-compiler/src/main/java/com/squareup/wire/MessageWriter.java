@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import javax.lang.model.element.Modifier;
 
 import static com.squareup.protoparser.MessageType.Field;
@@ -80,6 +82,20 @@ public class MessageWriter {
     }
   }
 
+  private static class EnumValueOptionInfo implements Comparable<EnumValueOptionInfo> {
+    public final String type;
+    public final String name;
+
+    EnumValueOptionInfo(String type, String name) {
+      this.type = type;
+      this.name = name;
+    }
+
+    @Override public int compareTo(EnumValueOptionInfo other) {
+      return name.compareTo(other.name);
+    }
+  }
+
   public void emitType(Type type, String currentType, Map<String, ?> optionsMap, boolean topLevel)
       throws IOException {
     writer.emitEmptyLine();
@@ -91,22 +107,53 @@ public class MessageWriter {
       writer.endType();
     } else if (type instanceof EnumType) {
       EnumType enumType = (EnumType) type;
+      OptionsMapMaker mapMaker = new OptionsMapMaker(compiler);
+      // Generate a list of all the options used by any value of this enum type.
+      List<EnumValueOptionInfo> options = getEnumValueOptions(enumType, mapMaker);
+
       writer.beginType(enumType.getName(), "enum", EnumSet.of(PUBLIC), null, "ProtoEnum");
       List<EnumType.Value> values = enumType.getValues();
       for (int i = 0, count = values.size(); i < count; i++) {
         EnumType.Value value = values.get(i);
         MessageWriter.emitDocumentation(writer, value.getDocumentation());
-        writer.emitEnumValue(value.getName() + "(" + value.getTag() + ")", (i == count - 1));
+
+        List<String> initializers = new ArrayList<String>();
+        initializers.add(String.valueOf(value.getTag()));
+        addEnumValueOptionInitializers(value, options, mapMaker, initializers);
+
+        writer.emitEnumValue(value.getName() + "(" + join(initializers, ", ") + ")",
+            (i == count - 1));
+      }
+
+      if (compiler.emitOptions()) {
+        emitEnumOptions(mapMaker.createEnumOptionsMap(enumType));
       }
 
       // Output Private tag field
       writer.emitEmptyLine();
       writer.emitField("int", "value", EnumSet.of(PRIVATE, FINAL));
+
+      // Output extension fields.
+      for (EnumValueOptionInfo option : options) {
+        writer.emitField(option.type, trailingSegment(option.name), EnumSet.of(PUBLIC, FINAL));
+      }
       writer.emitEmptyLine();
 
       // Private Constructor
-      writer.beginConstructor(EnumSet.of(PRIVATE), "int", "value");
+      List<String> parameters = new ArrayList<String>();
+      parameters.add("int");
+      parameters.add("value");
+      for (EnumValueOptionInfo option : options) {
+        parameters.add(option.type);
+        parameters.add(trailingSegment(option.name));
+      }
+
+      writer.beginConstructor(EnumSet.of(PRIVATE), parameters, null);
       writer.emitStatement("this.value = value");
+      for (EnumValueOptionInfo option : options) {
+        String name = trailingSegment(option.name);
+        writer.emitStatement("this.%s = %s", name, name);
+      }
       writer.endConstructor();
       writer.emitEmptyLine();
 
@@ -117,6 +164,80 @@ public class MessageWriter {
       writer.endMethod();
       writer.endType();
     }
+  }
+
+  private List<EnumValueOptionInfo> getEnumValueOptions(EnumType enumType,
+      OptionsMapMaker mapMaker) {
+    if (!compiler.emitOptions() && compiler.enumOptions().isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    Map<String, ?> optionsMap = mapMaker.createEnumValueOptionsMap(enumType);
+    if (optionsMap == null || optionsMap.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    List<EnumValueOptionInfo> result = new ArrayList<EnumValueOptionInfo>();
+
+    Set<String> optionNames = new TreeSet<String>();
+    for (EnumType.Value value : enumType.getValues()) {
+      for (Option option : value.getOptions()) {
+        optionNames.add(option.getName());
+      }
+    }
+
+    Set<String> fqNames = optionsMap.keySet();
+    for (String optionName : optionNames) {
+      for (String fqName : fqNames) {
+        if (fqName.equals(optionName) || fqName.endsWith("." + optionName)) {
+          if (compiler.enumOptions().contains(fqName)) {
+            ExtensionInfo info = compiler.getExtension(fqName);
+            result.add(new EnumValueOptionInfo(compiler.javaName(null, info.fqType), optionName));
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private void addEnumValueOptionInitializers(EnumType.Value value,
+      List<EnumValueOptionInfo> optionInfo, OptionsMapMaker mapMaker, List<String> initializers) {
+    Map<String, ?> enumValueOptionsMap = mapMaker.createSingleEnumValueOptionMap(value);
+    List<Option> valueOptions = value.getOptions();
+    for (EnumValueOptionInfo option : optionInfo) {
+      Option optionByName = Option.findByName(valueOptions, option.name);
+      String initializer = null;
+      if (optionByName != null) {
+        for (Map.Entry<String, ?> entry : enumValueOptionsMap.entrySet()) {
+          String fqName = entry.getKey();
+          ExtensionInfo info = compiler.getExtension(fqName);
+          String name = optionByName.getName();
+          if (fqName.equals(name) || fqName.endsWith("." + name)) {
+            initializer = mapMaker.createOptionInitializer(entry.getValue(), "", "", info.fqType,
+                false, 1);
+            break;
+          }
+        }
+      }
+      initializers.add(initializer);
+    }
+  }
+
+  private String trailingSegment(String s) {
+    int index = s.lastIndexOf('.');
+    return index == -1 ? s : s.substring(index + 1);
+  }
+
+  private String join(List<String> values, String separator) {
+    StringBuilder sb = new StringBuilder();
+    String sep = "";
+    for (String value : values) {
+      sb.append(sep);
+      sb.append(value);
+      sep = separator;
+    }
+    return sb.toString();
   }
 
   private void emitAll(MessageType messageType, Map<String, ?> optionsMap, boolean topLevel)
@@ -158,6 +279,25 @@ public class MessageWriter {
       sb.append("\n.build()");
       writer.emitEmptyLine();
       writer.emitField("MessageOptions", "MESSAGE_OPTIONS", EnumSet.of(PUBLIC, STATIC, FINAL),
+          sb.toString());
+    }
+  }
+
+  private void emitEnumOptions(Map<String, ?> optionsMap) throws IOException {
+    if (optionsMap != null) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("new EnumOptions.Builder()");
+      for (Map.Entry<String, ?> entry : optionsMap.entrySet()) {
+        String fqName = entry.getKey();
+        ExtensionInfo info = compiler.getExtension(fqName);
+        sb.append(String.format("%n.setExtension(Ext_%s.%s, %s)",
+            info.location, compiler.getTrailingSegment(fqName),
+            compiler.getOptionsMapMaker().createOptionInitializer(entry.getValue(), "", "",
+                info.fqType, false, 0)));
+      }
+      sb.append("\n.build()");
+      writer.emitEmptyLine();
+      writer.emitField("EnumOptions", "ENUM_OPTIONS", EnumSet.of(PUBLIC, STATIC, FINAL),
           sb.toString());
     }
   }

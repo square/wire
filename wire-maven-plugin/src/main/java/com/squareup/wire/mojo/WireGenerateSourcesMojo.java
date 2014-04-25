@@ -30,6 +30,9 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.noOptions")
   private boolean noOptions;
 
+  @Parameter(property = "wire.enumOptions")
+  private String[] enumOptions;
+
   @Parameter(property = "wire.roots")
   private String[] roots;
 
@@ -66,6 +69,9 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     args.add("--java_out=" + generatedSourceDirectory);
     if (noOptions) {
       args.add("--no_options");
+    }
+    if (enumOptions != null && enumOptions.length > 0) {
+      args.add("--enum_options=" + Joiner.on(',').join(enumOptions));
     }
     if (registryClass != null) {
       args.add("--registry_class=" + registryClass);
