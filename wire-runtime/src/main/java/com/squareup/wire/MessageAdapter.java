@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -25,8 +26,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.RandomAccess;
 import java.util.Set;
 import okio.ByteString;
+import org.jetbrains.annotations.NotNull;
 
 import static com.squareup.wire.ExtendableMessage.ExtendableBuilder;
 import static com.squareup.wire.Message.Builder;
@@ -241,8 +244,9 @@ final class MessageAdapter<M extends Message> {
 
   private <T extends ExtendableMessage<?>> int getExtensionsSerializedSize(ExtensionMap<T> map) {
     int size = 0;
-    for (Extension<T, ?> extension : map.getExtensions()) {
-      Object value = map.get(extension);
+    for (int i = 0; i < map.size(); i++) {
+      Extension<T, ?> extension = map.getExtension(i);
+      Object value = map.getExtensionValue(i);
       int tag = extension.getTag();
       Datatype datatype = extension.getDatatype();
       Label label = extension.getLabel();
@@ -312,8 +316,9 @@ final class MessageAdapter<M extends Message> {
 
   private <T extends ExtendableMessage<?>> void writeExtensions(WireOutput output,
       ExtensionMap<T> extensionMap) throws IOException {
-    for (Extension<T, ?> extension: extensionMap.getExtensions()) {
-      Object value = extensionMap.get(extension);
+    for (int i = 0; i < extensionMap.size(); i++) {
+      Extension<T, ?> extension = extensionMap.getExtension(i);
+      Object value = extensionMap.getExtensionValue(i);
       int tag = extension.getTag();
       Datatype datatype = extension.getDatatype();
       Label label = extension.getLabel();
@@ -703,18 +708,18 @@ final class MessageAdapter<M extends Message> {
   }
 
   private static class Storage {
-    private Map<Integer, List<Object>> map;
+    private Map<Integer, ImmutableList<Object>> map;
 
     void add(int tag, Object value) {
-      List<Object> list = map == null ? null : map.get(tag);
+      ImmutableList<Object> list = map == null ? null : map.get(tag);
       if (list == null) {
-        list = new ArrayList<Object>();
+        list = new ImmutableList<Object>();
         if (map == null) {
-          map = new LinkedHashMap<Integer, List<Object>>();
+          map = new LinkedHashMap<Integer, ImmutableList<Object>>();
         }
         map.put(tag, list);
       }
-      list.add(value);
+      list.addPrivate(value);
     }
 
     Set<Integer> getTags() {
@@ -757,5 +762,201 @@ final class MessageAdapter<M extends Message> {
       }
     }
     return enumType;
+  }
+
+  /**
+   * An immutable implementation of List that allows Wire messages to avoid the need to make copies.
+   */
+  static class ImmutableList<T> implements List<T>, Cloneable, RandomAccess, Serializable {
+
+    private final List<T> list;
+
+    public ImmutableList() {
+      this.list = new ArrayList<T>();
+    }
+
+    public ImmutableList(List<T> list) {
+      this.list = list;
+    }
+
+    public Object clone() {
+      return new ImmutableList<T>(list);
+    }
+
+    @Override public int size() {
+      return list.size();
+    }
+
+    @Override public boolean isEmpty() {
+      return list.isEmpty();
+    }
+
+    @Override public boolean contains(Object o) {
+      return list.contains(o);
+    }
+
+    @NotNull @Override public java.util.Iterator<T> iterator() {
+      return new Iterator<T>(list.iterator());
+    }
+
+    @NotNull @Override public Object[] toArray() {
+      return list.toArray();
+    }
+
+    @NotNull  @Override public <A> A[] toArray(@NotNull A[] array) {
+      return list.toArray(array);
+    }
+
+    @Override public boolean add(T t) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public boolean remove(Object o) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public boolean containsAll(@NotNull Collection<?> objects) {
+      return list.containsAll(objects);
+    }
+
+    @Override public boolean addAll(@NotNull Collection<? extends T> ts) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public boolean addAll(int i, @NotNull Collection<? extends T> ts) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public boolean removeAll(@NotNull Collection<?> objects) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public boolean retainAll(@NotNull Collection<?> objects) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public void clear() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public T get(int i) {
+      return list.get(i);
+    }
+
+    @Override public T set(int i, T t) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public void add(int i, T t) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public T remove(int i) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override public int indexOf(Object o) {
+      return list.indexOf(o);
+    }
+
+    @Override public int lastIndexOf(Object o) {
+      return list.lastIndexOf(o);
+    }
+
+    @NotNull @Override public java.util.ListIterator<T> listIterator() {
+      return new ListIterator<T>(list.listIterator());
+    }
+
+    @NotNull  @Override public java.util.ListIterator<T> listIterator(int i) {
+      return new ListIterator<T>(list.listIterator(i));
+    }
+
+    @NotNull @Override public List<T> subList(int i, int i2) {
+      return new ImmutableList<T>(list.subList(i, i2));
+    }
+
+    public String toString() {
+      return list.toString();
+    }
+
+    public boolean equals(Object o) {
+      if (o instanceof ImmutableList) {
+        return list.equals(((ImmutableList) o).list);
+      }
+      return list.equals(o);
+    }
+
+    public int hashCode() {
+      return list.hashCode();
+    }
+
+    // MessageAdapter can add elements to the list before it is visible to external code.
+    private void addPrivate(T t) {
+      list.add(t);
+    }
+
+    private static class Iterator<T> implements java.util.Iterator<T> {
+      private final java.util.Iterator<T> iterator;
+
+      public Iterator(java.util.Iterator<T> iterator) {
+        this.iterator = iterator;
+      }
+
+      @Override public boolean hasNext() {
+        return iterator.hasNext();
+      }
+
+      @Override public T next() {
+        return iterator.next();
+      }
+
+      @Override public void remove() {
+        throw new UnsupportedOperationException();
+      }
+    }
+
+    private static class ListIterator<T> implements java.util.ListIterator<T> {
+      private final java.util.ListIterator<T> iterator;
+
+      public ListIterator(java.util.ListIterator<T> iterator) {
+        this.iterator = iterator;
+      }
+
+      @Override public boolean hasNext() {
+        return iterator.hasNext();
+      }
+
+      @Override public T next() {
+        return iterator.next();
+      }
+
+      @Override public boolean hasPrevious() {
+        return iterator.hasPrevious();
+      }
+
+      @Override public T previous() {
+        return iterator.previous();
+      }
+
+      @Override public int nextIndex() {
+        return iterator.nextIndex();
+      }
+
+      @Override public int previousIndex() {
+        return iterator.previousIndex();
+      }
+
+      @Override public void remove() {
+        throw new UnsupportedOperationException();
+      }
+
+      @Override public void set(T t) {
+        throw new UnsupportedOperationException();
+      }
+
+      @Override public void add(T t) {
+        throw new UnsupportedOperationException();
+      }
+    }
   }
 }

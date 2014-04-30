@@ -108,9 +108,10 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
      */
     public <E> ExtendableBuilder<T> setExtension(Extension<T, E> extension, E value) {
       if (extensionMap == null) {
-        extensionMap = new ExtensionMap<T>();
+        extensionMap = new ExtensionMap<T>(extension, value);
+      } else {
+        extensionMap.put(extension, value);
       }
-      extensionMap.put(extension, value);
       return this;
     }
   }

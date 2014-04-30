@@ -109,17 +109,20 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     out.endObject();
   }
 
-  private <M extends ExtendableMessage<?>> void emitExtensions(ExtendableMessage<M> message,
+  @SuppressWarnings("unchecked")
+  private <M extends ExtendableMessage<?>, E> void emitExtensions(ExtendableMessage<M> message,
       JsonWriter out) throws IOException {
-    for (Extension<M, ?> extension : message.getExtensions()) {
-      emitExtension(message, extension, out);
+    if (message.extensionMap == null) return;
+    for (int i = 0; i < message.extensionMap.size(); i++) {
+      Extension<M, E> extension = (Extension<M, E>) message.extensionMap.getExtension(i);
+      E value = (E) message.extensionMap.getExtensionValue(i);
+      emitExtension(extension, value, out);
     }
   }
 
-  private <M extends ExtendableMessage<?>, E> void emitExtension(ExtendableMessage<M> message,
-      Extension<M, E> extension, JsonWriter out) throws IOException {
+  private <M extends ExtendableMessage<?>, E> void emitExtension(Extension<M, E> extension,
+      E value, JsonWriter out) throws IOException {
     out.name(extension.getName());
-    E value = message.getExtension(extension);
     emitJson(out, value, extension.getDatatype(), extension.getLabel());
   }
 
