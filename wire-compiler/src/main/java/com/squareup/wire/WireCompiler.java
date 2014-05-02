@@ -369,6 +369,10 @@ public class WireCompiler {
     return shortenJavaName(protoFile, fullyQualifiedName);
   }
 
+  boolean isRedacted(Option option) {
+    return option.getName().endsWith(".redacted") && "true".equals(option.getValue());
+  }
+
   private void compileOne() throws IOException {
     typeBeingGenerated = "";
 

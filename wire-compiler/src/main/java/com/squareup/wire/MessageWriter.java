@@ -282,6 +282,15 @@ public class MessageWriter {
         map.put("deprecated", "true");
       }
 
+      // Scan for redacted fields.
+      for (Option option : field.getOptions()) {
+        // We allow any package name to be used as long as it ends with '.redacted'.
+        if (compiler.isRedacted(option)) {
+          map.put("redacted", "true");
+          break;
+        }
+      }
+
       writer.emitEmptyLine();
       emitDocumentation(writer, field.getDocumentation());
       writer.emitAnnotation(ProtoField.class, map);
