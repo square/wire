@@ -213,16 +213,68 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
+  public static final class More extends Message {
+
+    public static final Integer DEFAULT_SERIAL = 0;
+
+    @ProtoField(tag = 1, type = INT32)
+    public final Integer serial;
+
+    private More(Builder builder) {
+      super(builder);
+      this.serial = builder.serial;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (other == this) return true;
+      if (!(other instanceof More)) return false;
+      return equals(serial, ((More) other).serial);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = hashCode;
+      return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 0);
+    }
+
+    public static final class Builder extends Message.Builder<More> {
+
+      public Integer serial;
+
+      public Builder() {
+      }
+
+      public Builder(More message) {
+        super(message);
+        if (message == null) return;
+        this.serial = message.serial;
+      }
+
+      public Builder serial(Integer serial) {
+        this.serial = serial;
+        return this;
+      }
+
+      @Override
+      public More build() {
+        return new More(this);
+      }
+    }
+  }
+
   public enum FooBarBazEnum
       implements ProtoEnum {
-    FOO(1),
-    BAR(2),
-    BAZ(3);
+    FOO(1, 17),
+    BAR(2, null),
+    BAZ(3, 18);
 
     private final int value;
+    public final Integer enum_value_option;
 
-    private FooBarBazEnum(int value) {
+    private FooBarBazEnum(int value, Integer enum_value_option) {
       this.value = value;
+      this.enum_value_option = enum_value_option;
     }
 
     @Override

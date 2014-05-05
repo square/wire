@@ -1,5 +1,6 @@
 package com.squareup.wire;
 
+import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.MessageType;
 import com.squareup.protoparser.Option;
 
@@ -30,6 +31,46 @@ public class OptionsMapMaker {
       insertOption(option.getName(), option.getValue(), type.getFullyQualifiedName(), map);
     }
     return map;
+  }
+
+  /**
+   * Builds a map from the options defined on an {@link EnumType}.
+   */
+  public Map<String, ?> createEnumOptionsMap(EnumType type) {
+    List<Option> options = type.getOptions();
+    if (options.isEmpty()) {
+      return null;
+    }
+
+    Map<String, Object> map = new LinkedHashMap<String, Object>();
+    for (Option option : type.getOptions()) {
+      insertOption(option.getName(), option.getValue(), "", map);
+    }
+    return map.isEmpty() ? null : map;
+  }
+
+  /**
+   * Builds a map from the options defined on the values of an {@link EnumType}.
+   */
+  public Map<String, ?> createEnumValueOptionsMap(EnumType type) {
+    Map<String, Object> map = new LinkedHashMap<String, Object>();
+    for (EnumType.Value value : type.getValues()) {
+      for (Option option : value.getOptions()) {
+        insertOption(option.getName(), option.getValue(), "", map);
+      }
+    }
+    return map.isEmpty() ? null : map;
+  }
+
+  /**
+   * Builds a map from the options defined on a single value of an {@link EnumType}.
+   */
+  public Map<String, ?> createSingleEnumValueOptionMap(EnumType.Value value) {
+    Map<String, Object> map = new LinkedHashMap<String, Object>();
+    for (Option option : value.getOptions()) {
+      insertOption(option.getName(), option.getValue(), "", map);
+    }
+    return map.isEmpty() ? null : map;
   }
 
   public Map<String, ?> createFieldOptionsMap(MessageType type, List<Option> options) {

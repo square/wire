@@ -68,17 +68,20 @@ public class WireCompilerTest {
 
   private void testProto(String[] sources, String[] outputs, String serviceWriter,
       String... serviceWriterOption) throws Exception {
-    int numFlags = 2;
+    int numFlags = 3;
     if (serviceWriter != null) ++numFlags;
     if (serviceWriterOption != null) numFlags += serviceWriterOption.length;
     String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--java_out=" + testDir.getAbsolutePath();
+    args[2] = "--enum_options=squareup.protos.custom_options.enum_value_option,"
+        + "squareup.protos.custom_options.complex_enum_value_option,"
+        + "squareup.protos.foreign.foreign_enum_value_option";
     if (serviceWriter != null) {
-      args[2] = "--service_writer=" + serviceWriter;
+      args[3] = "--service_writer=" + serviceWriter;
       if (serviceWriterOption != null) {
         for (int i = 0; i < serviceWriterOption.length; i++) {
-          args[3 + i] = "--service_writer_opt=" + serviceWriterOption[i];
+          args[4 + i] = "--service_writer_opt=" + serviceWriterOption[i];
         }
       }
     }
@@ -95,11 +98,13 @@ public class WireCompilerTest {
   }
 
   private void testProtoNoOptions(String[] sources, String[] outputs) throws Exception {
-    int numFlags = 3;
+    int numFlags = 4;
     String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--no_options";
-    args[2] = "--java_out=" + testDir.getAbsolutePath();
+    // Emit one of the enum options anyway.
+    args[2] = "--enum_options=squareup.protos.custom_options.enum_value_option";
+    args[3] = "--java_out=" + testDir.getAbsolutePath();
     System.arraycopy(sources, 0, args, numFlags, sources.length);
 
     WireCompiler.main(args);

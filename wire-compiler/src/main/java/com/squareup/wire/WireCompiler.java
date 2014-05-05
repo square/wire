@@ -67,6 +67,7 @@ public class WireCompiler {
   private static final String REGISTRY_CLASS_FLAG = "--registry_class=";
   private static final String ROOTS_FLAG = "--roots=";
   private static final String NO_OPTIONS_FLAG = "--no_options";
+  private static final String ENUM_OPTIONS_FLAG = "--enum_options=";
   private static final String SERVICE_WRITER_FLAG = "--service_writer=";
   private static final String SERVICE_WRITER_OPT_FLAG = "--service_writer_opt=";
   private static final String CODE_GENERATED_BY_WIRE =
@@ -94,6 +95,7 @@ public class WireCompiler {
   private String protoFileName;
   private String typeBeingGenerated = "";
   private boolean emitOptions = false;
+  private Set<String> enumOptions;
 
   private Constructor<?> serviceWriterConstructor;
   private List<String> serviceWriterOptions;
@@ -105,6 +107,7 @@ public class WireCompiler {
    * java WireCompiler --proto_path=&lt;path&gt; --java_out=&lt;path&gt;
    *     [--files=&lt;protos.include&gt;] [--roots=&lt;message_name&gt;[,&lt;message_name&gt;...]]
    *     [--registry_class=&lt;class_name&gt;] [--no_options]
+   *     [--enum_options=&lt;option_name&gt;[,&lt;option_name&gt;...]]
    *     [--service_writer=&lt;class_name&gt;]
    *     [--service_writer_flag=&lt;value&gt;] [--service_writer_flag=&lt;value&gt;]...]
    *     [file [file...]]
@@ -125,8 +128,11 @@ public class WireCompiler {
    * a field (other than the standard options "default", "deprecated", and "packed") will result in
    * a static member named "FIELD_OPTIONS_&lt;field name&gt;" in the generated code, initialized
    * with the field option values.
+   * <p>
+   * Regardless of the value of the {@code --no_options} flag, code will be emitted for all
+   * enum value options listed in the {@code --enum_options} flag. The resulting code will contain
+   * a public static field for each option used within a particular enum type.
    * </p>
-   *
    */
   public static void main(String... args) throws Exception {
     String protoPath = null;
@@ -135,6 +141,7 @@ public class WireCompiler {
     List<String> sourceFileNames = new ArrayList<String>();
     List<String> roots = new ArrayList<String>();
     boolean emitOptions = true;
+    List<String> enumOptions = new ArrayList<String>();
     Constructor<?> serviceWriterConstructor = null;
     List<String> serviceWriterOptions = new ArrayList<String>();
 
@@ -149,11 +156,13 @@ public class WireCompiler {
         String[] fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
         sourceFileNames.addAll(Arrays.asList(fileNames));
       } else if (args[index].startsWith(ROOTS_FLAG)) {
-        roots.addAll(Arrays.asList(args[index].substring(ROOTS_FLAG.length()).split(",")));
+        roots.addAll(splitArg(args[index], ROOTS_FLAG.length()));
       } else if (args[index].startsWith(REGISTRY_CLASS_FLAG)) {
         registryClass = args[index].substring(REGISTRY_CLASS_FLAG.length());
       } else if (args[index].equals(NO_OPTIONS_FLAG)) {
         emitOptions = false;
+      } else if (args[index].startsWith(ENUM_OPTIONS_FLAG)) {
+        enumOptions.addAll(splitArg(args[index], ENUM_OPTIONS_FLAG.length()));
       } else if (args[index].startsWith(SERVICE_WRITER_FLAG)) {
         serviceWriterConstructor =
             loadServiceWriter(args[index].substring(SERVICE_WRITER_FLAG.length()));
@@ -173,8 +182,12 @@ public class WireCompiler {
       System.err.println(PROTO_PATH_FLAG + " flag not specified, using current dir " + protoPath);
     }
     WireCompiler wireCompiler = new WireCompiler(protoPath, sourceFileNames, roots, javaOut,
-        registryClass, emitOptions, serviceWriterConstructor, serviceWriterOptions);
+        registryClass, emitOptions, enumOptions, serviceWriterConstructor, serviceWriterOptions);
     wireCompiler.compile();
+  }
+
+  private static List<String> splitArg(String arg, int flagLength) {
+    return Arrays.asList(arg.substring(flagLength).split(","));
   }
 
   private static Constructor<?> loadServiceWriter(String serviceWriterClassName) {
@@ -205,14 +218,14 @@ public class WireCompiler {
   }
 
   public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
-      String outputDirectory, String registryClass, boolean emitOptions,
+      String outputDirectory, String registryClass, boolean emitOptions, List<String> enumOptions,
       Constructor<?> serviceWriterConstructor, List<String> serviceWriterOptions) {
     this(protoPath, sourceFileNames, roots, outputDirectory, registryClass, emitOptions,
-        serviceWriterConstructor, serviceWriterOptions, new IO.FileIO());
+        enumOptions, serviceWriterConstructor, serviceWriterOptions, new IO.FileIO());
   }
 
   WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
-      String outputDirectory, String registryClass, boolean emitOptions,
+      String outputDirectory, String registryClass, boolean emitOptions, List<String> enumOptions,
       Constructor<?> serviceWriterConstructor, List<String> serviceWriterOptions, IO io) {
     this.repoPath = protoPath;
     this.typesToEmit.addAll(roots);
@@ -220,6 +233,7 @@ public class WireCompiler {
     this.outputDirectory = outputDirectory;
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
+    this.enumOptions = new LinkedHashSet<String>(enumOptions);
     this.serviceWriterConstructor = serviceWriterConstructor;
     this.serviceWriterOptions = serviceWriterOptions;
     this.io = io;
@@ -257,6 +271,10 @@ public class WireCompiler {
 
   boolean emitOptions() {
     return emitOptions;
+  }
+
+  Set<String> enumOptions() {
+    return enumOptions;
   }
 
   ProtoFile getProtoFile() {
@@ -423,6 +441,15 @@ public class WireCompiler {
   private boolean hasMessageOption(List<Type> types) {
     for (Type type : types) {
       if (type instanceof MessageType && !type.getOptions().isEmpty()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean hasEnumOption(List<Type> types) {
+    for (Type type : types) {
+      if (type instanceof EnumType && !type.getOptions().isEmpty()) {
         return true;
       }
     }
@@ -774,6 +801,9 @@ public class WireCompiler {
         }
         if (hasMessageOption(types)) {
           imports.add("com.google.protobuf.MessageOptions");
+        }
+        if (hasEnumOption(types)) {
+          imports.add("com.google.protobuf.EnumOptions");
         }
       }
 

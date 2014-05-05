@@ -39,10 +39,15 @@ message FooBar {
     optional FooBarBazEnum value = 1;
   }
 
+  message More {
+    optional int32 serial = 1;
+  }
+
   enum FooBarBazEnum {
-    FOO = 1;
-    BAR = 2;
-    BAZ = 3;
+    option enum_option = true;
+    FOO = 1 [enum_value_option=17, complex_enum_value_option={ serial: 99 }];
+    BAR = 2 [squareup.protos.foreign.foreign_enum_value_option=true];
+    BAZ = 3 [enum_value_option=18, squareup.protos.foreign.foreign_enum_value_option=false];
   }
 }
 
@@ -60,6 +65,15 @@ extend google.protobuf.FieldOptions {
   optional float my_field_option_two = 60002;
   optional FooBar.FooBarBazEnum my_field_option_three = 60003;
   optional FooBar my_field_option_four = 60004;
+}
+
+extend google.protobuf.EnumValueOptions {
+  optional int32 enum_value_option = 70000;
+  optional FooBar.More complex_enum_value_option = 70001;
+}
+
+extend google.protobuf.EnumOptions {
+  optional bool enum_option = 71000;
 }
 
 extend FooBar {

@@ -2,6 +2,7 @@
 // Source file: ../wire-runtime/src/test/proto/custom_options.proto
 package com.squareup.wire.protos.custom_options;
 
+import com.google.protobuf.EnumOptions;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
@@ -254,16 +255,78 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
+  public static final class More extends Message {
+
+    public static final Integer DEFAULT_SERIAL = 0;
+
+    @ProtoField(tag = 1, type = INT32)
+    public final Integer serial;
+
+    private More(Builder builder) {
+      super(builder);
+      this.serial = builder.serial;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (other == this) return true;
+      if (!(other instanceof More)) return false;
+      return equals(serial, ((More) other).serial);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = hashCode;
+      return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 0);
+    }
+
+    public static final class Builder extends Message.Builder<More> {
+
+      public Integer serial;
+
+      public Builder() {
+      }
+
+      public Builder(More message) {
+        super(message);
+        if (message == null) return;
+        this.serial = message.serial;
+      }
+
+      public Builder serial(Integer serial) {
+        this.serial = serial;
+        return this;
+      }
+
+      @Override
+      public More build() {
+        return new More(this);
+      }
+    }
+  }
+
   public enum FooBarBazEnum
       implements ProtoEnum {
-    FOO(1),
-    BAR(2),
-    BAZ(3);
+    FOO(1, new More.Builder()
+        .serial(99)
+        .build(), 17, null),
+    BAR(2, null, null, true),
+    BAZ(3, null, 18, false);
+
+    public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
+        .setExtension(Ext_custom_options.enum_option, true)
+        .build();
 
     private final int value;
+    public final More complex_enum_value_option;
+    public final Integer enum_value_option;
+    public final Boolean foreign_enum_value_option;
 
-    private FooBarBazEnum(int value) {
+    private FooBarBazEnum(int value, More complex_enum_value_option, Integer enum_value_option, Boolean foreign_enum_value_option) {
       this.value = value;
+      this.complex_enum_value_option = complex_enum_value_option;
+      this.enum_value_option = enum_value_option;
+      this.foreign_enum_value_option = foreign_enum_value_option;
     }
 
     @Override
