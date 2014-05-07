@@ -19,10 +19,37 @@ option java_package = "com.squareup.wire.protos.redacted";
 
 import "google/protobuf/descriptor.proto";
 
+message NotRedacted {
+  optional string a = 1;
+  optional string b = 2;
+}
+
 message Redacted {
+  optional string a = 1 [(squareup.protos.redacted_test.redacted) = true];
+  optional string b = 2 [(squareup.protos.redacted_test.redacted) = false];
+  optional string c = 3;
+}
+
+message RedactedChild {
+  optional string a = 1;
+  optional Redacted b = 2;
+  optional NotRedacted c = 3;
+}
+
+message RedactedCycleA {
+  optional RedactedCycleB b = 1;
+}
+
+message RedactedCycleB {
+  optional RedactedCycleA a = 1;
+}
+
+message RedactedRepeated {
+  repeated string a = 1 [(squareup.protos.redacted_test.redacted) = true];
+}
+
+message RedactedRequired {
   required string a = 1 [(squareup.protos.redacted_test.redacted) = true];
-  required string b = 2 [(squareup.protos.redacted_test.redacted) = false];
-  required string c = 3;
 }
 
 extend google.protobuf.FieldOptions {
