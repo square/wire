@@ -364,6 +364,17 @@ public class WireCompilerTest {
     testProtoNoOptions(sources, outputs);
   }
 
+  @Test public void testRedacted() throws Exception {
+    String[] sources = {
+        "redacted_test.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/redacted/Redacted.java",
+        "com/squareup/wire/protos/redacted/Ext_redacted_test.java",
+    };
+    testProto(sources, outputs);
+  }
+
   @Test public void testNoRoots() throws Exception {
     String[] sources = {
         "roots.proto"

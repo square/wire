@@ -50,6 +50,7 @@ final class MessageAdapter<M extends Message> {
     final Label label;
     final Class<? extends ProtoEnum> enumType;
     final Class<? extends Message> messageType;
+    final boolean redacted;
 
     // Cached values
     MessageAdapter<? extends Message> messageAdapter;
@@ -59,12 +60,13 @@ final class MessageAdapter<M extends Message> {
     private final Field builderField;
 
     @SuppressWarnings("unchecked")
-    private FieldInfo(int tag, String name, Datatype datatype, Label label,
+    private FieldInfo(int tag, String name, Datatype datatype, Label label, boolean redacted,
         Class<?> enumOrMessageType, Field messageField, Field builderField) {
       this.tag = tag;
       this.name = name;
       this.datatype = datatype;
       this.label = label;
+      this.redacted = redacted;
       if (datatype == Datatype.ENUM) {
         this.enumType = (Class<? extends ProtoEnum>) enumOrMessageType;
         this.messageType = null;
@@ -148,7 +150,7 @@ final class MessageAdapter<M extends Message> {
         } else if (datatype == Datatype.MESSAGE) {
           enumOrMessageType = getMessageType(messageField);
         }
-        map.put(tag, new FieldInfo(tag, name, datatype, annotation.label(),
+        map.put(tag, new FieldInfo(tag, name, datatype, annotation.label(), annotation.redacted(),
             enumOrMessageType, messageField, getBuilderField(name)));
       }
     }
@@ -378,7 +380,7 @@ final class MessageAdapter<M extends Message> {
     String sep = "";
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
-      if (value == null) {
+      if (value == null || fieldInfo.redacted) {
         continue;
       }
       sb.append(sep);
