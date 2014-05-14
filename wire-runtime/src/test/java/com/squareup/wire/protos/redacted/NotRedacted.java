@@ -2,49 +2,35 @@
 // Source file: ../wire-runtime/src/test/proto/redacted_test.proto
 package com.squareup.wire.protos.redacted;
 
-import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 import static com.squareup.wire.Message.Datatype.STRING;
 
-public final class Redacted extends Message {
-
-  public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
-      .setExtension(Ext_redacted_test.redacted, true)
-      .build();
-  public static final FieldOptions FIELD_OPTIONS_B = new FieldOptions.Builder()
-      .setExtension(Ext_redacted_test.redacted, false)
-      .build();
+public final class NotRedacted extends Message {
 
   public static final String DEFAULT_A = "";
   public static final String DEFAULT_B = "";
-  public static final String DEFAULT_C = "";
 
-  @ProtoField(tag = 1, type = STRING, redacted = true)
+  @ProtoField(tag = 1, type = STRING)
   public final String a;
 
   @ProtoField(tag = 2, type = STRING)
   public final String b;
 
-  @ProtoField(tag = 3, type = STRING)
-  public final String c;
-
-  private Redacted(Builder builder) {
+  private NotRedacted(Builder builder) {
     super(builder);
     this.a = builder.a;
     this.b = builder.b;
-    this.c = builder.c;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
-    if (!(other instanceof Redacted)) return false;
-    Redacted o = (Redacted) other;
+    if (!(other instanceof NotRedacted)) return false;
+    NotRedacted o = (NotRedacted) other;
     return equals(a, o.a)
-        && equals(b, o.b)
-        && equals(c, o.c);
+        && equals(b, o.b);
   }
 
   @Override
@@ -53,27 +39,24 @@ public final class Redacted extends Message {
     if (result == 0) {
       result = a != null ? a.hashCode() : 0;
       result = result * 37 + (b != null ? b.hashCode() : 0);
-      result = result * 37 + (c != null ? c.hashCode() : 0);
       hashCode = result;
     }
     return result;
   }
 
-  public static final class Builder extends Message.Builder<Redacted> {
+  public static final class Builder extends Message.Builder<NotRedacted> {
 
     public String a;
     public String b;
-    public String c;
 
     public Builder() {
     }
 
-    public Builder(Redacted message) {
+    public Builder(NotRedacted message) {
       super(message);
       if (message == null) return;
       this.a = message.a;
       this.b = message.b;
-      this.c = message.c;
     }
 
     public Builder a(String a) {
@@ -86,14 +69,9 @@ public final class Redacted extends Message {
       return this;
     }
 
-    public Builder c(String c) {
-      this.c = c;
-      return this;
-    }
-
     @Override
-    public Redacted build() {
-      return new Redacted(this);
+    public NotRedacted build() {
+      return new NotRedacted(this);
     }
   }
 }

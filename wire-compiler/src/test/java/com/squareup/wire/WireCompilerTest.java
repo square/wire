@@ -369,8 +369,14 @@ public class WireCompilerTest {
         "redacted_test.proto"
     };
     String[] outputs = {
-        "com/squareup/wire/protos/redacted/Redacted.java",
         "com/squareup/wire/protos/redacted/Ext_redacted_test.java",
+        "com/squareup/wire/protos/redacted/NotRedacted.java",
+        "com/squareup/wire/protos/redacted/Redacted.java",
+        "com/squareup/wire/protos/redacted/RedactedChild.java",
+        "com/squareup/wire/protos/redacted/RedactedCycleA.java",
+        "com/squareup/wire/protos/redacted/RedactedCycleB.java",
+        "com/squareup/wire/protos/redacted/RedactedRepeated.java",
+        "com/squareup/wire/protos/redacted/RedactedRequired.java",
     };
     testProto(sources, outputs);
   }
