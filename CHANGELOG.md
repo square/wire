@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 1.5.0 *(2014-04-22)*
+----------------------------
+
+ * New: Options on enums and enum values are now supported.
+ * New: Options ending with `.redacted` on fields will omit values from `toString`.
+ * New: `Redactor` creates copies of messages with redacted fields omitted.
+ * Various internal serialization improvements and memory reduction.
+ * Okio dependency bumped to 0.9.0
+
+
 Version 1.4.0 *(2014-04-22)*
 ----------------------------
 
