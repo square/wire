@@ -17,6 +17,14 @@ import static com.squareup.wire.Message.Datatype.UINT64;
 import static com.squareup.wire.Message.Label.REPEATED;
 import static com.squareup.wire.Message.Label.REQUIRED;
 
+/**
+ * A message representing a option the parser does not recognize. This only
+ * appears in options protos created by the compiler::Parser class.
+ * DescriptorPool resolves these when building Descriptor objects. Therefore,
+ * options protos in descriptor objects (e.g. returned by Descriptor::options(),
+ * or produced by Descriptor::CopyTo()) will never have UninterpretedOptions
+ * in them.
+ */
 public final class UninterpretedOption extends Message {
 
   public static final List<NamePart> DEFAULT_NAME = Collections.emptyList();
@@ -52,15 +60,19 @@ public final class UninterpretedOption extends Message {
   @ProtoField(tag = 8, type = STRING)
   public final String aggregate_value;
 
+  public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value) {
+    this.name = immutableCopyOf(name);
+    this.identifier_value = identifier_value;
+    this.positive_int_value = positive_int_value;
+    this.negative_int_value = negative_int_value;
+    this.double_value = double_value;
+    this.string_value = string_value;
+    this.aggregate_value = aggregate_value;
+  }
+
   private UninterpretedOption(Builder builder) {
-    super(builder);
-    this.name = immutableCopyOf(builder.name);
-    this.identifier_value = builder.identifier_value;
-    this.positive_int_value = builder.positive_int_value;
-    this.negative_int_value = builder.negative_int_value;
-    this.double_value = builder.double_value;
-    this.string_value = builder.string_value;
-    this.aggregate_value = builder.aggregate_value;
+    this(builder.name, builder.identifier_value, builder.positive_int_value, builder.negative_int_value, builder.double_value, builder.string_value, builder.aggregate_value);
+    setBuilder(builder);
   }
 
   @Override
@@ -119,10 +131,14 @@ public final class UninterpretedOption extends Message {
     }
 
     public Builder name(List<NamePart> name) {
-      this.name = name;
+      this.name = checkForNulls(name);
       return this;
     }
 
+    /**
+     * The value of the uninterpreted option, in whatever type the tokenizer
+     * identified it as during parsing. Exactly one of these should be set.
+     */
     public Builder identifier_value(String identifier_value) {
       this.identifier_value = identifier_value;
       return this;
@@ -159,6 +175,13 @@ public final class UninterpretedOption extends Message {
     }
   }
 
+  /**
+   * The name of the uninterpreted option.  Each string represents a segment in
+   * a dot-separated name.  is_extension is true iff a segment represents an
+   * extension (denoted with parentheses in options specs in .proto files).
+   * E.g.,{ ["foo", false], ["bar.baz", true], ["qux", false] } represents
+   * "foo.(bar.baz).qux".
+   */
   public static final class NamePart extends Message {
 
     public static final String DEFAULT_NAME_PART = "";
@@ -170,10 +193,14 @@ public final class UninterpretedOption extends Message {
     @ProtoField(tag = 2, type = BOOL, label = REQUIRED)
     public final Boolean is_extension;
 
+    public NamePart(String name_part, Boolean is_extension) {
+      this.name_part = name_part;
+      this.is_extension = is_extension;
+    }
+
     private NamePart(Builder builder) {
-      super(builder);
-      this.name_part = builder.name_part;
-      this.is_extension = builder.is_extension;
+      this(builder.name_part, builder.is_extension);
+      setBuilder(builder);
     }
 
     @Override

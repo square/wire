@@ -18,10 +18,14 @@ public final class NotRedacted extends Message {
   @ProtoField(tag = 2, type = STRING)
   public final String b;
 
+  public NotRedacted(String a, String b) {
+    this.a = a;
+    this.b = b;
+  }
+
   private NotRedacted(Builder builder) {
-    super(builder);
-    this.a = builder.a;
-    this.b = builder.b;
+    this(builder.a, builder.b);
+    setBuilder(builder);
   }
 
   @Override

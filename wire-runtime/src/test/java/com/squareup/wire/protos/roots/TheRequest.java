@@ -6,8 +6,11 @@ import com.squareup.wire.Message;
 
 public final class TheRequest extends Message {
 
+  public TheRequest() {
+  }
+
   private TheRequest(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override

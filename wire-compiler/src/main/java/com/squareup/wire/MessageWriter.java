@@ -258,7 +258,8 @@ public class MessageWriter {
     }
     emitMessageFieldDefaults(messageType);
     emitMessageFields(messageType);
-    emitMessageConstructor(messageType);
+    emitMessageFieldsConstructor(messageType);
+    emitMessageBuilderConstructor(messageType);
     emitMessageEquals(messageType);
     emitMessageHashCode(messageType);
     emitBuilder(messageType);
@@ -446,23 +447,54 @@ public class MessageWriter {
 
   // Example:
   //
-  // private SimpleMessage(Builder builder) {
-  //   super(builder);
-  //   this.optional_int32 = builder.optional_int32;
+  // public SimpleMessage(int optional_int32, long optional_int64) {
+  //   this.optional_int32 = optional_int32;
+  //   this.optional_int64 = optional_int64;
   // }
   //
-  private void emitMessageConstructor(MessageType messageType) throws IOException {
-    writer.emitEmptyLine();
-    writer.beginMethod(null, messageType.getName(), EnumSet.of(PRIVATE), "Builder", "builder");
-    writer.emitStatement("super(builder)");
+  private void emitMessageFieldsConstructor(MessageType messageType) throws IOException {
+    List<String> params = new ArrayList<String>();
     for (Field field : messageType.getFields()) {
+      String javaName = getJavaFieldType(messageType, field);
+      params.add(javaName);
+      params.add(sanitize(field.getName()));
+    }
+
+    writer.emitEmptyLine();
+    writer.beginMethod(null, messageType.getName(), EnumSet.of(PUBLIC), params, null);
+    for (Field field : messageType.getFields()) {
+      String sanitizedName = sanitize(field.getName());
       if (FieldInfo.isRepeated(field)) {
-        writer.emitStatement("this.%1$s = immutableCopyOf(builder.%1$s)",
-            sanitize(field.getName()));
+        writer.emitStatement("this.%1$s = immutableCopyOf(%1$s)", sanitizedName);
       } else {
-        writer.emitStatement("this.%1$s = builder.%1$s", sanitize(field.getName()));
+        writer.emitStatement("this.%1$s = %1$s", sanitizedName);
       }
     }
+    writer.endMethod();
+  }
+
+  // Example:
+  //
+  // private SimpleMessage(Builder builder) {
+  //   this(builder.optional_int32, builder.optional_int64);
+  //   setBuilder(builder);
+  // }
+  //
+  private void emitMessageBuilderConstructor(MessageType messageType) throws IOException {
+    writer.emitEmptyLine();
+    writer.beginMethod(null, messageType.getName(), EnumSet.of(PRIVATE), "Builder", "builder");
+    StringBuilder params = new StringBuilder();
+    for (Field field : messageType.getFields()) {
+      if (params.length() > 0) {
+        params.append(", ");
+      }
+      params.append("builder.");
+      params.append(sanitize(field.getName()));
+    }
+    if (params.length() > 0) {
+      writer.emitStatement("this(%1$s)", params);
+    }
+    writer.emitStatement("setBuilder(builder)");
     writer.endMethod();
   }
 

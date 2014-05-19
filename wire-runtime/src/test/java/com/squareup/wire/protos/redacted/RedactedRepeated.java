@@ -27,9 +27,13 @@ public final class RedactedRepeated extends Message {
   )
   public final List<String> a;
 
+  public RedactedRepeated(List<String> a) {
+    this.a = immutableCopyOf(a);
+  }
+
   private RedactedRepeated(Builder builder) {
-    super(builder);
-    this.a = immutableCopyOf(builder.a);
+    this(builder.a);
+    setBuilder(builder);
   }
 
   @Override

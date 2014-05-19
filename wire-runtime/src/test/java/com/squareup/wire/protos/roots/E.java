@@ -18,10 +18,14 @@ public final class E extends Message {
   @ProtoField(tag = 2, type = ENUM)
   public final G g;
 
+  public E(F f, G g) {
+    this.f = f;
+    this.g = g;
+  }
+
   private E(Builder builder) {
-    super(builder);
-    this.f = builder.f;
-    this.g = builder.g;
+    this(builder.f, builder.g);
+    setBuilder(builder);
   }
 
   @Override
@@ -82,9 +86,13 @@ public final class E extends Message {
     @ProtoField(tag = 1, type = INT32)
     public final Integer i;
 
+    public F(Integer i) {
+      this.i = i;
+    }
+
     private F(Builder builder) {
-      super(builder);
-      this.i = builder.i;
+      this(builder.i);
+      setBuilder(builder);
     }
 
     @Override

@@ -14,9 +14,13 @@ public final class OneField extends Message {
   @ProtoField(tag = 1, type = INT32)
   public final Integer opt_int32;
 
+  public OneField(Integer opt_int32) {
+    this.opt_int32 = opt_int32;
+  }
+
   private OneField(Builder builder) {
-    super(builder);
-    this.opt_int32 = builder.opt_int32;
+    this(builder.opt_int32);
+    setBuilder(builder);
   }
 
   @Override

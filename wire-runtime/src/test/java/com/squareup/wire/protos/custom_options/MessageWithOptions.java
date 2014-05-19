@@ -64,8 +64,11 @@ public final class MessageWithOptions extends Message {
           .build())
       .build();
 
+  public MessageWithOptions() {
+  }
+
   private MessageWithOptions(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override

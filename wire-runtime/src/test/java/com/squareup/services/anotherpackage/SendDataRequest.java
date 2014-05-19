@@ -15,9 +15,13 @@ public final class SendDataRequest extends Message {
   @ProtoField(tag = 1, type = BYTES)
   public final ByteString data;
 
+  public SendDataRequest(ByteString data) {
+    this.data = data;
+  }
+
   private SendDataRequest(Builder builder) {
-    super(builder);
-    this.data = builder.data;
+    this(builder.data);
+    setBuilder(builder);
   }
 
   @Override

@@ -6,8 +6,11 @@ import com.squareup.wire.Message;
 
 public final class MessageWithOptions extends Message {
 
+  public MessageWithOptions() {
+  }
+
   private MessageWithOptions(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override

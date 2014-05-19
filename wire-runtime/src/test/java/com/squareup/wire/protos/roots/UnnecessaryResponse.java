@@ -6,8 +6,11 @@ import com.squareup.wire.Message;
 
 public final class UnnecessaryResponse extends Message {
 
+  public UnnecessaryResponse() {
+  }
+
   private UnnecessaryResponse(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override
