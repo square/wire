@@ -30,6 +30,12 @@ public final class Redacted extends Message {
   @ProtoField(tag = 3, type = STRING)
   public final String c;
 
+  public Redacted(String a, String b, String c) {
+    this.a = a;
+    this.b = b;
+    this.c = c;
+  }
+
   private Redacted(Builder builder) {
     super(builder);
     this.a = builder.a;

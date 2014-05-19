@@ -14,6 +14,10 @@ public final class K extends Message {
   @ProtoField(tag = 1, type = INT32)
   public final Integer i;
 
+  public K(Integer i) {
+    this.i = i;
+  }
+
   private K(Builder builder) {
     super(builder);
     this.i = builder.i;

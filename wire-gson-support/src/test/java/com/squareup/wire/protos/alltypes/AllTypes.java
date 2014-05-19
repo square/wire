@@ -356,6 +356,90 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   @ProtoField(tag = 416, type = ENUM)
   public final NestedEnum default_nested_enum;
 
+  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum) {
+    this.opt_int32 = opt_int32;
+    this.opt_uint32 = opt_uint32;
+    this.opt_sint32 = opt_sint32;
+    this.opt_fixed32 = opt_fixed32;
+    this.opt_sfixed32 = opt_sfixed32;
+    this.opt_int64 = opt_int64;
+    this.opt_uint64 = opt_uint64;
+    this.opt_sint64 = opt_sint64;
+    this.opt_fixed64 = opt_fixed64;
+    this.opt_sfixed64 = opt_sfixed64;
+    this.opt_bool = opt_bool;
+    this.opt_float = opt_float;
+    this.opt_double = opt_double;
+    this.opt_string = opt_string;
+    this.opt_bytes = opt_bytes;
+    this.opt_nested_enum = opt_nested_enum;
+    this.opt_nested_message = opt_nested_message;
+    this.req_int32 = req_int32;
+    this.req_uint32 = req_uint32;
+    this.req_sint32 = req_sint32;
+    this.req_fixed32 = req_fixed32;
+    this.req_sfixed32 = req_sfixed32;
+    this.req_int64 = req_int64;
+    this.req_uint64 = req_uint64;
+    this.req_sint64 = req_sint64;
+    this.req_fixed64 = req_fixed64;
+    this.req_sfixed64 = req_sfixed64;
+    this.req_bool = req_bool;
+    this.req_float = req_float;
+    this.req_double = req_double;
+    this.req_string = req_string;
+    this.req_bytes = req_bytes;
+    this.req_nested_enum = req_nested_enum;
+    this.req_nested_message = req_nested_message;
+    this.rep_int32 = immutableCopyOf(rep_int32);
+    this.rep_uint32 = immutableCopyOf(rep_uint32);
+    this.rep_sint32 = immutableCopyOf(rep_sint32);
+    this.rep_fixed32 = immutableCopyOf(rep_fixed32);
+    this.rep_sfixed32 = immutableCopyOf(rep_sfixed32);
+    this.rep_int64 = immutableCopyOf(rep_int64);
+    this.rep_uint64 = immutableCopyOf(rep_uint64);
+    this.rep_sint64 = immutableCopyOf(rep_sint64);
+    this.rep_fixed64 = immutableCopyOf(rep_fixed64);
+    this.rep_sfixed64 = immutableCopyOf(rep_sfixed64);
+    this.rep_bool = immutableCopyOf(rep_bool);
+    this.rep_float = immutableCopyOf(rep_float);
+    this.rep_double = immutableCopyOf(rep_double);
+    this.rep_string = immutableCopyOf(rep_string);
+    this.rep_bytes = immutableCopyOf(rep_bytes);
+    this.rep_nested_enum = immutableCopyOf(rep_nested_enum);
+    this.rep_nested_message = immutableCopyOf(rep_nested_message);
+    this.pack_int32 = immutableCopyOf(pack_int32);
+    this.pack_uint32 = immutableCopyOf(pack_uint32);
+    this.pack_sint32 = immutableCopyOf(pack_sint32);
+    this.pack_fixed32 = immutableCopyOf(pack_fixed32);
+    this.pack_sfixed32 = immutableCopyOf(pack_sfixed32);
+    this.pack_int64 = immutableCopyOf(pack_int64);
+    this.pack_uint64 = immutableCopyOf(pack_uint64);
+    this.pack_sint64 = immutableCopyOf(pack_sint64);
+    this.pack_fixed64 = immutableCopyOf(pack_fixed64);
+    this.pack_sfixed64 = immutableCopyOf(pack_sfixed64);
+    this.pack_bool = immutableCopyOf(pack_bool);
+    this.pack_float = immutableCopyOf(pack_float);
+    this.pack_double = immutableCopyOf(pack_double);
+    this.pack_nested_enum = immutableCopyOf(pack_nested_enum);
+    this.default_int32 = default_int32;
+    this.default_uint32 = default_uint32;
+    this.default_sint32 = default_sint32;
+    this.default_fixed32 = default_fixed32;
+    this.default_sfixed32 = default_sfixed32;
+    this.default_int64 = default_int64;
+    this.default_uint64 = default_uint64;
+    this.default_sint64 = default_sint64;
+    this.default_fixed64 = default_fixed64;
+    this.default_sfixed64 = default_sfixed64;
+    this.default_bool = default_bool;
+    this.default_float = default_float;
+    this.default_double = default_double;
+    this.default_string = default_string;
+    this.default_bytes = default_bytes;
+    this.default_nested_enum = default_nested_enum;
+  }
+
   private AllTypes(Builder builder) {
     super(builder);
     this.opt_int32 = builder.opt_int32;
@@ -443,6 +527,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
   @Override
   public boolean equals(Object other) {
+    if (other == this) return true;
     if (!(other instanceof AllTypes)) return false;
     AllTypes o = (AllTypes) other;
     if (!extensionsEqual(o)) return false;
@@ -964,157 +1049,157 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     public Builder rep_int32(List<Integer> rep_int32) {
-      this.rep_int32 = rep_int32;
+      this.rep_int32 = checkForNulls(rep_int32);
       return this;
     }
 
     public Builder rep_uint32(List<Integer> rep_uint32) {
-      this.rep_uint32 = rep_uint32;
+      this.rep_uint32 = checkForNulls(rep_uint32);
       return this;
     }
 
     public Builder rep_sint32(List<Integer> rep_sint32) {
-      this.rep_sint32 = rep_sint32;
+      this.rep_sint32 = checkForNulls(rep_sint32);
       return this;
     }
 
     public Builder rep_fixed32(List<Integer> rep_fixed32) {
-      this.rep_fixed32 = rep_fixed32;
+      this.rep_fixed32 = checkForNulls(rep_fixed32);
       return this;
     }
 
     public Builder rep_sfixed32(List<Integer> rep_sfixed32) {
-      this.rep_sfixed32 = rep_sfixed32;
+      this.rep_sfixed32 = checkForNulls(rep_sfixed32);
       return this;
     }
 
     public Builder rep_int64(List<Long> rep_int64) {
-      this.rep_int64 = rep_int64;
+      this.rep_int64 = checkForNulls(rep_int64);
       return this;
     }
 
     public Builder rep_uint64(List<Long> rep_uint64) {
-      this.rep_uint64 = rep_uint64;
+      this.rep_uint64 = checkForNulls(rep_uint64);
       return this;
     }
 
     public Builder rep_sint64(List<Long> rep_sint64) {
-      this.rep_sint64 = rep_sint64;
+      this.rep_sint64 = checkForNulls(rep_sint64);
       return this;
     }
 
     public Builder rep_fixed64(List<Long> rep_fixed64) {
-      this.rep_fixed64 = rep_fixed64;
+      this.rep_fixed64 = checkForNulls(rep_fixed64);
       return this;
     }
 
     public Builder rep_sfixed64(List<Long> rep_sfixed64) {
-      this.rep_sfixed64 = rep_sfixed64;
+      this.rep_sfixed64 = checkForNulls(rep_sfixed64);
       return this;
     }
 
     public Builder rep_bool(List<Boolean> rep_bool) {
-      this.rep_bool = rep_bool;
+      this.rep_bool = checkForNulls(rep_bool);
       return this;
     }
 
     public Builder rep_float(List<Float> rep_float) {
-      this.rep_float = rep_float;
+      this.rep_float = checkForNulls(rep_float);
       return this;
     }
 
     public Builder rep_double(List<Double> rep_double) {
-      this.rep_double = rep_double;
+      this.rep_double = checkForNulls(rep_double);
       return this;
     }
 
     public Builder rep_string(List<String> rep_string) {
-      this.rep_string = rep_string;
+      this.rep_string = checkForNulls(rep_string);
       return this;
     }
 
     public Builder rep_bytes(List<ByteString> rep_bytes) {
-      this.rep_bytes = rep_bytes;
+      this.rep_bytes = checkForNulls(rep_bytes);
       return this;
     }
 
     public Builder rep_nested_enum(List<NestedEnum> rep_nested_enum) {
-      this.rep_nested_enum = rep_nested_enum;
+      this.rep_nested_enum = checkForNulls(rep_nested_enum);
       return this;
     }
 
     public Builder rep_nested_message(List<NestedMessage> rep_nested_message) {
-      this.rep_nested_message = rep_nested_message;
+      this.rep_nested_message = checkForNulls(rep_nested_message);
       return this;
     }
 
     public Builder pack_int32(List<Integer> pack_int32) {
-      this.pack_int32 = pack_int32;
+      this.pack_int32 = checkForNulls(pack_int32);
       return this;
     }
 
     public Builder pack_uint32(List<Integer> pack_uint32) {
-      this.pack_uint32 = pack_uint32;
+      this.pack_uint32 = checkForNulls(pack_uint32);
       return this;
     }
 
     public Builder pack_sint32(List<Integer> pack_sint32) {
-      this.pack_sint32 = pack_sint32;
+      this.pack_sint32 = checkForNulls(pack_sint32);
       return this;
     }
 
     public Builder pack_fixed32(List<Integer> pack_fixed32) {
-      this.pack_fixed32 = pack_fixed32;
+      this.pack_fixed32 = checkForNulls(pack_fixed32);
       return this;
     }
 
     public Builder pack_sfixed32(List<Integer> pack_sfixed32) {
-      this.pack_sfixed32 = pack_sfixed32;
+      this.pack_sfixed32 = checkForNulls(pack_sfixed32);
       return this;
     }
 
     public Builder pack_int64(List<Long> pack_int64) {
-      this.pack_int64 = pack_int64;
+      this.pack_int64 = checkForNulls(pack_int64);
       return this;
     }
 
     public Builder pack_uint64(List<Long> pack_uint64) {
-      this.pack_uint64 = pack_uint64;
+      this.pack_uint64 = checkForNulls(pack_uint64);
       return this;
     }
 
     public Builder pack_sint64(List<Long> pack_sint64) {
-      this.pack_sint64 = pack_sint64;
+      this.pack_sint64 = checkForNulls(pack_sint64);
       return this;
     }
 
     public Builder pack_fixed64(List<Long> pack_fixed64) {
-      this.pack_fixed64 = pack_fixed64;
+      this.pack_fixed64 = checkForNulls(pack_fixed64);
       return this;
     }
 
     public Builder pack_sfixed64(List<Long> pack_sfixed64) {
-      this.pack_sfixed64 = pack_sfixed64;
+      this.pack_sfixed64 = checkForNulls(pack_sfixed64);
       return this;
     }
 
     public Builder pack_bool(List<Boolean> pack_bool) {
-      this.pack_bool = pack_bool;
+      this.pack_bool = checkForNulls(pack_bool);
       return this;
     }
 
     public Builder pack_float(List<Float> pack_float) {
-      this.pack_float = pack_float;
+      this.pack_float = checkForNulls(pack_float);
       return this;
     }
 
     public Builder pack_double(List<Double> pack_double) {
-      this.pack_double = pack_double;
+      this.pack_double = checkForNulls(pack_double);
       return this;
     }
 
     public Builder pack_nested_enum(List<NestedEnum> pack_nested_enum) {
-      this.pack_nested_enum = pack_nested_enum;
+      this.pack_nested_enum = checkForNulls(pack_nested_enum);
       return this;
     }
 
@@ -1234,6 +1319,10 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     @ProtoField(tag = 1, type = INT32)
     public final Integer a;
 
+    public NestedMessage(Integer a) {
+      this.a = a;
+    }
+
     private NestedMessage(Builder builder) {
       super(builder);
       this.a = builder.a;
@@ -1241,6 +1330,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
     @Override
     public boolean equals(Object other) {
+      if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
       return equals(a, ((NestedMessage) other).a);
     }

@@ -15,6 +15,10 @@ public final class OneBytesField extends Message {
   @ProtoField(tag = 1, type = BYTES)
   public final ByteString opt_bytes;
 
+  public OneBytesField(ByteString opt_bytes) {
+    this.opt_bytes = opt_bytes;
+  }
+
   private OneBytesField(Builder builder) {
     super(builder);
     this.opt_bytes = builder.opt_bytes;

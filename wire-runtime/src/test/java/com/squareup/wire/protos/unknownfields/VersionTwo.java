@@ -33,6 +33,14 @@ public final class VersionTwo extends Message {
   @ProtoField(tag = 5, type = FIXED64)
   public final Long v2_f64;
 
+  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64) {
+    this.i = i;
+    this.v2_i = v2_i;
+    this.v2_s = v2_s;
+    this.v2_f32 = v2_f32;
+    this.v2_f64 = v2_f64;
+  }
+
   private VersionTwo(Builder builder) {
     super(builder);
     this.i = builder.i;

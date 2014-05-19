@@ -15,6 +15,10 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
   @ProtoField(tag = 1, type = FLOAT)
   public final Float f;
 
+  public ExternalMessage(Float f) {
+    this.f = f;
+  }
+
   private ExternalMessage(Builder builder) {
     super(builder);
     this.f = builder.f;

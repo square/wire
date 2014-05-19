@@ -28,6 +28,11 @@ public final class A extends Message {
   @ProtoField(tag = 2)
   public final D d;
 
+  public A(B c, D d) {
+    this.c = c;
+    this.d = d;
+  }
+
   private A(Builder builder) {
     super(builder);
     this.c = builder.c;

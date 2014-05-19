@@ -10,6 +10,10 @@ public final class RedactedCycleA extends Message {
   @ProtoField(tag = 1)
   public final RedactedCycleB b;
 
+  public RedactedCycleA(RedactedCycleB b) {
+    this.b = b;
+  }
+
   private RedactedCycleA(Builder builder) {
     super(builder);
     this.b = builder.b;

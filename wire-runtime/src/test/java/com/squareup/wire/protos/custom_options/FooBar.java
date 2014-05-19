@@ -90,6 +90,16 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   @ProtoField(tag = 7, label = REPEATED)
   public final List<FooBar> nested;
 
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested) {
+    this.foo = foo;
+    this.bar = bar;
+    this.baz = baz;
+    this.qux = qux;
+    this.fred = immutableCopyOf(fred);
+    this.daisy = daisy;
+    this.nested = immutableCopyOf(nested);
+  }
+
   private FooBar(Builder builder) {
     super(builder);
     this.foo = builder.foo;
@@ -212,6 +222,10 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     @ProtoField(tag = 1, type = ENUM)
     public final FooBarBazEnum value;
 
+    public Nested(FooBarBazEnum value) {
+      this.value = value;
+    }
+
     private Nested(Builder builder) {
       super(builder);
       this.value = builder.value;
@@ -261,6 +275,10 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
     @ProtoField(tag = 1, type = INT32)
     public final Integer serial;
+
+    public More(Integer serial) {
+      this.serial = serial;
+    }
 
     private More(Builder builder) {
       super(builder);

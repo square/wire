@@ -28,6 +28,10 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
   @SuppressWarnings("unchecked")
   transient ExtensionMap<T> extensionMap; // Null if empty.
 
+  protected ExtendableMessage() {
+    super();
+  }
+
   protected ExtendableMessage(ExtendableBuilder<T> builder) {
     super(builder);
     if (builder.extensionMap != null) {

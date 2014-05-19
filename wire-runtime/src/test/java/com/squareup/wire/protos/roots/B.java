@@ -12,6 +12,10 @@ public final class B extends Message {
   @ProtoField(tag = 1, label = REQUIRED)
   public final C c;
 
+  public B(C c) {
+    this.c = c;
+  }
+
   private B(Builder builder) {
     super(builder);
     this.c = builder.c;

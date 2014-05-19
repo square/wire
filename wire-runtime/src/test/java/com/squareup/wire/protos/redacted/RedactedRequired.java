@@ -25,6 +25,10 @@ public final class RedactedRequired extends Message {
   )
   public final String a;
 
+  public RedactedRequired(String a) {
+    this.a = a;
+  }
+
   private RedactedRequired(Builder builder) {
     super(builder);
     this.a = builder.a;

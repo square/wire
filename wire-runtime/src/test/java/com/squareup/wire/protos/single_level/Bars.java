@@ -16,6 +16,10 @@ public final class Bars extends Message {
   @ProtoField(tag = 1, label = REPEATED)
   public final List<Bar> bars;
 
+  public Bars(List<Bar> bars) {
+    this.bars = immutableCopyOf(bars);
+  }
+
   private Bars(Builder builder) {
     super(builder);
     this.bars = immutableCopyOf(builder.bars);

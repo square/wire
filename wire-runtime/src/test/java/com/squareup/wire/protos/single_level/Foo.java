@@ -14,6 +14,10 @@ public final class Foo extends Message {
   @ProtoField(tag = 1, type = INT32)
   public final Integer bar;
 
+  public Foo(Integer bar) {
+    this.bar = bar;
+  }
+
   private Foo(Builder builder) {
     super(builder);
     this.bar = builder.bar;

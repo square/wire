@@ -45,6 +45,13 @@ public final class Person extends Message {
   @ProtoField(tag = 4, label = REPEATED)
   public final List<PhoneNumber> phone;
 
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
+    this.name = name;
+    this.id = id;
+    this.email = email;
+    this.phone = immutableCopyOf(phone);
+  }
+
   private Person(Builder builder) {
     super(builder);
     this.name = builder.name;
@@ -172,6 +179,11 @@ public final class Person extends Message {
      */
     @ProtoField(tag = 2, type = ENUM)
     public final PhoneType type;
+
+    public PhoneNumber(String number, PhoneType type) {
+      this.number = number;
+      this.type = type;
+    }
 
     private PhoneNumber(Builder builder) {
       super(builder);

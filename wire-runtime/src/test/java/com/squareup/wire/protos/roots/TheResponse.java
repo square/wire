@@ -6,6 +6,9 @@ import com.squareup.wire.Message;
 
 public final class TheResponse extends Message {
 
+  public TheResponse() {
+  }
+
   private TheResponse(Builder builder) {
     super(builder);
   }

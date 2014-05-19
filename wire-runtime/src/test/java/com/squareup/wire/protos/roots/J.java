@@ -10,6 +10,10 @@ public final class J extends Message {
   @ProtoField(tag = 1)
   public final K k;
 
+  public J(K k) {
+    this.k = k;
+  }
+
   private J(Builder builder) {
     super(builder);
     this.k = builder.k;

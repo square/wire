@@ -20,6 +20,12 @@ public final class RedactedChild extends Message {
   @ProtoField(tag = 3)
   public final NotRedacted c;
 
+  public RedactedChild(String a, Redacted b, NotRedacted c) {
+    this.a = a;
+    this.b = b;
+    this.c = c;
+  }
+
   private RedactedChild(Builder builder) {
     super(builder);
     this.a = builder.a;

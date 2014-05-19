@@ -15,6 +15,10 @@ public final class ForeignMessage extends ExtendableMessage<ForeignMessage> {
   @ProtoField(tag = 1, type = INT32)
   public final Integer i;
 
+  public ForeignMessage(Integer i) {
+    this.i = i;
+  }
+
   private ForeignMessage(Builder builder) {
     super(builder);
     this.i = builder.i;
