@@ -20,8 +20,8 @@ public final class OneBytesField extends Message {
   }
 
   private OneBytesField(Builder builder) {
-    super(builder);
-    this.opt_bytes = builder.opt_bytes;
+    this(builder.opt_bytes);
+    setBuilder(builder);
   }
 
   @Override

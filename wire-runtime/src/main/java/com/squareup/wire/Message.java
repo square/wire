@@ -149,10 +149,9 @@ public abstract class Message {
   }
 
   /**
-   * Constructs a Message, initialized with any unknown field data stored in the given
-   * {@code Builder}.
+   * Initializes any unknown field data to that stored in the given {@code Builder}.
    */
-  protected Message(Builder builder) {
+  protected void setBuilder(Builder builder) {
     if (builder.unknownFieldMap != null) {
       unknownFields = new UnknownFieldMap(builder.unknownFieldMap);
     }

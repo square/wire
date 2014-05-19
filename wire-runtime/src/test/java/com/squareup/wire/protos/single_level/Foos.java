@@ -21,8 +21,8 @@ public final class Foos extends Message {
   }
 
   private Foos(Builder builder) {
-    super(builder);
-    this.foos = immutableCopyOf(builder.foos);
+    this(builder.foos);
+    setBuilder(builder);
   }
 
   @Override

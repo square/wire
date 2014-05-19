@@ -21,8 +21,8 @@ public final class Bars extends Message {
   }
 
   private Bars(Builder builder) {
-    super(builder);
-    this.bars = immutableCopyOf(builder.bars);
+    this(builder.bars);
+    setBuilder(builder);
   }
 
   @Override

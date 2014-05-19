@@ -24,9 +24,8 @@ public final class NotRedacted extends Message {
   }
 
   private NotRedacted(Builder builder) {
-    super(builder);
-    this.a = builder.a;
-    this.b = builder.b;
+    this(builder.a, builder.b);
+    setBuilder(builder);
   }
 
   @Override

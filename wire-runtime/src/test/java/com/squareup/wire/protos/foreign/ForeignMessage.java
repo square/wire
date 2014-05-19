@@ -20,8 +20,8 @@ public final class ForeignMessage extends ExtendableMessage<ForeignMessage> {
   }
 
   private ForeignMessage(Builder builder) {
-    super(builder);
-    this.i = builder.i;
+    this(builder.i);
+    setBuilder(builder);
   }
 
   @Override

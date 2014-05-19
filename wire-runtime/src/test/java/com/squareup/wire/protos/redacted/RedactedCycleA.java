@@ -15,8 +15,8 @@ public final class RedactedCycleA extends Message {
   }
 
   private RedactedCycleA(Builder builder) {
-    super(builder);
-    this.b = builder.b;
+    this(builder.b);
+    setBuilder(builder);
   }
 
   @Override

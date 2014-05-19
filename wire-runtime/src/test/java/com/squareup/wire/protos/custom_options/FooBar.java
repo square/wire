@@ -101,14 +101,8 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   }
 
   private FooBar(Builder builder) {
-    super(builder);
-    this.foo = builder.foo;
-    this.bar = builder.bar;
-    this.baz = builder.baz;
-    this.qux = builder.qux;
-    this.fred = immutableCopyOf(builder.fred);
-    this.daisy = builder.daisy;
-    this.nested = immutableCopyOf(builder.nested);
+    this(builder.foo, builder.bar, builder.baz, builder.qux, builder.fred, builder.daisy, builder.nested);
+    setBuilder(builder);
   }
 
   @Override
@@ -227,8 +221,8 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     private Nested(Builder builder) {
-      super(builder);
-      this.value = builder.value;
+      this(builder.value);
+      setBuilder(builder);
     }
 
     @Override
@@ -281,8 +275,8 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     private More(Builder builder) {
-      super(builder);
-      this.serial = builder.serial;
+      this(builder.serial);
+      setBuilder(builder);
     }
 
     @Override

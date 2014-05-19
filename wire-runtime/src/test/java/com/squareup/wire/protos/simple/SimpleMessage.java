@@ -124,19 +124,8 @@ public final class SimpleMessage extends Message {
   }
 
   private SimpleMessage(Builder builder) {
-    super(builder);
-    this.optional_int32 = builder.optional_int32;
-    this.optional_nested_msg = builder.optional_nested_msg;
-    this.optional_external_msg = builder.optional_external_msg;
-    this.default_nested_enum = builder.default_nested_enum;
-    this.required_int32 = builder.required_int32;
-    this.repeated_double = immutableCopyOf(builder.repeated_double);
-    this.default_foreign_enum = builder.default_foreign_enum;
-    this.no_default_foreign_enum = builder.no_default_foreign_enum;
-    this._package = builder._package;
-    this.result = builder.result;
-    this.other = builder.other;
-    this.o = builder.o;
+    this(builder.optional_int32, builder.optional_nested_msg, builder.optional_external_msg, builder.default_nested_enum, builder.required_int32, builder.repeated_double, builder.default_foreign_enum, builder.no_default_foreign_enum, builder._package, builder.result, builder.other, builder.o);
+    setBuilder(builder);
   }
 
   @Override
@@ -331,8 +320,8 @@ public final class SimpleMessage extends Message {
     }
 
     private NestedMessage(Builder builder) {
-      super(builder);
-      this.bb = builder.bb;
+      this(builder.bb);
+      setBuilder(builder);
     }
 
     @Override

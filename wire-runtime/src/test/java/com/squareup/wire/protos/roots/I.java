@@ -20,8 +20,8 @@ public final class I extends ExtendableMessage<I> {
   }
 
   private I(Builder builder) {
-    super(builder);
-    this.i = builder.i;
+    this(builder.i);
+    setBuilder(builder);
   }
 
   @Override

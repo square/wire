@@ -10,7 +10,7 @@ public final class TheResponse extends Message {
   }
 
   private TheResponse(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override

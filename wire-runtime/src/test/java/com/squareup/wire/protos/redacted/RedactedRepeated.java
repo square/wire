@@ -32,8 +32,8 @@ public final class RedactedRepeated extends Message {
   }
 
   private RedactedRepeated(Builder builder) {
-    super(builder);
-    this.a = immutableCopyOf(builder.a);
+    this(builder.a);
+    setBuilder(builder);
   }
 
   @Override

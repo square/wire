@@ -20,8 +20,8 @@ public final class ChildPackage extends Message {
   }
 
   private ChildPackage(Builder builder) {
-    super(builder);
-    this.inner_foreign_enum = builder.inner_foreign_enum;
+    this(builder.inner_foreign_enum);
+    setBuilder(builder);
   }
 
   @Override

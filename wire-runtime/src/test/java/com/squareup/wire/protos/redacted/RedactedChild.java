@@ -27,10 +27,8 @@ public final class RedactedChild extends Message {
   }
 
   private RedactedChild(Builder builder) {
-    super(builder);
-    this.a = builder.a;
-    this.b = builder.b;
-    this.c = builder.c;
+    this(builder.a, builder.b, builder.c);
+    setBuilder(builder);
   }
 
   @Override

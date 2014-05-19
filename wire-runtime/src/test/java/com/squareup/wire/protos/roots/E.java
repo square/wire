@@ -24,9 +24,8 @@ public final class E extends Message {
   }
 
   private E(Builder builder) {
-    super(builder);
-    this.f = builder.f;
-    this.g = builder.g;
+    this(builder.f, builder.g);
+    setBuilder(builder);
   }
 
   @Override
@@ -92,8 +91,8 @@ public final class E extends Message {
     }
 
     private F(Builder builder) {
-      super(builder);
-      this.i = builder.i;
+      this(builder.i);
+      setBuilder(builder);
     }
 
     @Override

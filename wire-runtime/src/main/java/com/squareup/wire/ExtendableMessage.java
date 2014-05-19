@@ -29,11 +29,13 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
   transient ExtensionMap<T> extensionMap; // Null if empty.
 
   protected ExtendableMessage() {
-    super();
   }
 
-  protected ExtendableMessage(ExtendableBuilder<T> builder) {
-    super(builder);
+  /**
+   * Initializes any extension and unknown field data to that stored in the given {@code Builder}.
+   */
+  protected void setBuilder(ExtendableBuilder<T> builder) {
+    super.setBuilder(builder);
     if (builder.extensionMap != null) {
       this.extensionMap = new ExtensionMap<T>(builder.extensionMap);
     }

@@ -72,13 +72,17 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
   @ProtoField(tag = 999, label = REPEATED)
   public final List<UninterpretedOption> uninterpreted_option;
 
+  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option) {
+    this.ctype = ctype;
+    this.packed = packed;
+    this.deprecated = deprecated;
+    this.experimental_map_key = experimental_map_key;
+    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+  }
+
   private FieldOptions(Builder builder) {
-    super(builder);
-    this.ctype = builder.ctype;
-    this.packed = builder.packed;
-    this.deprecated = builder.deprecated;
-    this.experimental_map_key = builder.experimental_map_key;
-    this.uninterpreted_option = immutableCopyOf(builder.uninterpreted_option);
+    this(builder.ctype, builder.packed, builder.deprecated, builder.experimental_map_key, builder.uninterpreted_option);
+    setBuilder(builder);
   }
 
   @Override
@@ -186,7 +190,7 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      this.uninterpreted_option = uninterpreted_option;
+      this.uninterpreted_option = checkForNulls(uninterpreted_option);
       return this;
     }
 

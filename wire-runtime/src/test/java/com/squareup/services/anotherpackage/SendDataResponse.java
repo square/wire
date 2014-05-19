@@ -20,8 +20,8 @@ public final class SendDataResponse extends Message {
   }
 
   private SendDataResponse(Builder builder) {
-    super(builder);
-    this.data = builder.data;
+    this(builder.data);
+    setBuilder(builder);
   }
 
   @Override

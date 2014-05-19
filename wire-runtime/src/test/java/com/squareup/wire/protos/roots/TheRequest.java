@@ -10,7 +10,7 @@ public final class TheRequest extends Message {
   }
 
   private TheRequest(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override

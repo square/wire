@@ -19,8 +19,8 @@ public final class Foo extends Message {
   }
 
   private Foo(Builder builder) {
-    super(builder);
-    this.bar = builder.bar;
+    this(builder.bar);
+    setBuilder(builder);
   }
 
   @Override

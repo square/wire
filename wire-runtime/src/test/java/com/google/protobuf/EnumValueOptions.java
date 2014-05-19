@@ -20,9 +20,13 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
   @ProtoField(tag = 999, label = REPEATED)
   public final List<UninterpretedOption> uninterpreted_option;
 
+  public EnumValueOptions(List<UninterpretedOption> uninterpreted_option) {
+    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+  }
+
   private EnumValueOptions(Builder builder) {
-    super(builder);
-    this.uninterpreted_option = immutableCopyOf(builder.uninterpreted_option);
+    this(builder.uninterpreted_option);
+    setBuilder(builder);
   }
 
   @Override

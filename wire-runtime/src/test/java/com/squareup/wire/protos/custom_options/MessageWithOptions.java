@@ -68,7 +68,7 @@ public final class MessageWithOptions extends Message {
   }
 
   private MessageWithOptions(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override

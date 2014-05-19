@@ -19,8 +19,8 @@ public final class Bar extends Message {
   }
 
   private Bar(Builder builder) {
-    super(builder);
-    this.baz = builder.baz;
+    this(builder.baz);
+    setBuilder(builder);
   }
 
   @Override

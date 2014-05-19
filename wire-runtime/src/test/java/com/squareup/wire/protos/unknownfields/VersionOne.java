@@ -19,8 +19,8 @@ public final class VersionOne extends Message {
   }
 
   private VersionOne(Builder builder) {
-    super(builder);
-    this.i = builder.i;
+    this(builder.i);
+    setBuilder(builder);
   }
 
   @Override

@@ -53,11 +53,8 @@ public final class Person extends Message {
   }
 
   private Person(Builder builder) {
-    super(builder);
-    this.name = builder.name;
-    this.id = builder.id;
-    this.email = builder.email;
-    this.phone = immutableCopyOf(builder.phone);
+    this(builder.name, builder.id, builder.email, builder.phone);
+    setBuilder(builder);
   }
 
   @Override
@@ -186,9 +183,8 @@ public final class Person extends Message {
     }
 
     private PhoneNumber(Builder builder) {
-      super(builder);
-      this.number = builder.number;
-      this.type = builder.type;
+      this(builder.number, builder.type);
+      setBuilder(builder);
     }
 
     @Override

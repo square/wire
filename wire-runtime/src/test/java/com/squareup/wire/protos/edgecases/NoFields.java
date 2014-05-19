@@ -10,7 +10,7 @@ public final class NoFields extends Message {
   }
 
   private NoFields(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override

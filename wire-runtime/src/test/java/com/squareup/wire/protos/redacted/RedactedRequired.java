@@ -30,8 +30,8 @@ public final class RedactedRequired extends Message {
   }
 
   private RedactedRequired(Builder builder) {
-    super(builder);
-    this.a = builder.a;
+    this(builder.a);
+    setBuilder(builder);
   }
 
   @Override

@@ -10,7 +10,7 @@ public final class UnnecessaryResponse extends Message {
   }
 
   private UnnecessaryResponse(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override

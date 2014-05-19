@@ -19,8 +19,8 @@ public final class OneField extends Message {
   }
 
   private OneField(Builder builder) {
-    super(builder);
-    this.opt_int32 = builder.opt_int32;
+    this(builder.opt_int32);
+    setBuilder(builder);
   }
 
   @Override
