@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Use Redactor to set any 'redacted' annotated fields in a message to null. */
+/** Creates redacted copies of objects. */
 public class Redactor<T extends Message> {
   private static final Redactor<?> NOOP_REDACTOR = new Redactor<Message>(null, null, null, null) {
     @Override
@@ -99,7 +99,11 @@ public class Redactor<T extends Message> {
     }
   }
 
-  /** Returns the given message with all of the 'redacted' fields set to null. */
+  /**
+   * Returns a copy of {@code message} with all redacted fields set to null.
+   * This operation is recursive: nested messages are themselves redacted in the
+   * returned object.
+   */
   @SuppressWarnings("unchecked") // Field and member redactors always agree.
   public T redact(T message) {
     if (message == null) return null;
