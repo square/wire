@@ -754,7 +754,7 @@ public class WireCompiler {
   }
 
   private String protoFileName(String path) {
-    int slashIndex = path.lastIndexOf('/');
+    int slashIndex = path.lastIndexOf(File.separatorChar);
     if (slashIndex != -1) {
       path = path.substring(slashIndex + 1);
     }

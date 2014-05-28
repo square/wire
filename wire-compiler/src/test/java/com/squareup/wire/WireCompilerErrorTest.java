@@ -18,6 +18,7 @@ package com.squareup.wire;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
@@ -42,7 +43,7 @@ public class WireCompilerErrorTest {
     private final Map<String, StringWriter> writers = new LinkedHashMap<String, StringWriter>();
 
     public StringIO(String protoFileName, String source) {
-      this.protoFileName = "./" + protoFileName;
+      this.protoFileName = "." + File.separator + protoFileName;
       this.source = source;
     }
 

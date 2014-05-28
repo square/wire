@@ -43,7 +43,7 @@ public class WireCompilerTest {
   }
 
   private File makeTestDirectory(String path) {
-    File dir = new File(path);
+    File dir = new File(fixPath(path));
     dir.mkdir();
     cleanup(dir);
     List<String> filesBefore = getAllFiles(dir);
@@ -573,8 +573,12 @@ public class WireCompilerTest {
     }
   }
 
+  private String fixPath(String path) {
+     return path.replaceAll("/", File.separator);
+  }
+
   private void assertFilesMatch(File outputDir, String path) throws FileNotFoundException {
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path);
+    File expectedFile = new File(fixPath("../wire-runtime/src/test/java/" + path));
     File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
   }
@@ -582,19 +586,36 @@ public class WireCompilerTest {
   private void assertFilesMatchNoOptions(File outputDir, String path)
       throws FileNotFoundException {
     // Compare against file with .noOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path + ".noOptions");
+    File expectedFile = new File(fixPath("../wire-runtime/src/test/java/" + path + ".noOptions"));
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {
-      expectedFile = new File("../wire-runtime/src/test/java/" + path);
+      expectedFile = new File(fixPath("../wire-runtime/src/test/java/" + path));
     }
     File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
   }
 
+  private String canonicalize(String header) {
+    // Remove DOS drive names (like 'c:') and canonicalize file separators.
+    return header.replaceAll("// Source file: [a-zA-Z]:", "// Source file: ")
+        .replaceAll("\\\\", "/");
+  }
+
+  private String canonicalizeHeader(String file) {
+    int firstNewlineIndex = file.indexOf('\n');
+    int secondNewlineIndex = file.indexOf('\n', firstNewlineIndex + 1);
+
+    return canonicalize(file.substring(0, secondNewlineIndex))
+        + file.substring(secondNewlineIndex);
+  }
+
   private void assertFilesMatch(File expectedFile, File actualFile) throws FileNotFoundException {
     String expected = new Scanner(expectedFile).useDelimiter("\\A").next();
     String actual = new Scanner(actualFile).useDelimiter("\\A").next();
+
+    expected = canonicalizeHeader(expected);
+    actual = canonicalizeHeader(actual);
 
     // Normalize CRLF -> LF
     expected = expected.replace("\r\n", "\n");
