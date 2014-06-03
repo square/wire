@@ -29,7 +29,8 @@ public class RedactedTest {
 
   @Test
   public void testRedacted() throws IOException {
-    assertEquals("Redacted{b=b, c=c}", new Redacted.Builder().a("a").b("b").c("c").build().toString());
+    assertEquals("Redacted{a=██, b=b, c=c}",
+        new Redacted.Builder().a("a").b("b").c("c").build().toString());
   }
 
   @Test
