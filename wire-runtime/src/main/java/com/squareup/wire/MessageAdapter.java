@@ -380,14 +380,14 @@ final class MessageAdapter<M extends Message> {
     String sep = "";
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
-      if (value == null || fieldInfo.redacted) {
+      if (value == null) {
         continue;
       }
       sb.append(sep);
       sep = ", ";
       sb.append(fieldInfo.name);
       sb.append("=");
-      sb.append(value);
+      sb.append(fieldInfo.redacted ? "██" : value);
     }
     if (message instanceof ExtendableMessage<?>) {
       ExtendableMessage<?> extendableMessage = (ExtendableMessage<?>) message;
