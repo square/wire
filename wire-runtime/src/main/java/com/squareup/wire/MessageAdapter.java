@@ -42,6 +42,9 @@ import static com.squareup.wire.Message.Label;
  * @param <M> the Message class handled by this adapter.
  */
 final class MessageAdapter<M extends Message> {
+  // The string to use when redacting fields from toString.
+  private static final String BOX = "█";
+  private static final String REDACTED = BOX + BOX;
 
   public static final class FieldInfo {
     final int tag;
@@ -387,7 +390,7 @@ final class MessageAdapter<M extends Message> {
       sep = ", ";
       sb.append(fieldInfo.name);
       sb.append("=");
-      sb.append(fieldInfo.redacted ? "██" : value);
+      sb.append(fieldInfo.redacted ? REDACTED : value);
     }
     if (message instanceof ExtendableMessage<?>) {
       ExtendableMessage<?> extendableMessage = (ExtendableMessage<?>) message;
