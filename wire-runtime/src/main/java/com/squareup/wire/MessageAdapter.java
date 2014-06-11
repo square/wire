@@ -42,9 +42,10 @@ import static com.squareup.wire.Message.Label;
  * @param <M> the Message class handled by this adapter.
  */
 final class MessageAdapter<M extends Message> {
+  // Unicode character "Full Block" (U+2588)
+  private static final String FULL_BLOCK = "█";
   // The string to use when redacting fields from toString.
-  private static final String BOX = "█";
-  private static final String REDACTED = BOX + BOX;
+  private static final String REDACTED = FULL_BLOCK + FULL_BLOCK;
 
   public static final class FieldInfo {
     final int tag;
