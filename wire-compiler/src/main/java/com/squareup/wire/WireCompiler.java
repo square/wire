@@ -109,7 +109,7 @@ public class WireCompiler {
    *     [--registry_class=&lt;class_name&gt;] [--no_options]
    *     [--enum_options=&lt;option_name&gt;[,&lt;option_name&gt;...]]
    *     [--service_writer=&lt;class_name&gt;]
-   *     [--service_writer_flag=&lt;value&gt;] [--service_writer_flag=&lt;value&gt;]...]
+   *     [--service_writer_opt=&lt;value&gt;] [--service_writer_opt=&lt;value&gt;]...]
    *     [file [file...]]
    * </pre>
    *
