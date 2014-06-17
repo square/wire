@@ -90,7 +90,7 @@ public class WireCompilerTest {
     WireCompiler.main(args);
 
     List<String> filesAfter = getAllFiles(testDir);
-    assertEquals(outputs.length, filesAfter.size());
+    assertEquals(filesAfter.toString(), outputs.length, filesAfter.size());
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
@@ -153,6 +153,27 @@ public class WireCompilerTest {
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
+    }
+  }
+
+  private void testLimitedServiceGeneration(String[] sources, String roots, String[] outputs,
+      String serviceSuffix) throws Exception {
+    int numFlags = 5;
+    String[] args = new String[numFlags + sources.length];
+    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[1] = "--java_out=" + testDir.getAbsolutePath();
+    args[2] = "--service_writer=com.squareup.wire.TestRxJavaServiceWriter";
+    args[3] = "--service_writer_opt=" + serviceSuffix;
+    args[4] = "--roots=" + roots;
+    System.arraycopy(sources, 0, args, numFlags, sources.length);
+
+    WireCompiler.main(args);
+
+    List<String> filesAfter = getAllFiles(testDir);
+    assertEquals(filesAfter.toString(), outputs.length, filesAfter.size());
+
+    for (String output : outputs) {
+      assertJavaFilesMatchWithSuffix(testDir, output, serviceSuffix);
     }
   }
 
@@ -222,9 +243,51 @@ public class WireCompilerTest {
     testProto(sources, outputs, "com.squareup.wire.RxJavaServiceWriter");
   }
 
-  // Verify that the --service_writer_opt flag works correctly.
-  public static class TestServiceWriter extends SimpleServiceWriter {
+  @Test
+  public void testUnlimitedRxJavaService() throws Exception {
+    String[] sources = {
+        "request_response.proto",
+        "rxjava_service.proto",
+        "rxjava_service2.proto"
+    };
+    String[] outputs = {
+        "com/squareup/services/anotherpackage/SendDataRequest.java",
+        "com/squareup/services/anotherpackage/SendDataResponse.java",
+        "com/squareup/services/HeresAllTheDataRequest.java",
+        "com/squareup/services/HeresAllTheDataResponse.java",
+        "com/squareup/services/LetsDataRequest.java",
+        "com/squareup/services/LetsDataResponse.java",
+        "com/squareup/services/RxJavaService.java",
+        "com/squareup/services/RxJavaService2.java"
+    };
+    String roots = "com.squareup.services.RxJavaService,com.squareup.services.RxJavaService2";
+    testLimitedServiceGeneration(sources, roots, outputs, "");
+  }
 
+  @Test
+  public void testLimitedRxJavaService() throws Exception {
+    String[] sources = {
+        "request_response.proto",
+        "rxjava_service.proto",
+        "rxjava_service2.proto"
+    };
+    String[] outputs = {
+        "com/squareup/services/anotherpackage/SendDataRequest.java",
+        "com/squareup/services/anotherpackage/SendDataResponse.java",
+        "com/squareup/services/LetsDataRequest.java",
+        "com/squareup/services/LetsDataResponse.java",
+        "com/squareup/services/RxJavaService.java",
+        "com/squareup/services/RxJavaService2.java"
+    };
+    String roots = "com.squareup.services.RxJavaService#SendSomeData,"
+        + "com.squareup.services.RxJavaService2#LetsData,"
+        + "com.squareup.services.RxJavaService2#SendSomeMoreData";
+    testLimitedServiceGeneration(sources, roots, outputs, "SomeEndpoints");
+  }
+
+  // Verify that the --service_writer_opt flag works correctly.
+  @SuppressWarnings("UnusedDeclaration")
+  public static class TestServiceWriter extends SimpleServiceWriter {
     public TestServiceWriter(JavaWriter writer, List<String> options) {
       super(writer, options);
       if (!Arrays.asList("OPTION1", "OPTION2").equals(options)) {
@@ -589,6 +652,20 @@ public class WireCompilerTest {
       expectedFile = new File("../wire-runtime/src/test/java/" + path);
     }
     File actualFile = new File(outputDir, path);
+    assertFilesMatch(expectedFile, actualFile);
+  }
+
+  private void assertJavaFilesMatchWithSuffix(File outputDir, String path, String suffix)
+      throws FileNotFoundException {
+    path = path.substring(0, path.indexOf(".java"));
+    // Compare against file with .noOptions suffix if present
+    File expectedFile = new File("../wire-runtime/src/test/java/" + path + suffix + ".java");
+    if (expectedFile.exists()) {
+      System.out.println("Comparing against expected output " + expectedFile.getName());
+    } else {
+      expectedFile = new File("../wire-runtime/src/test/java/" + path + ".java");
+    }
+    File actualFile = new File(outputDir, path + ".java");
     assertFilesMatch(expectedFile, actualFile);
   }
 

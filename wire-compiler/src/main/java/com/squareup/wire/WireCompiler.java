@@ -51,7 +51,6 @@ import static javax.lang.model.element.Modifier.STATIC;
 
 /** Compiler for Wire protocol buffers. */
 public class WireCompiler {
-
   static final String LINE_WRAP_INDENT = "    ";
 
   /**
@@ -181,8 +180,9 @@ public class WireCompiler {
       protoPath = System.getProperty("user.dir");
       System.err.println(PROTO_PATH_FLAG + " flag not specified, using current dir " + protoPath);
     }
-    WireCompiler wireCompiler = new WireCompiler(protoPath, sourceFileNames, roots, javaOut,
-        registryClass, emitOptions, enumOptions, serviceWriterConstructor, serviceWriterOptions);
+    WireCompiler wireCompiler =
+        new WireCompiler(protoPath, sourceFileNames, roots, javaOut, registryClass, emitOptions,
+            enumOptions, serviceWriterConstructor, serviceWriterOptions);
     wireCompiler.compile();
   }
 
@@ -200,16 +200,18 @@ public class WireCompiler {
     }
 
     if (!ServiceWriter.class.isAssignableFrom(serviceWriterClass)) {
-      System.err.println("Class " + serviceWriterClassName
-          + " does not implement ServiceWriter interface.");
+      System.err.println(
+          "Class " + serviceWriterClassName + " does not implement ServiceWriter interface.");
       System.exit(0);
     }
 
     try {
       return serviceWriterClass.getConstructor(JavaWriter.class, List.class);
     } catch (NoSuchMethodException e) {
-      System.err.println("ServiceWriter class " + serviceWriterClassName
-          + " needs a constructor 'public " + serviceWriterClassName
+      System.err.println("ServiceWriter class "
+          + serviceWriterClassName
+          + " needs a constructor 'public "
+          + serviceWriterClassName
           + "(JavaWriter writer, List<String> options)'.");
       System.exit(1);
     }
@@ -238,7 +240,6 @@ public class WireCompiler {
     this.serviceWriterOptions = serviceWriterOptions;
     this.io = io;
   }
-
 
   public void compile() throws IOException {
     Map<String, ProtoFile> parsedFiles = new LinkedHashMap<String, ProtoFile>();
@@ -299,9 +300,8 @@ public class WireCompiler {
 
   String javaName(ProtoFile protoFile, MessageType messageType, String type) {
     String scalarType = TypeInfo.scalarType(type);
-    return scalarType != null
-        ? scalarType : shortenJavaName(protoFile,
-        javaName(fullyQualifiedName(protoFile, messageType, type)));
+    return scalarType != null ? scalarType
+        : shortenJavaName(protoFile, javaName(fullyQualifiedName(protoFile, messageType, type)));
   }
 
   boolean fullyQualifiedNameIsOutsidePackage(String fqName) {
@@ -348,8 +348,8 @@ public class WireCompiler {
       if (initialValue == null) {
         return "ByteString.EMPTY";
       } else {
-        return "ByteString.decodeBase64(\""
-            + ByteString.of(initialValue.getBytes(ISO_8859_1)).base64() + "\")";
+        return "ByteString.decodeBase64(\"" + ByteString.of(initialValue.getBytes(ISO_8859_1))
+            .base64() + "\")";
       }
     } else {
       throw new WireCompilerException(javaTypeName + " is not an allowed scalar type");
@@ -366,8 +366,8 @@ public class WireCompiler {
 
   String javaName(MessageType messageType, String type) {
     String scalarType = TypeInfo.scalarType(type);
-    return scalarType != null
-        ? scalarType : shortenJavaName(javaName(fullyQualifiedName(messageType, type)));
+    return scalarType != null ? scalarType
+        : shortenJavaName(javaName(fullyQualifiedName(messageType, type)));
   }
 
   String javaName(String fqName) {
@@ -421,8 +421,16 @@ public class WireCompiler {
     }
 
     for (Service service : protoFile.getServices()) {
-      if (shouldEmitType(service.getFullyQualifiedName())) {
-        emitServiceInterface(service);
+      if (shouldEmitService(service.getFullyQualifiedName())) {
+        List<Service.Method> limitedMethods = new ArrayList<Service.Method>();
+        for (Service.Method method : service.getMethods()) {
+          if (shouldEmitServiceMethod(service.getFullyQualifiedName(), method.getName())) {
+            limitedMethods.add(method);
+          }
+        }
+        Service limitedService = new Service(service.getName(), service.getFullyQualifiedName(),
+            service.getDocumentation(), service.getOptions(), limitedMethods);
+        emitServiceInterface(limitedService);
       }
     }
   }
@@ -514,6 +522,27 @@ public class WireCompiler {
     return typesToEmit.isEmpty() || typesToEmit.contains(name);
   }
 
+  private boolean shouldEmitService(String serviceName) {
+    if (typesToEmit.isEmpty()) {
+      return true;
+    }
+    for (String type : typesToEmit) {
+      if (type.equals(serviceName) || type.startsWith(serviceName + "#")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean shouldEmitServiceMethod(String serviceName, String method) {
+    if (method == null) {
+      throw new IllegalArgumentException("No method specified");
+    }
+    return typesToEmit.isEmpty() //
+        || typesToEmit.contains(serviceName) //
+        || typesToEmit.contains(serviceName + "#" + method);
+  }
+
   private void findDependencies(Collection<ProtoFile> protoFiles) throws IOException {
     Set<String> loadedDependencies = new LinkedHashSet<String>();
     int count = typesToEmit.size();
@@ -548,8 +577,8 @@ public class WireCompiler {
         // FIXME: we need to determine the fully-qualified name of the extension field.
         // For now, just prepend the proto file's package name unless the type already appears
         // to be complete.
-        String fieldTypeName = typeIsComplete(field.getType())
-            ? field.getType() : prefixWithPackageName(protoFile, field.getType());
+        String fieldTypeName = typeIsComplete(field.getType()) ? field.getType()
+            : prefixWithPackageName(protoFile, field.getType());
         typesToEmit.add(fieldTypeName);
       }
     }
@@ -562,10 +591,12 @@ public class WireCompiler {
   private void addDependencies(List<Service> services) {
     for (Service service : services) {
       String fqName = service.getFullyQualifiedName();
-      if (shouldEmitType(fqName)) {
+      if (shouldEmitService(fqName)) {
         for (Service.Method method : service.getMethods()) {
-          addDependencyBranch(fullyQualifiedName(fqName, method.getRequestType()));
-          addDependencyBranch(fullyQualifiedName(fqName, method.getResponseType()));
+          if (shouldEmitServiceMethod(fqName, method.getName())) {
+            addDependencyBranch(fullyQualifiedName(fqName, method.getRequestType()));
+            addDependencyBranch(fullyQualifiedName(fqName, method.getResponseType()));
+          }
         }
       }
     }
@@ -599,7 +630,7 @@ public class WireCompiler {
 
   private String removeTrailingSegment(String name) {
     int index = name.lastIndexOf('.');
-    return index == -1 ? "" :  name.substring(0, index);
+    return index == -1 ? "" : name.substring(0, index);
   }
 
   public String getTypeBeingGenerated() {
@@ -663,8 +694,8 @@ public class WireCompiler {
 
         String location = protoFileName(protoFile.getFileName());
         String fqLocation = getJavaPackage(protoFile) + ".Ext_" + location;
-        ExtensionInfo info = new ExtensionInfo(type, fqType, location, fqLocation,
-            field.getLabel());
+        ExtensionInfo info =
+            new ExtensionInfo(type, fqType, location, fqLocation, field.getLabel());
         extensionInfo.put(fqName, info);
       }
     }
@@ -708,8 +739,9 @@ public class WireCompiler {
       String fieldType = field.getType();
       String fqMessageName = messageType.getFullyQualifiedName();
       String key = fqMessageName + "$" + field.getName();
-      fieldMap.put(key, new FieldInfo(TypeInfo.isScalar(fieldType)
-          ? fieldType : fullyQualifiedName(fqMessageName, fieldType), field.getLabel()));
+      fieldMap.put(key, new FieldInfo(
+          TypeInfo.isScalar(fieldType) ? fieldType : fullyQualifiedName(fqMessageName, fieldType),
+          field.getLabel()));
     }
   }
 
@@ -729,10 +761,9 @@ public class WireCompiler {
         prefix = removeTrailingSegment(prefix);
       }
     }
-    throw new WireCompilerException("Unknown type " + type + " in type "
-        + (fqName == null ? "<unknown>" : fqName));
+    throw new WireCompilerException(
+        "Unknown type " + type + " in type " + (fqName == null ? "<unknown>" : fqName));
   }
-
 
   private String shortenJavaName(ProtoFile protoFile, String fullyQualifiedName) {
     if (fullyQualifiedName == null) return null;
@@ -820,11 +851,11 @@ public class WireCompiler {
           optionsMap = optionsMapMaker.createMessageOptionsMap((MessageType) type);
           optionsMapMaker.getOptionTypes(optionsMap, externalTypes);
 
-            for (Field field : ((MessageType) type).getFields()) {
-              Map<String, ?> fieldOptionsMap =
-                  optionsMapMaker.createFieldOptionsMap((MessageType) type, field.getOptions());
-              optionsMapMaker.getOptionTypes(fieldOptionsMap, externalTypes);
-            }
+          for (Field field : ((MessageType) type).getFields()) {
+            Map<String, ?> fieldOptionsMap =
+                optionsMapMaker.createFieldOptionsMap((MessageType) type, field.getOptions());
+            optionsMapMaker.getOptionTypes(fieldOptionsMap, externalTypes);
+          }
         }
       }
       imports.addAll(externalTypes);
@@ -856,8 +887,9 @@ public class WireCompiler {
         List<String> options = new ArrayList<String>(serviceWriterOptions);
         serviceWriter = (ServiceWriter) serviceWriterConstructor.newInstance(writer, options);
       } catch (Exception e) {
-        throw new IllegalStateException("Unable to construct an instance of "
-            + serviceWriterConstructor.getDeclaringClass().getName() + ": " + e);
+        throw new IllegalStateException(
+            "Unable to construct an instance of " + serviceWriterConstructor.getDeclaringClass()
+                .getName() + ": " + e);
       }
 
       writer.emitSingleLineComment(CODE_GENERATED_BY_WIRE);
@@ -908,8 +940,8 @@ public class WireCompiler {
 
   private void addType(Service service, String method, List<String> types) {
     String serviceFQName = service.getFullyQualifiedName();
-    String servicePackage = serviceFQName.substring(0,
-        serviceFQName.length() - service.getName().length() - 1);
+    String servicePackage =
+        serviceFQName.substring(0, serviceFQName.length() - service.getName().length() - 1);
     String fqName = javaName(fullyQualifiedName(servicePackage, method));
     if (fullyQualifiedNameIsOutsidePackage(fqName)) {
       types.add(fqName);
@@ -1053,8 +1085,8 @@ public class WireCompiler {
 
   /** Works for messages or Java classes. */
   private static boolean isFieldOptions(String name) {
-    return "google.protobuf.FieldOptions".equals(name)
-        || "com.google.protobuf.FieldOptions".equals(name);
+    return "google.protobuf.FieldOptions".equals(name) || "com.google.protobuf.FieldOptions".equals(
+        name);
   }
 
   /** Works for messages or Java classes. */
@@ -1069,8 +1101,10 @@ public class WireCompiler {
 
   private String getLabelString(Field field, boolean isEnum) {
     switch (field.getLabel()) {
-      case OPTIONAL: return "Optional";
-      case REQUIRED: return "Required";
+      case OPTIONAL:
+        return "Optional";
+      case REQUIRED:
+        return "Required";
       case REPEATED:
         return FieldInfo.isPacked(field, isEnum) ? "Packed" : "Repeated";
       default:
