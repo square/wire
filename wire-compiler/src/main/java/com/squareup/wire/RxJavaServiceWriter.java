@@ -11,11 +11,8 @@ import java.util.Locale;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 
-/**
- * A ServiceWriter that generates simple RxJava/Retrofit-compatible interfaces.
- */
+/** A ServiceWriter that generates simple RxJava/Retrofit-compatible interfaces. */
 public class RxJavaServiceWriter extends ServiceWriter {
-
   String requestType;
   String responseType;
   String func1Type;
@@ -26,11 +23,11 @@ public class RxJavaServiceWriter extends ServiceWriter {
 
   @Override
   public void emitService(Service service, Set<String> importedTypes) throws IOException {
+    importedTypes.add("javax.inject.Inject");
     if (!service.getMethods().isEmpty()) {
       importedTypes.add("retrofit.http.Body");
       importedTypes.add("retrofit.http.POST");
-      importedTypes.add("javax.inject.Inject");
-      importedTypes.add("rx.util.functions.Func1");
+      importedTypes.add("rx.functions.Func1");
     }
 
     writer.emitImports(importedTypes);
@@ -63,11 +60,11 @@ public class RxJavaServiceWriter extends ServiceWriter {
       writer.emitField(func1Type, getMethodName(method),
           EnumSet.of(Modifier.PRIVATE, Modifier.FINAL),
           "\nnew " + func1Type + "() {\n"
-          + "  @Override\n"
-          + "  public " + responseType + " call(" + requestType + " request) {\n"
-          + "    return endpoint." + getMethodName(method) + "(request);\n"
-          + "  }\n"
-          + "}");
+              + "  @Override\n"
+              + "  public " + responseType + " call(" + requestType + " request) {\n"
+              + "    return endpoint." + getMethodName(method) + "(request);\n"
+              + "  }\n"
+              + "}");
     }
 
     writer.emitEmptyLine();

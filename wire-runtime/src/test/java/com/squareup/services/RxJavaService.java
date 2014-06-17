@@ -7,7 +7,7 @@ import com.squareup.services.anotherpackage.SendDataResponse;
 import javax.inject.Inject;
 import retrofit.http.Body;
 import retrofit.http.POST;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 /**
  * An example service.
