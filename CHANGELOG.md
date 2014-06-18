@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.5.1 *(2014-06-18)*
+----------------------------
+
+ * New: Generate interface definition for a `Service` with a partial list of methods.
+
 Version 1.5.0 *(2014-04-22)*
 ----------------------------
 

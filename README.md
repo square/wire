@@ -79,7 +79,7 @@ To generate interface definitions for `service` definitions in your `.proto` fil
 following compiler flag:
 
 `--service_writer=`*fully_qualified_class_name*
-	
+
 The named class must be on the classpath, must extend the `com.squareup.wire.ServiceWriter` class,
 and must have a public constructor taking a first argument of type `JavaWriter` and a second
 argument of type `List<String>` which will contain user-specified options.
@@ -167,6 +167,9 @@ public final class RxJavaService {
 ```
 
 (omitting the generated file comment, package declaration, and imports for clarity).
+
+If you would like to only generate interface definitions for some of the methods on a `Service`,
+use the `--roots` flag and specify each one as `fully.qualified.Service#MethodName`.
 
 Using Wire in your application
 ------------------------------
