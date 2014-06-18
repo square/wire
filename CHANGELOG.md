@@ -5,6 +5,8 @@ Version 1.5.1 *(2014-06-18)*
 ----------------------------
 
  * New: Generate interface definition for a `Service` with a partial list of methods.
+ * Okio dependency bumped to 1.0.0.
+
 
 Version 1.5.0 *(2014-04-22)*
 ----------------------------
@@ -13,7 +15,7 @@ Version 1.5.0 *(2014-04-22)*
  * New: Options ending with `.redacted` on fields will omit values from `toString`.
  * New: `Redactor` creates copies of messages with redacted fields omitted.
  * Various internal serialization improvements and memory reduction.
- * Okio dependency bumped to 0.9.0
+ * Okio dependency bumped to 0.9.0.
 
 
 Version 1.4.0 *(2014-04-22)*
@@ -31,6 +33,7 @@ Version 1.4.0 *(2014-04-22)*
  * Improve deserialization performance.
 
  * Fix a bug where no some extension dependencies were not detected.
+
 
 Version 1.3.3 *(2014-03-28)*
 ----------------------------
