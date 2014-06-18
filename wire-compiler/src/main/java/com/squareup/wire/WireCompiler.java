@@ -114,7 +114,9 @@ public class WireCompiler {
    *
    * If the {@code --roots} flag is present, its argument must be a comma-separated list
    * of fully-qualified message or enum names. The output will be limited to those messages
-   * and enums that are (transitive) dependencies of the listed names.
+   * and enums that are (transitive) dependencies of the listed names.  If you are using
+   * {@code --service_writer} to generate an interface for a Service, your roots can also take the
+   * form 'fully.qualified.Service#MethodName` to limit what endpoints are generated.
    * <p>
    * If the {@code --registry_class} flag is present, its argument must be a Java class name. A
    * class with the given name will be generated, containing a constant list of all extension
