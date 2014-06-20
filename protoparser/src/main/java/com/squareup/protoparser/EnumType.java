@@ -13,7 +13,7 @@ import static java.util.Collections.unmodifiableList;
 
 /** An enumerated type declaration. */
 public final class EnumType implements Type {
-  static void validateTagUniqueness(String type, List<Value> values) {
+  private static void validateTagUniqueness(String type, List<Value> values) {
     Set<Integer> tags = new LinkedHashSet<Integer>();
     for (Value value : values) {
       int tag = value.getTag();
@@ -21,6 +21,15 @@ public final class EnumType implements Type {
         throw new IllegalStateException("Duplicate tag " + tag + " in " + type);
       }
     }
+  }
+
+  private static boolean parseAllowAlias(List<Option> options) {
+    Option option = Option.findByName(options, "allow_alias");
+    if (option != null) {
+      Object value = option.getValue();
+      return value instanceof Boolean && (Boolean) value;
+    }
+    return false;
   }
 
   /**
@@ -47,6 +56,7 @@ public final class EnumType implements Type {
   private final String documentation;
   private final List<Option> options;
   private final List<Value> values;
+  private final boolean allowAlias;
 
   public EnumType(String name, String fqname, String documentation, List<Option> options,
       List<Value> values) {
@@ -55,13 +65,18 @@ public final class EnumType implements Type {
     if (documentation == null) throw new NullPointerException("documentation");
     if (options == null) throw new NullPointerException("options");
     if (values == null) throw new NullPointerException("values");
-    validateTagUniqueness(fqname, values);
+
+    boolean allowAlias = parseAllowAlias(options);
+    if (!allowAlias) {
+      validateTagUniqueness(fqname, values);
+    }
 
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
     this.options = unmodifiableList(new ArrayList<Option>(options));
     this.values = unmodifiableList(new ArrayList<Value>(values));
+    this.allowAlias = allowAlias;
   }
 
   @Override public String getName() {
@@ -82,6 +97,11 @@ public final class EnumType implements Type {
 
   public List<Value> getValues() {
     return values;
+  }
+
+  /** True if allowing multiple values to have the same tag. */
+  public boolean allowAlias() {
+    return allowAlias;
   }
 
   @Override public List<Type> getNestedTypes() {

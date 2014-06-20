@@ -96,7 +96,9 @@ public final class Option {
 
   @Override public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (value instanceof String) {
+    if (value instanceof Boolean) {
+      builder.append(name).append(" = ").append(value);
+    } else if (value instanceof String) {
       String stringValue = (String) value;
       builder.append(name).append(" = \"").append(escape(stringValue)).append('"');
     } else if (value instanceof Option) {

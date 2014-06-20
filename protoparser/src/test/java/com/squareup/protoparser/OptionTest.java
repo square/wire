@@ -33,6 +33,12 @@ public class OptionTest {
     assertThat(option.toString()).isEqualTo(expected);
   }
 
+  @Test public void booleanToString() {
+    Option option = new Option("foo", false);
+    String expected = "foo = false";
+    assertThat(option.toString()).isEqualTo(expected);
+  }
+
   @Test public void optionListToMap() {
     List<Option> options = list( //
         new Option("foo", "bar"), //
