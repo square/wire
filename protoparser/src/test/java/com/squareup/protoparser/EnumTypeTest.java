@@ -94,4 +94,21 @@ public class EnumTypeTest {
       assertThat(e).hasMessage("Duplicate tag 1 in example.Enum");
     }
   }
+
+  @Test public void duplicateValueTagWithAllowAlias() {
+    Option option1 = new Option("allow_alias", true);
+    Value value1 = new Value("VALUE1", 1, "", NO_OPTIONS);
+    Value value2 = new Value("VALUE2", 1, "", NO_OPTIONS);
+    EnumType type = new EnumType("Enum1", "example.Enum", "", list(option1), list(value1, value2));
+
+    String expected = ""
+        + "enum Enum1 {\n"
+        + "  option allow_alias = true;\n"
+        + "\n"
+        + "  VALUE1 = 1;\n"
+        + "  VALUE2 = 1;\n"
+        + "}\n";
+
+    assertThat(type.toString()).isEqualTo(expected);
+  }
 }
