@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.squareup.protoparser.Option.formatOptionList;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
@@ -210,9 +211,7 @@ public final class EnumType implements Type {
           .append(tag);
       if (!options.isEmpty()) {
         builder.append(" [\n");
-        for (Option option : options) {
-          appendIndented(builder, option.toString());
-        }
+        formatOptionList(builder, options);
         builder.append(']');
       }
       return builder.append(";\n").toString();

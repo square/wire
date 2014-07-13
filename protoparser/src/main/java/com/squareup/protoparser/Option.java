@@ -108,10 +108,7 @@ public final class Option {
       builder.append(name).append(" = [\n");
       //noinspection unchecked
       List<Option> optionList = (List<Option>) value;
-      for (int i = 0, count = optionList.size(); i < count; i++) {
-        String endl = (i < count - 1) ? "," : "";
-        appendIndented(builder, optionList.get(i).toString() + endl);
-      }
+      formatOptionList(builder, optionList);
       builder.append(']');
     } else {
       throw new IllegalStateException("Unknown value type " + value.getClass().getCanonicalName());
@@ -129,5 +126,13 @@ public final class Option {
         .replace("\"", "\\\"")
         .replace("\r", "\\r")
         .replace("\n", "\\n");
+  }
+
+  static StringBuilder formatOptionList(StringBuilder builder, List<Option> optionList) {
+    for (int i = 0, count = optionList.size(); i < count; i++) {
+      String endl = (i < count - 1) ? "," : "";
+      appendIndented(builder, optionList.get(i).toString() + endl);
+    }
+    return builder;
   }
 }
