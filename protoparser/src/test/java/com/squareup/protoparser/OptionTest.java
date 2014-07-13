@@ -12,55 +12,56 @@ import static org.fest.assertions.data.MapEntry.entry;
 
 public class OptionTest {
   @Test public void simpleToString() {
-    Option option = new Option("foo", "bar");
+    Option option = new Option("foo", "bar", false);
     String expected = "foo = \"bar\"";
     assertThat(option.toString()).isEqualTo(expected);
   }
 
   @Test public void nestedToString() {
-    Option option = new Option("foo.boo", new Option("bar", "baz"));
+    Option option = new Option("foo.boo", new Option("bar", "baz", true), true);
     String expected = "(foo.boo).bar = \"baz\"";
     assertThat(option.toString()).isEqualTo(expected);
   }
 
   @Test public void listToString() {
-    Option option = new Option("foo", list(new Option("ping", "pong"), new Option("kit", "kat")));
+    Option option = new Option("foo",
+        list(new Option("ping", "pong", true), new Option("kit", "kat", false)), true);
     String expected = ""
-        + "foo = [\n"
-        + "  ping = \"pong\",\n"
+        + "(foo) = [\n"
+        + "  (ping) = \"pong\",\n"
         + "  kit = \"kat\"\n"
         + "]";
     assertThat(option.toString()).isEqualTo(expected);
   }
 
   @Test public void booleanToString() {
-    Option option = new Option("foo", false);
+    Option option = new Option("foo", false, false);
     String expected = "foo = false";
     assertThat(option.toString()).isEqualTo(expected);
   }
 
   @Test public void optionListToMap() {
     List<Option> options = list( //
-        new Option("foo", "bar"), //
+        new Option("foo", "bar", false), //
         new Option("ping", list( //
-            new Option("kit", "kat"), //
-            new Option("tic", "tac"), //
-            new Option("up", "down") //
-        )), //
+            new Option("kit", "kat", false), //
+            new Option("tic", "tac", false), //
+            new Option("up", "down", false) //
+        ), false), //
         new Option("wire", map( //
             "omar", "little", //
             "proposition", "joe" //
-        )), //
-        new Option("nested.option", new Option("one", "two")), //
-        new Option("nested.option", new Option("three", "four")) //
+        ), false), //
+        new Option("nested.option", new Option("one", "two", false), false), //
+        new Option("nested.option", new Option("three", "four", false), false) //
     );
     Map<String, Object> optionMap = Option.optionsAsMap(options);
     assertThat(optionMap).contains( //
         entry("foo", "bar"), //
         entry("ping", list( //
-            new Option("kit", "kat"), //
-            new Option("tic", "tac"), //
-            new Option("up", "down") //
+            new Option("kit", "kat", false), //
+            new Option("tic", "tac", false), //
+            new Option("up", "down", false) //
         )), //
         entry("wire", map( //
             "omar", "little", //
@@ -74,9 +75,9 @@ public class OptionTest {
   }
 
   @Test public void findInList() {
-    Option one = new Option("one", "1");
-    Option two = new Option("two", "2");
-    Option three = new Option("three", "3");
+    Option one = new Option("one", "1", false);
+    Option two = new Option("two", "2", false);
+    Option three = new Option("three", "3", false);
     List<Option> options = list(one, two, three);
     assertThat(Option.findByName(options, "one")).isSameAs(one);
     assertThat(Option.findByName(options, "two")).isSameAs(two);
@@ -84,15 +85,15 @@ public class OptionTest {
   }
 
   @Test public void findInListMissing() {
-    Option one = new Option("one", "1");
-    Option two = new Option("two", "2");
+    Option one = new Option("one", "1", false);
+    Option two = new Option("two", "2", false);
     List<Option> options = list(one, two);
     assertThat(Option.findByName(options, "three")).isNull();
   }
 
   @Test public void findInListDuplicate() {
-    Option one = new Option("one", "1");
-    Option two = new Option("two", "2");
+    Option one = new Option("one", "1", false);
+    Option two = new Option("two", "2", false);
     List<Option> options = list(one, two, one);
     try {
       Option.findByName(options, "one");

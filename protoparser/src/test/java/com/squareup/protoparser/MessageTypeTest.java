@@ -46,7 +46,7 @@ public class MessageTypeTest {
   @Test public void simpleWithOptionsToString() {
     Field field = new Field(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
     Type type = new MessageType("Message", "", "", list(field), NO_TYPES, NO_EXTENSIONS,
-        list(new Option("kit", "kat")));
+        list(new Option("kit", "kat", false)));
     String expected = ""
         + "message Message {\n"
         + "  option kit = \"kat\";\n"
@@ -94,7 +94,7 @@ public class MessageTypeTest {
     Extensions extensions2 = new Extensions("", 503, 503);
     Type nested =
         new MessageType("Nested", "", "", list(field1), NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    Option option = new Option("kit", "kat");
+    Option option = new Option("kit", "kat", false);
     Type type = new MessageType("Message", "", "", list(field1, field2), list(nested),
         list(extensions1, extensions2), list(option));
     String expected = ""
@@ -129,7 +129,7 @@ public class MessageTypeTest {
   }
 
   @Test public void fieldWithOptions() {
-    Field field = new Field(REQUIRED, "Type", "name", 1, "", list(new Option("kit", "kat")));
+    Field field = new Field(REQUIRED, "Type", "name", 1, "", list(new Option("kit", "kat", false)));
     String expected = "required Type name = 1 [\n"
         + "  kit = \"kat\"\n"
         + "];\n";
@@ -163,13 +163,13 @@ public class MessageTypeTest {
 
   @Test public void deprecatedTrue() {
     Field field =
-        new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("deprecated", "true")));
+        new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("deprecated", "true", false)));
     assertThat(field.isDeprecated()).isTrue();
   }
 
   @Test public void deprecatedFalse() {
     Field field =
-        new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("deprecated", "false")));
+        new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("deprecated", "false", false)));
     assertThat(field.isDeprecated()).isFalse();
   }
 
@@ -179,12 +179,14 @@ public class MessageTypeTest {
   }
 
   @Test public void packedTrue() {
-    Field field = new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("packed", "true")));
+    Field field = new Field(REQUIRED, "Type", "name1", 1, "",
+        list(new Option("packed", "true", false)));
     assertThat(field.isPacked()).isTrue();
   }
 
   @Test public void packedFalse() {
-    Field field = new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("packed", "false")));
+    Field field = new Field(REQUIRED, "Type", "name1", 1, "",
+        list(new Option("packed", "false", false)));
     assertThat(field.isPacked()).isFalse();
   }
 
@@ -194,7 +196,8 @@ public class MessageTypeTest {
   }
 
   @Test public void defaultValue() {
-    Field field = new Field(REQUIRED, "Type", "name1", 1, "", list(new Option("default", "foo")));
+    Field field = new Field(REQUIRED, "Type", "name1", 1, "",
+        list(new Option("default", "foo", false)));
     assertThat(field.getDefault()).isEqualTo("foo");
   }
 

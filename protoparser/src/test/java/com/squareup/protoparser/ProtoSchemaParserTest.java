@@ -26,12 +26,12 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public final class ProtoSchemaParserTest {
   @Test public void field() throws Exception {
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
-        list(new Option("default", "STRING"), new Option("deprecated", "true")));
+        list(new Option("default", "STRING", false), new Option("deprecated", "true", false)));
     assertThat(field.isDeprecated()).isTrue();
     assertThat(field.getDefault()).isEqualTo("STRING");
     assertThat(field.getOptions()).containsOnly( //
-        new Option("default", "STRING"), //
-        new Option("deprecated", "true"));
+        new Option("default", "STRING", false), //
+        new Option("deprecated", "true", false));
   }
 
   @Test public void documentationFormats() {
@@ -192,8 +192,8 @@ public final class ProtoSchemaParserTest {
         + "  // Quebec Maple syrup\n"
         + "  SYRUP = 3;\n"
         + "}\n";
-    List<Option> fruitOptions = list(new Option("healthy", true));
-    List<Option> toppingOptions = list(new Option("max_choices", 2));
+    List<Option> fruitOptions = list(new Option("healthy", true, true));
+    List<Option> toppingOptions = list(new Option("max_choices", 2, true));
     Type expected = new EnumType("Topping", "Topping",
         "What's on my waffles.\nAlso works on pancakes.", toppingOptions,
         list(new Value("FRUIT", 1, "", fruitOptions),
@@ -222,7 +222,7 @@ public final class ProtoSchemaParserTest {
     ProtoFile expected =
         new ProtoFile("descriptor.proto", "google.protobuf", NO_STRINGS, NO_STRINGS,
             Arrays.asList(message), NO_SERVICES,
-            list(new Option("java_package", "com.google.protobuf")), NO_EXTEND_DECLARATIONS);
+            list(new Option("java_package", "com.google.protobuf", false)), NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -240,13 +240,13 @@ public final class ProtoSchemaParserTest {
         + "}\n";
     Type enumType = new EnumType("CType", "FieldOptions.CType", "", NO_OPTIONS,
         Arrays.asList(new Value("STRING", 0, "",
-            Arrays.asList(new Option("opt_a", 1), new Option("opt_b", 2)))));
+            Arrays.asList(new Option("opt_a", 1, true), new Option("opt_b", 2, true)))));
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "CType", "ctype", 1, "",
-        list(new Option("default", EnumType.Value.anonymous("STRING")),
-            new Option("deprecated", true)));
+        list(new Option("default", EnumType.Value.anonymous("STRING"), false),
+            new Option("deprecated", true, false)));
     assertThat(field.getOptions()).containsOnly( //
-        new Option("default", EnumType.Value.anonymous("STRING")), //
-        new Option("deprecated", true));
+        new Option("default", EnumType.Value.anonymous("STRING"), false), //
+        new Option("deprecated", true, false));
 
     Type messageType = new MessageType("FieldOptions", "FieldOptions", "", Arrays.asList(field),
         Arrays.asList(enumType), list(new Extensions(
@@ -379,8 +379,8 @@ public final class ProtoSchemaParserTest {
         + "  optional string claim_token = 2 [(squareup.redacted) = true];\n"
         + "}";
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "string", "claim_token", 2, "",
-        list(new Option("squareup.redacted", true)));
-    assertThat(field.getOptions()).containsOnly(new Option("squareup.redacted", true));
+        list(new Option("squareup.redacted", true, true)));
+    assertThat(field.getOptions()).containsOnly(new Option("squareup.redacted", true, true));
 
     Type messageType = new MessageType("Foo", "Foo", "", Arrays.asList(field), NO_TYPES,
         NO_EXTENSIONS, NO_OPTIONS);
@@ -399,9 +399,10 @@ public final class ProtoSchemaParserTest {
         + "}";
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "string", "name", 1, "", list(
         new Option("default",
-            "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA")));
+            "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA",
+            false)));
     assertThat(field.getOptions()).containsOnly(new Option("default",
-        "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"));
+        "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA", false));
 
     Type messageType = new MessageType("Foo", "Foo", "", Arrays.asList(field),
             NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
@@ -437,14 +438,15 @@ public final class ProtoSchemaParserTest {
         + "    option (squareup.a.b) = { value: [FOO, BAR] };\n"
         + "  }\n"
         + "}";
-    List<Option> options = list(new Option("default_timeout", 30));
+    List<Option> options = list(new Option("default_timeout", 30, true));
     Service expected = new Service("SearchService", "SearchService", "", options, list(
         new Service.Method("Search", "", "SearchRequest", "SearchResponse", NO_OPTIONS),
         new Service.Method("Purchase", "", "PurchaseRequest", "PurchaseResponse", list( //
-            new Option("squareup.sake.timeout", 15), //
+            new Option("squareup.sake.timeout", 15, true), //
             new Option("squareup.a.b",
                 map("value", //
-                    list(EnumType.Value.anonymous("FOO"), EnumType.Value.anonymous("BAR"))))))));
+                    list(EnumType.Value.anonymous("FOO"), EnumType.Value.anonymous("BAR"))),
+                true)))));
     ProtoFile protoFile = new ProtoFile("descriptor.proto", null, NO_STRINGS, NO_STRINGS, NO_TYPES,
         Arrays.asList(expected), NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
@@ -479,18 +481,18 @@ public final class ProtoSchemaParserTest {
     Map<String, String> option_one_map = new LinkedHashMap<String, String>();
     option_one_map.put("name", "Name");
     option_one_map.put("class_name", "ClassName");
-    options.add(new Option("squareup.one", option_one_map));
+    options.add(new Option("squareup.one", option_one_map, true));
     Map<String, Object> option_two_a_map = new LinkedHashMap<String, Object>();
     option_two_a_map.put("[squareup.options.type]", EnumType.Value.anonymous("EXOTIC"));
-    options.add(new Option("squareup.two.a", option_two_a_map));
+    options.add(new Option("squareup.two.a", option_two_a_map, true));
     Map<String, List<String>> option_two_b_map = new LinkedHashMap<String, List<String>>();
     option_two_b_map.put("names", Arrays.asList("Foo", "Bar"));
-    options.add(new Option("squareup.two.b", option_two_b_map));
+    options.add(new Option("squareup.two.b", option_two_b_map, true));
     Map<String, Map<String, ?>> option_three_map = new LinkedHashMap<String, Map<String, ?>>();
     Map<String, Object> option_three_nested_map = new LinkedHashMap<String, Object>();
     option_three_nested_map.put("y", Arrays.asList(1, 2));
     option_three_map.put("x", option_three_nested_map);
-    options.add(new Option("squareup.three", option_three_map));
+    options.add(new Option("squareup.three", option_three_map, true));
 
     Map<String, Map<String, ?>> option_four_map = new LinkedHashMap<String, Map<String, ?>>();
     Map<String, Object> option_four_map_1 = new LinkedHashMap<String, Object>();
@@ -500,7 +502,7 @@ public final class ProtoSchemaParserTest {
     option_four_map_2_b.put("z", 2);
     option_four_map_1.put("y", Arrays.asList(option_four_map_2_a, option_four_map_2_b));
     option_four_map.put("x", option_four_map_1);
-    options.add(new Option("squareup.four", option_four_map));
+    options.add(new Option("squareup.four", option_four_map, true));
 
     Type expected =
         new MessageType("ExoticOptions", "ExoticOptions", "", Arrays.<MessageType.Field>asList(),
@@ -522,12 +524,14 @@ public final class ProtoSchemaParserTest {
         + "    ];\n"
         + "}";
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "field.type", "has_options", 3,
-        "", list(new Option("option_map", map("nested_map", map("key", "value", "key2",
-        list("value2a", "value2b")))), new Option("option_string", list("string1","string2"))));
+        "", list(
+        new Option("option_map", map("nested_map", map("key", "value", "key2",
+          list("value2a", "value2b"))), true),
+        new Option("option_string", list("string1","string2"), true)));
     assertThat(field.getOptions()).containsOnly( //
         new Option("option_map",
-            map("nested_map", map("key", "value", "key2", list("value2a", "value2b")))),
-        new Option("option_string", list("string1", "string2")));
+            map("nested_map", map("key", "value", "key2", list("value2a", "value2b"))), true),
+        new Option("option_string", list("string1", "string2"), true));
 
     Type expected = new MessageType("StructuredOption", "StructuredOption", "",
         Arrays.<MessageType.Field>asList(field), NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
@@ -548,12 +552,13 @@ public final class ProtoSchemaParserTest {
         + "  ];\n"
         + "}";
     MessageType.Field field = new MessageType.Field(Label.OPTIONAL, "int32", "bar", 1, "",
-        list(new Option("validation.range", new Option("min", 1)),
-            new Option("validation.range", new Option("max", 100)), new Option("default", 20)));
+        list(new Option("validation.range", new Option("min", 1, true), true),
+            new Option("validation.range", new Option("max", 100, true), true),
+            new Option("default", 20, false)));
     assertThat(field.getOptions()).containsOnly( //
-        new Option("validation.range", new Option("min", 1)), //
-        new Option("validation.range", new Option("max", 100)), //
-        new Option("default", 20));
+        new Option("validation.range", new Option("min", 1, true), true), //
+        new Option("validation.range", new Option("max", 100, true), true), //
+        new Option("default", 20, false));
 
     Type expected = new MessageType("Foo", "Foo", "", Arrays.asList(field), NO_TYPES, NO_EXTENSIONS,
         NO_OPTIONS);

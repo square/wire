@@ -117,7 +117,7 @@ public class ProtoFileTest {
 
   @Test public void simpleWithOptionsToString() {
     Type type = new MessageType("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    Option option = new Option("kit", "kat");
+    Option option = new Option("kit", "kat", false);
     ProtoFile file =
         new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(type),
             NO_SERVICES, list(option), NO_EXTEND_DECLARATIONS);
@@ -154,8 +154,8 @@ public class ProtoFileTest {
         new ExtendDeclaration("Extend1", "example.simple.Extend1", "", NO_FIELDS);
     ExtendDeclaration extend2 =
         new ExtendDeclaration("Extend2", "example.simple.Extend2", "", NO_FIELDS);
-    Option option1 = new Option("kit", "kat");
-    Option option2 = new Option("foo", "bar");
+    Option option1 = new Option("kit", "kat", false);
+    Option option2 = new Option("foo", "bar", false);
     Service service1 =
         new Service("Service1", "example.simple.Service1", "", NO_OPTIONS, NO_METHODS);
     Service service2 =

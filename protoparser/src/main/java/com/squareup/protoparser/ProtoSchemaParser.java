@@ -353,6 +353,7 @@ public final class ProtoSchemaParser {
   /** Reads a option containing a name, an '=' or ':', and a value. */
   private Option readOption(char keyValueSeparator) {
     boolean isExtension = (peekChar() == '[');
+    boolean isParenthesized = (peekChar() == '(');
     String name = readName(); // Option name.
     if (isExtension) {
       name = "[" + name + "]";
@@ -368,7 +369,8 @@ public final class ProtoSchemaParser {
       throw unexpected("expected '" + keyValueSeparator + "' in option");
     }
     Object value = readValue();
-    return new Option(name, subName != null ? new Option(subName, value) : value);
+    Object valueOrSubOption = subName != null ? new Option(subName, value, isParenthesized) : value;
+    return new Option(name, valueOrSubOption, isParenthesized);
   }
 
   /** Reads a value that can be a map, list, string, number, boolean or enum. */

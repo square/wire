@@ -34,7 +34,7 @@ public class EnumTypeTest {
     Value one = new Value("ONE", 1, "", NO_OPTIONS);
     Value two = new Value("TWO", 2, "", NO_OPTIONS);
     Value six = new Value("SIX", 6, "", NO_OPTIONS);
-    Option kitKat = new Option("kit", "kat");
+    Option kitKat = new Option("kit", "kat", false);
     EnumType type = new EnumType("Enum", "", "", list(kitKat), list(one, two, six));
     String expected = ""
         + "enum Enum {\n"
@@ -77,9 +77,10 @@ public class EnumTypeTest {
   }
 
   @Test public void fieldWithOptions() {
-    Value value = new Value("NAME", 1, "", list(new Option("kit", "kat"), new Option("tit", "tat")));
+    Value value = new Value("NAME", 1, "",
+        list(new Option("kit", "kat", true), new Option("tit", "tat", false)));
     String expected = "NAME = 1 [\n"
-        + "  kit = \"kat\",\n"
+        + "  (kit) = \"kat\",\n"
         + "  tit = \"tat\"\n"
         + "];\n";
     assertThat(value.toString()).isEqualTo(expected);
@@ -97,7 +98,7 @@ public class EnumTypeTest {
   }
 
   @Test public void duplicateValueTagWithAllowAlias() {
-    Option option1 = new Option("allow_alias", true);
+    Option option1 = new Option("allow_alias", true, false);
     Value value1 = new Value("VALUE1", 1, "", NO_OPTIONS);
     Value value2 = new Value("VALUE2", 1, "", NO_OPTIONS);
     EnumType type = new EnumType("Enum1", "example.Enum", "", list(option1), list(value1, value2));
