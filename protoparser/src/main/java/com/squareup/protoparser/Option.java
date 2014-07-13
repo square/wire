@@ -96,7 +96,7 @@ public final class Option {
 
   @Override public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (value instanceof Boolean) {
+    if (value instanceof Boolean || value instanceof Number) {
       builder.append(name).append(" = ").append(value);
     } else if (value instanceof String) {
       String stringValue = (String) value;
@@ -104,6 +104,9 @@ public final class Option {
     } else if (value instanceof Option) {
       Option optionValue = (Option) value;
       builder.append('(').append(name).append(").").append(optionValue.toString());
+    } else if (value instanceof EnumType.Value) {
+      EnumType.Value enumValue = (EnumType.Value) value;
+      builder.append(name).append(" = ").append(enumValue.getName());
     } else if (value instanceof List) {
       builder.append(name).append(" = [\n");
       //noinspection unchecked

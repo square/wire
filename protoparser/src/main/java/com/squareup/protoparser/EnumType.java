@@ -153,6 +153,7 @@ public final class EnumType implements Type {
 
   /** An enum constant. */
   public static final class Value {
+    public static final int UNKNOWN_TAG = -1;
     private final String name;
     private final int tag;
     private final String documentation;
@@ -166,6 +167,11 @@ public final class EnumType implements Type {
       this.tag = tag;
       this.documentation = documentation;
       this.options = unmodifiableList(new ArrayList<Option>(options));
+    }
+
+    /** Used to represent enums values where we just know the name. */
+    static Value anonymous(String name) {
+      return new Value(name, UNKNOWN_TAG, "", Collections.<Option>emptyList());
     }
 
     public String getName() {

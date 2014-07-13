@@ -371,15 +371,27 @@ public final class ProtoSchemaParser {
     return new Option(name, subName != null ? new Option(subName, value) : value);
   }
 
-  /** Reads a value that can be a map, list or string. */
+  /** Reads a value that can be a map, list, string, number, boolean or enum. */
   private Object readValue() {
     switch (peekChar()) {
       case '{':
         return readMap('{', '}', ':');
       case '[':
         return readList();
-      default:
+      case '"':
         return readString();
+      default:
+        if (Character.isDigit(peekChar())) {
+          return readInt();
+        }
+        String word = readWord();
+        if (word.equals("true")) {
+          return true;
+        } else if (word.equals("false")) {
+          return false;
+        } else {
+          return EnumType.Value.anonymous(word);
+        }
     }
   }
 
