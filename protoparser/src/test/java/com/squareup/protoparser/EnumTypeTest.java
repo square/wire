@@ -77,9 +77,10 @@ public class EnumTypeTest {
   }
 
   @Test public void fieldWithOptions() {
-    Value value = new Value("NAME", 1, "", list(new Option("kit", "kat")));
+    Value value = new Value("NAME", 1, "", list(new Option("kit", "kat"), new Option("tit", "tat")));
     String expected = "NAME = 1 [\n"
-        + "  kit = \"kat\"\n"
+        + "  kit = \"kat\",\n"
+        + "  tit = \"tat\"\n"
         + "];\n";
     assertThat(value.toString()).isEqualTo(expected);
   }
