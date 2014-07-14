@@ -259,6 +259,38 @@ public final class ProtoSchemaParserTest {
     assertThat(actual).isEqualTo(expected);
   }
 
+  @Test public void optionParentheses() throws Exception {
+    String proto = ""
+        + "message Chickens {\n"
+        + "  optional boolean koka_ko_koka_ko = 1 [default = true];\n"
+        + "  optional boolean coodle_doodle_do = 2 [(delay) = 100, default = false];\n"
+        + "  optional boolean coo_coo_ca_cha = 3 [default = true, (delay) = 200];\n"
+        + "  optional boolean cha_chee_cha = 4;\n"
+        + "}\n";
+
+    MessageType.Field gobChicken = new MessageType.Field(Label.OPTIONAL, "boolean",
+        "koka_ko_koka_ko", 1, "", list(new Option("default", true, false)));
+    MessageType.Field lucilleChicken = new MessageType.Field(Label.OPTIONAL, "boolean",
+        "coodle_doodle_do", 2, "", list(new Option("delay", 100, true),
+        new Option("default", false, false)));
+    MessageType.Field georgeSrChicken = new MessageType.Field(Label.OPTIONAL, "boolean",
+        "coo_coo_ca_cha", 3, "", list(new Option("default", true, false),
+        new Option("delay", 200, true)));
+    MessageType.Field lindsayChicken = new MessageType.Field(Label.OPTIONAL, "boolean",
+        "cha_chee_cha", 4, "", NO_OPTIONS);
+
+    Type messageType = new MessageType("Chickens", "Chickens", "",
+        Arrays.asList(gobChicken, lucilleChicken, georgeSrChicken, lindsayChicken),
+        NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+
+    ProtoFile expected =
+        new ProtoFile("chickens.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(messageType),
+            NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
+
+    ProtoFile actual = ProtoSchemaParser.parse("chickens.proto", proto);
+    assertThat(actual).isEqualTo(expected);
+  }
+
   @Test public void imports() throws Exception {
     String proto = "import \"src/test/resources/unittest_import.proto\";\n";
     ProtoFile expected = new ProtoFile("descriptor.proto", null,
