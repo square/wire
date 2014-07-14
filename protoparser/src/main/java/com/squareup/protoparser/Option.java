@@ -65,13 +65,15 @@ public final class Option {
 
   private final String name;
   private final Object value;
+  private final boolean isParenthesized;
 
-  public Option(String name, Object value) {
+  public Option(String name, Object value, boolean isParenthesized) {
     if (name == null) throw new NullPointerException("name");
     if (value == null) throw new NullPointerException("value");
 
     this.name = name;
     this.value = value;
+    this.isParenthesized = isParenthesized;
   }
 
   public String getName() {
@@ -87,28 +89,31 @@ public final class Option {
     if (!(other instanceof Option)) return false;
 
     Option that = (Option) other;
-    return name.equals(that.name) && value.equals(that.value);
+    return name.equals(that.name) && value.equals(that.value)
+        && isParenthesized == that.isParenthesized;
   }
 
   @Override public int hashCode() {
-    return name.hashCode() + (37 * value.hashCode());
+    return name.hashCode() + (37 * value.hashCode()) + (37 * (isParenthesized ? 1 : 0));
   }
 
   @Override public String toString() {
     StringBuilder builder = new StringBuilder();
     if (value instanceof Boolean || value instanceof Number) {
-      builder.append(name).append(" = ").append(value);
+      builder.append(formatName()).append(" = ").append(value);
     } else if (value instanceof String) {
       String stringValue = (String) value;
-      builder.append(name).append(" = \"").append(escape(stringValue)).append('"');
+      builder.append(formatName()).append(" = \"").append(escape(stringValue)).append('"');
     } else if (value instanceof Option) {
       Option optionValue = (Option) value;
-      builder.append('(').append(name).append(").").append(optionValue.toString());
+      // Treat nested options as non-parenthesized always, prevents double parentheses.
+      optionValue = new Option(optionValue.name, optionValue.value, false);
+      builder.append(formatName()).append('.').append(optionValue.toString());
     } else if (value instanceof EnumType.Value) {
       EnumType.Value enumValue = (EnumType.Value) value;
       builder.append(name).append(" = ").append(enumValue.getName());
     } else if (value instanceof List) {
-      builder.append(name).append(" = [\n");
+      builder.append(formatName()).append(" = [\n");
       //noinspection unchecked
       List<Option> optionList = (List<Option>) value;
       formatOptionList(builder, optionList);
@@ -137,5 +142,13 @@ public final class Option {
       appendIndented(builder, optionList.get(i).toString() + endl);
     }
     return builder;
+  }
+
+  private String formatName() {
+    if (isParenthesized) {
+      return '(' + name + ')';
+    } else {
+      return name;
+    }
   }
 }

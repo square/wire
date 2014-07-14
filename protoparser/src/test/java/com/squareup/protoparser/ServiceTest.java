@@ -27,7 +27,8 @@ public class ServiceTest {
 
   @Test public void singleWithOptionsToString() {
     Method method = new Method("Name", "", "RequestType", "ResponseType", NO_OPTIONS);
-    Service service = new Service("Service", "", "", list(new Option("foo", "bar")), list(method));
+    Service service = new Service("Service", "", "", list(new Option("foo", "bar", false)),
+        list(method));
     String expected = ""
         + "service Service {\n"
         + "  option foo = \"bar\";\n"
@@ -74,8 +75,8 @@ public class ServiceTest {
   }
 
   @Test public void methodWithOptions() {
-    Method method =
-        new Method("Name", "", "RequestType", "ResponseType", list(new Option("foo", "bar")));
+    Method method = new Method("Name", "", "RequestType", "ResponseType",
+        list(new Option("foo", "bar", false)));
     String expected = ""
         + "rpc Name (RequestType) returns (ResponseType) {\n"
         + "  option foo = \"bar\";\n"
