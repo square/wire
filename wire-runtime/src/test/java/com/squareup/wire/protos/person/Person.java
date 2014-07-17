@@ -141,6 +141,11 @@ public final class Person extends Message {
 
   public enum PhoneType
       implements ProtoEnum {
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE),
+
     MOBILE(0),
     HOME(1),
     /**
@@ -234,6 +239,7 @@ public final class Person extends Message {
        * The type of phone stored here.
        */
       public Builder type(PhoneType type) {
+        if (type == PhoneType.__UNDEFINED__) throw new IllegalArgumentException();
         this.type = type;
         return this;
       }

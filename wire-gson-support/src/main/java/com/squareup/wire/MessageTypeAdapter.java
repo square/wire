@@ -50,6 +50,12 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     this.type = (Class<M>) type.getRawType();
   }
 
+  /** Returns true if the value is the {@code __UNDEFINED__} value of a ProtoEnum. */
+  private boolean isUndefinedEnum(Object value) {
+    return value instanceof ProtoEnum
+        && ((ProtoEnum) value).getValue() == ProtoEnum.UNDEFINED_VALUE;
+  }
+
   @SuppressWarnings("unchecked")
   @Override public void write(JsonWriter out, M message) throws IOException {
     if (message == null) {

@@ -229,6 +229,7 @@ public final class SimpleMessage extends Message {
     }
 
     public Builder default_nested_enum(NestedEnum default_nested_enum) {
+      if (default_nested_enum == NestedEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.default_nested_enum = default_nested_enum;
       return this;
     }
@@ -254,6 +255,7 @@ public final class SimpleMessage extends Message {
      * enum from another package with an explicit default
      */
     public Builder default_foreign_enum(ForeignEnum default_foreign_enum) {
+      if (default_foreign_enum == ForeignEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.default_foreign_enum = default_foreign_enum;
       return this;
     }
@@ -262,6 +264,7 @@ public final class SimpleMessage extends Message {
      * enum from another package without an explicit default
      */
     public Builder no_default_foreign_enum(ForeignEnum no_default_foreign_enum) {
+      if (no_default_foreign_enum == ForeignEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.no_default_foreign_enum = no_default_foreign_enum;
       return this;
     }
@@ -367,6 +370,11 @@ public final class SimpleMessage extends Message {
 
   public enum NestedEnum
       implements ProtoEnum {
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE),
+
     FOO(1),
     BAR(2),
     BAZ(3);
