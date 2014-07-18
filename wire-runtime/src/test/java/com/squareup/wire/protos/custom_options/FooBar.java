@@ -252,6 +252,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       }
 
       public Builder value(FooBarBazEnum value) {
+        if (value == FooBarBazEnum.__UNDEFINED__) throw new IllegalArgumentException();
         this.value = value;
         return this;
       }
@@ -319,6 +320,11 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
   public enum FooBarBazEnum
       implements ProtoEnum {
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE, null, null, null),
+
     FOO(1, new More.Builder()
         .serial(99)
         .build(), 17, null),

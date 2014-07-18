@@ -6,6 +6,11 @@ import com.squareup.wire.ProtoEnum;
 
 public enum G
     implements ProtoEnum {
+  /**
+   * Wire-generated value, do not access from application code.
+   */
+  __UNDEFINED__(UNDEFINED_VALUE),
+
   FOO(1),
   BAR(2);
 

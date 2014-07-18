@@ -69,6 +69,7 @@ public final class E extends Message {
     }
 
     public Builder g(G g) {
+      if (g == G.__UNDEFINED__) throw new IllegalArgumentException();
       this.g = g;
       return this;
     }

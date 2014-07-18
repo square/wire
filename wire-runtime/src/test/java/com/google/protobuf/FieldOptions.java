@@ -209,6 +209,11 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
   public enum CType
       implements ProtoEnum {
     /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE),
+
+    /**
      * Default mode.
      */
     STRING(0),

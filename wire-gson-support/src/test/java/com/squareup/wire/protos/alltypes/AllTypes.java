@@ -874,6 +874,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     public Builder opt_nested_enum(NestedEnum opt_nested_enum) {
+      if (opt_nested_enum == NestedEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.opt_nested_enum = opt_nested_enum;
       return this;
     }
@@ -959,6 +960,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     public Builder req_nested_enum(NestedEnum req_nested_enum) {
+      if (req_nested_enum == NestedEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.req_nested_enum = req_nested_enum;
       return this;
     }
@@ -1044,7 +1046,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     public Builder rep_nested_enum(List<NestedEnum> rep_nested_enum) {
-      this.rep_nested_enum = checkForNulls(rep_nested_enum);
+      this.rep_nested_enum = checkForNullOrUndefined(rep_nested_enum);
       return this;
     }
 
@@ -1119,7 +1121,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     public Builder pack_nested_enum(List<NestedEnum> pack_nested_enum) {
-      this.pack_nested_enum = checkForNulls(pack_nested_enum);
+      this.pack_nested_enum = checkForNullOrUndefined(pack_nested_enum);
       return this;
     }
 
@@ -1199,6 +1201,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     public Builder default_nested_enum(NestedEnum default_nested_enum) {
+      if (default_nested_enum == NestedEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.default_nested_enum = default_nested_enum;
       return this;
     }
@@ -1218,6 +1221,11 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
   public enum NestedEnum
       implements ProtoEnum {
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE),
+
     A(1);
 
     private final int value;
