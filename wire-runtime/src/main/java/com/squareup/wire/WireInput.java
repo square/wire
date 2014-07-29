@@ -36,15 +36,19 @@ package com.squareup.wire;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import okio.Buffer;
+import okio.BufferedSource;
+import okio.ByteString;
+import okio.Okio;
+import okio.Source;
 
 /**
  * Reads and decodes protocol message fields.
- *
- * <p>See GOOGLE_COPYRIGHT.txt for original copyright notice.</p>
  */
 final class WireInput {
 
-  private static final String UTF_8 = "UTF-8";
+  private static final Charset UTF_8 = Charset.forName("UTF-8");
 
   private static final String ENCOUNTERED_A_NEGATIVE_SIZE =
       "Encountered a negative size";
@@ -61,18 +65,22 @@ final class WireInput {
    * Create a new WireInput wrapping the given byte array.
    */
   public static WireInput newInstance(byte[] buf) {
-    return new WireInput(buf, 0, buf.length);
+    return new WireInput(new Buffer().write(buf));
   }
 
   /**
    * Create a new WireInput wrapping the given byte array slice.
    */
   public static WireInput newInstance(byte[] buf, int offset, int count) {
-    return new WireInput(buf, offset, count);
+    return new WireInput(new Buffer().write(buf, offset, count));
   }
 
-  public static WireInput newInstance(InputStream input) {
-    return new WireInput(input);
+  public static WireInput newInstance(InputStream source) {
+    return new WireInput(Okio.buffer(Okio.source(source)));
+  }
+
+  public static WireInput newInstance(Source source) {
+    return new WireInput(Okio.buffer(source));
   }
 
   // -----------------------------------------------------------------
@@ -109,21 +117,11 @@ final class WireInput {
     }
   }
 
-  /** Read a {@code string} field value from the stream. */
+  /** Reads a {@code string} field value from the stream. */
   public String readString() throws IOException {
     int count = readVarint32();
-    // Optimization: avoid an extra copy if the needed bytes are present in the buffer
-    if (bytesRemaining() >= count) {
-      String result = new String(buffer, pos, count, UTF_8);
-      pos += count;
-      return result;
-    }
-    return new String(readRawBytes(count), UTF_8);
-  }
-
-  /** Returns the number of unconsumed bytes in the current buffer. */
-  private int bytesRemaining() {
-    return limit - pos;
+    pos += count;
+    return source.readString(count, UTF_8);
   }
 
   /**
@@ -135,44 +133,45 @@ final class WireInput {
     return readBytes(count);
   }
 
-  /** Reads a {@code bytes} field value from the stream with a known length. */
+  /** Reads a ByteString from the stream with a given size in bytes. */
   public ByteString readBytes(int count) throws IOException {
-    // Optimization: avoid an extra copy if the needed bytes are present in the buffer
-    if (bytesRemaining() >= count) {
-      ByteString result = ByteString.of(buffer, pos, count);
-      pos += count;
-      return result;
-    }
-    return ByteString.of(readRawBytes(count));
+    pos += count;
+    return source.readByteString(count);
   }
 
   /**
-   * Read a raw varint from the stream.  If larger than 32 bits, discard the
+   * Reads a raw varint from the stream.  If larger than 32 bits, discard the
    * upper bits.
    */
   public int readVarint32() throws IOException {
-    byte tmp = readRawByte();
+    pos++;
+    byte tmp = source.readByte();
     if (tmp >= 0) {
       return tmp;
     }
     int result = tmp & 0x7f;
-    if ((tmp = readRawByte()) >= 0) {
+    pos++;
+    if ((tmp = source.readByte()) >= 0) {
       result |= tmp << 7;
     } else {
       result |= (tmp & 0x7f) << 7;
-      if ((tmp = readRawByte()) >= 0) {
+      pos++;
+      if ((tmp = source.readByte()) >= 0) {
         result |= tmp << 14;
       } else {
         result |= (tmp & 0x7f) << 14;
-        if ((tmp = readRawByte()) >= 0) {
+        pos++;
+        if ((tmp = source.readByte()) >= 0) {
           result |= tmp << 21;
         } else {
           result |= (tmp & 0x7f) << 21;
-          result |= (tmp = readRawByte()) << 28;
+          pos++;
+          result |= (tmp = source.readByte()) << 28;
           if (tmp < 0) {
             // Discard upper 32 bits.
             for (int i = 0; i < 5; i++) {
-              if (readRawByte() >= 0) {
+              pos++;
+              if (source.readByte() >= 0) {
                 return result;
               }
             }
@@ -184,12 +183,13 @@ final class WireInput {
     return result;
   }
 
-  /** Read a raw Varint from the stream. */
+  /** Reads a raw varint up to 64 bits in length from the stream. */
   public long readVarint64() throws IOException {
     int shift = 0;
     long result = 0;
     while (shift < 64) {
-      byte b = readRawByte();
+      pos++;
+      byte b = source.readByte();
       result |= (long) (b & 0x7F) << shift;
       if ((b & 0x80) == 0) {
         return result;
@@ -199,40 +199,20 @@ final class WireInput {
     throw new IOException(ENCOUNTERED_A_MALFORMED_VARINT);
   }
 
-  /** Read a 32-bit little-endian integer from the stream. */
+  /** Reads a 32-bit little-endian integer from the stream. */
   public int readFixed32() throws IOException {
-    byte b1 = readRawByte();
-    byte b2 = readRawByte();
-    byte b3 = readRawByte();
-    byte b4 = readRawByte();
-    return   (b1 & 0xff)
-          | ((b2 & 0xff) <<  8)
-          | ((b3 & 0xff) << 16)
-          | ((b4 & 0xff) << 24);
+    pos += 4;
+    return source.readIntLe();
   }
 
-  /** Read a 64-bit little-endian integer from the stream. */
+  /** Reads a 64-bit little-endian integer from the stream. */
   public long readFixed64() throws IOException {
-    byte b1 = readRawByte();
-    byte b2 = readRawByte();
-    byte b3 = readRawByte();
-    byte b4 = readRawByte();
-    byte b5 = readRawByte();
-    byte b6 = readRawByte();
-    byte b7 = readRawByte();
-    byte b8 = readRawByte();
-    return    ((long) b1 & 0xff)
-           | (((long) b2 & 0xff) <<  8)
-           | (((long) b3 & 0xff) << 16)
-           | (((long) b4 & 0xff) << 24)
-           | (((long) b5 & 0xff) << 32)
-           | (((long) b6 & 0xff) << 40)
-           | (((long) b7 & 0xff) << 48)
-           | (((long) b8 & 0xff) << 56);
+    pos += 8;
+    return source.readLongLe();
   }
 
   /**
-   * Decode a ZigZag-encoded 32-bit value.  ZigZag encodes signed integers
+   * Decodes a ZigZag-encoded 32-bit value.  ZigZag encodes signed integers
    * into values that can be efficiently encoded with varint.  (Otherwise,
    * negative values must be sign-extended to 64 bits to be varint encoded,
    * thus always taking 10 bytes on the wire.)
@@ -246,7 +226,7 @@ final class WireInput {
   }
 
   /**
-   * Decode a ZigZag-encoded 64-bit value.  ZigZag encodes signed integers
+   * Decodes a ZigZag-encoded 64-bit value.  ZigZag encodes signed integers
    * into values that can be efficiently encoded with varint.  (Otherwise,
    * negative values must be sign-extended to 64 bits to be varint encoded,
    * thus always taking 10 bytes on the wire.)
@@ -261,105 +241,28 @@ final class WireInput {
 
   // -----------------------------------------------------------------
 
-  private static final int BUFFER_SIZE = 1024;
-
-  private final InputStream input;
-
-  /**
-   * A buffer containing a subset of bytes from the input, running from position
-   * {@code bufferOffset} to {@code bufferOffset + limit}.
-   */
-  private final byte[] buffer;
+  /** The Okio input source. */
+  private final BufferedSource source;
 
   /**
-   * The input position associated with index 0 of {@code buffer}. This will be negative if the
-   * input begins at a non-zero offset within the buffer.
-   */
-  private long bufferOffset = 0L;
-
-  /**
-   * The current position in the input buffer, starting at 0 and increasing monotonically.
+   * The current position in the input source, starting at 0 and increasing monotonically.
    */
   private int pos = 0;
-
-  /**
-   * The number of readable bytes in the buffer. Indices 0 through limit - 1 contain
-   * readable input bytes.
-   */
-  private int limit;
-
-  /**
-   * True if the end of the input has already been read into {@code buffer}.
-   */
-  private boolean inputStreamAtEof;
-
-  private int lastTag;
 
   /** The absolute position of the end of the current message. */
   private int currentLimit = Integer.MAX_VALUE;
 
+  /** The standard number of levels of message nesting to allow. */
   public static final int RECURSION_LIMIT = 64;
+
+  /** The current number of levels of message nesting. */
   public int recursionDepth;
 
-  private WireInput(InputStream input) {
-    // Read the input stream as needed
-    this.input = input;
-    this.buffer = new byte[BUFFER_SIZE];
-  }
+  /** The last tag that was read. */
+  private int lastTag;
 
-  private WireInput(byte[] buffer, int start, int count) {
-    this.input = null;
-
-    // Keep a reference to the supplied buffer
-    this.buffer = buffer;
-    this.bufferOffset = -start;
-    this.pos = start;
-    this.limit = start + count;
-    this.inputStreamAtEof = true;
-  }
-
-  /**
-   * Refills the buffer if all bytes have been consumed. If unconsumed bytes
-   * are present, or end-of-stream has been reached, does nothing.
-   *
-   * This method does not perform any buffer compaction. Consumers may call this method at
-   * any time, but no new data will be read until all available bytes have been consumed.
-   *
-   * The {@code bytesRequested} parameter is a hint as to how many bytes to
-   * request from the input stream when new data is required.
-   * {@link InputStream#read(byte[], int, int)} will be called
-   * repeatedly in an attempt to obtain the desired number of bytes. However,
-   * we will never ask for more than {@link #BUFFER_SIZE} bytes.
-   *
-   * When end-of-stream is reached, the {@link #inputStreamAtEof} flag will be set.
-   */
-  private void refillBuffer(int bytesRequested) throws IOException {
-    // If there is still data in the buffer, do nothing.
-    // If there is no more data in the input stream, do nothing.
-    if (pos < limit || inputStreamAtEof) {
-      return;
-    }
-
-    bufferOffset += pos;
-    pos = 0;
-    int offset = 0;
-
-    // Try to read at least bytesRequested bytes, but not more than BUFFER_SIZE.
-    bytesRequested = Math.min(bytesRequested, BUFFER_SIZE);
-    while (offset < bytesRequested) {
-      int bytesRead = input.read(buffer, offset, BUFFER_SIZE - offset);
-      if (bytesRead == -1) {
-        // We reached end-of-stream
-        limit = offset;
-        inputStreamAtEof = true;
-        return;
-      }
-      offset += bytesRead;
-    }
-
-    // There are still more bytes in the stream to read when these are consumed
-    limit = offset;
-    inputStreamAtEof = false;
+  private WireInput(BufferedSource source) {
+    this.source = source;
   }
 
   /**
@@ -372,7 +275,7 @@ final class WireInput {
     if (byteLimit < 0) {
       throw new IOException(ENCOUNTERED_A_NEGATIVE_SIZE);
     }
-    byteLimit += bufferOffset + pos;
+    byteLimit += pos;
     int oldLimit = currentLimit;
     if (byteLimit > oldLimit) {
       throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
@@ -395,61 +298,23 @@ final class WireInput {
    * case if either the end of the underlying input source has been reached or
    * if the stream has reached a limit created using {@link #pushLimit(int)}.
    */
-  public boolean isAtEnd() throws IOException {
+  private boolean isAtEnd() throws IOException {
     // Treat the end of the current message (as specified by the message length field in the
     // protocol buffer wire encoding) as though it were end-of-stream.
     if (getPosition() == currentLimit) {
       return true;
     }
-    refillBuffer(1);
-    return bytesRemaining() == 0 && inputStreamAtEof;
+    return source.exhausted();
   }
 
   /**
-   * Get current position in buffer relative to beginning offset.
+   * Returns the current source position in bytes.
    */
   public long getPosition() {
-    return bufferOffset + pos;
+    return pos;
   }
 
-  /**
-   * Read one byte from the input.
-   *
-   * @throws IOException The end of the stream or the current limit was reached.
-   */
-  public byte readRawByte() throws IOException {
-    refillBuffer(1);
-    if (bytesRemaining() == 0) {
-      throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
-    }
-    return buffer[pos++];
-  }
-
-  /**
-   * Read a fixed size of bytes from the input.
-   *
-   * @throws IOException The end of the stream or the current limit was reached.
-   */
-  public byte[] readRawBytes(int size) throws IOException {
-    if (size < 0) {
-      throw new IOException(ENCOUNTERED_A_NEGATIVE_SIZE);
-    }
-
-    byte[] bytes = new byte[size];
-    int offset = 0;
-    while (offset < size) {
-      refillBuffer(size - offset);
-      if (bytesRemaining() == 0) {
-        throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
-      }
-      int count = Math.min(size - offset, bytesRemaining());
-      System.arraycopy(buffer, pos, bytes, offset, count);
-      pos += count;
-      offset += count;
-    }
-    return bytes;
-  }
-
+  /** Skips a section of the input delimited by START_GROUP/END_GROUP type markers. */
   public void skipGroup() throws IOException {
     while (true) {
       int tag = readTag();
@@ -465,7 +330,7 @@ final class WireInput {
       case VARINT: readVarint64(); return false;
       case FIXED32: readFixed32(); return false;
       case FIXED64: readFixed64(); return false;
-      case LENGTH_DELIMITED: readRawBytes(readVarint32()); return false;
+      case LENGTH_DELIMITED: skip(readVarint32()); return false;
       case START_GROUP:
         skipGroup();
         checkLastTagWas((tag & ~0x7) | WireType.END_GROUP.value());
@@ -475,5 +340,11 @@ final class WireInput {
       default:
         throw new AssertionError();
     }
+  }
+
+  // Skips count bytes of input.
+  private void skip(long count) throws IOException {
+    pos += count;
+    source.skip(count);
   }
 }

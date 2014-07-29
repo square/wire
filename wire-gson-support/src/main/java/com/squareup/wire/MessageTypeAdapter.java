@@ -28,6 +28,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
@@ -47,6 +48,12 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     this.wire = wire;
     this.gson = gson;
     this.type = (Class<M>) type.getRawType();
+  }
+
+  /** Returns true if the value is the {@code __UNDEFINED__} value of a ProtoEnum. */
+  private boolean isUndefinedEnum(Object value) {
+    return value instanceof ProtoEnum
+        && ((ProtoEnum) value).getValue() == ProtoEnum.UNDEFINED_VALUE;
   }
 
   @SuppressWarnings("unchecked")
@@ -94,7 +101,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
               break;
             case LENGTH_DELIMITED:
               if (first) out.value("length-delimited");
-              out.value(unknownField.getAsBytes().toString());
+              out.value(unknownField.getAsBytes().base64());
               break;
             default:
               throw new AssertionError("Unknown wire type " + unknownField.getWireType());
@@ -108,17 +115,20 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     out.endObject();
   }
 
-  private <M extends ExtendableMessage<?>> void emitExtensions(ExtendableMessage<M> message,
+  @SuppressWarnings("unchecked")
+  private <M extends ExtendableMessage<?>, E> void emitExtensions(ExtendableMessage<M> message,
       JsonWriter out) throws IOException {
-    for (Extension<M, ?> extension : message.getExtensions()) {
-      emitExtension(message, extension, out);
+    if (message.extensionMap == null) return;
+    for (int i = 0; i < message.extensionMap.size(); i++) {
+      Extension<M, E> extension = (Extension<M, E>) message.extensionMap.getExtension(i);
+      E value = (E) message.extensionMap.getExtensionValue(i);
+      emitExtension(extension, value, out);
     }
   }
 
-  private <M extends ExtendableMessage<?>, E> void emitExtension(ExtendableMessage<M> message,
-      Extension<M, E> extension, JsonWriter out) throws IOException {
+  private <M extends ExtendableMessage<?>, E> void emitExtension(Extension<M, E> extension,
+      E value, JsonWriter out) throws IOException {
     out.name(extension.getName());
-    E value = message.getExtension(extension);
     emitJson(out, value, extension.getDatatype(), extension.getLabel());
   }
 
@@ -239,7 +249,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
           builder.addFixed64(tag, in.nextInt());
           break;
         case LENGTH_DELIMITED:
-          builder.addLengthDelimited(tag, ByteString.of(in.nextString()));
+          builder.addLengthDelimited(tag, ByteString.decodeBase64(in.nextString()));
           break;
         default:
           throw new AssertionError("Unknown field type " + type);

@@ -41,7 +41,6 @@
 
     <!-- Checks for Naming Conventions.                  -->
     <!-- See http://checkstyle.sf.net/config_naming.html -->
-    <module name="ConstantName"/>
     <module name="LocalFinalVariableName"/>
     <module name="LocalVariableName"/>
     <module name="MemberName"/>
@@ -57,9 +56,7 @@
     <module name="AvoidStarImport"/>
     <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
     <module name="RedundantImport"/>
-    <module name="UnusedImports">
-      <property name="processJavadoc" value="true"/>
-    </module>
+    <module name="UnusedImports"/>
 
 
     <!-- Checks for Size Violations.                    -->
@@ -68,7 +65,10 @@
       <property name="max" value="100"/>
     </module>
     <module name="MethodLength"/>
-    <module name="ParameterNumber"/>
+    <module name="ParameterNumber">
+      <property name="max" value="10"/>
+      <property name="tokens" value="CTOR_DEF"/>
+    </module>
 
 
     <!-- Checks for whitespace                               -->

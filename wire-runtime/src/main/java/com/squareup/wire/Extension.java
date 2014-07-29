@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.util.List;
+import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
@@ -58,7 +59,7 @@ public final class Extension<T extends ExtendableMessage<?>, E>
   public static final class Builder<T extends ExtendableMessage<?>, E> {
     private final Class<T> extendedType;
     private final Class<? extends Message> messageType;
-    private final Class<? extends Enum> enumType;
+    private final Class<? extends ProtoEnum> enumType;
     private final Datatype datatype;
     private String name = null;
     private int tag = -1;
@@ -72,7 +73,7 @@ public final class Extension<T extends ExtendableMessage<?>, E>
     }
 
     private Builder(Class<T> extendedType, Class<? extends Message> messageType,
-        Class<? extends Enum> enumType, Datatype datatype) {
+        Class<? extends ProtoEnum> enumType, Datatype datatype) {
       this.extendedType = extendedType;
       this.messageType = messageType;
       this.enumType = enumType;
@@ -222,8 +223,8 @@ public final class Extension<T extends ExtendableMessage<?>, E>
     return new Builder<T, Double>(extendedType, Datatype.DOUBLE);
   }
 
-  public static <T extends ExtendableMessage<?>, E extends Enum> Builder<T, E> enumExtending(
-      Class<E> enumType, Class<T> extendedType) {
+  public static <T extends ExtendableMessage<?>, E extends Enum & ProtoEnum> Builder<T, E> //
+  enumExtending(Class<E> enumType, Class<T> extendedType) {
     return new Builder<T, E>(extendedType, null, enumType, Datatype.ENUM);
   }
 
@@ -234,14 +235,14 @@ public final class Extension<T extends ExtendableMessage<?>, E>
 
   private final Class<T> extendedType;
   private final Class<? extends Message> messageType;
-  private final Class<? extends Enum> enumType;
+  private final Class<? extends ProtoEnum> enumType;
   private final String name;
   private final int tag;
   private final Datatype datatype;
   private final Label label;
 
   private Extension(Class<T> extendedType, Class<? extends Message> messageType,
-      Class<? extends Enum> enumType, String name, int tag, Label label, Datatype datatype) {
+      Class<? extends ProtoEnum> enumType, String name, int tag, Label label, Datatype datatype) {
     this.extendedType = extendedType;
     this.name = name;
     this.tag = tag;
@@ -305,7 +306,7 @@ public final class Extension<T extends ExtendableMessage<?>, E>
     return messageType;
   }
 
-  public Class<? extends Enum> getEnumType() {
+  public Class<? extends ProtoEnum> getEnumType() {
     return enumType;
   }
 

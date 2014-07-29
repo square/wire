@@ -15,9 +15,13 @@ public final class I extends ExtendableMessage<I> {
   @ProtoField(tag = 1, type = INT32)
   public final Integer i;
 
+  public I(Integer i) {
+    this.i = i;
+  }
+
   private I(Builder builder) {
-    super(builder);
-    this.i = builder.i;
+    this(builder.i);
+    setBuilder(builder);
   }
 
   @Override

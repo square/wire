@@ -15,19 +15,22 @@
  */
 package com.squareup.wire.protobuf;
 
-import com.squareup.wire.ByteString;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
+import com.squareup.wire.Wire;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
-import com.squareup.wire.Wire;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import okio.Buffer;
+import okio.ByteString;
 import org.junit.Test;
 
+import static com.squareup.wire.protos.alltypes.AllTypes.NestedEnum.A;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
@@ -72,7 +75,7 @@ public class TestAllTypes {
         .opt_double(123.0)
         .opt_string("124")
         .opt_bytes(bytes)
-        .opt_nested_enum(AllTypes.NestedEnum.A)
+        .opt_nested_enum(A)
         .opt_nested_message(nestedMessage)
         .req_int32(111)
         .req_uint32(112)
@@ -89,7 +92,7 @@ public class TestAllTypes {
         .req_double(123.0)
         .req_string("124")
         .req_bytes(bytes)
-        .req_nested_enum(AllTypes.NestedEnum.A)
+        .req_nested_enum(A)
         .req_nested_message(nestedMessage)
         .rep_int32(list(111, numRepeated))
         .rep_uint32(list(112, numRepeated))
@@ -106,7 +109,7 @@ public class TestAllTypes {
         .rep_double(list(123.0, numRepeated))
         .rep_string(list("124", numRepeated))
         .rep_bytes(list(bytes, numRepeated))
-        .rep_nested_enum(list(AllTypes.NestedEnum.A, numRepeated))
+        .rep_nested_enum(list(A, numRepeated))
         .rep_nested_message(list(nestedMessage, numRepeated))
         .pack_int32(list(111, numRepeated))
         .pack_uint32(list(112, numRepeated))
@@ -121,7 +124,7 @@ public class TestAllTypes {
         .pack_bool(list(true, numRepeated))
         .pack_float(list(122.0F, numRepeated))
         .pack_double(list(123.0, numRepeated))
-        .pack_nested_enum(list(AllTypes.NestedEnum.A, numRepeated))
+        .pack_nested_enum(list(A, numRepeated))
         .setExtension(Ext_all_types.ext_opt_bool, true)
         .setExtension(Ext_all_types.ext_rep_bool, list(true, numRepeated))
         .setExtension(Ext_all_types.ext_pack_bool, list(true, numRepeated));
@@ -166,9 +169,9 @@ public class TestAllTypes {
     assertEquals(new Double(123.0), builder.opt_double);
     assertEquals("124", builder.opt_string);
     assertEquals(2, builder.opt_bytes.size());
-    assertEquals((byte) 125, builder.opt_bytes.byteAt(0));
-    assertEquals((byte) 225, builder.opt_bytes.byteAt(1));
-    assertEquals(AllTypes.NestedEnum.A, builder.opt_nested_enum);
+    assertEquals((byte) 125, builder.opt_bytes.getByte(0));
+    assertEquals((byte) 225, builder.opt_bytes.getByte(1));
+    assertEquals(A, builder.opt_nested_enum);
     assertEquals(nestedMessage, builder.opt_nested_message);
 
     assertEquals(new Integer(111), builder.req_int32);
@@ -186,9 +189,9 @@ public class TestAllTypes {
     assertEquals(new Double(123.0), builder.req_double);
     assertEquals("124", builder.req_string);
     assertEquals(2, builder.req_bytes.size());
-    assertEquals((byte) 125, builder.req_bytes.byteAt(0));
-    assertEquals((byte) 225, builder.req_bytes.byteAt(1));
-    assertEquals(AllTypes.NestedEnum.A, builder.req_nested_enum);
+    assertEquals((byte) 125, builder.req_bytes.getByte(0));
+    assertEquals((byte) 225, builder.req_bytes.getByte(1));
+    assertEquals(A, builder.req_nested_enum);
     assertEquals(nestedMessage, builder.req_nested_message);
 
     assertEquals(2, builder.rep_int32.size());
@@ -235,14 +238,14 @@ public class TestAllTypes {
     assertEquals("124", builder.rep_string.get(1));
     assertEquals(2, builder.rep_bytes.size());
     assertEquals(2, builder.rep_bytes.get(0).size());
-    assertEquals((byte) 125, builder.rep_bytes.get(0).byteAt(0));
-    assertEquals((byte) 225, builder.rep_bytes.get(0).byteAt(1));
+    assertEquals((byte) 125, builder.rep_bytes.get(0).getByte(0));
+    assertEquals((byte) 225, builder.rep_bytes.get(0).getByte(1));
     assertEquals(2, builder.rep_bytes.get(1).size());
-    assertEquals((byte) 125, builder.rep_bytes.get(1).byteAt(0));
-    assertEquals((byte) 225, builder.rep_bytes.get(1).byteAt(1));
+    assertEquals((byte) 125, builder.rep_bytes.get(1).getByte(0));
+    assertEquals((byte) 225, builder.rep_bytes.get(1).getByte(1));
     assertEquals(2, builder.rep_nested_enum.size());
-    assertEquals(AllTypes.NestedEnum.A, builder.rep_nested_enum.get(0));
-    assertEquals(AllTypes.NestedEnum.A, builder.rep_nested_enum.get(1));
+    assertEquals(A, builder.rep_nested_enum.get(0));
+    assertEquals(A, builder.rep_nested_enum.get(1));
     assertEquals(2, builder.rep_nested_message.size());
     assertEquals(nestedMessage, builder.rep_nested_message.get(0));
     assertEquals(nestedMessage, builder.rep_nested_message.get(1));
@@ -287,8 +290,8 @@ public class TestAllTypes {
     assertEquals(new Double(123.0), builder.pack_double.get(0));
     assertEquals(new Double(123.0), builder.pack_double.get(1));
     assertEquals(2, builder.pack_nested_enum.size());
-    assertEquals(AllTypes.NestedEnum.A, builder.pack_nested_enum.get(0));
-    assertEquals(AllTypes.NestedEnum.A, builder.pack_nested_enum.get(1));
+    assertEquals(A, builder.pack_nested_enum.get(0));
+    assertEquals(A, builder.pack_nested_enum.get(1));
 
     assertEquals(Boolean.TRUE, builder.getExtension(Ext_all_types.ext_opt_bool));
     assertEquals(list(true), builder.getExtension(Ext_all_types.ext_rep_bool));
@@ -370,6 +373,26 @@ public class TestAllTypes {
     allTypes.writeTo(data, 0, data.length);
 
     InputStream input = new ByteArrayInputStream(data);
+    AllTypes parsed = wire.parseFrom(input, AllTypes.class);
+    assertEquals(allTypes, parsed);
+
+    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
+
+    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    assertEquals(3, extensions.size());
+    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  }
+
+  @Test
+  public void testReadFromOkioBuffer() throws IOException {
+    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
+    allTypes.writeTo(data, 0, data.length);
+
+    Buffer input = new Buffer().write(data);
     AllTypes parsed = wire.parseFrom(input, AllTypes.class);
     assertEquals(allTypes, parsed);
 
@@ -502,7 +525,7 @@ public class TestAllTypes {
   @Test
   public void testDefaults() throws Exception {
     assertEquals(true, AllTypes.DEFAULT_DEFAULT_BOOL);
-    // original: "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel"
+    // original: "<c-cedilla>ok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11g<u umlaut>zel"
     assertEquals(
         "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel",
         AllTypes.DEFAULT_DEFAULT_STRING);
@@ -512,8 +535,8 @@ public class TestAllTypes {
 
   @Test
   public void testEnums() {
-    assertEquals(AllTypes.NestedEnum.A, Message.enumFromInt(AllTypes.NestedEnum.class, 1));
-    assertEquals(1, Message.intFromEnum(AllTypes.NestedEnum.A));
+    assertEquals(A, Message.enumFromInt(AllTypes.NestedEnum.class, 1));
+    assertEquals(1, Message.intFromEnum(A));
   }
 
   @Test
@@ -578,5 +601,18 @@ public class TestAllTypes {
     } catch (IllegalStateException e) {
       assertEquals("Wire type differs from previous type for tag", e.getMessage());
     }
+  }
+
+  @Test
+  public void testNullEnum() {
+    try {
+      // A null value for a repeated field is not allowed.
+      getBuilder().rep_nested_enum(Arrays.asList(A, null, A));
+      fail();
+    } catch (NullPointerException e) {
+    }
+
+    // Should not fail - a null list means the field is cleared.
+    getBuilder().rep_nested_enum(null);
   }
 }

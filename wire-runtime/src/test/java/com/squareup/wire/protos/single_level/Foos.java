@@ -16,9 +16,13 @@ public final class Foos extends Message {
   @ProtoField(tag = 1, label = REPEATED)
   public final List<Foo> foos;
 
+  public Foos(List<Foo> foos) {
+    this.foos = immutableCopyOf(foos);
+  }
+
   private Foos(Builder builder) {
-    super(builder);
-    this.foos = immutableCopyOf(builder.foos);
+    this(builder.foos);
+    setBuilder(builder);
   }
 
   @Override
@@ -48,7 +52,7 @@ public final class Foos extends Message {
     }
 
     public Builder foos(List<Foo> foos) {
-      this.foos = foos;
+      this.foos = checkForNulls(foos);
       return this;
     }
 

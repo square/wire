@@ -6,8 +6,11 @@ import com.squareup.wire.Message;
 
 public final class NoFields extends Message {
 
+  public NoFields() {
+  }
+
   private NoFields(Builder builder) {
-    super(builder);
+    setBuilder(builder);
   }
 
   @Override

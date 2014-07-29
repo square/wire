@@ -24,6 +24,7 @@ import com.squareup.wire.protos.simple.SimpleMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.junit.Test;
 
@@ -139,8 +140,7 @@ public class WireTest {
 
   @Test
   public void testExtensions() throws Exception {
-    ExternalMessage optional_external_msg =
-        new ExternalMessage.Builder()
+    ExternalMessage optional_external_msg = new ExternalMessage.Builder()
         .setExtension(fooext, Arrays.asList(444, 555))
         .setExtension(barext, 333)
         .setExtension(bazext, 222)
@@ -172,6 +172,35 @@ public class WireTest {
     assertEquals(Arrays.asList(444, 555), newMsg.optional_external_msg.getExtension(fooext));
     assertEquals(new Integer(333), newMsg.optional_external_msg.getExtension(barext));
     assertEquals(new Integer(222), newMsg.optional_external_msg.getExtension(bazext));
+  }
+
+  @Test
+  public void testExtensionEnum() throws Exception {
+    ExternalMessage optional_external_msg = new ExternalMessage.Builder()
+        .setExtension(Ext_simple_message.nested_enum_ext, SimpleMessage.NestedEnum.BAZ)
+        .build();
+
+    SimpleMessage msg = new SimpleMessage.Builder()
+        .optional_external_msg(optional_external_msg)
+        .required_int32(456)
+        .build();
+
+    byte[] data = msg.toByteArray();
+
+    // Change BAZ enum to a value not known by this client.
+    data[4] = 17;
+
+    // Parse the altered message.
+    SimpleMessage newMsg = new Wire(Ext_simple_message.class).parseFrom(data, SimpleMessage.class);
+
+    // Original value shows up as an extension.
+    assertTrue(msg.toString().contains("extensions={129=BAZ}"));
+    // New value is placed into the unknown field map.
+    assertTrue(newMsg.toString().contains("extensions={}"));
+
+    // Serialized outputs are the same.
+    byte[] newData = newMsg.toByteArray();
+    assertTrue(Arrays.equals(data, newData));
   }
 
   @Test
@@ -260,5 +289,40 @@ public class WireTest {
     assertEquals(0, noListParsed.repeated_double.size());
     assertNotNull(emptyListParsed.repeated_double);
     assertEquals(0, emptyListParsed.repeated_double.size());
+  }
+
+  @Test
+  public void testBadEnum() throws IOException {
+    Person person = new Person.Builder()
+        .id(1)
+        .name("Joe Schmoe")
+        .phone(Arrays.asList(
+            new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build()))
+        .build();
+
+    assertEquals(PhoneType.WORK, person.phone.get(0).type);
+
+    byte[] data = person.toByteArray();
+    assertEquals(PhoneType.WORK.getValue(), data[27]);
+
+    // Corrupt the PhoneNumber type field with an undefined value
+    data[27] = 17;
+    // Parsed PhoneNumber has no value set
+    Wire wire = new Wire();
+    Person result = wire.parseFrom(data, Person.class);
+    // The __UNDEFINED__ enum value will be returned in place of the undefined value.
+    assertEquals(PhoneType.__UNDEFINED__, result.phone.get(0).type);
+
+    // The value 17 will be stored as an unknown varint with tag number 2
+    Collection<List<UnknownFieldMap.FieldValue>> unknownFields = result.phone.get(0).unknownFields();
+    assertEquals(1, unknownFields.size());
+    List<UnknownFieldMap.FieldValue> fieldValues = unknownFields.iterator().next();
+    assertEquals(1, fieldValues.size());
+    assertEquals(2, fieldValues.get(0).getTag());
+    assertEquals(Long.valueOf(17L), fieldValues.get(0).getAsLong());
+
+    // Serialize again, value is preserved
+    byte[] newData = result.toByteArray();
+    assertTrue(Arrays.equals(data, newData));
   }
 }

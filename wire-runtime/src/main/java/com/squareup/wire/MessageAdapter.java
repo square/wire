@@ -16,17 +16,20 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.RandomAccess;
 import java.util.Set;
+import okio.ByteString;
 
 import static com.squareup.wire.ExtendableMessage.ExtendableBuilder;
 import static com.squareup.wire.Message.Builder;
@@ -39,39 +42,54 @@ import static com.squareup.wire.Message.Label;
  * @param <M> the Message class handled by this adapter.
  */
 final class MessageAdapter<M extends Message> {
+  // Unicode character "Full Block" (U+2588)
+  private static final String FULL_BLOCK = "█";
+  // The string to use when redacting fields from toString.
+  private static final String REDACTED = FULL_BLOCK + FULL_BLOCK;
 
   public static final class FieldInfo {
     final int tag;
     final String name;
     final Datatype datatype;
     final Label label;
-    final Class<? extends Enum> enumType;
+    final Class<? extends ProtoEnum> enumType;
     final Class<? extends Message> messageType;
+    final boolean redacted;
+    final ProtoEnum undefinedEnumValue;
+
+    // Cached values
+    MessageAdapter<? extends Message> messageAdapter;
+    EnumAdapter<? extends ProtoEnum> enumAdapter;
 
     private final Field messageField;
-    private final Method builderMethod;
+    private final Field builderField;
 
     @SuppressWarnings("unchecked")
-    private FieldInfo(int tag, String name, Datatype datatype, Label label,
-        Class<?> enumOrMessageType, Field messageField, Method builderMethod) {
+    private FieldInfo(int tag, String name, Datatype datatype, Label label, boolean redacted,
+        Class<?> enumOrMessageType, Field messageField, Field builderField) {
       this.tag = tag;
       this.name = name;
       this.datatype = datatype;
       this.label = label;
+      this.redacted = redacted;
       if (datatype == Datatype.ENUM) {
-        this.enumType = (Class<? extends Enum>) enumOrMessageType;
+        this.enumType = (Class<? extends ProtoEnum>) enumOrMessageType;
         this.messageType = null;
+        // The first defined value of a {@link ProtoEnum} is always {@code __UNDEFINED__}.
+        this.undefinedEnumValue = enumType.getEnumConstants()[0];
       } else if (datatype == Datatype.MESSAGE) {
         this.messageType = (Class<? extends Message>) enumOrMessageType;
         this.enumType = null;
+        this.undefinedEnumValue = null;
       } else {
         this.enumType = null;
         this.messageType = null;
+        this.undefinedEnumValue = null;
       }
 
       // private fields
       this.messageField = messageField;
-      this.builderMethod = builderMethod;
+      this.builderField = builderField;
     }
   }
 
@@ -107,10 +125,8 @@ final class MessageAdapter<M extends Message> {
 
   public void setBuilderField(Builder<M> builder, int tag, Object value) {
     try {
-      fieldInfoMap.get(tag).builderMethod.invoke(builder, value);
+      fieldInfoMap.get(tag).builderField.set(builder, value);
     } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    } catch (InvocationTargetException e) {
       throw new AssertionError(e);
     }
   }
@@ -119,8 +135,7 @@ final class MessageAdapter<M extends Message> {
   private final Class<M> messageType;
   private final Class<Builder<M>> builderType;
   private final Map<String, Integer> tagMap = new LinkedHashMap<String, Integer>();
-  private final Map<Integer, FieldInfo> fieldInfoMap =
-      new LinkedHashMap<Integer, FieldInfo>();
+  private final TagMap<FieldInfo> fieldInfoMap;
 
   /** Cache information about the Message class and its mapping to proto wire format. */
   MessageAdapter(Wire wire, Class<M> messageType) {
@@ -128,6 +143,7 @@ final class MessageAdapter<M extends Message> {
     this.messageType = messageType;
     this.builderType = getBuilderType(messageType);
 
+    Map<Integer, FieldInfo> map = new LinkedHashMap<Integer, FieldInfo>();
     for (Field messageField : messageType.getDeclaredFields()) {
       // Process fields annotated with '@ProtoField'
       ProtoField annotation = messageField.getAnnotation(ProtoField.class);
@@ -143,10 +159,12 @@ final class MessageAdapter<M extends Message> {
         } else if (datatype == Datatype.MESSAGE) {
           enumOrMessageType = getMessageType(messageField);
         }
-        fieldInfoMap.put(tag, new FieldInfo(tag, name, datatype, annotation.label(),
-            enumOrMessageType, messageField, getBuilderMethod(name, messageField.getType())));
+        map.put(tag, new FieldInfo(tag, name, datatype, annotation.label(), annotation.redacted(),
+            enumOrMessageType, messageField, getBuilderField(name)));
       }
     }
+
+    fieldInfoMap = TagMap.of(map);
   }
 
   @SuppressWarnings("unchecked")
@@ -159,12 +177,12 @@ final class MessageAdapter<M extends Message> {
     }
   }
 
-  private Method getBuilderMethod(String name, Class<?> type) {
+  private Field getBuilderField(String name) {
     try {
-      return builderType.getMethod(name, type);
-    } catch (NoSuchMethodException e) {
-      throw new AssertionError("No builder method "
-          + builderType.getName() + "." + name + "(" + type.getName() + ")");
+      return builderType.getField(name);
+    } catch (NoSuchFieldException e) {
+      throw new AssertionError("No builder field "
+          + builderType.getName() + "." + name);
     }
   }
 
@@ -200,6 +218,12 @@ final class MessageAdapter<M extends Message> {
 
   // Writing
 
+  /** Returns true if the value is the {@code __UNDEFINED__} value of a ProtoEnum. */
+  private boolean isUndefinedEnum(Object value) {
+    return value instanceof ProtoEnum
+        && ((ProtoEnum) value).getValue() == ProtoEnum.UNDEFINED_VALUE;
+  }
+
   /**
    * Returns the serialized size of a given message, in bytes.
    */
@@ -207,7 +231,7 @@ final class MessageAdapter<M extends Message> {
     int size = 0;
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
-      if (value == null) {
+      if (value == null || isUndefinedEnum(value)) {
         continue;
       }
       int tag = fieldInfo.tag;
@@ -237,8 +261,9 @@ final class MessageAdapter<M extends Message> {
 
   private <T extends ExtendableMessage<?>> int getExtensionsSerializedSize(ExtensionMap<T> map) {
     int size = 0;
-    for (Extension<T, ?> extension : map.getExtensions()) {
-      Object value = map.get(extension);
+    for (int i = 0; i < map.size(); i++) {
+      Extension<T, ?> extension = map.getExtension(i);
+      Object value = map.getExtensionValue(i);
       int tag = extension.getTag();
       Datatype datatype = extension.getDatatype();
       Label label = extension.getLabel();
@@ -258,7 +283,9 @@ final class MessageAdapter<M extends Message> {
   private int getRepeatedSize(List<?> value, int tag, Datatype datatype) {
     int size = 0;
     for (Object o : value) {
-      size += getSerializedSize(tag, o, datatype);
+      if (!isUndefinedEnum(o)) {
+        size += getSerializedSize(tag, o, datatype);
+      }
     }
     return size;
   }
@@ -266,7 +293,12 @@ final class MessageAdapter<M extends Message> {
   private int getPackedSize(List<?> value, int tag, Datatype datatype) {
     int packedLength = 0;
     for (Object o : value) {
-      packedLength += getSerializedSizeNoTag(o, datatype);
+      if (!isUndefinedEnum(o)) {
+        packedLength += getSerializedSizeNoTag(o, datatype);
+      }
+    }
+    if (packedLength == 0) {
+      return 0;
     }
     // tag + length + value + value + ...
     int size = WireOutput.varint32Size(WireOutput.makeTag(tag, WireType.LENGTH_DELIMITED));
@@ -279,7 +311,7 @@ final class MessageAdapter<M extends Message> {
   void write(M message, WireOutput output) throws IOException {
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
-      if (value == null) {
+      if (value == null || isUndefinedEnum(value)) {
         continue;
       }
       int tag = fieldInfo.tag;
@@ -308,8 +340,9 @@ final class MessageAdapter<M extends Message> {
 
   private <T extends ExtendableMessage<?>> void writeExtensions(WireOutput output,
       ExtensionMap<T> extensionMap) throws IOException {
-    for (Extension<T, ?> extension: extensionMap.getExtensions()) {
-      Object value = extensionMap.get(extension);
+    for (int i = 0; i < extensionMap.size(); i++) {
+      Extension<T, ?> extension = extensionMap.getExtension(i);
+      Object value = extensionMap.getExtensionValue(i);
       int tag = extension.getTag();
       Datatype datatype = extension.getDatatype();
       Label label = extension.getLabel();
@@ -336,12 +369,18 @@ final class MessageAdapter<M extends Message> {
       throws IOException {
     int packedLength = 0;
     for (Object o : value) {
-      packedLength += getSerializedSizeNoTag(o, datatype);
+      if (!isUndefinedEnum(o)) {
+        packedLength += getSerializedSizeNoTag(o, datatype);
+      }
     }
-    output.writeTag(tag, WireType.LENGTH_DELIMITED);
-    output.writeVarint32(packedLength);
-    for (Object o : value) {
-      writeValueNoTag(output, o, datatype);
+    if (packedLength > 0) {
+      output.writeTag(tag, WireType.LENGTH_DELIMITED);
+      output.writeVarint32(packedLength);
+      for (Object o : value) {
+        if (!isUndefinedEnum(o)) {
+          writeValueNoTag(output, o, datatype);
+        }
+      }
     }
   }
 
@@ -369,14 +408,14 @@ final class MessageAdapter<M extends Message> {
     String sep = "";
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
-      if (value == null) {
+      if (value == null || isUndefinedEnum(value)) {
         continue;
       }
       sb.append(sep);
       sep = ", ";
       sb.append(fieldInfo.name);
       sb.append("=");
-      sb.append(value);
+      sb.append(fieldInfo.redacted ? REDACTED : value);
     }
     if (message instanceof ExtendableMessage<?>) {
       ExtendableMessage<?> extendableMessage = (ExtendableMessage<?>) message;
@@ -408,7 +447,7 @@ final class MessageAdapter<M extends Message> {
       case SINT32: return WireOutput.varint32Size(WireOutput.zigZag32((Integer) value));
       case SINT64: return WireOutput.varint64Size(WireOutput.zigZag64((Long) value));
       case BOOL: return 1;
-      case ENUM: return getEnumSize((Enum) value);
+      case ENUM: return getEnumSize((ProtoEnum) value);
       case STRING:
         int utf8Length = utf8Length((String) value);
         return WireOutput.varint32Size(utf8Length) + utf8Length;
@@ -443,13 +482,13 @@ final class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private <E extends Enum> int getEnumSize(E value) {
+  private <E extends ProtoEnum> int getEnumSize(E value) {
     EnumAdapter<E> adapter = (EnumAdapter<E>) wire.enumAdapter(value.getClass());
     return WireOutput.varint32Size(adapter.toInt(value));
   }
 
   @SuppressWarnings("unchecked")
-  private <M extends Message> int getMessageSize(M message) {
+  private int getMessageSize(Message message) {
     int messageSize = message.getSerializedSize();
     return WireOutput.varint32Size(messageSize) + messageSize;
   }
@@ -472,7 +511,7 @@ final class MessageAdapter<M extends Message> {
       case SINT32: output.writeVarint32(WireOutput.zigZag32((Integer) value)); break;
       case SINT64: output.writeVarint64(WireOutput.zigZag64((Long) value)); break;
       case BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
-      case ENUM: writeEnum((Enum) value, output); break;
+      case ENUM: writeEnum((ProtoEnum) value, output); break;
       case STRING:
         final byte[] bytes = ((String) value).getBytes("UTF-8");
         output.writeVarint32(bytes.length);
@@ -493,14 +532,14 @@ final class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private <M extends Message> void writeMessage(M message, WireOutput output) throws IOException {
+  private <MM extends Message> void writeMessage(MM message, WireOutput output) throws IOException {
     output.writeVarint32(message.getSerializedSize());
-    MessageAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
+    MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
     adapter.write(message, output);
   }
 
   @SuppressWarnings("unchecked")
-  private <E extends Enum> void writeEnum(E value, WireOutput output)
+  private <E extends ProtoEnum> void writeEnum(E value, WireOutput output)
       throws IOException {
     EnumAdapter<E> adapter = (EnumAdapter<E>) wire.enumAdapter(value.getClass());
     output.writeVarint32(adapter.toInt(value));
@@ -522,8 +561,8 @@ final class MessageAdapter<M extends Message> {
         if (tag == 0) {
           // Set repeated fields
           for (int storedTag : storage.getTags()) {
-            FieldInfo fieldInfo = fieldInfoMap.get(storedTag);
-            if (fieldInfo != null) {
+            boolean hasField = fieldInfoMap.containsKey(storedTag);
+            if (hasField) {
               setBuilderField(builder, storedTag, storage.get(storedTag));
             } else {
               setExtension((ExtendableBuilder<?>) builder, getExtension(storedTag),
@@ -535,10 +574,13 @@ final class MessageAdapter<M extends Message> {
 
         Datatype datatype;
         Label label;
+        ProtoEnum undefinedEnumValue = null;
+
         FieldInfo fieldInfo = fieldInfoMap.get(tag);
         if (fieldInfo != null) {
           datatype = fieldInfo.datatype;
           label = fieldInfo.label;
+          undefinedEnumValue = fieldInfo.undefinedEnumValue;
         } else {
           extension = getExtension(tag);
           if (extension == null) {
@@ -557,6 +599,11 @@ final class MessageAdapter<M extends Message> {
           int oldLimit = input.pushLimit(length);
           while (input.getPosition() < start + length) {
             value = readValue(input, tag, datatype);
+            if (datatype == Datatype.ENUM && value instanceof Integer) {
+              // An unknown Enum value was encountered, store it as an unknown field
+              builder.addVarint(tag, (Integer) value);
+              value = undefinedEnumValue;
+            }
             storage.add(tag, value);
           }
           input.popLimit(oldLimit);
@@ -566,10 +613,17 @@ final class MessageAdapter<M extends Message> {
         } else {
           // Read a single value
           value = readValue(input, tag, datatype);
+          if (datatype == Datatype.ENUM && value instanceof Integer) {
+            // An unknown Enum value was encountered, store it as an unknown field
+            builder.addVarint(tag, (Integer) value);
+            value = undefinedEnumValue;
+          }
           if (label.isRepeated()) {
             storage.add(tag, value);
           } else if (extension != null) {
-            setExtension((ExtendableBuilder<?>) builder, extension, value);
+            if (value != null) {
+              setExtension((ExtendableBuilder<?>) builder, extension, value);
+            }
           } else {
             setBuilderField(builder, tag, value);
           }
@@ -590,8 +644,14 @@ final class MessageAdapter<M extends Message> {
       case SINT64: return WireInput.decodeZigZag64(input.readVarint64());
       case BOOL: return input.readVarint32() != 0;
       case ENUM:
-        EnumAdapter<? extends Enum> adapter = wire.enumAdapter(getEnumClass(tag));
-        return adapter.fromInt(input.readVarint32());
+        EnumAdapter<? extends ProtoEnum> adapter = getEnumAdapter(tag);
+        int value = input.readVarint32();
+        try {
+          return adapter.fromInt(value);
+        } catch (IllegalArgumentException e) {
+          // Return the raw value as an Integer
+          return value;
+        }
       case STRING: return input.readString();
       case BYTES: return input.readBytes();
       case MESSAGE: return readMessage(input, tag);
@@ -610,12 +670,36 @@ final class MessageAdapter<M extends Message> {
     }
     final int oldLimit = input.pushLimit(length);
     ++input.recursionDepth;
-    MessageAdapter<? extends Message> adapter = wire.messageAdapter(getMessageClass(tag));
+    MessageAdapter<? extends Message> adapter = getMessageAdapter(tag);
     Message message = adapter.read(input);
     input.checkLastTagWas(0);
     --input.recursionDepth;
     input.popLimit(oldLimit);
     return message;
+  }
+
+  private MessageAdapter<? extends Message> getMessageAdapter(int tag) {
+    FieldInfo fieldInfo = fieldInfoMap.get(tag);
+    if (fieldInfo != null && fieldInfo.messageAdapter != null) {
+      return fieldInfo.messageAdapter;
+    }
+    MessageAdapter<? extends Message> result = wire.messageAdapter(getMessageClass(tag));
+    if (fieldInfo != null) {
+      fieldInfo.messageAdapter = result;
+    }
+    return result;
+  }
+
+  private EnumAdapter<? extends ProtoEnum> getEnumAdapter(int tag) {
+    FieldInfo fieldInfo = fieldInfoMap.get(tag);
+    if (fieldInfo != null && fieldInfo.enumAdapter != null) {
+      return fieldInfo.enumAdapter;
+    }
+    EnumAdapter<? extends ProtoEnum> result = wire.enumAdapter(getEnumClass(tag));
+    if (fieldInfo != null) {
+      fieldInfo.enumAdapter = result;
+    }
+    return result;
   }
 
   @SuppressWarnings("unchecked")
@@ -659,23 +743,27 @@ final class MessageAdapter<M extends Message> {
   }
 
   private static class Storage {
-    private final Map<Integer, List<Object>> map = new LinkedHashMap<Integer, List<Object>>();
+    private Map<Integer, ImmutableList<Object>> map;
 
     void add(int tag, Object value) {
-      List<Object> list = map.get(tag);
+      ImmutableList<Object> list = map == null ? null : map.get(tag);
       if (list == null) {
-        list = new ArrayList<Object>();
+        list = new ImmutableList<Object>();
+        if (map == null) {
+          map = new LinkedHashMap<Integer, ImmutableList<Object>>();
+        }
         map.put(tag, list);
       }
-      list.add(value);
+      list.list.add(value);
     }
 
     Set<Integer> getTags() {
+      if (map == null) return Collections.emptySet();
       return map.keySet();
     }
 
     List<Object> get(int tag) {
-      return map.get(tag);
+      return map == null ? null : map.get(tag);
     }
   }
 
@@ -699,9 +787,9 @@ final class MessageAdapter<M extends Message> {
     builder.setExtension(extension, value);
   }
 
-  private Class<? extends Enum> getEnumClass(int tag) {
+  private Class<? extends ProtoEnum> getEnumClass(int tag) {
     FieldInfo fieldInfo = fieldInfoMap.get(tag);
-    Class<? extends Enum> enumType = fieldInfo == null ? null : fieldInfo.enumType;
+    Class<? extends ProtoEnum> enumType = fieldInfo == null ? null : fieldInfo.enumType;
     if (enumType == null) {
       Extension<ExtendableMessage<?>, ?> extension = getExtension(tag);
       if (extension != null) {
@@ -709,5 +797,27 @@ final class MessageAdapter<M extends Message> {
       }
     }
     return enumType;
+  }
+
+  /**
+   * An immutable implementation of List that allows Wire messages to avoid the need to make copies.
+   */
+  static class ImmutableList<T> extends AbstractList<T>
+      implements Cloneable, RandomAccess, Serializable {
+
+    private final List<T> list = new ArrayList<T>();
+
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    @Override public Object clone() throws CloneNotSupportedException {
+      return this;
+    }
+
+    @Override public int size() {
+      return list.size();
+    }
+
+    @Override public T get(int i) {
+      return list.get(i);
+    }
   }
 }

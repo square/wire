@@ -4,9 +4,24 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.ProtoEnum;
 
-public enum G {
-  @ProtoEnum(1)
-  FOO,
-  @ProtoEnum(2)
-  BAR,
+public enum G
+    implements ProtoEnum {
+  /**
+   * Wire-generated value, do not access from application code.
+   */
+  __UNDEFINED__(UNDEFINED_VALUE),
+
+  FOO(1),
+  BAR(2);
+
+  private final int value;
+
+  private G(int value) {
+    this.value = value;
+  }
+
+  @Override
+  public int getValue() {
+    return value;
+  }
 }

@@ -2,9 +2,9 @@
 // Source file: ../wire-runtime/src/test/proto/edge_cases.proto
 package com.squareup.wire.protos.edgecases;
 
-import com.squareup.wire.ByteString;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype.BYTES;
 
@@ -15,9 +15,13 @@ public final class OneBytesField extends Message {
   @ProtoField(tag = 1, type = BYTES)
   public final ByteString opt_bytes;
 
+  public OneBytesField(ByteString opt_bytes) {
+    this.opt_bytes = opt_bytes;
+  }
+
   private OneBytesField(Builder builder) {
-    super(builder);
-    this.opt_bytes = builder.opt_bytes;
+    this(builder.opt_bytes);
+    setBuilder(builder);
   }
 
   @Override
