@@ -31,7 +31,8 @@ import okio.ByteString;
  */
 public abstract class Message {
 
-  // Hidden Wire instance that can perform work that does not require knowledge of extensions.
+  // Hidden Wire instance that can perform work that does not require knowledge of extensions
+  // or interceptors.
   private static final Wire WIRE = new Wire();
 
   /**
@@ -208,15 +209,27 @@ public abstract class Message {
     return adapter.fromInt(value);
   }
 
+  /**
+   * Serializes the message to a byte array without running interceptors.
+   * To run interceptors, use {@link Wire#toByteArray(Message)} instead.
+   */
   @SuppressWarnings("unchecked")
   public byte[] toByteArray() {
     return WIRE.messageAdapter((Class<Message>) getClass()).toByteArray(this);
   }
 
+  /**
+   * Serializes the message into a byte array without running interceptors.
+   * To run interceptors, use {@link Wire#writeTo(Message, byte[])} instead.
+   */
   public void writeTo(byte[] output) {
     writeTo(output, 0, output.length);
   }
 
+  /**
+   * Serializes the message into a portion of a byte array without running interceptors.
+   * To run interceptors, use {@link Wire#writeTo(Message, byte[], int, int)} instead.
+   */
   public void writeTo(byte[] output, int offset, int count) {
     write(WireOutput.newInstance(output, offset, count));
   }

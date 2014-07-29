@@ -17,7 +17,9 @@ package com.squareup.wire;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.AbstractList;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.RandomAccess;
@@ -61,8 +64,8 @@ final class MessageAdapter<M extends Message> {
     MessageAdapter<? extends Message> messageAdapter;
     EnumAdapter<? extends ProtoEnum> enumAdapter;
 
-    private final Field messageField;
-    private final Field builderField;
+    final Field messageField;
+    final Field builderField;
 
     @SuppressWarnings("unchecked")
     private FieldInfo(int tag, String name, Datatype datatype, Label label, boolean redacted,
@@ -103,8 +106,27 @@ final class MessageAdapter<M extends Message> {
     }
   }
 
+  Builder<M> newBuilder(M message) {
+    try {
+      Constructor<Builder<M>> constructor = builderType.getConstructor(messageType);
+      return constructor.newInstance(message);
+    } catch (NoSuchMethodException e) {
+      throw new AssertionError(e);
+    } catch (IllegalAccessException e) {
+      throw new AssertionError(e);
+    } catch (InvocationTargetException e) {
+      throw new AssertionError(e);
+    } catch (InstantiationException e) {
+      throw new AssertionError(e);
+    }
+  }
+
   Collection<FieldInfo> getFields() {
     return fieldInfoMap.values();
+  }
+
+  public Collection<FieldInfo> getMessageFields() {
+    return messageFields;
   }
 
   FieldInfo getField(String name) {
@@ -136,6 +158,14 @@ final class MessageAdapter<M extends Message> {
   private final Class<Builder<M>> builderType;
   private final Map<String, Integer> tagMap = new LinkedHashMap<String, Integer>();
   private final TagMap<FieldInfo> fieldInfoMap;
+  private final Set<FieldInfo> messageFields = new LinkedHashSet<FieldInfo>();
+  private final List<Interceptor> interceptors;
+
+
+  // During the interception process, if we discover that no fields of this class can ever
+  // require interception, this will be set to true in order to short-circuit the process
+  // for future attempts.
+  boolean hasNoInterceptedFields = false;
 
   /** Cache information about the Message class and its mapping to proto wire format. */
   MessageAdapter(Wire wire, Class<M> messageType) {
@@ -159,12 +189,45 @@ final class MessageAdapter<M extends Message> {
         } else if (datatype == Datatype.MESSAGE) {
           enumOrMessageType = getMessageType(messageField);
         }
-        map.put(tag, new FieldInfo(tag, name, datatype, annotation.label(), annotation.redacted(),
-            enumOrMessageType, messageField, getBuilderField(name)));
+        FieldInfo fieldInfo = new FieldInfo(tag, name, datatype, annotation.label(),
+            annotation.redacted(), enumOrMessageType, messageField, getBuilderField(name));
+        map.put(tag, fieldInfo);
+
+        if (datatype == Datatype.MESSAGE) {
+          messageFields.add(fieldInfo);
+        }
       }
     }
 
     fieldInfoMap = TagMap.of(map);
+    this.interceptors = interceptorsOfInterest();
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<Interceptor> interceptorsOfInterest() {
+    if (wire.interceptorFactories.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    List<Interceptor> interceptors = new ArrayList<Interceptor>();
+    for (InterceptorFactory interceptorFactory : wire.interceptorFactories) {
+      Collection<Extension<?, ?>> extensions;
+      if (messageType.isAssignableFrom(ExtendableMessage.class)) {
+        extensions = wire.getExtensions((Class<ExtendableMessage<?>>) messageType);
+      } else {
+        extensions = Collections.emptyList();
+      }
+      Interceptor interceptor = interceptorFactory.interceptorFor(messageType, extensions);
+      if (interceptor != null) {
+        interceptors.add(interceptor);
+      }
+    }
+
+    return interceptors;
+  }
+
+  public List<Interceptor> getInterceptors() {
+    return interceptors;
   }
 
   @SuppressWarnings("unchecked")
@@ -192,7 +255,7 @@ final class MessageAdapter<M extends Message> {
     if (Message.class.isAssignableFrom(fieldType)) {
       return (Class<Message>) fieldType;
     } else if (List.class.isAssignableFrom(fieldType)) {
-      // Retrieve the declare element type of the list
+      // Retrieve the declared element type of the list
       Type type = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
       if (type instanceof Class<?> && Message.class.isAssignableFrom((Class<?>) type)) {
         return (Class<Message>) type;

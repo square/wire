@@ -204,6 +204,21 @@ public class WireCompilerTest {
     testProto(sources, outputs);
   }
 
+  @Test public void testInterceptors() throws Exception {
+    String[] sources = {
+        "interceptors.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/interceptors/Plaintext.java",
+        "com/squareup/wire/protos/interceptors/Encrypted.java",
+        "com/squareup/wire/protos/interceptors/Unencrypted.java",
+        "com/squareup/wire/protos/interceptors/EncryptedField.java",
+        "com/squareup/wire/protos/interceptors/Outer.java",
+        "com/squareup/wire/protos/interceptors/Ext_interceptors.java"
+    };
+    testProto(sources, outputs);
+  }
+
   @Test public void testSimpleService() throws Exception {
     String[] sources = {
         "request_response.proto",

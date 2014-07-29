@@ -16,6 +16,10 @@
     <property name="checkFormat" value="$1"/>
   </module>
 
+  <module name="SuppressionFilter">
+    <property name="file" value="suppressions.xml" />
+  </module>
+
   <module name="NewlineAtEndOfFile"/>
   <module name="FileLength"/>
   <module name="FileTabCharacter"/>

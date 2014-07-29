@@ -15,6 +15,8 @@
  */
 package com.squareup.wire;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -53,5 +55,16 @@ final class ExtensionRegistry {
       getExtension(Class<T> messageClass, String name) {
     Map<String, Extension<?, ?>> nameMap = extensionsByName.get(messageClass);
     return nameMap == null ? null : (Extension<T, E>) nameMap.get(name);
+  }
+
+  @SuppressWarnings("unchecked")
+  public Collection<Extension<?, ?>> getExtensions(Class<? extends ExtendableMessage>
+      messageClass) {
+    Map<Integer, Extension<?, ?>> map = extensionsByTag.get(messageClass);
+    if (map == null) {
+      return Collections.emptyList();
+    } else {
+      return map.values();
+    }
   }
 }
