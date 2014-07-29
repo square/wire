@@ -83,7 +83,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
       args.add("--roots=" + Joiner.on(',').join(roots));
     }
     if (serviceWriter != null) {
-        args.add("--service_writer=" + serviceWriter);
+      args.add("--service_writer=" + serviceWriter);
     }
     Collections.addAll(args, protoFiles);
 
