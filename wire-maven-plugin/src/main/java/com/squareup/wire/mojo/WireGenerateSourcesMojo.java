@@ -36,6 +36,9 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.roots")
   private String[] roots;
 
+  @Parameter(property = "wire.serviceWriter")
+  private String serviceWriter;
+
   @Parameter(property = "wire.registryClass")
   private String registryClass;
 
@@ -78,6 +81,9 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     }
     if (roots != null && roots.length > 0) {
       args.add("--roots=" + Joiner.on(',').join(roots));
+    }
+    if (serviceWriter != null) {
+        args.add("--service_writer=" + serviceWriter);
     }
     Collections.addAll(args, protoFiles);
 
