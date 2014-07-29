@@ -14,9 +14,13 @@ public final class VersionOne extends Message {
   @ProtoField(tag = 1, type = INT32)
   public final Integer i;
 
+  public VersionOne(Integer i) {
+    this.i = i;
+  }
+
   private VersionOne(Builder builder) {
-    super(builder);
-    this.i = builder.i;
+    this(builder.i);
+    setBuilder(builder);
   }
 
   @Override

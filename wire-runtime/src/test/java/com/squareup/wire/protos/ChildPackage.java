@@ -15,9 +15,13 @@ public final class ChildPackage extends Message {
   @ProtoField(tag = 1, type = ENUM)
   public final ForeignEnum inner_foreign_enum;
 
+  public ChildPackage(ForeignEnum inner_foreign_enum) {
+    this.inner_foreign_enum = inner_foreign_enum;
+  }
+
   private ChildPackage(Builder builder) {
-    super(builder);
-    this.inner_foreign_enum = builder.inner_foreign_enum;
+    this(builder.inner_foreign_enum);
+    setBuilder(builder);
   }
 
   @Override
@@ -47,6 +51,7 @@ public final class ChildPackage extends Message {
     }
 
     public Builder inner_foreign_enum(ForeignEnum inner_foreign_enum) {
+      if (inner_foreign_enum == ForeignEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.inner_foreign_enum = inner_foreign_enum;
       return this;
     }

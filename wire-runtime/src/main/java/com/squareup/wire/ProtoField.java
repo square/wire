@@ -50,4 +50,9 @@ public @interface ProtoField {
    * True if the field is marked as deprecated.
    */
   boolean deprecated() default false;
+
+  /**
+   * Redacted fields are omitted from toString() to protect sensitive data. Defaults to false.
+   */
+  boolean redacted() default false;
 }

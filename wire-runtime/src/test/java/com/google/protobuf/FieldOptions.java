@@ -72,13 +72,17 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
   @ProtoField(tag = 999, label = REPEATED)
   public final List<UninterpretedOption> uninterpreted_option;
 
+  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option) {
+    this.ctype = ctype;
+    this.packed = packed;
+    this.deprecated = deprecated;
+    this.experimental_map_key = experimental_map_key;
+    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+  }
+
   private FieldOptions(Builder builder) {
-    super(builder);
-    this.ctype = builder.ctype;
-    this.packed = builder.packed;
-    this.deprecated = builder.deprecated;
-    this.experimental_map_key = builder.experimental_map_key;
-    this.uninterpreted_option = immutableCopyOf(builder.uninterpreted_option);
+    this(builder.ctype, builder.packed, builder.deprecated, builder.experimental_map_key, builder.uninterpreted_option);
+    setBuilder(builder);
   }
 
   @Override
@@ -186,7 +190,7 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      this.uninterpreted_option = uninterpreted_option;
+      this.uninterpreted_option = checkForNulls(uninterpreted_option);
       return this;
     }
 
@@ -202,15 +206,29 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     }
   }
 
-  public enum CType {
+  public enum CType
+      implements ProtoEnum {
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE),
+
     /**
      * Default mode.
      */
-    @ProtoEnum(0)
-    STRING,
-    @ProtoEnum(1)
-    CORD,
-    @ProtoEnum(2)
-    STRING_PIECE,
+    STRING(0),
+    CORD(1),
+    STRING_PIECE(2);
+
+    private final int value;
+
+    private CType(int value) {
+      this.value = value;
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
   }
 }

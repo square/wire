@@ -10,9 +10,13 @@ public final class H extends Message {
   @ProtoField(tag = 1)
   public final E.F ef;
 
+  public H(E.F ef) {
+    this.ef = ef;
+  }
+
   private H(Builder builder) {
-    super(builder);
-    this.ef = builder.ef;
+    this(builder.ef);
+    setBuilder(builder);
   }
 
   @Override

@@ -42,6 +42,7 @@ public final class SimpleMessage extends Message {
    * An optional NestedMessage, deprecated
    */
   @ProtoField(tag = 2, deprecated = true)
+  @Deprecated
   public final NestedMessage optional_nested_msg;
 
   /**
@@ -68,6 +69,7 @@ public final class SimpleMessage extends Message {
     label = REPEATED,
     deprecated = true
   )
+  @Deprecated
   public final List<Double> repeated_double;
 
   /**
@@ -106,20 +108,24 @@ public final class SimpleMessage extends Message {
   @ProtoField(tag = 12, type = STRING)
   public final String o;
 
+  public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String _package, String result, String other, String o) {
+    this.optional_int32 = optional_int32;
+    this.optional_nested_msg = optional_nested_msg;
+    this.optional_external_msg = optional_external_msg;
+    this.default_nested_enum = default_nested_enum;
+    this.required_int32 = required_int32;
+    this.repeated_double = immutableCopyOf(repeated_double);
+    this.default_foreign_enum = default_foreign_enum;
+    this.no_default_foreign_enum = no_default_foreign_enum;
+    this._package = _package;
+    this.result = result;
+    this.other = other;
+    this.o = o;
+  }
+
   private SimpleMessage(Builder builder) {
-    super(builder);
-    this.optional_int32 = builder.optional_int32;
-    this.optional_nested_msg = builder.optional_nested_msg;
-    this.optional_external_msg = builder.optional_external_msg;
-    this.default_nested_enum = builder.default_nested_enum;
-    this.required_int32 = builder.required_int32;
-    this.repeated_double = immutableCopyOf(builder.repeated_double);
-    this.default_foreign_enum = builder.default_foreign_enum;
-    this.no_default_foreign_enum = builder.no_default_foreign_enum;
-    this._package = builder._package;
-    this.result = builder.result;
-    this.other = builder.other;
-    this.o = builder.o;
+    this(builder.optional_int32, builder.optional_nested_msg, builder.optional_external_msg, builder.default_nested_enum, builder.required_int32, builder.repeated_double, builder.default_foreign_enum, builder.no_default_foreign_enum, builder._package, builder.result, builder.other, builder.o);
+    setBuilder(builder);
   }
 
   @Override
@@ -208,6 +214,7 @@ public final class SimpleMessage extends Message {
     /**
      * An optional NestedMessage, deprecated
      */
+    @Deprecated
     public Builder optional_nested_msg(NestedMessage optional_nested_msg) {
       this.optional_nested_msg = optional_nested_msg;
       return this;
@@ -222,6 +229,7 @@ public final class SimpleMessage extends Message {
     }
 
     public Builder default_nested_enum(NestedEnum default_nested_enum) {
+      if (default_nested_enum == NestedEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.default_nested_enum = default_nested_enum;
       return this;
     }
@@ -237,8 +245,9 @@ public final class SimpleMessage extends Message {
     /**
      * A repeated double, deprecated
      */
+    @Deprecated
     public Builder repeated_double(List<Double> repeated_double) {
-      this.repeated_double = repeated_double;
+      this.repeated_double = checkForNulls(repeated_double);
       return this;
     }
 
@@ -246,6 +255,7 @@ public final class SimpleMessage extends Message {
      * enum from another package with an explicit default
      */
     public Builder default_foreign_enum(ForeignEnum default_foreign_enum) {
+      if (default_foreign_enum == ForeignEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.default_foreign_enum = default_foreign_enum;
       return this;
     }
@@ -254,6 +264,7 @@ public final class SimpleMessage extends Message {
      * enum from another package without an explicit default
      */
     public Builder no_default_foreign_enum(ForeignEnum no_default_foreign_enum) {
+      if (no_default_foreign_enum == ForeignEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.no_default_foreign_enum = no_default_foreign_enum;
       return this;
     }
@@ -307,9 +318,13 @@ public final class SimpleMessage extends Message {
     @ProtoField(tag = 1, type = INT32)
     public final Integer bb;
 
+    public NestedMessage(Integer bb) {
+      this.bb = bb;
+    }
+
     private NestedMessage(Builder builder) {
-      super(builder);
-      this.bb = builder.bb;
+      this(builder.bb);
+      setBuilder(builder);
     }
 
     @Override
@@ -353,12 +368,26 @@ public final class SimpleMessage extends Message {
     }
   }
 
-  public enum NestedEnum {
-    @ProtoEnum(1)
-    FOO,
-    @ProtoEnum(2)
-    BAR,
-    @ProtoEnum(3)
-    BAZ,
+  public enum NestedEnum
+      implements ProtoEnum {
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE),
+
+    FOO(1),
+    BAR(2),
+    BAZ(3);
+
+    private final int value;
+
+    private NestedEnum(int value) {
+      this.value = value;
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
   }
 }

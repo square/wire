@@ -79,5 +79,15 @@ public class CustomOptionsTest {
     Assert.assertEquals(Arrays.asList(FOO, BAZ),
         option_five.getExtension(Ext_custom_options.rep));
 
+    Assert.assertEquals(new Integer(17), FooBar.FooBarBazEnum.FOO.enum_value_option);
+    Assert.assertEquals(new Integer(99), FooBar.FooBarBazEnum.FOO.complex_enum_value_option.serial);
+    Assert.assertEquals(null, FooBar.FooBarBazEnum.FOO.foreign_enum_value_option);
+    Assert.assertEquals(null, FooBar.FooBarBazEnum.BAR.enum_value_option);
+    Assert.assertEquals(Boolean.TRUE, FooBar.FooBarBazEnum.BAR.foreign_enum_value_option);
+    Assert.assertEquals(new Integer(18), FooBar.FooBarBazEnum.BAZ.enum_value_option);
+    Assert.assertEquals(Boolean.FALSE, FooBar.FooBarBazEnum.BAZ.foreign_enum_value_option);
+
+    Assert.assertEquals(Boolean.TRUE,
+        FooBar.FooBarBazEnum.ENUM_OPTIONS.getExtension(Ext_custom_options.enum_option));
   }
 }

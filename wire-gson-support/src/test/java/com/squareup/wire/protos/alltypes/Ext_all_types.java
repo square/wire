@@ -2,9 +2,9 @@
 // Source file: ../wire-runtime/src/test/proto/all_types.proto
 package com.squareup.wire.protos.alltypes;
 
-import com.squareup.wire.ByteString;
 import com.squareup.wire.Extension;
 import java.util.List;
+import okio.ByteString;
 
 public final class Ext_all_types {
 

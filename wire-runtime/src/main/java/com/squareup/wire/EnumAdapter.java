@@ -15,40 +15,56 @@
  */
 package com.squareup.wire;
 
-import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
- * Converts values of an enum to and from integers using {@link ProtoEnum}
- * annotations.
+ * Converts values of an enum to and from integers.
  */
-final class EnumAdapter<E extends Enum> {
-  private final Map<Integer, E> fromInt = new LinkedHashMap<Integer, E>();
-  private final Map<E, Integer> toInt = new LinkedHashMap<E, Integer>();
+final class EnumAdapter<E extends ProtoEnum> {
+  private static final Comparator<ProtoEnum> COMPARATOR = new Comparator<ProtoEnum>() {
+    @Override public int compare(ProtoEnum o1, ProtoEnum o2) {
+      return o1.getValue() - o2.getValue();
+    }
+  };
+
+  private final Class<E> type;
+
+  private final int[] values;
+  private final E[] constants;
+  private final boolean isDense;
 
   EnumAdapter(Class<E> type) {
-    // Record values for each constant annotated with '@ProtoEnum'.
-    for (E value : type.getEnumConstants()) {
-      try {
-        Field f = type.getField(value.name());
-        if (f.isAnnotationPresent(ProtoEnum.class)) {
-          ProtoEnum annotation = f.getAnnotation(ProtoEnum.class);
-          int tag = annotation.value();
-          fromInt.put(tag, value);
-          toInt.put(value, tag);
-        }
-      } catch (NoSuchFieldException e) {
-        throw new RuntimeException(e);
+    this.type = type;
+
+    constants = type.getEnumConstants();
+    Arrays.sort(constants, COMPARATOR);
+
+    int length = constants.length;
+    if (constants[0].getValue() == 1 && constants[length - 1].getValue() == length) {
+      // Values completely fill the range from 1..length
+      isDense = true;
+      values = null;
+    } else {
+      isDense = false;
+      values = new int[length];
+      for (int i = 0; i < length; i++) {
+        values[i] = constants[i].getValue();
       }
     }
   }
 
   public int toInt(E e) {
-    return toInt.get(e);
+    return e.getValue();
   }
 
   public E fromInt(int value) {
-    return fromInt.get(value);
+    int index = isDense ? value - 1 : Arrays.binarySearch(values, value);
+    try {
+      return constants[index];
+    } catch (IndexOutOfBoundsException e) {
+      throw new IllegalArgumentException(
+          "Unknown enum tag " + value + " for " + type.getCanonicalName());
+    }
   }
 }

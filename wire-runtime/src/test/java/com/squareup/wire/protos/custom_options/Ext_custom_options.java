@@ -2,6 +2,8 @@
 // Source file: ../wire-runtime/src/test/proto/custom_options.proto
 package com.squareup.wire.protos.custom_options;
 
+import com.google.protobuf.EnumOptions;
+import com.google.protobuf.EnumValueOptions;
 import com.google.protobuf.FieldOptions;
 import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Extension;
@@ -61,6 +63,21 @@ public final class Ext_custom_options {
       .messageExtending(FooBar.class, FieldOptions.class)
       .setName("squareup.protos.custom_options.my_field_option_four")
       .setTag(60004)
+      .buildOptional();
+  public static final Extension<EnumValueOptions, Integer> enum_value_option = Extension
+      .int32Extending(EnumValueOptions.class)
+      .setName("squareup.protos.custom_options.enum_value_option")
+      .setTag(70000)
+      .buildOptional();
+  public static final Extension<EnumValueOptions, FooBar.More> complex_enum_value_option = Extension
+      .messageExtending(FooBar.More.class, EnumValueOptions.class)
+      .setName("squareup.protos.custom_options.complex_enum_value_option")
+      .setTag(70001)
+      .buildOptional();
+  public static final Extension<EnumOptions, Boolean> enum_option = Extension
+      .boolExtending(EnumOptions.class)
+      .setName("squareup.protos.custom_options.enum_option")
+      .setTag(71000)
       .buildOptional();
   public static final Extension<FooBar, FooBar.FooBarBazEnum> ext = Extension
       .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)

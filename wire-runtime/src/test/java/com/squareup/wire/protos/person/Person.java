@@ -45,12 +45,16 @@ public final class Person extends Message {
   @ProtoField(tag = 4, label = REPEATED)
   public final List<PhoneNumber> phone;
 
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
+    this.name = name;
+    this.id = id;
+    this.email = email;
+    this.phone = immutableCopyOf(phone);
+  }
+
   private Person(Builder builder) {
-    super(builder);
-    this.name = builder.name;
-    this.id = builder.id;
-    this.email = builder.email;
-    this.phone = immutableCopyOf(builder.phone);
+    this(builder.name, builder.id, builder.email, builder.phone);
+    setBuilder(builder);
   }
 
   @Override
@@ -124,7 +128,7 @@ public final class Person extends Message {
      * A list of the customer's phone numbers.
      */
     public Builder phone(List<PhoneNumber> phone) {
-      this.phone = phone;
+      this.phone = checkForNulls(phone);
       return this;
     }
 
@@ -135,16 +139,30 @@ public final class Person extends Message {
     }
   }
 
-  public enum PhoneType {
-    @ProtoEnum(0)
-    MOBILE,
-    @ProtoEnum(1)
-    HOME,
+  public enum PhoneType
+      implements ProtoEnum {
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE),
+
+    MOBILE(0),
+    HOME(1),
     /**
      * Could be phone or fax.
      */
-    @ProtoEnum(2)
-    WORK,
+    WORK(2);
+
+    private final int value;
+
+    private PhoneType(int value) {
+      this.value = value;
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
   }
 
   public static final class PhoneNumber extends Message {
@@ -164,10 +182,14 @@ public final class Person extends Message {
     @ProtoField(tag = 2, type = ENUM)
     public final PhoneType type;
 
+    public PhoneNumber(String number, PhoneType type) {
+      this.number = number;
+      this.type = type;
+    }
+
     private PhoneNumber(Builder builder) {
-      super(builder);
-      this.number = builder.number;
-      this.type = builder.type;
+      this(builder.number, builder.type);
+      setBuilder(builder);
     }
 
     @Override
@@ -217,6 +239,7 @@ public final class Person extends Message {
        * The type of phone stored here.
        */
       public Builder type(PhoneType type) {
+        if (type == PhoneType.__UNDEFINED__) throw new IllegalArgumentException();
         this.type = type;
         return this;
       }

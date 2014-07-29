@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import okio.ByteString;
 
 /**
  * Superclass for protocol buffer messages.
@@ -135,23 +136,29 @@ public abstract class Message {
   /** Set to null until a field is added. */
   private transient UnknownFieldMap unknownFields;
 
-  /** If >= 0, the serialized size of this message. */
-  private transient int cachedSerializedSize = -1;
+  /** False upon construction or deserialization. */
+  private transient boolean haveCachedSerializedSize;
+
+  /** If {@code haveCachedSerializedSize} is true, the serialized size of this message. */
+  private transient int cachedSerializedSize;
 
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected transient int hashCode = 0;
 
+  protected Message() {
+  }
+
   /**
-   * Constructs a Message, initialized with any unknown field data stored in the given
-   * {@code Builder}.
+   * Initializes any unknown field data to that stored in the given {@code Builder}.
    */
-  protected Message(Builder builder) {
+  protected void setBuilder(Builder builder) {
     if (builder.unknownFieldMap != null) {
       unknownFields = new UnknownFieldMap(builder.unknownFieldMap);
     }
   }
 
-  Collection<List<UnknownFieldMap.FieldValue>> unknownFields() {
+  // Increase visibility for testing
+  protected Collection<List<UnknownFieldMap.FieldValue>> unknownFields() {
     return unknownFields == null ? Collections.<List<UnknownFieldMap.FieldValue>>emptySet()
         : unknownFields.fieldMap.values();
   }
@@ -170,31 +177,33 @@ public abstract class Message {
   protected static <T> List<T> immutableCopyOf(List<T> source) {
     if (source == null) {
       return Collections.emptyList();
+    } else if (source instanceof MessageAdapter.ImmutableList) {
+      return source;
     }
     return Collections.unmodifiableList(new ArrayList<T>(source));
   }
 
   /**
    * Returns the integer value tagged associated with the given enum instance.
-   * If the enum value is not annotated with a {@link ProtoEnum} annotation, an exception
+   * If the enum instance is not initialized with an integer tag value, an exception
    * will be thrown.
    *
    * @param <E> the enum class type
    */
   @SuppressWarnings("unchecked")
-  public static <E extends Enum> int intFromEnum(E value) {
+  public static <E extends Enum & ProtoEnum> int intFromEnum(E value) {
     EnumAdapter<E> adapter = WIRE.enumAdapter((Class<E>) value.getClass());
     return adapter.toInt(value);
   }
 
   /**
    * Returns the enumerated value tagged with the given integer value for the
-   * given enum class. If no enum value in the given class is annotated with a {@link ProtoEnum}
-   * annotation having the given value, null is returned.
+   * given enum class. If no enum value in the given class is initialized
+   * with the given integer tag value, an exception will be thrown.
    *
    * @param <E> the enum class type
    */
-  public static <E extends Enum> E enumFromInt(Class<E> enumClass, int value) {
+  public static <E extends Enum & ProtoEnum> E enumFromInt(Class<E> enumClass, int value) {
     EnumAdapter<E> adapter = WIRE.enumAdapter(enumClass);
     return adapter.fromInt(value);
   }
@@ -230,9 +239,10 @@ public abstract class Message {
 
   @SuppressWarnings("unchecked")
   public int getSerializedSize() {
-    if (cachedSerializedSize < 0) {
-      cachedSerializedSize =
-          WIRE.messageAdapter((Class<Message>) getClass()).getSerializedSize(this);
+    if (!haveCachedSerializedSize) {
+      MessageAdapter<Message> adapter = WIRE.messageAdapter((Class<Message>) getClass());
+      cachedSerializedSize = adapter.getSerializedSize(this);
+      haveCachedSerializedSize = true;
     }
     return cachedSerializedSize;
   }
@@ -324,6 +334,42 @@ public abstract class Message {
      */
     public void checkRequiredFields() {
       WIRE.builderAdapter(getClass()).checkRequiredFields(this);
+    }
+
+    /**
+     * Checks incoming {@code List}s for null elements and throws an exception if one is
+     * present. A null list is allowed.
+     *
+     * @return the incoming list.
+     * @throws NullPointerException if a null element is present in the list.
+     */
+    protected static <T> List<T> checkForNulls(List<T> elements) {
+      if (elements != null && !elements.isEmpty()) {
+        int index = 0;
+        for (T element : elements) {
+          if (element == null) {
+            throw new NullPointerException("Element at index " + index + " is null");
+          }
+          index++;
+        }
+      }
+      return elements;
+    }
+
+    protected static <E extends ProtoEnum> List<E> checkForNullOrUndefined(List<E> elements) {
+      if (elements != null && !elements.isEmpty()) {
+        int index = 0;
+        for (E element : elements) {
+          if (element == null) {
+            throw new NullPointerException("Element at index " + index + " is null");
+          }
+          if (element.getValue() == ProtoEnum.UNDEFINED_VALUE) {
+            throw new IllegalArgumentException("Element at index " + index + " is __UNDEFINED__");
+          }
+          index++;
+        }
+      }
+      return elements;
     }
 
     /**

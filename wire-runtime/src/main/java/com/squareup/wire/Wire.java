@@ -22,6 +22,10 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import okio.Source;
+
+import static com.squareup.wire.Preconditions.checkArgument;
+import static com.squareup.wire.Preconditions.checkNotNull;
 
 /**
  * Encode and decode Wire protocol buffers.
@@ -34,8 +38,8 @@ public final class Wire {
       BuilderAdapter<? extends Message.Builder>> builderAdapters =
           new LinkedHashMap<Class<? extends Message.Builder>,
               BuilderAdapter<? extends Message.Builder>>();
-  private final Map<Class<? extends Enum>, EnumAdapter<? extends Enum>> enumAdapters =
-      new LinkedHashMap<Class<? extends Enum>, EnumAdapter<? extends Enum>>();
+  private final Map<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>> enumAdapters =
+      new LinkedHashMap<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>>();
 
   // Visible to MessageAdapter
   final ExtensionRegistry registry;
@@ -101,7 +105,7 @@ public final class Wire {
    * Returns an enum adapter for {@code enumClass}.
    */
   @SuppressWarnings("unchecked")
-  synchronized <E extends Enum> EnumAdapter<E> enumAdapter(Class<E> enumClass) {
+  synchronized <E extends ProtoEnum> EnumAdapter<E> enumAdapter(Class<E> enumClass) {
     EnumAdapter<E> adapter = (EnumAdapter<E>) enumAdapters.get(enumClass);
     if (adapter == null) {
       adapter = new EnumAdapter<E>(enumClass);
@@ -115,6 +119,8 @@ public final class Wire {
    * it.
    */
   public <M extends Message> M parseFrom(byte[] bytes, Class<M> messageClass) throws IOException {
+    checkNotNull(bytes, "bytes");
+    checkNotNull(messageClass, "messageClass");
     return parseFrom(WireInput.newInstance(bytes), messageClass);
   }
 
@@ -124,6 +130,11 @@ public final class Wire {
    */
   public <M extends Message> M parseFrom(byte[] bytes, int offset, int count, Class<M> messageClass)
       throws IOException {
+    checkNotNull(bytes, "bytes");
+    checkArgument(offset >= 0, "offset < 0");
+    checkArgument(count >= 0, "count < 0");
+    checkArgument(offset + count <= bytes.length, "offset + count > bytes");
+    checkNotNull(messageClass, "messageClass");
     return parseFrom(WireInput.newInstance(bytes, offset, count), messageClass);
   }
 
@@ -132,6 +143,18 @@ public final class Wire {
    */
   public <M extends Message> M parseFrom(InputStream input, Class<M> messageClass)
       throws IOException {
+    checkNotNull(input, "input");
+    checkNotNull(messageClass, "messageClass");
+    return parseFrom(WireInput.newInstance(input), messageClass);
+  }
+
+  /**
+   * Reads a message of type {@code messageClass} from the given {@link Source} and returns it.
+   */
+  public <M extends Message> M parseFrom(Source input, Class<M> messageClass)
+      throws IOException {
+    checkNotNull(input, "input");
+    checkNotNull(messageClass, "messageClass");
     return parseFrom(WireInput.newInstance(input), messageClass);
   }
 

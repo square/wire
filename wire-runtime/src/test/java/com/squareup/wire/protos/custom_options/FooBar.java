@@ -2,6 +2,7 @@
 // Source file: ../wire-runtime/src/test/proto/custom_options.proto
 package com.squareup.wire.protos.custom_options;
 
+import com.google.protobuf.EnumOptions;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
@@ -89,15 +90,19 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   @ProtoField(tag = 7, label = REPEATED)
   public final List<FooBar> nested;
 
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested) {
+    this.foo = foo;
+    this.bar = bar;
+    this.baz = baz;
+    this.qux = qux;
+    this.fred = immutableCopyOf(fred);
+    this.daisy = daisy;
+    this.nested = immutableCopyOf(nested);
+  }
+
   private FooBar(Builder builder) {
-    super(builder);
-    this.foo = builder.foo;
-    this.bar = builder.bar;
-    this.baz = builder.baz;
-    this.qux = builder.qux;
-    this.fred = immutableCopyOf(builder.fred);
-    this.daisy = builder.daisy;
-    this.nested = immutableCopyOf(builder.nested);
+    this(builder.foo, builder.bar, builder.baz, builder.qux, builder.fred, builder.daisy, builder.nested);
+    setBuilder(builder);
   }
 
   @Override
@@ -178,7 +183,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     public Builder fred(List<Float> fred) {
-      this.fred = fred;
+      this.fred = checkForNulls(fred);
       return this;
     }
 
@@ -188,7 +193,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     public Builder nested(List<FooBar> nested) {
-      this.nested = nested;
+      this.nested = checkForNulls(nested);
       return this;
     }
 
@@ -211,9 +216,13 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     @ProtoField(tag = 1, type = ENUM)
     public final FooBarBazEnum value;
 
+    public Nested(FooBarBazEnum value) {
+      this.value = value;
+    }
+
     private Nested(Builder builder) {
-      super(builder);
-      this.value = builder.value;
+      this(builder.value);
+      setBuilder(builder);
     }
 
     @Override
@@ -243,6 +252,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       }
 
       public Builder value(FooBarBazEnum value) {
+        if (value == FooBarBazEnum.__UNDEFINED__) throw new IllegalArgumentException();
         this.value = value;
         return this;
       }
@@ -254,12 +264,92 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
-  public enum FooBarBazEnum {
-    @ProtoEnum(1)
-    FOO,
-    @ProtoEnum(2)
-    BAR,
-    @ProtoEnum(3)
-    BAZ,
+  public static final class More extends Message {
+
+    public static final Integer DEFAULT_SERIAL = 0;
+
+    @ProtoField(tag = 1, type = INT32)
+    public final Integer serial;
+
+    public More(Integer serial) {
+      this.serial = serial;
+    }
+
+    private More(Builder builder) {
+      this(builder.serial);
+      setBuilder(builder);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (other == this) return true;
+      if (!(other instanceof More)) return false;
+      return equals(serial, ((More) other).serial);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = hashCode;
+      return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 0);
+    }
+
+    public static final class Builder extends Message.Builder<More> {
+
+      public Integer serial;
+
+      public Builder() {
+      }
+
+      public Builder(More message) {
+        super(message);
+        if (message == null) return;
+        this.serial = message.serial;
+      }
+
+      public Builder serial(Integer serial) {
+        this.serial = serial;
+        return this;
+      }
+
+      @Override
+      public More build() {
+        return new More(this);
+      }
+    }
+  }
+
+  public enum FooBarBazEnum
+      implements ProtoEnum {
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE, null, null, null),
+
+    FOO(1, new More.Builder()
+        .serial(99)
+        .build(), 17, null),
+    BAR(2, null, null, true),
+    BAZ(3, null, 18, false);
+
+    public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
+        .setExtension(Ext_custom_options.enum_option, true)
+        .build();
+
+    private final int value;
+    public final More complex_enum_value_option;
+    public final Integer enum_value_option;
+    public final Boolean foreign_enum_value_option;
+
+    private FooBarBazEnum(int value, More complex_enum_value_option, Integer enum_value_option, Boolean foreign_enum_value_option) {
+      this.value = value;
+      this.complex_enum_value_option = complex_enum_value_option;
+      this.enum_value_option = enum_value_option;
+      this.foreign_enum_value_option = foreign_enum_value_option;
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
   }
 }
