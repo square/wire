@@ -3,8 +3,10 @@ package com.squareup.wire.compiler.parser;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 import com.squareup.protoparser.Type;
@@ -17,8 +19,13 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -39,9 +46,8 @@ import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyProto
  * <li>{@link #addProto(Path) addProto} or {@link #addProtos(Iterable) addProtos} specifies which
  * proto files to parse. If no proto files are specified, all files under every directory will be
  * used.</li>
- * <li>{@link #addTypeRoot(String) addTypeRoot} or {@link #addTypeRoots(Iterable) addTypeRoots}
- * specifies which types to include. If no types are specified, all types in every proto file will
- * be used.</li>
+ * <li>{@link #addTypeRoot(String) addTypeRoot} specifies which types to include. If no types are
+ * specified, all types in every proto file will be used.</li>
  * </ul>
  * Given no data, an instance of this class will recursively find all files in the current working
  * directory, attempt to parse them as protocol buffer definitions, and verify that all of the
@@ -50,6 +56,22 @@ import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyProto
  * The API of this class is meant to mimic the builder pattern and should be used as such.
  */
 public final class WireParser {
+
+  public static class ParsedInput {
+    public final Set<ProtoFile> protoFiles;
+    public final Set<String> allTypes;
+    public final Map<String, String> enumTypes;
+    public final List<String> enumOptions;
+
+    public ParsedInput(Set<ProtoFile> protoFiles, Set<String> allTypes,
+        Map<String, String> enumTypes, List<String> enumOptions) {
+      this.protoFiles = Collections.unmodifiableSet(protoFiles);
+      this.allTypes = Collections.unmodifiableSet(allTypes);
+      this.enumTypes = Collections.unmodifiableMap(enumTypes);
+      this.enumOptions = Collections.unmodifiableList(enumOptions);
+    }
+  }
+
   /**
    * Create an instance of {@link WireParser} using the {@link FileSystems#getDefault() default
    * file system}.
@@ -67,6 +89,8 @@ public final class WireParser {
   private final Set<Path> directories = new LinkedHashSet<>();
   private final Set<Path> protos = new LinkedHashSet<>();
   private final Set<String> types = new LinkedHashSet<>();
+  private final List<String> enumOptions = new ArrayList<>();
+  private boolean emitOptions = true;
 
   private WireParser(FileSystem fs) {
     this.fs = fs;
@@ -110,6 +134,16 @@ public final class WireParser {
     return this;
   }
 
+  public WireParser addEnumOption(String enumOption) {
+    enumOptions.add(enumOption);
+    return this;
+  }
+
+  public WireParser setNoOptions() {
+    emitOptions = false;
+    return this;
+  }
+
   /**
    * Add a fully-qualified type to include in the parsed data. If specified, only these types and
    * their dependencies will be included. This allows for filtering message-heavy proto files such
@@ -123,19 +157,6 @@ public final class WireParser {
   }
 
   /**
-   * Add fully-qualified types to include in the parsed data. If specified, only these types and
-   * their dependencies will be included. This allows for filtering message-heavy proto files such
-   * that only desired message types are generated.
-   */
-  public WireParser addTypeRoots(Iterable<String> types) {
-    checkNotNull(types, "Types must not be null.");
-    for (String type : types) {
-      addTypeRoot(type);
-    }
-    return this;
-  }
-
-  /**
    * Parse the supplied protos into an object model using the supplied information or their
    * respective defaults.
    * <p>
@@ -143,7 +164,7 @@ public final class WireParser {
    * files have been specified, every file in the specified directories will be used. If no types
    * have been specified, every type in the specified proto files will be used.
    */
-  public Set<ProtoFile> parse() throws IOException {
+  public ParsedInput parse() throws IOException {
     validateInputFiles();
 
     Set<Path> directories = getOrFindDirectories();
@@ -156,7 +177,9 @@ public final class WireParser {
     if (!types.isEmpty()) {
       protoFiles = RootsFilter.filter(protoFiles, types);
     }
-    return protoFiles;
+
+    Map<String, String> enumTypes = collectEnumTypes(protoFiles);
+    return new ParsedInput(protoFiles, allTypes, enumTypes, enumOptions);
   }
 
   /** Verify all directories and protos exist and are valid file types. */
@@ -219,7 +242,7 @@ public final class WireParser {
       seenProtos.add(proto);
 
       String protoContent = new String(Files.readAllBytes(proto), Charsets.UTF_8);
-      ProtoFile protoFile = ProtoSchemaParser.parse(proto.getFileName().toString(), protoContent);
+      ProtoFile protoFile = ProtoSchemaParser.parse(proto.toString(), protoContent);
       protoFiles.add(protoFile);
 
       // Queue all unseen dependencies to be resolved.
@@ -255,35 +278,39 @@ public final class WireParser {
   }
 
   /** Aggregate a set of all fully-qualified types contained in the supplied proto files. */
-  static Set<String> collectAllTypes(Set<ProtoFile> protoFiles) {
-    Set<String> types = new LinkedHashSet<>();
+  static Set<String> collectAllTypes(final Set<ProtoFile> protoFiles) {
+    final Set<String> types = new LinkedHashSet<>();
+    new AllTypesVisitor(protoFiles) {
+      @Override public void visitType(Type type) {
+        String typeFqName = type.getFullyQualifiedName();
 
-    // Seed the type resolution queue with all the top-level types from each proto file.
-    Deque<Type> typeQueue = new ArrayDeque<>();
-    for (ProtoFile protoFile : protoFiles) {
-      typeQueue.addAll(protoFile.getTypes());
-    }
-
-    while (!typeQueue.isEmpty()) {
-      Type type = typeQueue.removeFirst();
-      String typeFqName = type.getFullyQualifiedName();
-
-      // Check for fully-qualified type name collisions.
-      if (types.contains(typeFqName)) {
-        throw new IllegalStateException(
-            "Duplicate type " + typeFqName + " defined in " + Joiner.on(", ")
-                .join(Iterables.transform(protoFiles, new Function<ProtoFile, String>() {
-                  @Override public String apply(ProtoFile input) {
-                    return input.getFileName();
-                  }
-                }))
-        );
+        // Check for fully-qualified type name collisions.
+        if (types.contains(typeFqName)) {
+          throw new IllegalStateException(
+              "Duplicate type " + typeFqName + " defined in " + Joiner.on(", ")
+                  .join(Iterables.transform(protoFiles, new Function<ProtoFile, String>() {
+                    @Override public String apply(ProtoFile input) {
+                      return input.getFileName();
+                    }
+                  }))
+          );
+        }
+        types.add(typeFqName);
       }
-      types.add(typeFqName);
-
-      typeQueue.addAll(type.getNestedTypes());
-    }
+    }.visit();
 
     return ImmutableSet.copyOf(types);
+  }
+
+  static Map<String, String> collectEnumTypes(Set<ProtoFile> protoFiles) {
+    final Map<String, String> enumTypes = new LinkedHashMap<>();
+    new AllTypesVisitor(protoFiles) {
+      @Override public void visitEnumType(EnumType enumType) {
+        enumTypes.put(enumType.getFullyQualifiedName(),
+            ((EnumType) enumType).getValues().get(0).getName());
+      }
+    }.visit();
+
+    return ImmutableMap.copyOf(enumTypes);
   }
 }

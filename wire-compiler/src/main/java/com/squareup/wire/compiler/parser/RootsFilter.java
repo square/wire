@@ -1,6 +1,7 @@
 package com.squareup.wire.compiler.parser;
 
 import com.squareup.protoparser.EnumType;
+import com.squareup.protoparser.ExtendDeclaration;
 import com.squareup.protoparser.MessageType;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.Service;
@@ -28,23 +29,51 @@ import static com.squareup.protoparser.ScalarTypes.isScalarType;
  * </ol>
  */
 final class RootsFilter {
+
+  public static final String EXTEND = "extend@";
+
   /** Filter the protos to only include the specified types and their transitive dependencies. */
-  static Set<ProtoFile> filter(Set<ProtoFile> protoFiles, Set<String> roots) {
+  public static Set<ProtoFile> filter(Set<ProtoFile> protoFiles, Set<String> roots) {
+    Set<String> kept = new LinkedHashSet<>();
+
+    //roots = new LinkedHashSet<>(roots);
+    //
+    //// Preserve extensions used by options.
+    //roots.add("google.protobuf.EnumOptions");
+    //roots.add("google.protobuf.FieldOptions");
+    //roots.add("google.protobuf.MessageOptions");
+    //roots.add("google.protobuf.EnumValueOptions");
+    //roots.add(EXTEND + "google.protobuf.EnumOptions");
+    //roots.add(EXTEND + "google.protobuf.FieldOptions");
+    //roots.add(EXTEND + "google.protobuf.MessageOptions");
+    //roots.add(EXTEND + "google.protobuf.EnumValueOptions");
+
+    Set<String> serviceMethodRoots = new LinkedHashSet<>();
+    for (String root : roots) {
+      if (root.contains("#")) {
+        serviceMethodRoots.add(root);
+      }
+    }
+
     // Transform the set of proto files into a tree of nodes.
-    RootNode rootNode = new RootNode(protoFiles);
+    RootNode rootNode = new RootNode(protoFiles, serviceMethodRoots);
     Map<String, Node<?>> nodeMap = rootNode.asNodeMap();
 
     // Collect nodes to keep by starting at the supplied roots and transitively iterating out.
-    Set<Node<?>> nodesToKeep = new LinkedHashSet<>();
+    Set<Node<?>> typesToKeep = new LinkedHashSet<>();
     for (String root : roots) {
+      int hashIndex = root.indexOf('#');
+      if (hashIndex != -1) {
+        root = root.substring(0, hashIndex);
+      }
       if (!nodeMap.containsKey(root)) {
         throw new IllegalStateException("Unknown type " + root);
       }
-      nodeMap.get(root).keepNodes(nodesToKeep, nodeMap);
+      keep(root, typesToKeep, nodeMap, kept);
     }
 
     // Re-assemble all of the marked nodes back into a set of proto files.
-    return rootNode.collectKeptNodes(nodesToKeep);
+    return rootNode.collectKeptNodes(typesToKeep);
   }
 
   private static Node<?> nodeForType(Node<?> parent, Type type) {
@@ -87,24 +116,24 @@ final class RootsFilter {
     abstract T collectKeptNodes(Set<Node<?>> typesToKeep);
 
     /** Mark this node to be kept. This method should be overriden to keep any dependencies. */
-    void keepNodes(Set<Node<?>> typesToKeep, Map<String, Node<?>> nodeMap) {
+    void keepNodes(Set<Node<?>> typesToKeep, Map<String, Node<?>> nodeMap, Set<String> kept) {
       if (typesToKeep.contains(this)) {
         return;
       }
       typesToKeep.add(this);
       if (parent != null) {
-        parent.keepNodes(typesToKeep, nodeMap);
+        parent.keepNodes(typesToKeep, nodeMap, kept);
       }
     }
   }
 
   /** The root node which represents set of {@link ProtoFile} objects. */
   private static class RootNode extends Node<Set<ProtoFile>> {
-    RootNode(Set<ProtoFile> protoFiles) {
+    RootNode(Set<ProtoFile> protoFiles, Set<String> serviceMethodRoots) {
       super(null, null, protoFiles);
 
       for (ProtoFile protoFile : protoFiles) {
-        children.add(new ProtoFileNode(this, protoFile));
+        children.add(new ProtoFileNode(this, protoFile, serviceMethodRoots));
       }
     }
 
@@ -120,57 +149,128 @@ final class RootsFilter {
   }
 
   private static class ProtoFileNode extends Node<ProtoFile> {
-    ProtoFileNode(RootNode parent, ProtoFile protoFile) {
+    ProtoFileNode(RootNode parent, ProtoFile protoFile, Set<String> serviceMethodRoots) {
       super(parent, null, protoFile);
 
       for (Type type : protoFile.getTypes()) {
         children.add(nodeForType(this, type));
       }
       for (Service service : protoFile.getServices()) {
-        children.add(new ServiceNode(this, service));
+        if (shouldEmitService(serviceMethodRoots, service.getFullyQualifiedName())) {
+          children.add(new ServiceNode(this, service, serviceMethodRoots));
+        }
+      }
+      for (ExtendDeclaration extendDeclaration : protoFile.getExtendDeclarations()) {
+        children.add(new ExtendDeclarationNode(this, extendDeclaration));
       }
     }
 
     @Override ProtoFile collectKeptNodes(Set<Node<?>> typesToKeep) {
       List<Type> markedTypes = new ArrayList<>();
       List<Service> markedServices = new ArrayList<>();
+      List<ExtendDeclaration> markedExtendDeclarations = new ArrayList<>();
       for (Node<?> child : children) {
         if (typesToKeep.contains(child)) {
           if (child instanceof ServiceNode) {
             markedServices.add((Service) child.collectKeptNodes(typesToKeep));
-          } else {
+          } else if (child instanceof ExtendDeclarationNode) {
+            markedExtendDeclarations.add((ExtendDeclaration) child.collectKeptNodes(typesToKeep));
+          } else if (child instanceof MessageTypeNode || child instanceof EnumTypeNode) {
             markedTypes.add((Type) child.collectKeptNodes(typesToKeep));
+          } else {
+            throw new RuntimeException("Unknown child type " + child.getClass().getName());
           }
+        } else {
+          child = child;
         }
       }
       return new ProtoFile(obj.getFileName(), obj.getPackageName(), obj.getDependencies(),
           obj.getPublicDependencies(), markedTypes, markedServices, obj.getOptions(),
-          obj.getExtendDeclarations());
+          markedExtendDeclarations);
+    }
+
+    private boolean shouldEmitService(Set<String> serviceMethodRoots, String fullyQualifiedName) {
+      if (serviceMethodRoots.isEmpty()) {
+        return true;
+      }
+      for (String serviceMethodRoot : serviceMethodRoots) {
+        if (serviceMethodRoot.equals(fullyQualifiedName) ||
+            serviceMethodRoot.startsWith(fullyQualifiedName + "#")) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
+  private static void keep(String type, Set<Node<?>> typesToKeep, Map<String, Node<?>> nodeMap,
+      Set<String> kept) {
+    if (isScalarType(type)) {
+      return;
+    }
+    if (!kept.contains(type)) {
+      kept.add(type);
+      System.out.println("keep " + type);
+      nodeMap.get(type).keepNodes(typesToKeep, nodeMap, kept);
+    }
+    if (!kept.contains(EXTEND + type) && nodeMap.containsKey(EXTEND + type)) {
+      kept.add(EXTEND + type);
+      System.out.println("keep " + EXTEND + type);
+      nodeMap.get(EXTEND + type).keepNodes(typesToKeep, nodeMap, kept);
     }
   }
 
   private static class ServiceNode extends Node<Service> {
-    ServiceNode(Node<?> parent, Service type) {
+    private final Set<String> serviceMethodRoots;
+
+    ServiceNode(Node<?> parent, Service type, Set<String> serviceMethodRoots) {
       super(parent, type.getFullyQualifiedName(), type);
+      this.serviceMethodRoots = serviceMethodRoots;
     }
 
-    @Override void keepNodes(Set<Node<?>> typesToKeep, Map<String, Node<?>> nodeMap) {
-      super.keepNodes(typesToKeep, nodeMap);
+    @Override void keepNodes(Set<Node<?>> typesToKeep, Map<String, Node<?>> nodeMap,
+        Set<String> kept) {
+      super.keepNodes(typesToKeep, nodeMap, kept);
 
       for (Service.Method method : obj.getMethods()) {
-        String requestType = method.getRequestType();
-        if (!isScalarType(requestType)) {
-          nodeMap.get(requestType).keepNodes(typesToKeep, nodeMap);
-        }
-        String responseType = method.getResponseType();
-        if (!isScalarType(responseType)) {
-          nodeMap.get(responseType).keepNodes(typesToKeep, nodeMap);
+        if (serviceMethodRoots.isEmpty() ||
+            serviceMethodRoots.contains(type) ||
+            serviceMethodRoots.contains(type + "#" + method.getName())) {
+          keep(method.getRequestType(), typesToKeep, nodeMap, kept);
+          keep(method.getResponseType(), typesToKeep, nodeMap, kept);
         }
       }
     }
 
     @Override Service collectKeptNodes(Set<Node<?>> typesToKeep) {
-      return obj; // No child types that could possibly be filtered. Return the original.
+      List<Service.Method> methodsToKeep = new ArrayList<>();
+      for (Service.Method method : obj.getMethods()) {
+        if (serviceMethodRoots.isEmpty() ||
+            serviceMethodRoots.contains(type) ||
+            serviceMethodRoots.contains(type + "#" + method.getName())) {
+          methodsToKeep.add(method);
+        }
+      }
+      return new Service(obj.getName(), obj.getFullyQualifiedName(),
+          obj.getDocumentation(), obj.getOptions(), methodsToKeep);
+    }
+  }
+
+  private static class ExtendDeclarationNode extends Node<ExtendDeclaration> {
+    ExtendDeclarationNode(Node<?> parent, ExtendDeclaration extendDeclaration) {
+      super(parent, EXTEND + extendDeclaration.getFullyQualifiedName(), extendDeclaration);
+    }
+
+    @Override void keepNodes(Set<Node<?>> typesToKeep, Map<String, Node<?>> nodeMap,
+        Set<String> kept) {
+      super.keepNodes(typesToKeep, nodeMap, kept);
+      for (MessageType.Field extensionField : obj.getFields()) {
+        keep(extensionField.getType(), typesToKeep, nodeMap, kept);
+      }
+    }
+
+    @Override ExtendDeclaration collectKeptNodes(Set<Node<?>> typesToKeep) {
+      return obj;
     }
   }
 
@@ -183,14 +283,12 @@ final class RootsFilter {
       }
     }
 
-    @Override void keepNodes(Set<Node<?>> typesToKeep, Map<String, Node<?>> nodeMap) {
-      super.keepNodes(typesToKeep, nodeMap);
+    @Override void keepNodes(Set<Node<?>> typesToKeep, Map<String, Node<?>> nodeMap,
+        Set<String> kept) {
+      super.keepNodes(typesToKeep, nodeMap, kept);
 
       for (MessageType.Field field : obj.getFields()) {
-        String fieldType = field.getType();
-        if (!isScalarType(fieldType)) {
-          nodeMap.get(fieldType).keepNodes(typesToKeep, nodeMap);
-        }
+        keep(field.getType(), typesToKeep, nodeMap, kept);
       }
     }
 
@@ -215,6 +313,7 @@ final class RootsFilter {
       return obj; // No child types that could possibly be filtered. Return the original.
     }
   }
+
 
   private RootsFilter() {
     throw new AssertionError("No instances.");

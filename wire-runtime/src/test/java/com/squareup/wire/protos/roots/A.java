@@ -23,18 +23,18 @@ import com.squareup.wire.ProtoField;
 public final class A extends Message {
 
   @ProtoField(tag = 1)
-  public final B c;
+  public final B b;
 
   @ProtoField(tag = 2)
   public final D d;
 
-  public A(B c, D d) {
-    this.c = c;
+  public A(B b, D d) {
+    this.b = b;
     this.d = d;
   }
 
   private A(Builder builder) {
-    this(builder.c, builder.d);
+    this(builder.b, builder.d);
     setBuilder(builder);
   }
 
@@ -43,7 +43,7 @@ public final class A extends Message {
     if (other == this) return true;
     if (!(other instanceof A)) return false;
     A o = (A) other;
-    return equals(c, o.c)
+    return equals(b, o.b)
         && equals(d, o.d);
   }
 
@@ -51,7 +51,7 @@ public final class A extends Message {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = c != null ? c.hashCode() : 0;
+      result = b != null ? b.hashCode() : 0;
       result = result * 37 + (d != null ? d.hashCode() : 0);
       hashCode = result;
     }
@@ -60,7 +60,7 @@ public final class A extends Message {
 
   public static final class Builder extends Message.Builder<A> {
 
-    public B c;
+    public B b;
     public D d;
 
     public Builder() {
@@ -69,12 +69,12 @@ public final class A extends Message {
     public Builder(A message) {
       super(message);
       if (message == null) return;
-      this.c = message.c;
+      this.b = message.b;
       this.d = message.d;
     }
 
-    public Builder c(B c) {
-      this.c = c;
+    public Builder b(B b) {
+      this.b = b;
       return this;
     }
 

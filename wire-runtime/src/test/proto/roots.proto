@@ -32,7 +32,7 @@ option java_package = "com.squareup.wire.protos.roots";
 // I -> nothing
 
 message A {
-  optional B c = 1;
+  optional B b = 1;
   optional D d = 2;
 }
 

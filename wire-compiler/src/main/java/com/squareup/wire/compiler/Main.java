@@ -1,13 +1,11 @@
 package com.squareup.wire.compiler;
 
-import com.squareup.protoparser.ProtoFile;
 import com.squareup.wire.compiler.parser.WireParser;
 import com.squareup.wire.compiler.plugin.WirePlugin;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.ServiceLoader;
-import java.util.Set;
 
 /**
  * Runs the parser and plugins.
@@ -41,6 +39,8 @@ import java.util.Set;
 public final class Main {
   private static final String ARG_PATH = "--path=";
   private static final String ARG_ROOT = "--root=";
+  private static final String ARG_ENUM_OPTION = "--enum_option=";
+  private static final String ARG_NO_OPTIONS = "--no_options";
   private static final String ARG_PROPERTY = "-D";
 
   public static void main(String... args) throws IOException {
@@ -54,6 +54,11 @@ public final class Main {
       } else if (arg.startsWith(ARG_ROOT)) {
         String rootsArg = arg.substring(ARG_ROOT.length());
         parser.addTypeRoot(rootsArg);
+      } else if (arg.startsWith(ARG_ENUM_OPTION)) {
+        String enumOptionArg = arg.substring(ARG_ENUM_OPTION.length());
+        parser.addEnumOption(enumOptionArg);
+      } else if (arg.equals(ARG_NO_OPTIONS)) {
+        parser.setNoOptions();
       } else if (arg.startsWith(ARG_PROPERTY)) {
         String[] parts = arg.substring(ARG_PROPERTY.length()).split("=", -1);
         System.setProperty(parts[0], parts[1]);
@@ -63,12 +68,12 @@ public final class Main {
     }
 
     System.out.print("Parsing proto files... ");
-    Set<ProtoFile> data = parser.parse();
+    WireParser.ParsedInput parsedInput = parser.parse();
     System.out.println("Done.");
 
     for (WirePlugin plugin : ServiceLoader.load(WirePlugin.class)) {
       System.out.print("Running " + plugin.getClass().getSimpleName() + "... ");
-      plugin.generate(fs, data);
+      plugin.generate(fs, parsedInput);
       System.out.println("Done.");
     }
   }

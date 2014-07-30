@@ -151,9 +151,6 @@ Unsupported
 
 Wire does not support:
 
- * Groups - they are skipping when parsing binary input data
- * Services - they are ignored by the compiler
- * Custom options - they are ignored
-
+ * Groups - they are skipped when parsing binary input data
 
  [dl]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
