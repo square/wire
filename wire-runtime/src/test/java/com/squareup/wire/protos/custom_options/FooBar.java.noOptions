@@ -278,14 +278,14 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
   public enum FooBarBazEnum
       implements ProtoEnum {
+    FOO(1, 17),
+    BAR(2, null),
+    BAZ(3, 18),
+
     /**
      * Wire-generated value, do not access from application code.
      */
-    __UNDEFINED__(UNDEFINED_VALUE, null),
-
-    FOO(1, 17),
-    BAR(2, null),
-    BAZ(3, 18);
+    __UNDEFINED__(UNDEFINED_VALUE, null);
 
     private final int value;
     public final Integer enum_value_option;

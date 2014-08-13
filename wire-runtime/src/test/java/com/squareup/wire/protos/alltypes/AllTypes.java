@@ -1221,12 +1221,12 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
   public enum NestedEnum
       implements ProtoEnum {
+    A(1),
+
     /**
      * Wire-generated value, do not access from application code.
      */
-    __UNDEFINED__(UNDEFINED_VALUE),
-
-    A(1);
+    __UNDEFINED__(UNDEFINED_VALUE);
 
     private final int value;
 

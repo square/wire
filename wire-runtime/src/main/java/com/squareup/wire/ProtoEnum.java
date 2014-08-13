@@ -19,7 +19,7 @@ package com.squareup.wire;
  * Interface for generated {@link Enum} values to help serialization and
  * deserialization.
  *
- * The first enum value defined in any implementing class must be named {@code __UNDEFINED__}
+ * The last enum value defined in any implementing class must be named {@code __UNDEFINED__}
  * and have the value {@link #UNDEFINED_VALUE}. Application code should never access this value
  * directly. Withing a parsed Message, it represents an unknown enum value which may have been
  * defined in a version of the protocol buffer definitions later than the one used to build the

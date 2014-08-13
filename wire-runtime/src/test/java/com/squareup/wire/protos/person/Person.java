@@ -141,17 +141,17 @@ public final class Person extends Message {
 
   public enum PhoneType
       implements ProtoEnum {
-    /**
-     * Wire-generated value, do not access from application code.
-     */
-    __UNDEFINED__(UNDEFINED_VALUE),
-
     MOBILE(0),
     HOME(1),
     /**
      * Could be phone or fax.
      */
-    WORK(2);
+    WORK(2),
+
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE);
 
     private final int value;
 

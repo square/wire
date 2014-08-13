@@ -115,16 +115,6 @@ public class MessageWriter {
       List<EnumType.Value> values = enumType.getValues();
       List<String> undefinedInitializers = new ArrayList<String>();
 
-      writer.emitJavadoc("Wire-generated value, do not access from application code.");
-      if (values.isEmpty()) {
-        writer.emitEnumValue("__UNDEFINED__(UNDEFINED_VALUE)", true);
-      } else {
-        undefinedInitializers.add("UNDEFINED_VALUE");
-        addNullEnumValueOptionInitializers(values.get(0), options, mapMaker, undefinedInitializers);
-        writer.emitEnumValue("__UNDEFINED__(" + join(undefinedInitializers, ", ") + ")", false);
-      }
-      writer.emitEmptyLine();
-
       for (int i = 0, count = values.size(); i < count; i++) {
         EnumType.Value value = values.get(i);
         MessageWriter.emitDocumentation(writer, value.getDocumentation());
@@ -137,8 +127,17 @@ public class MessageWriter {
         initializers.add(String.valueOf(tag));
         addEnumValueOptionInitializers(value, options, mapMaker, initializers);
 
-        writer.emitEnumValue(value.getName() + "(" + join(initializers, ", ") + ")",
-            (i == count - 1));
+        writer.emitEnumValue(value.getName() + "(" + join(initializers, ", ") + ")", false);
+      }
+
+      writer.emitEmptyLine();
+      writer.emitJavadoc("Wire-generated value, do not access from application code.");
+      if (values.isEmpty()) {
+        writer.emitEnumValue("__UNDEFINED__(UNDEFINED_VALUE)", true);
+      } else {
+        undefinedInitializers.add("UNDEFINED_VALUE");
+        addNullEnumValueOptionInitializers(values.get(0), options, mapMaker, undefinedInitializers);
+        writer.emitEnumValue("__UNDEFINED__(" + join(undefinedInitializers, ", ") + ")", true);
       }
 
       if (compiler.emitOptions()) {
