@@ -370,14 +370,14 @@ public final class SimpleMessage extends Message {
 
   public enum NestedEnum
       implements ProtoEnum {
+    FOO(1),
+    BAR(2),
+    BAZ(3),
+
     /**
      * Wire-generated value, do not access from application code.
      */
-    __UNDEFINED__(UNDEFINED_VALUE),
-
-    FOO(1),
-    BAR(2),
-    BAZ(3);
+    __UNDEFINED__(UNDEFINED_VALUE);
 
     private final int value;
 

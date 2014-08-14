@@ -75,8 +75,9 @@ final class MessageAdapter<M extends Message> {
       if (datatype == Datatype.ENUM) {
         this.enumType = (Class<? extends ProtoEnum>) enumOrMessageType;
         this.messageType = null;
-        // The first defined value of a {@link ProtoEnum} is always {@code __UNDEFINED__}.
-        this.undefinedEnumValue = enumType.getEnumConstants()[0];
+        // The last defined value of a {@link ProtoEnum} is always {@code __UNDEFINED__}.
+        ProtoEnum[] enumConstants = enumType.getEnumConstants();
+        this.undefinedEnumValue = enumConstants[enumConstants.length - 1];
       } else if (datatype == Datatype.MESSAGE) {
         this.messageType = (Class<? extends Message>) enumOrMessageType;
         this.enumType = null;

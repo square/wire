@@ -320,16 +320,16 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
   public enum FooBarBazEnum
       implements ProtoEnum {
-    /**
-     * Wire-generated value, do not access from application code.
-     */
-    __UNDEFINED__(UNDEFINED_VALUE, null, null, null),
-
     FOO(1, new More.Builder()
         .serial(99)
         .build(), 17, null),
     BAR(2, null, null, true),
-    BAZ(3, null, 18, false);
+    BAZ(3, null, 18, false),
+
+    /**
+     * Wire-generated value, do not access from application code.
+     */
+    __UNDEFINED__(UNDEFINED_VALUE, null, null, null);
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .setExtension(Ext_custom_options.enum_option, true)
