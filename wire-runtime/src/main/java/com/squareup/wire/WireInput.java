@@ -144,35 +144,43 @@ final class WireInput {
    * upper bits.
    */
   public int readVarint32() throws IOException {
-    pos++;
+    int[] retVal = readVarint32(source, pos);
+    pos = retVal[1];
+    return retVal[0];
+  }
+
+  public static int[] readVarint32(final BufferedSource source, int pos) throws IOException {
+    int[] retVal = {0, pos};
+    retVal [1]++;
     byte tmp = source.readByte();
     if (tmp >= 0) {
-      return tmp;
+      retVal [0] = tmp;
+      return retVal;
     }
-    int result = tmp & 0x7f;
-    pos++;
+    retVal [0] = tmp & 0x7f;
+    retVal [1]++;
     if ((tmp = source.readByte()) >= 0) {
-      result |= tmp << 7;
+      retVal [0] |= tmp << 7;
     } else {
-      result |= (tmp & 0x7f) << 7;
-      pos++;
+      retVal [0] |= (tmp & 0x7f) << 7;
+      retVal [1]++;
       if ((tmp = source.readByte()) >= 0) {
-        result |= tmp << 14;
+        retVal [0] |= tmp << 14;
       } else {
-        result |= (tmp & 0x7f) << 14;
-        pos++;
+        retVal [0] |= (tmp & 0x7f) << 14;
+        retVal [1]++;
         if ((tmp = source.readByte()) >= 0) {
-          result |= tmp << 21;
+          retVal [0] |= tmp << 21;
         } else {
-          result |= (tmp & 0x7f) << 21;
-          pos++;
-          result |= (tmp = source.readByte()) << 28;
+          retVal [0] |= (tmp & 0x7f) << 21;
+          retVal [1]++;
+          retVal [0] |= (tmp = source.readByte()) << 28;
           if (tmp < 0) {
             // Discard upper 32 bits.
             for (int i = 0; i < 5; i++) {
-              pos++;
+              retVal [1]++;
               if (source.readByte() >= 0) {
-                return result;
+                return retVal;
               }
             }
             throw new IOException(ENCOUNTERED_A_MALFORMED_VARINT);
@@ -180,7 +188,7 @@ final class WireInput {
         }
       }
     }
-    return result;
+    return retVal;
   }
 
   /** Reads a raw varint up to 64 bits in length from the stream. */

@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import okio.BufferedSource;
 import okio.Source;
 
 import static com.squareup.wire.Preconditions.checkArgument;
@@ -165,6 +167,22 @@ public final class Wire {
       throws IOException {
     MessageAdapter<M> adapter = messageAdapter(messageClass);
     return adapter.read(input);
+  }
+
+  /**
+   * Reads a size prefixed message of type {@code messageClass} from {@link BufferedSource}
+   * and returns it.
+  */
+  public <M extends Message> M parseDelimitedFrom(BufferedSource source, Class<M> messageClass)
+      throws IOException {
+    checkNotNull(source, "source");
+    checkNotNull(messageClass, "messageClass");
+    int size = WireInput.readVarint32(source, 0)[0];
+    if (size <= 0) {
+      throw new IOException("Invalid size prefix!");
+    }
+    MessageAdapter<M> adapter = messageAdapter(messageClass);
+    return adapter.read(WireInput.newInstance(source.readByteArray(size)));
   }
 
   /**
