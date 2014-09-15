@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 1.5.2 *(2014-09-15)*
+----------------------------
+
+ * New: '__UNDEFINED__' enum value represents values that the generated code is unable to handle.
+ * New: Service writer implementation can now be specified on the command-line.
+
+
 Version 1.5.1 *(2014-06-18)*
 ----------------------------
 
