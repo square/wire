@@ -149,7 +149,7 @@ final class WireInput {
     return retVal[0];
   }
 
-  public static int[] readVarint32(final BufferedSource source, int pos) throws IOException {
+  static int[] readVarint32(final BufferedSource source, int pos) throws IOException {
     int[] retVal = {0, pos};
     retVal [1]++;
     byte tmp = source.readByte();

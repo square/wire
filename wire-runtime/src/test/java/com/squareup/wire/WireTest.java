@@ -21,11 +21,17 @@ import com.squareup.wire.protos.person.Person.PhoneType;
 import com.squareup.wire.protos.simple.Ext_simple_message;
 import com.squareup.wire.protos.simple.ExternalMessage;
 import com.squareup.wire.protos.simple.SimpleMessage;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
 import org.junit.Test;
 
 import static com.squareup.wire.protos.simple.Ext_simple_message.barext;
@@ -324,5 +330,53 @@ public class WireTest {
     // Serialize again, value is preserved
     byte[] newData = result.toByteArray();
     assertTrue(Arrays.equals(data, newData));
+  }
+
+  @Test
+  public void testDelimited() throws IOException {
+    BufferedSink sink = null;
+    BufferedSource source = null;
+    Wire wire = new Wire();
+    Person person = new Person.Builder()
+            .name("Omar")
+            .id(1234)
+            .email("omar@wire.com")
+            .phone(Arrays.asList(new PhoneNumber.Builder()
+                    .number("410-555-0909")
+                    .type(PhoneType.MOBILE)
+                    .build()))
+            .build();
+    File tmpFile = File.createTempFile("test", "wire");
+    try {
+      sink = Okio.buffer(Okio.sink(tmpFile));
+      for (int i = 0; i < 100; i++) {
+        person.writeDelimitedTo(sink);
+      }
+      sink.flush();
+      sink.close();
+      sink = null;
+
+      source = Okio.buffer(Okio.source(tmpFile));
+      for (int i = 0; i < 100; i++) {
+        Person tmp_person = wire.parseDelimitedFrom(source, Person.class);
+        assertEquals(person.name, Wire.get(tmp_person.name, Person.DEFAULT_NAME));
+        assertEquals(person.id, Wire.get(tmp_person.id, Person.DEFAULT_ID));
+        assertEquals(person.email, Wire.get(tmp_person.email, Person.DEFAULT_EMAIL));
+        assertNotNull(tmp_person.phone);
+        assertEquals(person.phone.size(), tmp_person.phone.size());
+        assertEquals(person.phone.get(0).type, person.phone.get(0).type);
+        assertEquals(person.phone.get(0).number, person.phone.get(0).number);
+      }
+      source.close();
+      source = null;
+    } finally {
+      if(sink != null) {
+        sink.close();
+      }
+      if(source != null) {
+        source.close();
+      }
+      tmpFile.delete();
+    }
   }
 }
