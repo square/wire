@@ -146,12 +146,7 @@ public final class Person extends Message {
     /**
      * Could be phone or fax.
      */
-    WORK(2),
-
-    /**
-     * Wire-generated value, do not access from application code.
-     */
-    __UNDEFINED__(UNDEFINED_VALUE);
+    WORK(2);
 
     private final int value;
 
@@ -239,7 +234,6 @@ public final class Person extends Message {
        * The type of phone stored here.
        */
       public Builder type(PhoneType type) {
-        if (type == PhoneType.__UNDEFINED__) throw new IllegalArgumentException();
         this.type = type;
         return this;
       }

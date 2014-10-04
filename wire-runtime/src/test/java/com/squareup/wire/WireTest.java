@@ -310,8 +310,7 @@ public class WireTest {
     // Parsed PhoneNumber has no value set
     Wire wire = new Wire();
     Person result = wire.parseFrom(data, Person.class);
-    // The __UNDEFINED__ enum value will be returned in place of the undefined value.
-    assertEquals(PhoneType.__UNDEFINED__, result.phone.get(0).type);
+    assertEquals(null, result.phone.get(0).type);
 
     // The value 17 will be stored as an unknown varint with tag number 2
     Collection<List<UnknownFieldMap.FieldValue>> unknownFields = result.phone.get(0).unknownFields();
