@@ -252,7 +252,6 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       }
 
       public Builder value(FooBarBazEnum value) {
-        if (value == FooBarBazEnum.__UNDEFINED__) throw new IllegalArgumentException();
         this.value = value;
         return this;
       }
@@ -324,12 +323,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
         .serial(99)
         .build(), 17, null),
     BAR(2, null, null, true),
-    BAZ(3, null, 18, false),
-
-    /**
-     * Wire-generated value, do not access from application code.
-     */
-    __UNDEFINED__(UNDEFINED_VALUE, null, null, null);
+    BAZ(3, null, 18, false);
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .setExtension(Ext_custom_options.enum_option, true)

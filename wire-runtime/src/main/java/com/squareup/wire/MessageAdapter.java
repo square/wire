@@ -55,7 +55,6 @@ final class MessageAdapter<M extends Message> {
     final Class<? extends ProtoEnum> enumType;
     final Class<? extends Message> messageType;
     final boolean redacted;
-    final ProtoEnum undefinedEnumValue;
 
     // Cached values
     MessageAdapter<? extends Message> messageAdapter;
@@ -75,17 +74,12 @@ final class MessageAdapter<M extends Message> {
       if (datatype == Datatype.ENUM) {
         this.enumType = (Class<? extends ProtoEnum>) enumOrMessageType;
         this.messageType = null;
-        // The last defined value of a {@link ProtoEnum} is always {@code __UNDEFINED__}.
-        ProtoEnum[] enumConstants = enumType.getEnumConstants();
-        this.undefinedEnumValue = enumConstants[enumConstants.length - 1];
       } else if (datatype == Datatype.MESSAGE) {
         this.messageType = (Class<? extends Message>) enumOrMessageType;
         this.enumType = null;
-        this.undefinedEnumValue = null;
       } else {
         this.enumType = null;
         this.messageType = null;
-        this.undefinedEnumValue = null;
       }
 
       // private fields
@@ -219,12 +213,6 @@ final class MessageAdapter<M extends Message> {
 
   // Writing
 
-  /** Returns true if the value is the {@code __UNDEFINED__} value of a ProtoEnum. */
-  private boolean isUndefinedEnum(Object value) {
-    return value instanceof ProtoEnum
-        && ((ProtoEnum) value).getValue() == ProtoEnum.UNDEFINED_VALUE;
-  }
-
   /**
    * Returns the serialized size of a given message, in bytes.
    */
@@ -232,7 +220,7 @@ final class MessageAdapter<M extends Message> {
     int size = 0;
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
-      if (value == null || isUndefinedEnum(value)) {
+      if (value == null) {
         continue;
       }
       int tag = fieldInfo.tag;
@@ -284,9 +272,7 @@ final class MessageAdapter<M extends Message> {
   private int getRepeatedSize(List<?> value, int tag, Datatype datatype) {
     int size = 0;
     for (Object o : value) {
-      if (!isUndefinedEnum(o)) {
-        size += getSerializedSize(tag, o, datatype);
-      }
+      size += getSerializedSize(tag, o, datatype);
     }
     return size;
   }
@@ -294,12 +280,7 @@ final class MessageAdapter<M extends Message> {
   private int getPackedSize(List<?> value, int tag, Datatype datatype) {
     int packedLength = 0;
     for (Object o : value) {
-      if (!isUndefinedEnum(o)) {
-        packedLength += getSerializedSizeNoTag(o, datatype);
-      }
-    }
-    if (packedLength == 0) {
-      return 0;
+      packedLength += getSerializedSizeNoTag(o, datatype);
     }
     // tag + length + value + value + ...
     int size = WireOutput.varint32Size(WireOutput.makeTag(tag, WireType.LENGTH_DELIMITED));
@@ -312,7 +293,7 @@ final class MessageAdapter<M extends Message> {
   void write(M message, WireOutput output) throws IOException {
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
-      if (value == null || isUndefinedEnum(value)) {
+      if (value == null) {
         continue;
       }
       int tag = fieldInfo.tag;
@@ -370,18 +351,12 @@ final class MessageAdapter<M extends Message> {
       throws IOException {
     int packedLength = 0;
     for (Object o : value) {
-      if (!isUndefinedEnum(o)) {
-        packedLength += getSerializedSizeNoTag(o, datatype);
-      }
+      packedLength += getSerializedSizeNoTag(o, datatype);
     }
-    if (packedLength > 0) {
-      output.writeTag(tag, WireType.LENGTH_DELIMITED);
-      output.writeVarint32(packedLength);
-      for (Object o : value) {
-        if (!isUndefinedEnum(o)) {
-          writeValueNoTag(output, o, datatype);
-        }
-      }
+    output.writeTag(tag, WireType.LENGTH_DELIMITED);
+    output.writeVarint32(packedLength);
+    for (Object o : value) {
+      writeValueNoTag(output, o, datatype);
     }
   }
 
@@ -409,7 +384,7 @@ final class MessageAdapter<M extends Message> {
     String sep = "";
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
-      if (value == null || isUndefinedEnum(value)) {
+      if (value == null) {
         continue;
       }
       sb.append(sep);
@@ -489,7 +464,7 @@ final class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private int getMessageSize(Message message) {
+  private <M extends Message> int getMessageSize(M message) {
     int messageSize = message.getSerializedSize();
     return WireOutput.varint32Size(messageSize) + messageSize;
   }
@@ -533,9 +508,9 @@ final class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private <MM extends Message> void writeMessage(MM message, WireOutput output) throws IOException {
+  private <M extends Message> void writeMessage(M message, WireOutput output) throws IOException {
     output.writeVarint32(message.getSerializedSize());
-    MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
+    MessageAdapter<M> adapter = wire.messageAdapter((Class<M>) message.getClass());
     adapter.write(message, output);
   }
 
@@ -575,13 +550,10 @@ final class MessageAdapter<M extends Message> {
 
         Datatype datatype;
         Label label;
-        ProtoEnum undefinedEnumValue = null;
-
         FieldInfo fieldInfo = fieldInfoMap.get(tag);
         if (fieldInfo != null) {
           datatype = fieldInfo.datatype;
           label = fieldInfo.label;
-          undefinedEnumValue = fieldInfo.undefinedEnumValue;
         } else {
           extension = getExtension(tag);
           if (extension == null) {
@@ -603,9 +575,9 @@ final class MessageAdapter<M extends Message> {
             if (datatype == Datatype.ENUM && value instanceof Integer) {
               // An unknown Enum value was encountered, store it as an unknown field
               builder.addVarint(tag, (Integer) value);
-              value = undefinedEnumValue;
+            } else {
+              storage.add(tag, value);
             }
-            storage.add(tag, value);
           }
           input.popLimit(oldLimit);
           if (input.getPosition() != start + length) {
@@ -617,16 +589,14 @@ final class MessageAdapter<M extends Message> {
           if (datatype == Datatype.ENUM && value instanceof Integer) {
             // An unknown Enum value was encountered, store it as an unknown field
             builder.addVarint(tag, (Integer) value);
-            value = undefinedEnumValue;
-          }
-          if (label.isRepeated()) {
-            storage.add(tag, value);
-          } else if (extension != null) {
-            if (value != null) {
-              setExtension((ExtendableBuilder<?>) builder, extension, value);
-            }
           } else {
-            setBuilderField(builder, tag, value);
+            if (label.isRepeated()) {
+              storage.add(tag, value);
+            } else if (extension != null) {
+              setExtension((ExtendableBuilder<?>) builder, extension, value);
+            } else {
+              setBuilderField(builder, tag, value);
+            }
           }
         }
       }
@@ -808,8 +778,7 @@ final class MessageAdapter<M extends Message> {
 
     private final List<T> list = new ArrayList<T>();
 
-    @SuppressWarnings("CloneDoesntCallSuperClone")
-    @Override public Object clone() throws CloneNotSupportedException {
+    public Object clone() {
       return this;
     }
 

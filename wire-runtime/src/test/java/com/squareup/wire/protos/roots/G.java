@@ -7,12 +7,7 @@ import com.squareup.wire.ProtoEnum;
 public enum G
     implements ProtoEnum {
   FOO(1),
-  BAR(2),
-
-  /**
-   * Wire-generated value, do not access from application code.
-   */
-  __UNDEFINED__(UNDEFINED_VALUE);
+  BAR(2);
 
   private final int value;
 

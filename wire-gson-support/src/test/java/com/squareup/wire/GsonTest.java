@@ -245,7 +245,10 @@ public class GsonTest {
 
   @Test
   public void testGsonNoExtensions() {
-    Gson gson = createGson();
+    Gson gson = new GsonBuilder()
+        .registerTypeAdapterFactory(new WireTypeAdapterFactory(wire))
+        .disableHtmlEscaping()
+        .create();
 
     AllTypes allTypes = createBuilder().build();
     String json = gson.toJson(allTypes);
@@ -308,30 +311,5 @@ public class GsonTest {
     assertEquals(allTypes, parsed);
     assertEquals(allTypes.toString(), parsed.toString());
     assertEquals(gson.toJson(allTypes), gson.toJson(parsed));
-  }
-
-  @Test public void testGsonWithUndefinedEnum() {
-    AllTypes allTypes = new AllTypes(
-        null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, AllTypes.NestedEnum.__UNDEFINED__, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null,
-        null, null, AllTypes.NestedEnum.__UNDEFINED__, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null,
-        null);
-
-    String json = createGson().toJson(allTypes);
-    assertEquals("{\"opt_nested_enum\":\"__UNDEFINED__\",\"req_nested_enum\":\"__UNDEFINED__\","
-        + "\"rep_int32\":[],\"rep_uint32\":[],\"rep_sint32\":[],\"rep_fixed32\":[],"
-        + "\"rep_sfixed32\":[],\"rep_int64\":[],\"rep_uint64\":[],\"rep_sint64\":[],"
-        + "\"rep_fixed64\":[],\"rep_sfixed64\":[],\"rep_bool\":[],\"rep_float\":[],"
-        + "\"rep_double\":[],\"rep_string\":[],\"rep_bytes\":[],\"rep_nested_enum\":[],"
-        + "\"rep_nested_message\":[],\"pack_int32\":[],\"pack_uint32\":[],\"pack_sint32\":[],"
-        + "\"pack_fixed32\":[],\"pack_sfixed32\":[],\"pack_int64\":[],\"pack_uint64\":[],"
-        + "\"pack_sint64\":[],\"pack_fixed64\":[],\"pack_sfixed64\":[],\"pack_bool\":[],"
-        + "\"pack_float\":[],\"pack_double\":[],\"pack_nested_enum\":[]}",
-        json);
   }
 }

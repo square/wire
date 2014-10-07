@@ -7,12 +7,7 @@ import com.squareup.wire.ProtoEnum;
 public enum ForeignEnum
     implements ProtoEnum {
   BAV(0),
-  BAX(1),
-
-  /**
-   * Wire-generated value, do not access from application code.
-   */
-  __UNDEFINED__(UNDEFINED_VALUE);
+  BAX(1);
 
   private final int value;
 

@@ -345,28 +345,11 @@ public abstract class Message {
      */
     protected static <T> List<T> checkForNulls(List<T> elements) {
       if (elements != null && !elements.isEmpty()) {
-        int index = 0;
-        for (T element : elements) {
+        for (int i = 0, size = elements.size(); i < size; i++) {
+          T element = elements.get(i);
           if (element == null) {
-            throw new NullPointerException("Element at index " + index + " is null");
+            throw new NullPointerException("Element at index " + i + " is null");
           }
-          index++;
-        }
-      }
-      return elements;
-    }
-
-    protected static <E extends ProtoEnum> List<E> checkForNullOrUndefined(List<E> elements) {
-      if (elements != null && !elements.isEmpty()) {
-        int index = 0;
-        for (E element : elements) {
-          if (element == null) {
-            throw new NullPointerException("Element at index " + index + " is null");
-          }
-          if (element.getValue() == ProtoEnum.UNDEFINED_VALUE) {
-            throw new IllegalArgumentException("Element at index " + index + " is __UNDEFINED__");
-          }
-          index++;
         }
       }
       return elements;

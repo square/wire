@@ -113,31 +113,16 @@ public class MessageWriter {
 
       writer.beginType(enumType.getName(), "enum", EnumSet.of(PUBLIC), null, "ProtoEnum");
       List<EnumType.Value> values = enumType.getValues();
-      List<String> undefinedInitializers = new ArrayList<String>();
-
       for (int i = 0, count = values.size(); i < count; i++) {
         EnumType.Value value = values.get(i);
         MessageWriter.emitDocumentation(writer, value.getDocumentation());
 
         List<String> initializers = new ArrayList<String>();
-        int tag = value.getTag();
-        if (tag == ProtoEnum.UNDEFINED_VALUE) {
-          throw new IllegalArgumentException("Wire does not allow an enum value of " + tag);
-        }
-        initializers.add(String.valueOf(tag));
+        initializers.add(String.valueOf(value.getTag()));
         addEnumValueOptionInitializers(value, options, mapMaker, initializers);
 
-        writer.emitEnumValue(value.getName() + "(" + join(initializers, ", ") + ")", false);
-      }
-
-      writer.emitEmptyLine();
-      writer.emitJavadoc("Wire-generated value, do not access from application code.");
-      if (values.isEmpty()) {
-        writer.emitEnumValue("__UNDEFINED__(UNDEFINED_VALUE)", true);
-      } else {
-        undefinedInitializers.add("UNDEFINED_VALUE");
-        addNullEnumValueOptionInitializers(values.get(0), options, mapMaker, undefinedInitializers);
-        writer.emitEnumValue("__UNDEFINED__(" + join(undefinedInitializers, ", ") + ")", true);
+        writer.emitEnumValue(value.getName() + "(" + join(initializers, ", ") + ")",
+            (i == count - 1));
       }
 
       if (compiler.emitOptions()) {
@@ -236,14 +221,6 @@ public class MessageWriter {
         }
       }
       initializers.add(initializer);
-    }
-  }
-
-  private void addNullEnumValueOptionInitializers(EnumType.Value value,
-      List<EnumValueOptionInfo> optionInfo, OptionsMapMaker mapMaker, List<String> initializers) {
-    addEnumValueOptionInitializers(value, optionInfo, mapMaker, initializers);
-    for (int i = 1; i < initializers.size(); i++) {
-      initializers.set(i, "null");
     }
   }
 
@@ -705,29 +682,14 @@ public class MessageWriter {
       }
 
       writer.beginMethod("Builder", sanitized, EnumSet.of(PUBLIC), args, null);
-      boolean isEnum = isEnum(messageType, field);
       if (FieldInfo.isRepeated(field)) {
-        if (isEnum) {
-          writer.emitStatement("this.%1$s = checkForNullOrUndefined(%1$s)", sanitized);
-        } else {
-          writer.emitStatement("this.%1$s = checkForNulls(%1$s)", sanitized);
-        }
+        writer.emitStatement("this.%1$s = checkForNulls(%1$s)", sanitized);
       } else {
-        if (isEnum) {
-          writer.emitStatement("if (%s == %s.__UNDEFINED__) throw new IllegalArgumentException()",
-              sanitized, javaName);
-        }
         writer.emitStatement("this.%1$s = %1$s", sanitized);
       }
       writer.emitStatement("return this");
       writer.endMethod();
     }
-  }
-
-  private boolean isEnum(MessageType messageType, Field field) {
-    String type = field.getType();
-    return !TypeInfo.isScalar(type)
-        && compiler.isEnum(compiler.fullyQualifiedName(messageType, type));
   }
 
   // Example:
@@ -828,7 +790,8 @@ public class MessageWriter {
   }
 
   private boolean isMessageType(MessageType messageType, Field field) {
-    return !TypeInfo.isScalar(field.getType()) && !isEnum(messageType, field);
+    return !TypeInfo.isScalar(field.getType())
+        && !compiler.isEnum(compiler.fullyQualifiedName(messageType, field.getType()));
   }
 
   private String sanitize(String name) {

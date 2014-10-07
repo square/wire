@@ -51,7 +51,6 @@ public final class ChildPackage extends Message {
     }
 
     public Builder inner_foreign_enum(ForeignEnum inner_foreign_enum) {
-      if (inner_foreign_enum == ForeignEnum.__UNDEFINED__) throw new IllegalArgumentException();
       this.inner_foreign_enum = inner_foreign_enum;
       return this;
     }
