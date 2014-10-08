@@ -298,31 +298,47 @@ public abstract class Message {
      * Adds a {@code varint} value to the unknown field set with the given tag number.
      */
     public void addVarint(int tag, long value) {
-      ensureUnknownFieldMap().addVarint(tag, value);
+      try {
+        ensureUnknownFieldMap().addVarint(tag, value);
+      } catch (IOException e) {
+        throw new IllegalArgumentException(e.getMessage());
+      }
     }
 
     /**
      * Adds a {@code fixed32} value to the unknown field set with the given tag number.
      */
     public void addFixed32(int tag, int value) {
-      ensureUnknownFieldMap().addFixed32(tag, value);
+      try {
+        ensureUnknownFieldMap().addFixed32(tag, value);
+      } catch (IOException e) {
+        throw new IllegalArgumentException(e.getMessage());
+      }
     }
 
     /**
      * Adds a {@code fixed64} value to the unknown field set with the given tag number.
      */
     public void addFixed64(int tag, long value) {
-      ensureUnknownFieldMap().addFixed64(tag, value);
+      try {
+        ensureUnknownFieldMap().addFixed64(tag, value);
+      } catch (IOException e) {
+        throw new IllegalArgumentException(e.getMessage());
+      }
     }
 
     /**
      * Adds a length delimited value to the unknown field set with the given tag number.
      */
     public void addLengthDelimited(int tag, ByteString value) {
-      ensureUnknownFieldMap().addLengthDelimited(tag, value);
+      try {
+        ensureUnknownFieldMap().addLengthDelimited(tag, value);
+      } catch (IOException e) {
+        throw new IllegalArgumentException(e.getMessage());
+      }
     }
 
-    private UnknownFieldMap ensureUnknownFieldMap() {
+    UnknownFieldMap ensureUnknownFieldMap() {
       if (unknownFieldMap == null) {
         unknownFieldMap = new UnknownFieldMap();
       }

@@ -15,6 +15,8 @@
  */
 package com.squareup.wire;
 
+import java.io.IOException;
+
 public enum WireType {
   VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), START_GROUP(3), END_GROUP(4), FIXED32(5);
 
@@ -24,8 +26,8 @@ public enum WireType {
   public static final int FIXED_64_SIZE = 8;
   public static final int TAG_TYPE_BITS = 3;
 
-  public static WireType valueOf(int value) {
-    switch (value & TAG_TYPE_MASK) {
+  public static WireType valueOf(int tagAndType) throws IOException {
+    switch (tagAndType & TAG_TYPE_MASK) {
       case 0: return VARINT;
       case 1: return FIXED64;
       case 2: return LENGTH_DELIMITED;
@@ -33,7 +35,7 @@ public enum WireType {
       case 4: return END_GROUP;
       case 5: return FIXED32;
       default:
-        throw new IllegalArgumentException("No WireType for value " + value);
+        throw new IOException("No WireType for type " + (tagAndType & TAG_TYPE_MASK));
     }
   }
 

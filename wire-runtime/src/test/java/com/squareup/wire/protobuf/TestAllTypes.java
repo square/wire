@@ -598,8 +598,9 @@ public class TestAllTypes {
       builder.addVarint(10000, 1);
       builder.addFixed32(10000, 2);
       fail();
-    } catch (IllegalStateException e) {
-      assertEquals("Wire type differs from previous type for tag", e.getMessage());
+    } catch (IllegalArgumentException expected) {
+      assertEquals("Wire type FIXED32 differs from previous type VARINT for tag 10000",
+          expected.getMessage());
     }
   }
 
