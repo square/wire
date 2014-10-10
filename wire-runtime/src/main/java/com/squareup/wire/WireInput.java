@@ -136,6 +136,7 @@ final class WireInput {
   /** Reads a ByteString from the stream with a given size in bytes. */
   public ByteString readBytes(int count) throws IOException {
     pos += count;
+    source.require(count); // Throws EOFException if insufficient bytes are available.
     return source.readByteString(count);
   }
 

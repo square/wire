@@ -186,19 +186,19 @@ final class UnknownFieldMap {
     }
   }
 
-  void addVarint(int tag, Long value) {
+  void addVarint(int tag, Long value) throws IOException {
     addElement(ensureFieldMap(), tag, value, WireType.VARINT);
   }
 
-  void addFixed32(int tag, Integer value) {
+  void addFixed32(int tag, Integer value) throws IOException {
     addElement(ensureFieldMap(), tag, value, WireType.FIXED32);
   }
 
-  void addFixed64(int tag, Long value) {
+  void addFixed64(int tag, Long value) throws IOException {
     addElement(ensureFieldMap(), tag, value, WireType.FIXED64);
   }
 
-  void addLengthDelimited(int tag, ByteString value) {
+  void addLengthDelimited(int tag, ByteString value) throws IOException {
     addElement(ensureFieldMap(), tag, value, WireType.LENGTH_DELIMITED);
   }
 
@@ -209,8 +209,12 @@ final class UnknownFieldMap {
     return fieldMap;
   }
 
+  /**
+   * @throws IOException if the added element's type doesn't match the types of the other elements
+   *     with the same tag.
+   */
   private <T> void addElement(Map<Integer, List<FieldValue>> map, int tag, T value,
-      WireType wireType) {
+      WireType wireType) throws IOException {
     List<FieldValue> values = map.get(tag);
     if (values == null) {
       values = new ArrayList<FieldValue>();
@@ -228,7 +232,9 @@ final class UnknownFieldMap {
         throw new IllegalArgumentException("Unsupported wireType = " + wireType);
     }
     if (values.size() > 0 && values.get(0).getWireType() != fieldValue.getWireType()) {
-      throw new IllegalStateException("Wire type differs from previous type for tag");
+      throw new IOException(String.format(
+          "Wire type %s differs from previous type %s for tag %s", fieldValue.getWireType(),
+          values.get(0).getWireType(), tag));
     }
     values.add(fieldValue);
   }

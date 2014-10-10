@@ -691,17 +691,17 @@ final class MessageAdapter<M extends Message> {
       throws IOException {
     switch (type) {
       case VARINT:
-        builder.addVarint(tag, input.readVarint64());
+        builder.ensureUnknownFieldMap().addVarint(tag, input.readVarint64());
         break;
       case FIXED32:
-        builder.addFixed32(tag, input.readFixed32());
+        builder.ensureUnknownFieldMap().addFixed32(tag, input.readFixed32());
         break;
       case FIXED64:
-        builder.addFixed64(tag, input.readFixed64());
+        builder.ensureUnknownFieldMap().addFixed64(tag, input.readFixed64());
         break;
       case LENGTH_DELIMITED:
         int length = input.readVarint32();
-        builder.addLengthDelimited(tag, input.readBytes(length));
+        builder.ensureUnknownFieldMap().addLengthDelimited(tag, input.readBytes(length));
         break;
       /* Skip any groups found in the input */
       case START_GROUP:

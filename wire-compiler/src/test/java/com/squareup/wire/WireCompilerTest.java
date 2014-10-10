@@ -386,7 +386,8 @@ public class WireCompilerTest {
     String[] outputs = {
         "com/squareup/wire/protos/edgecases/NoFields.java",
         "com/squareup/wire/protos/edgecases/OneField.java",
-        "com/squareup/wire/protos/edgecases/OneBytesField.java"
+        "com/squareup/wire/protos/edgecases/OneBytesField.java",
+        "com/squareup/wire/protos/edgecases/Recursive.java"
     };
     testProto(sources, outputs);
   }

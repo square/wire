@@ -27,3 +27,8 @@ message OneField {
 message OneBytesField {
   optional bytes opt_bytes = 1;
 }
+
+message Recursive {
+  optional int32 value = 1;
+  optional Recursive recursive = 2;
+}
