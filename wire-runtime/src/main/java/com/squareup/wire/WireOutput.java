@@ -49,7 +49,15 @@ package com.squareup.wire;
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import okio.Buffer;
+import okio.ByteString;
+import okio.Source;
+import okio.BufferedSink;
+import okio.Timeout;
+
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 /**
  * Utilities for encoding and writing protocol message fields.
@@ -152,14 +160,10 @@ public final class WireOutput {
     return (fieldNumber << WireType.TAG_TYPE_BITS) | wireType.value();
   }
 
-  private final byte[] buffer;
-  private final int limit;
-  private int position;
+  private final BufferedSink sink;
 
-  private WireOutput(byte[] buffer, int offset, int length) {
-    this.buffer = buffer;
-    position = offset;
-    limit = offset + length;
+  private WireOutput(BufferedSink sink) {
+    this.sink = sink;
   }
 
   /**
@@ -179,7 +183,11 @@ public final class WireOutput {
    * array is faster than writing to an {@code OutputStream}.
    */
   static WireOutput newInstance(byte[] flatArray, int offset, int length) {
-    return new WireOutput(flatArray, offset, length);
+    return new WireOutput(new ByteArraySink(flatArray, offset, length));
+  }
+
+  static WireOutput newInstance(BufferedSink sink) {
+    return new WireOutput(sink);
   }
 
   /** Compute the number of bytes that would be needed to encode a tag. */
@@ -216,11 +224,7 @@ public final class WireOutput {
 
   /** Write a single byte. */
   void writeRawByte(byte value) throws IOException {
-    if (position == limit) {
-      // We're writing to a single buffer.
-      throw new IOException("Out of space: position=" + position + ", limit=" + limit);
-    }
-    buffer[position++] = value;
+    sink.writeByte(value);
   }
 
   /** Write a single byte, represented by an integer value. */
@@ -235,14 +239,7 @@ public final class WireOutput {
 
   /** Write part of an array of bytes. */
   void writeRawBytes(byte[] value, int offset, int length) throws IOException {
-    if (limit - position >= length) {
-      // We have room in the current buffer.
-      System.arraycopy(value, offset, buffer, position, length);
-      position += length;
-    } else {
-      // We're writing to a single buffer.
-      throw new IOException("Out of space: position=" + position + ", limit=" + limit);
-    }
+    sink.write(value, offset, length);
   }
 
   /** Encode and write a tag. */
@@ -342,4 +339,130 @@ public final class WireOutput {
     // Note:  the right-shift must be arithmetic
     return (n << 1) ^ (n >> 63);
   }
+
+  static class ByteArraySink implements BufferedSink {
+    private final byte[] targetArray;
+    private final int limit;
+    private int position;
+
+    public ByteArraySink(byte[] target, int offset, int length) {
+      targetArray = target;
+      position = offset;
+      limit = offset + length;
+    }
+
+    @Override
+    public Buffer buffer() {
+      return null;
+    }
+
+    @Override
+    public BufferedSink write(ByteString byteString) throws IOException {
+      return null;
+    }
+
+    @Override
+    public BufferedSink write(byte[] bytes) throws IOException {
+      return write(bytes, 0, bytes.length);
+    }
+
+    @Override
+    public BufferedSink write(byte[] bytes, int offset, int length) throws IOException {
+      if (limit - position >= length) {
+        // We have room in the current buffer.
+        System.arraycopy(bytes, offset, targetArray, position, length);
+        position += length;
+        return this;
+      } else {
+        // We're writing to a single buffer.
+        throw new IOException("Out of space: position=" + position + ", limit=" + limit);
+      }
+    }
+
+    @Override
+    public long writeAll(Source source) throws IOException {
+      return 0;
+    }
+
+    @Override
+    public BufferedSink writeUtf8(String s) throws IOException {
+      return null;
+    }
+
+    @Override
+    public BufferedSink writeString(String s, Charset charset) throws IOException {
+      return null;
+    }
+
+    @Override
+    public BufferedSink writeByte(int i) throws IOException {
+      if (position == limit) {
+        // We're writing to a single buffer.
+        throw new IOException("Out of space: position=" + position + ", limit=" + limit);
+      }
+      targetArray[position++] = (byte) i;
+      return this;
+    }
+
+    @Override
+    public BufferedSink writeShort(int i) throws IOException {
+      return null;
+    }
+
+    @Override
+    public BufferedSink writeShortLe(int i) throws IOException {
+      return null;
+    }
+
+    @Override
+    public BufferedSink writeInt(int i) throws IOException {
+      return null;
+    }
+
+    @Override
+    public BufferedSink writeIntLe(int i) throws IOException {
+      return null;
+    }
+
+    @Override
+    public BufferedSink writeLong(long l) throws IOException {
+      return null;
+    }
+
+    @Override
+    public BufferedSink writeLongLe(long l) throws IOException {
+      return null;
+    }
+
+    @Override
+    public BufferedSink emitCompleteSegments() throws IOException {
+      return null;
+    }
+
+    @Override
+    public OutputStream outputStream() {
+      return null;
+    }
+
+    @Override
+    public void write(Buffer buffer, long l) throws IOException {
+
+    }
+
+    @Override
+    public void flush() throws IOException {
+
+    }
+
+    @Override
+    public Timeout timeout() {
+      return null;
+    }
+
+    @Override
+    public void close() throws IOException {
+
+    }
+  }
+
 }

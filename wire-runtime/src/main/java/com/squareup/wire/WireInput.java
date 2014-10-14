@@ -83,6 +83,10 @@ final class WireInput {
     return new WireInput(Okio.buffer(source));
   }
 
+  public static WireInput newInstance(BufferedSource source) {
+    return new WireInput(source);
+  }
+
   // -----------------------------------------------------------------
 
   /**
@@ -149,38 +153,36 @@ final class WireInput {
     return retVal[0];
   }
 
-  static int[] readVarint32(final BufferedSource source, int pos) throws IOException {
-    int[] retVal = {0, pos};
-    retVal [1]++;
+  static int[] readVarint32(BufferedSource source, int pos) throws IOException {
+    pos++;
     byte tmp = source.readByte();
     if (tmp >= 0) {
-      retVal [0] = tmp;
-      return retVal;
+      return new int[] {tmp, pos};
     }
-    retVal [0] = tmp & 0x7f;
-    retVal [1]++;
+    int result = tmp & 0x7f;
+    pos++;
     if ((tmp = source.readByte()) >= 0) {
-      retVal [0] |= tmp << 7;
+      result |= tmp << 7;
     } else {
-      retVal [0] |= (tmp & 0x7f) << 7;
-      retVal [1]++;
+      result |= (tmp & 0x7f) << 7;
+      pos++;
       if ((tmp = source.readByte()) >= 0) {
-        retVal [0] |= tmp << 14;
+        result |= tmp << 14;
       } else {
-        retVal [0] |= (tmp & 0x7f) << 14;
-        retVal [1]++;
+        result |= (tmp & 0x7f) << 14;
+        pos++;
         if ((tmp = source.readByte()) >= 0) {
-          retVal [0] |= tmp << 21;
+          result |= tmp << 21;
         } else {
-          retVal [0] |= (tmp & 0x7f) << 21;
-          retVal [1]++;
-          retVal [0] |= (tmp = source.readByte()) << 28;
+          result |= (tmp & 0x7f) << 21;
+          pos++;
+          result |= (tmp = source.readByte()) << 28;
           if (tmp < 0) {
             // Discard upper 32 bits.
             for (int i = 0; i < 5; i++) {
-              retVal [1]++;
+              pos++;
               if (source.readByte() >= 0) {
-                return retVal;
+                return new int[] {result, pos};
               }
             }
             throw new IOException(ENCOUNTERED_A_MALFORMED_VARINT);
@@ -188,7 +190,7 @@ final class WireInput {
         }
       }
     }
-    return retVal;
+    return new int[] {result, pos};
   }
 
   /** Reads a raw varint up to 64 bits in length from the stream. */

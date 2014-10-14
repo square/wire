@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -334,8 +335,7 @@ public class WireTest {
 
   @Test
   public void testDelimited() throws IOException {
-    BufferedSink sink = null;
-    BufferedSource source = null;
+    Buffer buffer = new Buffer();
     Wire wire = new Wire();
     Person person = new Person.Builder()
             .name("Omar")
@@ -346,37 +346,20 @@ public class WireTest {
                     .type(PhoneType.MOBILE)
                     .build()))
             .build();
-    File tmpFile = File.createTempFile("test", "wire");
-    try {
-      sink = Okio.buffer(Okio.sink(tmpFile));
-      for (int i = 0; i < 100; i++) {
-        person.writeDelimitedTo(sink);
-      }
-      sink.flush();
-      sink.close();
-      sink = null;
 
-      source = Okio.buffer(Okio.source(tmpFile));
-      for (int i = 0; i < 100; i++) {
-        Person tmp_person = wire.parseDelimitedFrom(source, Person.class);
-        assertEquals(person.name, Wire.get(tmp_person.name, Person.DEFAULT_NAME));
-        assertEquals(person.id, Wire.get(tmp_person.id, Person.DEFAULT_ID));
-        assertEquals(person.email, Wire.get(tmp_person.email, Person.DEFAULT_EMAIL));
-        assertNotNull(tmp_person.phone);
-        assertEquals(person.phone.size(), tmp_person.phone.size());
-        assertEquals(person.phone.get(0).type, person.phone.get(0).type);
-        assertEquals(person.phone.get(0).number, person.phone.get(0).number);
-      }
-      source.close();
-      source = null;
-    } finally {
-      if(sink != null) {
-        sink.close();
-      }
-      if(source != null) {
-        source.close();
-      }
-      tmpFile.delete();
+    for (int i = 0; i < 100; i++) {
+      person.writeDelimitedTo(buffer);
+    }
+
+    for (int i = 0; i < 100; i++) {
+      Person tmp_person = wire.parseDelimitedFrom(buffer, Person.class);
+      assertEquals(person.name, Wire.get(tmp_person.name, Person.DEFAULT_NAME));
+      assertEquals(person.id, Wire.get(tmp_person.id, Person.DEFAULT_ID));
+      assertEquals(person.email, Wire.get(tmp_person.email, Person.DEFAULT_EMAIL));
+      assertNotNull(tmp_person.phone);
+      assertEquals(person.phone.size(), tmp_person.phone.size());
+      assertEquals(person.phone.get(0).type, person.phone.get(0).type);
+      assertEquals(person.phone.get(0).number, person.phone.get(0).number);
     }
   }
 }

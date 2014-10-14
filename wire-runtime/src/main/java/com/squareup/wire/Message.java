@@ -221,15 +221,14 @@ public abstract class Message {
     write(WireOutput.newInstance(output, offset, count));
   }
 
-  public void writeDelimitedTo(final BufferedSink output) throws IOException {
+  /**
+   * Write this message with size prefix to output sink.
+   */
+  public void writeDelimitedTo(BufferedSink output) throws IOException {
     MessageAdapter<Message> adapter = WIRE.messageAdapter((Class<Message>) getClass());
-    int msgSize = adapter.getSerializedSize(this);
-    int variantSize = WireOutput.varint32Size(msgSize);
-    byte[] buffer = new byte[variantSize + msgSize];
-    WireOutput wireOutput = WireOutput.newInstance(buffer);
-    wireOutput.writeVarint32(msgSize);
+    WireOutput wireOutput = WireOutput.newInstance(output);
+    wireOutput.writeVarint32(adapter.getSerializedSize(this));
     adapter.write(this, wireOutput);
-    output.write(buffer);
   }
 
   @SuppressWarnings("unchecked")

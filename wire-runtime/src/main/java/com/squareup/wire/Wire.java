@@ -170,8 +170,7 @@ public final class Wire {
   }
 
   /**
-   * Reads a size prefixed message of type {@code messageClass} from {@link BufferedSource}
-   * and returns it.
+   * Reads a size-prefixed message of type {@code messageClass} from {@code source}.
   */
   public <M extends Message> M parseDelimitedFrom(BufferedSource source, Class<M> messageClass)
       throws IOException {
@@ -182,7 +181,9 @@ public final class Wire {
       throw new IOException("Invalid size prefix!");
     }
     MessageAdapter<M> adapter = messageAdapter(messageClass);
-    return adapter.read(WireInput.newInstance(source.readByteArray(size)));
+    WireInput input = WireInput.newInstance(source);
+    input.pushLimit(size);
+    return adapter.read(input);
   }
 
   /**
