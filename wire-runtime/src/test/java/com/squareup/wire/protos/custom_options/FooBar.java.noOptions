@@ -223,13 +223,13 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
   public static final class More extends Message {
 
-    public static final Integer DEFAULT_SERIAL = 0;
+    public static final List<Integer> DEFAULT_SERIAL = Collections.emptyList();
 
-    @ProtoField(tag = 1, type = INT32)
-    public final Integer serial;
+    @ProtoField(tag = 1, type = INT32, label = REPEATED)
+    public final List<Integer> serial;
 
-    public More(Integer serial) {
-      this.serial = serial;
+    public More(List<Integer> serial) {
+      this.serial = immutableCopyOf(serial);
     }
 
     private More(Builder builder) {
@@ -247,12 +247,12 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     @Override
     public int hashCode() {
       int result = hashCode;
-      return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 0);
+      return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 1);
     }
 
     public static final class Builder extends Message.Builder<More> {
 
-      public Integer serial;
+      public List<Integer> serial;
 
       public Builder() {
       }
@@ -260,11 +260,11 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       public Builder(More message) {
         super(message);
         if (message == null) return;
-        this.serial = message.serial;
+        this.serial = copyOf(message.serial);
       }
 
-      public Builder serial(Integer serial) {
-        this.serial = serial;
+      public Builder serial(List<Integer> serial) {
+        this.serial = checkForNulls(serial);
         return this;
       }
 

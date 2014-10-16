@@ -17,7 +17,6 @@ package com.squareup.wire;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -260,10 +259,6 @@ public abstract class Message {
     if (a != null && a.isEmpty()) a = null;
     if (b != null && b.isEmpty()) b = null;
     return a == b || (a != null && a.equals(b));
-  }
-
-  protected static <T> List<T> asList(T... a) {
-    return Arrays.asList(a);
   }
 
   @SuppressWarnings("unchecked")

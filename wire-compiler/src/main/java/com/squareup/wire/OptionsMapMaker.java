@@ -381,7 +381,6 @@ public class OptionsMapMaker {
     return (Map<String, Object>) entry;
   }
 
-
   @SuppressWarnings("unchecked")
   String createOptionInitializer(Object listOrMap, String parentType,
       String parentField, String fieldType, boolean skipAsList, int level) {
@@ -395,7 +394,7 @@ public class OptionsMapMaker {
       FieldInfo fieldInfo = compiler.getField(dollarName);
       boolean emitAsList = !skipAsList && fieldInfo != null && fieldInfo.isRepeated();
       if (emitAsList) {
-        sb.append("asList(");
+        sb.append("java.util.Arrays.asList(");
       }
       String shortName = compiler.shortenJavaName(fullyQualifiedName);
       sb.append("new ").append(shortName).append(".Builder()");
@@ -439,7 +438,7 @@ public class OptionsMapMaker {
         sb.append(")");
       }
     } else if (listOrMap instanceof List) {
-      sb.append("asList(");
+      sb.append("java.util.Arrays.asList(");
       String sep = "\n";
       for (Object objectValue : (List<Object>) listOrMap) {
         sb.append(sep);
