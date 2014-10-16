@@ -40,12 +40,12 @@ message FooBar {
   }
 
   message More {
-    optional int32 serial = 1;
+    repeated int32 serial = 1;
   }
 
   enum FooBarBazEnum {
     option enum_option = true;
-    FOO = 1 [enum_value_option=17, complex_enum_value_option={ serial: 99 }];
+    FOO = 1 [enum_value_option=17, complex_enum_value_option={ serial: [ 99, 199 ] }];
     BAR = 2 [squareup.protos.foreign.foreign_enum_value_option=true];
     BAZ = 3 [enum_value_option=18, squareup.protos.foreign.foreign_enum_value_option=false];
   }

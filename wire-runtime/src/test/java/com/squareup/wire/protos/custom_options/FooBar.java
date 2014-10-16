@@ -42,12 +42,12 @@ public final class FooBar extends ExtendableMessage<FooBar> {
           .baz(new Nested.Builder()
               .value(FooBarBazEnum.BAR)
               .build())
-          .fred(asList(
+          .fred(java.util.Arrays.asList(
               444.0F,
               555.0F))
-          .nested(asList(new FooBar.Builder()
+          .nested(java.util.Arrays.asList(new FooBar.Builder()
               .foo(33)
-              .fred(asList(
+              .fred(java.util.Arrays.asList(
                   100.0F,
                   200.0F))
               .build()))
@@ -265,13 +265,13 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
   public static final class More extends Message {
 
-    public static final Integer DEFAULT_SERIAL = 0;
+    public static final List<Integer> DEFAULT_SERIAL = Collections.emptyList();
 
-    @ProtoField(tag = 1, type = INT32)
-    public final Integer serial;
+    @ProtoField(tag = 1, type = INT32, label = REPEATED)
+    public final List<Integer> serial;
 
-    public More(Integer serial) {
-      this.serial = serial;
+    public More(List<Integer> serial) {
+      this.serial = immutableCopyOf(serial);
     }
 
     private More(Builder builder) {
@@ -289,12 +289,12 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     @Override
     public int hashCode() {
       int result = hashCode;
-      return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 0);
+      return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 1);
     }
 
     public static final class Builder extends Message.Builder<More> {
 
-      public Integer serial;
+      public List<Integer> serial;
 
       public Builder() {
       }
@@ -302,11 +302,11 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       public Builder(More message) {
         super(message);
         if (message == null) return;
-        this.serial = message.serial;
+        this.serial = copyOf(message.serial);
       }
 
-      public Builder serial(Integer serial) {
-        this.serial = serial;
+      public Builder serial(List<Integer> serial) {
+        this.serial = checkForNulls(serial);
         return this;
       }
 
@@ -320,7 +320,9 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   public enum FooBarBazEnum
       implements ProtoEnum {
     FOO(1, new More.Builder()
-        .serial(99)
+        .serial(java.util.Arrays.asList(
+            99,
+            199))
         .build(), 17, null),
     BAR(2, null, null, true),
     BAZ(3, null, 18, false);

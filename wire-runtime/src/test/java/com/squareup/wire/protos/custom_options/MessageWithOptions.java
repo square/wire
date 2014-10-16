@@ -17,7 +17,7 @@ public final class MessageWithOptions extends Message {
               .value(FooBar.FooBarBazEnum.BAZ)
               .build())
           .qux(-1L)
-          .fred(asList(
+          .fred(java.util.Arrays.asList(
               123.0F,
               321.0F))
           .daisy(456.0D)
@@ -29,12 +29,12 @@ public final class MessageWithOptions extends Message {
           .baz(new FooBar.Nested.Builder()
               .value(FooBar.FooBarBazEnum.BAR)
               .build())
-          .fred(asList(
+          .fred(java.util.Arrays.asList(
               444.0F,
               555.0F))
-          .nested(asList(new FooBar.Builder()
+          .nested(java.util.Arrays.asList(new FooBar.Builder()
               .foo(33)
-              .fred(asList(
+              .fred(java.util.Arrays.asList(
                   100.0F,
                   200.0F))
               .build()))
@@ -45,15 +45,15 @@ public final class MessageWithOptions extends Message {
           .build())
       .setExtension(Ext_custom_options.my_message_option_five, new FooBar.Builder()
           .setExtension(Ext_custom_options.ext, FooBar.FooBarBazEnum.BAZ)
-          .setExtension(Ext_custom_options.rep, asList(
+          .setExtension(Ext_custom_options.rep, java.util.Arrays.asList(
               FooBar.FooBarBazEnum.FOO,
               FooBar.FooBarBazEnum.BAZ))
           .build())
       .setExtension(Ext_custom_options.my_message_option_six, new FooBar.Builder()
-          .setExtension(Ext_custom_options.rep, asList(
+          .setExtension(Ext_custom_options.rep, java.util.Arrays.asList(
               FooBar.FooBarBazEnum.FOO,
               FooBar.FooBarBazEnum.BAR))
-          .nested(asList(
+          .nested(java.util.Arrays.asList(
               new FooBar.Builder()
                   .foo(44)
                   .setExtension(Ext_custom_options.ext, FooBar.FooBarBazEnum.BAR)
