@@ -3,7 +3,6 @@ package com.squareup.wire;
 import com.squareup.protoparser.EnumType;
 import com.squareup.protoparser.MessageType;
 import com.squareup.protoparser.Option;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

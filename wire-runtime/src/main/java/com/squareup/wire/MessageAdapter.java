@@ -107,6 +107,10 @@ final class MessageAdapter<M extends Message> {
     return key == null ? null : fieldInfoMap.get(key);
   }
 
+  FieldInfo getField(int tag) {
+    return fieldInfoMap.get(tag);
+  }
+
   Object getFieldValue(M message, FieldInfo fieldInfo) {
     if (fieldInfo.messageField == null) {
       throw new AssertionError("Field is not of type \"Message\"");
@@ -739,7 +743,7 @@ final class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private Extension<ExtendableMessage<?>, ?> getExtension(int tag) {
+  Extension<ExtendableMessage<?>, ?> getExtension(int tag) {
     ExtensionRegistry registry = wire.registry;
     return registry == null
         ? null : registry.getExtension((Class<ExtendableMessage<?>>) messageType, tag);
