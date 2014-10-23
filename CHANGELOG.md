@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 1.6.0 *(2014-10-23)*
+----------------------------
+
+ * Fix: Correctly throw `IOException` when parsing bad input fails.
+ * Fix: Ensure emitted code references to `Arrays.asList` correctly compiles in some edge cases.
+ * '__UNDEFINED__' enum value has been removed.
+
+
 Version 1.5.2 *(2014-09-15)*
 ----------------------------
 
