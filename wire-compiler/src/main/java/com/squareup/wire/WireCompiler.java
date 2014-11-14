@@ -488,25 +488,36 @@ public class WireCompiler {
 
       writer.emitImports("java.util.List");
       writer.emitEmptyLine();
-      writer.emitStaticImports("java.util.Arrays.asList", "java.util.Collections.unmodifiableList");
+
+      int extensionsCount = extensionClasses.size();
+      if (extensionsCount == 0) {
+        writer.emitStaticImports("java.util.Collections.emptyList");
+      } else {
+        writer.emitStaticImports("java.util.Arrays.asList",
+            "java.util.Collections.unmodifiableList");
+      }
       writer.emitEmptyLine();
       writer.beginType(className, "class", EnumSet.of(PUBLIC, FINAL));
       writer.emitEmptyLine();
 
-      StringBuilder classes = new StringBuilder("unmodifiableList(asList(\n");
-      int extensionsCount = extensionClasses.size();
-      for (int i = 0; i < extensionsCount; i++) {
-        classes.append(extensionClasses.get(i));
-        classes.append(".class");
-        if (i < extensionsCount - 1) {
-          classes.append(",\n");
+      String classes;
+      if (extensionsCount == 0) {
+        classes = "emptyList()";
+      } else {
+        StringBuilder sb = new StringBuilder("unmodifiableList(asList(\n");
+        for (int i = 0; i < extensionsCount; i++) {
+          sb.append(extensionClasses.get(i));
+          sb.append(".class");
+          if (i < extensionsCount - 1) {
+            sb.append(",\n");
+          }
         }
+        sb.append("))");
+        classes = sb.toString();
       }
-      classes.append("))");
 
       writer.emitAnnotation("SuppressWarnings(\"unchecked\")");
-      writer.emitField("List<Class<?>>", "EXTENSIONS", EnumSet.of(PUBLIC, STATIC, FINAL),
-          classes.toString());
+      writer.emitField("List<Class<?>>", "EXTENSIONS", EnumSet.of(PUBLIC, STATIC, FINAL), classes);
       writer.emitEmptyLine();
 
       // Private no-args constructor
