@@ -334,6 +334,18 @@ public class WireCompilerTest {
     testProtoWithRegistry(sources, registry, outputs);
   }
 
+  @Test public void testEmptyRegistry() throws Exception {
+    String[] sources = {
+        "person.proto"
+    };
+    String registry = "com.squareup.wire.protos.person.EmptyRegistry";
+    String[] outputs = {
+        "com/squareup/wire/protos/person/EmptyRegistry.java",
+        "com/squareup/wire/protos/person/Person.java"
+    };
+    testProtoWithRegistry(sources, registry, outputs);
+  }
+
   @Test public void testSingleLevel() throws Exception {
     String[] sources = {
         "single_level.proto"
