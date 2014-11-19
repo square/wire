@@ -265,5 +265,5 @@ Wire does not support:
 Wire supports custom options on messages and fields. Other custom options are ignored. Use the
 `--no_options` flag to omit option information from the generated code.
 
- [dl_runtime]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
- [dl_compiler]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
+ [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
+ [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
