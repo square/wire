@@ -89,6 +89,7 @@ public final class WireParser {
   public WireParser addDirectories(Iterable<Path> directories) {
     checkNotNull(directories, "Directories must not be null.");
     for (Path directory : directories) {
+      checkNotNull(directory, "Directories must not contain null paths.");
       addDirectory(directory);
     }
     return this;
@@ -105,6 +106,7 @@ public final class WireParser {
   public WireParser addProtos(Iterable<Path> protos) {
     checkNotNull(protos, "Protos must not be null.");
     for (Path proto : protos) {
+      checkNotNull(proto, "Protos must not contain null paths.");
       addProto(proto);
     }
     return this;
@@ -130,6 +132,7 @@ public final class WireParser {
   public WireParser addTypeRoots(Iterable<String> types) {
     checkNotNull(types, "Types must not be null.");
     for (String type : types) {
+      checkNotNull(type, "Types must not contain null.");
       addTypeRoot(type);
     }
     return this;
