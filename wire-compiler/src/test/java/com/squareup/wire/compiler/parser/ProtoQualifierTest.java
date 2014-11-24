@@ -19,8 +19,8 @@ import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyServi
 import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyType;
 import static com.squareup.wire.compiler.parser.ProtoQualifier.resolveType;
 import static java.util.Arrays.asList;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class ProtoQualifierTest {
   private static final List<Option> NO_OPTIONS = Collections.emptyList();

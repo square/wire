@@ -7,14 +7,15 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Set;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class WireParserTest {
   @Rule public FileSystemRule fileSystemRule = new FileSystemRule();
@@ -27,13 +28,37 @@ public class WireParserTest {
     parser = WireParser.createWithFileSystem(fs);
   }
 
+  @Test public void directoryMustBeValid() {
+    try {
+      parser.addDirectory(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("Directory must not be null.");
+    }
+  }
+
+  @Test public void directoriesMustBeValid() {
+    try {
+      parser.addDirectories(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("Directories must not be null.");
+    }
+    try {
+      parser.addDirectories(Collections.<Path>singleton(null));
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("Directories must not contain null paths.");
+    }
+  }
+
   @Test public void fileIsNotValidDirectory() throws IOException {
     addFile(fs.getPath("/foo/bar"), "baz");
     parser.addDirectory(fs.getPath("/foo/bar"));
 
     try {
       parser.validateInputFiles();
-      fail("File is not valid directory.");
+      fail();
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("\"/foo/bar\" is not a directory.");
     }
@@ -44,7 +69,7 @@ public class WireParserTest {
 
     try {
       parser.validateInputFiles();
-      fail("Root directory must exist.");
+      fail();
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Directory \"/foo/bar\" does not exist.");
     }
@@ -56,7 +81,7 @@ public class WireParserTest {
 
     try {
       parser.validateInputFiles();
-      fail("Directory is not valid proto file.");
+      fail();
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Proto \"/foo/bar\" is not a file.");
     }
@@ -67,30 +92,69 @@ public class WireParserTest {
 
     try {
       parser.validateInputFiles();
-      fail("Proto file must exist.");
+      fail();
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Proto \"/foo/bar\" does not exist.");
+    }
+  }
+
+  @Test public void protoMustBeValid() {
+    try {
+      parser.addProto(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("Proto must not be null.");
+    }
+  }
+
+  @Test public void protosMustBeValid() {
+    try {
+      parser.addProtos(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("Protos must not be null.");
+    }
+    try {
+      parser.addProtos(Collections.<Path>singleton(null));
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("Protos must not contain null paths.");
     }
   }
 
   @Test public void typeMustBeValid() {
     try {
       parser.addTypeRoot(null);
-      fail("Null is not a valid type.");
+      fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("Type must not be null.");
     }
     try {
       parser.addTypeRoot("");
-      fail("Empty string is not a valid type.");
+      fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Type must not be blank.");
     }
     try {
       parser.addTypeRoot("      ");
-      fail("Blank string is not a valid type.");
+      fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Type must not be blank.");
+    }
+  }
+
+  @Test public void typesMustBeValid() {
+    try {
+      parser.addTypeRoots(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("Types must not be null.");
+    }
+    try {
+      parser.addTypeRoots(Collections.<String>singleton(null));
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("Types must not contain null.");
     }
   }
 
@@ -148,9 +212,9 @@ public class WireParserTest {
     Set<Path> directories = ImmutableSet.of(fs.getPath("/foo/bar/"), fs.getPath("/kit/kat/"));
 
     Path dependency1 = parser.resolveDependency(proto, directories, "two.proto");
-    assertThat(dependency1).isEqualTo(fs.getPath("/foo/bar/two.proto"));
+    assertThat((Comparable<Path>) dependency1).isEqualTo(fs.getPath("/foo/bar/two.proto"));
     Path dependency2 = parser.resolveDependency(proto, directories, "three.proto");
-    assertThat(dependency2).isEqualTo(fs.getPath("/kit/kat/three.proto"));
+    assertThat((Comparable<Path>) dependency2).isEqualTo(fs.getPath("/kit/kat/three.proto"));
   }
 
   @Test public void collectAllTypesRecursesToNestedTypes() {
@@ -182,7 +246,7 @@ public class WireParserTest {
 
     try {
       WireParser.collectAllTypes(files);
-      fail("Duplicate types are not allowed.");
+      fail();
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Duplicate type wire.Message defined in test1.proto, test2.proto");
     }
@@ -190,7 +254,6 @@ public class WireParserTest {
 
   private void addFile(Path path, String content) throws IOException {
     Files.createDirectories(path.getParent());
-    Files.createFile(path);
     Files.write(path, content.getBytes(UTF_8));
   }
 }

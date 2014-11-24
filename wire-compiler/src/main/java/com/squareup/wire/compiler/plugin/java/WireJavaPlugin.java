@@ -1,5 +1,6 @@
 package com.squareup.wire.compiler.plugin.java;
 
+import com.google.auto.service.AutoService;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.wire.compiler.plugin.WirePlugin;
 import java.nio.file.FileSystem;
@@ -9,6 +10,7 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@AutoService(WirePlugin.class)
 public class WireJavaPlugin implements WirePlugin {
   private Path outputDirectory;
   private String registryClass;
