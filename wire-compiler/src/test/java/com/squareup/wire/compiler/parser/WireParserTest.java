@@ -13,8 +13,8 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class WireParserTest {
   @Rule public FileSystemRule fileSystemRule = new FileSystemRule();
@@ -148,9 +148,9 @@ public class WireParserTest {
     Set<Path> directories = ImmutableSet.of(fs.getPath("/foo/bar/"), fs.getPath("/kit/kat/"));
 
     Path dependency1 = parser.resolveDependency(proto, directories, "two.proto");
-    assertThat(dependency1).isEqualTo(fs.getPath("/foo/bar/two.proto"));
+    assertThat((Comparable<Path>) dependency1).isEqualTo(fs.getPath("/foo/bar/two.proto"));
     Path dependency2 = parser.resolveDependency(proto, directories, "three.proto");
-    assertThat(dependency2).isEqualTo(fs.getPath("/kit/kat/three.proto"));
+    assertThat((Comparable<Path>) dependency2).isEqualTo(fs.getPath("/kit/kat/three.proto"));
   }
 
   @Test public void collectAllTypesRecursesToNestedTypes() {
@@ -190,7 +190,6 @@ public class WireParserTest {
 
   private void addFile(Path path, String content) throws IOException {
     Files.createDirectories(path.getParent());
-    Files.createFile(path);
     Files.write(path, content.getBytes(UTF_8));
   }
 }

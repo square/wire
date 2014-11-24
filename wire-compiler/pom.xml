@@ -12,10 +12,6 @@
   <artifactId>wire-compiler</artifactId>
   <name>Wire Protocol Buffer Compiler</name>
 
-  <properties>
-    <java.version>1.7</java.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.squareup.wire</groupId>
@@ -36,18 +32,24 @@
     </dependency>
 
     <dependency>
+      <groupId>com.google.auto.service</groupId>
+      <artifactId>auto-service</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easytesting</groupId>
-      <artifactId>fest-assert-core</artifactId>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.marschall</groupId>
-      <artifactId>memoryfilesystem</artifactId>
+      <groupId>com.google.jimfs</groupId>
+      <artifactId>jimfs</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import static com.squareup.wire.compiler.parser.ProtoQualifier.fullyQualifyProtos;
 import static com.squareup.wire.compiler.parser.WireParser.collectAllTypes;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RootsFilterTest {
   private static Set<String> filter(String proto, String... keep) {
