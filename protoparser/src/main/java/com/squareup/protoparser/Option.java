@@ -67,6 +67,10 @@ public final class Option {
   private final Object value;
   private final boolean isParenthesized;
 
+  public Option(String name, Object value) {
+    this(name, value, false);
+  }
+
   public Option(String name, Object value, boolean isParenthesized) {
     if (name == null) throw new NullPointerException("name");
     if (value == null) throw new NullPointerException("value");
@@ -89,7 +93,8 @@ public final class Option {
     if (!(other instanceof Option)) return false;
 
     Option that = (Option) other;
-    return name.equals(that.name) && value.equals(that.value)
+    return name.equals(that.name)
+        && value.equals(that.value)
         && isParenthesized == that.isParenthesized;
   }
 
