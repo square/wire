@@ -5,9 +5,9 @@ import java.util.List;
 
 /** A message type or enum type declaration. */
 public interface TypeElement {
-  String getName();
-  String getFullyQualifiedName();
-  String getDocumentation();
-  List<OptionElement> getOptions();
-  List<TypeElement> getNestedElements();
+  String name();
+  String qualifiedName();
+  String documentation();
+  List<OptionElement> options();
+  List<TypeElement> nestedElements();
 }

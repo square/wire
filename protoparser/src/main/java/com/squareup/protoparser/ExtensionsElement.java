@@ -1,62 +1,36 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.protoparser;
 
+import com.google.auto.value.AutoValue;
+
 import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 
-public final class ExtensionsElement {
-  private final String documentation;
-  private final int start;
-  private final int end;
-
-  public ExtensionsElement(String documentation, int start, int end) {
-    if (documentation == null) throw new NullPointerException("documentation");
+@AutoValue
+public abstract class ExtensionsElement {
+  public static ExtensionsElement create(String documentation, int start, int end) {
     if (!isValidTag(start)) throw new IllegalArgumentException("Invalid start value: " + start);
     if (!isValidTag(end)) throw new IllegalArgumentException("Invalid end value: " + end);
 
-    this.documentation = documentation;
-    this.start = start;
-    this.end = end;
+    return new AutoValue_ExtensionsElement(documentation, start, end);
   }
 
-  public String getDocumentation() {
-    return documentation;
+  ExtensionsElement() {
   }
 
-  public int getStart() {
-    return start;
-  }
+  public abstract String documentation();
+  public abstract int start();
+  public abstract int end();
 
-  public int getEnd() {
-    return end;
-  }
-
-  @Override public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ExtensionsElement)) return false;
-
-    ExtensionsElement that = (ExtensionsElement) o;
-    return end == that.end
-        && start == that.start
-        && documentation.equals(that.documentation);
-  }
-
-  @Override public int hashCode() {
-    int result = documentation.hashCode();
-    result = 31 * result + start;
-    result = 31 * result + end;
-    return result;
-  }
-
-  @Override public String toString() {
+  @Override public final String toString() {
     StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation);
+    appendDocumentation(builder, documentation());
     builder.append("extensions ")
-        .append(start);
-    if (start != end) {
+        .append(start());
+    if (start() != end()) {
       builder.append(" to ");
-      if (end < ProtoFile.MAX_TAG_VALUE) {
-        builder.append(end);
+      if (end() < ProtoFile.MAX_TAG_VALUE) {
+        builder.append(end());
       } else {
         builder.append("max");
       }

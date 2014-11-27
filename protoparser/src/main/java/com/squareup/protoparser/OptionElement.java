@@ -1,6 +1,7 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.protoparser;
 
+import com.google.auto.value.AutoValue;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,13 +10,14 @@ import java.util.Map;
 import static java.util.Collections.unmodifiableMap;
 import static com.squareup.protoparser.Utils.appendIndented;
 
-public final class OptionElement {
+@AutoValue
+public abstract class OptionElement {
   @SuppressWarnings("unchecked")
   public static Map<String, Object> optionsAsMap(List<OptionElement> options) {
     Map<String, Object> map = new LinkedHashMap<String, Object>();
     for (OptionElement option : options) {
-      String name = option.getName();
-      Object value = option.getValue();
+      String name = option.name();
+      Object value = option.value();
 
       if (value instanceof String || value instanceof List) {
         map.put(name, value);
@@ -53,7 +55,7 @@ public final class OptionElement {
 
     OptionElement found = null;
     for (OptionElement option : options) {
-      if (option.getName().equals(name)) {
+      if (option.name().equals(name)) {
         if (found != null) {
           throw new IllegalStateException("Multiple options match name: " + name);
         }
@@ -63,46 +65,19 @@ public final class OptionElement {
     return found;
   }
 
-  private final String name;
-  private final Object value;
-  private final boolean isParenthesized;
-
-  public OptionElement(String name, Object value) {
-    this(name, value, false);
+  public static OptionElement create(String name, Object value, boolean isParenthesized) {
+    return new AutoValue_OptionElement(name, value, isParenthesized);
   }
 
-  public OptionElement(String name, Object value, boolean isParenthesized) {
-    if (name == null) throw new NullPointerException("name");
-    if (value == null) throw new NullPointerException("value");
-
-    this.name = name;
-    this.value = value;
-    this.isParenthesized = isParenthesized;
+  OptionElement() {
   }
 
-  public String getName() {
-    return name;
-  }
+  public abstract String name();
+  public abstract Object value();
+  public abstract boolean isParenthesized();
 
-  public Object getValue() {
-    return value;
-  }
-
-  @Override public boolean equals(Object other) {
-    if (this == other) return true;
-    if (!(other instanceof OptionElement)) return false;
-
-    OptionElement that = (OptionElement) other;
-    return name.equals(that.name)
-        && value.equals(that.value)
-        && isParenthesized == that.isParenthesized;
-  }
-
-  @Override public int hashCode() {
-    return name.hashCode() + (37 * value.hashCode()) + (37 * (isParenthesized ? 1 : 0));
-  }
-
-  @Override public String toString() {
+  @Override public final String toString() {
+    Object value = value();
     StringBuilder builder = new StringBuilder();
     if (value instanceof Boolean || value instanceof Number) {
       builder.append(formatName()).append(" = ").append(value);
@@ -112,11 +87,11 @@ public final class OptionElement {
     } else if (value instanceof OptionElement) {
       OptionElement optionValue = (OptionElement) value;
       // Treat nested options as non-parenthesized always, prevents double parentheses.
-      optionValue = new OptionElement(optionValue.name, optionValue.value, false);
+      optionValue = OptionElement.create(optionValue.name(), optionValue.value(), false);
       builder.append(formatName()).append('.').append(optionValue.toString());
     } else if (value instanceof EnumElement.Value) {
       EnumElement.Value enumValue = (EnumElement.Value) value;
-      builder.append(name).append(" = ").append(enumValue.getName());
+      builder.append(name()).append(" = ").append(enumValue.name());
     } else if (value instanceof List) {
       builder.append(formatName()).append(" = [\n");
       //noinspection unchecked
@@ -129,7 +104,7 @@ public final class OptionElement {
     return builder.toString();
   }
 
-  public String toDeclaration() {
+  public final String toDeclaration() {
     return "option " + toString() + ";\n";
   }
 
@@ -150,10 +125,10 @@ public final class OptionElement {
   }
 
   private String formatName() {
-    if (isParenthesized) {
-      return '(' + name + ')';
+    if (isParenthesized()) {
+      return '(' + name() + ')';
     } else {
-      return name;
+      return name();
     }
   }
 }

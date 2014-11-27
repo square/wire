@@ -12,20 +12,20 @@ import static org.fest.assertions.data.MapEntry.entry;
 
 public class OptionElementTest {
   @Test public void simpleToString() {
-    OptionElement option = new OptionElement("foo", "bar", false);
+    OptionElement option = OptionElement.create("foo", "bar", false);
     String expected = "foo = \"bar\"";
     assertThat(option.toString()).isEqualTo(expected);
   }
 
   @Test public void nestedToString() {
-    OptionElement option = new OptionElement("foo.boo", new OptionElement("bar", "baz", true), true);
+    OptionElement option = OptionElement.create("foo.boo", OptionElement.create("bar", "baz", true), true);
     String expected = "(foo.boo).bar = \"baz\"";
     assertThat(option.toString()).isEqualTo(expected);
   }
 
   @Test public void listToString() {
-    OptionElement option = new OptionElement("foo",
-        list(new OptionElement("ping", "pong", true), new OptionElement("kit", "kat", false)), true);
+    OptionElement option = OptionElement.create("foo",
+        list(OptionElement.create("ping", "pong", true), OptionElement.create("kit", "kat", false)), true);
     String expected = ""
         + "(foo) = [\n"
         + "  (ping) = \"pong\",\n"
@@ -35,33 +35,33 @@ public class OptionElementTest {
   }
 
   @Test public void booleanToString() {
-    OptionElement option = new OptionElement("foo", false, false);
+    OptionElement option = OptionElement.create("foo", false, false);
     String expected = "foo = false";
     assertThat(option.toString()).isEqualTo(expected);
   }
 
   @Test public void optionListToMap() {
     List<OptionElement> options = list( //
-        new OptionElement("foo", "bar", false), //
-        new OptionElement("ping", list( //
-            new OptionElement("kit", "kat", false), //
-            new OptionElement("tic", "tac", false), //
-            new OptionElement("up", "down", false) //
+        OptionElement.create("foo", "bar", false), //
+        OptionElement.create("ping", list( //
+            OptionElement.create("kit", "kat", false), //
+            OptionElement.create("tic", "tac", false), //
+            OptionElement.create("up", "down", false) //
         ), false), //
-        new OptionElement("wire", map( //
+        OptionElement.create("wire", map( //
             "omar", "little", //
             "proposition", "joe" //
         ), false), //
-        new OptionElement("nested.option", new OptionElement("one", "two", false), false), //
-        new OptionElement("nested.option", new OptionElement("three", "four", false), false) //
+        OptionElement.create("nested.option", OptionElement.create("one", "two", false), false), //
+        OptionElement.create("nested.option", OptionElement.create("three", "four", false), false) //
     );
     Map<String, Object> optionMap = OptionElement.optionsAsMap(options);
     assertThat(optionMap).contains( //
         entry("foo", "bar"), //
         entry("ping", list( //
-            new OptionElement("kit", "kat", false), //
-            new OptionElement("tic", "tac", false), //
-            new OptionElement("up", "down", false) //
+            OptionElement.create("kit", "kat", false), //
+            OptionElement.create("tic", "tac", false), //
+            OptionElement.create("up", "down", false) //
         )), //
         entry("wire", map( //
             "omar", "little", //
@@ -75,9 +75,9 @@ public class OptionElementTest {
   }
 
   @Test public void findInList() {
-    OptionElement one = new OptionElement("one", "1", false);
-    OptionElement two = new OptionElement("two", "2", false);
-    OptionElement three = new OptionElement("three", "3", false);
+    OptionElement one = OptionElement.create("one", "1", false);
+    OptionElement two = OptionElement.create("two", "2", false);
+    OptionElement three = OptionElement.create("three", "3", false);
     List<OptionElement> options = list(one, two, three);
     assertThat(OptionElement.findByName(options, "one")).isSameAs(one);
     assertThat(OptionElement.findByName(options, "two")).isSameAs(two);
@@ -85,15 +85,15 @@ public class OptionElementTest {
   }
 
   @Test public void findInListMissing() {
-    OptionElement one = new OptionElement("one", "1", false);
-    OptionElement two = new OptionElement("two", "2", false);
+    OptionElement one = OptionElement.create("one", "1", false);
+    OptionElement two = OptionElement.create("two", "2", false);
     List<OptionElement> options = list(one, two);
     assertThat(OptionElement.findByName(options, "three")).isNull();
   }
 
   @Test public void findInListDuplicate() {
-    OptionElement one = new OptionElement("one", "1", false);
-    OptionElement two = new OptionElement("two", "2", false);
+    OptionElement one = OptionElement.create("one", "1", false);
+    OptionElement two = OptionElement.create("two", "2", false);
     List<OptionElement> options = list(one, two, one);
     try {
       OptionElement.findByName(options, "one");

@@ -1,171 +1,81 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.protoparser;
 
-import java.util.ArrayList;
+import com.google.auto.value.AutoValue;
 import java.util.List;
 
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
-import static java.util.Collections.unmodifiableList;
+import static com.squareup.protoparser.Utils.immutableCopyOf;
 
-public final class ServiceElement {
-  private final String name;
-  private final String fqname;
-  private final String documentation;
-  private final List<OptionElement> options;
-  private final List<Method> methods;
-
-  public ServiceElement(String name, String fqname, String documentation,
+@AutoValue
+public abstract class ServiceElement {
+  public static ServiceElement create(String name, String qualifiedName, String documentation,
       List<OptionElement> options, List<Method> methods) {
-    if (name == null) throw new NullPointerException("name");
-    if (fqname == null) throw new NullPointerException("fqname");
-    if (documentation == null) throw new NullPointerException("documentation");
-    if (options == null) throw new NullPointerException("options");
-    if (methods == null) throw new NullPointerException("methods");
-    this.name = name;
-    this.fqname = fqname;
-    this.documentation = documentation;
-    this.options = unmodifiableList(new ArrayList<OptionElement>(options));
-    this.methods = unmodifiableList(new ArrayList<Method>(methods));
+    return new AutoValue_ServiceElement(name, qualifiedName, documentation,
+        immutableCopyOf(options, "options"), immutableCopyOf(methods, "methods"));
   }
 
-  public String getName() {
-    return name;
+  public abstract String name();
+  public abstract String qualifiedName();
+  public abstract String documentation();
+  public abstract List<OptionElement> options();
+  public abstract List<Method> methods();
+
+  ServiceElement() {
   }
 
-  public String getFullyQualifiedName() {
-    return fqname;
-  }
-
-  public String getDocumentation() {
-    return documentation;
-  }
-
-  public List<OptionElement> getOptions() {
-    return options;
-  }
-
-  public List<Method> getMethods() {
-    return methods;
-  }
-
-  @Override public boolean equals(Object other) {
-    if (this == other) return true;
-    if (!(other instanceof ServiceElement)) return false;
-
-    ServiceElement that = (ServiceElement) other;
-    return name.equals(that.name)
-        && fqname.equals(that.fqname)
-        && documentation.equals(that.documentation)
-        && options.equals(that.options)
-        && methods.equals(that.methods);
-  }
-
-  @Override public int hashCode() {
-    int result = name.hashCode();
-    result = 31 * result + fqname.hashCode();
-    result = 31 * result + documentation.hashCode();
-    result = 31 * result + options.hashCode();
-    result = 31 * result + methods.hashCode();
-    return result;
-  }
-
-  @Override public String toString() {
+  @Override public final String toString() {
     StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation);
+    appendDocumentation(builder, documentation());
     builder.append("service ")
-        .append(name)
+        .append(name())
         .append(" {");
-    if (!options.isEmpty()) {
+    if (!options().isEmpty()) {
       builder.append('\n');
-      for (OptionElement option : options) {
+      for (OptionElement option : options()) {
         appendIndented(builder, option.toDeclaration());
       }
     }
-    if (!methods.isEmpty()) {
+    if (!methods().isEmpty()) {
       builder.append('\n');
-      for (Method method : methods) {
+      for (Method method : methods()) {
         appendIndented(builder, method.toString());
       }
     }
     return builder.append("}\n").toString();
   }
 
-  public static final class Method {
-    private final String name;
-    private final String documentation;
-    private final String requestType;
-    private final String responseType;
-    private final List<OptionElement> options;
-
-    public Method(String name, String documentation, String requestType, String responseType,
-        List<OptionElement> options) {
-      if (name == null) throw new NullPointerException("name");
-      if (documentation == null) throw new NullPointerException("documentation");
-      if (requestType == null) throw new NullPointerException("requestType");
-      if (responseType == null) throw new NullPointerException("responseType");
-      if (options == null) throw new NullPointerException("options");
-      this.name = name;
-      this.documentation = documentation;
-      this.requestType = requestType;
-      this.responseType = responseType;
-      this.options = unmodifiableList(new ArrayList<OptionElement>(options));
+  @AutoValue
+  public abstract static class Method {
+    public static Method create(String name, String documentation, String requestType,
+        String responseType, List<OptionElement> options) {
+      return new AutoValue_ServiceElement_Method(name, documentation, requestType, responseType,
+          immutableCopyOf(options, "options"));
     }
 
-    public String getName() {
-      return name;
+    Method() {
     }
 
-    public String getDocumentation() {
-      return documentation;
-    }
+    public abstract String name();
+    public abstract String documentation();
+    public abstract String requestType();
+    public abstract String responseType();
+    public abstract List<OptionElement> options();
 
-    public String getRequestType() {
-      return requestType;
-    }
-
-    public String getResponseType() {
-      return responseType;
-    }
-
-    public List<OptionElement> getOptions() {
-      return options;
-    }
-
-    @Override public boolean equals(Object other) {
-      if (this == other) return true;
-      if (!(other instanceof Method)) return false;
-
-      Method that = (Method) other;
-      return name.equals(that.name)
-          && documentation.equals(that.documentation)
-          && requestType.equals(that.requestType)
-          && responseType.equals(that.responseType)
-          && options.equals(that.options);
-    }
-
-    @Override public int hashCode() {
-      int result = name.hashCode();
-      result = 31 * result + documentation.hashCode();
-      result = 31 * result + requestType.hashCode();
-      result = 31 * result + responseType.hashCode();
-      result = 31 * result + options.hashCode();
-      return result;
-    }
-
-    @Override public String toString() {
+    @Override public final String toString() {
       StringBuilder builder = new StringBuilder();
-      appendDocumentation(builder, documentation);
+      appendDocumentation(builder, documentation());
       builder.append("rpc ")
-          .append(name)
+          .append(name())
           .append(" (")
-          .append(requestType)
+          .append(requestType())
           .append(") returns (")
-          .append(responseType)
+          .append(responseType())
           .append(')');
-      if (!options.isEmpty()) {
+      if (!options().isEmpty()) {
         builder.append(" {\n");
-        for (OptionElement option : options) {
+        for (OptionElement option : options()) {
           appendIndented(builder, option.toDeclaration());
         }
         builder.append("}");
