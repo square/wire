@@ -14,13 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Basic parser for {@code .proto} schema declarations.
- *
- * <p>This parser throws away data that it doesn't care about. In particular,
- * unrecognized options, and extensions are discarded. It doesn't retain nesting
- * within types.
- */
+/** Basic parser for {@code .proto} schema declarations. */
 public final class ProtoSchemaParser {
   /** Parse a {@code .proto} definition file. */
   public static ProtoFile parse(File file) throws IOException {
