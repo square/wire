@@ -7,7 +7,7 @@ import java.util.Set;
 import static java.util.Collections.unmodifiableSet;
 
 /** Utilities for dealing with scalar types. */
-public final class ScalarTypes {
+public final class Scalars {
   private static final Set<String> SCALAR_TYPES;
 
   public static final String TYPE_BOOL = "bool";
@@ -51,7 +51,7 @@ public final class ScalarTypes {
     return SCALAR_TYPES.contains(type);
   }
 
-  private ScalarTypes() {
+  private Scalars() {
     throw new AssertionError("No instances.");
   }
 }

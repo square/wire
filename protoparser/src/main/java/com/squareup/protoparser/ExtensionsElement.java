@@ -4,12 +4,12 @@ package com.squareup.protoparser;
 import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 
-public final class Extensions {
+public final class ExtensionsElement {
   private final String documentation;
   private final int start;
   private final int end;
 
-  public Extensions(String documentation, int start, int end) {
+  public ExtensionsElement(String documentation, int start, int end) {
     if (documentation == null) throw new NullPointerException("documentation");
     if (!isValidTag(start)) throw new IllegalArgumentException("Invalid start value: " + start);
     if (!isValidTag(end)) throw new IllegalArgumentException("Invalid end value: " + end);
@@ -33,9 +33,9 @@ public final class Extensions {
 
   @Override public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Extensions)) return false;
+    if (!(o instanceof ExtensionsElement)) return false;
 
-    Extensions that = (Extensions) o;
+    ExtensionsElement that = (ExtensionsElement) o;
     return end == that.end
         && start == that.start
         && documentation.equals(that.documentation);

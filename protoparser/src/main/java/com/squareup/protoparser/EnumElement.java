@@ -7,25 +7,25 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.squareup.protoparser.Option.formatOptionList;
+import static com.squareup.protoparser.OptionElement.formatOptionList;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
 /** An enumerated type declaration. */
-public final class EnumType implements Type {
-  private static void validateTagUniqueness(String type, List<Value> values) {
+public final class EnumElement implements TypeElement {
+  private static void validateTagUniqueness(String element, List<Value> values) {
     Set<Integer> tags = new LinkedHashSet<Integer>();
     for (Value value : values) {
       int tag = value.getTag();
       if (!tags.add(tag)) {
-        throw new IllegalStateException("Duplicate tag " + tag + " in " + type);
+        throw new IllegalStateException("Duplicate tag " + tag + " in " + element);
       }
     }
   }
 
-  private static boolean parseAllowAlias(List<Option> options) {
-    Option option = Option.findByName(options, "allow_alias");
+  private static boolean parseAllowAlias(List<OptionElement> options) {
+    OptionElement option = OptionElement.findByName(options, "allow_alias");
     if (option != null) {
       Object value = option.getValue();
       return value instanceof Boolean && (Boolean) value;
@@ -35,17 +35,17 @@ public final class EnumType implements Type {
 
   /**
    * Though not mentioned in the spec, enum names use C++ scoping rules, meaning that enum values
-   * are siblings of their type, not children of it.
+   * are siblings of their declaring element, not children of it.
    */
-  static void validateValueUniquenessInScope(String type, List<Type> nestedTypes) {
+  static void validateValueUniquenessInScope(String element, List<TypeElement> nestedElements) {
     Set<String> names = new LinkedHashSet<String>();
-    for (Type nestedType : nestedTypes) {
-      if (nestedType instanceof EnumType) {
-        EnumType enumType = (EnumType) nestedType;
-        for (Value value : enumType.getValues()) {
+    for (TypeElement nestedElement : nestedElements) {
+      if (nestedElement instanceof EnumElement) {
+        EnumElement enumElement = (EnumElement) nestedElement;
+        for (Value value : enumElement.getValues()) {
           String name = value.getName();
           if (!names.add(name)) {
-            throw new IllegalStateException("Duplicate enum name " + name + " in scope " + type);
+            throw new IllegalStateException("Duplicate enum name " + name + " in scope " + element);
           }
         }
       }
@@ -55,11 +55,11 @@ public final class EnumType implements Type {
   private final String name;
   private final String fqname;
   private final String documentation;
-  private final List<Option> options;
+  private final List<OptionElement> options;
   private final List<Value> values;
   private final boolean allowAlias;
 
-  public EnumType(String name, String fqname, String documentation, List<Option> options,
+  public EnumElement(String name, String fqname, String documentation, List<OptionElement> options,
       List<Value> values) {
     if (name == null) throw new NullPointerException("name");
     if (fqname == null) throw new NullPointerException("fqname");
@@ -75,7 +75,7 @@ public final class EnumType implements Type {
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
-    this.options = unmodifiableList(new ArrayList<Option>(options));
+    this.options = unmodifiableList(new ArrayList<OptionElement>(options));
     this.values = unmodifiableList(new ArrayList<Value>(values));
     this.allowAlias = allowAlias;
   }
@@ -92,7 +92,7 @@ public final class EnumType implements Type {
     return documentation;
   }
 
-  @Override public List<Option> getOptions() {
+  @Override public List<OptionElement> getOptions() {
     return options;
   }
 
@@ -105,15 +105,15 @@ public final class EnumType implements Type {
     return allowAlias;
   }
 
-  @Override public List<Type> getNestedTypes() {
+  @Override public List<TypeElement> getNestedElements() {
     return Collections.emptyList();
   }
 
   @Override public boolean equals(Object other) {
     if (this == other) return true;
-    if (!(other instanceof EnumType)) return false;
+    if (!(other instanceof EnumElement)) return false;
 
-    EnumType that = (EnumType) other;
+    EnumElement that = (EnumElement) other;
     return name.equals(that.name) //
         && fqname.equals(that.fqname) //
         && documentation.equals(that.documentation) //
@@ -138,7 +138,7 @@ public final class EnumType implements Type {
         .append(" {");
     if (!options.isEmpty()) {
       builder.append('\n');
-      for (Option option : options) {
+      for (OptionElement option : options) {
         appendIndented(builder, option.toDeclaration());
       }
     }
@@ -157,21 +157,21 @@ public final class EnumType implements Type {
     private final String name;
     private final int tag;
     private final String documentation;
-    private final List<Option> options;
+    private final List<OptionElement> options;
 
-    public Value(String name, int tag, String documentation, List<Option> options) {
+    public Value(String name, int tag, String documentation, List<OptionElement> options) {
       if (name == null) throw new NullPointerException("name");
       if (documentation == null) throw new NullPointerException("documentation");
       if (options == null) throw new NullPointerException("options");
       this.name = name;
       this.tag = tag;
       this.documentation = documentation;
-      this.options = unmodifiableList(new ArrayList<Option>(options));
+      this.options = unmodifiableList(new ArrayList<OptionElement>(options));
     }
 
     /** Used to represent enums values where we just know the name. */
     static Value anonymous(String name) {
-      return new Value(name, UNKNOWN_TAG, "", Collections.<Option>emptyList());
+      return new Value(name, UNKNOWN_TAG, "", Collections.<OptionElement>emptyList());
     }
 
     public String getName() {
@@ -186,7 +186,7 @@ public final class EnumType implements Type {
       return documentation;
     }
 
-    public List<Option> getOptions() {
+    public List<OptionElement> getOptions() {
       return options;
     }
 

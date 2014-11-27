@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 final class TestUtils {
-  static final List<Type> NO_TYPES = Collections.emptyList();
-  static final List<Service> NO_SERVICES = Collections.emptyList();
+  static final List<TypeElement> NO_TYPES = Collections.emptyList();
+  static final List<ServiceElement> NO_SERVICES = Collections.emptyList();
   static final List<String> NO_STRINGS = Collections.emptyList();
-  static final List<ExtendDeclaration> NO_EXTEND_DECLARATIONS = Collections.emptyList();
-  static final List<Extensions> NO_EXTENSIONS = Collections.emptyList();
-  static final List<Option> NO_OPTIONS = Collections.emptyList();
-  static final List<MessageType.Field> NO_FIELDS = Collections.emptyList();
-  static final List<EnumType.Value> NO_VALUES = Collections.emptyList();
-  static final List<Service.Method> NO_METHODS = Collections.emptyList();
+  static final List<ExtendElement> NO_EXTEND_DECLARATIONS = Collections.emptyList();
+  static final List<ExtensionsElement> NO_EXTENSIONS = Collections.emptyList();
+  static final List<OptionElement> NO_OPTIONS = Collections.emptyList();
+  static final List<MessageElement.Field> NO_FIELDS = Collections.emptyList();
+  static final List<EnumElement.Value> NO_VALUES = Collections.emptyList();
+  static final List<ServiceElement.Method> NO_METHODS = Collections.emptyList();
 
   static Map<String, Object> map(Object... keysAndValues) {
     Map<String, Object> result = new LinkedHashMap<String, Object>();

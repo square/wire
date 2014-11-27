@@ -9,18 +9,18 @@ import java.util.Map;
 import static java.util.Collections.unmodifiableMap;
 import static com.squareup.protoparser.Utils.appendIndented;
 
-public final class Option {
+public final class OptionElement {
   @SuppressWarnings("unchecked")
-  public static Map<String, Object> optionsAsMap(List<Option> options) {
+  public static Map<String, Object> optionsAsMap(List<OptionElement> options) {
     Map<String, Object> map = new LinkedHashMap<String, Object>();
-    for (Option option : options) {
+    for (OptionElement option : options) {
       String name = option.getName();
       Object value = option.getValue();
 
       if (value instanceof String || value instanceof List) {
         map.put(name, value);
-      } else if (value instanceof Option) {
-        Map<String, Object> newMap = optionsAsMap(Arrays.asList((Option) value));
+      } else if (value instanceof OptionElement) {
+        Map<String, Object> newMap = optionsAsMap(Arrays.asList((OptionElement) value));
 
         Object oldValue = map.get(name);
         if (oldValue instanceof Map) {
@@ -47,12 +47,12 @@ public final class Option {
   }
 
   /** Return the option with the specified name from the supplied list or null. */
-  public static Option findByName(List<Option> options, String name) {
+  public static OptionElement findByName(List<OptionElement> options, String name) {
     if (options == null) throw new NullPointerException("options");
     if (name == null) throw new NullPointerException("name");
 
-    Option found = null;
-    for (Option option : options) {
+    OptionElement found = null;
+    for (OptionElement option : options) {
       if (option.getName().equals(name)) {
         if (found != null) {
           throw new IllegalStateException("Multiple options match name: " + name);
@@ -67,11 +67,11 @@ public final class Option {
   private final Object value;
   private final boolean isParenthesized;
 
-  public Option(String name, Object value) {
+  public OptionElement(String name, Object value) {
     this(name, value, false);
   }
 
-  public Option(String name, Object value, boolean isParenthesized) {
+  public OptionElement(String name, Object value, boolean isParenthesized) {
     if (name == null) throw new NullPointerException("name");
     if (value == null) throw new NullPointerException("value");
 
@@ -90,9 +90,9 @@ public final class Option {
 
   @Override public boolean equals(Object other) {
     if (this == other) return true;
-    if (!(other instanceof Option)) return false;
+    if (!(other instanceof OptionElement)) return false;
 
-    Option that = (Option) other;
+    OptionElement that = (OptionElement) other;
     return name.equals(that.name)
         && value.equals(that.value)
         && isParenthesized == that.isParenthesized;
@@ -109,18 +109,18 @@ public final class Option {
     } else if (value instanceof String) {
       String stringValue = (String) value;
       builder.append(formatName()).append(" = \"").append(escape(stringValue)).append('"');
-    } else if (value instanceof Option) {
-      Option optionValue = (Option) value;
+    } else if (value instanceof OptionElement) {
+      OptionElement optionValue = (OptionElement) value;
       // Treat nested options as non-parenthesized always, prevents double parentheses.
-      optionValue = new Option(optionValue.name, optionValue.value, false);
+      optionValue = new OptionElement(optionValue.name, optionValue.value, false);
       builder.append(formatName()).append('.').append(optionValue.toString());
-    } else if (value instanceof EnumType.Value) {
-      EnumType.Value enumValue = (EnumType.Value) value;
+    } else if (value instanceof EnumElement.Value) {
+      EnumElement.Value enumValue = (EnumElement.Value) value;
       builder.append(name).append(" = ").append(enumValue.getName());
     } else if (value instanceof List) {
       builder.append(formatName()).append(" = [\n");
       //noinspection unchecked
-      List<Option> optionList = (List<Option>) value;
+      List<OptionElement> optionList = (List<OptionElement>) value;
       formatOptionList(builder, optionList);
       builder.append(']');
     } else {
@@ -141,7 +141,7 @@ public final class Option {
         .replace("\n", "\\n");
   }
 
-  static StringBuilder formatOptionList(StringBuilder builder, List<Option> optionList) {
+  static StringBuilder formatOptionList(StringBuilder builder, List<OptionElement> optionList) {
     for (int i = 0, count = optionList.size(); i < count; i++) {
       String endl = (i < count - 1) ? "," : "";
       appendIndented(builder, optionList.get(i).toString() + endl);

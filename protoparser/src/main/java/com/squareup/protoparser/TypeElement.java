@@ -4,10 +4,10 @@ package com.squareup.protoparser;
 import java.util.List;
 
 /** A message type or enum type declaration. */
-public interface Type {
+public interface TypeElement {
   String getName();
   String getFullyQualifiedName();
   String getDocumentation();
-  List<Option> getOptions();
-  List<Type> getNestedTypes();
+  List<OptionElement> getOptions();
+  List<TypeElement> getNestedElements();
 }
