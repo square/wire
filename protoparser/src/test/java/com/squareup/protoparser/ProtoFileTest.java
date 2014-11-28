@@ -9,6 +9,7 @@ import static com.squareup.protoparser.TestUtils.NO_EXTEND_DECLARATIONS;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
 import static com.squareup.protoparser.TestUtils.NO_FIELDS;
 import static com.squareup.protoparser.TestUtils.NO_METHODS;
+import static com.squareup.protoparser.TestUtils.NO_ONEOFS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.NO_SERVICES;
 import static com.squareup.protoparser.TestUtils.NO_STRINGS;
@@ -47,7 +48,8 @@ public class ProtoFileTest {
 
   @Test public void simpleToString() {
     TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     ProtoFile file =
         ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
             NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
@@ -60,7 +62,8 @@ public class ProtoFileTest {
 
   @Test public void simpleWithImportsToString() {
     TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     ProtoFile file =
         ProtoFile.create("file.proto", null, list("example.other"), NO_STRINGS, list(element),
             NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
@@ -75,7 +78,8 @@ public class ProtoFileTest {
 
   @Test public void simpleWithPublicImportsToString() {
     TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     ProtoFile file =
         ProtoFile.create("file.proto", null, NO_STRINGS, list("example.other"), list(element),
             NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
@@ -90,7 +94,8 @@ public class ProtoFileTest {
 
   @Test public void simpleWithBothImportsToString() {
     TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     ProtoFile file =
         ProtoFile.create("file.proto", null, list("example.thing"), list("example.other"),
             list(element), NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
@@ -106,7 +111,8 @@ public class ProtoFileTest {
 
   @Test public void simpleWithServicesToString() {
     TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     ServiceElement service = ServiceElement.create("Service", "", "", NO_OPTIONS, NO_METHODS);
     ProtoFile file =
         ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
@@ -122,7 +128,8 @@ public class ProtoFileTest {
 
   @Test public void simpleWithOptionsToString() {
     TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     OptionElement option = OptionElement.create("kit", "kat", false);
     ProtoFile file =
         ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
@@ -138,7 +145,8 @@ public class ProtoFileTest {
 
   @Test public void simpleWithExtendsToString() {
     TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     ExtendElement extend = ExtendElement.create("Extend", "Extend", "", NO_FIELDS);
     ProtoFile file =
         ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
@@ -154,11 +162,11 @@ public class ProtoFileTest {
 
   @Test public void multipleEverythingToString() {
     TypeElement element1 =
-        MessageElement.create("Message1", "example.simple.Message1", "", NO_FIELDS, NO_TYPES,
-            NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Message1", "example.simple.Message1", "", NO_FIELDS, NO_ONEOFS,
+            NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     TypeElement element2 =
-        MessageElement.create("Message2", "example.simple.Message2", "", NO_FIELDS, NO_TYPES,
-            NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Message2", "example.simple.Message2", "", NO_FIELDS, NO_ONEOFS,
+            NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ExtendElement extend1 =
         ExtendElement.create("Extend1", "example.simple.Extend1", "", NO_FIELDS);
     ExtendElement extend2 =

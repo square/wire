@@ -2,6 +2,7 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -15,11 +16,17 @@ import static com.squareup.protoparser.Utils.immutableCopyOf;
 
 @AutoValue
 public abstract class MessageElement implements TypeElement {
-  static void validateFieldTagUniqueness(String qualifiedName, List<FieldElement> fields) {
+  static void validateFieldTagUniqueness(String qualifiedName, List<FieldElement> fields,
+      List<OneOfElement> oneOfs) {
     checkNotNull(qualifiedName, "qualifiedName");
 
+    List<FieldElement> allFields = new ArrayList<FieldElement>(fields);
+    for (OneOfElement oneOf : oneOfs) {
+      allFields.addAll(oneOf.fields());
+    }
+
     Set<Integer> tags = new LinkedHashSet<Integer>();
-    for (FieldElement field : fields) {
+    for (FieldElement field : allFields) {
       int tag = field.tag();
       if (!tags.add(tag)) {
         throw new IllegalStateException("Duplicate tag " + tag + " in " + qualifiedName);
@@ -27,14 +34,28 @@ public abstract class MessageElement implements TypeElement {
     }
   }
 
+  static void validateFieldLabel(String qualifiedName, List<FieldElement> fields) {
+    for (FieldElement field : fields) {
+      if (field.label() == Label.ONE_OF) {
+        throw new IllegalStateException("Field '"
+            + field.name()
+            + "' in "
+            + qualifiedName
+            + " improperly declares itself a member of a 'oneof' group but is not.");
+      }
+    }
+  }
+
   public static MessageElement create(String name, String qualifiedName, String documentation,
-      List<FieldElement> fields, List<TypeElement> nestedElements,
+      List<FieldElement> fields, List<OneOfElement> oneOfs, List<TypeElement> nestedElements,
       List<ExtensionsElement> extensions, List<OptionElement> options) {
-    validateFieldTagUniqueness(qualifiedName, fields);
+    validateFieldTagUniqueness(qualifiedName, fields, oneOfs);
+    validateFieldLabel(qualifiedName, fields);
     EnumElement.validateValueUniquenessInScope(qualifiedName, nestedElements);
 
     return new AutoValue_MessageElement(name, qualifiedName, documentation,
-        immutableCopyOf(fields, "fields"), immutableCopyOf(nestedElements, "nestedElements"),
+        immutableCopyOf(fields, "fields"), immutableCopyOf(oneOfs, "oneOfs"),
+        immutableCopyOf(nestedElements, "nestedElements"),
         immutableCopyOf(extensions, "extensions"), immutableCopyOf(options, "options"));
   }
 
@@ -45,6 +66,7 @@ public abstract class MessageElement implements TypeElement {
   @Override public abstract String qualifiedName();
   @Override public abstract String documentation();
   public abstract List<FieldElement> fields();
+  public abstract List<OneOfElement> oneOfs();
   @Override public abstract List<TypeElement> nestedElements();
   public abstract List<ExtensionsElement> extensions();
   @Override public abstract List<OptionElement> options();
@@ -67,6 +89,12 @@ public abstract class MessageElement implements TypeElement {
         appendIndented(builder, field.toString());
       }
     }
+    if (!oneOfs().isEmpty()) {
+      builder.append('\n');
+      for (OneOfElement oneOf : oneOfs()) {
+        appendIndented(builder, oneOf.toString());
+      }
+    }
     if (!extensions().isEmpty()) {
       builder.append('\n');
       for (ExtensionsElement extension : extensions()) {
@@ -83,7 +111,9 @@ public abstract class MessageElement implements TypeElement {
   }
 
   public enum Label {
-    OPTIONAL, REQUIRED, REPEATED
+    OPTIONAL, REQUIRED, REPEATED,
+    /** Indicates the field is a member of a {@code oneof} block. */
+    ONE_OF
   }
 
   @AutoValue
@@ -131,9 +161,10 @@ public abstract class MessageElement implements TypeElement {
     @Override public final String toString() {
       StringBuilder builder = new StringBuilder();
       appendDocumentation(builder, documentation());
-      builder.append(label().toString().toLowerCase(Locale.US))
-          .append(' ')
-          .append(type())
+      if (label() != Label.ONE_OF) {
+        builder.append(label().name().toLowerCase(Locale.US)).append(' ');
+      }
+      builder.append(type())
           .append(' ')
           .append(name())
           .append(" = ")
@@ -146,6 +177,35 @@ public abstract class MessageElement implements TypeElement {
         builder.append(']');
       }
       return builder.append(";\n").toString();
+    }
+  }
+
+  @AutoValue
+  public abstract static class OneOfElement {
+    public static OneOfElement create(String name, String documentation,
+        List<FieldElement> fields) {
+      return new AutoValue_MessageElement_OneOfElement(name, documentation,
+          immutableCopyOf(fields, "fields"));
+    }
+
+    OneOfElement() {
+    }
+
+    public abstract String name();
+    public abstract String documentation();
+    public abstract List<FieldElement> fields();
+
+    @Override public final String toString() {
+      StringBuilder builder = new StringBuilder();
+      appendDocumentation(builder, documentation());
+      builder.append("oneof ").append(name()).append(" {");
+      if (!fields().isEmpty()) {
+        builder.append('\n');
+        for (FieldElement field : fields()) {
+          appendIndented(builder, field.toString());
+        }
+      }
+      return builder.append("}\n").toString();
     }
   }
 }

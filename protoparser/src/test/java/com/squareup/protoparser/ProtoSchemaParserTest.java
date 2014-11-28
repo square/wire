@@ -2,7 +2,6 @@
 package com.squareup.protoparser;
 
 import com.squareup.protoparser.EnumElement.ValueElement;
-import com.squareup.protoparser.MessageElement.Label;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,9 +11,13 @@ import java.util.Map;
 import org.fest.assertions.api.Fail;
 import org.junit.Test;
 
+import static com.squareup.protoparser.MessageElement.Label.ONE_OF;
+import static com.squareup.protoparser.MessageElement.Label.OPTIONAL;
+import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
 import static com.squareup.protoparser.TestUtils.NO_EXTEND_DECLARATIONS;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
 import static com.squareup.protoparser.TestUtils.NO_FIELDS;
+import static com.squareup.protoparser.TestUtils.NO_ONEOFS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.NO_SERVICES;
 import static com.squareup.protoparser.TestUtils.NO_STRINGS;
@@ -26,7 +29,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public final class ProtoSchemaParserTest {
   @Test public void field() throws Exception {
     MessageElement.FieldElement
-        field = MessageElement.FieldElement.create(Label.OPTIONAL, "CType", "ctype", 1, "",
+        field = MessageElement.FieldElement.create(OPTIONAL, "CType", "ctype", 1, "",
         list(OptionElement.create("default", "STRING", false),
             OptionElement.create("deprecated", "true", false)));
     assertThat(field.isDeprecated()).isTrue();
@@ -143,11 +146,34 @@ public final class ProtoSchemaParserTest {
         + "  optional int32 result_per_page = 3;\n"
         + "}";
     TypeElement expected = MessageElement.create("SearchRequest", "SearchRequest", "", Arrays.asList(
-        MessageElement.FieldElement.create(Label.REQUIRED, "string", "query", 1, "", NO_OPTIONS),
-        MessageElement.FieldElement.create(Label.OPTIONAL, "int32", "page_number", 2, "",
+        MessageElement.FieldElement.create(REQUIRED, "string", "query", 1, "", NO_OPTIONS),
+        MessageElement.FieldElement.create(OPTIONAL, "int32", "page_number", 2, "",
             NO_OPTIONS),
-        MessageElement.FieldElement.create(Label.OPTIONAL, "int32", "result_per_page", 3, "",
+        MessageElement.FieldElement.create(OPTIONAL, "int32", "result_per_page", 3, "",
             NO_OPTIONS)),
+        NO_ONEOFS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    ProtoFile protoFile =
+        ProtoFile.create("search.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
+            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    assertThat(ProtoSchemaParser.parse("search.proto", new StringReader(proto))) //
+        .isEqualTo(protoFile);
+  }
+
+  @Test public void parseMessageAndOneOf() throws Exception {
+    String proto = ""
+        + "message SearchRequest {\n"
+        + "  required string query = 1;\n"
+        + "  oneof page_info {\n"
+        + "    int32 page_number = 2;\n"
+        + "    int32 result_per_page = 3;\n"
+        + "  }\n"
+        + "}";
+    TypeElement expected = MessageElement.create("SearchRequest", "SearchRequest", "", list(
+            MessageElement.FieldElement.create(REQUIRED, "string", "query", 1, "", NO_OPTIONS)),
+        list(MessageElement.OneOfElement.create("page_info", "", list(
+            MessageElement.FieldElement.create(ONE_OF, "int32", "page_number", 2, "", NO_OPTIONS),
+            MessageElement.FieldElement.create(ONE_OF, "int32", "result_per_page", 3, "",
+                NO_OPTIONS)))),
         NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         ProtoFile.create("search.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
@@ -224,7 +250,7 @@ public final class ProtoSchemaParserTest {
     TypeElement
         message = MessageElement.create("FileDescriptorSet", "google.protobuf.FileDescriptorSet", ""
         + "The protocol compiler can output a FileDescriptorSet containing the .proto\n"
-        + "files it parses.", Arrays.<MessageElement.FieldElement>asList(), NO_TYPES, NO_EXTENSIONS,
+        + "files it parses.", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
         NO_OPTIONS);
     ProtoFile expected =
         ProtoFile.create("descriptor.proto", "google.protobuf", NO_STRINGS, NO_STRINGS,
@@ -250,7 +276,7 @@ public final class ProtoSchemaParserTest {
             Arrays.asList(OptionElement.create("opt_a", 1, true),
                 OptionElement.create("opt_b", 2, true)))));
     MessageElement.FieldElement
-        field = MessageElement.FieldElement.create(Label.OPTIONAL, "CType", "ctype", 1, "",
+        field = MessageElement.FieldElement.create(OPTIONAL, "CType", "ctype", 1, "",
         list(OptionElement.create("default", ValueElement.anonymous("STRING"), false),
             OptionElement.create("deprecated", true, false)));
     assertThat(field.options()).containsOnly( //
@@ -258,7 +284,7 @@ public final class ProtoSchemaParserTest {
         OptionElement.create("deprecated", true, false));
 
     TypeElement messageElement =
-        MessageElement.create("FieldOptions", "FieldOptions", "", Arrays.asList(field),
+        MessageElement.create("FieldOptions", "FieldOptions", "", Arrays.asList(field), NO_ONEOFS,
             Arrays.asList(enumElement), list(ExtensionsElement.create(
                 "Clients can define custom options in extensions of this message. See above.", 500,
                 500), ExtensionsElement.create("", 1000, ProtoFile.MAX_TAG_VALUE)), NO_OPTIONS);
@@ -278,22 +304,22 @@ public final class ProtoSchemaParserTest {
         + "}\n";
 
     MessageElement.FieldElement
-        gobChicken = MessageElement.FieldElement.create(Label.OPTIONAL, "boolean",
+        gobChicken = MessageElement.FieldElement.create(OPTIONAL, "boolean",
         "koka_ko_koka_ko", 1, "", list(OptionElement.create("default", true, false)));
     MessageElement.FieldElement
-        lucilleChicken = MessageElement.FieldElement.create(Label.OPTIONAL, "boolean",
+        lucilleChicken = MessageElement.FieldElement.create(OPTIONAL, "boolean",
         "coodle_doodle_do", 2, "", list(OptionElement.create("delay", 100, true),
             OptionElement.create("default", false, false)));
     MessageElement.FieldElement
-        georgeSrChicken = MessageElement.FieldElement.create(Label.OPTIONAL, "boolean",
+        georgeSrChicken = MessageElement.FieldElement.create(OPTIONAL, "boolean",
         "coo_coo_ca_cha", 3, "", list(OptionElement.create("default", true, false),
             OptionElement.create("delay", 200, true)));
     MessageElement.FieldElement
-        lindsayChicken = MessageElement.FieldElement.create(Label.OPTIONAL, "boolean",
+        lindsayChicken = MessageElement.FieldElement.create(OPTIONAL, "boolean",
         "cha_chee_cha", 4, "", NO_OPTIONS);
 
     TypeElement messageElement = MessageElement.create("Chickens", "Chickens", "",
-        Arrays.asList(gobChicken, lucilleChicken, georgeSrChicken, lindsayChicken),
+        Arrays.asList(gobChicken, lucilleChicken, georgeSrChicken, lindsayChicken), NO_ONEOFS,
         NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
 
     ProtoFile expected =
@@ -330,7 +356,7 @@ public final class ProtoSchemaParserTest {
         + "}";
     List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
     extendDeclarations.add(ExtendElement.create("Foo", "Foo", "Extends Foo", Arrays.asList(
-        MessageElement.FieldElement.create(Label.OPTIONAL, "int32", "bar", 126, "", NO_OPTIONS))));
+        MessageElement.FieldElement.create(OPTIONAL, "int32", "bar", 126, "", NO_OPTIONS))));
     ProtoFile expected =
         ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS, NO_TYPES, NO_SERVICES,
             extendDeclarations, NO_OPTIONS);
@@ -347,9 +373,10 @@ public final class ProtoSchemaParserTest {
         + "}";
     List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
     extendDeclarations.add(ExtendElement.create("Foo", "Foo", "", Arrays.asList(
-        MessageElement.FieldElement.create(Label.OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+        MessageElement.FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
     TypeElement messageElement =
-        MessageElement.create("Bar", "Bar", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Bar", "Bar", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     ProtoFile expected = ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS,
         Arrays.asList(messageElement), NO_SERVICES, extendDeclarations, NO_OPTIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
@@ -367,10 +394,10 @@ public final class ProtoSchemaParserTest {
         + "}";
     List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
     extendDeclarations.add(ExtendElement.create("Foo", "kit.kat.Foo", "", Arrays.asList(
-        MessageElement.FieldElement.create(Label.OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+        MessageElement.FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
     TypeElement messageElement =
-        MessageElement.create("Bar", "kit.kat.Bar", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+        MessageElement.create("Bar", "kit.kat.Bar", "", NO_FIELDS, NO_ONEOFS, NO_TYPES,
+            NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected =
         ProtoFile.create("descriptor.proto", "kit.kat", NO_STRINGS, NO_STRINGS,
             Arrays.asList(messageElement), NO_SERVICES, extendDeclarations, NO_OPTIONS);
@@ -387,9 +414,10 @@ public final class ProtoSchemaParserTest {
         + "}";
     List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
     extendDeclarations.add(ExtendElement.create("example.Foo", "example.Foo", "", Arrays.asList(
-        MessageElement.FieldElement.create(Label.OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+        MessageElement.FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
     TypeElement messageElement =
-        MessageElement.create("Bar", "Bar", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("Bar", "Bar", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     ProtoFile expected = ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS,
         Arrays.asList(messageElement), NO_SERVICES, extendDeclarations, NO_OPTIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
@@ -407,10 +435,10 @@ public final class ProtoSchemaParserTest {
         + "}";
     List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
     extendDeclarations.add(ExtendElement.create("example.Foo", "example.Foo", "", Arrays.asList(
-        MessageElement.FieldElement.create(Label.OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+        MessageElement.FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
     TypeElement messageElement =
-        MessageElement.create("Bar", "kit.kat.Bar", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+        MessageElement.create("Bar", "kit.kat.Bar", "", NO_FIELDS, NO_ONEOFS, NO_TYPES,
+            NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected =
         ProtoFile.create("descriptor.proto", "kit.kat", NO_STRINGS, NO_STRINGS,
             Arrays.asList(messageElement), NO_SERVICES, extendDeclarations, NO_OPTIONS);
@@ -424,13 +452,13 @@ public final class ProtoSchemaParserTest {
         + "  optional string claim_token = 2 [(squareup.redacted) = true];\n"
         + "}";
     MessageElement.FieldElement field =
-        MessageElement.FieldElement.create(Label.OPTIONAL, "string", "claim_token", 2, "",
+        MessageElement.FieldElement.create(OPTIONAL, "string", "claim_token", 2, "",
             list(OptionElement.create("squareup.redacted", true, true)));
     assertThat(field.options()).containsOnly(OptionElement.create("squareup.redacted", true, true));
 
     TypeElement messageElement =
-        MessageElement.create("Foo", "Foo", "", Arrays.asList(field), NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+        MessageElement.create("Foo", "Foo", "", Arrays.asList(field), NO_ONEOFS, NO_TYPES,
+            NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected = ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS,
         Arrays.asList(messageElement), NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
@@ -445,7 +473,7 @@ public final class ProtoSchemaParserTest {
         + "[default = \"\\a\\b\\f\\n\\r\\t\\v\1f\01\001\11\011\111\\xe\\Xe\\xE\\xE\\x41\\X41\"];\n"
         + "}";
     MessageElement.FieldElement
-        field = MessageElement.FieldElement.create(Label.OPTIONAL, "string", "name", 1, "", list(
+        field = MessageElement.FieldElement.create(OPTIONAL, "string", "name", 1, "", list(
             OptionElement.create("default",
                 "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA",
                 false)));
@@ -453,7 +481,7 @@ public final class ProtoSchemaParserTest {
         "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA", false));
 
     TypeElement messageElement = MessageElement.create("Foo", "Foo", "", Arrays.asList(field),
-            NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+            NO_ONEOFS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile expected =
         ProtoFile.create("foo.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(messageElement),
             NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
@@ -508,8 +536,8 @@ public final class ProtoSchemaParserTest {
         + "  required string hex = 0x10;\n"
         + "}";
     TypeElement expected = MessageElement.create("HexTag", "HexTag", "", Arrays.asList(
-        MessageElement.FieldElement.create(Label.REQUIRED, "string", "hex", 16, "", NO_OPTIONS)), NO_TYPES,
-        NO_EXTENSIONS, NO_OPTIONS);
+            MessageElement.FieldElement.create(REQUIRED, "string", "hex", 16, "",
+                NO_OPTIONS)), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         ProtoFile.create("hex.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
             NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
@@ -554,7 +582,7 @@ public final class ProtoSchemaParserTest {
     options.add(OptionElement.create("squareup.four", option_four_map, true));
 
     TypeElement expected =
-        MessageElement.create("ExoticOptions", "ExoticOptions", "", Arrays.<MessageElement.FieldElement>asList(),
+        MessageElement.create("ExoticOptions", "ExoticOptions", "", NO_FIELDS, NO_ONEOFS,
             NO_TYPES, NO_EXTENSIONS, options);
     ProtoFile protoFile =
         ProtoFile.create("exotic.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
@@ -573,7 +601,7 @@ public final class ProtoSchemaParserTest {
         + "    ];\n"
         + "}";
     MessageElement.FieldElement field =
-        MessageElement.FieldElement.create(Label.OPTIONAL, "field.type", "has_options", 3, "", list(
+        MessageElement.FieldElement.create(OPTIONAL, "field.type", "has_options", 3, "", list(
             OptionElement.create("option_map",
                 map("nested_map", map("key", "value", "key2", list("value2a", "value2b"))), true),
             OptionElement.create("option_string", list("string1", "string2"), true)));
@@ -583,7 +611,7 @@ public final class ProtoSchemaParserTest {
         OptionElement.create("option_string", list("string1", "string2"), true));
 
     TypeElement expected = MessageElement.create("StructuredOption", "StructuredOption", "",
-        Arrays.<MessageElement.FieldElement>asList(field), NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        Arrays.asList(field), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         ProtoFile.create("nestedmaps.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
             NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
@@ -601,7 +629,7 @@ public final class ProtoSchemaParserTest {
         + "  ];\n"
         + "}";
     MessageElement.FieldElement
-        field = MessageElement.FieldElement.create(Label.OPTIONAL, "int32", "bar", 1, "",
+        field = MessageElement.FieldElement.create(OPTIONAL, "int32", "bar", 1, "",
         list(OptionElement.create("validation.range", OptionElement.create("min", 1, true), true),
             OptionElement.create("validation.range", OptionElement.create("max", 100, true), true),
             OptionElement.create("default", 20, false)));
@@ -611,8 +639,8 @@ public final class ProtoSchemaParserTest {
         OptionElement.create("default", 20, false));
 
     TypeElement expected =
-        MessageElement.create("Foo", "Foo", "", Arrays.asList(field), NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+        MessageElement.create("Foo", "Foo", "", Arrays.asList(field), NO_ONEOFS, NO_TYPES,
+            NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile protoFile =
         ProtoFile.create("foo.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
             NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
@@ -624,9 +652,10 @@ public final class ProtoSchemaParserTest {
     ProtoFile parse = ProtoSchemaParser.parse("test.proto", proto);
 
     MessageElement.FieldElement field =
-        MessageElement.FieldElement.create(Label.OPTIONAL, "A.B", "ab", 1, "", NO_OPTIONS);
+        MessageElement.FieldElement.create(OPTIONAL, "A.B", "ab", 1, "", NO_OPTIONS);
     TypeElement element =
-        MessageElement.create("C", "C", "", list(field), NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+        MessageElement.create("C", "C", "", list(field), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
     ProtoFile expected =
         ProtoFile.create("test.proto", null, NO_STRINGS, NO_STRINGS, list(element), NO_SERVICES,
             NO_EXTEND_DECLARATIONS, NO_OPTIONS);

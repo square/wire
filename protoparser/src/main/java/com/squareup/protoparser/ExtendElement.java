@@ -3,6 +3,8 @@ package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.squareup.protoparser.MessageElement.FieldElement;
+import com.squareup.protoparser.MessageElement.OneOfElement;
+import java.util.Collections;
 import java.util.List;
 
 import static com.squareup.protoparser.MessageElement.validateFieldTagUniqueness;
@@ -14,7 +16,7 @@ import static com.squareup.protoparser.Utils.immutableCopyOf;
 public abstract class ExtendElement {
   public static ExtendElement create(String name, String qualifiedName, String documentation,
       List<FieldElement> fields) {
-    validateFieldTagUniqueness(qualifiedName, fields);
+    validateFieldTagUniqueness(qualifiedName, fields, Collections.<OneOfElement>emptyList());
     return new AutoValue_ExtendElement(name, qualifiedName, documentation,
         immutableCopyOf(fields, "fields"));
   }
