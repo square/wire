@@ -166,7 +166,11 @@ public final class ProtoSchemaParser {
       return readRpc(documentation);
     } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
       if (!context.permitsField()) throw unexpected("fields must be nested");
-      return readField(documentation, label);
+      MessageElement.Label labelEnum = MessageElement.Label.valueOf(label.toUpperCase(Locale.US));
+      return readField(documentation, labelEnum);
+    } else if (label.equals("oneof")) {
+      if (!context.permitsOneOf()) throw unexpected("oneofs must be nested in message");
+      return readOneOf(documentation);
     } else if (label.equals("extensions")) {
       if (!context.permitsExtensions()) throw unexpected("extensions must be nested");
       return readExtensions(documentation);
@@ -201,6 +205,7 @@ public final class ProtoSchemaParser {
     String name = readName();
     prefix = prefix + name + ".";
     List<MessageElement.FieldElement> fields = new ArrayList<MessageElement.FieldElement>();
+    List<MessageElement.OneOfElement> oneOfs = new ArrayList<MessageElement.OneOfElement>();
     List<TypeElement> nestedElements = new ArrayList<TypeElement>();
     List<ExtensionsElement> extensions = new ArrayList<ExtensionsElement>();
     List<OptionElement> options = new ArrayList<OptionElement>();
@@ -214,6 +219,8 @@ public final class ProtoSchemaParser {
       Object declared = readDeclaration(nestedDocumentation, Context.MESSAGE);
       if (declared instanceof MessageElement.FieldElement) {
         fields.add((MessageElement.FieldElement) declared);
+      } else if (declared instanceof MessageElement.OneOfElement) {
+        oneOfs.add((MessageElement.OneOfElement) declared);
       } else if (declared instanceof TypeElement) {
         nestedElements.add((TypeElement) declared);
       } else if (declared instanceof ExtensionsElement) {
@@ -226,7 +233,7 @@ public final class ProtoSchemaParser {
       }
     }
     prefix = previousPrefix;
-    return MessageElement.create(name, prefix + name, documentation, fields, nestedElements,
+    return MessageElement.create(name, prefix + name, documentation, fields, oneOfs, nestedElements,
         extensions, options);
   }
 
@@ -298,8 +305,7 @@ public final class ProtoSchemaParser {
   }
 
   /** Reads an field declaration and returns it. */
-  private MessageElement.FieldElement readField(String documentation, String label) {
-    MessageElement.Label labelEnum = MessageElement.Label.valueOf(label.toUpperCase(Locale.US));
+  private MessageElement.FieldElement readField(String documentation, MessageElement.Label label) {
     String type = readName();
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
@@ -322,9 +328,24 @@ public final class ProtoSchemaParser {
       }
     }
     if (readChar() == ';') {
-      return MessageElement.FieldElement.create(labelEnum, type, name, tag, documentation, options);
+      return MessageElement.FieldElement.create(label, type, name, tag, documentation, options);
     }
     throw unexpected("expected ';'");
+  }
+
+  private MessageElement.OneOfElement readOneOf(String documentation) {
+    String name = readName();
+    List<MessageElement.FieldElement> fields = new ArrayList<MessageElement.FieldElement>();
+    if (readChar() != '{') throw unexpected("expected '{'");
+    while (true) {
+      String nestedDocumentation = readDocumentation();
+      if (peekChar() == '}') {
+        pos++;
+        break;
+      }
+      fields.add(readField(nestedDocumentation, MessageElement.Label.ONE_OF));
+    }
+    return MessageElement.OneOfElement.create(name, documentation, fields);
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
@@ -779,6 +800,10 @@ public final class ProtoSchemaParser {
 
     public boolean permitsRpc() {
       return this == SERVICE;
+    }
+
+    public boolean permitsOneOf() {
+      return this == MESSAGE;
     }
   }
 }

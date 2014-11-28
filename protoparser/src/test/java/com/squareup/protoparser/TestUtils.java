@@ -14,6 +14,7 @@ final class TestUtils {
   static final List<ExtensionsElement> NO_EXTENSIONS = Collections.emptyList();
   static final List<OptionElement> NO_OPTIONS = Collections.emptyList();
   static final List<MessageElement.FieldElement> NO_FIELDS = Collections.emptyList();
+  static final List<MessageElement.OneOfElement> NO_ONEOFS = Collections.emptyList();
   static final List<EnumElement.ValueElement> NO_VALUES = Collections.emptyList();
   static final List<ServiceElement.MethodElement> NO_METHODS = Collections.emptyList();
 
