@@ -2,9 +2,9 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
+import com.squareup.protoparser.MessageElement.FieldElement;
 import java.util.List;
 
-import static com.squareup.protoparser.MessageElement.Field;
 import static com.squareup.protoparser.MessageElement.validateFieldTagUniqueness;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
@@ -13,7 +13,7 @@ import static com.squareup.protoparser.Utils.immutableCopyOf;
 @AutoValue
 public abstract class ExtendElement {
   public static ExtendElement create(String name, String qualifiedName, String documentation,
-      List<Field> fields) {
+      List<FieldElement> fields) {
     validateFieldTagUniqueness(qualifiedName, fields);
     return new AutoValue_ExtendElement(name, qualifiedName, documentation,
         immutableCopyOf(fields, "fields"));
@@ -25,7 +25,7 @@ public abstract class ExtendElement {
   public abstract String name();
   public abstract String qualifiedName();
   public abstract String documentation();
-  public abstract List<Field> fields();
+  public abstract List<FieldElement> fields();
 
   @Override public final String toString() {
     StringBuilder builder = new StringBuilder();
@@ -35,7 +35,7 @@ public abstract class ExtendElement {
         .append(" {");
     if (!fields().isEmpty()) {
       builder.append('\n');
-      for (Field field : fields()) {
+      for (FieldElement field : fields()) {
         appendIndented(builder, field.toString());
       }
     }
