@@ -11,7 +11,7 @@ import static com.squareup.protoparser.Utils.immutableCopyOf;
 @AutoValue
 public abstract class ServiceElement {
   public static ServiceElement create(String name, String qualifiedName, String documentation,
-      List<OptionElement> options, List<Method> methods) {
+      List<OptionElement> options, List<MethodElement> methods) {
     return new AutoValue_ServiceElement(name, qualifiedName, documentation,
         immutableCopyOf(options, "options"), immutableCopyOf(methods, "methods"));
   }
@@ -20,7 +20,7 @@ public abstract class ServiceElement {
   public abstract String qualifiedName();
   public abstract String documentation();
   public abstract List<OptionElement> options();
-  public abstract List<Method> methods();
+  public abstract List<MethodElement> methods();
 
   ServiceElement() {
   }
@@ -39,7 +39,7 @@ public abstract class ServiceElement {
     }
     if (!methods().isEmpty()) {
       builder.append('\n');
-      for (Method method : methods()) {
+      for (MethodElement method : methods()) {
         appendIndented(builder, method.toString());
       }
     }
@@ -47,14 +47,14 @@ public abstract class ServiceElement {
   }
 
   @AutoValue
-  public abstract static class Method {
-    public static Method create(String name, String documentation, String requestType,
+  public abstract static class MethodElement {
+    public static MethodElement create(String name, String documentation, String requestType,
         String responseType, List<OptionElement> options) {
-      return new AutoValue_ServiceElement_Method(name, documentation, requestType, responseType,
-          immutableCopyOf(options, "options"));
+      return new AutoValue_ServiceElement_MethodElement(name, documentation, requestType,
+          responseType, immutableCopyOf(options, "options"));
     }
 
-    Method() {
+    MethodElement() {
     }
 
     public abstract String name();

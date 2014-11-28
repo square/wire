@@ -13,9 +13,9 @@ final class TestUtils {
   static final List<ExtendElement> NO_EXTEND_DECLARATIONS = Collections.emptyList();
   static final List<ExtensionsElement> NO_EXTENSIONS = Collections.emptyList();
   static final List<OptionElement> NO_OPTIONS = Collections.emptyList();
-  static final List<MessageElement.Field> NO_FIELDS = Collections.emptyList();
-  static final List<EnumElement.Value> NO_VALUES = Collections.emptyList();
-  static final List<ServiceElement.Method> NO_METHODS = Collections.emptyList();
+  static final List<MessageElement.FieldElement> NO_FIELDS = Collections.emptyList();
+  static final List<EnumElement.ValueElement> NO_VALUES = Collections.emptyList();
+  static final List<ServiceElement.MethodElement> NO_METHODS = Collections.emptyList();
 
   static Map<String, Object> map(Object... keysAndValues) {
     Map<String, Object> result = new LinkedHashMap<String, Object>();

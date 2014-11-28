@@ -16,11 +16,11 @@ import static com.squareup.protoparser.Utils.immutableCopyOf;
 /** An enumerated type declaration. */
 @AutoValue
 public abstract class EnumElement implements TypeElement {
-  private static void validateTagUniqueness(String qualifiedName, List<Value> values) {
+  private static void validateTagUniqueness(String qualifiedName, List<ValueElement> values) {
     checkNotNull(qualifiedName, "qualifiedName");
 
     Set<Integer> tags = new LinkedHashSet<Integer>();
-    for (Value value : values) {
+    for (ValueElement value : values) {
       int tag = value.tag();
       if (!tags.add(tag)) {
         throw new IllegalStateException("Duplicate tag " + tag + " in " + qualifiedName);
@@ -49,7 +49,7 @@ public abstract class EnumElement implements TypeElement {
     for (TypeElement nestedElement : nestedElements) {
       if (nestedElement instanceof EnumElement) {
         EnumElement enumElement = (EnumElement) nestedElement;
-        for (Value value : enumElement.values()) {
+        for (ValueElement value : enumElement.values()) {
           String name = value.name();
           if (!names.add(name)) {
             throw new IllegalStateException(
@@ -61,7 +61,7 @@ public abstract class EnumElement implements TypeElement {
   }
 
   public static EnumElement create(String name, String qualifiedName, String documentation,
-      List<OptionElement> options, List<Value> values) {
+      List<OptionElement> options, List<ValueElement> values) {
     if (!parseAllowAlias(options)) {
       validateTagUniqueness(qualifiedName, values);
     }
@@ -76,7 +76,7 @@ public abstract class EnumElement implements TypeElement {
   @Override public abstract String name();
   @Override public abstract String qualifiedName();
   @Override public abstract String documentation();
-  public abstract List<Value> values();
+  public abstract List<ValueElement> values();
   @Override public abstract List<OptionElement> options();
 
   @Override public final List<TypeElement> nestedElements() {
@@ -97,7 +97,7 @@ public abstract class EnumElement implements TypeElement {
     }
     if (!values().isEmpty()) {
       builder.append('\n');
-      for (Value value : values()) {
+      for (ValueElement value : values()) {
         appendIndented(builder, value.toString());
       }
     }
@@ -106,21 +106,21 @@ public abstract class EnumElement implements TypeElement {
 
   /** An enum constant. */
   @AutoValue
-  public abstract static class Value {
+  public abstract static class ValueElement {
     public static final int UNKNOWN_TAG = -1;
 
     /** Used to represent enums values where we just know the name. */
-    static Value anonymous(String name) {
-      return Value.create(name, UNKNOWN_TAG, "", Collections.<OptionElement>emptyList());
+    static ValueElement anonymous(String name) {
+      return ValueElement.create(name, UNKNOWN_TAG, "", Collections.<OptionElement>emptyList());
     }
 
-    public static Value create(String name, int tag, String documentation,
+    public static ValueElement create(String name, int tag, String documentation,
         List<OptionElement> options) {
-      return new AutoValue_EnumElement_Value(name, tag, documentation,
+      return new AutoValue_EnumElement_ValueElement(name, tag, documentation,
           immutableCopyOf(options, "options"));
     }
 
-    Value() {
+    ValueElement() {
     }
 
     public abstract String name();

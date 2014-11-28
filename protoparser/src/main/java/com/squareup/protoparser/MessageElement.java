@@ -15,11 +15,11 @@ import static com.squareup.protoparser.Utils.immutableCopyOf;
 
 @AutoValue
 public abstract class MessageElement implements TypeElement {
-  static void validateFieldTagUniqueness(String qualifiedName, List<Field> fields) {
+  static void validateFieldTagUniqueness(String qualifiedName, List<FieldElement> fields) {
     checkNotNull(qualifiedName, "qualifiedName");
 
     Set<Integer> tags = new LinkedHashSet<Integer>();
-    for (Field field : fields) {
+    for (FieldElement field : fields) {
       int tag = field.tag();
       if (!tags.add(tag)) {
         throw new IllegalStateException("Duplicate tag " + tag + " in " + qualifiedName);
@@ -28,8 +28,8 @@ public abstract class MessageElement implements TypeElement {
   }
 
   public static MessageElement create(String name, String qualifiedName, String documentation,
-      List<Field> fields, List<TypeElement> nestedElements, List<ExtensionsElement> extensions,
-      List<OptionElement> options) {
+      List<FieldElement> fields, List<TypeElement> nestedElements,
+      List<ExtensionsElement> extensions, List<OptionElement> options) {
     validateFieldTagUniqueness(qualifiedName, fields);
     EnumElement.validateValueUniquenessInScope(qualifiedName, nestedElements);
 
@@ -44,7 +44,7 @@ public abstract class MessageElement implements TypeElement {
   @Override public abstract String name();
   @Override public abstract String qualifiedName();
   @Override public abstract String documentation();
-  public abstract List<Field> fields();
+  public abstract List<FieldElement> fields();
   @Override public abstract List<TypeElement> nestedElements();
   public abstract List<ExtensionsElement> extensions();
   @Override public abstract List<OptionElement> options();
@@ -63,7 +63,7 @@ public abstract class MessageElement implements TypeElement {
     }
     if (!fields().isEmpty()) {
       builder.append('\n');
-      for (Field field : fields()) {
+      for (FieldElement field : fields()) {
         appendIndented(builder, field.toString());
       }
     }
@@ -87,15 +87,15 @@ public abstract class MessageElement implements TypeElement {
   }
 
   @AutoValue
-  public abstract static class Field {
-    public static Field create(Label label, String type, String name, int tag, String documentation,
-        List<OptionElement> options) {
+  public abstract static class FieldElement {
+    public static FieldElement create(Label label, String type, String name, int tag,
+        String documentation, List<OptionElement> options) {
       if (!isValidTag(tag)) throw new IllegalArgumentException("Illegal tag value: " + tag);
-      return new AutoValue_MessageElement_Field(label, type, name, tag, documentation,
+      return new AutoValue_MessageElement_FieldElement(label, type, name, tag, documentation,
           immutableCopyOf(options, "options"));
     }
 
-    Field() {
+    FieldElement() {
     }
 
     public abstract Label label();

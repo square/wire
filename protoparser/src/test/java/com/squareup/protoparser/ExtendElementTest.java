@@ -2,7 +2,7 @@ package com.squareup.protoparser;
 
 import org.junit.Test;
 
-import static com.squareup.protoparser.MessageElement.Field;
+import static com.squareup.protoparser.MessageElement.FieldElement;
 import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
 import static com.squareup.protoparser.TestUtils.NO_FIELDS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
@@ -18,7 +18,8 @@ public class ExtendElementTest {
   }
 
   @Test public void simpleToString() {
-    Field field = Field.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
+    FieldElement
+        field = FieldElement.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
     ExtendElement extend = ExtendElement.create("Name", "Name", "", list(field));
     String expected = ""
         + "extend Name {\n"
@@ -28,7 +29,8 @@ public class ExtendElementTest {
   }
 
   @Test public void simpleWithDocumentationToString() {
-    Field field = Field.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
+    FieldElement
+        field = FieldElement.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
     ExtendElement extend = ExtendElement.create("Name", "Name", "Hello", list(field));
     String expected = ""
         + "// Hello\n"
@@ -39,8 +41,10 @@ public class ExtendElementTest {
   }
 
   @Test public void duplicateTagValueThrows() {
-    Field field1 = Field.create(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
-    Field field2 = Field.create(REQUIRED, "Type", "name2", 1, "", NO_OPTIONS);
+    FieldElement
+        field1 = FieldElement.create(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
+    FieldElement
+        field2 = FieldElement.create(REQUIRED, "Type", "name2", 1, "", NO_OPTIONS);
     try {
       ExtendElement.create("Extend", "example.Extend", "", list(field1, field2));
       fail("Duplicate tag values are not allowed.");
