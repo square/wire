@@ -46,9 +46,10 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleToString() {
-    Type type = new MessageType("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    TypeElement element =
+        new MessageElement("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile file =
-        new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(type),
+        new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
             NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     String expected = ""
         + "// file.proto\n"
@@ -58,9 +59,10 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithImportsToString() {
-    Type type = new MessageType("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    TypeElement element =
+        new MessageElement("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile file =
-        new ProtoFile("file.proto", null, list("example.other"), NO_STRINGS, list(type),
+        new ProtoFile("file.proto", null, list("example.other"), NO_STRINGS, list(element),
             NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     String expected = ""
         + "// file.proto\n"
@@ -72,9 +74,10 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithPublicImportsToString() {
-    Type type = new MessageType("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    TypeElement element =
+        new MessageElement("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile file =
-        new ProtoFile("file.proto", null, NO_STRINGS, list("example.other"), list(type),
+        new ProtoFile("file.proto", null, NO_STRINGS, list("example.other"), list(element),
             NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     String expected = ""
         + "// file.proto\n"
@@ -86,10 +89,11 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithBothImportsToString() {
-    Type type = new MessageType("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    TypeElement element =
+        new MessageElement("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
     ProtoFile file =
         new ProtoFile("file.proto", null, list("example.thing"), list("example.other"),
-            list(type), NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
+            list(element), NO_SERVICES, NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -101,10 +105,11 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithServicesToString() {
-    Type type = new MessageType("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    Service service = new Service("Service", "", "", NO_OPTIONS, NO_METHODS);
+    TypeElement element =
+        new MessageElement("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    ServiceElement service = new ServiceElement("Service", "", "", NO_OPTIONS, NO_METHODS);
     ProtoFile file =
-        new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(type),
+        new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
             list(service), NO_OPTIONS, NO_EXTEND_DECLARATIONS);
     String expected = ""
         + "// file.proto\n"
@@ -116,10 +121,11 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithOptionsToString() {
-    Type type = new MessageType("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    Option option = new Option("kit", "kat", false);
+    TypeElement element =
+        new MessageElement("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    OptionElement option = new OptionElement("kit", "kat", false);
     ProtoFile file =
-        new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(type),
+        new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
             NO_SERVICES, list(option), NO_EXTEND_DECLARATIONS);
     String expected = ""
         + "// file.proto\n"
@@ -131,10 +137,11 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithExtendsToString() {
-    Type type = new MessageType("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    ExtendDeclaration extend = new ExtendDeclaration("Extend", "Extend", "", NO_FIELDS);
+    TypeElement element =
+        new MessageElement("Message", "", "", NO_FIELDS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    ExtendElement extend = new ExtendElement("Extend", "Extend", "", NO_FIELDS);
     ProtoFile file =
-        new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(type),
+        new ProtoFile("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
             NO_SERVICES, NO_OPTIONS, list(extend));
     String expected = ""
         + "// file.proto\n"
@@ -146,23 +153,25 @@ public class ProtoFileTest {
   }
 
   @Test public void multipleEverythingToString() {
-    Type type1 = new MessageType("Message1", "example.simple.Message1", "", NO_FIELDS, NO_TYPES,
-        NO_EXTENSIONS, NO_OPTIONS);
-    Type type2 = new MessageType("Message2", "example.simple.Message2", "", NO_FIELDS, NO_TYPES,
-        NO_EXTENSIONS, NO_OPTIONS);
-    ExtendDeclaration extend1 =
-        new ExtendDeclaration("Extend1", "example.simple.Extend1", "", NO_FIELDS);
-    ExtendDeclaration extend2 =
-        new ExtendDeclaration("Extend2", "example.simple.Extend2", "", NO_FIELDS);
-    Option option1 = new Option("kit", "kat", false);
-    Option option2 = new Option("foo", "bar", false);
-    Service service1 =
-        new Service("Service1", "example.simple.Service1", "", NO_OPTIONS, NO_METHODS);
-    Service service2 =
-        new Service("Service2", "example.simple.Service2", "", NO_OPTIONS, NO_METHODS);
+    TypeElement element1 =
+        new MessageElement("Message1", "example.simple.Message1", "", NO_FIELDS, NO_TYPES,
+            NO_EXTENSIONS, NO_OPTIONS);
+    TypeElement element2 =
+        new MessageElement("Message2", "example.simple.Message2", "", NO_FIELDS, NO_TYPES,
+            NO_EXTENSIONS, NO_OPTIONS);
+    ExtendElement extend1 =
+        new ExtendElement("Extend1", "example.simple.Extend1", "", NO_FIELDS);
+    ExtendElement extend2 =
+        new ExtendElement("Extend2", "example.simple.Extend2", "", NO_FIELDS);
+    OptionElement option1 = new OptionElement("kit", "kat", false);
+    OptionElement option2 = new OptionElement("foo", "bar", false);
+    ServiceElement service1 =
+        new ServiceElement("Service1", "example.simple.Service1", "", NO_OPTIONS, NO_METHODS);
+    ServiceElement service2 =
+        new ServiceElement("Service2", "example.simple.Service2", "", NO_OPTIONS, NO_METHODS);
     ProtoFile file =
         new ProtoFile("file.proto", "example.simple", list("example.thing"), list("example.other"),
-            list(type1, type2), list(service1, service2), list(option1, option2),
+            list(element1, element2), list(service1, service2), list(option1, option2),
             list(extend1, extend2));
     String expected = ""
         + "// file.proto\n"

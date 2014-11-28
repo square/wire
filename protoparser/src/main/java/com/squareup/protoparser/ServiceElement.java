@@ -8,15 +8,15 @@ import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
-public final class Service {
+public final class ServiceElement {
   private final String name;
   private final String fqname;
   private final String documentation;
-  private final List<Option> options;
+  private final List<OptionElement> options;
   private final List<Method> methods;
 
-  public Service(String name, String fqname, String documentation, List<Option> options,
-      List<Method> methods) {
+  public ServiceElement(String name, String fqname, String documentation,
+      List<OptionElement> options, List<Method> methods) {
     if (name == null) throw new NullPointerException("name");
     if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
@@ -25,7 +25,7 @@ public final class Service {
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
-    this.options = unmodifiableList(new ArrayList<Option>(options));
+    this.options = unmodifiableList(new ArrayList<OptionElement>(options));
     this.methods = unmodifiableList(new ArrayList<Method>(methods));
   }
 
@@ -41,7 +41,7 @@ public final class Service {
     return documentation;
   }
 
-  public List<Option> getOptions() {
+  public List<OptionElement> getOptions() {
     return options;
   }
 
@@ -51,9 +51,9 @@ public final class Service {
 
   @Override public boolean equals(Object other) {
     if (this == other) return true;
-    if (!(other instanceof Service)) return false;
+    if (!(other instanceof ServiceElement)) return false;
 
-    Service that = (Service) other;
+    ServiceElement that = (ServiceElement) other;
     return name.equals(that.name)
         && fqname.equals(that.fqname)
         && documentation.equals(that.documentation)
@@ -78,7 +78,7 @@ public final class Service {
         .append(" {");
     if (!options.isEmpty()) {
       builder.append('\n');
-      for (Option option : options) {
+      for (OptionElement option : options) {
         appendIndented(builder, option.toDeclaration());
       }
     }
@@ -96,10 +96,10 @@ public final class Service {
     private final String documentation;
     private final String requestType;
     private final String responseType;
-    private final List<Option> options;
+    private final List<OptionElement> options;
 
     public Method(String name, String documentation, String requestType, String responseType,
-        List<Option> options) {
+        List<OptionElement> options) {
       if (name == null) throw new NullPointerException("name");
       if (documentation == null) throw new NullPointerException("documentation");
       if (requestType == null) throw new NullPointerException("requestType");
@@ -109,7 +109,7 @@ public final class Service {
       this.documentation = documentation;
       this.requestType = requestType;
       this.responseType = responseType;
-      this.options = unmodifiableList(new ArrayList<Option>(options));
+      this.options = unmodifiableList(new ArrayList<OptionElement>(options));
     }
 
     public String getName() {
@@ -128,7 +128,7 @@ public final class Service {
       return responseType;
     }
 
-    public List<Option> getOptions() {
+    public List<OptionElement> getOptions() {
       return options;
     }
 
@@ -165,7 +165,7 @@ public final class Service {
           .append(')');
       if (!options.isEmpty()) {
         builder.append(" {\n");
-        for (Option option : options) {
+        for (OptionElement option : options) {
           appendIndented(builder, option.toDeclaration());
         }
         builder.append("}");

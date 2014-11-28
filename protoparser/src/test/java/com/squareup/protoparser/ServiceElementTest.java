@@ -2,22 +2,22 @@ package com.squareup.protoparser;
 
 import org.junit.Test;
 
-import static com.squareup.protoparser.Service.Method;
+import static com.squareup.protoparser.ServiceElement.Method;
 import static com.squareup.protoparser.TestUtils.NO_METHODS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.list;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class ServiceTest {
+public class ServiceElementTest {
   @Test public void emptyToString() {
-    Service service = new Service("Service", "", "", NO_OPTIONS, NO_METHODS);
+    ServiceElement service = new ServiceElement("Service", "", "", NO_OPTIONS, NO_METHODS);
     String expected = "service Service {}\n";
     assertThat(service.toString()).isEqualTo(expected);
   }
 
   @Test public void singleToString() {
     Method method = new Method("Name", "", "RequestType", "ResponseType", NO_OPTIONS);
-    Service service = new Service("Service", "", "", NO_OPTIONS, list(method));
+    ServiceElement service = new ServiceElement("Service", "", "", NO_OPTIONS, list(method));
     String expected = ""
         + "service Service {\n"
         + "  rpc Name (RequestType) returns (ResponseType);\n"
@@ -27,7 +27,8 @@ public class ServiceTest {
 
   @Test public void singleWithOptionsToString() {
     Method method = new Method("Name", "", "RequestType", "ResponseType", NO_OPTIONS);
-    Service service = new Service("Service", "", "", list(new Option("foo", "bar", false)),
+    ServiceElement
+        service = new ServiceElement("Service", "", "", list(new OptionElement("foo", "bar", false)),
         list(method));
     String expected = ""
         + "service Service {\n"
@@ -40,7 +41,7 @@ public class ServiceTest {
 
   @Test public void singleWithDocumentation() {
     Method method = new Method("Name", "", "RequestType", "ResponseType", NO_OPTIONS);
-    Service service = new Service("Service", "", "Hello", NO_OPTIONS, list(method));
+    ServiceElement service = new ServiceElement("Service", "", "Hello", NO_OPTIONS, list(method));
     String expected = ""
         + "// Hello\n"
         + "service Service {\n"
@@ -51,7 +52,7 @@ public class ServiceTest {
 
   @Test public void multipleToString() {
     Method method = new Method("Name", "", "RequestType", "ResponseType", NO_OPTIONS);
-    Service service = new Service("Service", "", "", NO_OPTIONS, list(method, method));
+    ServiceElement service = new ServiceElement("Service", "", "", NO_OPTIONS, list(method, method));
     String expected = ""
         + "service Service {\n"
         + "  rpc Name (RequestType) returns (ResponseType);\n"
@@ -76,7 +77,7 @@ public class ServiceTest {
 
   @Test public void methodWithOptions() {
     Method method = new Method("Name", "", "RequestType", "ResponseType",
-        list(new Option("foo", "bar", false)));
+        list(new OptionElement("foo", "bar", false)));
     String expected = ""
         + "rpc Name (RequestType) returns (ResponseType) {\n"
         + "  option foo = \"bar\";\n"

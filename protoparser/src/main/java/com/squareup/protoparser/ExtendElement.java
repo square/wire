@@ -4,19 +4,19 @@ package com.squareup.protoparser;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.squareup.protoparser.MessageType.Field;
+import static com.squareup.protoparser.MessageElement.Field;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
-public final class ExtendDeclaration {
+public final class ExtendElement {
   private final String name;
   private final String fqname;
   private final String documentation;
   private final List<Field> fields;
 
-  public ExtendDeclaration(String name, String fqname, String documentation, List<Field> fields) {
-    MessageType.validateFieldTagUniqueness(fqname, fields);
+  public ExtendElement(String name, String fqname, String documentation, List<Field> fields) {
+    MessageElement.validateFieldTagUniqueness(fqname, fields);
 
     this.name = name;
     this.fqname = fqname;
@@ -42,9 +42,9 @@ public final class ExtendDeclaration {
 
   @Override public boolean equals(Object other) {
     if (this == other) return true;
-    if (!(other instanceof ExtendDeclaration)) return false;
+    if (!(other instanceof ExtendElement)) return false;
 
-    ExtendDeclaration that = (ExtendDeclaration) other;
+    ExtendElement that = (ExtendElement) other;
     return name.equals(that.name)
         && fqname.equals(that.fqname)
         && documentation.equals(that.documentation)

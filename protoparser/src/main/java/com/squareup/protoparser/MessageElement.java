@@ -12,13 +12,13 @@ import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
 import static java.util.Collections.unmodifiableList;
 
-public final class MessageType implements Type {
-  static void validateFieldTagUniqueness(String type, List<Field> fields) {
+public final class MessageElement implements TypeElement {
+  static void validateFieldTagUniqueness(String element, List<Field> fields) {
     Set<Integer> tags = new LinkedHashSet<Integer>();
     for (Field field : fields) {
       int tag = field.getTag();
       if (!tags.add(tag)) {
-        throw new IllegalStateException("Duplicate tag " + tag + " in " + type);
+        throw new IllegalStateException("Duplicate tag " + tag + " in " + element);
       }
     }
   }
@@ -27,29 +27,30 @@ public final class MessageType implements Type {
   private final String fqname;
   private final String documentation;
   private final List<Field> fields;
-  private final List<Type> nestedTypes;
-  private final List<Extensions> extensions;
-  private final List<Option> options;
+  private final List<TypeElement> nestedElements;
+  private final List<ExtensionsElement> extensions;
+  private final List<OptionElement> options;
 
-  public MessageType(String name, String fqname, String documentation, List<Field> fields,
-      List<Type> nestedTypes, List<Extensions> extensions, List<Option> options) {
+  public MessageElement(String name, String fqname, String documentation, List<Field> fields,
+      List<TypeElement> nestedElements, List<ExtensionsElement> extensions,
+      List<OptionElement> options) {
     if (name == null) throw new NullPointerException("name");
     if (fqname == null) throw new NullPointerException("fqname");
     if (documentation == null) throw new NullPointerException("documentation");
     if (fields == null) throw new NullPointerException("fields");
-    if (nestedTypes == null) throw new NullPointerException("nestedTypes");
+    if (nestedElements == null) throw new NullPointerException("nestedElements");
     if (extensions == null) throw new NullPointerException("extensions");
     if (options == null) throw new NullPointerException("options");
     validateFieldTagUniqueness(fqname, fields);
-    EnumType.validateValueUniquenessInScope(fqname, nestedTypes);
+    EnumElement.validateValueUniquenessInScope(fqname, nestedElements);
 
     this.name = name;
     this.fqname = fqname;
     this.documentation = documentation;
     this.fields = unmodifiableList(new ArrayList<Field>(fields));
-    this.nestedTypes = unmodifiableList(new ArrayList<Type>(nestedTypes));
-    this.extensions = unmodifiableList(new ArrayList<Extensions>(extensions));
-    this.options = unmodifiableList(new ArrayList<Option>(options));
+    this.nestedElements = unmodifiableList(new ArrayList<TypeElement>(nestedElements));
+    this.extensions = unmodifiableList(new ArrayList<ExtensionsElement>(extensions));
+    this.options = unmodifiableList(new ArrayList<OptionElement>(options));
   }
 
   @Override public String getName() {
@@ -68,28 +69,28 @@ public final class MessageType implements Type {
     return fields;
   }
 
-  @Override public List<Type> getNestedTypes() {
-    return nestedTypes;
+  @Override public List<TypeElement> getNestedElements() {
+    return nestedElements;
   }
 
-  public List<Extensions> getExtensions() {
+  public List<ExtensionsElement> getExtensions() {
     return extensions;
   }
 
-  @Override public List<Option> getOptions() {
+  @Override public List<OptionElement> getOptions() {
     return options;
   }
 
   @Override public boolean equals(Object other) {
     if (this == other) return true;
-    if (!(other instanceof MessageType)) return false;
+    if (!(other instanceof MessageElement)) return false;
 
-    MessageType that = (MessageType) other;
+    MessageElement that = (MessageElement) other;
     return name.equals(that.name)
         && fqname.equals(that.fqname)
         && documentation.equals(that.documentation)
         && fields.equals(that.fields)
-        && nestedTypes.equals(that.nestedTypes)
+        && nestedElements.equals(that.nestedElements)
         && extensions.equals(that.extensions)
         && options.equals(that.options);
   }
@@ -99,7 +100,7 @@ public final class MessageType implements Type {
     result = 31 * result + fqname.hashCode();
     result = 31 * result + documentation.hashCode();
     result = 31 * result + fields.hashCode();
-    result = 31 * result + nestedTypes.hashCode();
+    result = 31 * result + nestedElements.hashCode();
     result = 31 * result + extensions.hashCode();
     result = 31 * result + options.hashCode();
     return result;
@@ -113,7 +114,7 @@ public final class MessageType implements Type {
         .append(" {");
     if (!options.isEmpty()) {
       builder.append('\n');
-      for (Option option : options) {
+      for (OptionElement option : options) {
         appendIndented(builder, option.toDeclaration());
       }
     }
@@ -125,13 +126,13 @@ public final class MessageType implements Type {
     }
     if (!extensions.isEmpty()) {
       builder.append('\n');
-      for (Extensions extension : extensions) {
+      for (ExtensionsElement extension : extensions) {
         appendIndented(builder, extension.toString());
       }
     }
-    if (!nestedTypes.isEmpty()) {
+    if (!nestedElements.isEmpty()) {
       builder.append('\n');
-      for (Type type : nestedTypes) {
+      for (TypeElement type : nestedElements) {
         appendIndented(builder, type.toString());
       }
     }
@@ -147,11 +148,11 @@ public final class MessageType implements Type {
     private final String type;
     private final String name;
     private final int tag;
-    private final List<Option> options;
+    private final List<OptionElement> options;
     private final String documentation;
 
     public Field(Label label, String type, String name, int tag, String documentation,
-        List<Option> options) {
+        List<OptionElement> options) {
       if (label == null) throw new NullPointerException("label");
       if (type == null) throw new NullPointerException("type");
       if (!isValidTag(tag)) throw new IllegalArgumentException("Illegal tag value: " + tag);
@@ -164,7 +165,7 @@ public final class MessageType implements Type {
       this.name = name;
       this.tag = tag;
       this.documentation = documentation;
-      this.options = unmodifiableList(new ArrayList<Option>(options));
+      this.options = unmodifiableList(new ArrayList<OptionElement>(options));
     }
 
     public Label getLabel() {
@@ -188,7 +189,7 @@ public final class MessageType implements Type {
       return tag;
     }
 
-    public List<Option> getOptions() {
+    public List<OptionElement> getOptions() {
       return options;
     }
 
@@ -198,19 +199,19 @@ public final class MessageType implements Type {
 
     /** Returns true when the {@code deprecated} option is present and set to true. */
     public boolean isDeprecated() {
-      Option deprecatedOption = Option.findByName(options, "deprecated");
+      OptionElement deprecatedOption = OptionElement.findByName(options, "deprecated");
       return deprecatedOption != null && "true".equals(deprecatedOption.getValue());
     }
 
     /** Returns true when the {@code packed} option is present and set to true. */
     public boolean isPacked() {
-      Option packedOption = Option.findByName(options, "packed");
+      OptionElement packedOption = OptionElement.findByName(options, "packed");
       return packedOption != null && "true".equals(packedOption.getValue());
     }
 
     /** Returns the {@code default} option value or {@code null}. */
     public String getDefault() {
-      Option defaultOption = Option.findByName(options, "default");
+      OptionElement defaultOption = OptionElement.findByName(options, "default");
       return defaultOption != null ? (String) defaultOption.getValue() : null;
     }
 
@@ -249,7 +250,7 @@ public final class MessageType implements Type {
           .append(tag);
       if (!options.isEmpty()) {
         builder.append(" [\n");
-        for (Option option : options) {
+        for (OptionElement option : options) {
           appendIndented(builder, option.toString());
         }
         builder.append(']');

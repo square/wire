@@ -64,16 +64,16 @@ public final class ProtoSchemaParser {
   private final List<String> publicDependencies = new ArrayList<String>();
 
   /** Declared message types and enum types. */
-  private final List<Type> types = new ArrayList<Type>();
+  private final List<TypeElement> typeElements = new ArrayList<TypeElement>();
 
   /** Declared services. */
-  private final List<Service> services = new ArrayList<Service>();
+  private final List<ServiceElement> services = new ArrayList<ServiceElement>();
 
   /** Declared 'extend's. */
-  private final List<ExtendDeclaration> extendDeclarations = new ArrayList<ExtendDeclaration>();
+  private final List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
 
   /** Global options. */
-  private final List<Option> options = new ArrayList<Option>();
+  private final List<OptionElement> options = new ArrayList<OptionElement>();
 
   ProtoSchemaParser(String fileName, char[] data) {
     this.fileName = fileName;
@@ -107,18 +107,18 @@ public final class ProtoSchemaParser {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return new ProtoFile(fileName, packageName, dependencies, publicDependencies, types,
+        return new ProtoFile(fileName, packageName, dependencies, publicDependencies, typeElements,
             services, options, extendDeclarations);
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
-      if (declaration instanceof Type) {
-        types.add((Type) declaration);
-      } else if (declaration instanceof Service) {
-        services.add((Service) declaration);
-      } else if (declaration instanceof Option) {
-        options.add((Option) declaration);
-      } else if (declaration instanceof ExtendDeclaration) {
-        extendDeclarations.add((ExtendDeclaration) declaration);
+      if (declaration instanceof TypeElement) {
+        typeElements.add((TypeElement) declaration);
+      } else if (declaration instanceof ServiceElement) {
+        services.add((ServiceElement) declaration);
+      } else if (declaration instanceof OptionElement) {
+        options.add((OptionElement) declaration);
+      } else if (declaration instanceof ExtendElement) {
+        extendDeclarations.add((ExtendElement) declaration);
       }
     }
   }
@@ -150,13 +150,13 @@ public final class ProtoSchemaParser {
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
     } else if (label.equals("option")) {
-      Option result = readOption('=');
+      OptionElement result = readOption('=');
       if (readChar() != ';') throw unexpected("expected ';'");
       return result;
     } else if (label.equals("message")) {
       return readMessage(documentation);
     } else if (label.equals("enum")) {
-      return readEnumType(documentation);
+      return readEnumElement(documentation);
     } else if (label.equals("service")) {
       return readService(documentation);
     } else if (label.equals("extend")) {
@@ -171,7 +171,7 @@ public final class ProtoSchemaParser {
       if (!context.permitsExtensions()) throw unexpected("extensions must be nested");
       return readExtensions(documentation);
     } else if (context == Context.ENUM) {
-      List<Option> options = new ArrayList<Option>();
+      List<OptionElement> options = new ArrayList<OptionElement>();
 
       if (readChar() != '=') throw unexpected("expected '='");
       int tag = readInt();
@@ -189,21 +189,21 @@ public final class ProtoSchemaParser {
         }
       }
       if (readChar() != ';') throw unexpected("expected ';'");
-      return new EnumType.Value(label, tag, documentation, options);
+      return new EnumElement.Value(label, tag, documentation, options);
     } else {
       throw unexpected("unexpected label: " + label);
     }
   }
 
   /** Reads a message declaration. */
-  private MessageType readMessage(String documentation) {
+  private MessageElement readMessage(String documentation) {
     String previousPrefix = prefix;
     String name = readName();
     prefix = prefix + name + ".";
-    List<MessageType.Field> fields = new ArrayList<MessageType.Field>();
-    List<Type> nestedTypes = new ArrayList<Type>();
-    List<Extensions> extensions = new ArrayList<Extensions>();
-    List<Option> options = new ArrayList<Option>();
+    List<MessageElement.Field> fields = new ArrayList<MessageElement.Field>();
+    List<TypeElement> nestedElements = new ArrayList<TypeElement>();
+    List<ExtensionsElement> extensions = new ArrayList<ExtensionsElement>();
+    List<OptionElement> options = new ArrayList<OptionElement>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -212,28 +212,28 @@ public final class ProtoSchemaParser {
         break;
       }
       Object declared = readDeclaration(nestedDocumentation, Context.MESSAGE);
-      if (declared instanceof MessageType.Field) {
-        fields.add((MessageType.Field) declared);
-      } else if (declared instanceof Type) {
-        nestedTypes.add((Type) declared);
-      } else if (declared instanceof Extensions) {
-        extensions.add((Extensions) declared);
-      } else if (declared instanceof Option) {
-        options.add((Option) declared);
-      } else if (declared instanceof ExtendDeclaration) {
+      if (declared instanceof MessageElement.Field) {
+        fields.add((MessageElement.Field) declared);
+      } else if (declared instanceof TypeElement) {
+        nestedElements.add((TypeElement) declared);
+      } else if (declared instanceof ExtensionsElement) {
+        extensions.add((ExtensionsElement) declared);
+      } else if (declared instanceof OptionElement) {
+        options.add((OptionElement) declared);
+      } else if (declared instanceof ExtendElement) {
         // Extend declarations always add in a global scope regardless of nesting.
-        extendDeclarations.add((ExtendDeclaration) declared);
+        extendDeclarations.add((ExtendElement) declared);
       }
     }
     prefix = previousPrefix;
-    return new MessageType(name, prefix + name, documentation, fields, nestedTypes, extensions,
-        options);
+    return new MessageElement(name, prefix + name, documentation, fields, nestedElements,
+        extensions, options);
   }
 
   /** Reads an extend declaration. */
-  private ExtendDeclaration readExtend(String documentation) {
+  private ExtendElement readExtend(String documentation) {
     String name = readName();
-    List<MessageType.Field> fields = new ArrayList<MessageType.Field>();
+    List<MessageElement.Field> fields = new ArrayList<MessageElement.Field>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -242,22 +242,22 @@ public final class ProtoSchemaParser {
         break;
       }
       Object declared = readDeclaration(nestedDocumentation, Context.EXTEND);
-      if (declared instanceof MessageType.Field) {
-        fields.add((MessageType.Field) declared);
+      if (declared instanceof MessageElement.Field) {
+        fields.add((MessageElement.Field) declared);
       }
     }
     String fqname = name;
     if (!name.contains(".") && packageName != null) {
       fqname = packageName + "." + name;
     }
-    return new ExtendDeclaration(name, fqname, documentation, fields);
+    return new ExtendElement(name, fqname, documentation, fields);
   }
 
   /** Reads a service declaration and returns it. */
-  private Service readService(String documentation) {
+  private ServiceElement readService(String documentation) {
     String name = readName();
-    List<Option> options = new ArrayList<Option>();
-    List<Service.Method> methods = new ArrayList<Service.Method>();
+    List<OptionElement> options = new ArrayList<OptionElement>();
+    List<ServiceElement.Method> methods = new ArrayList<ServiceElement.Method>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String methodDocumentation = readDocumentation();
@@ -266,20 +266,20 @@ public final class ProtoSchemaParser {
         break;
       }
       Object declared = readDeclaration(methodDocumentation, Context.SERVICE);
-      if (declared instanceof Service.Method) {
-        methods.add((Service.Method) declared);
-      } else if (declared instanceof Option) {
-        options.add((Option) declared);
+      if (declared instanceof ServiceElement.Method) {
+        methods.add((ServiceElement.Method) declared);
+      } else if (declared instanceof OptionElement) {
+        options.add((OptionElement) declared);
       }
     }
-    return new Service(name, prefix + name, documentation, options, methods);
+    return new ServiceElement(name, prefix + name, documentation, options, methods);
   }
 
   /** Reads an enumerated type declaration and returns it. */
-  private EnumType readEnumType(String documentation) {
+  private EnumElement readEnumElement(String documentation) {
     String name = readName();
-    List<Option> options = new ArrayList<Option>();
-    List<EnumType.Value> values = new ArrayList<EnumType.Value>();
+    List<OptionElement> options = new ArrayList<OptionElement>();
+    List<EnumElement.Value> values = new ArrayList<EnumElement.Value>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String valueDocumentation = readDocumentation();
@@ -288,23 +288,23 @@ public final class ProtoSchemaParser {
         break;
       }
       Object declared = readDeclaration(valueDocumentation, Context.ENUM);
-      if (declared instanceof EnumType.Value) {
-        values.add((EnumType.Value) declared);
-      } else if (declared instanceof Option) {
-        options.add((Option) declared);
+      if (declared instanceof EnumElement.Value) {
+        values.add((EnumElement.Value) declared);
+      } else if (declared instanceof OptionElement) {
+        options.add((OptionElement) declared);
       }
     }
-    return new EnumType(name, prefix + name, documentation, options, values);
+    return new EnumElement(name, prefix + name, documentation, options, values);
   }
 
   /** Reads an field declaration and returns it. */
-  private MessageType.Field readField(String documentation, String label) {
-    MessageType.Label labelEnum = MessageType.Label.valueOf(label.toUpperCase(Locale.US));
+  private MessageElement.Field readField(String documentation, String label) {
+    MessageElement.Label labelEnum = MessageElement.Label.valueOf(label.toUpperCase(Locale.US));
     String type = readName();
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
-    List<Option> options = new ArrayList<Option>();
+    List<OptionElement> options = new ArrayList<OptionElement>();
 
     if (peekChar() == '[') {
       pos++;
@@ -322,13 +322,13 @@ public final class ProtoSchemaParser {
       }
     }
     if (readChar() == ';') {
-      return new MessageType.Field(labelEnum, type, name, tag, documentation, options);
+      return new MessageElement.Field(labelEnum, type, name, tag, documentation, options);
     }
     throw unexpected("expected ';'");
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
-  private Extensions readExtensions(String documentation) {
+  private ExtensionsElement readExtensions(String documentation) {
     int start = readInt(); // Range start.
     int end = start;
     if (peekChar() != ';') {
@@ -341,11 +341,11 @@ public final class ProtoSchemaParser {
       }
     }
     if (readChar() != ';') throw unexpected("expected ';'");
-    return new Extensions(documentation, start, end);
+    return new ExtensionsElement(documentation, start, end);
   }
 
   /** Reads a option containing a name, an '=' or ':', and a value. */
-  private Option readOption(char keyValueSeparator) {
+  private OptionElement readOption(char keyValueSeparator) {
     boolean isExtension = (peekChar() == '[');
     boolean isParenthesized = (peekChar() == '(');
     String name = readName(); // Option name.
@@ -363,8 +363,9 @@ public final class ProtoSchemaParser {
       throw unexpected("expected '" + keyValueSeparator + "' in option");
     }
     Object value = readValue();
-    Object valueOrSubOption = subName != null ? new Option(subName, value, isParenthesized) : value;
-    return new Option(name, valueOrSubOption, isParenthesized);
+    Object valueOrSubOption =
+        subName != null ? new OptionElement(subName, value, isParenthesized) : value;
+    return new OptionElement(name, valueOrSubOption, isParenthesized);
   }
 
   /** Reads a value that can be a map, list, string, number, boolean or enum. */
@@ -386,7 +387,7 @@ public final class ProtoSchemaParser {
         } else if (word.equals("false")) {
           return false;
         } else {
-          return EnumType.Value.anonymous(word);
+          return EnumElement.Value.anonymous(word);
         }
     }
   }
@@ -407,17 +408,17 @@ public final class ProtoSchemaParser {
         return result;
       }
 
-      Option option = readOption(keyValueSeparator);
+      OptionElement option = readOption(keyValueSeparator);
       String name = option.getName();
       Object value = option.getValue();
-      if (value instanceof Option) {
+      if (value instanceof OptionElement) {
         @SuppressWarnings("unchecked")
         Map<String, Object> nested = (Map<String, Object>) result.get(name);
         if (nested == null) {
           nested = new LinkedHashMap<String, Object>();
           result.put(name, nested);
         }
-        Option valueOption = (Option) value;
+        OptionElement valueOption = (OptionElement) value;
         nested.put(valueOption.getName(), valueOption.getValue());
       } else {
         // Add the value(s) to any previous values with the same key
@@ -479,7 +480,7 @@ public final class ProtoSchemaParser {
   }
 
   /** Reads an rpc method and returns it. */
-  private Service.Method readRpc(String documentation) {
+  private ServiceElement.Method readRpc(String documentation) {
     String name = readName();
 
     if (readChar() != '(') throw unexpected("expected '('");
@@ -492,7 +493,7 @@ public final class ProtoSchemaParser {
     String responseType = readName();
     if (readChar() != ')') throw unexpected("expected ')'");
 
-    List<Option> options = new ArrayList<Option>();
+    List<OptionElement> options = new ArrayList<OptionElement>();
     if (peekChar() == '{') {
       pos++;
       while (true) {
@@ -502,13 +503,13 @@ public final class ProtoSchemaParser {
           break;
         }
         Object declared = readDeclaration(methodDocumentation, Context.RPC);
-        if (declared instanceof Option) {
-          options.add((Option) declared);
+        if (declared instanceof OptionElement) {
+          options.add((OptionElement) declared);
         }
       }
     } else if (readChar() != ';') throw unexpected("expected ';'");
 
-    return new Service.Method(name, documentation, requestType, responseType, options);
+    return new ServiceElement.Method(name, documentation, requestType, responseType, options);
   }
 
   /** Reads a non-whitespace character and returns it. */

@@ -23,18 +23,19 @@ public final class ProtoFile {
   private final String packageName;
   private final List<String> dependencies;
   private final List<String> publicDependencies;
-  private final List<Type> types;
-  private final List<Service> services;
-  private final List<Option> options;
-  private final List<ExtendDeclaration> extendDeclarations;
+  private final List<TypeElement> typeElements;
+  private final List<ServiceElement> services;
+  private final List<OptionElement> options;
+  private final List<ExtendElement> extendDeclarations;
 
   public ProtoFile(String fileName, String packageName, List<String> dependencies,
-      List<String> publicDependencies, List<Type> types, List<Service> services,
-      List<Option> options, List<ExtendDeclaration> extendDeclarations) {
+      List<String> publicDependencies, List<TypeElement> typeElements,
+      List<ServiceElement> services, List<OptionElement> options,
+      List<ExtendElement> extendDeclarations) {
     if (fileName == null) throw new NullPointerException("fileName");
     if (dependencies == null) throw new NullPointerException("dependencies");
     if (publicDependencies == null) throw new NullPointerException("publicDependencies");
-    if (types == null) throw new NullPointerException("types");
+    if (typeElements == null) throw new NullPointerException("typeElements");
     if (services == null) throw new NullPointerException("services");
     if (options == null) throw new NullPointerException("options");
     if (extendDeclarations == null) throw new NullPointerException("extendDeclarations");
@@ -43,11 +44,11 @@ public final class ProtoFile {
     this.packageName = packageName;
     this.dependencies = unmodifiableList(new ArrayList<String>(dependencies));
     this.publicDependencies = unmodifiableList(new ArrayList<String>(publicDependencies));
-    this.types = unmodifiableList(new ArrayList<Type>(types));
-    this.services = unmodifiableList(new ArrayList<Service>(services));
-    this.options = unmodifiableList(new ArrayList<Option>(options));
+    this.typeElements = unmodifiableList(new ArrayList<TypeElement>(typeElements));
+    this.services = unmodifiableList(new ArrayList<ServiceElement>(services));
+    this.options = unmodifiableList(new ArrayList<OptionElement>(options));
     this.extendDeclarations =
-        unmodifiableList(new ArrayList<ExtendDeclaration>(extendDeclarations));
+        unmodifiableList(new ArrayList<ExtendElement>(extendDeclarations));
   }
 
   public String getFileName() {
@@ -66,19 +67,19 @@ public final class ProtoFile {
     return publicDependencies;
   }
 
-  public List<Type> getTypes() {
-    return types;
+  public List<TypeElement> getTypeElements() {
+    return typeElements;
   }
 
-  public List<Service> getServices() {
+  public List<ServiceElement> getServices() {
     return services;
   }
 
-  public List<Option> getOptions() {
+  public List<OptionElement> getOptions() {
     return options;
   }
 
-  public List<ExtendDeclaration> getExtendDeclarations() {
+  public List<ExtendElement> getExtendDeclarations() {
     return extendDeclarations;
   }
 
@@ -94,7 +95,7 @@ public final class ProtoFile {
         && (packageName == null ? that.packageName == null : packageName.equals(that.packageName))
         && publicDependencies.equals(that.publicDependencies)
         && services.equals(that.services)
-        && types.equals(that.types);
+        && typeElements.equals(that.typeElements);
   }
 
   @Override public int hashCode() {
@@ -102,7 +103,7 @@ public final class ProtoFile {
     result = 31 * result + (packageName != null ? packageName.hashCode() : 0);
     result = 31 * result + dependencies.hashCode();
     result = 31 * result + publicDependencies.hashCode();
-    result = 31 * result + types.hashCode();
+    result = 31 * result + typeElements.hashCode();
     result = 31 * result + services.hashCode();
     result = 31 * result + options.hashCode();
     result = 31 * result + extendDeclarations.hashCode();
@@ -128,25 +129,25 @@ public final class ProtoFile {
     }
     if (!options.isEmpty()) {
       builder.append('\n');
-      for (Option option : options) {
+      for (OptionElement option : options) {
         builder.append(option.toDeclaration());
       }
     }
-    if (!types.isEmpty()) {
+    if (!typeElements.isEmpty()) {
       builder.append('\n');
-      for (Type type : types) {
-        builder.append(type);
+      for (TypeElement typeElement : typeElements) {
+        builder.append(typeElement);
       }
     }
     if (!extendDeclarations.isEmpty()) {
       builder.append('\n');
-      for (ExtendDeclaration extendDeclaration : extendDeclarations) {
+      for (ExtendElement extendDeclaration : extendDeclarations) {
         builder.append(extendDeclaration);
       }
     }
     if (!services.isEmpty()) {
       builder.append('\n');
-      for (Service service : services) {
+      for (ServiceElement service : services) {
         builder.append(service);
       }
     }
