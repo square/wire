@@ -12,14 +12,14 @@ import static org.fest.assertions.api.Assertions.fail;
 
 public class ExtendElementTest {
   @Test public void emptyToString() {
-    ExtendElement extend = new ExtendElement("Name", "Name", "", NO_FIELDS);
+    ExtendElement extend = ExtendElement.create("Name", "Name", "", NO_FIELDS);
     String expected = "extend Name {}\n";
     assertThat(extend.toString()).isEqualTo(expected);
   }
 
   @Test public void simpleToString() {
-    Field field = new Field(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    ExtendElement extend = new ExtendElement("Name", "Name", "", list(field));
+    Field field = Field.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
+    ExtendElement extend = ExtendElement.create("Name", "Name", "", list(field));
     String expected = ""
         + "extend Name {\n"
         + "  required Type name = 1;\n"
@@ -28,8 +28,8 @@ public class ExtendElementTest {
   }
 
   @Test public void simpleWithDocumentationToString() {
-    Field field = new Field(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    ExtendElement extend = new ExtendElement("Name", "Name", "Hello", list(field));
+    Field field = Field.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
+    ExtendElement extend = ExtendElement.create("Name", "Name", "Hello", list(field));
     String expected = ""
         + "// Hello\n"
         + "extend Name {\n"
@@ -39,10 +39,10 @@ public class ExtendElementTest {
   }
 
   @Test public void duplicateTagValueThrows() {
-    Field field1 = new Field(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
-    Field field2 = new Field(REQUIRED, "Type", "name2", 1, "", NO_OPTIONS);
+    Field field1 = Field.create(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
+    Field field2 = Field.create(REQUIRED, "Type", "name2", 1, "", NO_OPTIONS);
     try {
-      new ExtendElement("Extend", "example.Extend", "", list(field1, field2));
+      ExtendElement.create("Extend", "example.Extend", "", list(field1, field2));
       fail("Duplicate tag values are not allowed.");
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Duplicate tag 1 in example.Extend");

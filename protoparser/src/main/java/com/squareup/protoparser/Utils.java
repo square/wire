@@ -1,5 +1,10 @@
 package com.squareup.protoparser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
+
 final class Utils {
   static void appendDocumentation(StringBuilder builder, String documentation) {
     if (documentation.isEmpty()) {
@@ -14,6 +19,17 @@ final class Utils {
     for (String line : value.split("\n")) {
       builder.append("  ").append(line).append('\n');
     }
+  }
+
+  static <T> List<T> immutableCopyOf(List<T> list, String name) {
+    return unmodifiableList(new ArrayList<T>(checkNotNull(list, name)));
+  }
+
+  static <T> T checkNotNull(T value, String name) {
+    if (value == null) {
+      throw new NullPointerException(name);
+    }
+    return value;
   }
 
   private Utils() {

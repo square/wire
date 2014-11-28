@@ -107,8 +107,8 @@ public final class ProtoSchemaParser {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return new ProtoFile(fileName, packageName, dependencies, publicDependencies, typeElements,
-            services, options, extendDeclarations);
+        return ProtoFile.create(fileName, packageName, dependencies, publicDependencies,
+            typeElements, services, extendDeclarations, options);
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
       if (declaration instanceof TypeElement) {
@@ -189,7 +189,7 @@ public final class ProtoSchemaParser {
         }
       }
       if (readChar() != ';') throw unexpected("expected ';'");
-      return new EnumElement.Value(label, tag, documentation, options);
+      return EnumElement.Value.create(label, tag, documentation, options);
     } else {
       throw unexpected("unexpected label: " + label);
     }
@@ -226,7 +226,7 @@ public final class ProtoSchemaParser {
       }
     }
     prefix = previousPrefix;
-    return new MessageElement(name, prefix + name, documentation, fields, nestedElements,
+    return MessageElement.create(name, prefix + name, documentation, fields, nestedElements,
         extensions, options);
   }
 
@@ -250,7 +250,7 @@ public final class ProtoSchemaParser {
     if (!name.contains(".") && packageName != null) {
       fqname = packageName + "." + name;
     }
-    return new ExtendElement(name, fqname, documentation, fields);
+    return ExtendElement.create(name, fqname, documentation, fields);
   }
 
   /** Reads a service declaration and returns it. */
@@ -272,7 +272,7 @@ public final class ProtoSchemaParser {
         options.add((OptionElement) declared);
       }
     }
-    return new ServiceElement(name, prefix + name, documentation, options, methods);
+    return ServiceElement.create(name, prefix + name, documentation, options, methods);
   }
 
   /** Reads an enumerated type declaration and returns it. */
@@ -294,7 +294,7 @@ public final class ProtoSchemaParser {
         options.add((OptionElement) declared);
       }
     }
-    return new EnumElement(name, prefix + name, documentation, options, values);
+    return EnumElement.create(name, prefix + name, documentation, options, values);
   }
 
   /** Reads an field declaration and returns it. */
@@ -322,7 +322,7 @@ public final class ProtoSchemaParser {
       }
     }
     if (readChar() == ';') {
-      return new MessageElement.Field(labelEnum, type, name, tag, documentation, options);
+      return MessageElement.Field.create(labelEnum, type, name, tag, documentation, options);
     }
     throw unexpected("expected ';'");
   }
@@ -341,7 +341,7 @@ public final class ProtoSchemaParser {
       }
     }
     if (readChar() != ';') throw unexpected("expected ';'");
-    return new ExtensionsElement(documentation, start, end);
+    return ExtensionsElement.create(documentation, start, end);
   }
 
   /** Reads a option containing a name, an '=' or ':', and a value. */
@@ -364,8 +364,8 @@ public final class ProtoSchemaParser {
     }
     Object value = readValue();
     Object valueOrSubOption =
-        subName != null ? new OptionElement(subName, value, isParenthesized) : value;
-    return new OptionElement(name, valueOrSubOption, isParenthesized);
+        subName != null ? OptionElement.create(subName, value, isParenthesized) : value;
+    return OptionElement.create(name, valueOrSubOption, isParenthesized);
   }
 
   /** Reads a value that can be a map, list, string, number, boolean or enum. */
@@ -409,8 +409,8 @@ public final class ProtoSchemaParser {
       }
 
       OptionElement option = readOption(keyValueSeparator);
-      String name = option.getName();
-      Object value = option.getValue();
+      String name = option.name();
+      Object value = option.value();
       if (value instanceof OptionElement) {
         @SuppressWarnings("unchecked")
         Map<String, Object> nested = (Map<String, Object>) result.get(name);
@@ -419,7 +419,7 @@ public final class ProtoSchemaParser {
           result.put(name, nested);
         }
         OptionElement valueOption = (OptionElement) value;
-        nested.put(valueOption.getName(), valueOption.getValue());
+        nested.put(valueOption.name(), valueOption.value());
       } else {
         // Add the value(s) to any previous values with the same key
         Object previous = result.get(name);
@@ -509,7 +509,7 @@ public final class ProtoSchemaParser {
       }
     } else if (readChar() != ';') throw unexpected("expected ';'");
 
-    return new ServiceElement.Method(name, documentation, requestType, responseType, options);
+    return ServiceElement.Method.create(name, documentation, requestType, responseType, options);
   }
 
   /** Reads a non-whitespace character and returns it. */
