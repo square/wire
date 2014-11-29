@@ -6,9 +6,9 @@ import org.junit.Test;
 
 import static com.squareup.protoparser.TestUtils.list;
 import static com.squareup.protoparser.TestUtils.map;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
-import static org.fest.assertions.data.MapEntry.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.data.MapEntry.entry;
 
 public class OptionElementTest {
   @Test public void simpleToString() {
