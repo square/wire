@@ -16,7 +16,7 @@ final class TestUtils {
   static final List<MessageElement.FieldElement> NO_FIELDS = Collections.emptyList();
   static final List<MessageElement.OneOfElement> NO_ONEOFS = Collections.emptyList();
   static final List<EnumElement.ValueElement> NO_VALUES = Collections.emptyList();
-  static final List<ServiceElement.MethodElement> NO_METHODS = Collections.emptyList();
+  static final List<ServiceElement.RpcElement> NO_METHODS = Collections.emptyList();
 
   static Map<String, Object> map(Object... keysAndValues) {
     Map<String, Object> result = new LinkedHashMap<>();

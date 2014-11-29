@@ -11,16 +11,16 @@ import static com.squareup.protoparser.Utils.immutableCopyOf;
 @AutoValue
 public abstract class ServiceElement {
   public static ServiceElement create(String name, String qualifiedName, String documentation,
-      List<OptionElement> options, List<MethodElement> methods) {
+      List<OptionElement> options, List<RpcElement> rpcs) {
     return new AutoValue_ServiceElement(name, qualifiedName, documentation,
-        immutableCopyOf(options, "options"), immutableCopyOf(methods, "methods"));
+        immutableCopyOf(options, "options"), immutableCopyOf(rpcs, "rpcs"));
   }
 
   public abstract String name();
   public abstract String qualifiedName();
   public abstract String documentation();
   public abstract List<OptionElement> options();
-  public abstract List<MethodElement> methods();
+  public abstract List<RpcElement> rpcs();
 
   ServiceElement() {
   }
@@ -37,24 +37,24 @@ public abstract class ServiceElement {
         appendIndented(builder, option.toDeclaration());
       }
     }
-    if (!methods().isEmpty()) {
+    if (!rpcs().isEmpty()) {
       builder.append('\n');
-      for (MethodElement method : methods()) {
-        appendIndented(builder, method.toString());
+      for (RpcElement rpc : rpcs()) {
+        appendIndented(builder, rpc.toString());
       }
     }
     return builder.append("}\n").toString();
   }
 
   @AutoValue
-  public abstract static class MethodElement {
-    public static MethodElement create(String name, String documentation, String requestType,
+  public abstract static class RpcElement {
+    public static RpcElement create(String name, String documentation, String requestType,
         String responseType, List<OptionElement> options) {
-      return new AutoValue_ServiceElement_MethodElement(name, documentation, requestType,
+      return new AutoValue_ServiceElement_RpcElement(name, documentation, requestType,
           responseType, immutableCopyOf(options, "options"));
     }
 
-    MethodElement() {
+    RpcElement() {
     }
 
     public abstract String name();

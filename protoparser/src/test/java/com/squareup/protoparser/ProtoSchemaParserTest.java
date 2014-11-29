@@ -516,10 +516,10 @@ public final class ProtoSchemaParserTest {
         + "}";
     List<OptionElement> options = list(OptionElement.create("default_timeout", 30, true));
     ServiceElement expected = ServiceElement.create("SearchService", "SearchService", "", options,
-        list(ServiceElement.MethodElement.create("Search", "", "SearchRequest", "SearchResponse",
+        list(ServiceElement.RpcElement.create("Search", "", "SearchRequest", "SearchResponse",
                 NO_OPTIONS),
-            ServiceElement.MethodElement.create("Purchase", "", "PurchaseRequest",
-                "PurchaseResponse", list( //
+            ServiceElement.RpcElement.create("Purchase", "", "PurchaseRequest", "PurchaseResponse",
+                list( //
                     OptionElement.create("squareup.sake.timeout", 15, true), //
                     OptionElement.create("squareup.a.b", map("value", //
                         list(EnumElement.ValueElement.anonymous("FOO"),
