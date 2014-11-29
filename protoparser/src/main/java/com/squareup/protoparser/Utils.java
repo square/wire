@@ -22,7 +22,7 @@ final class Utils {
   }
 
   static <T> List<T> immutableCopyOf(List<T> list, String name) {
-    return unmodifiableList(new ArrayList<T>(checkNotNull(list, name)));
+    return unmodifiableList(new ArrayList<>(checkNotNull(list, name)));
   }
 
   static <T> T checkNotNull(T value, String name) {

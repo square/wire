@@ -19,13 +19,14 @@ final class TestUtils {
   static final List<ServiceElement.MethodElement> NO_METHODS = Collections.emptyList();
 
   static Map<String, Object> map(Object... keysAndValues) {
-    Map<String, Object> result = new LinkedHashMap<String, Object>();
+    Map<String, Object> result = new LinkedHashMap<>();
     for (int i = 0; i < keysAndValues.length; i += 2) {
       result.put((String) keysAndValues[i], keysAndValues[i + 1]);
     }
     return result;
   }
 
+  @SafeVarargs
   static <T> List<T> list(T... values) {
     return Arrays.asList(values);
   }

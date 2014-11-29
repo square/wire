@@ -14,7 +14,7 @@ import static com.squareup.protoparser.Utils.appendIndented;
 public abstract class OptionElement {
   @SuppressWarnings("unchecked")
   public static Map<String, Object> optionsAsMap(List<OptionElement> options) {
-    Map<String, Object> map = new LinkedHashMap<String, Object>();
+    Map<String, Object> map = new LinkedHashMap<>();
     for (OptionElement option : options) {
       String name = option.name();
       Object value = option.value();
@@ -28,7 +28,7 @@ public abstract class OptionElement {
         if (oldValue instanceof Map) {
           Map<String, Object> oldMap = (Map<String, Object>) oldValue;
           // Existing nested maps are immutable. Make a mutable copy, update, and replace.
-          oldMap = new LinkedHashMap<String, Object>(oldMap);
+          oldMap = new LinkedHashMap<>(oldMap);
           oldMap.putAll(newMap);
           map.put(name, oldMap);
         } else {

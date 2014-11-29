@@ -19,7 +19,7 @@ public abstract class EnumElement implements TypeElement {
   private static void validateTagUniqueness(String qualifiedName, List<ValueElement> values) {
     checkNotNull(qualifiedName, "qualifiedName");
 
-    Set<Integer> tags = new LinkedHashSet<Integer>();
+    Set<Integer> tags = new LinkedHashSet<>();
     for (ValueElement value : values) {
       int tag = value.tag();
       if (!tags.add(tag)) {
@@ -45,7 +45,7 @@ public abstract class EnumElement implements TypeElement {
       List<TypeElement> nestedElements) {
     checkNotNull(qualifiedName, "qualifiedName");
 
-    Set<String> names = new LinkedHashSet<String>();
+    Set<String> names = new LinkedHashSet<>();
     for (TypeElement nestedElement : nestedElements) {
       if (nestedElement instanceof EnumElement) {
         EnumElement enumElement = (EnumElement) nestedElement;
