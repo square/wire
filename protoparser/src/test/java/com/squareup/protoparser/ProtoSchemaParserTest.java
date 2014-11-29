@@ -354,7 +354,7 @@ public final class ProtoSchemaParserTest {
         + "extend Foo {\n"
         + "  optional int32 bar = 126;\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
+    List<ExtendElement> extendDeclarations = new ArrayList<>();
     extendDeclarations.add(ExtendElement.create("Foo", "Foo", "Extends Foo", Arrays.asList(
         MessageElement.FieldElement.create(OPTIONAL, "int32", "bar", 126, "", NO_OPTIONS))));
     ProtoFile expected =
@@ -371,7 +371,7 @@ public final class ProtoSchemaParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
+    List<ExtendElement> extendDeclarations = new ArrayList<>();
     extendDeclarations.add(ExtendElement.create("Foo", "Foo", "", Arrays.asList(
         MessageElement.FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
     TypeElement messageElement =
@@ -392,7 +392,7 @@ public final class ProtoSchemaParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
+    List<ExtendElement> extendDeclarations = new ArrayList<>();
     extendDeclarations.add(ExtendElement.create("Foo", "kit.kat.Foo", "", Arrays.asList(
         MessageElement.FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
     TypeElement messageElement =
@@ -412,7 +412,7 @@ public final class ProtoSchemaParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
+    List<ExtendElement> extendDeclarations = new ArrayList<>();
     extendDeclarations.add(ExtendElement.create("example.Foo", "example.Foo", "", Arrays.asList(
         MessageElement.FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
     TypeElement messageElement =
@@ -433,7 +433,7 @@ public final class ProtoSchemaParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
+    List<ExtendElement> extendDeclarations = new ArrayList<>();
     extendDeclarations.add(ExtendElement.create("example.Foo", "example.Foo", "", Arrays.asList(
         MessageElement.FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
     TypeElement messageElement =
@@ -554,28 +554,28 @@ public final class ProtoSchemaParserTest {
         + "  option (squareup.four) = {x: {y: {z: 1}, y: {z: 2}}};\n"
         + "}";
 
-    List<OptionElement> options = new ArrayList<OptionElement>();
-    Map<String, String> option_one_map = new LinkedHashMap<String, String>();
+    List<OptionElement> options = new ArrayList<>();
+    Map<String, String> option_one_map = new LinkedHashMap<>();
     option_one_map.put("name", "Name");
     option_one_map.put("class_name", "ClassName");
     options.add(OptionElement.create("squareup.one", option_one_map, true));
-    Map<String, Object> option_two_a_map = new LinkedHashMap<String, Object>();
+    Map<String, Object> option_two_a_map = new LinkedHashMap<>();
     option_two_a_map.put("[squareup.options.type]", EnumElement.ValueElement.anonymous("EXOTIC"));
     options.add(OptionElement.create("squareup.two.a", option_two_a_map, true));
-    Map<String, List<String>> option_two_b_map = new LinkedHashMap<String, List<String>>();
+    Map<String, List<String>> option_two_b_map = new LinkedHashMap<>();
     option_two_b_map.put("names", Arrays.asList("Foo", "Bar"));
     options.add(OptionElement.create("squareup.two.b", option_two_b_map, true));
-    Map<String, Map<String, ?>> option_three_map = new LinkedHashMap<String, Map<String, ?>>();
-    Map<String, Object> option_three_nested_map = new LinkedHashMap<String, Object>();
+    Map<String, Map<String, ?>> option_three_map = new LinkedHashMap<>();
+    Map<String, Object> option_three_nested_map = new LinkedHashMap<>();
     option_three_nested_map.put("y", Arrays.asList(1, 2));
     option_three_map.put("x", option_three_nested_map);
     options.add(OptionElement.create("squareup.three", option_three_map, true));
 
-    Map<String, Map<String, ?>> option_four_map = new LinkedHashMap<String, Map<String, ?>>();
-    Map<String, Object> option_four_map_1 = new LinkedHashMap<String, Object>();
-    Map<String, Object> option_four_map_2_a = new LinkedHashMap<String, Object>();
+    Map<String, Map<String, ?>> option_four_map = new LinkedHashMap<>();
+    Map<String, Object> option_four_map_1 = new LinkedHashMap<>();
+    Map<String, Object> option_four_map_2_a = new LinkedHashMap<>();
     option_four_map_2_a.put("z", 1);
-    Map<String, Object> option_four_map_2_b = new LinkedHashMap<String, Object>();
+    Map<String, Object> option_four_map_2_b = new LinkedHashMap<>();
     option_four_map_2_b.put("z", 2);
     option_four_map_1.put("y", Arrays.asList(option_four_map_2_a, option_four_map_2_b));
     option_four_map.put("x", option_four_map_1);

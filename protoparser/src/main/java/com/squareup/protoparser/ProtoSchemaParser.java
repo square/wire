@@ -8,27 +8,46 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /** Basic parser for {@code .proto} schema declarations. */
 public final class ProtoSchemaParser {
   /** Parse a {@code .proto} definition file. */
-  public static ProtoFile parse(File file) throws IOException {
-    return new ProtoSchemaParser(file.getName(), fileToCharArray(file)).readProtoFile();
+  public static ProtoFile parseUtf8(File file) throws IOException {
+    try (InputStream is = new FileInputStream(file)) {
+      return parseUtf8(file.getPath(), is);
+    }
+  }
+
+  /** Parse a {@code .proto} definition file. */
+  public static ProtoFile parseUtf8(Path path) throws IOException {
+    try (Reader reader = Files.newBufferedReader(path, UTF_8)) {
+      return parse(path.toString(), reader);
+    }
   }
 
   /** Parse a named {@code .proto} schema. The {@code InputStream} is not closed. */
   public static ProtoFile parseUtf8(String name, InputStream is) throws IOException {
-    return new ProtoSchemaParser(name, streamToCharArray(is)).readProtoFile();
+    return parse(name, new InputStreamReader(is, UTF_8));
   }
 
   /** Parse a named {@code .proto} schema. The {@code Reader} is not closed. */
   public static ProtoFile parse(String name, Reader reader) throws IOException {
-    return new ProtoSchemaParser(name, readerToCharArray(reader)).readProtoFile();
+    CharArrayWriter writer = new CharArrayWriter();
+    char[] buffer = new char[1024];
+    int count;
+    while ((count = reader.read(buffer)) != -1) {
+      writer.write(buffer, 0, count);
+    }
+    return new ProtoSchemaParser(name, writer.toCharArray()).readProtoFile();
   }
 
   /** Parse a named {@code .proto} schema. */
@@ -37,7 +56,7 @@ public final class ProtoSchemaParser {
   }
 
   /** The path to the {@code .proto} file. */
-  private final String fileName;
+  private final String filePath;
 
   /** The entire document. */
   private final char[] data;
@@ -58,56 +77,33 @@ public final class ProtoSchemaParser {
   private String prefix = "";
 
   /** Imported files. */
-  private final List<String> dependencies = new ArrayList<String>();
+  private final List<String> dependencies = new ArrayList<>();
 
   /** Public imported files. */
-  private final List<String> publicDependencies = new ArrayList<String>();
+  private final List<String> publicDependencies = new ArrayList<>();
 
   /** Declared message types and enum types. */
-  private final List<TypeElement> typeElements = new ArrayList<TypeElement>();
+  private final List<TypeElement> typeElements = new ArrayList<>();
 
   /** Declared services. */
-  private final List<ServiceElement> services = new ArrayList<ServiceElement>();
+  private final List<ServiceElement> services = new ArrayList<>();
 
   /** Declared 'extend's. */
-  private final List<ExtendElement> extendDeclarations = new ArrayList<ExtendElement>();
+  private final List<ExtendElement> extendDeclarations = new ArrayList<>();
 
   /** Global options. */
-  private final List<OptionElement> options = new ArrayList<OptionElement>();
+  private final List<OptionElement> options = new ArrayList<>();
 
-  ProtoSchemaParser(String fileName, char[] data) {
-    this.fileName = fileName;
+  ProtoSchemaParser(String filePath, char[] data) {
+    this.filePath = filePath;
     this.data = data;
-  }
-
-  private static char[] fileToCharArray(File file) throws IOException {
-    FileInputStream is = new FileInputStream(file);
-    try {
-      return streamToCharArray(is);
-    } finally {
-      is.close();
-    }
-  }
-
-  private static char[] streamToCharArray(InputStream is) throws IOException {
-    return readerToCharArray(new InputStreamReader(is, "UTF-8"));
-  }
-
-  private static char[] readerToCharArray(Reader reader) throws IOException {
-    CharArrayWriter writer = new CharArrayWriter();
-    char[] buffer = new char[1024];
-    int count;
-    while ((count = reader.read(buffer)) != -1) {
-      writer.write(buffer, 0, count);
-    }
-    return writer.toCharArray();
   }
 
   ProtoFile readProtoFile() {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return ProtoFile.create(fileName, packageName, dependencies, publicDependencies,
+        return ProtoFile.create(filePath, packageName, dependencies, publicDependencies,
             typeElements, services, extendDeclarations, options);
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
@@ -175,7 +171,7 @@ public final class ProtoSchemaParser {
       if (!context.permitsExtensions()) throw unexpected("extensions must be nested");
       return readExtensions(documentation);
     } else if (context == Context.ENUM) {
-      List<OptionElement> options = new ArrayList<OptionElement>();
+      List<OptionElement> options = new ArrayList<>();
 
       if (readChar() != '=') throw unexpected("expected '='");
       int tag = readInt();
@@ -204,11 +200,11 @@ public final class ProtoSchemaParser {
     String previousPrefix = prefix;
     String name = readName();
     prefix = prefix + name + ".";
-    List<MessageElement.FieldElement> fields = new ArrayList<MessageElement.FieldElement>();
-    List<MessageElement.OneOfElement> oneOfs = new ArrayList<MessageElement.OneOfElement>();
-    List<TypeElement> nestedElements = new ArrayList<TypeElement>();
-    List<ExtensionsElement> extensions = new ArrayList<ExtensionsElement>();
-    List<OptionElement> options = new ArrayList<OptionElement>();
+    List<MessageElement.FieldElement> fields = new ArrayList<>();
+    List<MessageElement.OneOfElement> oneOfs = new ArrayList<>();
+    List<TypeElement> nestedElements = new ArrayList<>();
+    List<ExtensionsElement> extensions = new ArrayList<>();
+    List<OptionElement> options = new ArrayList<>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -240,7 +236,7 @@ public final class ProtoSchemaParser {
   /** Reads an extend declaration. */
   private ExtendElement readExtend(String documentation) {
     String name = readName();
-    List<MessageElement.FieldElement> fields = new ArrayList<MessageElement.FieldElement>();
+    List<MessageElement.FieldElement> fields = new ArrayList<>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -263,8 +259,8 @@ public final class ProtoSchemaParser {
   /** Reads a service declaration and returns it. */
   private ServiceElement readService(String documentation) {
     String name = readName();
-    List<OptionElement> options = new ArrayList<OptionElement>();
-    List<ServiceElement.MethodElement> methods = new ArrayList<ServiceElement.MethodElement>();
+    List<OptionElement> options = new ArrayList<>();
+    List<ServiceElement.MethodElement> methods = new ArrayList<>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String methodDocumentation = readDocumentation();
@@ -285,8 +281,8 @@ public final class ProtoSchemaParser {
   /** Reads an enumerated type declaration and returns it. */
   private EnumElement readEnumElement(String documentation) {
     String name = readName();
-    List<OptionElement> options = new ArrayList<OptionElement>();
-    List<EnumElement.ValueElement> values = new ArrayList<EnumElement.ValueElement>();
+    List<OptionElement> options = new ArrayList<>();
+    List<EnumElement.ValueElement> values = new ArrayList<>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String valueDocumentation = readDocumentation();
@@ -310,7 +306,7 @@ public final class ProtoSchemaParser {
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
-    List<OptionElement> options = new ArrayList<OptionElement>();
+    List<OptionElement> options = new ArrayList<>();
 
     if (peekChar() == '[') {
       pos++;
@@ -335,7 +331,7 @@ public final class ProtoSchemaParser {
 
   private MessageElement.OneOfElement readOneOf(String documentation) {
     String name = readName();
-    List<MessageElement.FieldElement> fields = new ArrayList<MessageElement.FieldElement>();
+    List<MessageElement.FieldElement> fields = new ArrayList<>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -403,12 +399,13 @@ public final class ProtoSchemaParser {
           return readInt();
         }
         String word = readWord();
-        if (word.equals("true")) {
-          return true;
-        } else if (word.equals("false")) {
-          return false;
-        } else {
-          return EnumElement.ValueElement.anonymous(word);
+        switch (word) {
+          case "true":
+            return true;
+          case "false":
+            return false;
+          default:
+            return EnumElement.ValueElement.anonymous(word);
         }
     }
   }
@@ -421,7 +418,7 @@ public final class ProtoSchemaParser {
   @SuppressWarnings("unchecked")
   private Map<String, Object> readMap(char openBrace, char closeBrace, char keyValueSeparator) {
     if (readChar() != openBrace) throw new AssertionError();
-    Map<String, Object> result = new LinkedHashMap<String, Object>();
+    Map<String, Object> result = new LinkedHashMap<>();
     while (true) {
       if (peekChar() == closeBrace) {
         // If we see the close brace, finish immediately. This handles {}/[] and ,}/,] cases.
@@ -436,7 +433,7 @@ public final class ProtoSchemaParser {
         @SuppressWarnings("unchecked")
         Map<String, Object> nested = (Map<String, Object>) result.get(name);
         if (nested == null) {
-          nested = new LinkedHashMap<String, Object>();
+          nested = new LinkedHashMap<>();
           result.put(name, nested);
         }
         OptionElement valueOption = (OptionElement) value;
@@ -450,7 +447,7 @@ public final class ProtoSchemaParser {
           // Add to previous List
           addToList((List<Object>) previous, value);
         } else {
-          List<Object> newList = new ArrayList<Object>();
+          List<Object> newList = new ArrayList<>();
           newList.add(previous);
           addToList(newList, value);
           result.put(name, newList);
@@ -481,7 +478,7 @@ public final class ProtoSchemaParser {
    */
   private List<Object> readList() {
     if (readChar() != '[') throw new AssertionError();
-    List<Object> result = new ArrayList<Object>();
+    List<Object> result = new ArrayList<>();
     while (true) {
       if (peekChar() == ']') {
         // If we see the close brace, finish immediately. This handles [] and ,] cases.
@@ -514,7 +511,7 @@ public final class ProtoSchemaParser {
     String responseType = readName();
     if (readChar() != ')') throw unexpected("expected ')'");
 
-    List<OptionElement> options = new ArrayList<OptionElement>();
+    List<OptionElement> options = new ArrayList<>();
     if (peekChar() == '{') {
       pos++;
       while (true) {
@@ -771,7 +768,7 @@ public final class ProtoSchemaParser {
 
   private RuntimeException unexpected(String message) {
     throw new IllegalStateException(
-        String.format("Syntax error in %s at %d:%d: %s", fileName, line(), column(), message));
+        String.format("Syntax error in %s at %d:%d: %s", filePath, line(), column(), message));
   }
 
   enum Context {

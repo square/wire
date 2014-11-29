@@ -20,12 +20,12 @@ public abstract class MessageElement implements TypeElement {
       List<OneOfElement> oneOfs) {
     checkNotNull(qualifiedName, "qualifiedName");
 
-    List<FieldElement> allFields = new ArrayList<FieldElement>(fields);
+    List<FieldElement> allFields = new ArrayList<>(fields);
     for (OneOfElement oneOf : oneOfs) {
       allFields.addAll(oneOf.fields());
     }
 
-    Set<Integer> tags = new LinkedHashSet<Integer>();
+    Set<Integer> tags = new LinkedHashSet<>();
     for (FieldElement field : allFields) {
       int tag = field.tag();
       if (!tags.add(tag)) {

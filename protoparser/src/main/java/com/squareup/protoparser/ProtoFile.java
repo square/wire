@@ -21,11 +21,11 @@ public abstract class ProtoFile {
         || (value > RESERVED_TAG_VALUE_END && value <= MAX_TAG_VALUE);
   }
 
-  public static ProtoFile create(String fileName, String packageName, List<String> dependencies,
+  public static ProtoFile create(String filePath, String packageName, List<String> dependencies,
       List<String> publicDependencies, List<TypeElement> typeElements,
       List<ServiceElement> services, List<ExtendElement> extendDeclarations,
       List<OptionElement> options) {
-    return new AutoValue_ProtoFile(fileName, packageName,
+    return new AutoValue_ProtoFile(filePath, packageName,
         immutableCopyOf(dependencies, "dependencies"),
         immutableCopyOf(publicDependencies, "publicDependencies"),
         immutableCopyOf(typeElements, "typeElements"), immutableCopyOf(services, "services"),
@@ -36,7 +36,7 @@ public abstract class ProtoFile {
   ProtoFile() {
   }
 
-  public abstract String fileName();
+  public abstract String filePath();
   @Nullable public abstract String packageName();
   public abstract List<String> dependencies();
   public abstract List<String> publicDependencies();
@@ -47,8 +47,8 @@ public abstract class ProtoFile {
 
   @Override public final String toString() {
     StringBuilder builder = new StringBuilder();
-    if (!fileName().isEmpty()) {
-      builder.append("// ").append(fileName()).append('\n');
+    if (!filePath().isEmpty()) {
+      builder.append("// ").append(filePath()).append('\n');
     }
     if (packageName() != null) {
       builder.append("package ").append(packageName()).append(";\n");

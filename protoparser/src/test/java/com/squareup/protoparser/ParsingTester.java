@@ -14,7 +14,7 @@ public class ParsingTester {
     int total = 0;
     int failed = 0;
 
-    Deque<File> fileQueue = new ArrayDeque<File>();
+    Deque<File> fileQueue = new ArrayDeque<>();
     fileQueue.add(ROOT);
     while (!fileQueue.isEmpty()) {
       File file = fileQueue.removeFirst();
@@ -25,7 +25,7 @@ public class ParsingTester {
         total += 1;
 
         try {
-          ProtoSchemaParser.parse(file);
+          ProtoSchemaParser.parseUtf8(file);
         } catch (Exception e) {
           e.printStackTrace();
           failed += 1;

@@ -27,7 +27,7 @@ public final class Scalars {
   public static final String TYPE_UINT_64 = "uint64";
 
   static {
-    Set<String> scalarTypes = new LinkedHashSet<String>();
+    Set<String> scalarTypes = new LinkedHashSet<>();
     scalarTypes.add(TYPE_BOOL);
     scalarTypes.add(TYPE_BYTES);
     scalarTypes.add(TYPE_DOUBLE);
