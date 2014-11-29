@@ -6,7 +6,7 @@ import static com.squareup.protoparser.ServiceElement.MethodElement;
 import static com.squareup.protoparser.TestUtils.NO_METHODS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.list;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ServiceElementTest {
   @Test public void emptyToString() {

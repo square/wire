@@ -7,8 +7,8 @@ import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
 import static com.squareup.protoparser.TestUtils.NO_FIELDS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.list;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class ExtendElementTest {
   @Test public void emptyToString() {

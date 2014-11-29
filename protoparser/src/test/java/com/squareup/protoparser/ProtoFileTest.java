@@ -15,7 +15,7 @@ import static com.squareup.protoparser.TestUtils.NO_SERVICES;
 import static com.squareup.protoparser.TestUtils.NO_STRINGS;
 import static com.squareup.protoparser.TestUtils.NO_TYPES;
 import static com.squareup.protoparser.TestUtils.list;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProtoFileTest {
   @Test public void tagValueValidation() {

@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class UtilsTest {
   @Test public void indentationTest() {

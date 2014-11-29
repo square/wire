@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.fest.assertions.api.Fail;
 import org.junit.Test;
 
 import static com.squareup.protoparser.MessageElement.Label.ONE_OF;
@@ -24,7 +23,8 @@ import static com.squareup.protoparser.TestUtils.NO_STRINGS;
 import static com.squareup.protoparser.TestUtils.NO_TYPES;
 import static com.squareup.protoparser.TestUtils.list;
 import static com.squareup.protoparser.TestUtils.map;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 public final class ProtoSchemaParserTest {
   @Test public void field() throws Exception {
@@ -497,7 +497,7 @@ public final class ProtoSchemaParserTest {
         + "}";
     try {
       ProtoSchemaParser.parse("foo.proto", proto);
-      Fail.fail("Expected parse error");
+      fail("Expected parse error");
     } catch (IllegalStateException e) {
       assertThat(e.getMessage().contains("expected a digit after \\x or \\X"));
     }

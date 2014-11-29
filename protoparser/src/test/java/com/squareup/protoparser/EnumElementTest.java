@@ -6,8 +6,8 @@ import static com.squareup.protoparser.EnumElement.ValueElement;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.NO_VALUES;
 import static com.squareup.protoparser.TestUtils.list;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class EnumElementTest {
   @Test public void emptyToString() {
