@@ -63,7 +63,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   }
 
   private void compileProtos() throws MojoExecutionException {
-    WireCompiler.Builder builder = new WireCompiler.Builder()
+    WireCompiler.Builder builder = WireCompiler.builder()
             .protoPath(protoSourceDirectory)
             .addSourceFileNames(protoFiles)
             .outputDirectory(generatedSourceDirectory)

@@ -31,6 +31,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -136,7 +137,7 @@ public final class WireCompiler {
    * </p>
    */
   public static void main(String... args) throws Exception {
-    Builder builder = new Builder();
+    Builder builder = builder();
     String protoPath = null;
 
     int index = 0;
@@ -183,7 +184,11 @@ public final class WireCompiler {
     builder.build().compile();
   }
 
-  public static class Builder {
+  public static Builder builder() {
+    return new Builder(new IO.FileIO());
+  }
+
+  public static final class Builder {
     private String protoPath = System.getProperty("user.dir");
     private String outputDirectory;
     private String registryClass;
@@ -193,7 +198,11 @@ public final class WireCompiler {
     private final Set<String> enumOptions = new LinkedHashSet<String>();
     private Constructor<?> serviceWriterConstructor;
     private final List<String> serviceWriterOptions = new ArrayList<String>();
-    private IO io = new IO.FileIO();
+    private final IO io;
+
+    Builder(IO io) {
+      this.io = io;
+    }
 
     public Builder protoPath(String protoPath) {
       this.protoPath = protoPath;
@@ -216,7 +225,8 @@ public final class WireCompiler {
     }
 
     public Builder addSourceFileNames(String... sourceFileNames) {
-      return addSourceFileNames(Arrays.asList(sourceFileNames));
+      Collections.addAll(this.sourceFileNames, sourceFileNames);
+      return this;
     }
 
     public Builder addSourceFileNames(Collection<String> sourceFileNames) {
@@ -230,7 +240,8 @@ public final class WireCompiler {
     }
 
     public Builder addTypesToEmit(String... typesToEmit) {
-      return addTypesToEmit(Arrays.asList(typesToEmit));
+      Collections.addAll(this.typesToEmit, typesToEmit);
+      return this;
     }
 
     public Builder addTypesToEmit(Collection<String> typesToEmit) {
@@ -249,7 +260,8 @@ public final class WireCompiler {
     }
 
     public Builder addEnumOptions(String... enumOptions) {
-      return addEnumOptions(Arrays.asList(enumOptions));
+      Collections.addAll(this.enumOptions, enumOptions);
+      return this;
     }
 
     public Builder addEnumOptions(Collection<String> enumOptions) {
@@ -268,16 +280,12 @@ public final class WireCompiler {
     }
 
     public Builder addServiceWriterOptions(String... serviceWriterOptions) {
-      return addServiceWriterOptions(Arrays.asList(serviceWriterOptions));
+      Collections.addAll(this.serviceWriterOptions, serviceWriterOptions);
+      return this;
     }
 
     public Builder addServiceWriterOptions(Collection<String> serviceWriterOptions) {
       this.serviceWriterOptions.addAll(serviceWriterOptions);
-      return this;
-    }
-
-    public Builder io(IO io) {
-      this.io = io;
       return this;
     }
 

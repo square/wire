@@ -27,7 +27,10 @@ import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class WireCompilerErrorTest {
 
@@ -75,11 +78,10 @@ public class WireCompilerErrorTest {
     StringIO io = new StringIO("test.proto", source);
 
     try {
-      new WireCompiler.Builder()
+      new WireCompiler.Builder(io)
           .protoPath(".")
           .outputDirectory(".")
           .addSourceFileName("test.proto")
-          .io(io)
           .build().compile();
     } catch (IOException e) {
       fail();
