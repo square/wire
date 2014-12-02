@@ -18,21 +18,16 @@ package com.squareup.wire;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
+import org.junit.Test;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class WireCompilerErrorTest {
 
@@ -79,12 +74,13 @@ public class WireCompilerErrorTest {
   private Map<String, String> compile(String source) {
     StringIO io = new StringIO("test.proto", source);
 
-    @SuppressWarnings("unchecked")
-    WireCompiler compiler = new WireCompiler(".", Arrays.asList("test.proto"),
-        new ArrayList<String>(), ".", null, true, Collections.EMPTY_LIST, null,
-        Collections.EMPTY_LIST, io);
     try {
-      compiler.compile();
+      new WireCompiler.Builder()
+          .protoPath(".")
+          .outputDirectory(".")
+          .addSourceFileName("test.proto")
+          .io(io)
+          .build().compile();
     } catch (IOException e) {
       fail();
     }
