@@ -8,7 +8,7 @@ import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static com.squareup.protoparser.TestUtils.NO_EXTEND_DECLARATIONS;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
 import static com.squareup.protoparser.TestUtils.NO_FIELDS;
-import static com.squareup.protoparser.TestUtils.NO_METHODS;
+import static com.squareup.protoparser.TestUtils.NO_RPCS;
 import static com.squareup.protoparser.TestUtils.NO_ONEOFS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
 import static com.squareup.protoparser.TestUtils.NO_SERVICES;
@@ -38,8 +38,8 @@ public class ProtoFileTest {
 
   @Test public void emptyWithPackageToString() {
     ProtoFile file =
-        ProtoFile.create("file.proto", "example.simple", NO_STRINGS, NO_STRINGS, NO_TYPES, NO_SERVICES,
-            NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+        ProtoFile.create("file.proto", "example.simple", NO_STRINGS, NO_STRINGS, NO_TYPES,
+            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
     String expected = ""
         + "// file.proto\n"
         + "package example.simple;\n";
@@ -51,8 +51,8 @@ public class ProtoFileTest {
         MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
             NO_OPTIONS);
     ProtoFile file =
-        ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+        ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element), NO_SERVICES,
+            NO_EXTEND_DECLARATIONS, NO_OPTIONS);
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -113,10 +113,10 @@ public class ProtoFileTest {
     TypeElement element =
         MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
             NO_OPTIONS);
-    ServiceElement service = ServiceElement.create("Service", "", "", NO_OPTIONS, NO_METHODS);
+    ServiceElement service = ServiceElement.create("Service", "", "", NO_OPTIONS, NO_RPCS);
     ProtoFile file =
-        ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
-            list(service), NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+        ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element), list(service),
+            NO_EXTEND_DECLARATIONS, NO_OPTIONS);
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -132,8 +132,8 @@ public class ProtoFileTest {
             NO_OPTIONS);
     OptionElement option = OptionElement.create("kit", "kat", false);
     ProtoFile file =
-        ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, list(option));
+        ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element), NO_SERVICES,
+            NO_EXTEND_DECLARATIONS, list(option));
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -149,8 +149,8 @@ public class ProtoFileTest {
             NO_OPTIONS);
     ExtendElement extend = ExtendElement.create("Extend", "Extend", "", NO_FIELDS);
     ProtoFile file =
-        ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element),
-            NO_SERVICES, list(extend), NO_OPTIONS);
+        ProtoFile.create("file.proto", null, NO_STRINGS, NO_STRINGS, list(element), NO_SERVICES,
+            list(extend), NO_OPTIONS);
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -174,13 +174,12 @@ public class ProtoFileTest {
     OptionElement option1 = OptionElement.create("kit", "kat", false);
     OptionElement option2 = OptionElement.create("foo", "bar", false);
     ServiceElement service1 =
-        ServiceElement.create("Service1", "example.simple.Service1", "", NO_OPTIONS, NO_METHODS);
+        ServiceElement.create("Service1", "example.simple.Service1", "", NO_OPTIONS, NO_RPCS);
     ServiceElement service2 =
-        ServiceElement.create("Service2", "example.simple.Service2", "", NO_OPTIONS, NO_METHODS);
-    ProtoFile file =
-        ProtoFile.create("file.proto", "example.simple", list("example.thing"), list("example.other"),
-            list(element1, element2), list(service1, service2), list(extend1, extend2),
-            list(option1, option2));
+        ServiceElement.create("Service2", "example.simple.Service2", "", NO_OPTIONS, NO_RPCS);
+    ProtoFile file = ProtoFile.create("file.proto", "example.simple", list("example.thing"),
+        list("example.other"), list(element1, element2), list(service1, service2),
+        list(extend1, extend2), list(option1, option2));
     String expected = ""
         + "// file.proto\n"
         + "package example.simple;\n"

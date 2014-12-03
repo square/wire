@@ -18,14 +18,16 @@ public class OptionElementTest {
   }
 
   @Test public void nestedToString() {
-    OptionElement option = OptionElement.create("foo.boo", OptionElement.create("bar", "baz", true), true);
+    OptionElement option =
+        OptionElement.create("foo.boo", OptionElement.create("bar", "baz", true), true);
     String expected = "(foo.boo).bar = \"baz\"";
     assertThat(option.toString()).isEqualTo(expected);
   }
 
   @Test public void listToString() {
     OptionElement option = OptionElement.create("foo",
-        list(OptionElement.create("ping", "pong", true), OptionElement.create("kit", "kat", false)), true);
+        list(OptionElement.create("ping", "pong", true), OptionElement.create("kit", "kat", false)),
+        true);
     String expected = ""
         + "(foo) = [\n"
         + "  (ping) = \"pong\",\n"

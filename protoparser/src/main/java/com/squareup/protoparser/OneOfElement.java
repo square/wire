@@ -1,38 +1,30 @@
-// Copyright 2013 Square, Inc.
+// Copyright 2014 Square, Inc.
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
-import java.util.Collections;
 import java.util.List;
 
-import static com.squareup.protoparser.MessageElement.validateFieldTagUniqueness;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
 import static com.squareup.protoparser.Utils.immutableCopyOf;
 
 @AutoValue
-public abstract class ExtendElement {
-  public static ExtendElement create(String name, String qualifiedName, String documentation,
-      List<FieldElement> fields) {
-    validateFieldTagUniqueness(qualifiedName, fields, Collections.<OneOfElement>emptyList());
-    return new AutoValue_ExtendElement(name, qualifiedName, documentation,
-        immutableCopyOf(fields, "fields"));
+public abstract class OneOfElement {
+  public static OneOfElement create(String name, String documentation, List<FieldElement> fields) {
+    return new AutoValue_OneOfElement(name, documentation, immutableCopyOf(fields, "fields"));
   }
 
-  ExtendElement() {
+  OneOfElement() {
   }
 
   public abstract String name();
-  public abstract String qualifiedName();
   public abstract String documentation();
   public abstract List<FieldElement> fields();
 
   @Override public final String toString() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    builder.append("extend ")
-        .append(name())
-        .append(" {");
+    builder.append("oneof ").append(name()).append(" {");
     if (!fields().isEmpty()) {
       builder.append('\n');
       for (FieldElement field : fields()) {
