@@ -2,9 +2,11 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import static com.squareup.protoparser.Utils.checkNotNull;
 import static com.squareup.protoparser.Utils.immutableCopyOf;
 
 /** A single {@code .proto} file. */
@@ -21,16 +23,8 @@ public abstract class ProtoFile {
         || (value > RESERVED_TAG_VALUE_END && value <= MAX_TAG_VALUE);
   }
 
-  public static ProtoFile create(String filePath, String packageName, List<String> dependencies,
-      List<String> publicDependencies, List<TypeElement> typeElements,
-      List<ServiceElement> services, List<ExtendElement> extendDeclarations,
-      List<OptionElement> options) {
-    return new AutoValue_ProtoFile(filePath, packageName,
-        immutableCopyOf(dependencies, "dependencies"),
-        immutableCopyOf(publicDependencies, "publicDependencies"),
-        immutableCopyOf(typeElements, "typeElements"), immutableCopyOf(services, "services"),
-        immutableCopyOf(extendDeclarations, "extendDeclarations"),
-        immutableCopyOf(options, "options"));
+  public static Builder builder(String filePath) {
+    return new Builder(checkNotNull(filePath, "filePath"));
   }
 
   ProtoFile() {
@@ -87,5 +81,61 @@ public abstract class ProtoFile {
       }
     }
     return builder.toString();
+  }
+
+  public static final class Builder {
+    private final String filePath;
+    private String packageName;
+    private final List<String> dependencies = new ArrayList<>();
+    private final List<String> publicDependencies = new ArrayList<>();
+    private final List<TypeElement> types = new ArrayList<>();
+    private final List<ServiceElement> services = new ArrayList<>();
+    private final List<ExtendElement> extendDeclarations = new ArrayList<>();
+    private final List<OptionElement> options = new ArrayList<>();
+
+    Builder(String filePath) {
+      this.filePath = filePath;
+    }
+
+    public Builder setPackageName(String packageName) {
+      this.packageName = checkNotNull(packageName, "packageName");
+      return this;
+    }
+
+    public Builder addDependency(String dependency) {
+      dependencies.add(checkNotNull(dependency, "dependency"));
+      return this;
+    }
+
+    public Builder addPublicDependency(String dependency) {
+      publicDependencies.add(checkNotNull(dependency, "dependency"));
+      return this;
+    }
+
+    public Builder addType(TypeElement type) {
+      types.add(checkNotNull(type, "type"));
+      return this;
+    }
+
+    public Builder addService(ServiceElement service) {
+      services.add(checkNotNull(service, "service"));
+      return this;
+    }
+
+    public Builder addExtendDeclaration(ExtendElement extend) {
+      extendDeclarations.add(checkNotNull(extend, "extend"));
+      return this;
+    }
+
+    public Builder addOption(OptionElement option) {
+      options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public ProtoFile build() {
+      return new AutoValue_ProtoFile(filePath, packageName, immutableCopyOf(dependencies),
+          immutableCopyOf(publicDependencies), immutableCopyOf(types), immutableCopyOf(services),
+          immutableCopyOf(extendDeclarations), immutableCopyOf(options));
+    }
   }
 }

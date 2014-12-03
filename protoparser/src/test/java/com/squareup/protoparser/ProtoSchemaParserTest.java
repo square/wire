@@ -12,13 +12,10 @@ import org.junit.Test;
 import static com.squareup.protoparser.MessageElement.Label.ONE_OF;
 import static com.squareup.protoparser.MessageElement.Label.OPTIONAL;
 import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
-import static com.squareup.protoparser.TestUtils.NO_EXTEND_DECLARATIONS;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
 import static com.squareup.protoparser.TestUtils.NO_FIELDS;
 import static com.squareup.protoparser.TestUtils.NO_ONEOFS;
 import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
-import static com.squareup.protoparser.TestUtils.NO_SERVICES;
-import static com.squareup.protoparser.TestUtils.NO_STRINGS;
 import static com.squareup.protoparser.TestUtils.NO_TYPES;
 import static com.squareup.protoparser.TestUtils.list;
 import static com.squareup.protoparser.TestUtils.map;
@@ -148,9 +145,7 @@ public final class ProtoSchemaParserTest {
         FieldElement.create(OPTIONAL, "int32", "page_number", 2, "", NO_OPTIONS),
         FieldElement.create(OPTIONAL, "int32", "result_per_page", 3, "", NO_OPTIONS)),
         NO_ONEOFS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    ProtoFile protoFile =
-        ProtoFile.create("search.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile protoFile = ProtoFile.builder("search.proto").addType(expected).build();
     assertThat(ProtoSchemaParser.parse("search.proto", new StringReader(proto))) //
         .isEqualTo(protoFile);
   }
@@ -170,9 +165,7 @@ public final class ProtoSchemaParserTest {
             list(FieldElement.create(ONE_OF, "int32", "page_number", 2, "", NO_OPTIONS),
                 FieldElement.create(ONE_OF, "int32", "result_per_page", 3, "", NO_OPTIONS)))),
         NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    ProtoFile protoFile =
-        ProtoFile.create("search.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile protoFile = ProtoFile.builder("search.proto").addType(expected).build();
     assertThat(ProtoSchemaParser.parse("search.proto", new StringReader(proto))) //
         .isEqualTo(protoFile);
   }
@@ -196,9 +189,7 @@ public final class ProtoSchemaParserTest {
             NO_OPTIONS, Arrays.asList(EnumConstantElement.create("FRUIT", 1, "", NO_OPTIONS),
             EnumConstantElement.create("CREAM", 2, "Yummy, yummy cream.", NO_OPTIONS),
             EnumConstantElement.create("SYRUP", 3, "Quebec Maple syrup", NO_OPTIONS)));
-    ProtoFile protoFile =
-        ProtoFile.create("waffles.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile protoFile = ProtoFile.builder("waffles.proto").addType(expected).build();
     ProtoFile actual = ProtoSchemaParser.parse("waffles.proto", proto);
     assertThat(actual).isEqualTo(protoFile);
   }
@@ -226,9 +217,7 @@ public final class ProtoSchemaParserTest {
         list(EnumConstantElement.create("FRUIT", 1, "", fruitOptions),
             EnumConstantElement.create("CREAM", 2, "Yummy, yummy cream.", NO_OPTIONS),
             EnumConstantElement.create("SYRUP", 3, "Quebec Maple syrup", NO_OPTIONS)));
-    ProtoFile protoFile =
-        ProtoFile.create("waffles.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile protoFile = ProtoFile.builder("waffles.proto").addType(expected).build();
     ProtoFile actual = ProtoSchemaParser.parse("waffles.proto", proto);
     assertThat(actual).isEqualTo(protoFile);
   }
@@ -242,15 +231,16 @@ public final class ProtoSchemaParserTest {
         + "// files it parses.\n"
         + "message FileDescriptorSet {\n"
         + "}\n";
-    TypeElement
-        message = MessageElement.create("FileDescriptorSet", "google.protobuf.FileDescriptorSet", ""
-        + "The protocol compiler can output a FileDescriptorSet containing the .proto\n"
-        + "files it parses.", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-        NO_OPTIONS);
-    ProtoFile expected =
-        ProtoFile.create("descriptor.proto", "google.protobuf", NO_STRINGS, NO_STRINGS,
-            Arrays.asList(message), NO_SERVICES, NO_EXTEND_DECLARATIONS,
-            list(OptionElement.create("java_package", "com.google.protobuf", false)));
+    TypeElement message =
+        MessageElement.create("FileDescriptorSet", "google.protobuf.FileDescriptorSet", ""
+                + "The protocol compiler can output a FileDescriptorSet containing the .proto\n"
+                + "files it parses.", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+    OptionElement option = OptionElement.create("java_package", "com.google.protobuf", false);
+    ProtoFile expected = ProtoFile.builder("descriptor.proto")
+        .setPackageName("google.protobuf")
+        .addType(message)
+        .addOption(option)
+        .build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -270,8 +260,7 @@ public final class ProtoSchemaParserTest {
         Arrays.asList(EnumConstantElement.create("STRING", 0, "",
             Arrays.asList(OptionElement.create("opt_a", 1, true),
                 OptionElement.create("opt_b", 2, true)))));
-    FieldElement
-        field = FieldElement.create(OPTIONAL, "CType", "ctype", 1, "",
+    FieldElement field = FieldElement.create(OPTIONAL, "CType", "ctype", 1, "",
         list(OptionElement.create("default", EnumConstantElement.anonymous("STRING"), false),
             OptionElement.create("deprecated", true, false)));
     assertThat(field.options()).containsOnly( //
@@ -283,8 +272,7 @@ public final class ProtoSchemaParserTest {
             Arrays.asList(enumElement), list(ExtensionsElement.create(
                 "Clients can define custom options in extensions of this message. See above.", 500,
                 500), ExtensionsElement.create("", 1000, ProtoFile.MAX_TAG_VALUE)), NO_OPTIONS);
-    ProtoFile expected = ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS,
-        Arrays.asList(messageElement), NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("descriptor.proto").addType(messageElement).build();
     ProtoFile actual = ProtoSchemaParser.parse("descriptor.proto", proto);
     assertThat(actual).isEqualTo(expected);
   }
@@ -316,9 +304,7 @@ public final class ProtoSchemaParserTest {
         Arrays.asList(gobChicken, lucilleChicken, georgeSrChicken, lindsayChicken), NO_ONEOFS,
         NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
 
-    ProtoFile expected =
-        ProtoFile.create("chickens.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(messageElement),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("chickens.proto").addType(messageElement).build();
 
     ProtoFile actual = ProtoSchemaParser.parse("chickens.proto", proto);
     assertThat(actual).isEqualTo(expected);
@@ -326,18 +312,18 @@ public final class ProtoSchemaParserTest {
 
   @Test public void imports() throws Exception {
     String proto = "import \"src/test/resources/unittest_import.proto\";\n";
-    ProtoFile expected = ProtoFile.create("descriptor.proto", null,
-        Arrays.asList("src/test/resources/unittest_import.proto"), NO_STRINGS, NO_TYPES,
-        NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("descriptor.proto")
+        .addDependency("src/test/resources/unittest_import.proto")
+        .build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
 
   @Test public void publicImports() throws Exception {
     String proto = "import public \"src/test/resources/unittest_import.proto\";\n";
-    ProtoFile expected = ProtoFile.create("descriptor.proto", null,
-        NO_STRINGS, Arrays.asList("src/test/resources/unittest_import.proto"), NO_TYPES,
-        NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("descriptor.proto")
+        .addPublicDependency("src/test/resources/unittest_import.proto")
+        .build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -348,12 +334,10 @@ public final class ProtoSchemaParserTest {
         + "extend Foo {\n"
         + "  optional int32 bar = 126;\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<>();
-    extendDeclarations.add(ExtendElement.create("Foo", "Foo", "Extends Foo", Arrays.asList(
-        FieldElement.create(OPTIONAL, "int32", "bar", 126, "", NO_OPTIONS))));
+    ExtendElement extendDeclaration = ExtendElement.create("Foo", "Foo", "Extends Foo",
+        Arrays.asList(FieldElement.create(OPTIONAL, "int32", "bar", 126, "", NO_OPTIONS)));
     ProtoFile expected =
-        ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS, NO_TYPES, NO_SERVICES,
-            extendDeclarations, NO_OPTIONS);
+        ProtoFile.builder("descriptor.proto").addExtendDeclaration(extendDeclaration).build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -365,14 +349,15 @@ public final class ProtoSchemaParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<>();
-    extendDeclarations.add(ExtendElement.create("Foo", "Foo", "", Arrays.asList(
-        FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+    ExtendElement extendElement = ExtendElement.create("Foo", "Foo", "",
+        Arrays.asList(FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS)));
     TypeElement messageElement =
         MessageElement.create("Bar", "Bar", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
             NO_OPTIONS);
-    ProtoFile expected = ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS,
-        Arrays.asList(messageElement), NO_SERVICES, extendDeclarations, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("descriptor.proto")
+        .addType(messageElement)
+        .addExtendDeclaration(extendElement)
+        .build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -386,15 +371,16 @@ public final class ProtoSchemaParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<>();
-    extendDeclarations.add(ExtendElement.create("Foo", "kit.kat.Foo", "", Arrays.asList(
-        FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+    ExtendElement extendElement = ExtendElement.create("Foo", "kit.kat.Foo", "",
+        Arrays.asList(FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS)));
     TypeElement messageElement =
         MessageElement.create("Bar", "kit.kat.Bar", "", NO_FIELDS, NO_ONEOFS, NO_TYPES,
             NO_EXTENSIONS, NO_OPTIONS);
-    ProtoFile expected =
-        ProtoFile.create("descriptor.proto", "kit.kat", NO_STRINGS, NO_STRINGS,
-            Arrays.asList(messageElement), NO_SERVICES, extendDeclarations, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("descriptor.proto")
+        .setPackageName("kit.kat")
+        .addType(messageElement)
+        .addExtendDeclaration(extendElement)
+        .build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -406,14 +392,15 @@ public final class ProtoSchemaParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<>();
-    extendDeclarations.add(ExtendElement.create("example.Foo", "example.Foo", "", Arrays.asList(
-        FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+    ExtendElement extendElement = ExtendElement.create("example.Foo", "example.Foo", "",
+        Arrays.asList(FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS)));
     TypeElement messageElement =
         MessageElement.create("Bar", "Bar", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
             NO_OPTIONS);
-    ProtoFile expected = ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS,
-        Arrays.asList(messageElement), NO_SERVICES, extendDeclarations, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("descriptor.proto")
+        .addType(messageElement)
+        .addExtendDeclaration(extendElement)
+        .build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -427,15 +414,16 @@ public final class ProtoSchemaParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    List<ExtendElement> extendDeclarations = new ArrayList<>();
-    extendDeclarations.add(ExtendElement.create("example.Foo", "example.Foo", "", Arrays.asList(
-        FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS))));
+    ExtendElement extendElement = ExtendElement.create("example.Foo", "example.Foo", "",
+        Arrays.asList(FieldElement.create(OPTIONAL, "Bar", "bar", 126, "", NO_OPTIONS)));
     TypeElement messageElement =
         MessageElement.create("Bar", "kit.kat.Bar", "", NO_FIELDS, NO_ONEOFS, NO_TYPES,
             NO_EXTENSIONS, NO_OPTIONS);
-    ProtoFile expected =
-        ProtoFile.create("descriptor.proto", "kit.kat", NO_STRINGS, NO_STRINGS,
-            Arrays.asList(messageElement), NO_SERVICES, extendDeclarations, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("descriptor.proto")
+        .setPackageName("kit.kat")
+        .addType(messageElement)
+        .addExtendDeclaration(extendElement)
+        .build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -453,8 +441,7 @@ public final class ProtoSchemaParserTest {
     TypeElement messageElement =
         MessageElement.create("Foo", "Foo", "", Arrays.asList(field), NO_ONEOFS, NO_TYPES,
             NO_EXTENSIONS, NO_OPTIONS);
-    ProtoFile expected = ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS,
-        Arrays.asList(messageElement), NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("descriptor.proto").addType(messageElement).build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(expected);
   }
@@ -476,9 +463,7 @@ public final class ProtoSchemaParserTest {
 
     TypeElement messageElement = MessageElement.create("Foo", "Foo", "", Arrays.asList(field),
             NO_ONEOFS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    ProtoFile expected =
-        ProtoFile.create("foo.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(messageElement),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("foo.proto").addType(messageElement).build();
     assertThat(ProtoSchemaParser.parse("foo.proto", proto))
         .isEqualTo(expected);
   }
@@ -516,8 +501,7 @@ public final class ProtoSchemaParserTest {
                     OptionElement.create("squareup.a.b", map("value", //
                         list(EnumConstantElement.anonymous("FOO"),
                             EnumConstantElement.anonymous("BAR"))), true)))));
-    ProtoFile protoFile = ProtoFile.create("descriptor.proto", null, NO_STRINGS, NO_STRINGS, NO_TYPES,
-        Arrays.asList(expected), NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile protoFile = ProtoFile.builder("descriptor.proto").addService(expected).build();
     assertThat(ProtoSchemaParser.parse("descriptor.proto", proto))
         .isEqualTo(protoFile);
   }
@@ -529,9 +513,7 @@ public final class ProtoSchemaParserTest {
         + "}";
     TypeElement expected = MessageElement.create("HexTag", "HexTag", "", Arrays.asList(
             FieldElement.create(REQUIRED, "string", "hex", 16, "", NO_OPTIONS)), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    ProtoFile protoFile =
-        ProtoFile.create("hex.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile protoFile = ProtoFile.builder("hex.proto").addType(expected).build();
     assertThat(ProtoSchemaParser.parse("hex.proto", proto)).isEqualTo(protoFile);
   }
 
@@ -575,9 +557,7 @@ public final class ProtoSchemaParserTest {
     TypeElement expected =
         MessageElement.create("ExoticOptions", "ExoticOptions", "", NO_FIELDS, NO_ONEOFS,
             NO_TYPES, NO_EXTENSIONS, options);
-    ProtoFile protoFile =
-        ProtoFile.create("exotic.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile protoFile = ProtoFile.builder("exotic.proto").addType(expected).build();
     assertThat(ProtoSchemaParser.parse("exotic.proto", proto)).isEqualTo(protoFile);
   }
 
@@ -603,9 +583,7 @@ public final class ProtoSchemaParserTest {
 
     TypeElement expected = MessageElement.create("StructuredOption", "StructuredOption", "",
         Arrays.asList(field), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    ProtoFile protoFile =
-        ProtoFile.create("nestedmaps.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile protoFile = ProtoFile.builder("nestedmaps.proto").addType(expected).build();
     assertThat(ProtoSchemaParser.parse("nestedmaps.proto", proto))
         .isEqualTo(protoFile);
   }
@@ -632,9 +610,7 @@ public final class ProtoSchemaParserTest {
     TypeElement expected =
         MessageElement.create("Foo", "Foo", "", Arrays.asList(field), NO_ONEOFS, NO_TYPES,
             NO_EXTENSIONS, NO_OPTIONS);
-    ProtoFile protoFile =
-        ProtoFile.create("foo.proto", null, NO_STRINGS, NO_STRINGS, Arrays.asList(expected),
-            NO_SERVICES, NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile protoFile = ProtoFile.builder("foo.proto").addType(expected).build();
     assertThat(ProtoSchemaParser.parse("foo.proto", proto)).isEqualTo(protoFile);
   }
 
@@ -647,9 +623,7 @@ public final class ProtoSchemaParserTest {
     TypeElement element =
         MessageElement.create("C", "C", "", list(field), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
             NO_OPTIONS);
-    ProtoFile expected =
-        ProtoFile.create("test.proto", null, NO_STRINGS, NO_STRINGS, list(element), NO_SERVICES,
-            NO_EXTEND_DECLARATIONS, NO_OPTIONS);
+    ProtoFile expected = ProtoFile.builder("test.proto").addType(element).build();
 
     assertThat(parse).isEqualTo(expected);
   }

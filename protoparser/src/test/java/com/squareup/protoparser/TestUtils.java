@@ -8,9 +8,6 @@ import java.util.Map;
 
 final class TestUtils {
   static final List<TypeElement> NO_TYPES = Collections.emptyList();
-  static final List<ServiceElement> NO_SERVICES = Collections.emptyList();
-  static final List<String> NO_STRINGS = Collections.emptyList();
-  static final List<ExtendElement> NO_EXTEND_DECLARATIONS = Collections.emptyList();
   static final List<ExtensionsElement> NO_EXTENSIONS = Collections.emptyList();
   static final List<OptionElement> NO_OPTIONS = Collections.emptyList();
   static final List<FieldElement> NO_FIELDS = Collections.emptyList();
