@@ -89,8 +89,8 @@ public abstract class OptionElement {
       // Treat nested options as non-parenthesized always, prevents double parentheses.
       optionValue = OptionElement.create(optionValue.name(), optionValue.value(), false);
       builder.append(formatName()).append('.').append(optionValue.toString());
-    } else if (value instanceof EnumElement.ValueElement) {
-      EnumElement.ValueElement enumValue = (EnumElement.ValueElement) value;
+    } else if (value instanceof EnumConstantElement) {
+      EnumConstantElement enumValue = (EnumConstantElement) value;
       builder.append(name()).append(" = ").append(enumValue.name());
     } else if (value instanceof List) {
       builder.append(formatName()).append(" = [\n");

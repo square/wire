@@ -1,10 +1,6 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.protoparser;
 
-import com.squareup.protoparser.EnumElement.ValueElement;
-import com.squareup.protoparser.MessageElement.FieldElement;
-import com.squareup.protoparser.MessageElement.OneOfElement;
-import com.squareup.protoparser.ServiceElement.RpcElement;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -193,7 +189,7 @@ public final class ProtoSchemaParser {
         }
       }
       if (readChar() != ';') throw unexpected("expected ';'");
-      return ValueElement.create(label, tag, documentation, options);
+      return EnumConstantElement.create(label, tag, documentation, options);
     } else {
       throw unexpected("unexpected label: " + label);
     }
@@ -286,7 +282,7 @@ public final class ProtoSchemaParser {
   private EnumElement readEnumElement(String documentation) {
     String name = readName();
     List<OptionElement> options = new ArrayList<>();
-    List<ValueElement> values = new ArrayList<>();
+    List<EnumConstantElement> values = new ArrayList<>();
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String valueDocumentation = readDocumentation();
@@ -295,8 +291,8 @@ public final class ProtoSchemaParser {
         break;
       }
       Object declared = readDeclaration(valueDocumentation, Context.ENUM);
-      if (declared instanceof ValueElement) {
-        values.add((ValueElement) declared);
+      if (declared instanceof EnumConstantElement) {
+        values.add((EnumConstantElement) declared);
       } else if (declared instanceof OptionElement) {
         options.add((OptionElement) declared);
       }
@@ -409,7 +405,7 @@ public final class ProtoSchemaParser {
           case "false":
             return false;
           default:
-            return ValueElement.anonymous(word);
+            return EnumConstantElement.anonymous(word);
         }
     }
   }

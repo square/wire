@@ -13,10 +13,10 @@ final class TestUtils {
   static final List<ExtendElement> NO_EXTEND_DECLARATIONS = Collections.emptyList();
   static final List<ExtensionsElement> NO_EXTENSIONS = Collections.emptyList();
   static final List<OptionElement> NO_OPTIONS = Collections.emptyList();
-  static final List<MessageElement.FieldElement> NO_FIELDS = Collections.emptyList();
-  static final List<MessageElement.OneOfElement> NO_ONEOFS = Collections.emptyList();
-  static final List<EnumElement.ValueElement> NO_VALUES = Collections.emptyList();
-  static final List<ServiceElement.RpcElement> NO_METHODS = Collections.emptyList();
+  static final List<FieldElement> NO_FIELDS = Collections.emptyList();
+  static final List<OneOfElement> NO_ONEOFS = Collections.emptyList();
+  static final List<EnumConstantElement> NO_CONSTANTS = Collections.emptyList();
+  static final List<RpcElement> NO_RPCS = Collections.emptyList();
 
   static Map<String, Object> map(Object... keysAndValues) {
     Map<String, Object> result = new LinkedHashMap<>();
