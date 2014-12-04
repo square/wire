@@ -55,66 +55,43 @@ public final class ProtoSchemaParser {
     return new ProtoSchemaParser(name, data.toCharArray()).readProtoFile();
   }
 
-  /** The path to the {@code .proto} file. */
   private final String filePath;
-
-  /** The entire document. */
   private final char[] data;
+  private final ProtoFile.Builder builder;
 
   /** Our cursor within the document. {@code data[pos]} is the next character to be read. */
   private int pos;
-
   /** The number of newline characters encountered thus far. */
   private int line;
-
   /** The index of the most recent newline character. */
   private int lineStart;
-
   /** Output package name, or null if none yet encountered. */
   private String packageName;
 
   /** The current package name + nested type names, separated by dots. */
   private String prefix = "";
 
-  /** Imported files. */
-  private final List<String> dependencies = new ArrayList<>();
-
-  /** Public imported files. */
-  private final List<String> publicDependencies = new ArrayList<>();
-
-  /** Declared message types and enum types. */
-  private final List<TypeElement> typeElements = new ArrayList<>();
-
-  /** Declared services. */
-  private final List<ServiceElement> services = new ArrayList<>();
-
-  /** Declared 'extend's. */
-  private final List<ExtendElement> extendDeclarations = new ArrayList<>();
-
-  /** Global options. */
-  private final List<OptionElement> options = new ArrayList<>();
-
   ProtoSchemaParser(String filePath, char[] data) {
     this.filePath = filePath;
     this.data = data;
+    this.builder = ProtoFile.builder(filePath);
   }
 
   ProtoFile readProtoFile() {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return ProtoFile.create(filePath, packageName, dependencies, publicDependencies,
-            typeElements, services, extendDeclarations, options);
+        return builder.build();
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
       if (declaration instanceof TypeElement) {
-        typeElements.add((TypeElement) declaration);
+        builder.addType((TypeElement) declaration);
       } else if (declaration instanceof ServiceElement) {
-        services.add((ServiceElement) declaration);
+        builder.addService((ServiceElement) declaration);
       } else if (declaration instanceof OptionElement) {
-        options.add((OptionElement) declaration);
+        builder.addOption((OptionElement) declaration);
       } else if (declaration instanceof ExtendElement) {
-        extendDeclarations.add((ExtendElement) declaration);
+        builder.addExtendDeclaration((ExtendElement) declaration);
       }
     }
   }
@@ -132,6 +109,7 @@ public final class ProtoSchemaParser {
       if (!context.permitsPackage()) throw unexpected("package in " + context);
       if (packageName != null) throw unexpected("too many package names");
       packageName = readName();
+      builder.setPackageName(packageName);
       prefix = packageName + ".";
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
@@ -139,9 +117,9 @@ public final class ProtoSchemaParser {
       if (!context.permitsImport()) throw unexpected("import in " + context);
       String importString = readString();
       if ("public".equals(importString)) {
-        publicDependencies.add(readString());
+        builder.addPublicDependency(readString());
       } else {
-        dependencies.add(importString);
+        builder.addDependency(importString);
       }
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
@@ -225,7 +203,7 @@ public final class ProtoSchemaParser {
         options.add((OptionElement) declared);
       } else if (declared instanceof ExtendElement) {
         // Extend declarations always add in a global scope regardless of nesting.
-        extendDeclarations.add((ExtendElement) declared);
+        builder.addExtendDeclaration((ExtendElement) declared);
       }
     }
     prefix = previousPrefix;
