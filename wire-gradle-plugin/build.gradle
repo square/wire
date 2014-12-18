@@ -1,0 +1,36 @@
+apply plugin: 'groovy'
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+
+    compile 'com.android.tools.build:gradle:1.0.0'
+    compile 'com.squareup.wire:wire-compiler:1.6.0'
+}
+
+apply plugin: 'maven'
+
+repositories {
+    mavenCentral()
+}
+
+group = 'com.squareup.wire'
+version = '1.6.1-SNAPSHOT'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wire Protocol Buffer Gradle Plugin'
+                inceptionYear '2014'
+                licenses {
+                    license {
+                        name 'Apache License Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+    }
+}
