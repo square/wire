@@ -190,9 +190,9 @@ or Gradle:
 compile 'com.squareup.wire:wire-runtime:VERSION'
 ```
 
-Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
-
 where `VERSION` is replaced by an actual version number such as `1.6.0`.
+
+Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 
 How Wire works
 --------------
