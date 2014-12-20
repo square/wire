@@ -81,9 +81,17 @@ Download [the latest runtime .jar][dl] or depend via Maven:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>(latest version)</version>
+  <version>VERSION</version>
 </dependency>
 ```
+or Gradle:
+```groovy
+compile 'com.squareup.wire:wire-runtime:VERSION'
+```
+
+where `VERSION` is replaced by an actual version number such as `1.6.0`.
+
+Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 
 How Wire works
 --------------
@@ -152,8 +160,10 @@ Unsupported
 Wire does not support:
 
  * Groups - they are skipping when parsing binary input data
- * Services - they are ignored by the compiler
- * Custom options - they are ignored
 
+Wire supports custom options on messages and fields. Other custom options are ignored. Use the
+`--no_options` flag to omit option information from the generated code.
 
- [dl]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
+ [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
+ [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
+ [snap]: https://oss.sonatype.org/content/repositories/snapshots/
