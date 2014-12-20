@@ -190,6 +190,8 @@ or Gradle:
 compile 'com.squareup.wire:wire-runtime:VERSION'
 ```
 
+Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
+
 where `VERSION` is replaced by an actual version number such as `1.6.0`.
 
 How Wire works
@@ -267,3 +269,4 @@ Wire supports custom options on messages and fields. Other custom options are ig
 
  [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
+ [snap]: https://oss.sonatype.org/content/repositories/snapshots/
