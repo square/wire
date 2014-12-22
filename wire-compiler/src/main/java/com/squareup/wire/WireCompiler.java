@@ -171,17 +171,18 @@ public final class WireCompiler {
       }
       index++;
     }
-    if (builder.outputDirectory == null) {
-      System.err.println("Must specify " + JAVA_OUT_FLAG + " flag");
-      System.exit(1);
-    }
     if (protoPath == null) {
       System.err.println(PROTO_PATH_FLAG + " flag not specified, using current dir "
           + builder.protoPath);
     } else {
       builder.protoPath(protoPath);
     }
-    builder.build().compile();
+    try {
+      builder.build().compile();
+    } catch (MissingOutputDirectoryWireCompilerException e) {
+      System.err.println("Must specify " + JAVA_OUT_FLAG + " flag");
+      System.exit(1);
+    }
   }
 
   public static Builder builder() {
@@ -290,6 +291,9 @@ public final class WireCompiler {
     }
 
     public WireCompiler build() {
+      if (outputDirectory == null || outputDirectory.length() == 0) {
+        throw new MissingOutputDirectoryWireCompilerException();
+      }
       return new WireCompiler(this);
     }
   }
