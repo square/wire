@@ -31,6 +31,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -50,7 +51,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
 /** Compiler for Wire protocol buffers. */
-public class WireCompiler {
+public final class WireCompiler {
   static final String LINE_WRAP_INDENT = "    ";
 
   /**
@@ -75,7 +76,7 @@ public class WireCompiler {
   private final String repoPath;
   private final List<String> sourceFileNames;
   private final IO io;
-  private final Set<String> typesToEmit = new LinkedHashSet<String>();
+  private final Set<String> typesToEmit;
   private final Map<String, String> javaSymbolMap = new LinkedHashMap<String, String>();
   private final Set<String> javaSymbols = new LinkedHashSet<String>();
   private final Set<String> enumTypes = new LinkedHashSet<String>();
@@ -136,56 +137,165 @@ public class WireCompiler {
    * </p>
    */
   public static void main(String... args) throws Exception {
+    Builder builder = builder();
     String protoPath = null;
-    String javaOut = null;
-    String registryClass = null;
-    List<String> sourceFileNames = new ArrayList<String>();
-    List<String> roots = new ArrayList<String>();
-    boolean emitOptions = true;
-    List<String> enumOptions = new ArrayList<String>();
-    Constructor<?> serviceWriterConstructor = null;
-    List<String> serviceWriterOptions = new ArrayList<String>();
 
     int index = 0;
     while (index < args.length) {
-      if (args[index].startsWith(PROTO_PATH_FLAG)) {
-        protoPath = args[index].substring(PROTO_PATH_FLAG.length());
-      } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
-        javaOut = args[index].substring(JAVA_OUT_FLAG.length());
-      } else if (args[index].startsWith(FILES_FLAG)) {
-        File files = new File(args[index].substring(FILES_FLAG.length()));
-        String[] fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
-        sourceFileNames.addAll(Arrays.asList(fileNames));
-      } else if (args[index].startsWith(ROOTS_FLAG)) {
-        roots.addAll(splitArg(args[index], ROOTS_FLAG.length()));
-      } else if (args[index].startsWith(REGISTRY_CLASS_FLAG)) {
-        registryClass = args[index].substring(REGISTRY_CLASS_FLAG.length());
-      } else if (args[index].equals(NO_OPTIONS_FLAG)) {
-        emitOptions = false;
-      } else if (args[index].startsWith(ENUM_OPTIONS_FLAG)) {
-        enumOptions.addAll(splitArg(args[index], ENUM_OPTIONS_FLAG.length()));
-      } else if (args[index].startsWith(SERVICE_WRITER_FLAG)) {
-        serviceWriterConstructor =
-            loadServiceWriter(args[index].substring(SERVICE_WRITER_FLAG.length()));
-      } else if (args[index].startsWith(SERVICE_WRITER_OPT_FLAG)) {
-        serviceWriterOptions.add(args[index].substring(SERVICE_WRITER_OPT_FLAG.length()));
+      String arg = args[index];
+      if (arg.startsWith(PROTO_PATH_FLAG)) {
+        protoPath = arg.substring(PROTO_PATH_FLAG.length());
+      } else if (arg.startsWith(JAVA_OUT_FLAG)) {
+        builder.outputDirectory(arg.substring(JAVA_OUT_FLAG.length()));
+      } else if (arg.startsWith(FILES_FLAG)) {
+        File files = new File(arg.substring(FILES_FLAG.length()));
+        final String[] sourceFileNames = new Scanner(files, "UTF-8")
+            .useDelimiter("\\A")
+            .next()
+            .split("\n");
+        builder.addSourceFileNames(sourceFileNames);
+      } else if (arg.startsWith(ROOTS_FLAG)) {
+        builder.addTypesToEmit(splitArg(arg, ROOTS_FLAG.length()));
+      } else if (arg.startsWith(REGISTRY_CLASS_FLAG)) {
+        builder.registryClass(arg.substring(REGISTRY_CLASS_FLAG.length()));
+      } else if (arg.equals(NO_OPTIONS_FLAG)) {
+        builder.emitOptions(false);
+      } else if (arg.startsWith(ENUM_OPTIONS_FLAG)) {
+        builder.addEnumOptions(splitArg(arg, ENUM_OPTIONS_FLAG.length()));
+      } else if (arg.startsWith(SERVICE_WRITER_FLAG)) {
+        builder.serviceWriter(arg.substring(SERVICE_WRITER_FLAG.length()));
+      } else if (arg.startsWith(SERVICE_WRITER_OPT_FLAG)) {
+        builder.addServiceWriterOption(arg.substring(SERVICE_WRITER_OPT_FLAG.length()));
       } else {
-        sourceFileNames.add(args[index]);
+        builder.addSourceFileName(arg);
       }
       index++;
     }
-    if (javaOut == null) {
+    if (protoPath == null) {
+      System.err.println(PROTO_PATH_FLAG + " flag not specified, using current dir "
+          + builder.protoPath);
+    } else {
+      builder.protoPath(protoPath);
+    }
+    try {
+      builder.build().compile();
+    } catch (MissingOutputDirectoryWireCompilerException e) {
       System.err.println("Must specify " + JAVA_OUT_FLAG + " flag");
       System.exit(1);
     }
-    if (protoPath == null) {
-      protoPath = System.getProperty("user.dir");
-      System.err.println(PROTO_PATH_FLAG + " flag not specified, using current dir " + protoPath);
+  }
+
+  public static Builder builder() {
+    return new Builder(new IO.FileIO());
+  }
+
+  public static final class Builder {
+    private String protoPath = System.getProperty("user.dir");
+    private String outputDirectory;
+    private String registryClass;
+    private final List<String> sourceFileNames = new ArrayList<String>();
+    private final Set<String> typesToEmit = new LinkedHashSet<String>();
+    private boolean emitOptions = true;
+    private final Set<String> enumOptions = new LinkedHashSet<String>();
+    private Constructor<?> serviceWriterConstructor;
+    private final List<String> serviceWriterOptions = new ArrayList<String>();
+    private final IO io;
+
+    Builder(IO io) {
+      this.io = io;
     }
-    WireCompiler wireCompiler =
-        new WireCompiler(protoPath, sourceFileNames, roots, javaOut, registryClass, emitOptions,
-            enumOptions, serviceWriterConstructor, serviceWriterOptions);
-    wireCompiler.compile();
+
+    public Builder protoPath(String protoPath) {
+      this.protoPath = protoPath;
+      return this;
+    }
+
+    public Builder outputDirectory(String outputDirectory) {
+      this.outputDirectory = outputDirectory;
+      return this;
+    }
+
+    public Builder registryClass(String registryClass) {
+      this.registryClass = registryClass;
+      return this;
+    }
+
+    public Builder addSourceFileName(String sourceFileName) {
+      sourceFileNames.add(sourceFileName);
+      return this;
+    }
+
+    public Builder addSourceFileNames(String... sourceFileNames) {
+      Collections.addAll(this.sourceFileNames, sourceFileNames);
+      return this;
+    }
+
+    public Builder addSourceFileNames(Collection<String> sourceFileNames) {
+      sourceFileNames.addAll(sourceFileNames);
+      return this;
+    }
+
+    public Builder addTypeToEmit(String typeToEmit) {
+      typesToEmit.add(typeToEmit);
+      return this;
+    }
+
+    public Builder addTypesToEmit(String... typesToEmit) {
+      Collections.addAll(this.typesToEmit, typesToEmit);
+      return this;
+    }
+
+    public Builder addTypesToEmit(Collection<String> typesToEmit) {
+      this.typesToEmit.addAll(typesToEmit);
+      return this;
+    }
+
+    public Builder emitOptions(boolean emitOptions) {
+      this.emitOptions = emitOptions;
+      return this;
+    }
+
+    public Builder addEnumOption(String enumOption) {
+      enumOptions.add(enumOption);
+      return this;
+    }
+
+    public Builder addEnumOptions(String... enumOptions) {
+      Collections.addAll(this.enumOptions, enumOptions);
+      return this;
+    }
+
+    public Builder addEnumOptions(Collection<String> enumOptions) {
+      this.enumOptions.addAll(enumOptions);
+      return this;
+    }
+
+    public Builder serviceWriter(String serviceWriter) {
+      this.serviceWriterConstructor = loadServiceWriter(serviceWriter);
+      return this;
+    }
+
+    public Builder addServiceWriterOption(String serviceWriterOption) {
+      this.serviceWriterOptions.add(serviceWriterOption);
+      return this;
+    }
+
+    public Builder addServiceWriterOptions(String... serviceWriterOptions) {
+      Collections.addAll(this.serviceWriterOptions, serviceWriterOptions);
+      return this;
+    }
+
+    public Builder addServiceWriterOptions(Collection<String> serviceWriterOptions) {
+      this.serviceWriterOptions.addAll(serviceWriterOptions);
+      return this;
+    }
+
+    public WireCompiler build() {
+      if (outputDirectory == null || outputDirectory.length() == 0) {
+        throw new MissingOutputDirectoryWireCompilerException();
+      }
+      return new WireCompiler(this);
+    }
   }
 
   private static List<String> splitArg(String arg, int flagLength) {
@@ -221,26 +331,17 @@ public class WireCompiler {
     return null;
   }
 
-  public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
-      String outputDirectory, String registryClass, boolean emitOptions, List<String> enumOptions,
-      Constructor<?> serviceWriterConstructor, List<String> serviceWriterOptions) {
-    this(protoPath, sourceFileNames, roots, outputDirectory, registryClass, emitOptions,
-        enumOptions, serviceWriterConstructor, serviceWriterOptions, new IO.FileIO());
-  }
-
-  WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
-      String outputDirectory, String registryClass, boolean emitOptions, List<String> enumOptions,
-      Constructor<?> serviceWriterConstructor, List<String> serviceWriterOptions, IO io) {
-    this.repoPath = protoPath;
-    this.typesToEmit.addAll(roots);
-    this.sourceFileNames = sourceFileNames;
-    this.outputDirectory = outputDirectory;
-    this.registryClass = registryClass;
-    this.emitOptions = emitOptions;
-    this.enumOptions = new LinkedHashSet<String>(enumOptions);
-    this.serviceWriterConstructor = serviceWriterConstructor;
-    this.serviceWriterOptions = serviceWriterOptions;
-    this.io = io;
+  private WireCompiler(Builder builder) {
+    this.repoPath = builder.protoPath;
+    this.typesToEmit = builder.typesToEmit;
+    this.sourceFileNames = builder.sourceFileNames;
+    this.outputDirectory = builder.outputDirectory;
+    this.registryClass = builder.registryClass;
+    this.emitOptions = builder.emitOptions;
+    this.enumOptions = builder.enumOptions;
+    this.serviceWriterConstructor = builder.serviceWriterConstructor;
+    this.serviceWriterOptions = builder.serviceWriterOptions;
+    this.io = builder.io;
   }
 
   public void compile() throws IOException {
