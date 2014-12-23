@@ -19,6 +19,8 @@ final class CommandLineOptions {
   public static final String ENUM_OPTIONS_FLAG = "--enum_options=";
   public static final String SERVICE_WRITER_FLAG = "--service_writer=";
   public static final String SERVICE_WRITER_OPT_FLAG = "--service_writer_opt=";
+  public static final String QUIET_FLAG = "--quiet";
+  public static final String DRY_RUN_FLAG = "--dry_run";
 
   final String protoPath;
   final String javaOut;
@@ -29,13 +31,17 @@ final class CommandLineOptions {
   final Set<String> enumOptions;
   final String serviceWriter;
   final List<String> serviceWriterOptions;
+  final boolean quiet;
+  final boolean dryRun;
 
   CommandLineOptions(String protoPath, String javaOut,
       List<String> sourceFileNames, List<String> roots,
       String registryClass, boolean emitOptions,
       Set<String> enumOptions,
       String serviceWriter,
-      List<String> serviceWriterOptions) {
+      List<String> serviceWriterOptions,
+      boolean quiet,
+      boolean dryRun) {
     this.protoPath = protoPath;
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
@@ -45,9 +51,12 @@ final class CommandLineOptions {
     this.enumOptions = enumOptions;
     this.serviceWriter = serviceWriter;
     this.serviceWriterOptions = serviceWriterOptions;
+    this.quiet = quiet;
+    this.dryRun = dryRun;
   }
 
   /**
+   * Usage:
    *
    * <pre>
    * java WireCompiler --proto_path=&lt;path&gt; --java_out=&lt;path&gt;
@@ -56,6 +65,7 @@ final class CommandLineOptions {
    *     [--enum_options=&lt;option_name&gt;[,&lt;option_name&gt;...]]
    *     [--service_writer=&lt;class_name&gt;]
    *     [--service_writer_opt=&lt;value&gt;] [--service_writer_opt=&lt;value&gt;]...]
+   *     [--quiet] [--dry_run]
    *     [file [file...]]
    * </pre>
    *
@@ -81,6 +91,12 @@ final class CommandLineOptions {
    * enum value options listed in the {@code --enum_options} flag. The resulting code will contain
    * a public static field for each option used within a particular enum type.
    * </p>
+   * <p>
+   * If {@code --quiet} is specified, diagnostic messages to stdout are suppressed.
+   * </p>
+   * <p>
+   * The {@code --dry_run} flag causes the compile to just emit the names of the source files that
+   * would be generated to stdout.
    */
   CommandLineOptions(String... args) throws WireException {
     int index = 0;
@@ -94,6 +110,8 @@ final class CommandLineOptions {
     String registryClass = null;
     List<String> enumOptionsList = new ArrayList<String>();
     String serviceWriter = null;
+    boolean quiet = false;
+    boolean dryRun = false;
 
     while (index < args.length) {
       if (args[index].startsWith(PROTO_PATH_FLAG)) {
@@ -121,6 +139,10 @@ final class CommandLineOptions {
         serviceWriter = args[index].substring(SERVICE_WRITER_FLAG.length());
       } else if (args[index].startsWith(SERVICE_WRITER_OPT_FLAG)) {
         serviceWriterOptions.add(args[index].substring(SERVICE_WRITER_OPT_FLAG.length()));
+      } else if (args[index].startsWith(QUIET_FLAG)) {
+        quiet = true;
+      } else if (args[index].startsWith(DRY_RUN_FLAG)) {
+        dryRun = true;
       } else {
         sourceFileNames.add(args[index]);
       }
@@ -136,6 +158,8 @@ final class CommandLineOptions {
     this.enumOptions = new LinkedHashSet<String>(enumOptionsList);
     this.serviceWriter = serviceWriter;
     this.serviceWriterOptions = serviceWriterOptions;
+    this.quiet = quiet;
+    this.dryRun = dryRun;
   }
 
   private static List<String> splitArg(String arg, int flagLength) {
