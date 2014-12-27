@@ -19,6 +19,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
+import com.squareup.wire.protos.person.Person;
+import com.squareup.wire.protos.person.Person.PhoneNumber;
+import com.squareup.wire.protos.person.Person.PhoneType;
 import java.util.Arrays;
 import java.util.List;
 import okio.ByteString;
@@ -122,6 +125,98 @@ public class GsonTest {
           + "\"squareup.protos.alltypes.ext_pack_double\":[1.2345E67,1.2345E67],"
           + "\"squareup.protos.alltypes.ext_pack_nested_enum\":[\"A\",\"A\"]";
 
+  private static final String JSON_BASE_FIELD_NUMBERS = "\"1\":111,"
+      + "\"2\":112,"
+      + "\"3\":113,"
+      + "\"4\":114,"
+      + "\"5\":115,"
+      + "\"6\":116,"
+      + "\"7\":117,"
+      + "\"8\":118,"
+      + "\"9\":119,"
+      + "\"10\":120,"
+      + "\"11\":true,"
+      + "\"12\":122.0,"
+      + "\"13\":123.0,"
+      + "\"14\":\"124\","
+      + "\"15\":\"e30=\","
+      + "\"16\":\"A\","
+      + "\"17\":{\"1\":999},"
+      + "\"101\":111,"
+      + "\"102\":112,"
+      + "\"103\":113,"
+      + "\"104\":114,"
+      + "\"105\":115,"
+      + "\"106\":116,"
+      + "\"107\":117,"
+      + "\"108\":118,"
+      + "\"109\":119,"
+      + "\"110\":120,"
+      + "\"111\":true,"
+      + "\"112\":122.0,"
+      + "\"113\":123.0,"
+      + "\"114\":\"124\","
+      + "\"115\":\"e30=\","
+      + "\"116\":\"A\","
+      + "\"117\":{\"1\":999},"
+      + "\"201\":[111,111],"
+      + "\"202\":[112,112],"
+      + "\"203\":[113,113],"
+      + "\"204\":[114,114],"
+      + "\"205\":[115,115],"
+      + "\"206\":[116,116],"
+      + "\"207\":[117,117],"
+      + "\"208\":[118,118],"
+      + "\"209\":[119,119],"
+      + "\"210\":[120,120],"
+      + "\"211\":[true,true],"
+      + "\"212\":[122.0,122.0],"
+      + "\"213\":[123.0,123.0],"
+      + "\"214\":[\"124\",\"124\"],"
+      + "\"215\":[\"e30=\",\"e30=\"],"
+      + "\"216\":[\"A\",\"A\"],"
+      + "\"217\":[{\"1\":999},{\"1\":999}],"
+      + "\"301\":[111,111],"
+      + "\"302\":[112,112],"
+      + "\"303\":[113,113],"
+      + "\"304\":[114,114],"
+      + "\"305\":[115,115],"
+      + "\"306\":[116,116],"
+      + "\"307\":[117,117],"
+      + "\"308\":[118,118],"
+      + "\"309\":[119,119],"
+      + "\"310\":[120,120],"
+      + "\"311\":[true,true],"
+      + "\"312\":[122.0,122.0],"
+      + "\"313\":[123.0,123.0],"
+      + "\"316\":[\"A\",\"A\"]";
+
+  private static final String JSON_EXTENSIONS_FIELD_NUMBERS =
+      ",\"1001\":2147483647,"
+          + "\"1006\":4611686018427388081,"
+          + "\"1007\":13835058055282163890,"
+          + "\"1008\":-4611686018427387726,"
+          + "\"1011\":true,"
+          + "\"1012\":1234500.0,"
+          + "\"1013\":1.2345E67,"
+          + "\"1016\":\"A\","
+          + "\"1017\":{\"1\":999},"
+          + "\"1101\":[2147483647,2147483647],"
+          + "\"1107\":[13835058055282163890,13835058055282163890],"
+          + "\"1108\":[-4611686018427387726,-4611686018427387726],"
+          + "\"1111\":[true,true],"
+          + "\"1112\":[1234500.0,1234500.0],"
+          + "\"1113\":[1.2345E67,1.2345E67],"
+          + "\"1116\":[\"A\",\"A\"],"
+          + "\"1117\":[{\"1\":999},{\"1\":999}],"
+          + "\"1201\":[2147483647,2147483647],"
+          + "\"1207\":[13835058055282163890,13835058055282163890],"
+          + "\"1208\":[-4611686018427387726,-4611686018427387726],"
+          + "\"1211\":[true,true],"
+          + "\"1212\":[1234500.0,1234500.0],"
+          + "\"1213\":[1.2345E67,1.2345E67],"
+          + "\"1216\":[\"A\",\"A\"]";
+
   // There doesn't appear to be a standard for representing unknown proto fields in JSON,
   // so we use the format shown below.
   private static final String JSON_UNKNOWN_FIELDS =
@@ -129,6 +224,10 @@ public class GsonTest {
           + "\"9001\":[\"fixed64\",9001],"
           + "\"9002\":[\"length-delimited\",\"OTAwMg==\"],"
           + "\"9003\":[\"varint\",9003]";
+
+  private static final String PERSON_GSON = "{\"name\":\"Omar\",\"id\":1234,\"email\":\"omar@wire.com\",\"phone\":[{\"number\":\"410-555-0909\",\"type\":\"MOBILE\"}]}";
+
+  private static final String PERSON_GSON_FIELD_NUMBERS = "{\"1\":\"Omar\",\"2\":1234,\"3\":\"omar@wire.com\",\"4\":[{\"1\":\"410-555-0909\",\"2\":\"MOBILE\"}]}";
 
   // Return a two-element list with a given repeated value
   @SuppressWarnings("unchecked")
@@ -236,9 +335,10 @@ public class GsonTest {
     return builder;
   }
 
-  private Gson createGson() {
+  private Gson createGson(boolean useFieldNumbers) {
     return new GsonBuilder()
-        .registerTypeAdapterFactory(new WireTypeAdapterFactory(wire))
+        .registerTypeAdapterFactory(new WireTypeAdapterFactory(wire)
+            .useFieldNumbers(useFieldNumbers))
         .disableHtmlEscaping()
         .create();
   }
@@ -262,7 +362,7 @@ public class GsonTest {
 
   @Test
   public void testGsonWithExtensions() {
-    Gson gson = createGson();
+    Gson gson = createGson(false);
 
     AllTypes allTypes = setExtensions(createBuilder()).build();
     String json = gson.toJson(allTypes);
@@ -276,7 +376,7 @@ public class GsonTest {
 
   @Test
   public void testGsonWithUnknownFields() {
-    Gson gson = createGson();
+    Gson gson = createGson(false);
 
     AllTypes.Builder builder = createBuilder();
     builder.addFixed32(9000, 9000);
@@ -295,7 +395,7 @@ public class GsonTest {
   }
 
   @Test public void testGsonWithUnknownFieldsAndExtensions() {
-    Gson gson = createGson();
+    Gson gson = createGson(false);
 
     AllTypes.Builder builder = createBuilder();
     builder.addFixed32(9000, 9000);
@@ -311,5 +411,60 @@ public class GsonTest {
     assertEquals(allTypes, parsed);
     assertEquals(allTypes.toString(), parsed.toString());
     assertEquals(gson.toJson(allTypes), gson.toJson(parsed));
+  }
+
+  @Test public void testGsonWithUnknownFieldsAndExtensionsUseFieldNumbers() {
+    Gson gson = createGson(true);
+
+    AllTypes.Builder builder = createBuilder();
+    builder.addFixed32(9000, 9000);
+    builder.addFixed64(9001, 9001L);
+    builder.addLengthDelimited(9002, ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
+    builder.addVarint(9003, 9003);
+
+    AllTypes allTypes = setExtensions(builder).build();
+    String json = gson.toJson(allTypes);
+    assertEquals("{" + JSON_BASE_FIELD_NUMBERS + JSON_EXTENSIONS_FIELD_NUMBERS + JSON_UNKNOWN_FIELDS + "}", json);
+
+    AllTypes parsed = gson.fromJson(json, AllTypes.class);
+    assertEquals(allTypes, parsed);
+    assertEquals(allTypes.toString(), parsed.toString());
+    assertEquals(gson.toJson(allTypes), gson.toJson(parsed));
+  }
+
+  @Test public void testPersonGson() {
+    Person person = new Person.Builder().name("Omar")
+        .id(1234)
+        .email("omar@wire.com")
+        .phone(Arrays.asList(
+            new PhoneNumber.Builder().number("410-555-0909").type(PhoneType.MOBILE).build()))
+        .build();
+
+    Gson gson = new GsonBuilder()
+        .registerTypeAdapterFactory(new WireTypeAdapterFactory(wire))
+        .disableHtmlEscaping()
+        .create();
+
+    String json = gson.toJson(person);
+
+    assertEquals(PERSON_GSON, json);
+  }
+
+  @Test public void testPersonGsonUseFieldNumbers() {
+    Person person = new Person.Builder().name("Omar")
+        .id(1234)
+        .email("omar@wire.com")
+        .phone(Arrays.asList(
+            new PhoneNumber.Builder().number("410-555-0909").type(PhoneType.MOBILE).build()))
+        .build();
+
+    Gson gson = new GsonBuilder()
+        .registerTypeAdapterFactory(new WireTypeAdapterFactory(wire).useFieldNumbers(true))
+        .disableHtmlEscaping()
+        .create();
+
+    String json = gson.toJson(person);
+
+    assertEquals(PERSON_GSON_FIELD_NUMBERS, json);
   }
 }

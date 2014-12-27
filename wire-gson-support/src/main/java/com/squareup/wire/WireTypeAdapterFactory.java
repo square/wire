@@ -28,7 +28,8 @@ import okio.ByteString;
  *
  * <pre>
  * Wire wire = new Wire(...extension classes...)
- * WireTypeAdapterFactory wireTypeAdapterFactory = new WireTypeAdapterFactory(wire);
+ * WireTypeAdapterFactory wireTypeAdapterFactory = new WireTypeAdapterFactory(wire)
+ *     .useFieldNumbers(true);
  * Gson gson = new GsonBuilder()
  *     .registerTypeAdapterFactory(wireTypeAdapterFactory)
  *     .create();
@@ -45,6 +46,12 @@ import okio.ByteString;
 public final class WireTypeAdapterFactory implements TypeAdapterFactory {
 
   private final Wire wire;
+  private final boolean useFieldNumbers;
+
+  private WireTypeAdapterFactory(Wire wire, boolean useFieldNumbers) {
+    this.wire = wire;
+    this.useFieldNumbers = useFieldNumbers;
+  }
 
   /**
    * Constructs an adapter that is capable of serializing and deserializing extension values
@@ -53,7 +60,19 @@ public final class WireTypeAdapterFactory implements TypeAdapterFactory {
    * form. It is not necessary to include non-extension classes in the whitelist.
    */
   public WireTypeAdapterFactory(Wire wire) {
-    this.wire = wire;
+    this(wire, false);
+  }
+
+  /**
+   * If {@code useFieldNumbers} is true, the JSON output will use (quoted) field numbers
+   * rather than field names. This allows for backwards-compatibility of the JSON schema
+   * (analogous to the backwards-compatibility of standard binary protocol buffer serialization)
+   * if field names evolve over time, as long as field numbers remain fixed.
+   *
+   * @return a reference to a new {@link com.squareup.wire.WireTypeAdapterFactory} instance.
+   */
+  public WireTypeAdapterFactory useFieldNumbers(boolean useFieldNumbers) {
+    return new WireTypeAdapterFactory(wire, useFieldNumbers);
   }
 
   @SuppressWarnings("unchecked")
@@ -62,7 +81,7 @@ public final class WireTypeAdapterFactory implements TypeAdapterFactory {
       return (TypeAdapter<T>) new ByteStringTypeAdapter();
     }
     if (Message.class.isAssignableFrom(type.getRawType())) {
-      return (TypeAdapter<T>) new MessageTypeAdapter(wire, gson, type);
+      return (TypeAdapter<T>) new MessageTypeAdapter(wire, gson, type, useFieldNumbers);
     }
     return null;
   }

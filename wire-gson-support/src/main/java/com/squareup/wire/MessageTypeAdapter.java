@@ -22,12 +22,14 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.squareup.wire.MessageAdapter.FieldInfo;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype;
@@ -39,15 +41,19 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
   // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
   private static final BigInteger POWER_64 = new BigInteger("18446744073709551616");
 
+  private static final Pattern NUMBER_REGEX = Pattern.compile("[0-9]+");
+
   private final Wire wire;
   private final Gson gson;
   private final Class<M> type;
+  private final boolean useFieldNumbers;
 
   @SuppressWarnings("unchecked")
-  public MessageTypeAdapter(Wire wire, Gson gson, TypeToken<M> type) {
+  public MessageTypeAdapter(Wire wire, Gson gson, TypeToken<M> type, boolean useFieldNumbers) {
     this.wire = wire;
     this.gson = gson;
     this.type = (Class<M>) type.getRawType();
+    this.useFieldNumbers = useFieldNumbers;
   }
 
   @SuppressWarnings("unchecked")
@@ -59,12 +65,12 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
 
     MessageAdapter<M> messageAdapter = wire.messageAdapter((Class<M>) message.getClass());
     out.beginObject();
-    for (MessageAdapter.FieldInfo fieldInfo : messageAdapter.getFields()) {
+    for (FieldInfo fieldInfo : messageAdapter.getFields()) {
       Object value = messageAdapter.getFieldValue(message, fieldInfo);
       if (value == null) {
         continue;
       }
-      out.name(fieldInfo.name);
+      out.name(useFieldNumbers ? Integer.toString(fieldInfo.tag) : fieldInfo.name);
       emitJson(out, value, fieldInfo.datatype, fieldInfo.label);
     }
 
@@ -110,19 +116,19 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
   }
 
   @SuppressWarnings("unchecked")
-  private <M extends ExtendableMessage<?>, E> void emitExtensions(ExtendableMessage<M> message,
+  private <X extends ExtendableMessage<?>, E> void emitExtensions(ExtendableMessage<X> message,
       JsonWriter out) throws IOException {
     if (message.extensionMap == null) return;
     for (int i = 0; i < message.extensionMap.size(); i++) {
-      Extension<M, E> extension = (Extension<M, E>) message.extensionMap.getExtension(i);
+      Extension<X, E> extension = (Extension<X, E>) message.extensionMap.getExtension(i);
       E value = (E) message.extensionMap.getExtensionValue(i);
       emitExtension(extension, value, out);
     }
   }
 
-  private <M extends ExtendableMessage<?>, E> void emitExtension(Extension<M, E> extension,
+  private <X extends ExtendableMessage<?>, E> void emitExtension(Extension<X, E> extension,
       E value, JsonWriter out) throws IOException {
-    out.name(extension.getName());
+    out.name(useFieldNumbers ? Integer.toString(extension.getTag()) : extension.getName());
     emitJson(out, value, extension.getDatatype(), extension.getLabel());
   }
 
@@ -167,11 +173,13 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
 
     while (in.peek() == JsonToken.NAME) {
       String name = in.nextName();
-      MessageAdapter.FieldInfo fieldInfo = messageAdapter.getField(name);
+      int tag = NUMBER_REGEX.matcher(name).matches() ? Integer.parseInt(name) : -1;
+
+      FieldInfo fieldInfo = getFieldInfo(messageAdapter, name, tag);
       if (fieldInfo == null) {
-        Extension<ExtendableMessage<?>, ?> extension = messageAdapter.getExtension(name);
+        Extension<ExtendableMessage<?>, ?> extension = getExtension(messageAdapter, name, tag);
         if (extension == null) {
-          parseUnknownField(in, builder, Integer.parseInt(name));
+          parseUnknownField(in, builder, tag);
         } else {
           Type valueType = getType(extension);
           Object value = parseValue(extension.getLabel(), valueType, parse(in));
@@ -188,11 +196,20 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     return builder.build();
   }
 
+  private FieldInfo getFieldInfo(MessageAdapter<M> messageAdapter, String name, int tag) {
+    return tag != -1 ? messageAdapter.getField(tag) : messageAdapter.getField(name);
+  }
+
+  private Extension<ExtendableMessage<?>, ?> getExtension(MessageAdapter<M> messageAdapter,
+      String name, int tag) {
+    return tag != -1 ? messageAdapter.getExtension(tag) : messageAdapter.getExtension(name);
+  }
+
   private JsonElement parse(JsonReader in) {
     return gson.fromJson(in, JsonElement.class);
   }
 
-  private Type getType(MessageAdapter.FieldInfo fieldInfo) {
+  private Type getType(FieldInfo fieldInfo) {
     Type valueType;
     if (fieldInfo.datatype == Datatype.ENUM) {
       valueType = fieldInfo.enumType;

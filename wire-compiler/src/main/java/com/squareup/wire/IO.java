@@ -4,7 +4,6 @@ package com.squareup.wire;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
