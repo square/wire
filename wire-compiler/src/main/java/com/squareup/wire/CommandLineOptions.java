@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-
 final class CommandLineOptions {
   public static final String PROTO_PATH_FLAG = "--proto_path=";
   public static final String JAVA_OUT_FLAG = "--java_out=";
@@ -83,7 +82,7 @@ final class CommandLineOptions {
    * a public static field for each option used within a particular enum type.
    * </p>
    */
-  CommandLineOptions(String... args) throws FileNotFoundException {
+  CommandLineOptions(String... args) throws WireException {
     int index = 0;
 
     List<String> sourceFileNames = new ArrayList<String>();
@@ -103,7 +102,12 @@ final class CommandLineOptions {
         javaOut = args[index].substring(JAVA_OUT_FLAG.length());
       } else if (args[index].startsWith(FILES_FLAG)) {
         File files = new File(args[index].substring(FILES_FLAG.length()));
-        String[] fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
+        String[] fileNames;
+        try {
+          fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
+        } catch (FileNotFoundException ex) {
+          throw new WireException("Error processing argument " + args[index], ex);
+        }
         sourceFileNames.addAll(Arrays.asList(fileNames));
       } else if (args[index].startsWith(ROOTS_FLAG)) {
         roots.addAll(splitArg(args[index], ROOTS_FLAG.length()));

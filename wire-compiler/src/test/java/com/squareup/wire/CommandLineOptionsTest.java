@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 public class CommandLineOptionsTest {
 
-  @Test public void testProtoPath() throws Exception {
+  @Test public void protoPath() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
     assertNull(options.protoPath);
 
@@ -24,7 +24,7 @@ public class CommandLineOptionsTest {
     assertEquals("foo/bar", options.protoPath);
   }
 
-  @Test public void testJavaOut() throws Exception{
+  @Test public void javaOut() throws Exception{
     CommandLineOptions options = new CommandLineOptions();
     assertNull(options.javaOut);
 
@@ -32,7 +32,7 @@ public class CommandLineOptionsTest {
     assertEquals("baz/qux", options.javaOut);
   }
 
-  @Test public void testSourceFileNames() throws Exception {
+  @Test public void sourceFileNames() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
     assertTrue(options.sourceFileNames.isEmpty());
 
@@ -43,7 +43,7 @@ public class CommandLineOptionsTest {
     assertEquals(expected, options.sourceFileNames);
   }
 
-  @Test public void testSourceFileNamesFromInclude() throws Exception {
+  @Test public void sourceFileNamesFromInclude() throws Exception {
     File tmpFile = File.createTempFile("proto", ".include");
     try {
       PrintWriter out = new PrintWriter(new FileOutputStream(tmpFile));
@@ -66,7 +66,7 @@ public class CommandLineOptionsTest {
     }
   }
 
-  @Test public void testRoots() throws Exception {
+  @Test public void roots() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
     assertTrue(options.roots.isEmpty());
 
@@ -79,14 +79,14 @@ public class CommandLineOptionsTest {
     assertEquals(expected, options.roots);
   }
 
-  @Test public void testRegistryClass() throws Exception {
+  @Test public void registryClass() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
     assertNull(options.registryClass);
     options = new CommandLineOptions("--registry_class=com.example.RegistryClass");
     assertEquals("com.example.RegistryClass", options.registryClass);
   }
 
-  @Test public void  testEmitOptions() throws Exception {
+  @Test public void  emitOptions() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
     assertTrue(options.emitOptions);
 
@@ -94,7 +94,7 @@ public class CommandLineOptionsTest {
     assertFalse(options.emitOptions);
   }
 
-  @Test public void testEnumOptions() throws Exception {
+  @Test public void enumOptions() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
     assertTrue(options.enumOptions.isEmpty());
 
@@ -107,7 +107,7 @@ public class CommandLineOptionsTest {
     assertEquals(expected, options.enumOptions);
   }
 
-  @Test public void testServiceWriter() throws Exception {
+  @Test public void serviceWriter() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
     assertNull(options.serviceWriter);
 
@@ -116,7 +116,7 @@ public class CommandLineOptionsTest {
     assertEquals("com.squareup.wire.SimpleServiceWriter", options.serviceWriter);
   }
 
-  @Test public void testServiceWriterOptions() throws Exception {
+  @Test public void serviceWriterOptions() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
     assertTrue(options.serviceWriterOptions.isEmpty());
 

@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -90,64 +89,62 @@ public class WireCompiler {
   /**
    * Runs the compiler.  See {@link CommandLineOptions} for command line options.
    */
-  public static void main(String... args) throws Exception {
-
-    CommandLineOptions options = new CommandLineOptions(args);
-
-    WireCompiler wireCompiler =
-        new WireCompiler(options);
-    wireCompiler.compile();
+  public static void main(String... args) {
+    try {
+      new WireCompiler(new CommandLineOptions(args)).compile();
+    } catch (WireException e) {
+      System.err.print("Fatal: ");
+      e.printStackTrace(System.err);
+      System.exit(1);
+    }
   }
 
-  private static Constructor<?> loadServiceWriter(String serviceWriterClassName) {
+  private static Constructor<?> loadServiceWriter(String serviceWriterClassName)
+      throws WireException {
     Class<?> serviceWriterClass = null;
     try {
       serviceWriterClass = Class.forName(serviceWriterClassName);
     } catch (ClassNotFoundException e) {
-      System.err.println("Unable to load ServiceWriter class " + serviceWriterClassName + ".");
-      System.exit(1);
+      throw new WireException("Unable to load ServiceWriter class "
+          + serviceWriterClassName + ".", e);
     }
 
     if (!ServiceWriter.class.isAssignableFrom(serviceWriterClass)) {
-      System.err.println(
+      throw new WireException(
           "Class " + serviceWriterClassName + " does not implement ServiceWriter interface.");
-      System.exit(0);
     }
 
     try {
       return serviceWriterClass.getConstructor(JavaWriter.class, List.class);
     } catch (NoSuchMethodException e) {
-      System.err.println("ServiceWriter class "
+      throw new WireException("ServiceWriter class "
           + serviceWriterClassName
           + " needs a constructor 'public "
           + serviceWriterClassName
-          + "(JavaWriter writer, List<String> options)'.");
-      System.exit(1);
+          + "(JavaWriter writer, List<String> options)'.", e);
     }
-
-    return null;
   }
 
   @Deprecated
-  public WireCompiler(String protoPath, String outputDirectory, List<String> sourceFileNames,
-      List<String> roots, String registryClass, boolean emitOptions, List<String> enumOptions,
-      Constructor<?> serviceWriterConstructor, List<String> serviceWriterOptions) {
+  public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
+      String outputDirectory, String registryClass, boolean emitOptions, List<String> enumOptions,
+      Constructor<?> serviceWriterConstructor, List<String> serviceWriterOptions)
+      throws WireException {
     this(new CommandLineOptions(protoPath, outputDirectory, sourceFileNames, roots,  registryClass,
-        emitOptions,  new HashSet<String>(enumOptions), serviceWriterConstructor.getName(),
+        emitOptions,  new LinkedHashSet<String>(enumOptions), serviceWriterConstructor.getName(),
         serviceWriterOptions));
   }
 
-  public WireCompiler(CommandLineOptions options) {
+  public WireCompiler(CommandLineOptions options) throws WireException {
     this(options, new IO.FileIO());
   }
 
-  WireCompiler(CommandLineOptions options, IO io) {
+  WireCompiler(CommandLineOptions options, IO io) throws WireException {
     this.options = options;
 
     String protoPath = options.protoPath;
     if (options.javaOut == null) {
-      System.err.println("Must specify " + CommandLineOptions.JAVA_OUT_FLAG + " flag");
-      System.exit(1);
+      throw new WireException("Must specify " + CommandLineOptions.JAVA_OUT_FLAG + " flag");
     }
     if (options.protoPath == null) {
       protoPath = System.getProperty("user.dir");
@@ -164,15 +161,18 @@ public class WireCompiler {
     this.io = io;
   }
 
-  public void compile() throws IOException {
+  public void compile() throws WireException {
     Map<String, ProtoFile> parsedFiles = new LinkedHashMap<String, ProtoFile>();
 
     for (String sourceFilename : options.sourceFileNames) {
       String sourcePath = repoPath + File.separator + sourceFilename;
-      ProtoFile protoFile = io.parse(sourcePath);
-      parsedFiles.put(sourcePath, protoFile);
-
-      loadSymbols(protoFile);
+      try {
+        ProtoFile protoFile = io.parse(sourcePath);
+        parsedFiles.put(sourcePath, protoFile);
+        loadSymbols(protoFile);
+      } catch (IOException e) {
+        throw new WireException("Error loading symbols for " + sourcePath, e);
+      }
     }
 
     if (!typesToEmit.isEmpty()) {
@@ -185,11 +185,20 @@ public class WireCompiler {
       this.protoFile = entry.getValue();
       this.protoFileName = protoFileName(protoFile.getFileName());
       System.out.println("Compiling proto source file " + sourceFileName);
-      compileOne();
+      try {
+        compileOne();
+      } catch (IOException e) {
+        throw new WireException("Error compiling " + entry.getKey(), e);
+
+      }
     }
 
     if (options.registryClass != null) {
-      emitRegistry();
+      try {
+        emitRegistry();
+      } catch (IOException e) {
+        throw new WireException("Error emitting registry class " + options.registryClass, e);
+      }
     }
   }
 
@@ -477,7 +486,7 @@ public class WireCompiler {
         || typesToEmit.contains(serviceName + "#" + method);
   }
 
-  private void findDependencies(Collection<ProtoFile> protoFiles) throws IOException {
+  private void findDependencies(Collection<ProtoFile> protoFiles) throws WireException {
     Set<String> loadedDependencies = new LinkedHashSet<String>();
     int count = typesToEmit.size();
     while (true) {
@@ -493,13 +502,17 @@ public class WireCompiler {
   }
 
   private void findDependenciesHelper(ProtoFile protoFile, Set<String> loadedDependencies)
-      throws IOException {
+      throws WireException {
     // Load symbols from imports
     for (String dependency : protoFile.getDependencies()) {
       if (!loadedDependencies.contains(dependency)) {
         String dep = repoPath + File.separator + dependency;
-        ProtoFile dependencyFile = io.parse(dep);
-        loadSymbols(dependencyFile);
+        try {
+          ProtoFile dependencyFile = io.parse(dep);
+          loadSymbols(dependencyFile);
+        } catch (IOException e) {
+          throw new WireException("Error loading symbols for " + dep, e);
+        }
         loadedDependencies.add(dependency);
       }
     }

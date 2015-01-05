@@ -67,6 +67,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   }
 
   private void compileProtos() throws MojoExecutionException {
+    //TODO(Eric Ayers) refactor to use CommandLineOptions class?
     List<String> args = Lists.newArrayList();
     args.add("--proto_path=" + protoSourceDirectory);
     args.add("--java_out=" + generatedSourceDirectory);
