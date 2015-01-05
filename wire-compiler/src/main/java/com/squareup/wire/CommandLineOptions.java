@@ -14,30 +14,33 @@ final class CommandLineOptions {
   public static final String PROTO_PATH_FLAG = "--proto_path=";
   public static final String JAVA_OUT_FLAG = "--java_out=";
   public static final String FILES_FLAG = "--files=";
-  public static final String REGISTRY_CLASS_FLAG = "--registry_class=";
   public static final String ROOTS_FLAG = "--roots=";
+  public static final String REGISTRY_CLASS_FLAG = "--registry_class=";
   public static final String NO_OPTIONS_FLAG = "--no_options";
   public static final String ENUM_OPTIONS_FLAG = "--enum_options=";
   public static final String SERVICE_WRITER_FLAG = "--service_writer=";
   public static final String SERVICE_WRITER_OPT_FLAG = "--service_writer_opt=";
 
   final String protoPath;
+  final String javaOut;
   final List<String> sourceFileNames;
   final List<String> roots;
-  final String javaOut;
   final String registryClass;
   final boolean emitOptions;
   final Set<String> enumOptions;
   final String serviceWriter;
   final List<String> serviceWriterOptions;
 
-  CommandLineOptions(String protoPath, List<String> sourceFileNames, List<String> roots,
-      String javaOut, String registryClass, boolean emitOptions, Set<String> enumOptions,
-      String serviceWriter, List<String> serviceWriterOptions) {
+  CommandLineOptions(String protoPath, String javaOut,
+      List<String> sourceFileNames, List<String> roots,
+      String registryClass, boolean emitOptions,
+      Set<String> enumOptions,
+      String serviceWriter,
+      List<String> serviceWriterOptions) {
     this.protoPath = protoPath;
+    this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
     this.roots = roots;
-    this.javaOut = javaOut;
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
     this.enumOptions = enumOptions;
@@ -121,9 +124,9 @@ final class CommandLineOptions {
     }
 
     this.protoPath = protoPath;
+    this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
     this.roots = roots;
-    this.javaOut = javaOut;
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
     this.enumOptions = new LinkedHashSet<String>(enumOptionsList);

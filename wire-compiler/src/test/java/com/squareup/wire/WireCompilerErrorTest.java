@@ -79,8 +79,8 @@ public class WireCompilerErrorTest {
   private Map<String, String> compile(String source) {
     StringIO io = new StringIO("test.proto", source);
 
-    CommandLineOptions options = new CommandLineOptions(".", Arrays.asList("test.proto"),
-        new ArrayList<String>(), ".", null, true, Collections.EMPTY_SET, null,
+    CommandLineOptions options = new CommandLineOptions(".",  ".", Arrays.asList("test.proto"),
+        new ArrayList<String>(), null, true, Collections.EMPTY_SET, null,
         Collections.EMPTY_LIST);
 
     @SuppressWarnings("unchecked")

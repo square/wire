@@ -129,11 +129,12 @@ public class WireCompiler {
   }
 
   @Deprecated
-  public WireCompiler(String protoPath, List<String> sourceFileNames, List<String> roots,
-      String outputDirectory, String registryClass, boolean emitOptions, List<String> enumOptions,
+  public WireCompiler(String protoPath, String outputDirectory, List<String> sourceFileNames,
+      List<String> roots, String registryClass, boolean emitOptions, List<String> enumOptions,
       Constructor<?> serviceWriterConstructor, List<String> serviceWriterOptions) {
-    this(new CommandLineOptions(protoPath, sourceFileNames, roots, outputDirectory, registryClass, emitOptions,
-        new HashSet<String>(enumOptions), serviceWriterConstructor.getName(), serviceWriterOptions));
+    this(new CommandLineOptions(protoPath, outputDirectory, sourceFileNames, roots,  registryClass,
+        emitOptions,  new HashSet<String>(enumOptions), serviceWriterConstructor.getName(),
+        serviceWriterOptions));
   }
 
   public WireCompiler(CommandLineOptions options) {
@@ -151,7 +152,8 @@ public class WireCompiler {
     if (options.protoPath == null) {
       protoPath = System.getProperty("user.dir");
       System.err.println(
-          CommandLineOptions.PROTO_PATH_FLAG + " flag not specified, using current dir " + protoPath);
+          CommandLineOptions.PROTO_PATH_FLAG + " flag not specified, using current dir "
+              + protoPath);
     }
     if (options.serviceWriter != null) {
       serviceWriterConstructor =
