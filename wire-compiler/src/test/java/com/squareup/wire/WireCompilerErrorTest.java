@@ -79,10 +79,12 @@ public class WireCompilerErrorTest {
   private Map<String, String> compile(String source) {
     StringIO io = new StringIO("test.proto", source);
 
+    CommandLineOptions options = new CommandLineOptions(".", Arrays.asList("test.proto"),
+        new ArrayList<String>(), ".", null, true, Collections.EMPTY_SET, null,
+        Collections.EMPTY_LIST);
+
     @SuppressWarnings("unchecked")
-    WireCompiler compiler = new WireCompiler(".", Arrays.asList("test.proto"),
-        new ArrayList<String>(), ".", null, true, Collections.EMPTY_LIST, null,
-        Collections.EMPTY_LIST, io);
+    WireCompiler compiler = new WireCompiler(options, io);
     try {
       compiler.compile();
     } catch (IOException e) {
