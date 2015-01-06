@@ -189,7 +189,6 @@ public class WireCompiler {
         compileOne();
       } catch (IOException e) {
         throw new WireException("Error compiling " + entry.getKey(), e);
-
       }
     }
 
