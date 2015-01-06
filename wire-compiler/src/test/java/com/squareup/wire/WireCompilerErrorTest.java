@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -79,13 +80,13 @@ public class WireCompilerErrorTest {
   private Map<String, String> compile(String source) {
     StringIO io = new StringIO("test.proto", source);
 
-    @SuppressWarnings("unchecked")
-    WireCompiler compiler = new WireCompiler(".", Arrays.asList("test.proto"),
-        new ArrayList<String>(), ".", null, true, Collections.EMPTY_LIST, null,
-        Collections.EMPTY_LIST, io);
+    CommandLineOptions options = new CommandLineOptions(".",  ".", Arrays.asList("test.proto"),
+        new ArrayList<String>(), null, true, Collections.<String>emptySet(), null,
+        Collections.<String>emptyList());
+
     try {
-      compiler.compile();
-    } catch (IOException e) {
+      new WireCompiler(options, io).compile();
+    } catch (WireException e) {
       fail();
     }
     return io.getOutput();
