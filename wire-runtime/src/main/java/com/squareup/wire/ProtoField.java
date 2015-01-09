@@ -47,6 +47,18 @@ public @interface ProtoField {
   Label label() default Label.OPTIONAL;
 
   /**
+   * For repeated Message fields, the underlying Message type.
+   */
+  // The exact supertype 'Message.class' is used as a sentinel for 'no value'.
+  Class<? extends Message> messageType() default Message.class;
+
+  /**
+   * For repeated Enum fields, the underlying Enum type.
+   */
+  // The exact supertype 'Enum.class' is used as a sentinel for 'no value'.
+  Class<? extends Enum> enumType() default Enum.class;
+
+  /**
    * True if the field is marked as deprecated.
    */
   boolean deprecated() default false;

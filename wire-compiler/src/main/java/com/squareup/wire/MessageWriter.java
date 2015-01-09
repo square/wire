@@ -402,8 +402,10 @@ public class MessageWriter {
       Map<String, String> map = new LinkedHashMap<String, String>();
       map.put("tag", String.valueOf(tag));
 
+      boolean isScalar = false;
       boolean isEnum = false;
       if (TypeInfo.isScalar(fieldType)) {
+        isScalar = true;
         map.put("type", scalarTypeConstant(fieldType));
       } else {
         String fullyQualifiedName = compiler.fullyQualifiedName(messageType, fieldType);
@@ -417,6 +419,10 @@ public class MessageWriter {
         } else {
           map.put("label", field.getLabel().toString());
         }
+      }
+
+      if (FieldInfo.isRepeated(field) && !isScalar) {
+        map.put(isEnum ? "enumType" : "messageType", javaName + ".class");
       }
 
       if (field.isDeprecated()) {

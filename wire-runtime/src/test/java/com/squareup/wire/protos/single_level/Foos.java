@@ -13,7 +13,7 @@ public final class Foos extends Message {
 
   public static final List<Foo> DEFAULT_FOOS = Collections.emptyList();
 
-  @ProtoField(tag = 1, label = REPEATED)
+  @ProtoField(tag = 1, label = REPEATED, messageType = Foo.class)
   public final List<Foo> foos;
 
   public Foos(List<Foo> foos) {

@@ -87,7 +87,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   @ProtoField(tag = 6, type = DOUBLE)
   public final Double daisy;
 
-  @ProtoField(tag = 7, label = REPEATED)
+  @ProtoField(tag = 7, label = REPEATED, messageType = FooBar.class)
   public final List<FooBar> nested;
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested) {

@@ -18,8 +18,6 @@ package com.squareup.wire;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -182,31 +180,23 @@ final class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private Class<Message> getMessageType(Field field) {
+  private Class<? extends Message> getMessageType(Field field) {
     Class<?> fieldType = field.getType();
     if (Message.class.isAssignableFrom(fieldType)) {
       return (Class<Message>) fieldType;
     } else if (List.class.isAssignableFrom(fieldType)) {
-      // Retrieve the declare element type of the list
-      Type type = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-      if (type instanceof Class<?> && Message.class.isAssignableFrom((Class<?>) type)) {
-        return (Class<Message>) type;
-      }
+      return field.getAnnotation(ProtoField.class).messageType();
     }
     return null;
   }
 
   @SuppressWarnings("unchecked")
-  private Class<Enum> getEnumType(Field field) {
+  private Class<? extends Enum> getEnumType(Field field) {
     Class<?> fieldType = field.getType();
     if (Enum.class.isAssignableFrom(fieldType)) {
       return (Class<Enum>) fieldType;
     } else if (List.class.isAssignableFrom(fieldType)) {
-      // Retrieve the declare element type of the list
-      Type type = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-      if (type instanceof Class<?> && Enum.class.isAssignableFrom((Class<?>) type)) {
-        return (Class<Enum>) type;
-      }
+      return field.getAnnotation(ProtoField.class).enumType();
     }
     return null;
   }
