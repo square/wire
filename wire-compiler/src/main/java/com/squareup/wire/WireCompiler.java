@@ -435,7 +435,7 @@ public class WireCompiler {
       } else {
         StringBuilder sb = new StringBuilder("unmodifiableList(asList(\n");
         for (int i = 0; i < extensionsCount; i++) {
-          sb.append(extensionClasses.get(i));
+          sb.append(writer.compressType(extensionClasses.get(i)));
           sb.append(".class");
           if (i < extensionsCount - 1) {
             sb.append(",\n");
@@ -446,7 +446,10 @@ public class WireCompiler {
       }
 
       writer.emitAnnotation("SuppressWarnings(\"unchecked\")");
-      writer.emitField("List<Class<?>>", "EXTENSIONS", EnumSet.of(PUBLIC, STATIC, FINAL), classes);
+
+      String wildcard = extensionsCount == 1 ? extensionClasses.get(0) : "?";
+      String listType = "List<Class<" + wildcard + ">>";
+      writer.emitField(listType, "EXTENSIONS", EnumSet.of(PUBLIC, STATIC, FINAL), classes);
       writer.emitEmptyLine();
 
       // Private no-args constructor

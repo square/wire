@@ -346,6 +346,20 @@ public class WireCompilerTest {
     testProtoWithRegistry(sources, registry, outputs);
   }
 
+  @Test public void testOneClassRegistry() throws Exception {
+    String[] sources = {
+        "one_extension.proto"
+    };
+    String registry = "com.squareup.wire.protos.one_extension.OneExtensionRegistry";
+    String[] outputs = {
+        "com/squareup/wire/protos/one_extension/Ext_one_extension.java",
+        "com/squareup/wire/protos/one_extension/Foo.java",
+        "com/squareup/wire/protos/one_extension/OneExtension.java",
+        "com/squareup/wire/protos/one_extension/OneExtensionRegistry.java"
+    };
+    testProtoWithRegistry(sources, registry, outputs);
+  }
+
   @Test public void testSingleLevel() throws Exception {
     String[] sources = {
         "single_level.proto"
