@@ -42,7 +42,7 @@ public final class Person extends Message {
   /**
    * A list of the customer's phone numbers.
    */
-  @ProtoField(tag = 4, label = REPEATED)
+  @ProtoField(tag = 4, label = REPEATED, messageType = PhoneNumber.class)
   public final List<PhoneNumber> phone;
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone) {

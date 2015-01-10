@@ -13,7 +13,7 @@ public final class Bars extends Message {
 
   public static final List<Bar> DEFAULT_BARS = Collections.emptyList();
 
-  @ProtoField(tag = 1, label = REPEATED)
+  @ProtoField(tag = 1, label = REPEATED, messageType = Bar.class)
   public final List<Bar> bars;
 
   public Bars(List<Bar> bars) {

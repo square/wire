@@ -260,10 +260,15 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   @ProtoField(tag = 215, type = BYTES, label = REPEATED)
   public final List<ByteString> rep_bytes;
 
-  @ProtoField(tag = 216, type = ENUM, label = REPEATED)
+  @ProtoField(
+    tag = 216,
+    type = ENUM,
+    label = REPEATED,
+    enumType = NestedEnum.class
+  )
   public final List<NestedEnum> rep_nested_enum;
 
-  @ProtoField(tag = 217, label = REPEATED)
+  @ProtoField(tag = 217, label = REPEATED, messageType = NestedMessage.class)
   public final List<NestedMessage> rep_nested_message;
 
   @ProtoField(tag = 301, type = INT32, label = PACKED)
@@ -305,7 +310,12 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   @ProtoField(tag = 313, type = DOUBLE, label = PACKED)
   public final List<Double> pack_double;
 
-  @ProtoField(tag = 316, type = ENUM, label = PACKED)
+  @ProtoField(
+    tag = 316,
+    type = ENUM,
+    label = PACKED,
+    enumType = NestedEnum.class
+  )
   public final List<NestedEnum> pack_nested_enum;
 
   @ProtoField(tag = 401, type = INT32)
