@@ -39,7 +39,6 @@ public class WireCompilerTest {
 
   @Before
   public void setUp() throws IOException {
-    System.out.println("cwd = " + new File(".").getAbsolutePath());
     String targetDir = locateProjectTargetDirectory();
 
     // Create temp dir under "target" so it would clean during Maven "clean" task.
@@ -651,9 +650,9 @@ public class WireCompilerTest {
           cleanupHelper(ff);
         }
       }
-      f.delete();
-    } else {
-      f.delete();
+    }
+    if (!f.delete()) {
+        System.err.println("Cannot delete: " + f);
     }
   }
 
@@ -709,12 +708,32 @@ public class WireCompilerTest {
   }
 
   private void assertFilesMatch(File expectedFile, File actualFile) throws FileNotFoundException {
-    String expected = new Scanner(expectedFile).useDelimiter("\\A").next();
-    String actual = new Scanner(actualFile).useDelimiter("\\A").next();
+    final Scanner expectedScanner = new Scanner(expectedFile);
+    String expected = expectedScanner.useDelimiter("\\A").next();
+    expectedScanner.close();
+
+    final Scanner actualScanner = new Scanner(actualFile);
+    String actual = actualScanner.useDelimiter("\\A").next();
+    actualScanner.close();
 
     // Normalize CRLF -> LF
     expected = expected.replace("\r\n", "\n");
     actual = actual.replace("\r\n", "\n");
+
+    // Normalize relative path and OS file separator
+    actual = normalizeActualFile(actual);
     assertEquals(expected, actual);
+  }
+
+  private String normalizeActualFile(String contents) {
+    final int firstLineBreak = contents.indexOf("\n") + 1;
+    final int secondLineBreak = contents.indexOf("\n", firstLineBreak) + 1;
+    final int thirdLineBreak = contents.indexOf("\n", secondLineBreak) + 1;
+    final String line1 = contents.substring(0, firstLineBreak);
+    final String line2 = contents.substring(firstLineBreak, secondLineBreak);
+    final String restOfLines = contents.substring(secondLineBreak);
+
+    final String newLine2 = line2.replace(wireRuntimeDir.getAbsolutePath(), "..\\wire-runtime").replace("\\", "/");
+    return line1 + newLine2 + restOfLines;
   }
 }
