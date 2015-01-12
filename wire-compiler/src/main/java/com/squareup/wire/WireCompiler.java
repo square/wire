@@ -247,7 +247,7 @@ public class WireCompiler {
     Map<String, ProtoFile> parsedFiles = new LinkedHashMap<String, ProtoFile>();
 
     for (String sourceFilename : sourceFileNames) {
-      String sourcePath = repoPath + File.separator + sourceFilename;
+      String sourcePath = repoPath + "/" + sourceFilename;
       ProtoFile protoFile = io.parse(sourcePath);
       parsedFiles.put(sourcePath, protoFile);
 
@@ -576,7 +576,7 @@ public class WireCompiler {
     // Load symbols from imports
     for (String dependency : protoFile.getDependencies()) {
       if (!loadedDependencies.contains(dependency)) {
-        String dep = repoPath + File.separator + dependency;
+        String dep = repoPath + "/" + dependency;
         ProtoFile dependencyFile = io.parse(dep);
         loadSymbols(dependencyFile);
         loadedDependencies.add(dependency);
@@ -668,7 +668,7 @@ public class WireCompiler {
     // Load symbols from imports
     for (String dependency : protoFile.getDependencies()) {
       if (!loadedDependencies.contains(dependency)) {
-        String dep = repoPath + File.separator + dependency;
+        String dep = repoPath + "/" + dependency;
         ProtoFile dependencyFile = io.parse(dep);
         loadSymbolsHelper(dependencyFile, loadedDependencies, pass);
         loadedDependencies.add(dependency);

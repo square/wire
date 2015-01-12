@@ -20,26 +20,52 @@ import com.squareup.protoparser.Service;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.net.URL;
+import java.util.*;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class WireCompilerTest {
 
   private File testDir;
+  private File wireRuntimeDir;
 
-  @Before public void setUp() {
+  @Before
+  public void setUp() throws IOException {
     System.out.println("cwd = " + new File(".").getAbsolutePath());
-    testDir = makeTestDirectory("WireCompilerTest");
+    String targetDir = locateProjectTargetDirectory();
+
+    // Create temp dir under "target" so it would clean during Maven "clean" task.
+    testDir = makeTestDirectory(targetDir + "WireCompilerTest");
+    wireRuntimeDir = new File(testDir.getParentFile().getParentFile().getParentFile().getAbsolutePath() +"/wire-runtime");
+    assertTrue(wireRuntimeDir.exists());
+    assertTrue(wireRuntimeDir.isDirectory());
+  }
+
+  /**
+   * Search for "wire-compiler/target" directory in a platform independent way,
+   * assuming that Maven directory structure is used and test runs from "wire-compiler/target/test-classes" directory.
+   */
+  private String locateProjectTargetDirectory() throws IOException {
+    List<String> urls = new ArrayList<String>();
+    Enumeration<URL> resources = getClass().getClassLoader().getResources(".");
+    while (resources.hasMoreElements()) {
+      urls.add(resources.nextElement().getFile());
+    }
+
+    for (String url : urls) {
+      if (url.endsWith("test-classes/")) {
+        return url.substring(0, url.lastIndexOf("test-classes/"));
+      }
+    }
+    throw new FileNotFoundException("Cannot find directory ending with \"test-classes/\" in classpath. Classpath is: " + urls);
   }
 
   private File makeTestDirectory(String path) {
@@ -72,7 +98,7 @@ public class WireCompilerTest {
     if (serviceWriter != null) ++numFlags;
     if (serviceWriterOption != null) numFlags += serviceWriterOption.length;
     String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[0] = "--proto_path=" + new File(wireRuntimeDir + "/src/test/proto").getPath();
     args[1] = "--java_out=" + testDir.getAbsolutePath();
     args[2] = "--enum_options=squareup.protos.custom_options.enum_value_option,"
         + "squareup.protos.custom_options.complex_enum_value_option,"
@@ -100,7 +126,7 @@ public class WireCompilerTest {
   private void testProtoNoOptions(String[] sources, String[] outputs) throws Exception {
     int numFlags = 4;
     String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[0] = "--proto_path=" + new File(wireRuntimeDir + "/src/test/proto").getPath();
     args[1] = "--no_options";
     // Emit one of the enum options anyway.
     args[2] = "--enum_options=squareup.protos.custom_options.enum_value_option";
@@ -121,7 +147,7 @@ public class WireCompilerTest {
       throws Exception {
     int numFlags = 3;
     String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[0] = "--proto_path=" + new File(wireRuntimeDir + "/src/test/proto").getPath();
     args[1] = "--java_out=" + testDir.getAbsolutePath();
     args[2] = "--registry_class=" + registryClass;
     System.arraycopy(sources, 0, args, numFlags, sources.length);
@@ -140,7 +166,7 @@ public class WireCompilerTest {
       throws Exception {
     int numFlags = 4;
     String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[0] = "--proto_path=" + new File(wireRuntimeDir + "/src/test/proto").getPath();
     args[1] = "--java_out=" + testDir.getAbsolutePath();
     args[2] = "--service_writer=com.squareup.wire.SimpleServiceWriter";
     args[3] = "--roots=" + roots;
@@ -160,7 +186,7 @@ public class WireCompilerTest {
       String serviceSuffix) throws Exception {
     int numFlags = 5;
     String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    args[0] = "--proto_path=" + new File(wireRuntimeDir + "/src/test/proto").getPath();
     args[1] = "--java_out=" + testDir.getAbsolutePath();
     args[2] = "--service_writer=com.squareup.wire.TestRxJavaServiceWriter";
     args[3] = "--service_writer_opt=" + serviceSuffix;
@@ -650,7 +676,7 @@ public class WireCompilerTest {
   }
 
   private void assertFilesMatch(File outputDir, String path) throws FileNotFoundException {
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path);
+    File expectedFile = new File(wireRuntimeDir + "/src/test/java/" + path);
     File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
   }
@@ -658,11 +684,11 @@ public class WireCompilerTest {
   private void assertFilesMatchNoOptions(File outputDir, String path)
       throws FileNotFoundException {
     // Compare against file with .noOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path + ".noOptions");
+    File expectedFile = new File(wireRuntimeDir + "/src/test/java/" + path + ".noOptions");
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {
-      expectedFile = new File("../wire-runtime/src/test/java/" + path);
+      expectedFile = new File(wireRuntimeDir + "/src/test/java/" + path);
     }
     File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
@@ -672,11 +698,11 @@ public class WireCompilerTest {
       throws FileNotFoundException {
     path = path.substring(0, path.indexOf(".java"));
     // Compare against file with .noOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path + suffix + ".java");
+    File expectedFile = new File(wireRuntimeDir + "/src/test/java/" + path + suffix + ".java");
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {
-      expectedFile = new File("../wire-runtime/src/test/java/" + path + ".java");
+      expectedFile = new File(wireRuntimeDir + "/src/test/java/" + path + ".java");
     }
     File actualFile = new File(outputDir, path + ".java");
     assertFilesMatch(expectedFile, actualFile);
