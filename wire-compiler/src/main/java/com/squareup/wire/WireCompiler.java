@@ -23,8 +23,6 @@ import com.squareup.protoparser.Option;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.Service;
 import com.squareup.protoparser.Type;
-import com.squareup.wire.logger.ConsoleWireLogger;
-import com.squareup.wire.logger.WireLogger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;

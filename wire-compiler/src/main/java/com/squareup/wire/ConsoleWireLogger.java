@@ -1,9 +1,6 @@
-package com.squareup.wire.logger;
+package com.squareup.wire;
 
-import com.squareup.wire.OutputArtifact;
-
-
-public final class ConsoleWireLogger implements WireLogger {
+final class ConsoleWireLogger implements WireLogger {
   private final boolean isQuiet;
 
   public ConsoleWireLogger(boolean quiet) {
