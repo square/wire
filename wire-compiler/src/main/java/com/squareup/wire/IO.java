@@ -31,7 +31,6 @@ interface IO {
   JavaWriter getJavaWriter(OutputArtifact outputArtifact)
       throws IOException;
 
-
   /**
    * Concrete implementation of the IO interface that proxies to the file system.
    */

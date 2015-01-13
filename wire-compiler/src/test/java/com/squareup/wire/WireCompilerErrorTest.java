@@ -18,7 +18,6 @@ package com.squareup.wire;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
-import com.squareup.wire.logger.MockWireLogger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
@@ -84,9 +83,8 @@ public class WireCompilerErrorTest {
         new ArrayList<String>(), null, true, Collections.<String>emptySet(), null,
         Collections.<String>emptyList(), false, false);
 
-
     try {
-      new WireCompiler(options, io, new MockWireLogger()).compile();
+      new WireCompiler(options, io, new StringWireLogger(true)).compile();
     } catch (WireException e) {
       fail();
     }

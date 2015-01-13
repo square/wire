@@ -17,7 +17,6 @@ package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.Service;
-import com.squareup.wire.logger.StringWireLogger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
