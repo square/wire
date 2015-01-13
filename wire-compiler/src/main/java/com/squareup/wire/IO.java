@@ -5,7 +5,6 @@ import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,8 +28,9 @@ interface IO {
    *   <output directory>/<java package converted to slashed form>/<className>.java
    * }</pre>
    */
-  JavaWriter getJavaWriter(String outputDirectory, String javaPackage, String className)
+  JavaWriter getJavaWriter(OutputArtifact outputArtifact)
       throws IOException;
+
 
   /**
    * Concrete implementation of the IO interface that proxies to the file system.
@@ -45,18 +45,10 @@ interface IO {
     }
 
     @Override
-    public JavaWriter getJavaWriter(String outputDirectory, String javaPackage, String className)
+    public JavaWriter getJavaWriter(OutputArtifact artifact)
         throws IOException {
-      String directory = outputDirectory + File.separator
-          + javaPackage.replace(".", File.separator);
-      boolean created = new File(directory).mkdirs();
-      if (created) {
-        System.out.println("Created output directory " + directory);
-      }
-
-      String fileName = directory + File.separator + className + ".java";
-      System.out.println("Writing generated code to " + fileName);
-      return new JavaWriter(new OutputStreamWriter(new FileOutputStream(fileName), UTF_8));
+      artifact.dir().mkdirs();
+      return new JavaWriter(new OutputStreamWriter(new FileOutputStream(artifact.file()), UTF_8));
     }
   }
 }

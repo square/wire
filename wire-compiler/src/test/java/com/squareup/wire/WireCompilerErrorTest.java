@@ -18,6 +18,7 @@ package com.squareup.wire;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoSchemaParser;
+import com.squareup.wire.logger.MockWireLogger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
@@ -27,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -57,10 +57,10 @@ public class WireCompilerErrorTest {
     }
 
     @Override
-    public JavaWriter getJavaWriter(String javaOut, String javaPackage, String className)
+    public JavaWriter getJavaWriter(OutputArtifact outputArtifact)
         throws IOException {
       StringWriter writer = new StringWriter();
-      writers.put(javaPackage + "." + className, writer);
+      writers.put(outputArtifact.fullClassName(), writer);
       return new JavaWriter(writer);
     }
 
@@ -82,10 +82,11 @@ public class WireCompilerErrorTest {
 
     CommandLineOptions options = new CommandLineOptions(".",  ".", Arrays.asList("test.proto"),
         new ArrayList<String>(), null, true, Collections.<String>emptySet(), null,
-        Collections.<String>emptyList());
+        Collections.<String>emptyList(), false, false);
+
 
     try {
-      new WireCompiler(options, io).compile();
+      new WireCompiler(options, io, new MockWireLogger()).compile();
     } catch (WireException e) {
       fail();
     }
