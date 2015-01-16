@@ -101,7 +101,7 @@ public class WireCompiler {
 
   private static Constructor<?> loadServiceWriter(String serviceWriterClassName)
       throws WireException {
-    Class<?> serviceWriterClass = null;
+    Class<?> serviceWriterClass;
     try {
       serviceWriterClass = Class.forName(serviceWriterClassName);
     } catch (ClassNotFoundException e) {
@@ -135,7 +135,7 @@ public class WireCompiler {
         serviceWriterOptions, false, false));
   }
 
-  public WireCompiler(CommandLineOptions options) throws WireException {
+  WireCompiler(CommandLineOptions options) throws WireException {
     this(options, new IO.FileIO(), new ConsoleWireLogger(options.quiet));
   }
 
