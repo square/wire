@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 1.6.1 *(2015-01-16)*
+----------------------------
+
+ * New: `--quiet` and `--dry-run` command-line arguments.
+ * Fix: Handle an extension registry with zero or only one item.
+ * Okio dependency bumped to 1.2.0.
+
+
 Version 1.6.0 *(2014-10-23)*
 ----------------------------
 
