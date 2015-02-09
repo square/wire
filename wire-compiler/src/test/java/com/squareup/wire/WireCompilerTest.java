@@ -188,6 +188,17 @@ public class WireCompilerTest {
     }
   }
 
+  @Test public void testFooBar() throws Exception {
+    String[] sources = {
+        "foo.proto",
+        "bar.proto"
+    };
+    String[] outputs = {
+        "com/squareup/foobar/protos/bar/Bar.java",
+        "com/squareup/foobar/protos/foo/Foo.java"
+    };
+    testProto(sources, outputs);
+  }
 
   @Test public void testPerson() throws Exception {
     String[] sources = {

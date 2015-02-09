@@ -1,0 +1,9 @@
+package squareup.foobar;
+
+option java_package = "com.squareup.foobar.protos.foo";
+
+import "bar.proto";
+
+message Foo {
+  optional Bar.Baz.Moo moo = 1;
+}
