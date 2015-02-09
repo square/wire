@@ -874,6 +874,7 @@ public class WireCompiler {
           continue;
         }
         if (fullyQualifiedNameIsOutsidePackage(fqName)) {
+          fqName = getTopLevelMessageName(messageType, fqName);
           types.add(fqName);
         }
         String parentType = removeTrailingSegment(fqName);
@@ -885,6 +886,18 @@ public class WireCompiler {
     for (Type nestedType : parent.getNestedTypes()) {
       getExternalTypes(nestedType, types);
     }
+  }
+
+  // Convert 'Bar.Baz.Moo' to 'Bar' for use in imports.
+  private String getTopLevelMessageName(MessageType messageType, String fqName) {
+    String packageName = getPackageFromFullyQualifiedJavaName(fqName);
+    String unqualifiedName = fqName.substring(packageName.length() + 1);
+    int dotIndex = unqualifiedName.indexOf('.');
+    if (dotIndex != -1) {
+      String parentType = unqualifiedName.substring(0, dotIndex);
+      return fullyQualifiedJavaName(messageType, parentType);
+    }
+    return fqName;
   }
 
   private void getExternalTypes(Service service, List<String> types) {
