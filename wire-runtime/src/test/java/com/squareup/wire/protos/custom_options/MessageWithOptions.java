@@ -8,6 +8,7 @@ import com.squareup.wire.protos.foreign.Ext_foreign;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 
 public final class MessageWithOptions extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final MessageOptions MESSAGE_OPTIONS = new MessageOptions.Builder()
       .setExtension(Ext_custom_options.my_message_option_one, new FooBar.Builder()

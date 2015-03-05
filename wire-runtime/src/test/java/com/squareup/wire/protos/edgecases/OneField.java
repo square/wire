@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoField;
 import static com.squareup.wire.Message.Datatype.INT32;
 
 public final class OneField extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
 

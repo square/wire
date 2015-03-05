@@ -16,6 +16,8 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +30,8 @@ import okio.ByteString;
 /**
  * Superclass for protocol buffer messages.
  */
-public abstract class Message {
+public abstract class Message implements Serializable {
+  private static final long serialVersionUID = 0L;
 
   // Hidden Wire instance that can perform work that does not require knowledge of extensions.
   private static final Wire WIRE = new Wire();
@@ -264,6 +267,10 @@ public abstract class Message {
   @SuppressWarnings("unchecked")
   @Override public String toString() {
     return WIRE.messageAdapter((Class<Message>) getClass()).toString(this);
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return new MessageSerializedForm(this, getClass());
   }
 
   /**

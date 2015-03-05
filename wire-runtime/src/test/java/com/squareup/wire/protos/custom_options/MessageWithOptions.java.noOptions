@@ -5,6 +5,7 @@ package com.squareup.wire.protos.custom_options;
 import com.squareup.wire.Message;
 
 public final class MessageWithOptions extends Message {
+  private static final long serialVersionUID = 0L;
 
   public MessageWithOptions() {
   }

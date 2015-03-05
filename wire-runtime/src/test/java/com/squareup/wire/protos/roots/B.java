@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoField;
 import static com.squareup.wire.Message.Label.REQUIRED;
 
 public final class B extends Message {
+  private static final long serialVersionUID = 0L;
 
   @ProtoField(tag = 1, label = REQUIRED)
   public final C c;

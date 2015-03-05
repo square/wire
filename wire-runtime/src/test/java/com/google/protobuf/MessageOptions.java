@@ -12,6 +12,7 @@ import static com.squareup.wire.Message.Datatype.BOOL;
 import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class MessageOptions extends ExtendableMessage<MessageOptions> {
+  private static final long serialVersionUID = 0L;
 
   public static final Boolean DEFAULT_MESSAGE_SET_WIRE_FORMAT = false;
   public static final Boolean DEFAULT_NO_STANDARD_DESCRIPTOR_ACCESSOR = false;
@@ -51,7 +52,7 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(tag = 999, label = REPEATED)
+  @ProtoField(tag = 999, label = REPEATED, messageType = UninterpretedOption.class)
   public final List<UninterpretedOption> uninterpreted_option;
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option) {

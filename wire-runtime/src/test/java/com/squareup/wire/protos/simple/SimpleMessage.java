@@ -20,6 +20,7 @@ import static com.squareup.wire.Message.Label.REQUIRED;
  * A message for testing.
  */
 public final class SimpleMessage extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.BAZ;
@@ -306,6 +307,7 @@ public final class SimpleMessage extends Message {
   }
 
   public static final class NestedMessage extends Message {
+    private static final long serialVersionUID = 0L;
 
     public static final Integer DEFAULT_BB = 0;
 

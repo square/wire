@@ -5,6 +5,7 @@ package com.squareup.wire.protos.edgecases;
 import com.squareup.wire.Message;
 
 public final class NoFields extends Message {
+  private static final long serialVersionUID = 0L;
 
   public NoFields() {
   }

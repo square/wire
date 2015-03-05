@@ -5,6 +5,7 @@ package com.squareup.wire.protos.roots;
 import com.squareup.wire.Message;
 
 public final class UnnecessaryResponse extends Message {
+  private static final long serialVersionUID = 0L;
 
   public UnnecessaryResponse() {
   }

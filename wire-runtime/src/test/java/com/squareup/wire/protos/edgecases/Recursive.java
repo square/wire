@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoField;
 import static com.squareup.wire.Message.Datatype.INT32;
 
 public final class Recursive extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_VALUE = 0;
 
