@@ -131,7 +131,8 @@ public class WireCompiler {
       Constructor<?> serviceWriterConstructor, List<String> serviceWriterOptions)
       throws WireException {
     this(new CommandLineOptions(protoPath, outputDirectory, sourceFileNames, roots,  registryClass,
-        emitOptions,  new LinkedHashSet<String>(enumOptions), serviceWriterConstructor.getName(),
+        emitOptions, new LinkedHashSet<String>(enumOptions),
+        serviceWriterConstructor == null ? null : serviceWriterConstructor.getName(),
         serviceWriterOptions, false, false));
   }
 
