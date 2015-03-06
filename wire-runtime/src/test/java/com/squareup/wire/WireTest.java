@@ -324,4 +324,15 @@ public class WireTest {
     byte[] newData = result.toByteArray();
     assertTrue(Arrays.equals(data, newData));
   }
+
+  @Test
+  public void testParseRepeated() throws IOException {
+    List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+    phoneNumbers.add(new PhoneNumber("123", PhoneType.HOME));
+    phoneNumbers.add(new PhoneNumber("456", PhoneType.MOBILE));
+    phoneNumbers.add(new PhoneNumber("789", PhoneType.WORK));
+    Person person = new Person("name", 1, "email", phoneNumbers);
+    Wire wire = new Wire();
+    Person deserialized = wire.parseFrom(person.toByteArray(), Person.class);
+  }
 }

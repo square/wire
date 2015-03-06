@@ -167,18 +167,26 @@ public class WireCompilerTest {
     }
   }
 
-  private void testLimitedServiceGeneration(String[] sources, String roots, String[] outputs,
+  private void testLimitedServiceGeneration(String[] sources, String[] roots, String[] outputs,
       String serviceSuffix) throws Exception {
-    int numFlags = 5;
-    String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
-    args[1] = "--java_out=" + testDir.getAbsolutePath();
-    args[2] = "--service_writer=com.squareup.wire.TestRxJavaServiceWriter";
-    args[3] = "--service_writer_opt=" + serviceSuffix;
-    args[4] = "--roots=" + roots;
-    System.arraycopy(sources, 0, args, numFlags, sources.length);
+    //int numFlags = 5;
+    //String[] args = new String[numFlags + sources.length];
+    //args[0] = "--proto_path=../wire-runtime/src/test/proto";
+    //args[1] = "--java_out=" + testDir.getAbsolutePath();
+    //args[2] = "--service_writer=com.squareup.wire.TestRxJavaServiceWriter";
+    //args[3] = "--service_writer_opt=" + serviceSuffix;
+    //args[4] = "--roots=" + roots;
+    //System.arraycopy(sources, 0, args, numFlags, sources.length);
 
-    invokeCompiler(args);
+    CommandLineOptions options = new CommandLineOptions.Builder()
+        .protoPath("../wire-runtime/src/test/proto")
+        .javaOut(testDir.getAbsolutePath())
+        .serviceWriter("com.squareup.wire.TestRxJavaServiceWriter")
+        .addServiceWriterOption(serviceSuffix)
+        .addRoots(roots)
+        .build();
+
+    invokeCompiler(options);
 
     List<String> filesAfter = getAllFiles(testDir);
     assertEquals(filesAfter.toString(), outputs.length, filesAfter.size());
@@ -283,7 +291,10 @@ public class WireCompilerTest {
         "com/squareup/services/RxJavaService.java",
         "com/squareup/services/RxJavaService2.java"
     };
-    String roots = "com.squareup.services.RxJavaService,com.squareup.services.RxJavaService2";
+    String[] roots = {
+        "com.squareup.services.RxJavaService",
+        "com.squareup.services.RxJavaService2"
+    };
     testLimitedServiceGeneration(sources, roots, outputs, "");
   }
 
@@ -302,9 +313,11 @@ public class WireCompilerTest {
         "com/squareup/services/RxJavaService.java",
         "com/squareup/services/RxJavaService2.java"
     };
-    String roots = "com.squareup.services.RxJavaService#SendSomeData,"
-        + "com.squareup.services.RxJavaService2#LetsData,"
-        + "com.squareup.services.RxJavaService2#SendSomeMoreData";
+    String[] roots = {
+        "com.squareup.services.RxJavaService#SendSomeData",
+        "com.squareup.services.RxJavaService2#LetsData",
+        "com.squareup.services.RxJavaService2#SendSomeMoreData"
+    };
     testLimitedServiceGeneration(sources, roots, outputs, "SomeEndpoints");
   }
 
@@ -708,6 +721,11 @@ public class WireCompilerTest {
 
   private void invokeCompiler(String[] args) throws WireException {
     CommandLineOptions options = new CommandLineOptions(args);
+    logger = new StringWireLogger(options.quiet);
+    new WireCompiler(options, new IO.FileIO(), logger).compile();
+  }
+
+  private void invokeCompiler(CommandLineOptions options) throws WireException {
     logger = new StringWireLogger(options.quiet);
     new WireCompiler(options, new IO.FileIO(), logger).compile();
   }
