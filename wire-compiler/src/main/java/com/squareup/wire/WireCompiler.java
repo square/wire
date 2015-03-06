@@ -875,7 +875,7 @@ public class WireCompiler {
           continue;
         }
         if (fullyQualifiedNameIsOutsidePackage(fqName)) {
-          fqName = getTopLevelMessageName(messageType, fqName);
+          fqName = getTopLevelMessageName(fqName);
           types.add(fqName);
         }
         String parentType = removeTrailingSegment(fqName);
@@ -890,13 +890,14 @@ public class WireCompiler {
   }
 
   // Convert 'Bar.Baz.Moo' to 'Bar' for use in imports.
-  private String getTopLevelMessageName(MessageType messageType, String fqName) {
-    String packageName = getPackageFromFullyQualifiedJavaName(fqName);
-    String unqualifiedName = fqName.substring(packageName.length() + 1);
-    int dotIndex = unqualifiedName.indexOf('.');
-    if (dotIndex != -1) {
-      String parentType = unqualifiedName.substring(0, dotIndex);
-      return fullyQualifiedJavaName(messageType, parentType);
+  private String getTopLevelMessageName(String fqName) {
+    // Navigate up the class hierarchy to find the outermost parent that is 'complete'.
+    String parentType = removeTrailingSegment(fqName);
+    while (!parentType.isEmpty()
+        && javaTypeIsComplete(parentType)
+        && fullyQualifiedNameIsOutsidePackage(parentType)) {
+      fqName = parentType;
+      parentType = removeTrailingSegment(parentType);
     }
     return fqName;
   }
