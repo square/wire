@@ -15,6 +15,7 @@ import static com.squareup.wire.Message.Datatype.STRING;
 import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class FieldOptions extends ExtendableMessage<FieldOptions> {
+  private static final long serialVersionUID = 0L;
 
   public static final CType DEFAULT_CTYPE = CType.STRING;
   public static final Boolean DEFAULT_PACKED = false;
@@ -69,7 +70,7 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(tag = 999, label = REPEATED)
+  @ProtoField(tag = 999, label = REPEATED, messageType = UninterpretedOption.class)
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option) {

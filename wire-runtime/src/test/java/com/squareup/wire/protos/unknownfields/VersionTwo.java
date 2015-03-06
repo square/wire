@@ -11,6 +11,7 @@ import static com.squareup.wire.Message.Datatype.INT32;
 import static com.squareup.wire.Message.Datatype.STRING;
 
 public final class VersionTwo extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;
   public static final Integer DEFAULT_V2_I = 0;

@@ -9,6 +9,7 @@ import okio.ByteString;
 import static com.squareup.wire.Message.Datatype.BYTES;
 
 public final class HeresAllTheDataRequest extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final ByteString DEFAULT_DATA = ByteString.EMPTY;
 

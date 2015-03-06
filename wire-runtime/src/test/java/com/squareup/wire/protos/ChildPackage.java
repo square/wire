@@ -9,6 +9,7 @@ import com.squareup.wire.protos.foreign.ForeignEnum;
 import static com.squareup.wire.Message.Datatype.ENUM;
 
 public final class ChildPackage extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final ForeignEnum DEFAULT_INNER_FOREIGN_ENUM = ForeignEnum.BAV;
 

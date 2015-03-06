@@ -24,6 +24,7 @@ import java.util.List;
  * @param <T> the message type being extended.
  */
 public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends Message {
+  private static final long serialVersionUID = 0L;
 
   @SuppressWarnings("unchecked")
   transient ExtensionMap<T> extensionMap; // Null if empty.

@@ -15,6 +15,7 @@ import static com.squareup.wire.Message.Label.REPEATED;
 import static com.squareup.wire.Message.Label.REQUIRED;
 
 public final class Person extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
   public static final Integer DEFAULT_ID = 0;
@@ -161,6 +162,7 @@ public final class Person extends Message {
   }
 
   public static final class PhoneNumber extends Message {
+    private static final long serialVersionUID = 0L;
 
     public static final String DEFAULT_NUMBER = "";
     public static final PhoneType DEFAULT_TYPE = PhoneType.HOME;

@@ -11,13 +11,14 @@ import java.util.List;
 import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class EnumOptions extends ExtendableMessage<EnumOptions> {
+  private static final long serialVersionUID = 0L;
 
   public static final List<UninterpretedOption> DEFAULT_UNINTERPRETED_OPTION = Collections.emptyList();
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(tag = 999, label = REPEATED)
+  @ProtoField(tag = 999, label = REPEATED, messageType = UninterpretedOption.class)
   public final List<UninterpretedOption> uninterpreted_option;
 
   public EnumOptions(List<UninterpretedOption> uninterpreted_option) {

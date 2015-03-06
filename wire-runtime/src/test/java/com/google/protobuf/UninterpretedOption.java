@@ -26,6 +26,7 @@ import static com.squareup.wire.Message.Label.REQUIRED;
  * in them.
  */
 public final class UninterpretedOption extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final List<NamePart> DEFAULT_NAME = Collections.emptyList();
   public static final String DEFAULT_IDENTIFIER_VALUE = "";
@@ -35,7 +36,7 @@ public final class UninterpretedOption extends Message {
   public static final ByteString DEFAULT_STRING_VALUE = ByteString.EMPTY;
   public static final String DEFAULT_AGGREGATE_VALUE = "";
 
-  @ProtoField(tag = 2, label = REPEATED)
+  @ProtoField(tag = 2, label = REPEATED, messageType = NamePart.class)
   public final List<NamePart> name;
 
   /**
@@ -183,6 +184,7 @@ public final class UninterpretedOption extends Message {
    * "foo.(bar.baz).qux".
    */
   public static final class NamePart extends Message {
+    private static final long serialVersionUID = 0L;
 
     public static final String DEFAULT_NAME_PART = "";
     public static final Boolean DEFAULT_IS_EXTENSION = false;

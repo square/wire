@@ -251,6 +251,7 @@ public class MessageWriter {
     emitDocumentation(writer, messageType.getDocumentation());
     writer.beginType(name, "class", modifiers,
         compiler.hasExtensions(messageType) ? "ExtendableMessage<" + name + ">" : "Message");
+    writer.emitField("long", "serialVersionUID", EnumSet.of(PRIVATE, STATIC, FINAL), "0L");
 
     emitMessageOptions(writer, optionsMap);
     if (compiler.shouldEmitOptions()) {

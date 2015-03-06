@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoField;
 import static com.squareup.wire.Message.Datatype.FLOAT;
 
 public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
+  private static final long serialVersionUID = 0L;
 
   public static final Float DEFAULT_F = 20F;
 

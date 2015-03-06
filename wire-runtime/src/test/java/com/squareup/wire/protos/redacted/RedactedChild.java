@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoField;
 import static com.squareup.wire.Message.Datatype.STRING;
 
 public final class RedactedChild extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_A = "";
 

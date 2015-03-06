@@ -32,6 +32,7 @@ import static com.squareup.wire.Message.Label.REPEATED;
 import static com.squareup.wire.Message.Label.REQUIRED;
 
 public final class AllTypes extends ExtendableMessage<AllTypes> {
+  private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
   public static final Integer DEFAULT_OPT_UINT32 = 0;
@@ -1243,6 +1244,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   }
 
   public static final class NestedMessage extends Message {
+    private static final long serialVersionUID = 0L;
 
     public static final Integer DEFAULT_A = 0;
 

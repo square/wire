@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 
 public final class Foo extends Message {
+  private static final long serialVersionUID = 0L;
 
   @ProtoField(tag = 1)
   public final Bar.Baz.Moo moo;

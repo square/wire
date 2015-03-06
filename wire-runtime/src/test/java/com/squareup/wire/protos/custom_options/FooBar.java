@@ -21,6 +21,7 @@ import static com.squareup.wire.Message.Datatype.UINT64;
 import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class FooBar extends ExtendableMessage<FooBar> {
+  private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
       .setExtension(Ext_custom_options.my_field_option_one, 17)
@@ -210,6 +211,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   }
 
   public static final class Nested extends Message {
+    private static final long serialVersionUID = 0L;
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
 
@@ -264,6 +266,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   }
 
   public static final class More extends Message {
+    private static final long serialVersionUID = 0L;
 
     public static final List<Integer> DEFAULT_SERIAL = Collections.emptyList();
 

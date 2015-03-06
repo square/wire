@@ -10,6 +10,7 @@ import java.util.List;
 import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class Bars extends Message {
+  private static final long serialVersionUID = 0L;
 
   public static final List<Bar> DEFAULT_BARS = Collections.emptyList();
 

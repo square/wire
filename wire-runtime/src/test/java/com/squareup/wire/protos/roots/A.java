@@ -21,6 +21,7 @@ import com.squareup.wire.ProtoField;
  * I -> nothing
  */
 public final class A extends Message {
+  private static final long serialVersionUID = 0L;
 
   @ProtoField(tag = 1)
   public final B c;

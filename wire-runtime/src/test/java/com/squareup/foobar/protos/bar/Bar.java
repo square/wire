@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import static com.squareup.wire.Message.Datatype.STRING;
 
 public final class Bar extends Message {
+  private static final long serialVersionUID = 0L;
 
   public Bar() {
   }
@@ -41,6 +42,7 @@ public final class Bar extends Message {
   }
 
   public static final class Baz extends Message {
+    private static final long serialVersionUID = 0L;
 
     public Baz() {
     }
@@ -75,6 +77,7 @@ public final class Bar extends Message {
     }
 
     public static final class Moo extends Message {
+      private static final long serialVersionUID = 0L;
 
       public static final String DEFAULT_BOO = "";
 
