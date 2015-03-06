@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.squareup.wire</groupId>
     <artifactId>wire</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.7.0</version>
   </parent>
 
   <artifactId>wire-compiler</artifactId>
