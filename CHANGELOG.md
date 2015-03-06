@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 1.7.0 *(2015-03-05)*
+----------------------------
+
+ * New: Messages implement `Serializable`. The serialized form follows protobuf encoding, so
+   renaming fields is safe as long as tags are consistent. (Renaming classes is unsafe, however).
+   Note that extension fields are deserialized as unknown fields.
+
 Version 1.6.1 *(2015-01-16)*
 ----------------------------
 
