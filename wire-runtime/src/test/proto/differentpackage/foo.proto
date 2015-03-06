@@ -1,0 +1,9 @@
+package squareup.differentpackage.foo;
+
+option java_package = "com.squareup.differentpackage.protos.foo";
+
+import "differentpackage/bar.proto";
+
+message Foo {
+  optional squareup.differentpackage.bar.Bar.Baz.Moo moo = 1;
+}
