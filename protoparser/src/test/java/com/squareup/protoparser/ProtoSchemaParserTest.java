@@ -195,6 +195,48 @@ public final class ProtoSchemaParserTest {
     assertThat(value.documentation()).isEqualTo("Test all...\n...the things!");
   }
 
+  @Test public void syntaxNotRequired() throws Exception {
+    String proto = "message Foo {}";
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    assertThat(parsed.syntax()).isNull();
+  }
+
+  @Test public void syntaxSpecified() throws Exception {
+    String proto = ""
+        + "syntax \"proto3\";\n"
+        + "message Foo {}";
+    TypeElement foo =
+        MessageElement.create("Foo", "Foo", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
+            NO_OPTIONS);
+    ProtoFile expected =
+        ProtoFile.builder("test.proto").setSyntax(ProtoFile.Syntax.PROTO_3).addType(foo).build();
+    assertThat(ProtoSchemaParser.parse("test.proto", proto)).isEqualTo(expected);
+  }
+
+  @Test public void invalidSyntaxValueThrows() throws Exception {
+    String proto = ""
+        + "syntax \"proto4\";\n"
+        + "message Foo {}";
+    try {
+      ProtoSchemaParser.parse("test.proto", proto);
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage(
+          "Syntax error in test.proto at 1:16: 'syntax' must be 'proto2' or 'proto3'. Found: proto4");
+    }
+  }
+
+  @Test public void syntaxInWrongContextThrows() {
+    String proto = ""
+        + "message Foo {\n"
+        + "  syntax \"proto2\";\n"
+        + "}";
+    try {
+      ProtoSchemaParser.parse("test.proto", proto);
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in test.proto at 2:9: 'syntax' in MESSAGE");
+    }
+  }
+
   @Test public void parseMessageAndFields() throws Exception {
     String proto = ""
         + "message SearchRequest {\n"

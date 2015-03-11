@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.squareup.protoparser.ProtoFile.Syntax.PROTO_2;
+import static com.squareup.protoparser.ProtoFile.Syntax.PROTO_3;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /** Basic parser for {@code .proto} schema declarations. */
@@ -106,7 +108,7 @@ public final class ProtoSchemaParser {
     String label = readWord();
 
     if (label.equals("package")) {
-      if (!context.permitsPackage()) throw unexpected("package in " + context);
+      if (!context.permitsPackage()) throw unexpected("'package' in " + context);
       if (packageName != null) throw unexpected("too many package names");
       packageName = readName();
       builder.setPackageName(packageName);
@@ -114,12 +116,27 @@ public final class ProtoSchemaParser {
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
     } else if (label.equals("import")) {
-      if (!context.permitsImport()) throw unexpected("import in " + context);
+      if (!context.permitsImport()) throw unexpected("'import' in " + context);
       String importString = readString();
       if ("public".equals(importString)) {
         builder.addPublicDependency(readString());
       } else {
         builder.addDependency(importString);
+      }
+      if (readChar() != ';') throw unexpected("expected ';'");
+      return null;
+    } else if (label.equals("syntax")) {
+      if (!context.permitsSyntax()) throw unexpected("'syntax' in " + context);
+      String syntax = readQuotedString();
+      switch (syntax) {
+        case "proto2":
+          builder.setSyntax(PROTO_2);
+          break;
+        case "proto3":
+          builder.setSyntax(PROTO_3);
+          break;
+        default:
+          throw unexpected("'syntax' must be 'proto2' or 'proto3'. Found: " + syntax);
       }
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
@@ -136,17 +153,17 @@ public final class ProtoSchemaParser {
     } else if (label.equals("extend")) {
       return readExtend(documentation);
     } else if (label.equals("rpc")) {
-      if (!context.permitsRpc()) throw unexpected("rpc in " + context);
+      if (!context.permitsRpc()) throw unexpected("'rpc' in " + context);
       return readRpc(documentation);
     } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
       if (!context.permitsField()) throw unexpected("fields must be nested");
       MessageElement.Label labelEnum = MessageElement.Label.valueOf(label.toUpperCase(Locale.US));
       return readField(documentation, labelEnum);
     } else if (label.equals("oneof")) {
-      if (!context.permitsOneOf()) throw unexpected("oneofs must be nested in message");
+      if (!context.permitsOneOf()) throw unexpected("'oneof' must be nested in message");
       return readOneOf(documentation);
     } else if (label.equals("extensions")) {
-      if (!context.permitsExtensions()) throw unexpected("extensions must be nested");
+      if (!context.permitsExtensions()) throw unexpected("'extensions' must be nested");
       return readExtensions(documentation);
     } else if (context == Context.ENUM) {
       List<OptionElement> options = new ArrayList<>();
@@ -799,6 +816,10 @@ public final class ProtoSchemaParser {
     SERVICE;
 
     public boolean permitsPackage() {
+      return this == FILE;
+    }
+
+    public boolean permitsSyntax() {
       return this == FILE;
     }
 
