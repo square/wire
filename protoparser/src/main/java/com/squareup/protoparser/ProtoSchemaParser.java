@@ -167,6 +167,7 @@ public final class ProtoSchemaParser {
         }
       }
       if (readChar() != ';') throw unexpected("expected ';'");
+      documentation = tryAppendTrailingDocumentation(documentation);
       return EnumConstantElement.create(label, tag, documentation, options);
     } else {
       throw unexpected("unexpected label: " + label);
@@ -301,10 +302,11 @@ public final class ProtoSchemaParser {
         }
       }
     }
-    if (readChar() == ';') {
-      return FieldElement.create(label, type, name, tag, documentation, options);
+    if (readChar() != ';') {
+      throw unexpected("expected ';'");
     }
-    throw unexpected("expected ';'");
+    documentation = tryAppendTrailingDocumentation(documentation);
+    return FieldElement.create(label, type, name, tag, documentation, options);
   }
 
   private OneOfElement readOneOf(String documentation) {
@@ -709,6 +711,46 @@ public final class ProtoSchemaParser {
     } else {
       throw unexpected("unexpected '/'");
     }
+  }
+
+  private String tryAppendTrailingDocumentation(String documentation) {
+    // Search for a '/' character ignoring spaces and tabs.
+    while (pos < data.length) {
+      char c = data[pos];
+      if (c == ' ' || c == '\t') {
+        pos++;
+      } else if (c == '/') {
+        pos++;
+        break;
+      } else {
+        // Not a whitespace or comment-starting character. Return original documentation.
+        return documentation;
+      }
+    }
+
+    if (pos == data.length || data[pos] != '/') {
+      throw unexpected("expected '/'");
+    }
+    pos++;
+    if (pos < data.length && data[pos] == ' ') {
+      pos++; // Skip a single leading space, if present.
+    }
+
+    // Consume comment until newline.
+    int start = pos;
+    while (pos < data.length) {
+      char c = data[pos++];
+      if (c == '\n') {
+        newline();
+        break;
+      }
+    }
+
+    String trailingDocumentation = new String(data, start, pos - 1 - start);
+    if (documentation.isEmpty()) {
+      return trailingDocumentation;
+    }
+    return documentation + '\n' + trailingDocumentation;
   }
 
   /**

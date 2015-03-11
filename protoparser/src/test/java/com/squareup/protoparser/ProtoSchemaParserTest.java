@@ -34,69 +34,73 @@ public final class ProtoSchemaParserTest {
         OptionElement.create("deprecated", "true", false));
   }
 
-  @Test public void documentationFormats() {
-    // Single-line comment.
-    String proto1 = ""
+  @Test public void singleLineComment() {
+    String proto = ""
         + "// Test all the things!\n"
         + "message Test {}";
-    ProtoFile parsed1 = ProtoSchemaParser.parse("test.proto", proto1);
-    MessageElement element1 = (MessageElement) parsed1.typeElements().get(0);
-    assertThat(element1.documentation()).isEqualTo("Test all the things!");
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    MessageElement type = (MessageElement) parsed.typeElements().get(0);
+    assertThat(type.documentation()).isEqualTo("Test all the things!");
+  }
 
-    // Multiple, single-line comment.
-    String proto2 = ""
+  @Test public void multipleSingleLineComments() {
+    String proto = ""
         + "// Test all\n"
         + "// the things!\n"
         + "message Test {}";
-    String expected2 = ""
+    String expected = ""
         + "Test all\n"
         + "the things!";
-    ProtoFile parsed2 = ProtoSchemaParser.parse("test.proto", proto2);
-    MessageElement element2 = (MessageElement) parsed2.typeElements().get(0);
-    assertThat(element2.documentation()).isEqualTo(expected2);
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    MessageElement type = (MessageElement) parsed.typeElements().get(0);
+    assertThat(type.documentation()).isEqualTo(expected);
+  }
 
-    // Single-line, Javadoc-esque comment.
-    String proto3 = ""
+  @Test public void singleLineJavadocComment() {
+    String proto = ""
         + "/** Test */\n"
         + "message Test {}";
-    ProtoFile parsed3 = ProtoSchemaParser.parse("test.proto", proto3);
-    MessageElement element3 = (MessageElement) parsed3.typeElements().get(0);
-    assertThat(element3.documentation()).isEqualTo("Test");
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    MessageElement type = (MessageElement) parsed.typeElements().get(0);
+    assertThat(type.documentation()).isEqualTo("Test");
+  }
 
-    // Multi-line, Javadoc-esque comment.
-    String proto4 = ""
+  @Test public void multilineJavadocComment() {
+    String proto = ""
         + "/**\n"
         + " * Test\n"
         + " *\n"
         + " * Foo\n"
         + " */\n"
         + "message Test {}";
-    String expected4 = ""
+    String expected = ""
         + "Test\n"
         + "\n"
         + "Foo";
-    ProtoFile parsed4 = ProtoSchemaParser.parse("test.proto", proto4);
-    MessageElement element4 = (MessageElement) parsed4.typeElements().get(0);
-    assertThat(element4.documentation()).isEqualTo(expected4);
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    MessageElement type = (MessageElement) parsed.typeElements().get(0);
+    assertThat(type.documentation()).isEqualTo(expected);
+  }
 
-    // Multiple, single-line comment with leading whitespace
-    String proto5 = ""
+  @Test public void multipleSingleLineCommentsWithLeadingWhitespace() {
+    String proto = ""
         + "// Test\n"
         + "//   All\n"
         + "//     The\n"
         + "//       Things!\n"
         + "message Test {}";
-    String expected5 = ""
+    String expected = ""
         + "Test\n"
         + "  All\n"
         + "    The\n"
         + "      Things!";
-    ProtoFile parsed5 = ProtoSchemaParser.parse("test.proto", proto5);
-    MessageElement element5 = (MessageElement) parsed5.typeElements().get(0);
-    assertThat(element5.documentation()).isEqualTo(expected5);
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    MessageElement type = (MessageElement) parsed.typeElements().get(0);
+    assertThat(type.documentation()).isEqualTo(expected);
+  }
 
-    // Multi-line, Javadoc-esque comment.
-    String proto6 = ""
+  @Test public void multilineJavadocCommentWithLeadingWhitespace() {
+    String proto = ""
         + "/**\n"
         + " * Test\n"
         + " *   All\n"
@@ -104,18 +108,19 @@ public final class ProtoSchemaParserTest {
         + " *       Things!\n"
         + " */\n"
         + "message Test {}";
-    String expected6 = ""
+    String expected = ""
         + "Test\n"
         + "  All\n"
         + "    The\n"
         + "      Things!";
-    ProtoFile parsed6 = ProtoSchemaParser.parse("test.proto", proto6);
-    MessageElement element6 = (MessageElement) parsed6.typeElements().get(0);
-    assertThat(element6.documentation()).isEqualTo(expected6);
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    MessageElement type = (MessageElement) parsed.typeElements().get(0);
+    assertThat(type.documentation()).isEqualTo(expected);
+  }
 
-    // Multi-line, poorly-formatted Javadoc-esque comment. The lack of leading asterisks prevents
-    // us from preserving any leading whitespace.
-    String proto7 = ""
+  @Test public void multilineJavadocCommentWithoutLeadingAsterisks() {
+    // We do not honor leading whitespace when the comment lacks leading asterisks.
+    String proto = ""
         + "/**\n"
         + " Test\n"
         + "   All\n"
@@ -123,14 +128,71 @@ public final class ProtoSchemaParserTest {
         + "       Things!\n"
         + " */\n"
         + "message Test {}";
-    String expected7 = ""
+    String expected = ""
         + "Test\n"
         + "All\n"
         + "The\n"
         + "Things!";
-    ProtoFile parsed7 = ProtoSchemaParser.parse("test.proto", proto7);
-    MessageElement element7 = (MessageElement) parsed7.typeElements().get(0);
-    assertThat(element7.documentation()).isEqualTo(expected7);
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    MessageElement type = (MessageElement) parsed.typeElements().get(0);
+    assertThat(type.documentation()).isEqualTo(expected);
+  }
+
+  @Test public void messageFieldTrailingComment() {
+    // Trailing message field comment.
+    String proto = ""
+        + "message Test {\n"
+        + "  optional string name = 1; // Test all the things!\n"
+        + "}";
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    FieldElement field = ((MessageElement) parsed.typeElements().get(0)).fields().get(0);
+    assertThat(field.documentation()).isEqualTo("Test all the things!");
+  }
+
+  @Test public void messageFieldLeadingAndTrailingCommentAreCombined() {
+    String proto = ""
+        + "message Test {\n"
+        + "  // Test all...\n"
+        + "  optional string name = 1; // ...the things!\n"
+        + "}";
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    FieldElement field = ((MessageElement) parsed.typeElements().get(0)).fields().get(0);
+    assertThat(field.documentation()).isEqualTo("Test all...\n...the things!");
+  }
+
+  @Test public void trailingCommentNotAssignedToFollowingField() {
+    String proto = ""
+        + "message Test {\n"
+        + "  optional string first_name = 1; // Testing!\n"
+        + "  optional string last_name = 2;\n"
+        + "}";
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    MessageElement message = (MessageElement) parsed.typeElements().get(0);
+    FieldElement field1 = message.fields().get(0);
+    assertThat(field1.documentation()).isEqualTo("Testing!");
+    FieldElement field2 = message.fields().get(1);
+    assertThat(field2.documentation()).isEqualTo("");
+  }
+
+  @Test public void enumValueTrailingComment() {
+    String proto = ""
+        + "enum Test {\n"
+        + "  FOO = 1; // Test all the things!\n"
+        + "}";
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    EnumConstantElement value = ((EnumElement) parsed.typeElements().get(0)).constants().get(0);
+    assertThat(value.documentation()).isEqualTo("Test all the things!");
+  }
+
+  @Test public void enumValueLeadingAndTrailingCommentsAreCombined() {
+    String proto = ""
+        + "enum Test {\n"
+        + "  // Test all...\n"
+        + "  FOO = 1; // ...the things!\n"
+        + "}";
+    ProtoFile parsed = ProtoSchemaParser.parse("test.proto", proto);
+    EnumConstantElement value = ((EnumElement) parsed.typeElements().get(0)).constants().get(0);
+    assertThat(value.documentation()).isEqualTo("Test all...\n...the things!");
   }
 
   @Test public void parseMessageAndFields() throws Exception {
