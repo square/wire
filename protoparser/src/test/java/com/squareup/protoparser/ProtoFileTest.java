@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static com.squareup.protoparser.ProtoFile.MAX_TAG_VALUE;
 import static com.squareup.protoparser.ProtoFile.MIN_TAG_VALUE;
+import static com.squareup.protoparser.ProtoFile.Syntax.PROTO_2;
 import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
 import static com.squareup.protoparser.TestUtils.NO_FIELDS;
@@ -200,5 +201,18 @@ public class ProtoFileTest {
     // Re-parse the expected string into a ProtoFile and ensure they're equal.
     ProtoFile parsed = ProtoSchemaParser.parse("file.proto", expected);
     assertThat(parsed).isEqualTo(file);
+  }
+
+  @Test public void syntaxToString() {
+    TypeElement element =
+        MessageElement.create("Message", "Message", "", NO_FIELDS, NO_ONEOFS, NO_TYPES,
+            NO_EXTENSIONS, NO_OPTIONS);
+    ProtoFile file = ProtoFile.builder("file.proto").setSyntax(PROTO_2).addType(element).build();
+    String expected = ""
+        + "// file.proto\n"
+        + "syntax \"proto2\";\n"
+        + "\n"
+        + "message Message {}\n";
+    assertThat(file.toString()).isEqualTo(expected);
   }
 }

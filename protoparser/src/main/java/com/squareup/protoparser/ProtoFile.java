@@ -17,6 +17,18 @@ public abstract class ProtoFile {
   private static final int RESERVED_TAG_VALUE_START = 19000;
   private static final int RESERVED_TAG_VALUE_END = 19999;
 
+  /** Syntax version. */
+  public enum Syntax {
+    PROTO_2("proto2"),
+    PROTO_3("proto3");
+
+    private final String name;
+
+    Syntax(String name) {
+      this.name = name;
+    }
+  }
+
   /** True if the supplied value is in the valid tag range and not reserved. */
   static boolean isValidTag(int value) {
     return (value >= MIN_TAG_VALUE && value < RESERVED_TAG_VALUE_START)
@@ -32,6 +44,7 @@ public abstract class ProtoFile {
 
   public abstract String filePath();
   @Nullable public abstract String packageName();
+  @Nullable public abstract Syntax syntax();
   public abstract List<String> dependencies();
   public abstract List<String> publicDependencies();
   public abstract List<TypeElement> typeElements();
@@ -46,6 +59,9 @@ public abstract class ProtoFile {
     }
     if (packageName() != null) {
       builder.append("package ").append(packageName()).append(";\n");
+    }
+    if (syntax() != null) {
+      builder.append("syntax \"").append(syntax().name).append("\";\n");
     }
     if (!dependencies().isEmpty() || !publicDependencies().isEmpty()) {
       builder.append('\n');
@@ -86,6 +102,7 @@ public abstract class ProtoFile {
   public static final class Builder {
     private final String filePath;
     private String packageName;
+    private Syntax syntax;
     private final List<String> dependencies = new ArrayList<>();
     private final List<String> publicDependencies = new ArrayList<>();
     private final List<TypeElement> types = new ArrayList<>();
@@ -99,6 +116,11 @@ public abstract class ProtoFile {
 
     public Builder setPackageName(String packageName) {
       this.packageName = checkNotNull(packageName, "packageName");
+      return this;
+    }
+
+    public Builder setSyntax(Syntax syntax) {
+      this.syntax = checkNotNull(syntax, "syntax");
       return this;
     }
 
@@ -133,7 +155,7 @@ public abstract class ProtoFile {
     }
 
     public ProtoFile build() {
-      return new AutoValue_ProtoFile(filePath, packageName, immutableCopyOf(dependencies),
+      return new AutoValue_ProtoFile(filePath, packageName, syntax, immutableCopyOf(dependencies),
           immutableCopyOf(publicDependencies), immutableCopyOf(types), immutableCopyOf(services),
           immutableCopyOf(extendDeclarations), immutableCopyOf(options));
     }
