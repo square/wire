@@ -21,7 +21,7 @@ import static com.squareup.protoparser.ProtoFile.Syntax.PROTO_3;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /** Basic parser for {@code .proto} schema declarations. */
-public final class ProtoSchemaParser {
+public final class ProtoParser {
   /** Parse a {@code .proto} definition file. */
   public static ProtoFile parseUtf8(File file) throws IOException {
     try (InputStream is = new FileInputStream(file)) {
@@ -49,12 +49,12 @@ public final class ProtoSchemaParser {
     while ((count = reader.read(buffer)) != -1) {
       writer.write(buffer, 0, count);
     }
-    return new ProtoSchemaParser(name, writer.toCharArray()).readProtoFile();
+    return new ProtoParser(name, writer.toCharArray()).readProtoFile();
   }
 
   /** Parse a named {@code .proto} schema. */
   public static ProtoFile parse(String name, String data) {
-    return new ProtoSchemaParser(name, data.toCharArray()).readProtoFile();
+    return new ProtoParser(name, data.toCharArray()).readProtoFile();
   }
 
   private final String filePath;
@@ -73,7 +73,7 @@ public final class ProtoSchemaParser {
   /** The current package name + nested type names, separated by dots. */
   private String prefix = "";
 
-  ProtoSchemaParser(String filePath, char[] data) {
+  ProtoParser(String filePath, char[] data) {
     this.filePath = filePath;
     this.data = data;
     this.builder = ProtoFile.builder(filePath);
