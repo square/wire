@@ -2,21 +2,20 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
+import static com.squareup.protoparser.Utils.checkNotNull;
 import static com.squareup.protoparser.Utils.immutableCopyOf;
 
 @AutoValue
 public abstract class FieldElement {
-  public static FieldElement create(MessageElement.Label label, String type, String name, int tag,
-      String documentation, List<OptionElement> options) {
-    if (!isValidTag(tag)) throw new IllegalArgumentException("Illegal tag value: " + tag);
-    return new AutoValue_FieldElement(label, type, name, tag, documentation,
-        immutableCopyOf(options, "options"));
+  public static Builder builder() {
+    return new Builder();
   }
 
   FieldElement() {
@@ -71,5 +70,54 @@ public abstract class FieldElement {
       builder.append(']');
     }
     return builder.append(";\n").toString();
+  }
+
+  public static final class Builder {
+    private MessageElement.Label label;
+    private String type;
+    private String name;
+    private Integer tag;
+    private String documentation = "";
+    private final List<OptionElement> options = new ArrayList<>();
+
+    private Builder() {
+    }
+
+    public Builder label(MessageElement.Label label) {
+      this.label = checkNotNull(label, "label");
+      return this;
+    }
+
+    public Builder type(String type) {
+      this.type = checkNotNull(type, "type");
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = checkNotNull(name, "name");
+      return this;
+    }
+
+    public Builder tag(int tag) {
+      this.tag = tag;
+      return this;
+    }
+
+    public Builder documentation(String documentation) {
+      this.documentation = checkNotNull(documentation, "documentation");
+      return this;
+    }
+
+    public Builder addOption(OptionElement option) {
+      options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public FieldElement build() {
+      checkNotNull(tag, "tag");
+      if (!isValidTag(tag)) throw new IllegalArgumentException("Illegal tag value: " + tag);
+      return new AutoValue_FieldElement(label, type, name, tag, documentation,
+          immutableCopyOf(options));
+    }
   }
 }

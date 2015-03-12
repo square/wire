@@ -59,7 +59,7 @@ public final class ProtoParser {
 
   private final String filePath;
   private final char[] data;
-  private final ProtoFile.Builder builder;
+  private final ProtoFile.Builder fileBuilder;
 
   /** Our cursor within the document. {@code data[pos]} is the next character to be read. */
   private int pos;
@@ -76,24 +76,24 @@ public final class ProtoParser {
   ProtoParser(String filePath, char[] data) {
     this.filePath = filePath;
     this.data = data;
-    this.builder = ProtoFile.builder(filePath);
+    this.fileBuilder = ProtoFile.builder(filePath);
   }
 
   ProtoFile readProtoFile() {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return builder.build();
+        return fileBuilder.build();
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
       if (declaration instanceof TypeElement) {
-        builder.addType((TypeElement) declaration);
+        fileBuilder.addType((TypeElement) declaration);
       } else if (declaration instanceof ServiceElement) {
-        builder.addService((ServiceElement) declaration);
+        fileBuilder.addService((ServiceElement) declaration);
       } else if (declaration instanceof OptionElement) {
-        builder.addOption((OptionElement) declaration);
+        fileBuilder.addOption((OptionElement) declaration);
       } else if (declaration instanceof ExtendElement) {
-        builder.addExtendDeclaration((ExtendElement) declaration);
+        fileBuilder.addExtendDeclaration((ExtendElement) declaration);
       }
     }
   }
@@ -111,7 +111,7 @@ public final class ProtoParser {
       if (!context.permitsPackage()) throw unexpected("'package' in " + context);
       if (packageName != null) throw unexpected("too many package names");
       packageName = readName();
-      builder.setPackageName(packageName);
+      fileBuilder.setPackageName(packageName);
       prefix = packageName + ".";
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
@@ -119,9 +119,9 @@ public final class ProtoParser {
       if (!context.permitsImport()) throw unexpected("'import' in " + context);
       String importString = readString();
       if ("public".equals(importString)) {
-        builder.addPublicDependency(readString());
+        fileBuilder.addPublicDependency(readString());
       } else {
-        builder.addDependency(importString);
+        fileBuilder.addDependency(importString);
       }
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
@@ -130,10 +130,10 @@ public final class ProtoParser {
       String syntax = readQuotedString();
       switch (syntax) {
         case "proto2":
-          builder.setSyntax(PROTO_2);
+          fileBuilder.setSyntax(PROTO_2);
           break;
         case "proto3":
-          builder.setSyntax(PROTO_3);
+          fileBuilder.setSyntax(PROTO_3);
           break;
         default:
           throw unexpected("'syntax' must be 'proto2' or 'proto3'. Found: " + syntax);
@@ -166,14 +166,16 @@ public final class ProtoParser {
       if (!context.permitsExtensions()) throw unexpected("'extensions' must be nested");
       return readExtensions(documentation);
     } else if (context == Context.ENUM) {
-      List<OptionElement> options = new ArrayList<>();
-
       if (readChar() != '=') throw unexpected("expected '='");
-      int tag = readInt();
+
+      EnumConstantElement.Builder builder = EnumConstantElement.builder()
+          .name(label)
+          .tag(readInt());
+
       if (peekChar() == '[') {
         readChar();
         while (true) {
-          options.add(readOption('='));
+          builder.addOption(readOption('='));
           char c = readChar();
           if (c == ']') {
             break;
@@ -185,7 +187,7 @@ public final class ProtoParser {
       }
       if (readChar() != ';') throw unexpected("expected ';'");
       documentation = tryAppendTrailingDocumentation(documentation);
-      return EnumConstantElement.create(label, tag, documentation, options);
+      return builder.documentation(documentation).build();
     } else {
       throw unexpected("unexpected label: " + label);
     }
@@ -193,14 +195,15 @@ public final class ProtoParser {
 
   /** Reads a message declaration. */
   private MessageElement readMessage(String documentation) {
-    String previousPrefix = prefix;
     String name = readName();
+    MessageElement.Builder builder = MessageElement.builder()
+        .name(name)
+        .qualifiedName(prefix + name)
+        .documentation(documentation);
+
+    String previousPrefix = prefix;
     prefix = prefix + name + ".";
-    List<FieldElement> fields = new ArrayList<>();
-    List<OneOfElement> oneOfs = new ArrayList<>();
-    List<TypeElement> nestedElements = new ArrayList<>();
-    List<ExtensionsElement> extensions = new ArrayList<>();
-    List<OptionElement> options = new ArrayList<>();
+
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -210,29 +213,37 @@ public final class ProtoParser {
       }
       Object declared = readDeclaration(nestedDocumentation, Context.MESSAGE);
       if (declared instanceof FieldElement) {
-        fields.add((FieldElement) declared);
+        builder.addField((FieldElement) declared);
       } else if (declared instanceof OneOfElement) {
-        oneOfs.add((OneOfElement) declared);
+        builder.addOneOf((OneOfElement) declared);
       } else if (declared instanceof TypeElement) {
-        nestedElements.add((TypeElement) declared);
+        builder.addType((TypeElement) declared);
       } else if (declared instanceof ExtensionsElement) {
-        extensions.add((ExtensionsElement) declared);
+        builder.addExtensions((ExtensionsElement) declared);
       } else if (declared instanceof OptionElement) {
-        options.add((OptionElement) declared);
+        builder.addOption((OptionElement) declared);
       } else if (declared instanceof ExtendElement) {
         // Extend declarations always add in a global scope regardless of nesting.
-        builder.addExtendDeclaration((ExtendElement) declared);
+        fileBuilder.addExtendDeclaration((ExtendElement) declared);
       }
     }
     prefix = previousPrefix;
-    return MessageElement.create(name, prefix + name, documentation, fields, oneOfs, nestedElements,
-        extensions, options);
+
+    return builder.build();
   }
 
   /** Reads an extend declaration. */
   private ExtendElement readExtend(String documentation) {
     String name = readName();
-    List<FieldElement> fields = new ArrayList<>();
+    String qualifiedName = name;
+    if (!name.contains(".") && packageName != null) {
+      qualifiedName = packageName + "." + name;
+    }
+    ExtendElement.Builder builder = ExtendElement.builder()
+        .name(name)
+        .qualifiedName(qualifiedName)
+        .documentation(documentation);
+
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -242,21 +253,20 @@ public final class ProtoParser {
       }
       Object declared = readDeclaration(nestedDocumentation, Context.EXTEND);
       if (declared instanceof FieldElement) {
-        fields.add((FieldElement) declared);
+        builder.addField((FieldElement) declared);
       }
     }
-    String fqname = name;
-    if (!name.contains(".") && packageName != null) {
-      fqname = packageName + "." + name;
-    }
-    return ExtendElement.create(name, fqname, documentation, fields);
+    return builder.build();
   }
 
   /** Reads a service declaration and returns it. */
   private ServiceElement readService(String documentation) {
     String name = readName();
-    List<OptionElement> options = new ArrayList<>();
-    List<RpcElement> rpcs = new ArrayList<>();
+    ServiceElement.Builder builder = ServiceElement.builder()
+        .name(name)
+        .qualifiedName(prefix + name)
+        .documentation(documentation);
+
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String rpcDocumentation = readDocumentation();
@@ -266,19 +276,22 @@ public final class ProtoParser {
       }
       Object declared = readDeclaration(rpcDocumentation, Context.SERVICE);
       if (declared instanceof RpcElement) {
-        rpcs.add((RpcElement) declared);
+        builder.addRpc((RpcElement) declared);
       } else if (declared instanceof OptionElement) {
-        options.add((OptionElement) declared);
+        builder.addOption((OptionElement) declared);
       }
     }
-    return ServiceElement.create(name, prefix + name, documentation, options, rpcs);
+    return builder.build();
   }
 
   /** Reads an enumerated type declaration and returns it. */
   private EnumElement readEnumElement(String documentation) {
     String name = readName();
-    List<OptionElement> options = new ArrayList<>();
-    List<EnumConstantElement> values = new ArrayList<>();
+    EnumElement.Builder builder = EnumElement.builder()
+        .name(name)
+        .qualifiedName(prefix + name)
+        .documentation(documentation);
+
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String valueDocumentation = readDocumentation();
@@ -288,12 +301,12 @@ public final class ProtoParser {
       }
       Object declared = readDeclaration(valueDocumentation, Context.ENUM);
       if (declared instanceof EnumConstantElement) {
-        values.add((EnumConstantElement) declared);
+        builder.addConstant((EnumConstantElement) declared);
       } else if (declared instanceof OptionElement) {
-        options.add((OptionElement) declared);
+        builder.addOption((OptionElement) declared);
       }
     }
-    return EnumElement.create(name, prefix + name, documentation, options, values);
+    return builder.build();
   }
 
   /** Reads an field declaration and returns it. */
@@ -302,12 +315,17 @@ public final class ProtoParser {
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
-    List<OptionElement> options = new ArrayList<>();
+
+    FieldElement.Builder builder = FieldElement.builder()
+        .label(label)
+        .type(type)
+        .name(name)
+        .tag(tag);
 
     if (peekChar() == '[') {
       pos++;
       while (true) {
-        options.add(readOption('='));
+        builder.addOption(readOption('='));
 
         // Check for optional ',' or closing ']'
         char c = peekChar();
@@ -323,12 +341,14 @@ public final class ProtoParser {
       throw unexpected("expected ';'");
     }
     documentation = tryAppendTrailingDocumentation(documentation);
-    return FieldElement.create(label, type, name, tag, documentation, options);
+    return builder.documentation(documentation).build();
   }
 
   private OneOfElement readOneOf(String documentation) {
-    String name = readName();
-    List<FieldElement> fields = new ArrayList<>();
+    OneOfElement.Builder builder = OneOfElement.builder()
+        .name(readName())
+        .documentation(documentation);
+
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
       String nestedDocumentation = readDocumentation();
@@ -336,9 +356,9 @@ public final class ProtoParser {
         pos++;
         break;
       }
-      fields.add(readField(nestedDocumentation, MessageElement.Label.ONE_OF));
+      builder.addField(readField(nestedDocumentation, MessageElement.Label.ONE_OF));
     }
-    return OneOfElement.create(name, documentation, fields);
+    return builder.build();
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
@@ -355,7 +375,7 @@ public final class ProtoParser {
       }
     }
     if (readChar() != ';') throw unexpected("expected ';'");
-    return ExtensionsElement.create(documentation, start, end);
+    return ExtensionsElement.create(start, end, documentation);
   }
 
   /** Reads a option containing a name, an '=' or ':', and a value. */
@@ -496,19 +516,20 @@ public final class ProtoParser {
 
   /** Reads an rpc and returns it. */
   private RpcElement readRpc(String documentation) {
-    String name = readName();
+    RpcElement.Builder builder = RpcElement.builder()
+        .name(readName())
+        .documentation(documentation);
 
     if (readChar() != '(') throw unexpected("expected '('");
-    String requestType = readName();
+    builder.requestType(readName());
     if (readChar() != ')') throw unexpected("expected ')'");
 
     if (!readWord().equals("returns")) throw unexpected("expected 'returns'");
 
     if (readChar() != '(') throw unexpected("expected '('");
-    String responseType = readName();
+    builder.responseType(readName());
     if (readChar() != ')') throw unexpected("expected ')'");
 
-    List<OptionElement> options = new ArrayList<>();
     if (peekChar() == '{') {
       pos++;
       while (true) {
@@ -519,12 +540,12 @@ public final class ProtoParser {
         }
         Object declared = readDeclaration(rpcDocumentation, Context.RPC);
         if (declared instanceof OptionElement) {
-          options.add((OptionElement) declared);
+          builder.addOption((OptionElement) declared);
         }
       }
     } else if (readChar() != ';') throw unexpected("expected ';'");
 
-    return RpcElement.create(name, documentation, requestType, responseType, options);
+    return builder.build();
   }
 
   /** Reads a non-whitespace character and returns it. */

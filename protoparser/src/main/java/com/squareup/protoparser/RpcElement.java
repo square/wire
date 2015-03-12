@@ -2,18 +2,18 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
+import static com.squareup.protoparser.Utils.checkNotNull;
 import static com.squareup.protoparser.Utils.immutableCopyOf;
 
 @AutoValue
 public abstract class RpcElement {
-  public static RpcElement create(String name, String documentation, String requestType,
-      String responseType, List<OptionElement> options) {
-    return new AutoValue_RpcElement(name, documentation, requestType, responseType,
-        immutableCopyOf(options, "options"));
+  public static Builder builder() {
+    return new Builder();
   }
 
   RpcElement() {
@@ -43,5 +43,46 @@ public abstract class RpcElement {
       builder.append("}");
     }
     return builder.append(";\n").toString();
+  }
+
+  public static final class Builder {
+    private String name;
+    private String documentation = "";
+    private String requestType;
+    private String responseType;
+    private final List<OptionElement> options = new ArrayList<>();
+
+    private Builder() {
+    }
+
+    public Builder name(String name) {
+      this.name = checkNotNull(name, "name");
+      return this;
+    }
+
+    public Builder documentation(String documentation) {
+      this.documentation = checkNotNull(documentation, "documentation");
+      return this;
+    }
+
+    public Builder requestType(String requestType) {
+      this.requestType = checkNotNull(requestType, "requestType");
+      return this;
+    }
+
+    public Builder responseType(String responseType) {
+      this.responseType = checkNotNull(responseType, "responseType");
+      return this;
+    }
+
+    public Builder addOption(OptionElement option) {
+      options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public RpcElement build() {
+      return new AutoValue_RpcElement(name, documentation, requestType, responseType,
+          immutableCopyOf(options));
+    }
   }
 }

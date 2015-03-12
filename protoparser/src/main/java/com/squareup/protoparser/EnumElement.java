@@ -2,6 +2,7 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -60,14 +61,8 @@ public abstract class EnumElement implements TypeElement {
     }
   }
 
-  public static EnumElement create(String name, String qualifiedName, String documentation,
-      List<OptionElement> options, List<EnumConstantElement> constants) {
-    if (!parseAllowAlias(options)) {
-      validateTagUniqueness(qualifiedName, constants);
-    }
-
-    return new AutoValue_EnumElement(name, qualifiedName, documentation,
-        immutableCopyOf(constants, "constants"), immutableCopyOf(options, "options"));
+  public static Builder builder() {
+    return new Builder();
   }
 
   EnumElement() {
@@ -102,5 +97,52 @@ public abstract class EnumElement implements TypeElement {
       }
     }
     return builder.append("}\n").toString();
+  }
+
+  public static final class Builder {
+    private String name;
+    private String qualifiedName;
+    private String documentation = "";
+    private final List<EnumConstantElement> constants = new ArrayList<>();
+    private final List<OptionElement> options = new ArrayList<>();
+
+    private Builder() {
+    }
+
+    public Builder name(String name) {
+      this.name = checkNotNull(name, "name");
+      if (qualifiedName == null) {
+        qualifiedName = name;
+      }
+      return this;
+    }
+
+    public Builder qualifiedName(String qualifiedName) {
+      this.qualifiedName = checkNotNull(qualifiedName, "qualifiedName");
+      return this;
+    }
+
+    public Builder documentation(String documentation) {
+      this.documentation = checkNotNull(documentation, "documentation");
+      return this;
+    }
+
+    public Builder addConstant(EnumConstantElement constant) {
+      constants.add(checkNotNull(constant, "constant"));
+      return this;
+    }
+
+    public Builder addOption(OptionElement option) {
+      options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public EnumElement build() {
+      if (!parseAllowAlias(options)) {
+        validateTagUniqueness(qualifiedName, constants);
+      }
+      return new AutoValue_EnumElement(name, qualifiedName, documentation,
+          immutableCopyOf(constants), immutableCopyOf(options));
+    }
   }
 }

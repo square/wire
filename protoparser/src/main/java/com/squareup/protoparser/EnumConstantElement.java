@@ -2,11 +2,12 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.squareup.protoparser.OptionElement.formatOptionList;
 import static com.squareup.protoparser.Utils.appendDocumentation;
+import static com.squareup.protoparser.Utils.checkNotNull;
 import static com.squareup.protoparser.Utils.immutableCopyOf;
 
 /** An enum constant. */
@@ -16,14 +17,11 @@ public abstract class EnumConstantElement {
 
   /** Used to represent enums constants where we just know the name. */
   static EnumConstantElement anonymous(String name) {
-    return EnumConstantElement.create(name, UNKNOWN_TAG, "",
-        Collections.<OptionElement>emptyList());
+    return builder().name(name).tag(UNKNOWN_TAG).build();
   }
 
-  public static EnumConstantElement create(String name, int tag, String documentation,
-      List<OptionElement> options) {
-    return new AutoValue_EnumConstantElement(name, tag, documentation,
-        immutableCopyOf(options, "options"));
+  public static Builder builder() {
+    return new Builder();
   }
 
   EnumConstantElement() {
@@ -46,5 +44,39 @@ public abstract class EnumConstantElement {
       builder.append(']');
     }
     return builder.append(";\n").toString();
+  }
+
+  public static final class Builder {
+    private String name;
+    private Integer tag;
+    private String documentation = "";
+    private final List<OptionElement> options = new ArrayList<>();
+
+    private Builder() {
+    }
+
+    public Builder name(String name) {
+      this.name = checkNotNull(name, "name");
+      return this;
+    }
+
+    public Builder tag(int tag) {
+      this.tag = tag;
+      return this;
+    }
+
+    public Builder documentation(String documentation) {
+      this.documentation = checkNotNull(documentation, "documentation");
+      return this;
+    }
+
+    public Builder addOption(OptionElement option) {
+      options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public EnumConstantElement build() {
+      return new AutoValue_EnumConstantElement(name, tag, documentation, immutableCopyOf(options));
+    }
   }
 }

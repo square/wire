@@ -8,7 +8,11 @@ import static com.squareup.protoparser.Utils.appendDocumentation;
 
 @AutoValue
 public abstract class ExtensionsElement {
-  public static ExtensionsElement create(String documentation, int start, int end) {
+  public static ExtensionsElement create(int start, int end) {
+    return create(start, end, "");
+  }
+
+  public static ExtensionsElement create(int start, int end, String documentation) {
     if (!isValidTag(start)) throw new IllegalArgumentException("Invalid start value: " + start);
     if (!isValidTag(end)) throw new IllegalArgumentException("Invalid end value: " + end);
 

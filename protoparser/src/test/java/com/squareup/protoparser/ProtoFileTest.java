@@ -6,12 +6,6 @@ import static com.squareup.protoparser.ProtoFile.MAX_TAG_VALUE;
 import static com.squareup.protoparser.ProtoFile.MIN_TAG_VALUE;
 import static com.squareup.protoparser.ProtoFile.Syntax.PROTO_2;
 import static com.squareup.protoparser.ProtoFile.isValidTag;
-import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
-import static com.squareup.protoparser.TestUtils.NO_FIELDS;
-import static com.squareup.protoparser.TestUtils.NO_ONEOFS;
-import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
-import static com.squareup.protoparser.TestUtils.NO_RPCS;
-import static com.squareup.protoparser.TestUtils.NO_TYPES;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProtoFileTest {
@@ -40,9 +34,7 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleToString() {
-    TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+    TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file = ProtoFile.builder("file.proto").addType(element).build();
     String expected = ""
         + "// file.proto\n"
@@ -52,9 +44,7 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithImportsToString() {
-    TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+    TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file =
         ProtoFile.builder("file.proto").addDependency("example.other").addType(element).build();
     String expected = ""
@@ -67,9 +57,7 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithPublicImportsToString() {
-    TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+    TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file = ProtoFile.builder("file.proto")
         .addPublicDependency("example.other")
         .addType(element)
@@ -84,9 +72,7 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithBothImportsToString() {
-    TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+    TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file = ProtoFile.builder("file.proto")
         .addDependency("example.thing")
         .addPublicDependency("example.other")
@@ -103,10 +89,8 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithServicesToString() {
-    TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
-    ServiceElement service = ServiceElement.create("Service", "", "", NO_OPTIONS, NO_RPCS);
+    TypeElement element = MessageElement.builder().name("Message").build();
+    ServiceElement service = ServiceElement.builder().name("Service").build();
     ProtoFile file = ProtoFile.builder("file.proto").addType(element).addService(service).build();
     String expected = ""
         + "// file.proto\n"
@@ -118,9 +102,7 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithOptionsToString() {
-    TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+    TypeElement element = MessageElement.builder().name("Message").build();
     OptionElement option = OptionElement.create("kit", "kat", false);
     ProtoFile file = ProtoFile.builder("file.proto").addOption(option).addType(element).build();
     String expected = ""
@@ -133,12 +115,10 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithExtendsToString() {
-    TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
-    ExtendElement extend = ExtendElement.create("Extend", "Extend", "", NO_FIELDS);
-    ProtoFile file =
-        ProtoFile.builder("file.proto").addExtendDeclaration(extend).addType(element).build();
+    ProtoFile file = ProtoFile.builder("file.proto")
+        .addExtendDeclaration(ExtendElement.builder().name("Extend").build())
+        .addType(MessageElement.builder().name("Message").build())
+        .build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -149,22 +129,32 @@ public class ProtoFileTest {
   }
 
   @Test public void multipleEverythingToString() {
-    TypeElement element1 =
-        MessageElement.create("Message1", "example.simple.Message1", "", NO_FIELDS, NO_ONEOFS,
-            NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    TypeElement element2 =
-        MessageElement.create("Message2", "example.simple.Message2", "", NO_FIELDS, NO_ONEOFS,
-            NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
-    ExtendElement extend1 =
-        ExtendElement.create("Extend1", "example.simple.Extend1", "", NO_FIELDS);
-    ExtendElement extend2 =
-        ExtendElement.create("Extend2", "example.simple.Extend2", "", NO_FIELDS);
+    TypeElement element1 = MessageElement.builder()
+        .name("Message1")
+        .qualifiedName("example.simple.Message1")
+        .build();
+    TypeElement element2 = MessageElement.builder()
+        .name("Message2")
+        .qualifiedName("example.simple.Message2")
+        .build();
+    ExtendElement extend1 = ExtendElement.builder()
+        .name("Extend1")
+        .qualifiedName("example.simple.Extend1")
+        .build();
+    ExtendElement extend2 = ExtendElement.builder()
+        .name("Extend2")
+        .qualifiedName("example.simple.Extend2")
+        .build();
     OptionElement option1 = OptionElement.create("kit", "kat", false);
     OptionElement option2 = OptionElement.create("foo", "bar", false);
-    ServiceElement service1 =
-        ServiceElement.create("Service1", "example.simple.Service1", "", NO_OPTIONS, NO_RPCS);
-    ServiceElement service2 =
-        ServiceElement.create("Service2", "example.simple.Service2", "", NO_OPTIONS, NO_RPCS);
+    ServiceElement service1 = ServiceElement.builder()
+        .name("Service1")
+        .qualifiedName("example.simple.Service1")
+        .build();
+    ServiceElement service2 = ServiceElement.builder()
+        .name("Service2")
+        .qualifiedName("example.simple.Service2")
+        .build();
     ProtoFile file = ProtoFile.builder("file.proto")
         .setPackageName("example.simple")
         .addDependency("example.thing")
@@ -204,9 +194,7 @@ public class ProtoFileTest {
   }
 
   @Test public void syntaxToString() {
-    TypeElement element =
-        MessageElement.create("Message", "Message", "", NO_FIELDS, NO_ONEOFS, NO_TYPES,
-            NO_EXTENSIONS, NO_OPTIONS);
+    TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file = ProtoFile.builder("file.proto").setSyntax(PROTO_2).addType(element).build();
     String expected = ""
         + "// file.proto\n"

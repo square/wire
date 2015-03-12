@@ -25,10 +25,6 @@ final class Utils {
     return unmodifiableList(new ArrayList<>(list));
   }
 
-  static <T> List<T> immutableCopyOf(List<T> list, String name) {
-    return immutableCopyOf(checkNotNull(list, name));
-  }
-
   static <T> T checkNotNull(T value, String name) {
     if (value == null) {
       throw new NullPointerException(name);
