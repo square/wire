@@ -5,6 +5,7 @@ import com.google.auto.value.AutoValue;
 
 import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static com.squareup.protoparser.Utils.appendDocumentation;
+import static com.squareup.protoparser.Utils.checkArgument;
 
 @AutoValue
 public abstract class ExtensionsElement {
@@ -13,8 +14,8 @@ public abstract class ExtensionsElement {
   }
 
   public static ExtensionsElement create(int start, int end, String documentation) {
-    if (!isValidTag(start)) throw new IllegalArgumentException("Invalid start value: " + start);
-    if (!isValidTag(end)) throw new IllegalArgumentException("Invalid end value: " + end);
+    checkArgument(isValidTag(start), "Invalid start value: %s", start);
+    checkArgument(isValidTag(end), "Invalid end value: %s", end);
 
     return new AutoValue_ExtensionsElement(documentation, start, end);
   }

@@ -74,6 +74,9 @@ public abstract class ExtendElement {
     }
 
     public ExtendElement build() {
+      checkNotNull(name, "name");
+      checkNotNull(qualifiedName, "qualifiedName");
+
       validateFieldTagUniqueness(qualifiedName, fields, Collections.<OneOfElement>emptyList());
       return new AutoValue_ExtendElement(name, qualifiedName, documentation,
           immutableCopyOf(fields));

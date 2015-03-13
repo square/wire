@@ -60,6 +60,9 @@ public abstract class OneOfElement {
     }
 
     public OneOfElement build() {
+      checkNotNull(name, "name");
+      // TODO check non-empty?
+
       return new AutoValue_OneOfElement(name, documentation, immutableCopyOf(fields));
     }
   }

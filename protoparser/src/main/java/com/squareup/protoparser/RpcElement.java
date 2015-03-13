@@ -81,6 +81,10 @@ public abstract class RpcElement {
     }
 
     public RpcElement build() {
+      checkNotNull(name, "name");
+      checkNotNull(requestType, "requestType");
+      checkNotNull(responseType, "responseType");
+
       return new AutoValue_RpcElement(name, documentation, requestType, responseType,
           immutableCopyOf(options));
     }

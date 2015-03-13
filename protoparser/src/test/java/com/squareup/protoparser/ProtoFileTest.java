@@ -7,8 +7,66 @@ import static com.squareup.protoparser.ProtoFile.MIN_TAG_VALUE;
 import static com.squareup.protoparser.ProtoFile.Syntax.PROTO_2;
 import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class ProtoFileTest {
+  @Test public void nullBuilderValuesThrow() {
+    try {
+      ProtoFile.builder(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("filePath == null");
+    }
+    try {
+      ProtoFile.builder("test.proto").packageName(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("packageName == null");
+    }
+    try {
+      ProtoFile.builder("test.proto").syntax(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("syntax == null");
+    }
+    try {
+      ProtoFile.builder("test.proto").addDependency(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("dependency == null");
+    }
+    try {
+      ProtoFile.builder("test.proto").addPublicDependency(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("dependency == null");
+    }
+    try {
+      ProtoFile.builder("test.proto").addType(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("type == null");
+    }
+    try {
+      ProtoFile.builder("test.proto").addService(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("service == null");
+    }
+    try {
+      ProtoFile.builder("test.proto").addExtendDeclaration(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("extend == null");
+    }
+    try {
+      ProtoFile.builder("test.proto").addOption(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("option == null");
+    }
+  }
+
   @Test public void tagValueValidation() {
     assertThat(isValidTag(MIN_TAG_VALUE - 1)).isFalse(); // Less than minimum.
     assertThat(isValidTag(MIN_TAG_VALUE)).isTrue();
@@ -26,7 +84,7 @@ public class ProtoFileTest {
   }
 
   @Test public void emptyWithPackageToString() {
-    ProtoFile file = ProtoFile.builder("file.proto").setPackageName("example.simple").build();
+    ProtoFile file = ProtoFile.builder("file.proto").packageName("example.simple").build();
     String expected = ""
         + "// file.proto\n"
         + "package example.simple;\n";
@@ -156,7 +214,7 @@ public class ProtoFileTest {
         .qualifiedName("example.simple.Service2")
         .build();
     ProtoFile file = ProtoFile.builder("file.proto")
-        .setPackageName("example.simple")
+        .packageName("example.simple")
         .addDependency("example.thing")
         .addPublicDependency("example.other")
         .addType(element1)
@@ -195,7 +253,7 @@ public class ProtoFileTest {
 
   @Test public void syntaxToString() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFile file = ProtoFile.builder("file.proto").setSyntax(PROTO_2).addType(element).build();
+    ProtoFile file = ProtoFile.builder("file.proto").syntax(PROTO_2).addType(element).build();
     String expected = ""
         + "// file.proto\n"
         + "syntax \"proto2\";\n"
