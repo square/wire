@@ -44,17 +44,8 @@ public abstract class MessageElement implements TypeElement {
     }
   }
 
-  public static MessageElement create(String name, String qualifiedName, String documentation,
-      List<FieldElement> fields, List<OneOfElement> oneOfs, List<TypeElement> nestedElements,
-      List<ExtensionsElement> extensions, List<OptionElement> options) {
-    validateFieldTagUniqueness(qualifiedName, fields, oneOfs);
-    validateFieldLabel(qualifiedName, fields);
-    EnumElement.validateValueUniquenessInScope(qualifiedName, nestedElements);
-
-    return new AutoValue_MessageElement(name, qualifiedName, documentation,
-        immutableCopyOf(fields, "fields"), immutableCopyOf(oneOfs, "oneOfs"),
-        immutableCopyOf(nestedElements, "nestedElements"),
-        immutableCopyOf(extensions, "extensions"), immutableCopyOf(options, "options"));
+  public static Builder builder() {
+    return new Builder();
   }
 
   MessageElement() {
@@ -112,5 +103,72 @@ public abstract class MessageElement implements TypeElement {
     OPTIONAL, REQUIRED, REPEATED,
     /** Indicates the field is a member of a {@code oneof} block. */
     ONE_OF
+  }
+
+  public static final class Builder {
+    private String name;
+    private String qualifiedName;
+    private String documentation = "";
+    private final List<FieldElement> fields = new ArrayList<>();
+    private final List<OneOfElement> oneOfs = new ArrayList<>();
+    private final List<TypeElement> nestedElements = new ArrayList<>();
+    private final List<ExtensionsElement> extensions = new ArrayList<>();
+    private final List<OptionElement> options = new ArrayList<>();
+
+    private Builder() {
+    }
+
+    public Builder name(String name) {
+      this.name = checkNotNull(name, "name");
+      if (qualifiedName == null) {
+        qualifiedName = name;
+      }
+      return this;
+    }
+
+    public Builder qualifiedName(String qualifiedName) {
+      this.qualifiedName = checkNotNull(qualifiedName, "qualifiedName");
+      return this;
+    }
+
+    public Builder documentation(String documentation) {
+      this.documentation = checkNotNull(documentation, "documentation");
+      return this;
+    }
+
+    public Builder addField(FieldElement field) {
+      fields.add(checkNotNull(field, "field"));
+      return this;
+    }
+
+    public Builder addOneOf(OneOfElement oneOf) {
+      oneOfs.add(checkNotNull(oneOf, "oneOf"));
+      return this;
+    }
+
+    public Builder addType(TypeElement type) {
+      nestedElements.add(checkNotNull(type, "type"));
+      return this;
+    }
+
+    public Builder addExtensions(ExtensionsElement extensions) {
+      this.extensions.add(checkNotNull(extensions, "extensions"));
+      return this;
+    }
+
+    public Builder addOption(OptionElement option) {
+      options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public MessageElement build() {
+      validateFieldTagUniqueness(qualifiedName, fields, oneOfs);
+      validateFieldLabel(qualifiedName, fields);
+      EnumElement.validateValueUniquenessInScope(qualifiedName, nestedElements);
+
+      return new AutoValue_MessageElement(name, qualifiedName, documentation,
+          immutableCopyOf(fields), immutableCopyOf(oneOfs), immutableCopyOf(nestedElements),
+          immutableCopyOf(extensions), immutableCopyOf(options));
+    }
   }
 }

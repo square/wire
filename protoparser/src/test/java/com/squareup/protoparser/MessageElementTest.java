@@ -4,29 +4,26 @@ import org.junit.Test;
 
 import static com.squareup.protoparser.MessageElement.Label.ONE_OF;
 import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
-import static com.squareup.protoparser.TestUtils.NO_EXTENSIONS;
-import static com.squareup.protoparser.TestUtils.NO_FIELDS;
-import static com.squareup.protoparser.TestUtils.NO_ONEOFS;
-import static com.squareup.protoparser.TestUtils.NO_OPTIONS;
-import static com.squareup.protoparser.TestUtils.NO_TYPES;
-import static com.squareup.protoparser.TestUtils.list;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 public class MessageElementTest {
   @Test public void emptyToString() {
-    TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+    TypeElement element = MessageElement.builder().name("Message").build();
     String expected = "message Message {}\n";
     assertThat(element.toString()).isEqualTo(expected);
   }
 
   @Test public void simpleToString() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    TypeElement element =
-        MessageElement.create("Message", "", "", list(field), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addField(FieldElement.builder()
+            .label(REQUIRED)
+            .type("Type")
+            .name("name")
+            .tag(1)
+            .build())
+        .build();
     String expected = ""
         + "message Message {\n"
         + "  required Type name = 1;\n"
@@ -35,10 +32,16 @@ public class MessageElementTest {
   }
 
   @Test public void simpleWithDocumentationToString() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    TypeElement element =
-        MessageElement.create("Message", "", "Hello", list(field), NO_ONEOFS, NO_TYPES,
-            NO_EXTENSIONS, NO_OPTIONS);
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .documentation("Hello")
+        .addField(FieldElement.builder()
+            .label(REQUIRED)
+            .type("Type")
+            .name("name")
+            .tag(1)
+            .build())
+        .build();
     String expected = ""
         + "// Hello\n"
         + "message Message {\n"
@@ -48,10 +51,17 @@ public class MessageElementTest {
   }
 
   @Test public void simpleWithOptionsToString() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    TypeElement element =
-        MessageElement.create("Message", "", "", list(field), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            list(OptionElement.create("kit", "kat", false)));
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name")
+        .tag(1)
+        .build();
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addField(field)
+        .addOption(OptionElement.create("kit", "kat", false))
+        .build();
     String expected = ""
         + "message Message {\n"
         + "  option kit = \"kat\";\n"
@@ -62,13 +72,24 @@ public class MessageElementTest {
   }
 
   @Test public void simpleWithNestedElementsToString() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    TypeElement nested =
-        MessageElement.create("Nested", "", "", list(field), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
-    TypeElement element =
-        MessageElement.create("Message", "", "", list(field), NO_ONEOFS, list(nested),
-            NO_EXTENSIONS, NO_OPTIONS);
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addField(FieldElement.builder()
+            .label(REQUIRED)
+            .type("Type")
+            .name("name")
+            .tag(1)
+            .build())
+        .addType(MessageElement.builder()
+            .name("Nested")
+            .addField(FieldElement.builder()
+                .label(REQUIRED)
+                .type("Type")
+                .name("name")
+                .tag(1)
+                .build())
+            .build())
+        .build();
     String expected = ""
         + "message Message {\n"
         + "  required Type name = 1;\n"
@@ -81,11 +102,16 @@ public class MessageElementTest {
   }
 
   @Test public void simpleWithExtensionsToString() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    ExtensionsElement extensions = ExtensionsElement.create("", 500, 501);
-    TypeElement element =
-        MessageElement.create("Message", "", "", list(field), NO_ONEOFS, NO_TYPES, list(extensions),
-            NO_OPTIONS);
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addField(FieldElement.builder()
+            .label(REQUIRED)
+            .type("Type")
+            .name("name")
+            .tag(1)
+            .build())
+        .addExtensions(ExtensionsElement.create(500, 501))
+        .build();
     String expected = ""
         + "message Message {\n"
         + "  required Type name = 1;\n"
@@ -96,11 +122,18 @@ public class MessageElementTest {
   }
 
   @Test public void oneOfToString() {
-    FieldElement field = FieldElement.create(ONE_OF, "Type", "name", 1, "", NO_OPTIONS);
-    OneOfElement oneOf = OneOfElement.create("hi", "", list(field));
-    TypeElement element =
-        MessageElement.create("Message", "", "", NO_FIELDS, list(oneOf), NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addOneOf(OneOfElement.builder()
+            .name("hi")
+            .addField(FieldElement.builder()
+                .label(ONE_OF)
+                .type("Type")
+                .name("name")
+                .tag(1)
+                .build())
+            .build())
+        .build();
     String expected = ""
         + "message Message {\n"
         + "  oneof hi {\n"
@@ -111,22 +144,53 @@ public class MessageElementTest {
   }
 
   @Test public void multipleEverythingToString() {
-    FieldElement field1 = FieldElement.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
-    FieldElement field2 =
-        FieldElement.create(REQUIRED, "OtherType", "other_name", 2, "", NO_OPTIONS);
-    FieldElement oneOf1Field = FieldElement.create(ONE_OF, "Type", "namey", 3, "", NO_OPTIONS);
-    OneOfElement oneOf1 = OneOfElement.create("thingy", "", list(oneOf1Field));
-    FieldElement oneOf2Field = FieldElement.create(ONE_OF, "Type", "namer", 4, "", NO_OPTIONS);
-    OneOfElement oneOf2 = OneOfElement.create("thinger", "", list(oneOf2Field));
-    ExtensionsElement extensions1 = ExtensionsElement.create("", 500, 501);
-    ExtensionsElement extensions2 = ExtensionsElement.create("", 503, 503);
-    TypeElement nested =
-        MessageElement.create("Nested", "", "", list(field1), NO_ONEOFS, NO_TYPES, NO_EXTENSIONS,
-            NO_OPTIONS);
+    FieldElement field1 = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name")
+        .tag(1)
+        .build();
+    FieldElement field2 = FieldElement.builder()
+        .label(REQUIRED)
+        .type("OtherType")
+        .name("other_name")
+        .tag(2)
+        .build();
+    FieldElement oneOf1Field = FieldElement.builder()
+        .label(ONE_OF)
+        .type("Type")
+        .name("namey")
+        .tag(3)
+        .build();
+    OneOfElement oneOf1 = OneOfElement.builder()
+        .name("thingy")
+        .addField(oneOf1Field)
+        .build();
+    FieldElement oneOf2Field = FieldElement.builder()
+        .label(ONE_OF)
+        .type("Type")
+        .name("namer")
+        .tag(4)
+        .build();
+    OneOfElement oneOf2 = OneOfElement.builder()
+        .name("thinger")
+        .addField(oneOf2Field)
+        .build();
+    ExtensionsElement extensions1 = ExtensionsElement.create(500, 501);
+    ExtensionsElement extensions2 = ExtensionsElement.create(503, 503);
+    TypeElement nested = MessageElement.builder().name("Nested").addField(field1).build();
     OptionElement option = OptionElement.create("kit", "kat", false);
-    TypeElement element =
-        MessageElement.create("Message", "", "", list(field1, field2), list(oneOf1, oneOf2),
-            list(nested), list(extensions1, extensions2), list(option));
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addField(field1)
+        .addField(field2)
+        .addOneOf(oneOf1)
+        .addOneOf(oneOf2)
+        .addType(nested)
+        .addExtensions(extensions1)
+        .addExtensions(extensions2)
+        .addOption(option)
+        .build();
     String expected = ""
         + "message Message {\n"
         + "  option kit = \"kat\";\n"
@@ -152,19 +216,35 @@ public class MessageElementTest {
   }
 
   @Test public void fieldToString() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name", 1, "", NO_OPTIONS);
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name")
+        .tag(1)
+        .build();
     String expected = "required Type name = 1;\n";
     assertThat(field.toString()).isEqualTo(expected);
   }
 
   @Test public void oneOfFieldToString() {
-    FieldElement field = FieldElement.create(ONE_OF, "Type", "name", 1, "", NO_OPTIONS);
+    FieldElement field = FieldElement.builder()
+        .label(ONE_OF)
+        .type("Type")
+        .name("name")
+        .tag(1)
+        .build();
     String expected = "Type name = 1;\n";
     assertThat(field.toString()).isEqualTo(expected);
   }
 
   @Test public void fieldWithDocumentationToString() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name", 1, "Hello", NO_OPTIONS);
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name")
+        .tag(1)
+        .documentation("Hello")
+        .build();
     String expected = ""
         + "// Hello\n"
         + "required Type name = 1;\n";
@@ -172,8 +252,13 @@ public class MessageElementTest {
   }
 
   @Test public void fieldWithOptions() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name", 1, "",
-        list(OptionElement.create("kit", "kat", false)));
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name")
+        .tag(1)
+        .addOption(OptionElement.create("kit", "kat", false))
+        .build();
     String expected = "required Type name = 1 [\n"
         + "  kit = \"kat\"\n"
         + "];\n";
@@ -181,11 +266,25 @@ public class MessageElementTest {
   }
 
   @Test public void duplicateTagValueThrows() {
-    FieldElement field1 = FieldElement.create(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
-    FieldElement field2 = FieldElement.create(REQUIRED, "Type", "name2", 1, "", NO_OPTIONS);
+    FieldElement field1 = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .build();
+    FieldElement field2 = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name2")
+        .tag(1)
+        .build();
     try {
-      MessageElement.create("Message", "example.Message", "", list(field1, field2), NO_ONEOFS,
-          NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+      MessageElement.builder()
+          .name("Message")
+          .qualifiedName("example.Message")
+          .addField(field1)
+          .addField(field2)
+          .build();
       fail("Duplicate tag values are not allowed.");
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Duplicate tag 1 in example.Message");
@@ -193,13 +292,27 @@ public class MessageElementTest {
   }
 
   @Test public void duplicateTagValueOneOfThrows() {
-    FieldElement field1 = FieldElement.create(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
-    FieldElement field2 = FieldElement.create(ONE_OF, "Type", "name2", 1, "", NO_OPTIONS);
-    OneOfElement oneOf = OneOfElement.create("name3", "", list(field2));
+    FieldElement field1 = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .build();
+    FieldElement field2 = FieldElement.builder()
+        .label(ONE_OF)
+        .type("Type")
+        .name("name2")
+        .tag(1)
+        .build();
+    OneOfElement oneOf = OneOfElement.builder().name("name3").addField(field2).build();
 
     try {
-      MessageElement.create("Message", "example.Message", "", list(field1), list(oneOf),
-          NO_TYPES, NO_EXTENSIONS, NO_OPTIONS);
+      MessageElement.builder()
+          .name("Message")
+          .qualifiedName("example.Message")
+          .addField(field1)
+          .addOneOf(oneOf)
+          .build();
       fail("Duplicate tag values are not allowed.");
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Duplicate tag 1 in example.Message");
@@ -207,10 +320,18 @@ public class MessageElementTest {
   }
 
   @Test public void oneOfFieldDisallowed() {
-    FieldElement field1 = FieldElement.create(ONE_OF, "Type", "name", 1, "", NO_OPTIONS);
+    FieldElement field1 = FieldElement.builder()
+        .label(ONE_OF)
+        .type("Type")
+        .name("name")
+        .tag(1)
+        .build();
     try {
-      MessageElement.create("Message", "example.Message", "", list(field1), NO_ONEOFS, NO_TYPES,
-          NO_EXTENSIONS, NO_OPTIONS);
+      MessageElement.builder()
+          .name("Message")
+          .qualifiedName("example.Message")
+          .addField(field1)
+          .build();
       fail("Fields declaring as 'oneof' are not allowed.");
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Field 'name' in example.Message improperly declares itself a member of a 'oneof' group but is not.");
@@ -218,12 +339,24 @@ public class MessageElementTest {
   }
 
   @Test public void duplicateEnumValueTagInScopeThrows() {
-    EnumConstantElement value = EnumConstantElement.create("VALUE", 1, "", NO_OPTIONS);
-    TypeElement enum1 = EnumElement.create("Enum1", "example.Enum1", "", NO_OPTIONS, list(value));
-    TypeElement enum2 = EnumElement.create("Enum2", "example.Enum2", "", NO_OPTIONS, list(value));
+    EnumConstantElement value = EnumConstantElement.builder().name("VALUE").tag(1).build();
+    TypeElement enum1 = EnumElement.builder()
+        .name("Enum1")
+        .qualifiedName("example.Enum1")
+        .addConstant(value)
+        .build();
+    TypeElement enum2 = EnumElement.builder()
+        .name("Enum2")
+        .qualifiedName("example.Enum2")
+        .addConstant(value)
+        .build();
     try {
-      MessageElement.create("Message", "example.Message", "", NO_FIELDS, NO_ONEOFS,
-          list(enum1, enum2), NO_EXTENSIONS, NO_OPTIONS);
+      MessageElement.builder()
+          .name("Message")
+          .qualifiedName("example.Message")
+          .addType(enum1)
+          .addType(enum2)
+          .build();
       fail("Duplicate name not allowed.");
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Duplicate enum constant VALUE in scope example.Message");
@@ -231,47 +364,87 @@ public class MessageElementTest {
   }
 
   @Test public void deprecatedTrue() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name1", 1, "",
-        list(OptionElement.create("deprecated", "true", false)));
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .addOption(OptionElement.create("deprecated", "true", false))
+        .build();
     assertThat(field.isDeprecated()).isTrue();
   }
 
   @Test public void deprecatedFalse() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name1", 1, "",
-        list(OptionElement.create("deprecated", "false", false)));
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .addOption(OptionElement.create("deprecated", "false", false))
+        .build();
     assertThat(field.isDeprecated()).isFalse();
   }
 
   @Test public void deprecatedMissing() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .build();
     assertThat(field.isDeprecated()).isFalse();
   }
 
   @Test public void packedTrue() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name1", 1, "",
-        list(OptionElement.create("packed", "true", false)));
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .addOption(OptionElement.create("packed", "true", false))
+        .build();
     assertThat(field.isPacked()).isTrue();
   }
 
   @Test public void packedFalse() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name1", 1, "",
-        list(OptionElement.create("packed", "false", false)));
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .addOption(OptionElement.create("packed", "false", false))
+        .build();
     assertThat(field.isPacked()).isFalse();
   }
 
   @Test public void packedMissing() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .build();
     assertThat(field.isPacked()).isFalse();
   }
 
   @Test public void defaultValue() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name1", 1, "",
-        list(OptionElement.create("default", "foo", false)));
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .addOption(OptionElement.create("default", "foo", false))
+        .build();
     assertThat(field.getDefault()).isEqualTo("foo");
   }
 
   @Test public void defaultMissing() {
-    FieldElement field = FieldElement.create(REQUIRED, "Type", "name1", 1, "", NO_OPTIONS);
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type("Type")
+        .name("name1")
+        .tag(1)
+        .build();
     assertThat(field.getDefault()).isNull();
   }
 }
