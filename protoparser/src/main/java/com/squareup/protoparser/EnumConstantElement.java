@@ -76,6 +76,9 @@ public abstract class EnumConstantElement {
     }
 
     public EnumConstantElement build() {
+      checkNotNull(name, "name");
+      checkNotNull(tag, "tag");
+
       return new AutoValue_EnumConstantElement(name, tag, documentation, immutableCopyOf(options));
     }
   }

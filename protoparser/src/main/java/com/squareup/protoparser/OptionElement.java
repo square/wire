@@ -2,13 +2,14 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.unmodifiableMap;
 import static com.squareup.protoparser.Utils.appendIndented;
+import static com.squareup.protoparser.Utils.checkNotNull;
+import static java.util.Collections.unmodifiableMap;
 
 @AutoValue
 public abstract class OptionElement {
@@ -22,7 +23,7 @@ public abstract class OptionElement {
       if (value instanceof String || value instanceof List) {
         map.put(name, value);
       } else if (value instanceof OptionElement) {
-        Map<String, Object> newMap = optionsAsMap(Arrays.asList((OptionElement) value));
+        Map<String, Object> newMap = optionsAsMap(Collections.singletonList((OptionElement) value));
 
         Object oldValue = map.get(name);
         if (oldValue instanceof Map) {
@@ -50,8 +51,8 @@ public abstract class OptionElement {
 
   /** Return the option with the specified name from the supplied list or null. */
   public static OptionElement findByName(List<OptionElement> options, String name) {
-    if (options == null) throw new NullPointerException("options");
-    if (name == null) throw new NullPointerException("name");
+    checkNotNull(options, "options");
+    checkNotNull(name, "name");
 
     OptionElement found = null;
     for (OptionElement option : options) {
@@ -66,6 +67,9 @@ public abstract class OptionElement {
   }
 
   public static OptionElement create(String name, Object value, boolean isParenthesized) {
+    checkNotNull(name, "name");
+    checkNotNull(value, "value");
+
     return new AutoValue_OptionElement(name, value, isParenthesized);
   }
 

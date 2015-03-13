@@ -44,8 +44,6 @@ public abstract class EnumElement implements TypeElement {
    */
   static void validateValueUniquenessInScope(String qualifiedName,
       List<TypeElement> nestedElements) {
-    checkNotNull(qualifiedName, "qualifiedName");
-
     Set<String> names = new LinkedHashSet<>();
     for (TypeElement nestedElement : nestedElements) {
       if (nestedElement instanceof EnumElement) {
@@ -138,6 +136,9 @@ public abstract class EnumElement implements TypeElement {
     }
 
     public EnumElement build() {
+      checkNotNull(name, "name");
+      checkNotNull(qualifiedName, "qualifiedName");
+
       if (!parseAllowAlias(options)) {
         validateTagUniqueness(qualifiedName, constants);
       }

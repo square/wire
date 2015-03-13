@@ -3,9 +3,57 @@ package com.squareup.protoparser;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.junit.Assert.fail;
 
 public class EnumElementTest {
+  @Test public void nameRequired() {
+    try {
+      EnumElement.builder().qualifiedName("Test").build();
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("name == null");
+    }
+  }
+
+  @Test public void nameSetsQualifiedName() {
+    EnumElement test = EnumElement.builder().name("Test").build();
+    assertThat(test.name()).isEqualTo("Test");
+    assertThat(test.qualifiedName()).isEqualTo("Test");
+  }
+
+  @Test public void nullBuilderValuesThrow() {
+    try {
+      EnumElement.builder().name(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("name == null");
+    }
+    try {
+      EnumElement.builder().qualifiedName(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("qualifiedName == null");
+    }
+    try {
+      EnumElement.builder().documentation(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("documentation == null");
+    }
+    try {
+      EnumElement.builder().addConstant(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("constant == null");
+    }
+    try {
+      EnumElement.builder().addOption(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("option == null");
+    }
+  }
+
   @Test public void emptyToString() {
     EnumElement element = EnumElement.builder().name("Enum").build();
     String expected = "enum Enum {}\n";
@@ -105,7 +153,7 @@ public class EnumElementTest {
           .addConstant(EnumConstantElement.builder().name("VALUE1").tag(1).build())
           .addConstant(EnumConstantElement.builder().name("VALUE2").tag(1).build())
           .build();
-      fail("Duplicate tags not allowed.");
+      fail();
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Duplicate tag 1 in example.Enum");
     }

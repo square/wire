@@ -27,9 +27,18 @@ final class Utils {
 
   static <T> T checkNotNull(T value, String name) {
     if (value == null) {
-      throw new NullPointerException(name);
+      throw new NullPointerException(name + " == null");
     }
     return value;
+  }
+
+  static void checkArgument(boolean condition, String message, Object... messageArgs) {
+    if (!condition) {
+      if (messageArgs.length > 0) {
+        message = String.format(message, messageArgs);
+      }
+      throw new IllegalArgumentException(message);
+    }
   }
 
   private Utils() {

@@ -114,12 +114,12 @@ public abstract class ProtoFile {
       this.filePath = filePath;
     }
 
-    public Builder setPackageName(String packageName) {
+    public Builder packageName(String packageName) {
       this.packageName = checkNotNull(packageName, "packageName");
       return this;
     }
 
-    public Builder setSyntax(Syntax syntax) {
+    public Builder syntax(Syntax syntax) {
       this.syntax = checkNotNull(syntax, "syntax");
       return this;
     }

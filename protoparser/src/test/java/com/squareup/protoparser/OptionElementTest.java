@@ -7,10 +7,28 @@ import org.junit.Test;
 import static com.squareup.protoparser.TestUtils.list;
 import static com.squareup.protoparser.TestUtils.map;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.data.MapEntry.entry;
+import static org.junit.Assert.fail;
 
 public class OptionElementTest {
+  @Test public void nullNameThrows() {
+    try {
+      OptionElement.create(null, "Test", true);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("name == null");
+    }
+  }
+
+  @Test public void nullValueThrows() {
+    try {
+      OptionElement.create("test", null, true);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("value == null");
+    }
+  }
+
   @Test public void simpleToString() {
     OptionElement option = OptionElement.create("foo", "bar", false);
     String expected = "foo = \"bar\"";
@@ -99,7 +117,7 @@ public class OptionElementTest {
     List<OptionElement> options = list(one, two, one);
     try {
       OptionElement.findByName(options, "one");
-      fail("Multiple option matches not allowed.");
+      fail();
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Multiple options match name: one");
     }

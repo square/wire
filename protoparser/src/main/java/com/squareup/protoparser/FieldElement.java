@@ -9,6 +9,7 @@ import java.util.Locale;
 import static com.squareup.protoparser.ProtoFile.isValidTag;
 import static com.squareup.protoparser.Utils.appendDocumentation;
 import static com.squareup.protoparser.Utils.appendIndented;
+import static com.squareup.protoparser.Utils.checkArgument;
 import static com.squareup.protoparser.Utils.checkNotNull;
 import static com.squareup.protoparser.Utils.immutableCopyOf;
 
@@ -114,8 +115,13 @@ public abstract class FieldElement {
     }
 
     public FieldElement build() {
+      checkNotNull(label, "label");
+      checkNotNull(type, "type");
+      checkNotNull(name, "name");
       checkNotNull(tag, "tag");
-      if (!isValidTag(tag)) throw new IllegalArgumentException("Illegal tag value: " + tag);
+
+      checkArgument(isValidTag(tag), "Illegal tag value: %s", tag);
+
       return new AutoValue_FieldElement(label, type, name, tag, documentation,
           immutableCopyOf(options));
     }

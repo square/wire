@@ -111,7 +111,7 @@ public final class ProtoParser {
       if (!context.permitsPackage()) throw unexpected("'package' in " + context);
       if (packageName != null) throw unexpected("too many package names");
       packageName = readName();
-      fileBuilder.setPackageName(packageName);
+      fileBuilder.packageName(packageName);
       prefix = packageName + ".";
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
@@ -130,10 +130,10 @@ public final class ProtoParser {
       String syntax = readQuotedString();
       switch (syntax) {
         case "proto2":
-          fileBuilder.setSyntax(PROTO_2);
+          fileBuilder.syntax(PROTO_2);
           break;
         case "proto3":
-          fileBuilder.setSyntax(PROTO_3);
+          fileBuilder.syntax(PROTO_3);
           break;
         default:
           throw unexpected("'syntax' must be 'proto2' or 'proto3'. Found: " + syntax);

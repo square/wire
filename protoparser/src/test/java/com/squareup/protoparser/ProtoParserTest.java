@@ -13,7 +13,7 @@ import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
 import static com.squareup.protoparser.TestUtils.list;
 import static com.squareup.protoparser.TestUtils.map;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
+import static org.junit.Assert.fail;
 
 public final class ProtoParserTest {
   @Test public void field() throws Exception {
@@ -208,7 +208,7 @@ public final class ProtoParserTest {
         + "syntax \"proto3\";\n"
         + "message Foo {}";
     ProtoFile expected = ProtoFile.builder("test.proto")
-        .setSyntax(ProtoFile.Syntax.PROTO_3)
+        .syntax(ProtoFile.Syntax.PROTO_3)
         .addType(MessageElement.builder().name("Foo").build())
         .build();
     assertThat(ProtoParser.parse("test.proto", proto)).isEqualTo(expected);
@@ -395,7 +395,7 @@ public final class ProtoParserTest {
         + "message FileDescriptorSet {\n"
         + "}\n";
     ProtoFile expected = ProtoFile.builder("descriptor.proto")
-        .setPackageName("google.protobuf")
+        .packageName("google.protobuf")
         .addType(MessageElement.builder()
             .name("FileDescriptorSet")
             .qualifiedName("google.protobuf.FileDescriptorSet")
@@ -568,7 +568,7 @@ public final class ProtoParserTest {
         + "  }\n"
         + "}";
     ProtoFile expected = ProtoFile.builder("descriptor.proto")
-        .setPackageName("kit.kat")
+        .packageName("kit.kat")
         .addType(MessageElement.builder().name("Bar").qualifiedName("kit.kat.Bar").build())
         .addExtendDeclaration(ExtendElement.builder()
             .name("Foo")
@@ -616,7 +616,7 @@ public final class ProtoParserTest {
         + "  }\n"
         + "}";
     ProtoFile expected = ProtoFile.builder("descriptor.proto")
-        .setPackageName("kit.kat")
+        .packageName("kit.kat")
         .addType(MessageElement.builder().name("Bar").qualifiedName("kit.kat.Bar").build())
         .addExtendDeclaration(ExtendElement.builder()
             .name("example.Foo")
@@ -685,7 +685,7 @@ public final class ProtoParserTest {
         + "}";
     try {
       ProtoParser.parse("foo.proto", proto);
-      fail("Expected parse error");
+      fail();
     } catch (IllegalStateException e) {
       assertThat(e.getMessage().contains("expected a digit after \\x or \\X"));
     }

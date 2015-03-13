@@ -16,8 +16,6 @@ import static com.squareup.protoparser.Utils.immutableCopyOf;
 public abstract class MessageElement implements TypeElement {
   static void validateFieldTagUniqueness(String qualifiedName, List<FieldElement> fields,
       List<OneOfElement> oneOfs) {
-    checkNotNull(qualifiedName, "qualifiedName");
-
     List<FieldElement> allFields = new ArrayList<>(fields);
     for (OneOfElement oneOf : oneOfs) {
       allFields.addAll(oneOf.fields());
@@ -162,6 +160,9 @@ public abstract class MessageElement implements TypeElement {
     }
 
     public MessageElement build() {
+      checkNotNull(name, "name");
+      checkNotNull(qualifiedName, "qualifiedName");
+
       validateFieldTagUniqueness(qualifiedName, fields, oneOfs);
       validateFieldLabel(qualifiedName, fields);
       EnumElement.validateValueUniquenessInScope(qualifiedName, nestedElements);

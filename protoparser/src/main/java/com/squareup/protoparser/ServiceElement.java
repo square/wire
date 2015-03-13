@@ -85,6 +85,9 @@ public abstract class ServiceElement {
     }
 
     public ServiceElement build() {
+      checkNotNull(name, "name");
+      checkNotNull(qualifiedName, "qualifiedName");
+
       return new AutoValue_ServiceElement(name, qualifiedName, documentation,
           immutableCopyOf(options), immutableCopyOf(rpcs));
     }
