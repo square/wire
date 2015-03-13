@@ -199,7 +199,7 @@ public class ProtoFileTest {
     assertThat(file.toString()).isEqualTo(expected);
 
     // Re-parse the expected string into a ProtoFile and ensure they're equal.
-    ProtoFile parsed = ProtoSchemaParser.parse("file.proto", expected);
+    ProtoFile parsed = ProtoParser.parse("file.proto", expected);
     assertThat(parsed).isEqualTo(file);
   }
 

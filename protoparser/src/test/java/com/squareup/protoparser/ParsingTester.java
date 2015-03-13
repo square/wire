@@ -25,7 +25,7 @@ public class ParsingTester {
         total += 1;
 
         try {
-          ProtoSchemaParser.parseUtf8(file);
+          ProtoParser.parseUtf8(file);
         } catch (Exception e) {
           e.printStackTrace();
           failed += 1;
