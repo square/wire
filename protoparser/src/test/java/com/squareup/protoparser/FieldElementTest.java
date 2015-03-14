@@ -2,15 +2,15 @@ package com.squareup.protoparser;
 
 import org.junit.Test;
 
+import static com.squareup.protoparser.DataType.ScalarType.STRING;
 import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
-import static com.squareup.protoparser.Scalars.TYPE_STRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class FieldElementTest {
   @Test public void labelRequired() {
     try {
-      FieldElement.builder().type(TYPE_STRING).name("name").tag(1).build();
+      FieldElement.builder().type(STRING).name("name").tag(1).build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("label == null");
@@ -28,7 +28,7 @@ public final class FieldElementTest {
 
   @Test public void nameRequired() {
     try {
-      FieldElement.builder().label(REQUIRED).type(TYPE_STRING).tag(1).build();
+      FieldElement.builder().label(REQUIRED).type(STRING).tag(1).build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name == null");
@@ -37,7 +37,7 @@ public final class FieldElementTest {
 
   @Test public void tagRequired() {
     try {
-      FieldElement.builder().label(REQUIRED).type(TYPE_STRING).name("name").build();
+      FieldElement.builder().label(REQUIRED).type(STRING).name("name").build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("tag == null");

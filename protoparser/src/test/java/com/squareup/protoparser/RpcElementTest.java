@@ -1,5 +1,6 @@
 package com.squareup.protoparser;
 
+import com.squareup.protoparser.DataType.NamedType;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,7 +9,10 @@ import static org.junit.Assert.fail;
 public final class RpcElementTest {
   @Test public void nameRequired() {
     try {
-      RpcElement.builder().requestType("Foo").responseType("Bar").build();
+      RpcElement.builder()
+          .requestType(NamedType.create("Foo"))
+          .responseType(NamedType.create("Bar"))
+          .build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name == null");
@@ -17,7 +21,7 @@ public final class RpcElementTest {
 
   @Test public void requestTypeRequired() {
     try {
-      RpcElement.builder().name("Test").responseType("Bar").build();
+      RpcElement.builder().name("Test").responseType(NamedType.create("Bar")).build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("requestType == null");
@@ -26,7 +30,7 @@ public final class RpcElementTest {
 
   @Test public void responseTypeRequired() {
     try {
-      RpcElement.builder().name("Test").requestType("Foo").build();
+      RpcElement.builder().name("Test").requestType(NamedType.create("Foo")).build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("responseType == null");

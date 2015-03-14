@@ -2,6 +2,7 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
+import com.squareup.protoparser.DataType.NamedType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +22,8 @@ public abstract class RpcElement {
 
   public abstract String name();
   public abstract String documentation();
-  public abstract String requestType();
-  public abstract String responseType();
+  public abstract NamedType requestType();
+  public abstract NamedType responseType();
   public abstract List<OptionElement> options();
 
   @Override public final String toString() {
@@ -48,8 +49,8 @@ public abstract class RpcElement {
   public static final class Builder {
     private String name;
     private String documentation = "";
-    private String requestType;
-    private String responseType;
+    private NamedType requestType;
+    private NamedType responseType;
     private final List<OptionElement> options = new ArrayList<>();
 
     private Builder() {
@@ -65,12 +66,12 @@ public abstract class RpcElement {
       return this;
     }
 
-    public Builder requestType(String requestType) {
+    public Builder requestType(NamedType requestType) {
       this.requestType = checkNotNull(requestType, "requestType");
       return this;
     }
 
-    public Builder responseType(String responseType) {
+    public Builder responseType(NamedType responseType) {
       this.responseType = checkNotNull(responseType, "responseType");
       return this;
     }

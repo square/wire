@@ -28,7 +28,7 @@ public abstract class FieldElement {
    * name, or a <a href="https://developers.google.com/protocol-buffers/docs/proto#scalar">
    * scalar value type</a> like {@code int64} or {@code bytes}.
    */
-  public abstract String type();
+  public abstract DataType type();
   public abstract String name();
   public abstract int tag();
   public abstract String documentation();
@@ -75,7 +75,7 @@ public abstract class FieldElement {
 
   public static final class Builder {
     private MessageElement.Label label;
-    private String type;
+    private DataType type;
     private String name;
     private Integer tag;
     private String documentation = "";
@@ -89,7 +89,7 @@ public abstract class FieldElement {
       return this;
     }
 
-    public Builder type(String type) {
+    public Builder type(DataType type) {
       this.type = checkNotNull(type, "type");
       return this;
     }

@@ -1,12 +1,30 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.protoparser;
 
+import com.squareup.protoparser.DataType.MapType;
+import com.squareup.protoparser.DataType.NamedType;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
+import static com.squareup.protoparser.DataType.ScalarType.ANY;
+import static com.squareup.protoparser.DataType.ScalarType.BOOL;
+import static com.squareup.protoparser.DataType.ScalarType.BYTES;
+import static com.squareup.protoparser.DataType.ScalarType.DOUBLE;
+import static com.squareup.protoparser.DataType.ScalarType.FIXED32;
+import static com.squareup.protoparser.DataType.ScalarType.FIXED64;
+import static com.squareup.protoparser.DataType.ScalarType.FLOAT;
+import static com.squareup.protoparser.DataType.ScalarType.INT32;
+import static com.squareup.protoparser.DataType.ScalarType.INT64;
+import static com.squareup.protoparser.DataType.ScalarType.SFIXED32;
+import static com.squareup.protoparser.DataType.ScalarType.SFIXED64;
+import static com.squareup.protoparser.DataType.ScalarType.SINT32;
+import static com.squareup.protoparser.DataType.ScalarType.SINT64;
+import static com.squareup.protoparser.DataType.ScalarType.STRING;
+import static com.squareup.protoparser.DataType.ScalarType.UINT32;
+import static com.squareup.protoparser.DataType.ScalarType.UINT64;
 import static com.squareup.protoparser.MessageElement.Label.ONE_OF;
 import static com.squareup.protoparser.MessageElement.Label.OPTIONAL;
 import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
@@ -16,10 +34,92 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class ProtoParserTest {
+  @Test public void typeParsing() {
+    String proto = ""
+        + "message Types {\n"
+        + "  required any f1 = 1;\n"
+        + "  required bool f2 = 2;\n"
+        + "  required bytes f3 = 3;\n"
+        + "  required double f4 = 4;\n"
+        + "  required float f5 = 5;\n"
+        + "  required fixed32 f6 = 6;\n"
+        + "  required fixed64 f7 = 7;\n"
+        + "  required int32 f8 = 8;\n"
+        + "  required int64 f9 = 9;\n"
+        + "  required sfixed32 f10 = 10;\n"
+        + "  required sfixed64 f11 = 11;\n"
+        + "  required sint32 f12 = 12;\n"
+        + "  required sint64 f13 = 13;\n"
+        + "  required string f14 = 14;\n"
+        + "  required uint32 f15 = 15;\n"
+        + "  required uint64 f16 = 16;\n"
+        + "  required map<string, bool> f17 = 17;\n"
+        + "  required map<arbitrary, nested.nested> f18 = 18;\n"
+        + "  required arbitrary f19 = 19;\n"
+        + "  required nested.nested f20 = 20;\n"
+        + "}\n";
+    ProtoFile expected = ProtoFile.builder("test.proto")
+        .addType(MessageElement.builder()
+            .name("Types")
+            .addField(FieldElement.builder().label(REQUIRED).type(ANY).name("f1").tag(1).build())
+            .addField(FieldElement.builder().label(REQUIRED).type(BOOL).name("f2").tag(2).build())
+            .addField(FieldElement.builder().label(REQUIRED).type(BYTES).name("f3").tag(3).build())
+            .addField(FieldElement.builder().label(REQUIRED).type(DOUBLE).name("f4").tag(4).build())
+            .addField(FieldElement.builder().label(REQUIRED).type(FLOAT).name("f5").tag(5).build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(FIXED32).name("f6").tag(6).build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(FIXED64).name("f7").tag(7).build())
+            .addField(FieldElement.builder().label(REQUIRED).type(INT32).name("f8").tag(8).build())
+            .addField(FieldElement.builder().label(REQUIRED).type(INT64).name("f9").tag(9).build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(SFIXED32).name("f10").tag(10).build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(SFIXED64).name("f11").tag(11).build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(SINT32).name("f12").tag(12).build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(SINT64).name("f13").tag(13).build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(STRING).name("f14").tag(14).build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(UINT32).name("f15").tag(15).build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(UINT64).name("f16").tag(16).build())
+            .addField(FieldElement.builder()
+                .label(REQUIRED)
+                .type(MapType.create(STRING, BOOL))
+                .name("f17")
+                .tag(17)
+                .build())
+            .addField(FieldElement.builder()
+                .label(REQUIRED)
+                .type(MapType.create(NamedType.create("arbitrary"),
+                    NamedType.create("nested.nested")))
+                .name("f18")
+                .tag(18)
+                .build())
+            .addField(FieldElement.builder()
+                .label(REQUIRED)
+                .type(NamedType.create("arbitrary"))
+                .name("f19")
+                .tag(19)
+                .build())
+            .addField(FieldElement.builder()
+                .label(REQUIRED)
+                .type(NamedType.create("nested.nested"))
+                .name("f20")
+                .tag(20)
+                .build())
+            .build())
+        .build();
+    assertThat(ProtoParser.parse("test.proto", proto)).isEqualTo(expected);
+  }
+
   @Test public void field() throws Exception {
     FieldElement field = FieldElement.builder()
         .label(OPTIONAL)
-        .type("CType")
+        .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
         .addOption(OptionElement.create("default", "STRING", false))
@@ -250,19 +350,19 @@ public final class ProtoParserTest {
             .name("SearchRequest")
             .addField(FieldElement.builder()
                 .label(REQUIRED)
-                .type("string")
+                .type(STRING)
                 .name("query")
                 .tag(1)
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("int32")
+                .type(INT32)
                 .name("page_number")
                 .tag(2)
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("int32")
+                .type(INT32)
                 .name("result_per_page")
                 .tag(3)
                 .build())
@@ -285,7 +385,7 @@ public final class ProtoParserTest {
             .name("SearchRequest")
             .addField(FieldElement.builder()
                 .label(REQUIRED)
-                .type("string")
+                .type(STRING)
                 .name("query")
                 .tag(1)
                 .build())
@@ -293,13 +393,13 @@ public final class ProtoParserTest {
                 .name("page_info")
                 .addField(FieldElement.builder()
                     .label(ONE_OF)
-                    .type("int32")
+                    .type(INT32)
                     .name("page_number")
                     .tag(2)
                     .build())
                 .addField(FieldElement.builder()
                     .label(ONE_OF)
-                    .type("int32")
+                    .type(INT32)
                     .name("result_per_page")
                     .tag(3)
                     .build())
@@ -430,7 +530,7 @@ public final class ProtoParserTest {
         .build();
     FieldElement field = FieldElement.builder()
         .label(OPTIONAL)
-        .type("CType")
+        .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
         .addOption(OptionElement.create("default", EnumConstantElement.anonymous("STRING"), false))
@@ -456,10 +556,10 @@ public final class ProtoParserTest {
   @Test public void optionParentheses() throws Exception {
     String proto = ""
         + "message Chickens {\n"
-        + "  optional boolean koka_ko_koka_ko = 1 [default = true];\n"
-        + "  optional boolean coodle_doodle_do = 2 [(delay) = 100, default = false];\n"
-        + "  optional boolean coo_coo_ca_cha = 3 [default = true, (delay) = 200];\n"
-        + "  optional boolean cha_chee_cha = 4;\n"
+        + "  optional bool koka_ko_koka_ko = 1 [default = true];\n"
+        + "  optional bool coodle_doodle_do = 2 [(delay) = 100, default = false];\n"
+        + "  optional bool coo_coo_ca_cha = 3 [default = true, (delay) = 200];\n"
+        + "  optional bool cha_chee_cha = 4;\n"
         + "}\n";
 
     ProtoFile expected = ProtoFile.builder("chickens.proto")
@@ -467,14 +567,14 @@ public final class ProtoParserTest {
             .name("Chickens")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("boolean")
+                .type(BOOL)
                 .name("koka_ko_koka_ko")
                 .tag(1)
                 .addOption(OptionElement.create("default", true, false))
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("boolean")
+                .type(BOOL)
                 .name("coodle_doodle_do")
                 .tag(2)
                 .addOption(OptionElement.create("delay", 100, true))
@@ -482,7 +582,7 @@ public final class ProtoParserTest {
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("boolean")
+                .type(BOOL)
                 .name("coo_coo_ca_cha")
                 .tag(3)
                 .addOption(OptionElement.create("default", true, false))
@@ -490,7 +590,7 @@ public final class ProtoParserTest {
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("boolean")
+                .type(BOOL)
                 .name("cha_chee_cha")
                 .tag(4)
                 .build())
@@ -525,12 +625,8 @@ public final class ProtoParserTest {
         .addExtendDeclaration(ExtendElement.builder()
             .name("Foo")
             .documentation("Extends Foo")
-            .addField(FieldElement.builder()
-                .label(OPTIONAL)
-                .type("int32")
-                .name("bar")
-                .tag(126)
-                .build())
+            .addField(
+                FieldElement.builder().label(OPTIONAL).type(INT32).name("bar").tag(126).build())
             .build())
         .build();
     assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
@@ -549,7 +645,7 @@ public final class ProtoParserTest {
             .name("Foo")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("Bar")
+                .type(NamedType.create("Bar"))
                 .name("bar")
                 .tag(126)
                 .build())
@@ -575,7 +671,7 @@ public final class ProtoParserTest {
             .qualifiedName("kit.kat.Foo")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("Bar")
+                .type(NamedType.create("Bar"))
                 .name("bar")
                 .tag(126)
                 .build())
@@ -597,7 +693,7 @@ public final class ProtoParserTest {
             .name("example.Foo")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("Bar")
+                .type(NamedType.create("Bar"))
                 .name("bar")
                 .tag(126)
                 .build())
@@ -622,7 +718,7 @@ public final class ProtoParserTest {
             .name("example.Foo")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
-                .type("Bar")
+                .type(NamedType.create("Bar"))
                 .name("bar")
                 .tag(126)
                 .build())
@@ -638,7 +734,7 @@ public final class ProtoParserTest {
         + "}";
     FieldElement field = FieldElement.builder()
         .label(OPTIONAL)
-        .type("string")
+        .type(STRING)
         .name("claim_token")
         .tag(2)
         .addOption(OptionElement.create("squareup.redacted", true, true))
@@ -661,7 +757,7 @@ public final class ProtoParserTest {
     FieldElement
         field = FieldElement.builder()
         .label(OPTIONAL)
-        .type("string")
+        .type(STRING)
         .name("name")
         .tag(1)
         .addOption(OptionElement.create("default",
@@ -708,13 +804,13 @@ public final class ProtoParserTest {
             .addOption(OptionElement.create("default_timeout", 30, true))
             .addRpc(RpcElement.builder()
                 .name("Search")
-                .requestType("SearchRequest")
-                .responseType("SearchResponse")
+                .requestType(NamedType.create("SearchRequest"))
+                .responseType(NamedType.create("SearchResponse"))
                 .build())
             .addRpc(RpcElement.builder()
                 .name("Purchase")
-                .requestType("PurchaseRequest")
-                .responseType("PurchaseResponse")
+                .requestType(NamedType.create("PurchaseRequest"))
+                .responseType(NamedType.create("PurchaseResponse"))
                 .addOption(OptionElement.create("squareup.sake.timeout", 15, true))
                 .addOption(OptionElement.create("squareup.a.b", map("value", //
                     list(EnumConstantElement.anonymous("FOO"),
@@ -723,6 +819,29 @@ public final class ProtoParserTest {
             .build())
         .build();
     assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+  }
+
+  @Test public void serviceTypesMustBeNamed() {
+    try {
+      String proto = ""
+          + "service SearchService {\n"
+          + "  rpc Search (string) returns (SearchResponse);"
+          + "}";
+      ProtoParser.parse("test.proto", proto);
+      fail();
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in test.proto at 2:21: expected message but was string");
+    }
+    try {
+      String proto = ""
+          + "service SearchService {\n"
+          + "  rpc Search (SearchRequest) returns (string);"
+          + "}";
+      ProtoParser.parse("test.proto", proto);
+      fail();
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in test.proto at 2:45: expected message but was string");
+    }
   }
 
   @Test public void hexTag() throws Exception {
@@ -735,7 +854,7 @@ public final class ProtoParserTest {
             .name("HexTag")
             .addField(FieldElement.builder()
                 .label(REQUIRED)
-                .type("string")
+                .type(STRING)
                 .name("hex")
                 .tag(16)
                 .build())
@@ -798,7 +917,7 @@ public final class ProtoParserTest {
         + "}";
     FieldElement field = FieldElement.builder()
         .label(OPTIONAL)
-        .type("field.type")
+        .type(NamedType.create("field.type"))
         .name("has_options")
         .tag(3)
         .addOption(OptionElement.create("option_map",
@@ -829,7 +948,7 @@ public final class ProtoParserTest {
     FieldElement
         field = FieldElement.builder()
         .label(OPTIONAL)
-        .type("int32")
+        .type(INT32)
         .name("bar")
         .tag(1)
         .addOption(
@@ -854,7 +973,7 @@ public final class ProtoParserTest {
                 .name("C")
                 .addField(FieldElement.builder()
                     .label(OPTIONAL)
-                    .type("A.B")
+                    .type(NamedType.create("A.B"))
                     .name("ab")
                     .tag(1)
                     .build())

@@ -1,5 +1,6 @@
 package com.squareup.protoparser;
 
+import com.squareup.protoparser.DataType.NamedType;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,8 +66,8 @@ public class ServiceElementTest {
         .name("Service")
         .addRpc(RpcElement.builder()
             .name("Name")
-            .requestType("RequestType")
-            .responseType("ResponseType")
+            .requestType(NamedType.create("RequestType"))
+            .responseType(NamedType.create("ResponseType"))
             .build())
         .build();
     String expected = ""
@@ -82,8 +83,8 @@ public class ServiceElementTest {
         .addOption(OptionElement.create("foo", "bar", false))
         .addRpc(RpcElement.builder()
             .name("Name")
-            .requestType("RequestType")
-            .responseType("ResponseType")
+            .requestType(NamedType.create("RequestType"))
+            .responseType(NamedType.create("ResponseType"))
             .build())
         .build();
     String expected = ""
@@ -101,8 +102,8 @@ public class ServiceElementTest {
         .documentation("Hello")
         .addRpc(RpcElement.builder()
             .name("Name")
-            .requestType("RequestType")
-            .responseType("ResponseType")
+            .requestType(NamedType.create("RequestType"))
+            .responseType(NamedType.create("ResponseType"))
             .build())
         .build();
     String expected = ""
@@ -116,8 +117,8 @@ public class ServiceElementTest {
   @Test public void multipleToString() {
     RpcElement rpc = RpcElement.builder()
         .name("Name")
-        .requestType("RequestType")
-        .responseType("ResponseType")
+        .requestType(NamedType.create("RequestType"))
+        .responseType(NamedType.create("ResponseType"))
         .build();
     ServiceElement service =
         ServiceElement.builder().name("Service").addRpc(rpc).addRpc(rpc).build();
@@ -132,8 +133,8 @@ public class ServiceElementTest {
   @Test public void rpcToString() {
     RpcElement rpc = RpcElement.builder()
         .name("Name")
-        .requestType("RequestType")
-        .responseType("ResponseType")
+        .requestType(NamedType.create("RequestType"))
+        .responseType(NamedType.create("ResponseType"))
         .build();
     String expected = "rpc Name (RequestType) returns (ResponseType);\n";
     assertThat(rpc.toString()).isEqualTo(expected);
@@ -143,8 +144,8 @@ public class ServiceElementTest {
     RpcElement rpc = RpcElement.builder()
         .name("Name")
         .documentation("Hello")
-        .requestType("RequestType")
-        .responseType("ResponseType")
+        .requestType(NamedType.create("RequestType"))
+        .responseType(NamedType.create("ResponseType"))
         .build();
     String expected = ""
         + "// Hello\n"
@@ -155,8 +156,8 @@ public class ServiceElementTest {
   @Test public void rpcWithOptions() {
     RpcElement rpc = RpcElement.builder()
         .name("Name")
-        .requestType("RequestType")
-        .responseType("ResponseType")
+        .requestType(NamedType.create("RequestType"))
+        .responseType(NamedType.create("ResponseType"))
         .addOption(OptionElement.create("foo", "bar", false))
         .build();
     String expected = ""

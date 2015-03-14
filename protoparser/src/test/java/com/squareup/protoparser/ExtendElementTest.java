@@ -2,6 +2,7 @@ package com.squareup.protoparser;
 
 import org.junit.Test;
 
+import static com.squareup.protoparser.DataType.ScalarType.STRING;
 import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -60,14 +61,14 @@ public class ExtendElementTest {
         .name("Name")
         .addField(FieldElement.builder()
             .label(REQUIRED)
-            .type("Type")
+            .type(STRING)
             .name("name")
             .tag(1)
             .build())
         .build();
     String expected = ""
         + "extend Name {\n"
-        + "  required Type name = 1;\n"
+        + "  required string name = 1;\n"
         + "}\n";
     assertThat(extend.toString()).isEqualTo(expected);
   }
@@ -78,7 +79,7 @@ public class ExtendElementTest {
         .documentation("Hello")
         .addField(FieldElement.builder()
             .label(REQUIRED)
-            .type("Type")
+            .type(STRING)
             .name("name")
             .tag(1)
             .build())
@@ -86,7 +87,7 @@ public class ExtendElementTest {
     String expected = ""
         + "// Hello\n"
         + "extend Name {\n"
-        + "  required Type name = 1;\n"
+        + "  required string name = 1;\n"
         + "}\n";
     assertThat(extend.toString()).isEqualTo(expected);
   }
@@ -94,13 +95,13 @@ public class ExtendElementTest {
   @Test public void duplicateTagValueThrows() {
     FieldElement field1 = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .build();
     FieldElement field2 = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name2")
         .tag(1)
         .build();
