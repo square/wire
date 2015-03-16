@@ -2,6 +2,8 @@ package com.squareup.protoparser;
 
 import org.junit.Test;
 
+import static com.squareup.protoparser.DataType.ScalarType.BOOL;
+import static com.squareup.protoparser.DataType.ScalarType.STRING;
 import static com.squareup.protoparser.MessageElement.Label.ONE_OF;
 import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,14 +87,14 @@ public class MessageElementTest {
         .name("Message")
         .addField(FieldElement.builder()
             .label(REQUIRED)
-            .type("Type")
+            .type(STRING)
             .name("name")
             .tag(1)
             .build())
         .build();
     String expected = ""
         + "message Message {\n"
-        + "  required Type name = 1;\n"
+        + "  required string name = 1;\n"
         + "}\n";
     assertThat(element.toString()).isEqualTo(expected);
   }
@@ -103,7 +105,7 @@ public class MessageElementTest {
         .documentation("Hello")
         .addField(FieldElement.builder()
             .label(REQUIRED)
-            .type("Type")
+            .type(STRING)
             .name("name")
             .tag(1)
             .build())
@@ -111,7 +113,7 @@ public class MessageElementTest {
     String expected = ""
         + "// Hello\n"
         + "message Message {\n"
-        + "  required Type name = 1;\n"
+        + "  required string name = 1;\n"
         + "}\n";
     assertThat(element.toString()).isEqualTo(expected);
   }
@@ -119,7 +121,7 @@ public class MessageElementTest {
   @Test public void simpleWithOptionsToString() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name")
         .tag(1)
         .build();
@@ -132,7 +134,7 @@ public class MessageElementTest {
         + "message Message {\n"
         + "  option kit = \"kat\";\n"
         + "\n"
-        + "  required Type name = 1;\n"
+        + "  required string name = 1;\n"
         + "}\n";
     assertThat(element.toString()).isEqualTo(expected);
   }
@@ -142,7 +144,7 @@ public class MessageElementTest {
         .name("Message")
         .addField(FieldElement.builder()
             .label(REQUIRED)
-            .type("Type")
+            .type(STRING)
             .name("name")
             .tag(1)
             .build())
@@ -150,7 +152,7 @@ public class MessageElementTest {
             .name("Nested")
             .addField(FieldElement.builder()
                 .label(REQUIRED)
-                .type("Type")
+                .type(STRING)
                 .name("name")
                 .tag(1)
                 .build())
@@ -158,10 +160,10 @@ public class MessageElementTest {
         .build();
     String expected = ""
         + "message Message {\n"
-        + "  required Type name = 1;\n"
+        + "  required string name = 1;\n"
         + "\n"
         + "  message Nested {\n"
-        + "    required Type name = 1;\n"
+        + "    required string name = 1;\n"
         + "  }\n"
         + "}\n";
     assertThat(element.toString()).isEqualTo(expected);
@@ -172,7 +174,7 @@ public class MessageElementTest {
         .name("Message")
         .addField(FieldElement.builder()
             .label(REQUIRED)
-            .type("Type")
+            .type(STRING)
             .name("name")
             .tag(1)
             .build())
@@ -180,7 +182,7 @@ public class MessageElementTest {
         .build();
     String expected = ""
         + "message Message {\n"
-        + "  required Type name = 1;\n"
+        + "  required string name = 1;\n"
         + "\n"
         + "  extensions 500 to 501;\n"
         + "}\n";
@@ -194,7 +196,7 @@ public class MessageElementTest {
             .name("hi")
             .addField(FieldElement.builder()
                 .label(ONE_OF)
-                .type("Type")
+                .type(STRING)
                 .name("name")
                 .tag(1)
                 .build())
@@ -203,7 +205,7 @@ public class MessageElementTest {
     String expected = ""
         + "message Message {\n"
         + "  oneof hi {\n"
-        + "    Type name = 1;\n"
+        + "    string name = 1;\n"
         + "  }\n"
         + "}\n";
     assertThat(element.toString()).isEqualTo(expected);
@@ -212,19 +214,19 @@ public class MessageElementTest {
   @Test public void multipleEverythingToString() {
     FieldElement field1 = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name")
         .tag(1)
         .build();
     FieldElement field2 = FieldElement.builder()
         .label(REQUIRED)
-        .type("OtherType")
+        .type(BOOL)
         .name("other_name")
         .tag(2)
         .build();
     FieldElement oneOf1Field = FieldElement.builder()
         .label(ONE_OF)
-        .type("Type")
+        .type(STRING)
         .name("namey")
         .tag(3)
         .build();
@@ -234,7 +236,7 @@ public class MessageElementTest {
         .build();
     FieldElement oneOf2Field = FieldElement.builder()
         .label(ONE_OF)
-        .type("Type")
+        .type(STRING)
         .name("namer")
         .tag(4)
         .build();
@@ -261,21 +263,21 @@ public class MessageElementTest {
         + "message Message {\n"
         + "  option kit = \"kat\";\n"
         + "\n"
-        + "  required Type name = 1;\n"
-        + "  required OtherType other_name = 2;\n"
+        + "  required string name = 1;\n"
+        + "  required bool other_name = 2;\n"
         + "\n"
         + "  oneof thingy {\n"
-        + "    Type namey = 3;\n"
+        + "    string namey = 3;\n"
         + "  }\n"
         + "  oneof thinger {\n"
-        + "    Type namer = 4;\n"
+        + "    string namer = 4;\n"
         + "  }\n"
         + "\n"
         + "  extensions 500 to 501;\n"
         + "  extensions 503;\n"
         + "\n"
         + "  message Nested {\n"
-        + "    required Type name = 1;\n"
+        + "    required string name = 1;\n"
         + "  }\n"
         + "}\n";
     assertThat(element.toString()).isEqualTo(expected);
@@ -284,48 +286,48 @@ public class MessageElementTest {
   @Test public void fieldToString() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name")
         .tag(1)
         .build();
-    String expected = "required Type name = 1;\n";
+    String expected = "required string name = 1;\n";
     assertThat(field.toString()).isEqualTo(expected);
   }
 
   @Test public void oneOfFieldToString() {
     FieldElement field = FieldElement.builder()
         .label(ONE_OF)
-        .type("Type")
+        .type(STRING)
         .name("name")
         .tag(1)
         .build();
-    String expected = "Type name = 1;\n";
+    String expected = "string name = 1;\n";
     assertThat(field.toString()).isEqualTo(expected);
   }
 
   @Test public void fieldWithDocumentationToString() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name")
         .tag(1)
         .documentation("Hello")
         .build();
     String expected = ""
         + "// Hello\n"
-        + "required Type name = 1;\n";
+        + "required string name = 1;\n";
     assertThat(field.toString()).isEqualTo(expected);
   }
 
   @Test public void fieldWithOptions() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name")
         .tag(1)
         .addOption(OptionElement.create("kit", "kat", false))
         .build();
-    String expected = "required Type name = 1 [\n"
+    String expected = "required string name = 1 [\n"
         + "  kit = \"kat\"\n"
         + "];\n";
     assertThat(field.toString()).isEqualTo(expected);
@@ -334,13 +336,13 @@ public class MessageElementTest {
   @Test public void duplicateTagValueThrows() {
     FieldElement field1 = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .build();
     FieldElement field2 = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name2")
         .tag(1)
         .build();
@@ -360,13 +362,13 @@ public class MessageElementTest {
   @Test public void duplicateTagValueOneOfThrows() {
     FieldElement field1 = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .build();
     FieldElement field2 = FieldElement.builder()
         .label(ONE_OF)
-        .type("Type")
+        .type(STRING)
         .name("name2")
         .tag(1)
         .build();
@@ -388,7 +390,7 @@ public class MessageElementTest {
   @Test public void oneOfFieldDisallowed() {
     FieldElement field1 = FieldElement.builder()
         .label(ONE_OF)
-        .type("Type")
+        .type(STRING)
         .name("name")
         .tag(1)
         .build();
@@ -432,7 +434,7 @@ public class MessageElementTest {
   @Test public void deprecatedTrue() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("deprecated", "true", false))
@@ -443,7 +445,7 @@ public class MessageElementTest {
   @Test public void deprecatedFalse() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("deprecated", "false", false))
@@ -454,7 +456,7 @@ public class MessageElementTest {
   @Test public void deprecatedMissing() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .build();
@@ -464,7 +466,7 @@ public class MessageElementTest {
   @Test public void packedTrue() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("packed", "true", false))
@@ -475,7 +477,7 @@ public class MessageElementTest {
   @Test public void packedFalse() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("packed", "false", false))
@@ -486,7 +488,7 @@ public class MessageElementTest {
   @Test public void packedMissing() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .build();
@@ -496,7 +498,7 @@ public class MessageElementTest {
   @Test public void defaultValue() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("default", "foo", false))
@@ -507,7 +509,7 @@ public class MessageElementTest {
   @Test public void defaultMissing() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
-        .type("Type")
+        .type(STRING)
         .name("name1")
         .tag(1)
         .build();

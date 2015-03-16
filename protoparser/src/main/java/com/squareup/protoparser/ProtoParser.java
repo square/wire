@@ -1,6 +1,9 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.protoparser;
 
+import com.squareup.protoparser.DataType.MapType;
+import com.squareup.protoparser.DataType.NamedType;
+import com.squareup.protoparser.DataType.ScalarType;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -311,7 +314,7 @@ public final class ProtoParser {
 
   /** Reads an field declaration and returns it. */
   private FieldElement readField(String documentation, MessageElement.Label label) {
-    String type = readName();
+    DataType type = readDataType();
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
@@ -521,13 +524,21 @@ public final class ProtoParser {
         .documentation(documentation);
 
     if (readChar() != '(') throw unexpected("expected '('");
-    builder.requestType(readName());
+    DataType requestType = readDataType();
+    if (!(requestType instanceof NamedType)) {
+      throw unexpected("expected message but was " + requestType);
+    }
+    builder.requestType((NamedType) requestType);
     if (readChar() != ')') throw unexpected("expected ')'");
 
     if (!readWord().equals("returns")) throw unexpected("expected 'returns'");
 
     if (readChar() != '(') throw unexpected("expected '('");
-    builder.responseType(readName());
+    DataType responseType = readDataType();
+    if (!(responseType instanceof NamedType)) {
+      throw unexpected("expected message but was " + responseType);
+    }
+    builder.responseType((NamedType) responseType);
     if (readChar() != ')') throw unexpected("expected ')'");
 
     if (peekChar() == '{') {
@@ -646,6 +657,54 @@ public final class ProtoParser {
       optionName = readWord();
     }
     return optionName;
+  }
+
+  /** Reads a scalar, map, or type name. */
+  private DataType readDataType() {
+    String name = readWord();
+    switch (name) {
+      case "map":
+        if (readChar() != '<') throw unexpected("expected '<'");
+        DataType keyType = readDataType();
+        if (readChar() != ',') throw unexpected("expected ','");
+        DataType valueType = readDataType();
+        if (readChar() != '>') throw unexpected("expected '>'");
+        return MapType.create(keyType, valueType);
+      case "any":
+        return ScalarType.ANY;
+      case "bool":
+        return ScalarType.BOOL;
+      case "bytes":
+        return ScalarType.BYTES;
+      case "double":
+        return ScalarType.DOUBLE;
+      case "float":
+        return ScalarType.FLOAT;
+      case "fixed32":
+        return ScalarType.FIXED32;
+      case "fixed64":
+        return ScalarType.FIXED64;
+      case "int32":
+        return ScalarType.INT32;
+      case "int64":
+        return ScalarType.INT64;
+      case "sfixed32":
+        return ScalarType.SFIXED32;
+      case "sfixed64":
+        return ScalarType.SFIXED64;
+      case "sint32":
+        return ScalarType.SINT32;
+      case "sint64":
+        return ScalarType.SINT64;
+      case "string":
+        return ScalarType.STRING;
+      case "uint32":
+        return ScalarType.UINT32;
+      case "uint64":
+        return ScalarType.UINT64;
+      default:
+        return NamedType.create(name);
+    }
   }
 
   /** Reads a non-empty word and returns it. */
