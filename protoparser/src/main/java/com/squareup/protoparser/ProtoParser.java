@@ -401,7 +401,7 @@ public final class ProtoParser {
     }
     Object value = readValue();
     Object valueOrSubOption =
-        subName != null ? OptionElement.create(subName, value, isParenthesized) : value;
+        subName != null ? OptionElement.create(subName, value) : value;
     return OptionElement.create(name, valueOrSubOption, isParenthesized);
   }
 

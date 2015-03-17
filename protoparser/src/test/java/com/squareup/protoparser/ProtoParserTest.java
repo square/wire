@@ -122,14 +122,14 @@ public final class ProtoParserTest {
         .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
-        .addOption(OptionElement.create("default", "STRING", false))
-        .addOption(OptionElement.create("deprecated", "true", false))
+        .addOption(OptionElement.create("default", "STRING"))
+        .addOption(OptionElement.create("deprecated", "true"))
         .build();
     assertThat(field.isDeprecated()).isTrue();
     assertThat(field.getDefault()).isEqualTo("STRING");
     assertThat(field.options()).containsOnly( //
-        OptionElement.create("default", "STRING", false), //
-        OptionElement.create("deprecated", "true", false));
+        OptionElement.create("default", "STRING"), //
+        OptionElement.create("deprecated", "true"));
   }
 
   @Test public void singleLineComment() {
@@ -502,7 +502,7 @@ public final class ProtoParserTest {
             .documentation(
                 "The protocol compiler can output a FileDescriptorSet containing the .proto\nfiles it parses.")
             .build())
-        .addOption(OptionElement.create("java_package", "com.google.protobuf", false))
+        .addOption(OptionElement.create("java_package", "com.google.protobuf"))
         .build();
     assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
   }
@@ -533,12 +533,12 @@ public final class ProtoParserTest {
         .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
-        .addOption(OptionElement.create("default", EnumConstantElement.anonymous("STRING"), false))
-        .addOption(OptionElement.create("deprecated", true, false))
+        .addOption(OptionElement.create("default", EnumConstantElement.anonymous("STRING")))
+        .addOption(OptionElement.create("deprecated", true))
         .build();
     assertThat(field.options()).containsOnly( //
-        OptionElement.create("default", EnumConstantElement.anonymous("STRING"), false), //
-        OptionElement.create("deprecated", true, false));
+        OptionElement.create("default", EnumConstantElement.anonymous("STRING")), //
+        OptionElement.create("deprecated", true));
 
     TypeElement messageElement = MessageElement.builder()
         .name("FieldOptions")
@@ -570,7 +570,7 @@ public final class ProtoParserTest {
                 .type(BOOL)
                 .name("koka_ko_koka_ko")
                 .tag(1)
-                .addOption(OptionElement.create("default", true, false))
+                .addOption(OptionElement.create("default", true))
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
@@ -578,14 +578,14 @@ public final class ProtoParserTest {
                 .name("coodle_doodle_do")
                 .tag(2)
                 .addOption(OptionElement.create("delay", 100, true))
-                .addOption(OptionElement.create("default", false, false))
+                .addOption(OptionElement.create("default", false))
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
                 .type(BOOL)
                 .name("coo_coo_ca_cha")
                 .tag(3)
-                .addOption(OptionElement.create("default", true, false))
+                .addOption(OptionElement.create("default", true))
                 .addOption(OptionElement.create("delay", 200, true))
                 .build())
             .addField(FieldElement.builder()
@@ -761,11 +761,10 @@ public final class ProtoParserTest {
         .name("name")
         .tag(1)
         .addOption(OptionElement.create("default",
-            "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA",
-            false))
+            "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"))
         .build();
     assertThat(field.options()).containsOnly(OptionElement.create("default",
-        "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA", false));
+        "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"));
 
     TypeElement messageElement = MessageElement.builder().name("Foo").addField(field).build();
     ProtoFile expected = ProtoFile.builder("foo.proto").addType(messageElement).build();
@@ -952,14 +951,14 @@ public final class ProtoParserTest {
         .name("bar")
         .tag(1)
         .addOption(
-            OptionElement.create("validation.range", OptionElement.create("min", 1, true), true))
-        .addOption(OptionElement.create("validation.range", OptionElement.create("max", 100, true), true))
-        .addOption(OptionElement.create("default", 20, false))
+            OptionElement.create("validation.range", OptionElement.create("min", 1), true))
+        .addOption(OptionElement.create("validation.range", OptionElement.create("max", 100), true))
+        .addOption(OptionElement.create("default", 20))
         .build();
     assertThat(field.options()).containsOnly( //
-        OptionElement.create("validation.range", OptionElement.create("min", 1, true), true), //
-        OptionElement.create("validation.range", OptionElement.create("max", 100, true), true), //
-        OptionElement.create("default", 20, false));
+        OptionElement.create("validation.range", OptionElement.create("min", 1), true), //
+        OptionElement.create("validation.range", OptionElement.create("max", 100), true), //
+        OptionElement.create("default", 20));
 
     TypeElement expected = MessageElement.builder().name("Foo").addField(field).build();
     ProtoFile protoFile = ProtoFile.builder("foo.proto").addType(expected).build();

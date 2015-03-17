@@ -66,6 +66,10 @@ public abstract class OptionElement {
     return found;
   }
 
+  public static OptionElement create(String name, Object value) {
+    return create(name, value, false);
+  }
+
   public static OptionElement create(String name, Object value, boolean isParenthesized) {
     checkNotNull(name, "name");
     checkNotNull(value, "value");
@@ -91,7 +95,7 @@ public abstract class OptionElement {
     } else if (value instanceof OptionElement) {
       OptionElement optionValue = (OptionElement) value;
       // Treat nested options as non-parenthesized always, prevents double parentheses.
-      optionValue = OptionElement.create(optionValue.name(), optionValue.value(), false);
+      optionValue = OptionElement.create(optionValue.name(), optionValue.value());
       builder.append(formatName()).append('.').append(optionValue.toString());
     } else if (value instanceof EnumConstantElement) {
       EnumConstantElement enumValue = (EnumConstantElement) value;
