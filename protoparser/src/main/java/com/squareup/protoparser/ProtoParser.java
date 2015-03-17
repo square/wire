@@ -160,7 +160,7 @@ public final class ProtoParser {
       return readRpc(documentation);
     } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
       if (!context.permitsField()) throw unexpected("fields must be nested");
-      MessageElement.Label labelEnum = MessageElement.Label.valueOf(label.toUpperCase(Locale.US));
+      FieldElement.Label labelEnum = FieldElement.Label.valueOf(label.toUpperCase(Locale.US));
       return readField(documentation, labelEnum);
     } else if (label.equals("oneof")) {
       if (!context.permitsOneOf()) throw unexpected("'oneof' must be nested in message");
@@ -313,7 +313,7 @@ public final class ProtoParser {
   }
 
   /** Reads an field declaration and returns it. */
-  private FieldElement readField(String documentation, MessageElement.Label label) {
+  private FieldElement readField(String documentation, FieldElement.Label label) {
     DataType type = readDataType();
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
@@ -359,7 +359,7 @@ public final class ProtoParser {
         pos++;
         break;
       }
-      builder.addField(readField(nestedDocumentation, MessageElement.Label.ONE_OF));
+      builder.addField(readField(nestedDocumentation, FieldElement.Label.ONE_OF));
     }
     return builder.build();
   }

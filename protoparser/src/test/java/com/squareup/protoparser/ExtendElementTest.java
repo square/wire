@@ -3,7 +3,7 @@ package com.squareup.protoparser;
 import org.junit.Test;
 
 import static com.squareup.protoparser.DataType.ScalarType.STRING;
-import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
+import static com.squareup.protoparser.FieldElement.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 

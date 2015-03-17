@@ -32,7 +32,7 @@ public abstract class MessageElement implements TypeElement {
 
   static void validateFieldLabel(String qualifiedName, List<FieldElement> fields) {
     for (FieldElement field : fields) {
-      if (field.label() == Label.ONE_OF) {
+      if (field.label() == FieldElement.Label.ONE_OF) {
         throw new IllegalStateException("Field '"
             + field.name()
             + "' in "
@@ -95,12 +95,6 @@ public abstract class MessageElement implements TypeElement {
       }
     }
     return builder.append("}\n").toString();
-  }
-
-  public enum Label {
-    OPTIONAL, REQUIRED, REPEATED,
-    /** Indicates the field is a member of a {@code oneof} block. */
-    ONE_OF
   }
 
   public static final class Builder {
