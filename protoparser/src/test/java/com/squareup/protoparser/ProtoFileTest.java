@@ -161,7 +161,7 @@ public class ProtoFileTest {
 
   @Test public void simpleWithOptionsToString() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    OptionElement option = OptionElement.create("kit", "kat", false);
+    OptionElement option = OptionElement.create("kit", "kat");
     ProtoFile file = ProtoFile.builder("file.proto").addOption(option).addType(element).build();
     String expected = ""
         + "// file.proto\n"
@@ -203,8 +203,8 @@ public class ProtoFileTest {
         .name("Extend2")
         .qualifiedName("example.simple.Extend2")
         .build();
-    OptionElement option1 = OptionElement.create("kit", "kat", false);
-    OptionElement option2 = OptionElement.create("foo", "bar", false);
+    OptionElement option1 = OptionElement.create("kit", "kat");
+    OptionElement option2 = OptionElement.create("foo", "bar");
     ServiceElement service1 = ServiceElement.builder()
         .name("Service1")
         .qualifiedName("example.simple.Service1")

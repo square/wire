@@ -79,7 +79,7 @@ public class EnumElementTest {
   @Test public void simpleWithOptionsToString() {
     EnumElement element = EnumElement.builder()
         .name("Enum")
-        .addOption(OptionElement.create("kit", "kat", false))
+        .addOption(OptionElement.create("kit", "kat"))
         .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
         .addConstant(EnumConstantElement.builder().name("TWO").tag(2).build())
         .addConstant(EnumConstantElement.builder().name("SIX").tag(6).build())
@@ -136,7 +136,7 @@ public class EnumElementTest {
         .name("NAME")
         .tag(1)
         .addOption(OptionElement.create("kit", "kat", true))
-        .addOption(OptionElement.create("tit", "tat", false))
+        .addOption(OptionElement.create("tit", "tat"))
         .build();
     String expected = "NAME = 1 [\n"
         + "  (kit) = \"kat\",\n"
@@ -163,7 +163,7 @@ public class EnumElementTest {
     EnumElement element = EnumElement.builder()
         .name("Enum1")
         .qualifiedName("example.Enum")
-        .addOption(OptionElement.create("allow_alias", true, false))
+        .addOption(OptionElement.create("allow_alias", true))
         .addConstant(EnumConstantElement.builder().name("VALUE1").tag(1).build())
         .addConstant(EnumConstantElement.builder().name("VALUE2").tag(1).build())
         .build();

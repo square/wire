@@ -128,7 +128,7 @@ public class MessageElementTest {
     TypeElement element = MessageElement.builder()
         .name("Message")
         .addField(field)
-        .addOption(OptionElement.create("kit", "kat", false))
+        .addOption(OptionElement.create("kit", "kat"))
         .build();
     String expected = ""
         + "message Message {\n"
@@ -247,7 +247,7 @@ public class MessageElementTest {
     ExtensionsElement extensions1 = ExtensionsElement.create(500, 501);
     ExtensionsElement extensions2 = ExtensionsElement.create(503, 503);
     TypeElement nested = MessageElement.builder().name("Nested").addField(field1).build();
-    OptionElement option = OptionElement.create("kit", "kat", false);
+    OptionElement option = OptionElement.create("kit", "kat");
     TypeElement element = MessageElement.builder()
         .name("Message")
         .addField(field1)
@@ -325,7 +325,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name")
         .tag(1)
-        .addOption(OptionElement.create("kit", "kat", false))
+        .addOption(OptionElement.create("kit", "kat"))
         .build();
     String expected = "required string name = 1 [\n"
         + "  kit = \"kat\"\n"
@@ -437,7 +437,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("deprecated", "true", false))
+        .addOption(OptionElement.create("deprecated", "true"))
         .build();
     assertThat(field.isDeprecated()).isTrue();
   }
@@ -448,7 +448,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("deprecated", "false", false))
+        .addOption(OptionElement.create("deprecated", "false"))
         .build();
     assertThat(field.isDeprecated()).isFalse();
   }
@@ -469,7 +469,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("packed", "true", false))
+        .addOption(OptionElement.create("packed", "true"))
         .build();
     assertThat(field.isPacked()).isTrue();
   }
@@ -480,7 +480,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("packed", "false", false))
+        .addOption(OptionElement.create("packed", "false"))
         .build();
     assertThat(field.isPacked()).isFalse();
   }
@@ -501,7 +501,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("default", "foo", false))
+        .addOption(OptionElement.create("default", "foo"))
         .build();
     assertThat(field.getDefault()).isEqualTo("foo");
   }

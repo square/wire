@@ -80,7 +80,7 @@ public class ServiceElementTest {
   @Test public void singleWithOptionsToString() {
     ServiceElement service = ServiceElement.builder()
         .name("Service")
-        .addOption(OptionElement.create("foo", "bar", false))
+        .addOption(OptionElement.create("foo", "bar"))
         .addRpc(RpcElement.builder()
             .name("Name")
             .requestType(NamedType.create("RequestType"))
@@ -158,7 +158,7 @@ public class ServiceElementTest {
         .name("Name")
         .requestType(NamedType.create("RequestType"))
         .responseType(NamedType.create("ResponseType"))
-        .addOption(OptionElement.create("foo", "bar", false))
+        .addOption(OptionElement.create("foo", "bar"))
         .build();
     String expected = ""
         + "rpc Name (RequestType) returns (ResponseType) {\n"
