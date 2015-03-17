@@ -4,8 +4,8 @@ import org.junit.Test;
 
 import static com.squareup.protoparser.DataType.ScalarType.BOOL;
 import static com.squareup.protoparser.DataType.ScalarType.STRING;
-import static com.squareup.protoparser.MessageElement.Label.ONE_OF;
-import static com.squareup.protoparser.MessageElement.Label.REQUIRED;
+import static com.squareup.protoparser.FieldElement.Label.ONE_OF;
+import static com.squareup.protoparser.FieldElement.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 

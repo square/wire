@@ -22,7 +22,7 @@ public abstract class FieldElement {
   FieldElement() {
   }
 
-  public abstract MessageElement.Label label();
+  public abstract Label label();
   /**
    * Returns the type of this field. May be a message type name, an enum type
    * name, or a <a href="https://developers.google.com/protocol-buffers/docs/proto#scalar">
@@ -55,7 +55,7 @@ public abstract class FieldElement {
   @Override public final String toString() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    if (label() != MessageElement.Label.ONE_OF) {
+    if (label() != Label.ONE_OF) {
       builder.append(label().name().toLowerCase(Locale.US)).append(' ');
     }
     builder.append(type())
@@ -73,8 +73,14 @@ public abstract class FieldElement {
     return builder.append(";\n").toString();
   }
 
+  public enum Label {
+    OPTIONAL, REQUIRED, REPEATED,
+    /** Indicates the field is a member of a {@code oneof} block. */
+    ONE_OF
+  }
+
   public static final class Builder {
-    private MessageElement.Label label;
+    private Label label;
     private DataType type;
     private String name;
     private Integer tag;
@@ -84,7 +90,7 @@ public abstract class FieldElement {
     private Builder() {
     }
 
-    public Builder label(MessageElement.Label label) {
+    public Builder label(Label label) {
       this.label = checkNotNull(label, "label");
       return this;
     }
