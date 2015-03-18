@@ -116,22 +116,6 @@ public final class ProtoParserTest {
     assertThat(ProtoParser.parse("test.proto", proto)).isEqualTo(expected);
   }
 
-  @Test public void field() throws Exception {
-    FieldElement field = FieldElement.builder()
-        .label(OPTIONAL)
-        .type(NamedType.create("CType"))
-        .name("ctype")
-        .tag(1)
-        .addOption(OptionElement.create("default", "STRING"))
-        .addOption(OptionElement.create("deprecated", "true"))
-        .build();
-    assertThat(field.isDeprecated()).isTrue();
-    assertThat(field.getDefault()).isEqualTo("STRING");
-    assertThat(field.options()).containsOnly( //
-        OptionElement.create("default", "STRING"), //
-        OptionElement.create("deprecated", "true"));
-  }
-
   @Test public void singleLineComment() {
     String proto = ""
         + "// Test all the things!\n"

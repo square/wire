@@ -48,9 +48,9 @@ public abstract class FieldElement {
   }
 
   /** Returns the {@code default} option value or {@code null}. */
-  public final String getDefault() {
+  public final Object getDefault() {
     OptionElement defaultOption = OptionElement.findByName(options(), "default");
-    return defaultOption != null ? (String) defaultOption.value() : null;
+    return defaultOption != null ? defaultOption.value() : null;
   }
 
   @Override public final String toString() {

@@ -5,11 +5,28 @@ import java.util.Collections;
 import org.junit.Test;
 
 import static com.squareup.protoparser.DataType.ScalarType.STRING;
+import static com.squareup.protoparser.FieldElement.Label.OPTIONAL;
 import static com.squareup.protoparser.FieldElement.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class FieldElementTest {
+  @Test public void field() throws Exception {
+    FieldElement field = FieldElement.builder()
+        .label(OPTIONAL)
+        .type(DataType.NamedType.create("CType"))
+        .name("ctype")
+        .tag(1)
+        .addOption(OptionElement.create("default", EnumConstantElement.anonymous("TEST")))
+        .addOption(OptionElement.create("deprecated", "true"))
+        .build();
+    assertThat(field.isDeprecated()).isTrue();
+    assertThat(field.getDefault()).isEqualTo(EnumConstantElement.anonymous("TEST"));
+    assertThat(field.options()).containsOnly( //
+        OptionElement.create("default", EnumConstantElement.anonymous("TEST")), //
+        OptionElement.create("deprecated", "true"));
+  }
+
   @Test public void addMultipleOptions() {
     OptionElement kitKat = OptionElement.create("kit", "kat");
     OptionElement fooBar = OptionElement.create("foo", "bar");
