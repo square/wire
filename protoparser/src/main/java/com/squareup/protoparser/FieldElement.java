@@ -38,13 +38,13 @@ public abstract class FieldElement {
   /** Returns true when the {@code deprecated} option is present and set to true. */
   public final boolean isDeprecated() {
     OptionElement deprecatedOption = OptionElement.findByName(options(), "deprecated");
-    return deprecatedOption != null && "true".equals(deprecatedOption.value());
+    return deprecatedOption != null && "true".equals(String.valueOf(deprecatedOption.value()));
   }
 
   /** Returns true when the {@code packed} option is present and set to true. */
   public final boolean isPacked() {
     OptionElement packedOption = OptionElement.findByName(options(), "packed");
-    return packedOption != null && "true".equals(packedOption.value());
+    return packedOption != null && "true".equals(String.valueOf(packedOption.value()));
   }
 
   /** Returns the {@code default} option value or {@code null}. */
