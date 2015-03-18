@@ -1,6 +1,7 @@
 package com.squareup.protoparser;
 
 import com.squareup.protoparser.DataType.NamedType;
+import java.util.Collections;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +65,18 @@ public final class RpcElementTest {
     }
     try {
       RpcElement.builder().addOption(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("option == null");
+    }
+    try {
+      RpcElement.builder().addOptions(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("options == null");
+    }
+    try {
+      RpcElement.builder().addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option == null");

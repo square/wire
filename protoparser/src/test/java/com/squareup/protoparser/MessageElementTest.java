@@ -1,5 +1,8 @@
 package com.squareup.protoparser;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import org.junit.Test;
 
 import static com.squareup.protoparser.DataType.ScalarType.BOOL;
@@ -51,7 +54,31 @@ public class MessageElementTest {
       assertThat(e).hasMessage("field == null");
     }
     try {
+      MessageElement.builder().addFields(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("fields == null");
+    }
+    try {
+      MessageElement.builder().addFields(Collections.<FieldElement>singleton(null));
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("field == null");
+    }
+    try {
       MessageElement.builder().addType(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("type == null");
+    }
+    try {
+      MessageElement.builder().addTypes(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("types == null");
+    }
+    try {
+      MessageElement.builder().addTypes(Collections.<TypeElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("type == null");
@@ -63,13 +90,49 @@ public class MessageElementTest {
       assertThat(e).hasMessage("oneOf == null");
     }
     try {
-      MessageElement.builder().addExtensions(null);
+      MessageElement.builder().addOneOfs(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("oneOfs == null");
+    }
+    try {
+      MessageElement.builder().addOneOfs(Collections.<OneOfElement>singleton(null));
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("oneOf == null");
+    }
+    try {
+      MessageElement.builder().addExtensions((ExtensionsElement) null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("extensions == null");
+    }
+    try {
+      MessageElement.builder().addExtensions((Collection<ExtensionsElement>) null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("extensions == null");
+    }
+    try {
+      MessageElement.builder().addExtensions(Collections.<ExtensionsElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extensions == null");
     }
     try {
       MessageElement.builder().addOption(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("option == null");
+    }
+    try {
+      MessageElement.builder().addOptions(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("options == null");
+    }
+    try {
+      MessageElement.builder().addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option == null");
@@ -85,12 +148,7 @@ public class MessageElementTest {
   @Test public void simpleToString() {
     TypeElement element = MessageElement.builder()
         .name("Message")
-        .addField(FieldElement.builder()
-            .label(REQUIRED)
-            .type(STRING)
-            .name("name")
-            .tag(1)
-            .build())
+        .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
         .build();
     String expected = ""
         + "message Message {\n"
@@ -99,16 +157,28 @@ public class MessageElementTest {
     assertThat(element.toString()).isEqualTo(expected);
   }
 
+  @Test public void addMultipleFields() {
+    FieldElement firstName =
+        FieldElement.builder().label(REQUIRED).type(STRING).name("first_name").tag(1).build();
+    FieldElement lastName =
+        FieldElement.builder().label(REQUIRED).type(STRING).name("last_name").tag(2).build();
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addFields(Arrays.asList(firstName, lastName))
+        .build();
+    String expected = ""
+        + "message Message {\n"
+        + "  required string first_name = 1;\n"
+        + "  required string last_name = 2;\n"
+        + "}\n";
+    assertThat(element.toString()).isEqualTo(expected);
+  }
+
   @Test public void simpleWithDocumentationToString() {
     TypeElement element = MessageElement.builder()
         .name("Message")
         .documentation("Hello")
-        .addField(FieldElement.builder()
-            .label(REQUIRED)
-            .type(STRING)
-            .name("name")
-            .tag(1)
-            .build())
+        .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
         .build();
     String expected = ""
         + "// Hello\n"
@@ -139,23 +209,38 @@ public class MessageElementTest {
     assertThat(element.toString()).isEqualTo(expected);
   }
 
+  @Test public void addMultipleOptions() {
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type(STRING)
+        .name("name")
+        .tag(1)
+        .build();
+    OptionElement kitKat = OptionElement.create("kit", "kat");
+    OptionElement fooBar = OptionElement.create("foo", "bar");
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addField(field)
+        .addOptions(Arrays.asList(kitKat, fooBar))
+        .build();
+    String expected = ""
+        + "message Message {\n"
+        + "  option kit = \"kat\";\n"
+        + "  option foo = \"bar\";\n"
+        + "\n"
+        + "  required string name = 1;\n"
+        + "}\n";
+    assertThat(element.toString()).isEqualTo(expected);
+  }
+
   @Test public void simpleWithNestedElementsToString() {
     TypeElement element = MessageElement.builder()
         .name("Message")
-        .addField(FieldElement.builder()
-            .label(REQUIRED)
-            .type(STRING)
-            .name("name")
-            .tag(1)
-            .build())
+        .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
         .addType(MessageElement.builder()
             .name("Nested")
-            .addField(FieldElement.builder()
-                .label(REQUIRED)
-                .type(STRING)
-                .name("name")
-                .tag(1)
-                .build())
+            .addField(
+                FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
             .build())
         .build();
     String expected = ""
@@ -165,6 +250,29 @@ public class MessageElementTest {
         + "  message Nested {\n"
         + "    required string name = 1;\n"
         + "  }\n"
+        + "}\n";
+    assertThat(element.toString()).isEqualTo(expected);
+  }
+
+  @Test public void addMultipleTypes() {
+    TypeElement nested1 = MessageElement.builder().name("Nested1").build();
+    TypeElement nested2 = MessageElement.builder().name("Nested2").build();
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addField(FieldElement.builder()
+            .label(REQUIRED)
+            .type(STRING)
+            .name("name")
+            .tag(1)
+            .build())
+        .addTypes(Arrays.asList(nested1, nested2))
+        .build();
+    String expected = ""
+        + "message Message {\n"
+        + "  required string name = 1;\n"
+        + "\n"
+        + "  message Nested1 {}\n"
+        + "  message Nested2 {}\n"
         + "}\n";
     assertThat(element.toString()).isEqualTo(expected);
   }
@@ -189,23 +297,66 @@ public class MessageElementTest {
     assertThat(element.toString()).isEqualTo(expected);
   }
 
+  @Test public void addMultipleExtensions() {
+    ExtensionsElement fives = ExtensionsElement.create(500, 501);
+    ExtensionsElement sixes = ExtensionsElement.create(600, 601);
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addField(FieldElement.builder()
+            .label(REQUIRED)
+            .type(STRING)
+            .name("name")
+            .tag(1)
+            .build())
+        .addExtensions(Arrays.asList(fives, sixes))
+        .build();
+    String expected = ""
+        + "message Message {\n"
+        + "  required string name = 1;\n"
+        + "\n"
+        + "  extensions 500 to 501;\n"
+        + "  extensions 600 to 601;\n"
+        + "}\n";
+    assertThat(element.toString()).isEqualTo(expected);
+  }
+
   @Test public void oneOfToString() {
     TypeElement element = MessageElement.builder()
         .name("Message")
         .addOneOf(OneOfElement.builder()
             .name("hi")
-            .addField(FieldElement.builder()
-                .label(ONE_OF)
-                .type(STRING)
-                .name("name")
-                .tag(1)
-                .build())
+            .addField(FieldElement.builder().label(ONE_OF).type(STRING).name("name").tag(1).build())
             .build())
         .build();
     String expected = ""
         + "message Message {\n"
         + "  oneof hi {\n"
         + "    string name = 1;\n"
+        + "  }\n"
+        + "}\n";
+    assertThat(element.toString()).isEqualTo(expected);
+  }
+
+  @Test public void addMultipleOneOfs() {
+    OneOfElement hi = OneOfElement.builder()
+        .name("hi")
+        .addField(FieldElement.builder().label(ONE_OF).type(STRING).name("name").tag(1).build())
+        .build();
+    OneOfElement hey = OneOfElement.builder()
+        .name("hey")
+        .addField(FieldElement.builder().label(ONE_OF).type(STRING).name("city").tag(2).build())
+        .build();
+    TypeElement element = MessageElement.builder()
+        .name("Message")
+        .addOneOfs(Arrays.asList(hi, hey))
+        .build();
+    String expected = ""
+        + "message Message {\n"
+        + "  oneof hi {\n"
+        + "    string name = 1;\n"
+        + "  }\n"
+        + "  oneof hey {\n"
+        + "    string city = 2;\n"
         + "  }\n"
         + "}\n";
     assertThat(element.toString()).isEqualTo(expected);

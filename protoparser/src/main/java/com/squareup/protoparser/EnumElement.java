@@ -3,6 +3,7 @@ package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -130,8 +131,22 @@ public abstract class EnumElement implements TypeElement {
       return this;
     }
 
+    public Builder addConstants(Collection<EnumConstantElement> constants) {
+      for (EnumConstantElement constant : checkNotNull(constants, "constants")) {
+        addConstant(constant);
+      }
+      return this;
+    }
+
     public Builder addOption(OptionElement option) {
       options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public Builder addOptions(Collection<OptionElement> options) {
+      for (OptionElement option : checkNotNull(options, "options")) {
+        addOption(option);
+      }
       return this;
     }
 

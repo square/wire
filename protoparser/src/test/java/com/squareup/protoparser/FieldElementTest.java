@@ -1,5 +1,7 @@
 package com.squareup.protoparser;
 
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 
 import static com.squareup.protoparser.DataType.ScalarType.STRING;
@@ -8,6 +10,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class FieldElementTest {
+  @Test public void addMultipleOptions() {
+    OptionElement kitKat = OptionElement.create("kit", "kat");
+    OptionElement fooBar = OptionElement.create("foo", "bar");
+    FieldElement field = FieldElement.builder()
+        .label(REQUIRED)
+        .type(STRING)
+        .name("name")
+        .tag(1)
+        .addOptions(Arrays.asList(kitKat, fooBar))
+        .build();
+    String expected = ""
+        + "required string name = 1 [\n"
+        + "  kit = \"kat\"\n"
+        + "  foo = \"bar\"\n"
+        + "];\n";
+    assertThat(field.toString()).isEqualTo(expected);
+  }
+
   @Test public void labelRequired() {
     try {
       FieldElement.builder().type(STRING).name("name").tag(1).build();
@@ -65,6 +85,18 @@ public final class FieldElementTest {
     }
     try {
       FieldElement.builder().addOption(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("option == null");
+    }
+    try {
+      FieldElement.builder().addOptions(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("options == null");
+    }
+    try {
+      FieldElement.builder().addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option == null");

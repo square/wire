@@ -1,5 +1,7 @@
 package com.squareup.protoparser;
 
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +49,31 @@ public class EnumElementTest {
       assertThat(e).hasMessage("constant == null");
     }
     try {
+      EnumElement.builder().addConstants(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("constants == null");
+    }
+    try {
+      EnumElement.builder().addConstants(Collections.<EnumConstantElement>singleton(null));
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("constant == null");
+    }
+    try {
       EnumElement.builder().addOption(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("option == null");
+    }
+    try {
+      EnumElement.builder().addOptions(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("options == null");
+    }
+    try {
+      EnumElement.builder().addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option == null");
@@ -76,6 +102,23 @@ public class EnumElementTest {
     assertThat(element.toString()).isEqualTo(expected);
   }
 
+  @Test public void addMultipleConstants() {
+    EnumConstantElement one = EnumConstantElement.builder().name("ONE").tag(1).build();
+    EnumConstantElement two = EnumConstantElement.builder().name("TWO").tag(2).build();
+    EnumConstantElement six = EnumConstantElement.builder().name("SIX").tag(6).build();
+    EnumElement element = EnumElement.builder()
+        .name("Enum")
+        .addConstants(Arrays.asList(one, two, six))
+        .build();
+    String expected = ""
+        + "enum Enum {\n"
+        + "  ONE = 1;\n"
+        + "  TWO = 2;\n"
+        + "  SIX = 6;\n"
+        + "}\n";
+    assertThat(element.toString()).isEqualTo(expected);
+  }
+
   @Test public void simpleWithOptionsToString() {
     EnumElement element = EnumElement.builder()
         .name("Enum")
@@ -91,6 +134,24 @@ public class EnumElementTest {
         + "  ONE = 1;\n"
         + "  TWO = 2;\n"
         + "  SIX = 6;\n"
+        + "}\n";
+    assertThat(element.toString()).isEqualTo(expected);
+  }
+
+  @Test public void addMultipleOptions() {
+    OptionElement kitKat = OptionElement.create("kit", "kat");
+    OptionElement fooBar = OptionElement.create("foo", "bar");
+    EnumElement element = EnumElement.builder()
+        .name("Enum")
+        .addOptions(Arrays.asList(kitKat, fooBar))
+        .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
+        .build();
+    String expected = ""
+        + "enum Enum {\n"
+        + "  option kit = \"kat\";\n"
+        + "  option foo = \"bar\";\n"
+        + "\n"
+        + "  ONE = 1;\n"
         + "}\n";
     assertThat(element.toString()).isEqualTo(expected);
   }

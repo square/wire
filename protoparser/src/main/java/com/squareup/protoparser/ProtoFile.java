@@ -3,6 +3,7 @@ package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -129,8 +130,22 @@ public abstract class ProtoFile {
       return this;
     }
 
+    public Builder addDependencies(Collection<String> dependencies) {
+      for (String dependency : checkNotNull(dependencies, "dependencies")) {
+        addDependency(dependency);
+      }
+      return this;
+    }
+
     public Builder addPublicDependency(String dependency) {
       publicDependencies.add(checkNotNull(dependency, "dependency"));
+      return this;
+    }
+
+    public Builder addPublicDependencies(Collection<String> dependencies) {
+      for (String dependency : checkNotNull(dependencies, "dependencies")) {
+        addPublicDependency(dependency);
+      }
       return this;
     }
 
@@ -139,8 +154,22 @@ public abstract class ProtoFile {
       return this;
     }
 
+    public Builder addTypes(Collection<TypeElement> types) {
+      for (TypeElement type : checkNotNull(types, "types")) {
+        addType(type);
+      }
+      return this;
+    }
+
     public Builder addService(ServiceElement service) {
       services.add(checkNotNull(service, "service"));
+      return this;
+    }
+
+    public Builder addServices(Collection<ServiceElement> services) {
+      for (ServiceElement service : checkNotNull(services, "services")) {
+        addService(service);
+      }
       return this;
     }
 
@@ -149,8 +178,23 @@ public abstract class ProtoFile {
       return this;
     }
 
+    public Builder addExtendDeclarations(Collection<ExtendElement> extendDeclarations) {
+      for (ExtendElement extendDeclaration : checkNotNull(extendDeclarations,
+          "extendDeclarations")) {
+        addExtendDeclaration(extendDeclaration);
+      }
+      return this;
+    }
+
     public Builder addOption(OptionElement option) {
       options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public Builder addOptions(Collection<OptionElement> options) {
+      for (OptionElement option : checkNotNull(options, "options")) {
+        addOption(option);
+      }
       return this;
     }
 

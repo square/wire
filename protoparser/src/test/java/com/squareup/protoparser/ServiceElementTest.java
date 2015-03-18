@@ -1,6 +1,8 @@
 package com.squareup.protoparser;
 
 import com.squareup.protoparser.DataType.NamedType;
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +50,31 @@ public class ServiceElementTest {
       assertThat(e).hasMessage("rpc == null");
     }
     try {
+      ServiceElement.builder().addRpcs(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("rpcs == null");
+    }
+    try {
+      ServiceElement.builder().addRpcs(Collections.<RpcElement>singleton(null));
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("rpc == null");
+    }
+    try {
       ServiceElement.builder().addOption(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("option == null");
+    }
+    try {
+      ServiceElement.builder().addOptions(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("options == null");
+    }
+    try {
+      ServiceElement.builder().addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option == null");
@@ -77,6 +103,29 @@ public class ServiceElementTest {
     assertThat(service.toString()).isEqualTo(expected);
   }
 
+  @Test public void addMultipleRpcs() {
+    RpcElement firstName = RpcElement.builder()
+        .name("FirstName")
+        .requestType(NamedType.create("RequestType"))
+        .responseType(NamedType.create("ResponseType"))
+        .build();
+    RpcElement lastName = RpcElement.builder()
+        .name("LastName")
+        .requestType(NamedType.create("RequestType"))
+        .responseType(NamedType.create("ResponseType"))
+        .build();
+    ServiceElement service = ServiceElement.builder()
+        .name("Service")
+        .addRpcs(Arrays.asList(firstName, lastName))
+        .build();
+    String expected = ""
+        + "service Service {\n"
+        + "  rpc FirstName (RequestType) returns (ResponseType);\n"
+        + "  rpc LastName (RequestType) returns (ResponseType);\n"
+        + "}\n";
+    assertThat(service.toString()).isEqualTo(expected);
+  }
+
   @Test public void singleWithOptionsToString() {
     ServiceElement service = ServiceElement.builder()
         .name("Service")
@@ -89,6 +138,28 @@ public class ServiceElementTest {
         .build();
     String expected = ""
         + "service Service {\n"
+        + "  option foo = \"bar\";\n"
+        + "\n"
+        + "  rpc Name (RequestType) returns (ResponseType);\n"
+        + "}\n";
+    assertThat(service.toString()).isEqualTo(expected);
+  }
+
+  @Test public void addMultipleOptions() {
+    OptionElement kitKat = OptionElement.create("kit", "kat");
+    OptionElement fooBar = OptionElement.create("foo", "bar");
+    ServiceElement service = ServiceElement.builder()
+        .name("Service")
+        .addOptions(Arrays.asList(kitKat, fooBar))
+        .addRpc(RpcElement.builder()
+            .name("Name")
+            .requestType(NamedType.create("RequestType"))
+            .responseType(NamedType.create("ResponseType"))
+            .build())
+        .build();
+    String expected = ""
+        + "service Service {\n"
+        + "  option kit = \"kat\";\n"
         + "  option foo = \"bar\";\n"
         + "\n"
         + "  rpc Name (RequestType) returns (ResponseType);\n"
