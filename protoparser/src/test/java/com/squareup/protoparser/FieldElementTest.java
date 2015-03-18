@@ -1,15 +1,71 @@
 package com.squareup.protoparser;
 
+import com.squareup.protoparser.DataType.NamedType;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
 import static com.squareup.protoparser.DataType.ScalarType.STRING;
+import static com.squareup.protoparser.FieldElement.Label.OPTIONAL;
 import static com.squareup.protoparser.FieldElement.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class FieldElementTest {
+  @Test public void field() {
+    FieldElement field = FieldElement.builder()
+        .label(OPTIONAL)
+        .type(NamedType.create("CType"))
+        .name("ctype")
+        .tag(1)
+        .addOption(OptionElement.create("default", EnumConstantElement.anonymous("TEST")))
+        .addOption(OptionElement.create("deprecated", "true"))
+        .build();
+    assertThat(field.isDeprecated()).isTrue();
+    assertThat(field.getDefault()).isEqualTo(EnumConstantElement.anonymous("TEST"));
+    assertThat(field.options()).containsOnly( //
+        OptionElement.create("default", EnumConstantElement.anonymous("TEST")), //
+        OptionElement.create("deprecated", "true"));
+  }
+
+  @Test public void deprecatedSupportStringAndBoolean() {
+    FieldElement field1 = FieldElement.builder()
+        .label(OPTIONAL)
+        .type(NamedType.create("CType"))
+        .name("ctype")
+        .tag(1)
+        .addOption(OptionElement.create("deprecated", "true"))
+        .build();
+    assertThat(field1.isDeprecated()).isTrue();
+    FieldElement field2 = FieldElement.builder()
+        .label(OPTIONAL)
+        .type(NamedType.create("CType"))
+        .name("ctype")
+        .tag(1)
+        .addOption(OptionElement.create("deprecated", true))
+        .build();
+    assertThat(field2.isDeprecated()).isTrue();
+  }
+
+  @Test public void packedSupportStringAndBoolean() {
+    FieldElement field1 = FieldElement.builder()
+        .label(OPTIONAL)
+        .type(NamedType.create("CType"))
+        .name("ctype")
+        .tag(1)
+        .addOption(OptionElement.create("packed", "true"))
+        .build();
+    assertThat(field1.isPacked()).isTrue();
+    FieldElement field2 = FieldElement.builder()
+        .label(OPTIONAL)
+        .type(NamedType.create("CType"))
+        .name("ctype")
+        .tag(1)
+        .addOption(OptionElement.create("packed", true))
+        .build();
+    assertThat(field2.isPacked()).isTrue();
+  }
+
   @Test public void addMultipleOptions() {
     OptionElement kitKat = OptionElement.create("kit", "kat");
     OptionElement fooBar = OptionElement.create("foo", "bar");
