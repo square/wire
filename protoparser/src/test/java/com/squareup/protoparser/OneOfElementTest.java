@@ -1,5 +1,6 @@
 package com.squareup.protoparser;
 
+import java.util.Collections;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +31,18 @@ public final class OneOfElementTest {
     }
     try {
       OneOfElement.builder().addField(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("field == null");
+    }
+    try {
+      OneOfElement.builder().addFields(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("fields == null");
+    }
+    try {
+      OneOfElement.builder().addFields(Collections.<FieldElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("field == null");

@@ -3,6 +3,7 @@ package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -117,6 +118,13 @@ public abstract class FieldElement {
 
     public Builder addOption(OptionElement option) {
       options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public Builder addOptions(Collection<OptionElement> options) {
+      for (OptionElement option : checkNotNull(options, "options")) {
+        addOption(option);
+      }
       return this;
     }
 

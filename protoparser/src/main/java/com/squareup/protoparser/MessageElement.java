@@ -3,6 +3,7 @@ package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -133,8 +134,22 @@ public abstract class MessageElement implements TypeElement {
       return this;
     }
 
+    public Builder addFields(Collection<FieldElement> fields) {
+      for (FieldElement field : checkNotNull(fields, "fields")) {
+        addField(field);
+      }
+      return this;
+    }
+
     public Builder addOneOf(OneOfElement oneOf) {
       oneOfs.add(checkNotNull(oneOf, "oneOf"));
+      return this;
+    }
+
+    public Builder addOneOfs(Collection<OneOfElement> oneOfs) {
+      for (OneOfElement oneOf : checkNotNull(oneOfs, "oneOfs")) {
+        addOneOf(oneOf);
+      }
       return this;
     }
 
@@ -143,13 +158,34 @@ public abstract class MessageElement implements TypeElement {
       return this;
     }
 
+    public Builder addTypes(Collection<TypeElement> types) {
+      for (TypeElement type : checkNotNull(types, "types")) {
+        addType(type);
+      }
+      return this;
+    }
+
     public Builder addExtensions(ExtensionsElement extensions) {
       this.extensions.add(checkNotNull(extensions, "extensions"));
       return this;
     }
 
+    public Builder addExtensions(Collection<ExtensionsElement> extensions) {
+      for (ExtensionsElement extension : checkNotNull(extensions, "extensions")) {
+        addExtensions(extension);
+      }
+      return this;
+    }
+
     public Builder addOption(OptionElement option) {
       options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public Builder addOptions(Collection<OptionElement> options) {
+      for (OptionElement option : checkNotNull(options, "options")) {
+        addOption(option);
+      }
       return this;
     }
 

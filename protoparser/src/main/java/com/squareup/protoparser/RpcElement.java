@@ -4,6 +4,7 @@ package com.squareup.protoparser;
 import com.google.auto.value.AutoValue;
 import com.squareup.protoparser.DataType.NamedType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.squareup.protoparser.Utils.appendDocumentation;
@@ -78,6 +79,13 @@ public abstract class RpcElement {
 
     public Builder addOption(OptionElement option) {
       options.add(checkNotNull(option, "option"));
+      return this;
+    }
+
+    public Builder addOptions(Collection<OptionElement> options) {
+      for (OptionElement option : checkNotNull(options, "options")) {
+        addOption(option);
+      }
       return this;
     }
 

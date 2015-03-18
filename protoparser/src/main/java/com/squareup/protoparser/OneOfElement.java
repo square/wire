@@ -3,6 +3,7 @@ package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.squareup.protoparser.Utils.appendDocumentation;
@@ -56,6 +57,13 @@ public abstract class OneOfElement {
 
     public Builder addField(FieldElement field) {
       fields.add(checkNotNull(field, "field"));
+      return this;
+    }
+
+    public Builder addFields(Collection<FieldElement> fields) {
+      for (FieldElement field : checkNotNull(fields, "fields")) {
+        addField(field);
+      }
       return this;
     }
 

@@ -1,5 +1,7 @@
 package com.squareup.protoparser;
 
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 
 import static com.squareup.protoparser.DataType.ScalarType.STRING;
@@ -48,6 +50,18 @@ public class ExtendElementTest {
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("field == null");
     }
+    try {
+      ExtendElement.builder().addFields(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("fields == null");
+    }
+    try {
+      ExtendElement.builder().addFields(Collections.<FieldElement>singleton(null));
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("field == null");
+    }
   }
 
   @Test public void emptyToString() {
@@ -59,16 +73,28 @@ public class ExtendElementTest {
   @Test public void simpleToString() {
     ExtendElement extend = ExtendElement.builder()
         .name("Name")
-        .addField(FieldElement.builder()
-            .label(REQUIRED)
-            .type(STRING)
-            .name("name")
-            .tag(1)
-            .build())
+        .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
         .build();
     String expected = ""
         + "extend Name {\n"
         + "  required string name = 1;\n"
+        + "}\n";
+    assertThat(extend.toString()).isEqualTo(expected);
+  }
+
+  @Test public void addMultipleFields() {
+    FieldElement firstName =
+        FieldElement.builder().label(REQUIRED).type(STRING).name("first_name").tag(1).build();
+    FieldElement lastName =
+        FieldElement.builder().label(REQUIRED).type(STRING).name("last_name").tag(2).build();
+    ExtendElement extend = ExtendElement.builder()
+        .name("Name")
+        .addFields(Arrays.asList(firstName, lastName))
+        .build();
+    String expected = ""
+        + "extend Name {\n"
+        + "  required string first_name = 1;\n"
+        + "  required string last_name = 2;\n"
         + "}\n";
     assertThat(extend.toString()).isEqualTo(expected);
   }

@@ -3,6 +3,7 @@ package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.squareup.protoparser.Utils.appendDocumentation;
@@ -19,8 +20,8 @@ public abstract class ServiceElement {
   public abstract String name();
   public abstract String qualifiedName();
   public abstract String documentation();
-  public abstract List<OptionElement> options();
   public abstract List<RpcElement> rpcs();
+  public abstract List<OptionElement> options();
 
   ServiceElement() {
   }
@@ -74,13 +75,27 @@ public abstract class ServiceElement {
       return this;
     }
 
+    public Builder addRpc(RpcElement rpc) {
+      rpcs.add(checkNotNull(rpc, "rpc"));
+      return this;
+    }
+
+    public Builder addRpcs(Collection<RpcElement> rpcs) {
+      for (RpcElement rpc : checkNotNull(rpcs, "rpcs")) {
+        addRpc(rpc);
+      }
+      return this;
+    }
+
     public Builder addOption(OptionElement option) {
       options.add(checkNotNull(option, "option"));
       return this;
     }
 
-    public Builder addRpc(RpcElement rpc) {
-      rpcs.add(checkNotNull(rpc, "rpc"));
+    public Builder addOptions(Collection<OptionElement> options) {
+      for (OptionElement option : checkNotNull(options, "options")) {
+        addOption(option);
+      }
       return this;
     }
 
@@ -88,8 +103,8 @@ public abstract class ServiceElement {
       checkNotNull(name, "name");
       checkNotNull(qualifiedName, "qualifiedName");
 
-      return new AutoValue_ServiceElement(name, qualifiedName, documentation,
-          immutableCopyOf(options), immutableCopyOf(rpcs));
+      return new AutoValue_ServiceElement(name, qualifiedName, documentation, immutableCopyOf(rpcs),
+          immutableCopyOf(options));
     }
   }
 }
