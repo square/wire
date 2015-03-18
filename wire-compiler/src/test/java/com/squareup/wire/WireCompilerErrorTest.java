@@ -17,7 +17,7 @@ package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
-import com.squareup.protoparser.ProtoSchemaParser;
+import com.squareup.protoparser.ProtoParser;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
@@ -49,7 +49,7 @@ public class WireCompilerErrorTest {
     @Override
     public ProtoFile parse(String filename) throws IOException {
       if (filename.equals(protoFileName)) {
-        return ProtoSchemaParser.parse(filename, new StringReader(source));
+        return ProtoParser.parse(filename, new StringReader(source));
       } else {
         throw new FileNotFoundException();
       }
@@ -141,7 +141,7 @@ public class WireCompilerErrorTest {
           + "}\n");
       fail();
     } catch (IllegalStateException e) {
-      assertEquals("Duplicate enum name QUIX in scope com.squareup.protos.test.Foo", e.getMessage());
+      assertEquals("Duplicate enum constant QUIX in scope com.squareup.protos.test.Foo", e.getMessage());
     }
   }
 

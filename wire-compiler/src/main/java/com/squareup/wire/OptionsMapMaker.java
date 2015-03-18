@@ -1,9 +1,10 @@
 package com.squareup.wire;
 
-import com.squareup.protoparser.EnumType;
-import com.squareup.protoparser.MessageType;
-import com.squareup.protoparser.Option;
-
+import com.squareup.protoparser.EnumConstantElement;
+import com.squareup.protoparser.EnumElement;
+import com.squareup.protoparser.FieldElement;
+import com.squareup.protoparser.MessageElement;
+import com.squareup.protoparser.OptionElement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,73 +19,73 @@ public class OptionsMapMaker {
   }
 
   /**
-   * Builds a nested map from the options defined on a {@link MessageType}.
+   * Builds a nested map from the options defined on a {@link MessageElement}.
    */
-  public Map<String, ?> createMessageOptionsMap(MessageType type) {
-    List<Option> options = type.getOptions();
+  public Map<String, ?> createMessageOptionsMap(MessageElement type) {
+    List<OptionElement> options = type.options();
     if (options.isEmpty()) {
       return null;
     }
 
     Map<String, Object> map = new LinkedHashMap<String, Object>();
-    for (Option option : options) {
-      insertOption(option.getName(), option.getValue(), type.getFullyQualifiedName(), map);
+    for (OptionElement option : options) {
+      insertOption(option.name(), option.value(), type.qualifiedName(), map);
     }
     return map;
   }
 
   /**
-   * Builds a map from the options defined on an {@link EnumType}.
+   * Builds a map from the options defined on an {@link EnumElement}.
    */
-  public Map<String, ?> createEnumOptionsMap(EnumType type) {
-    List<Option> options = type.getOptions();
+  public Map<String, ?> createEnumOptionsMap(EnumElement type) {
+    List<OptionElement> options = type.options();
     if (options.isEmpty()) {
       return null;
     }
 
     Map<String, Object> map = new LinkedHashMap<String, Object>();
-    for (Option option : type.getOptions()) {
-      insertOption(option.getName(), option.getValue(), "", map);
+    for (OptionElement option : type.options()) {
+      insertOption(option.name(), option.value(), "", map);
     }
     return map.isEmpty() ? null : map;
   }
 
   /**
-   * Builds a map from the options defined on the values of an {@link EnumType}.
+   * Builds a map from the options defined on the values of an {@link EnumElement}.
    */
-  public Map<String, ?> createEnumValueOptionsMap(EnumType type) {
+  public Map<String, ?> createEnumValueOptionsMap(EnumElement type) {
     Map<String, Object> map = new LinkedHashMap<String, Object>();
-    for (EnumType.Value value : type.getValues()) {
-      for (Option option : value.getOptions()) {
-        insertOption(option.getName(), option.getValue(), "", map);
+    for (EnumConstantElement value : type.constants()) {
+      for (OptionElement option : value.options()) {
+        insertOption(option.name(), option.value(), "", map);
       }
     }
     return map.isEmpty() ? null : map;
   }
 
   /**
-   * Builds a map from the options defined on a single value of an {@link EnumType}.
+   * Builds a map from the options defined on a single value of an {@link EnumElement}.
    */
-  public Map<String, ?> createSingleEnumValueOptionMap(EnumType.Value value) {
+  public Map<String, ?> createSingleEnumValueOptionMap(EnumConstantElement value) {
     Map<String, Object> map = new LinkedHashMap<String, Object>();
-    for (Option option : value.getOptions()) {
-      insertOption(option.getName(), option.getValue(), "", map);
+    for (OptionElement option : value.options()) {
+      insertOption(option.name(), option.value(), "", map);
     }
     return map.isEmpty() ? null : map;
   }
 
-  public Map<String, ?> createFieldOptionsMap(MessageType type, List<Option> options) {
+  public Map<String, ?> createFieldOptionsMap(MessageElement type, List<OptionElement> options) {
     if (options.isEmpty()) {
       return null;
     }
 
     Map<String, Object> map = new LinkedHashMap<String, Object>();
-    for (Option option : options) {
-      String key = option.getName();
+    for (OptionElement option : options) {
+      String key = option.name();
       if (WireCompiler.DEFAULT_FIELD_OPTION_KEYS.contains(key)) {
         continue;
       }
-      insertOption(key, option.getValue(), type.getFullyQualifiedName(), map);
+      insertOption(key, option.value(), type.qualifiedName(), map);
     }
     return map;
   }
@@ -191,7 +192,8 @@ public class OptionsMapMaker {
       String prefix = name.substring(0, firstDotAfterExtensionIndex);
       String suffix = name.substring(firstDotAfterExtensionIndex + 1);
       String fieldType = getFieldType(enclosingType, prefix);
-      insertOptionHelper(prefix, new Option(suffix, value), fieldType, map);
+      insertOptionHelper(prefix, OptionElement.create(suffix, OptionElement.Kind.STRING, value),
+          fieldType, map);
       return;
     }
 
@@ -199,11 +201,11 @@ public class OptionsMapMaker {
     ExtensionInfo info = compiler.isEnum(enclosingType) ? null : getExtensionInfo(name);
 
     // Deal with names that start with a suffix of the package name
-    if (info == null && compiler.getProtoFile().getPackageName().endsWith("." + name)
-        && value instanceof Option) {
-      name = compiler.prefixWithPackageName(((Option) value).getName());
+    if (info == null && compiler.getProtoFile().packageName().endsWith("." + name)
+        && value instanceof OptionElement) {
+      name = compiler.prefixWithPackageName(((OptionElement) value).name());
       info = compiler.getExtension(name);
-      value = ((Option) value).getValue();
+      value = ((OptionElement) value).value();
     }
 
     if (info != null) {
@@ -217,19 +219,19 @@ public class OptionsMapMaker {
     }
 
     if (value instanceof String) {
-      MessageType.Label fieldLabel = getFieldLabel(enclosingType, name);
+      FieldElement.Label fieldLabel = getFieldLabel(enclosingType, name);
       if (info != null) {
         fieldLabel = info.label;
       }
       insertStringOption(name, (String) value, map, fieldType, fieldLabel);
     } else if (value instanceof List) {
       insertListOption(name, (List<?>) value, enclosingType, map, fieldType);
-    } else if (value instanceof Option) {
-      insertOptionOption(name, (Option) value, enclosingType, map);
+    } else if (value instanceof OptionElement) {
+      insertOptionOption(name, (OptionElement) value, enclosingType, map);
     } else if (value instanceof Map) {
       insertMapOption(name, (Map<String, ?>) value, enclosingType, map);
     } else {
-      throw new RuntimeException("value is not an Option, String, List, or Map");
+      throw new RuntimeException("value is not an Option, String, List, or Map: " + value);
     }
   }
 
@@ -241,7 +243,7 @@ public class OptionsMapMaker {
     return info;
   }
 
-  private MessageType.Label getFieldLabel(String enclosingType, String nestedName) {
+  private FieldElement.Label getFieldLabel(String enclosingType, String nestedName) {
     FieldInfo fieldInfo = compiler.getField(enclosingType + "$" + nestedName);
     return fieldInfo == null ? null : fieldInfo.label;
   }
@@ -279,9 +281,9 @@ public class OptionsMapMaker {
 
   @SuppressWarnings("unchecked")
   private void insertStringOption(String name, String value, Map<String, Object> map,
-      String fieldType, MessageType.Label fieldLabel) {
+      String fieldType, FieldElement.Label fieldLabel) {
     value = getOptionInitializer(value, fieldType);
-    if (fieldLabel == MessageType.Label.REPEATED) {
+    if (fieldLabel == FieldElement.Label.REPEATED) {
       List<String> list = (List<String>) map.get(name);
       if (list == null) {
         list = new ArrayList<String>();
@@ -344,15 +346,15 @@ public class OptionsMapMaker {
     }
   }
 
-  private void insertOptionOption(String name, Option value, String enclosingType,
+  private void insertOptionOption(String name, OptionElement value, String enclosingType,
                                   Map<String, Object> map) {
     Map<String, Object> entryMap = getOrCreateFromMap(map, name);
     entryMap.put("@type", enclosingType);
 
-    String nestedName = value.getName();
+    String nestedName = value.name();
     String fieldType = getFieldType(enclosingType, nestedName);
     // Only rewrite enum initializers, others will be rewritten at the final insertion level
-    Object val = qualifyEnum(enclosingType, nestedName, fieldType, value.getValue());
+    Object val = qualifyEnum(enclosingType, nestedName, fieldType, value.value());
     insertOptionHelper(nestedName, val, enclosingType, entryMap);
   }
 

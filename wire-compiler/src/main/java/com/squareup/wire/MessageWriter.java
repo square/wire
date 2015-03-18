@@ -1,11 +1,13 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.EnumType;
-import com.squareup.protoparser.MessageType;
-import com.squareup.protoparser.Option;
+import com.squareup.protoparser.EnumConstantElement;
+import com.squareup.protoparser.EnumElement;
+import com.squareup.protoparser.FieldElement;
+import com.squareup.protoparser.MessageElement;
+import com.squareup.protoparser.OptionElement;
 import com.squareup.protoparser.ProtoFile;
-import com.squareup.protoparser.Type;
+import com.squareup.protoparser.TypeElement;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +24,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.lang.model.element.Modifier;
 
-import static com.squareup.protoparser.MessageType.Field;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -94,33 +95,32 @@ public class MessageWriter {
     }
   }
 
-  public void emitType(JavaWriter writer, Type type, String currentType, Map<String, ?> optionsMap,
-      boolean topLevel)
-      throws IOException {
+  public void emitType(JavaWriter writer, TypeElement type, String currentType,
+      Map<String, ?> optionsMap, boolean topLevel) throws IOException {
     writer.emitEmptyLine();
-    if (type instanceof MessageType) {
-      emitAll(writer, (MessageType) type, optionsMap, topLevel);
-      for (Type nestedType : type.getNestedTypes()) {
-        emitType(writer, nestedType, currentType + nestedType.getName() + ".", optionsMap, false);
+    if (type instanceof MessageElement) {
+      emitAll(writer, (MessageElement) type, optionsMap, topLevel);
+      for (TypeElement nestedType : type.nestedElements()) {
+        emitType(writer, nestedType, currentType + nestedType.name() + ".", optionsMap, false);
       }
       writer.endType();
-    } else if (type instanceof EnumType) {
-      EnumType enumType = (EnumType) type;
+    } else if (type instanceof EnumElement) {
+      EnumElement enumType = (EnumElement) type;
       OptionsMapMaker mapMaker = new OptionsMapMaker(compiler);
       // Generate a list of all the options used by any value of this enum type.
       List<EnumValueOptionInfo> options = getEnumValueOptions(enumType, mapMaker);
 
-      writer.beginType(enumType.getName(), "enum", EnumSet.of(PUBLIC), null, "ProtoEnum");
-      List<EnumType.Value> values = enumType.getValues();
+      writer.beginType(enumType.name(), "enum", EnumSet.of(PUBLIC), null, "ProtoEnum");
+      List<EnumConstantElement> values = enumType.constants();
       for (int i = 0, count = values.size(); i < count; i++) {
-        EnumType.Value value = values.get(i);
-        MessageWriter.emitDocumentation(writer, value.getDocumentation());
+        EnumConstantElement value = values.get(i);
+        MessageWriter.emitDocumentation(writer, value.documentation());
 
         List<String> initializers = new ArrayList<String>();
-        initializers.add(String.valueOf(value.getTag()));
+        initializers.add(String.valueOf(value.tag()));
         addEnumValueOptionInitializers(value, options, mapMaker, initializers);
 
-        writer.emitEnumValue(value.getName() + "(" + join(initializers, ", ") + ")",
+        writer.emitEnumValue(value.name() + "(" + join(initializers, ", ") + ")",
             (i == count - 1));
       }
 
@@ -165,7 +165,7 @@ public class MessageWriter {
     }
   }
 
-  private List<EnumValueOptionInfo> getEnumValueOptions(EnumType enumType,
+  private List<EnumValueOptionInfo> getEnumValueOptions(EnumElement enumType,
       OptionsMapMaker mapMaker) {
     if (!compiler.shouldEmitOptions() && compiler.enumOptions().isEmpty()) {
       return Collections.emptyList();
@@ -179,9 +179,9 @@ public class MessageWriter {
     List<EnumValueOptionInfo> result = new ArrayList<EnumValueOptionInfo>();
 
     Set<String> optionNames = new TreeSet<String>();
-    for (EnumType.Value value : enumType.getValues()) {
-      for (Option option : value.getOptions()) {
-        optionNames.add(option.getName());
+    for (EnumConstantElement value : enumType.constants()) {
+      for (OptionElement option : value.options()) {
+        optionNames.add(option.name());
       }
     }
 
@@ -200,18 +200,18 @@ public class MessageWriter {
     return result;
   }
 
-  private void addEnumValueOptionInitializers(EnumType.Value value,
+  private void addEnumValueOptionInitializers(EnumConstantElement value,
       List<EnumValueOptionInfo> optionInfo, OptionsMapMaker mapMaker, List<String> initializers) {
     Map<String, ?> enumValueOptionsMap = mapMaker.createSingleEnumValueOptionMap(value);
-    List<Option> valueOptions = value.getOptions();
+    List<OptionElement> valueOptions = value.options();
     for (EnumValueOptionInfo option : optionInfo) {
-      Option optionByName = Option.findByName(valueOptions, option.name);
+      OptionElement optionByName = OptionElement.findByName(valueOptions, option.name);
       String initializer = null;
       if (optionByName != null) {
         for (Map.Entry<String, ?> entry : enumValueOptionsMap.entrySet()) {
           String fqName = entry.getKey();
           ExtensionInfo info = compiler.getExtension(fqName);
-          String name = optionByName.getName();
+          String name = optionByName.name();
           if (fqName.equals(name) || fqName.endsWith("." + name)) {
             initializer = mapMaker.createOptionInitializer(entry.getValue(), "", "", info.fqType,
                 false, 1);
@@ -239,7 +239,7 @@ public class MessageWriter {
     return sb.toString();
   }
 
-  private void emitAll(JavaWriter writer, MessageType messageType, Map<String, ?> optionsMap,
+  private void emitAll(JavaWriter writer, MessageElement messageType, Map<String, ?> optionsMap,
       boolean topLevel)
       throws IOException {
     Set<Modifier> modifiers = EnumSet.of(PUBLIC, FINAL);
@@ -247,8 +247,8 @@ public class MessageWriter {
       modifiers.add(STATIC);
     }
 
-    String name = messageType.getName();
-    emitDocumentation(writer, messageType.getDocumentation());
+    String name = messageType.name();
+    emitDocumentation(writer, messageType.documentation());
     writer.beginType(name, "class", modifiers,
         compiler.hasExtensions(messageType) ? "ExtendableMessage<" + name + ">" : "Message");
     writer.emitField("long", "serialVersionUID", EnumSet.of(PRIVATE, STATIC, FINAL), "0L");
@@ -304,21 +304,22 @@ public class MessageWriter {
     }
   }
 
-  private void emitMessageFieldOptions(JavaWriter writer, MessageType messageType)
+  private void emitMessageFieldOptions(JavaWriter writer, MessageElement messageType)
       throws IOException {
-    Map<String, List<Option>> fieldOptions = new LinkedHashMap<String, List<Option>>();
+    Map<String, List<OptionElement>> fieldOptions =
+        new LinkedHashMap<String, List<OptionElement>>();
 
-    for (Field field : messageType.getFields()) {
-      List<Option> options = new ArrayList<Option>(field.getOptions());
-      for (Iterator<Option> iterator = options.iterator(); iterator.hasNext();) {
+    for (FieldElement field : messageType.fields()) {
+      List<OptionElement> options = new ArrayList<OptionElement>(field.options());
+      for (Iterator<OptionElement> iterator = options.iterator(); iterator.hasNext();) {
         // Remove non-custom key
-        String name = iterator.next().getName();
+        String name = iterator.next().name();
         if (WireCompiler.DEFAULT_FIELD_OPTION_KEYS.contains(name)) {
           iterator.remove();
         }
       }
       if (!options.isEmpty()) {
-        fieldOptions.put(field.getName(), options);
+        fieldOptions.put(field.name(), options);
       }
     }
 
@@ -326,7 +327,7 @@ public class MessageWriter {
       writer.emitEmptyLine();
     }
 
-    for (Map.Entry<String, List<Option>> entry : fieldOptions.entrySet()) {
+    for (Map.Entry<String, List<OptionElement>> entry : fieldOptions.entrySet()) {
       Map<String, ?> fieldOptionsMap =
           compiler.getOptionsMapMaker().createFieldOptionsMap(messageType, entry.getValue());
       emitFieldOptions(writer, entry.getKey(), fieldOptionsMap);
@@ -359,10 +360,10 @@ public class MessageWriter {
   //
   // public static final Integer DEFAULT_OPT_INT32 = 123;
   //
-  private void emitMessageFieldDefaults(JavaWriter writer, MessageType messageType)
+  private void emitMessageFieldDefaults(JavaWriter writer, MessageElement messageType)
       throws IOException {
-    List<Field> defaultFields = new ArrayList<Field>();
-    for (Field field : messageType.getFields()) {
+    List<FieldElement> defaultFields = new ArrayList<FieldElement>();
+    for (FieldElement field : messageType.fields()) {
       // Message types cannot have defaults
       if (!isMessageType(messageType, field) || FieldInfo.isRepeated(field)) {
         defaultFields.add(field);
@@ -373,15 +374,15 @@ public class MessageWriter {
       writer.emitEmptyLine();
     }
 
-    for (Field field : defaultFields) {
+    for (FieldElement field : defaultFields) {
       String javaName = getJavaFieldType(messageType, field);
       if (javaName == null) {
         throw new WireCompilerException(
-            "Unknown type for field " + field + " in message " + messageType.getName());
+            "Unknown type for field " + field + " in message " + messageType.name());
       }
       String defaultValue = getDefaultValue(messageType, field);
 
-      writer.emitField(javaName, "DEFAULT_" + field.getName().toUpperCase(Locale.US),
+      writer.emitField(javaName, "DEFAULT_" + field.name().toUpperCase(Locale.US),
           EnumSet.of(PUBLIC, STATIC, FINAL), defaultValue);
     }
   }
@@ -397,11 +398,11 @@ public class MessageWriter {
   // )
   // public final Integer optional_int32;
   //
-  private void emitMessageFields(JavaWriter writer, MessageType messageType) throws IOException {
-    for (Field field : messageType.getFields()) {
-      int tag = field.getTag();
+  private void emitMessageFields(JavaWriter writer, MessageElement messageType) throws IOException {
+    for (FieldElement field : messageType.fields()) {
+      int tag = field.tag();
 
-      String fieldType = field.getType();
+      String fieldType = field.type().toString();
       String javaName = compiler.javaName(messageType, fieldType);
       Map<String, String> map = new LinkedHashMap<String, String>();
       map.put("tag", String.valueOf(tag));
@@ -421,7 +422,7 @@ public class MessageWriter {
         if (FieldInfo.isPacked(field, isEnum)) {
           map.put("label", "PACKED");
         } else {
-          map.put("label", field.getLabel().toString());
+          map.put("label", field.label().toString());
         }
       }
 
@@ -434,7 +435,7 @@ public class MessageWriter {
       }
 
       // Scan for redacted fields.
-      for (Option option : field.getOptions()) {
+      for (OptionElement option : field.options()) {
         // We allow any package name to be used as long as it ends with '.redacted'.
         if (compiler.isRedacted(option)) {
           map.put("redacted", "true");
@@ -443,7 +444,7 @@ public class MessageWriter {
       }
 
       writer.emitEmptyLine();
-      emitDocumentation(writer, field.getDocumentation());
+      emitDocumentation(writer, field.documentation());
       writer.emitAnnotation(ProtoField.class, map);
 
       if (field.isDeprecated()) {
@@ -451,7 +452,7 @@ public class MessageWriter {
       }
 
       if (FieldInfo.isRepeated(field)) javaName = "List<" + javaName + ">";
-      writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC, FINAL));
+      writer.emitField(javaName, sanitize(field.name()), EnumSet.of(PUBLIC, FINAL));
     }
   }
 
@@ -462,19 +463,19 @@ public class MessageWriter {
   //   this.optional_int64 = optional_int64;
   // }
   //
-  private void emitMessageFieldsConstructor(JavaWriter writer, MessageType messageType)
+  private void emitMessageFieldsConstructor(JavaWriter writer, MessageElement messageType)
       throws IOException {
     List<String> params = new ArrayList<String>();
-    for (Field field : messageType.getFields()) {
+    for (FieldElement field : messageType.fields()) {
       String javaName = getJavaFieldType(messageType, field);
       params.add(javaName);
-      params.add(sanitize(field.getName()));
+      params.add(sanitize(field.name()));
     }
 
     writer.emitEmptyLine();
-    writer.beginMethod(null, messageType.getName(), EnumSet.of(PUBLIC), params, null);
-    for (Field field : messageType.getFields()) {
-      String sanitizedName = sanitize(field.getName());
+    writer.beginMethod(null, messageType.name(), EnumSet.of(PUBLIC), params, null);
+    for (FieldElement field : messageType.fields()) {
+      String sanitizedName = sanitize(field.name());
       if (FieldInfo.isRepeated(field)) {
         writer.emitStatement("this.%1$s = immutableCopyOf(%1$s)", sanitizedName);
       } else {
@@ -491,17 +492,17 @@ public class MessageWriter {
   //   setBuilder(builder);
   // }
   //
-  private void emitMessageBuilderConstructor(JavaWriter writer, MessageType messageType)
+  private void emitMessageBuilderConstructor(JavaWriter writer, MessageElement messageType)
       throws IOException {
     writer.emitEmptyLine();
-    writer.beginMethod(null, messageType.getName(), EnumSet.of(PRIVATE), "Builder", "builder");
+    writer.beginMethod(null, messageType.name(), EnumSet.of(PRIVATE), "Builder", "builder");
     StringBuilder params = new StringBuilder();
-    for (Field field : messageType.getFields()) {
+    for (FieldElement field : messageType.fields()) {
       if (params.length() > 0) {
         params.append(", ");
       }
       params.append("builder.");
-      params.append(sanitize(field.getName()));
+      params.append(sanitize(field.name()));
     }
     if (params.length() > 0) {
       writer.emitStatement("this(%1$s)", params);
@@ -520,34 +521,34 @@ public class MessageWriter {
   //   if (!Wire.equals(optional_int32, o.optional_int32)) return false;
   //   return true;
   //
-  private void emitMessageEquals(JavaWriter writer, MessageType messageType) throws IOException {
+  private void emitMessageEquals(JavaWriter writer, MessageElement messageType) throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
     writer.beginMethod("boolean", "equals", EnumSet.of(PUBLIC), "Object", "other");
 
-    List<Field> fields = messageType.getFields();
+    List<FieldElement> fields = messageType.fields();
     if (fields.isEmpty()) {
-      writer.emitStatement("return other instanceof %s", messageType.getName());
+      writer.emitStatement("return other instanceof %s", messageType.name());
     } else {
       writer.emitStatement("if (other == this) return true");
-      writer.emitStatement("if (!(other instanceof %s)) return false", messageType.getName());
+      writer.emitStatement("if (!(other instanceof %s)) return false", messageType.name());
       if (hasOnlyOneField(messageType)) {
-        String name = sanitize(fields.get(0).getName());
+        String name = sanitize(fields.get(0).name());
         // If the field is named "other" or "o", qualify the field reference with 'this'
         writer.emitStatement("return equals(%1$s, ((%2$s) other).%3$s)",
-            addThisIfOneOf(name, "other", "o"), messageType.getName(), name);
+            addThisIfOneOf(name, "other", "o"), messageType.name(), name);
       } else {
-        writer.emitStatement("%1$s o = (%1$s) other", messageType.getName());
+        writer.emitStatement("%1$s o = (%1$s) other", messageType.name());
         if (compiler.hasExtensions(messageType)) {
           writer.emitStatement("if (!extensionsEqual(o)) return false");
         }
         StringBuilder sb = new StringBuilder();
         String prefix = "return ";
-        for (Field field : fields) {
+        for (FieldElement field : fields) {
           sb.append(prefix);
           prefix = "\n&& ";
           // If the field is named "other" or "o", qualify the field reference with 'this'
-          String name = sanitize(field.getName());
+          String name = sanitize(field.name());
           sb.append(String.format("equals(%1$s, o.%2$s)",
               addThisIfOneOf(name, "other", "o"), name));
         }
@@ -572,7 +573,7 @@ public class MessageWriter {
   // For repeated fields, the final "0" in the example above changes to a "1"
   // in order to be the same as the system hash code for an empty list.
   //
-  private void emitMessageHashCode(JavaWriter writer, MessageType messageType)
+  private void emitMessageHashCode(JavaWriter writer, MessageElement messageType)
       throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
@@ -581,8 +582,8 @@ public class MessageWriter {
     if (!compiler.hasFields(messageType) && !compiler.hasExtensions(messageType)) {
       writer.emitStatement("return 0");
     } else if (hasOnlyOneField(messageType)) {
-      Field field = messageType.getFields().get(0);
-      String name = sanitize(field.getName());
+      FieldElement field = messageType.fields().get(0);
+      String name = sanitize(field.name());
       // If the field is named "result", qualify the field reference with 'this'
       name = addThisIfOneOf(name, "result");
       writer.emitStatement("int result = hashCode");
@@ -597,8 +598,8 @@ public class MessageWriter {
         writer.emitStatement("result = extensionsHashCode()");
         afterFirstAssignment = true;
       }
-      for (Field field : messageType.getFields()) {
-        String name = sanitize(field.getName());
+      for (FieldElement field : messageType.fields()) {
+        String name = sanitize(field.name());
         // If the field is named "result", qualify the field reference with 'this'
         name = addThisIfOneOf(name, "result");
         if (afterFirstAssignment) {
@@ -617,15 +618,15 @@ public class MessageWriter {
     writer.endMethod();
   }
 
-  private int nullHashValue(Field field) {
+  private int nullHashValue(FieldElement field) {
     return FieldInfo.isRepeated(field) ? 1 : 0;
   }
 
-  private void emitBuilder(JavaWriter writer, MessageType messageType) throws IOException {
+  private void emitBuilder(JavaWriter writer, MessageElement messageType) throws IOException {
     writer.emitEmptyLine();
     writer.beginType("Builder", "class", EnumSet.of(PUBLIC, STATIC, FINAL),
         (compiler.hasExtensions(messageType) ? "ExtendableBuilder<" : "Message.Builder<")
-            + messageType.getName()
+            + messageType.name()
             + ">");
     emitBuilderFields(writer, messageType);
     emitBuilderConstructors(writer, messageType);
@@ -635,13 +636,13 @@ public class MessageWriter {
     writer.endType();
   }
 
-  private void emitBuilderFields(JavaWriter writer, MessageType messageType) throws IOException {
-    List<Field> fields = messageType.getFields();
+  private void emitBuilderFields(JavaWriter writer, MessageElement messageType) throws IOException {
+    List<FieldElement> fields = messageType.fields();
 
     if (!fields.isEmpty()) writer.emitEmptyLine();
-    for (Field field : fields) {
+    for (FieldElement field : fields) {
       String javaName = getJavaFieldType(messageType, field);
-      writer.emitField(javaName, sanitize(field.getName()), EnumSet.of(PUBLIC));
+      writer.emitField(javaName, sanitize(field.name()), EnumSet.of(PUBLIC));
     }
   }
 
@@ -657,39 +658,40 @@ public class MessageWriter {
   //   ...
   // }
   //
-  private void emitBuilderConstructors(JavaWriter writer, MessageType messageType)
+  private void emitBuilderConstructors(JavaWriter writer, MessageElement messageType)
       throws IOException {
     writer.emitEmptyLine();
     writer.beginMethod(null, "Builder", EnumSet.of(PUBLIC));
     writer.endMethod();
 
     writer.emitEmptyLine();
-    writer.beginMethod(null, "Builder", EnumSet.of(PUBLIC), messageType.getName(), "message");
+    writer.beginMethod(null, "Builder", EnumSet.of(PUBLIC), messageType.name(), "message");
     writer.emitStatement("super(message)");
-    List<Field> fields = messageType.getFields();
+    List<FieldElement> fields = messageType.fields();
     if (!fields.isEmpty()) writer.emitStatement("if (message == null) return");
-    for (Field field : fields) {
+    for (FieldElement field : fields) {
       if (FieldInfo.isRepeated(field)) {
         writer.emitStatement("this.%1$s = copyOf(message.%1$s)",
-            sanitize(field.getName()));
+            sanitize(field.name()));
       } else {
-        writer.emitStatement("this.%1$s = message.%1$s", sanitize(field.getName()));
+        writer.emitStatement("this.%1$s = message.%1$s", sanitize(field.name()));
       }
     }
     writer.endMethod();
   }
 
-  private void emitBuilderSetters(JavaWriter writer, MessageType messageType) throws IOException {
-    for (Field field : messageType.getFields()) {
+  private void emitBuilderSetters(JavaWriter writer, MessageElement messageType)
+      throws IOException {
+    for (FieldElement field : messageType.fields()) {
       String javaName = getJavaFieldType(messageType, field);
       List<String> args = new ArrayList<String>();
       args.add(javaName);
-      String sanitized = sanitize(field.getName());
+      String sanitized = sanitize(field.name());
       args.add(sanitized);
 
       writer.emitEmptyLine();
 
-      emitDocumentation(writer, field.getDocumentation());
+      emitDocumentation(writer, field.documentation());
 
       if (field.isDeprecated()) {
         writer.emitAnnotation(Deprecated.class);
@@ -714,12 +716,12 @@ public class MessageWriter {
   //   return this;
   // }
   //
-  private void emitBuilderSetExtension(JavaWriter writer, MessageType messageType)
+  private void emitBuilderSetExtension(JavaWriter writer, MessageElement messageType)
       throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
     writer.beginMethod("<E> Builder", "setExtension", EnumSet.of(PUBLIC),
-        "Extension<" + messageType.getName() + ", E>", "extension", "E", "value");
+        "Extension<" + messageType.name() + ", E>", "extension", "E", "value");
     writer.emitStatement("super.setExtension(extension, value)");
     writer.emitStatement("return this");
     writer.endMethod();
@@ -736,14 +738,14 @@ public class MessageWriter {
   // The call to checkRequiredFields will be emitted only if the message has
   // required fields.
   //
-  private void emitBuilderBuild(JavaWriter writer, MessageType messageType) throws IOException {
+  private void emitBuilderBuild(JavaWriter writer, MessageElement messageType) throws IOException {
     writer.emitEmptyLine();
     writer.emitAnnotation(Override.class);
-    writer.beginMethod(messageType.getName(), "build", EnumSet.of(PUBLIC));
+    writer.beginMethod(messageType.name(), "build", EnumSet.of(PUBLIC));
     if (hasRequiredFields(messageType)) {
       writer.emitStatement("checkRequiredFields()");
     }
-    writer.emitStatement("return new %s(this)", messageType.getName());
+    writer.emitStatement("return new %s(this)", messageType.name());
     writer.endMethod();
   }
 
@@ -756,17 +758,19 @@ public class MessageWriter {
     return name;
   }
 
-  private String getDefaultValue(MessageType messageType, Field field) {
-    String initialValue = field.getDefault();
+  private String getDefaultValue(MessageElement messageType, FieldElement field) {
     if (FieldInfo.isRepeated(field)) return "Collections.emptyList()";
-    String javaName = compiler.javaName(messageType, field.getType());
-    if (TypeInfo.isScalar(field.getType())) {
+    OptionElement defaultOption = field.getDefault();
+    String javaName = compiler.javaName(messageType, field.type().toString());
+    if (TypeInfo.isScalar(field.type().toString())) {
+      Object initialValue = defaultOption != null ? defaultOption.value() : null;
       return compiler.getInitializerForType(initialValue, javaName);
     } else {
-      if (initialValue != null) {
-        return javaName + "." + initialValue;
+      if (defaultOption != null) {
+        return javaName + "." + defaultOption.value();
       } else {
-        String fullyQualifiedName = compiler.fullyQualifiedName(messageType, field.getType());
+        String fullyQualifiedName =
+            compiler.fullyQualifiedName(messageType, field.type().toString());
         if (compiler.isEnum(fullyQualifiedName)) {
           return javaName + "." + compiler.getEnumDefault(fullyQualifiedName);
         } else {
@@ -777,12 +781,13 @@ public class MessageWriter {
     }
   }
 
-  private String getJavaFieldType(MessageType messageType, Field field) {
+  private String getJavaFieldType(MessageElement messageType, FieldElement field) {
     return getJavaFieldType(compiler.getProtoFile(), messageType, field);
   }
 
-  private String getJavaFieldType(ProtoFile protoFile, MessageType messageType, Field field) {
-    String javaName = compiler.javaName(protoFile, messageType, field.getType());
+  private String getJavaFieldType(ProtoFile protoFile, MessageElement messageType,
+      FieldElement field) {
+    String javaName = compiler.javaName(protoFile, messageType, field.type().toString());
     if (FieldInfo.isRepeated(field)) javaName = "List<" + javaName + ">";
     return javaName;
   }
@@ -791,22 +796,22 @@ public class MessageWriter {
     return documentation != null && !documentation.isEmpty();
   }
 
-  private boolean hasOnlyOneField(MessageType messageType) {
-    return messageType.getFields().size() == 1 && !compiler.hasExtensions(messageType);
+  private boolean hasOnlyOneField(MessageElement messageType) {
+    return messageType.fields().size() == 1 && !compiler.hasExtensions(messageType);
   }
 
-  private boolean hasRequiredFields(Type type) {
-    if (type instanceof MessageType) {
-      for (Field field : ((MessageType) type).getFields()) {
+  private boolean hasRequiredFields(TypeElement type) {
+    if (type instanceof MessageElement) {
+      for (FieldElement field : ((MessageElement) type).fields()) {
         if (FieldInfo.isRequired(field)) return true;
       }
     }
     return false;
   }
 
-  private boolean isMessageType(MessageType messageType, Field field) {
-    return !TypeInfo.isScalar(field.getType())
-        && !compiler.isEnum(compiler.fullyQualifiedName(messageType, field.getType()));
+  private boolean isMessageType(MessageElement messageType, FieldElement field) {
+    return !TypeInfo.isScalar(field.type().toString())
+        && !compiler.isEnum(compiler.fullyQualifiedName(messageType, field.type().toString()));
   }
 
   private String sanitize(String name) {

@@ -2,7 +2,8 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.Service;
+import com.squareup.protoparser.RpcElement;
+import com.squareup.protoparser.ServiceElement;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -18,27 +19,27 @@ abstract class AbstractServiceWriter extends ServiceWriter {
   }
 
   @Override
-  public void emitService(Service service, Set<String> importedTypes) throws IOException {
+  public void emitService(ServiceElement service, Set<String> importedTypes) throws IOException {
     importedTypes.addAll(getImports(service));
     writer.emitImports(importedTypes);
     writer.emitEmptyLine();
 
-    if (!service.getDocumentation().isEmpty()) {
-      writer.emitJavadoc(service.getDocumentation());
+    if (!service.documentation().isEmpty()) {
+      writer.emitJavadoc(service.documentation());
     }
-    writer.beginType(service.getName(), "interface", EnumSet.of(Modifier.PUBLIC));
-    for (Service.Method method : service.getMethods()) {
-      String requestType = method.getRequestType();
+    writer.beginType(service.name(), "interface", EnumSet.of(Modifier.PUBLIC));
+    for (RpcElement rpc : service.rpcs()) {
+      String requestType = rpc.requestType().toString();
       int index = requestType.lastIndexOf('.');
       if (index != -1) {
         requestType = requestType.substring(index + 1);
       }
 
-      if (!method.getDocumentation().isEmpty()) {
-        writer.emitJavadoc(method.getDocumentation());
+      if (!rpc.documentation().isEmpty()) {
+        writer.emitJavadoc(rpc.documentation());
       }
-      emitAnnotation(service, method);
-      writer.beginMethod(method.getResponseType(), getMethodName(method),
+      emitAnnotation(service, rpc);
+      writer.beginMethod(rpc.responseType().toString(), getRpcName(rpc),
           EnumSet.noneOf(Modifier.class),
           Arrays.asList(getRequestType(requestType), getRequestName(requestType)), getThrows());
       writer.endMethod();
@@ -46,16 +47,16 @@ abstract class AbstractServiceWriter extends ServiceWriter {
     writer.endType();
   }
 
-  List<String> getImports(Service service) {
+  List<String> getImports(ServiceElement service) {
     return null;
   }
 
-  void emitAnnotation(Service service, Service.Method method) throws IOException {
+  void emitAnnotation(ServiceElement service, RpcElement rpc) throws IOException {
     // no-op
   }
 
-  String getMethodName(Service.Method method) {
-    return lowerCaseInitialLetter(method.getName());
+  String getRpcName(RpcElement rpc) {
+    return lowerCaseInitialLetter(rpc.name());
   }
 
   String getRequestName(String requestType) {

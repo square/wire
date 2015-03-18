@@ -2,8 +2,7 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.Service;
-import java.util.Arrays;
+import com.squareup.protoparser.ServiceElement;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,15 +15,15 @@ public class SimpleServiceWriter extends AbstractServiceWriter {
     super(writer, options);
   }
 
-  @Override List<String> getImports(Service service) {
-    if (!service.getMethods().isEmpty()) {
-      return Arrays.asList("java.io.IOException");
+  @Override List<String> getImports(ServiceElement service) {
+    if (!service.rpcs().isEmpty()) {
+      return Collections.singletonList("java.io.IOException");
     }
     return Collections.emptyList();
   }
 
   @Override List<String> getThrows() {
-    return Arrays.asList("java.io.IOException");
+    return Collections.singletonList("java.io.IOException");
   }
 
   @Override String getRequestName(String requestType) {

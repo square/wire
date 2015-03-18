@@ -16,7 +16,7 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.Service;
+import com.squareup.protoparser.ServiceElement;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -330,7 +330,7 @@ public class WireCompilerTest {
       }
     }
 
-    @Override public void emitService(Service service, Set<String> importedTypes)
+    @Override public void emitService(ServiceElement service, Set<String> importedTypes)
         throws IOException {
       super.emitService(service, importedTypes);
     }
