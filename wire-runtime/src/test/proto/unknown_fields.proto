@@ -28,4 +28,5 @@ message VersionTwo {
   optional string v2_s = 3;
   optional fixed32 v2_f32 = 4;
   optional fixed64 v2_f64 = 5;
+  repeated string v2_rs = 6;
 }

@@ -18,6 +18,7 @@ package com.squareup.wire;
 import com.squareup.wire.protos.unknownfields.VersionOne;
 import com.squareup.wire.protos.unknownfields.VersionTwo;
 import java.io.IOException;
+import java.util.Arrays;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -35,6 +36,7 @@ public class UnknownFieldsTest {
        .v2_s("222")
        .v2_f32(67890)
        .v2_f64(98765L)
+       .v2_rs(Arrays.asList("1", "2"))
        .build();
     assertEquals(new Integer(111), v2.i);
     // Check v.2 fields
@@ -42,6 +44,7 @@ public class UnknownFieldsTest {
     assertEquals("222", v2.v2_s);
     assertEquals(new Integer(67890), v2.v2_f32);
     assertEquals(new Long(98765L), v2.v2_f64);
+    assertEquals(Arrays.asList("1", "2"), v2.v2_rs);
     // Serialized
     byte[] v2Bytes = v2.toByteArray();
 
@@ -65,6 +68,7 @@ public class UnknownFieldsTest {
     assertEquals("222", v2B.v2_s);
     assertEquals(new Integer(67890), v2B.v2_f32);
     assertEquals(new Long(98765L), v2B.v2_f64);
+    assertEquals(Arrays.asList("1", "2"), v2B.v2_rs);
 
     // "Modify" v1 via a merged builder, serialize, and re-parse
     VersionOne v1Modified = new VersionOne.Builder(v1).i(777).build();
@@ -77,5 +81,6 @@ public class UnknownFieldsTest {
     assertEquals("222", v2C.v2_s);
     assertEquals(new Integer(67890), v2C.v2_f32);
     assertEquals(new Long(98765L), v2C.v2_f64);
+    assertEquals(Arrays.asList("1", "2"), v2C.v2_rs);
   }
 }
