@@ -4,11 +4,14 @@ package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.util.Collections;
+import java.util.List;
 
 import static com.squareup.wire.Message.Datatype.FIXED32;
 import static com.squareup.wire.Message.Datatype.FIXED64;
 import static com.squareup.wire.Message.Datatype.INT32;
 import static com.squareup.wire.Message.Datatype.STRING;
+import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class VersionTwo extends Message {
   private static final long serialVersionUID = 0L;
@@ -18,6 +21,7 @@ public final class VersionTwo extends Message {
   public static final String DEFAULT_V2_S = "";
   public static final Integer DEFAULT_V2_F32 = 0;
   public static final Long DEFAULT_V2_F64 = 0L;
+  public static final List<String> DEFAULT_V2_RS = Collections.emptyList();
 
   @ProtoField(tag = 1, type = INT32)
   public final Integer i;
@@ -34,16 +38,20 @@ public final class VersionTwo extends Message {
   @ProtoField(tag = 5, type = FIXED64)
   public final Long v2_f64;
 
-  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64) {
+  @ProtoField(tag = 6, type = STRING, label = REPEATED)
+  public final List<String> v2_rs;
+
+  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs) {
     this.i = i;
     this.v2_i = v2_i;
     this.v2_s = v2_s;
     this.v2_f32 = v2_f32;
     this.v2_f64 = v2_f64;
+    this.v2_rs = immutableCopyOf(v2_rs);
   }
 
   private VersionTwo(Builder builder) {
-    this(builder.i, builder.v2_i, builder.v2_s, builder.v2_f32, builder.v2_f64);
+    this(builder.i, builder.v2_i, builder.v2_s, builder.v2_f32, builder.v2_f64, builder.v2_rs);
     setBuilder(builder);
   }
 
@@ -56,7 +64,8 @@ public final class VersionTwo extends Message {
         && equals(v2_i, o.v2_i)
         && equals(v2_s, o.v2_s)
         && equals(v2_f32, o.v2_f32)
-        && equals(v2_f64, o.v2_f64);
+        && equals(v2_f64, o.v2_f64)
+        && equals(v2_rs, o.v2_rs);
   }
 
   @Override
@@ -68,6 +77,7 @@ public final class VersionTwo extends Message {
       result = result * 37 + (v2_s != null ? v2_s.hashCode() : 0);
       result = result * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
       result = result * 37 + (v2_f64 != null ? v2_f64.hashCode() : 0);
+      result = result * 37 + (v2_rs != null ? v2_rs.hashCode() : 1);
       hashCode = result;
     }
     return result;
@@ -80,6 +90,7 @@ public final class VersionTwo extends Message {
     public String v2_s;
     public Integer v2_f32;
     public Long v2_f64;
+    public List<String> v2_rs;
 
     public Builder() {
     }
@@ -92,6 +103,7 @@ public final class VersionTwo extends Message {
       this.v2_s = message.v2_s;
       this.v2_f32 = message.v2_f32;
       this.v2_f64 = message.v2_f64;
+      this.v2_rs = copyOf(message.v2_rs);
     }
 
     public Builder i(Integer i) {
@@ -116,6 +128,11 @@ public final class VersionTwo extends Message {
 
     public Builder v2_f64(Long v2_f64) {
       this.v2_f64 = v2_f64;
+      return this;
+    }
+
+    public Builder v2_rs(List<String> v2_rs) {
+      this.v2_rs = checkForNulls(v2_rs);
       return this;
     }
 

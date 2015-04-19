@@ -243,8 +243,8 @@ final class UnknownFieldMap {
     int size = 0;
     if (fieldMap != null) {
       for (Map.Entry<Integer, List<FieldValue>> entry : fieldMap.entrySet()) {
-        size += WireOutput.varintTagSize(entry.getKey());
         for (FieldValue value : entry.getValue()) {
+          size += WireOutput.varintTagSize(entry.getKey());
           size += value.getSerializedSize();
         }
       }
