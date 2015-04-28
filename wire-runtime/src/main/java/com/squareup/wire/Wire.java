@@ -114,6 +114,18 @@ public final class Wire {
     return adapter;
   }
 
+  public interface Visitor {
+    <M extends Message> void messageStart(Message.Builder<M> builder);
+
+    <M extends Message> void messageEnd(Message.Builder<M> builder);
+
+    <M extends Message> boolean repeatedMessageField(Message.Builder<M> builder, int tag,
+        Object value);
+
+    <M extends Message> boolean repeatedMessageExtension(Message.Builder<M> builder,
+        Extension<ExtendableMessage<?>, ?> extension, Object value);
+  }
+
   /**
    * Reads a message of type {@code messageClass} from {@code bytes} and returns
    * it.
@@ -121,7 +133,7 @@ public final class Wire {
   public <M extends Message> M parseFrom(byte[] bytes, Class<M> messageClass) throws IOException {
     checkNotNull(bytes, "bytes");
     checkNotNull(messageClass, "messageClass");
-    return parseFrom(WireInput.newInstance(bytes), messageClass);
+    return parseFrom(WireInput.newInstance(bytes), messageClass, null);
   }
 
   /**
@@ -135,7 +147,7 @@ public final class Wire {
     checkArgument(count >= 0, "count < 0");
     checkArgument(offset + count <= bytes.length, "offset + count > bytes");
     checkNotNull(messageClass, "messageClass");
-    return parseFrom(WireInput.newInstance(bytes, offset, count), messageClass);
+    return parseFrom(WireInput.newInstance(bytes, offset, count), messageClass, null);
   }
 
   /**
@@ -145,7 +157,7 @@ public final class Wire {
       throws IOException {
     checkNotNull(input, "input");
     checkNotNull(messageClass, "messageClass");
-    return parseFrom(WireInput.newInstance(input), messageClass);
+    return parseFrom(WireInput.newInstance(input), messageClass, null);
   }
 
   /**
@@ -155,16 +167,26 @@ public final class Wire {
       throws IOException {
     checkNotNull(input, "input");
     checkNotNull(messageClass, "messageClass");
-    return parseFrom(WireInput.newInstance(input), messageClass);
+    return parseFrom(WireInput.newInstance(input), messageClass, null);
+  }
+
+  public <M extends Message> M parseFrom(InputStream input, Class<M> messageClass,
+      Visitor visitor) throws IOException {
+    return parseFrom(WireInput.newInstance(input), messageClass, visitor);
+  }
+
+  public <M extends Message> M parseFrom(Source input, Class<M> messageClass,
+      Visitor visitor) throws IOException {
+    return parseFrom(WireInput.newInstance(input), messageClass, visitor);
   }
 
   /**
    * Reads a message of type {@code messageClass} from {@code input} and returns it.
    */
-  private <M extends Message> M parseFrom(WireInput input, Class<M> messageClass)
+  private <M extends Message> M parseFrom(WireInput input, Class<M> messageClass, Visitor visitor)
       throws IOException {
     MessageAdapter<M> adapter = messageAdapter(messageClass);
-    return adapter.read(input);
+    return adapter.read(input, visitor);
   }
 
   /**

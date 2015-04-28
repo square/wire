@@ -514,9 +514,12 @@ final class MessageAdapter<M extends Message> {
   // Reading
 
   /** Uses reflection to read an instance from {@code input}. */
-  M read(WireInput input) throws IOException {
+  M read(WireInput input, Wire.Visitor visitor) throws IOException {
     try {
       Builder<M> builder = builderType.newInstance();
+      if (visitor != null) {
+        visitor.messageStart(builder);
+      }
       Storage storage = new Storage();
 
       while (true) {
@@ -534,6 +537,9 @@ final class MessageAdapter<M extends Message> {
               setExtension((ExtendableBuilder<?>) builder, getExtension(storedTag),
                   storage.get(storedTag));
             }
+          }
+          if (visitor != null) {
+            visitor.messageEnd(builder);
           }
           return builder.build();
         }
@@ -561,12 +567,18 @@ final class MessageAdapter<M extends Message> {
           long start = input.getPosition();
           int oldLimit = input.pushLimit(length);
           while (input.getPosition() < start + length) {
-            value = readValue(input, tag, datatype);
+            value = readValue(input, tag, datatype, visitor);
             if (datatype == Datatype.ENUM && value instanceof Integer) {
               // An unknown Enum value was encountered, store it as an unknown field
               builder.addVarint(tag, (Integer) value);
             } else {
-              storage.add(tag, value);
+              boolean storeRepeatedMessage = true;
+              if (visitor != null) {
+                storeRepeatedMessage = visitor.repeatedMessageField(builder, tag, value);
+              }
+              if (storeRepeatedMessage) {
+                storage.add(tag, value);
+              }
             }
           }
           input.popLimit(oldLimit);
@@ -575,13 +587,24 @@ final class MessageAdapter<M extends Message> {
           }
         } else {
           // Read a single value
-          value = readValue(input, tag, datatype);
+          value = readValue(input, tag, datatype, visitor);
           if (datatype == Datatype.ENUM && value instanceof Integer) {
             // An unknown Enum value was encountered, store it as an unknown field
             builder.addVarint(tag, (Integer) value);
           } else {
             if (label.isRepeated()) {
-              storage.add(tag, value);
+              boolean storeRepeatedMessage = true;
+              if (datatype == Datatype.MESSAGE && visitor != null) {
+                if (fieldInfoMap.containsKey(tag)) {
+                  storeRepeatedMessage = visitor.repeatedMessageField(builder, tag, value);
+                } else {
+                  storeRepeatedMessage = visitor.repeatedMessageExtension(builder,
+                      getExtension(tag), value);
+                }
+              }
+              if (storeRepeatedMessage) {
+                storage.add(tag, value);
+              }
             } else if (extension != null) {
               setExtension((ExtendableBuilder<?>) builder, extension, value);
             } else {
@@ -597,7 +620,8 @@ final class MessageAdapter<M extends Message> {
     }
   }
 
-  private Object readValue(WireInput input, int tag, Datatype datatype) throws IOException {
+  private Object readValue(WireInput input, int tag, Datatype datatype, Wire.Visitor visitor)
+      throws IOException {
     switch (datatype) {
       case INT32: case UINT32: return input.readVarint32();
       case INT64: case UINT64: return input.readVarint64();
@@ -615,7 +639,7 @@ final class MessageAdapter<M extends Message> {
         }
       case STRING: return input.readString();
       case BYTES: return input.readBytes();
-      case MESSAGE: return readMessage(input, tag);
+      case MESSAGE: return readMessage(input, tag, visitor);
       case FIXED32: case SFIXED32: return input.readFixed32();
       case FIXED64: case SFIXED64: return input.readFixed64();
       case FLOAT: return Float.intBitsToFloat(input.readFixed32());
@@ -624,7 +648,7 @@ final class MessageAdapter<M extends Message> {
     }
   }
 
-  private Message readMessage(WireInput input, int tag) throws IOException {
+  private Message readMessage(WireInput input, int tag, Wire.Visitor visitor) throws IOException {
     final int length = input.readVarint32();
     if (input.recursionDepth >= WireInput.RECURSION_LIMIT) {
       throw new IOException("Wire recursion limit exceeded");
@@ -632,7 +656,7 @@ final class MessageAdapter<M extends Message> {
     final int oldLimit = input.pushLimit(length);
     ++input.recursionDepth;
     MessageAdapter<? extends Message> adapter = getMessageAdapter(tag);
-    Message message = adapter.read(input);
+    Message message = adapter.read(input, visitor);
     input.checkLastTagWas(0);
     --input.recursionDepth;
     input.popLimit(oldLimit);
