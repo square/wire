@@ -1,0 +1,29 @@
+language: java
+
+jdk:
+  - oraclejdk7
+  - oraclejdk8
+
+script:
+  - ./gradlew clean check
+
+after_success:
+  - .buildscript/deploy_snapshot.sh
+
+env:
+  global:
+    - secure: "TODO"
+    - secure: "TODO"
+
+branches:
+  except:
+    - gh-pages
+
+notifications:
+  email: false
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.gradle
