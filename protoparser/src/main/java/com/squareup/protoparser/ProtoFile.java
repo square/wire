@@ -53,7 +53,7 @@ public abstract class ProtoFile {
   public abstract List<ExtendElement> extendDeclarations();
   public abstract List<OptionElement> options();
 
-  @Override public final String toString() {
+  public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     if (!filePath().isEmpty()) {
       builder.append("// ").append(filePath()).append('\n');
@@ -76,25 +76,25 @@ public abstract class ProtoFile {
     if (!options().isEmpty()) {
       builder.append('\n');
       for (OptionElement option : options()) {
-        builder.append(option.toDeclaration());
+        builder.append(option.toSchemaDeclaration());
       }
     }
     if (!typeElements().isEmpty()) {
       builder.append('\n');
       for (TypeElement typeElement : typeElements()) {
-        builder.append(typeElement);
+        builder.append(typeElement.toSchema());
       }
     }
     if (!extendDeclarations().isEmpty()) {
       builder.append('\n');
       for (ExtendElement extendDeclaration : extendDeclarations()) {
-        builder.append(extendDeclaration);
+        builder.append(extendDeclaration.toSchema());
       }
     }
     if (!services().isEmpty()) {
       builder.append('\n');
       for (ServiceElement service : services()) {
-        builder.append(service);
+        builder.append(service.toSchema());
       }
     }
     return builder.toString();

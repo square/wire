@@ -27,7 +27,7 @@ public abstract class RpcElement {
   public abstract NamedType responseType();
   public abstract List<OptionElement> options();
 
-  @Override public final String toString() {
+  public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append("rpc ")
@@ -40,7 +40,7 @@ public abstract class RpcElement {
     if (!options().isEmpty()) {
       builder.append(" {\n");
       for (OptionElement option : options()) {
-        appendIndented(builder, option.toDeclaration());
+        appendIndented(builder, option.toSchemaDeclaration());
       }
       builder.append("}");
     }

@@ -1,6 +1,7 @@
 package com.squareup.protoparser;
 
 import com.squareup.protoparser.DataType.NamedType;
+import com.squareup.protoparser.OptionElement.Kind;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -18,14 +19,14 @@ public final class FieldElementTest {
         .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
-        .addOption(OptionElement.create("default", EnumConstantElement.anonymous("TEST")))
-        .addOption(OptionElement.create("deprecated", "true"))
+        .addOption(OptionElement.create("default", Kind.ENUM, "TEST"))
+        .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "true"))
         .build();
     assertThat(field.isDeprecated()).isTrue();
-    assertThat(field.getDefault()).isEqualTo(EnumConstantElement.anonymous("TEST"));
+    assertThat(field.getDefault().value()).isEqualTo("TEST");
     assertThat(field.options()).containsOnly( //
-        OptionElement.create("default", EnumConstantElement.anonymous("TEST")), //
-        OptionElement.create("deprecated", "true"));
+        OptionElement.create("default", Kind.ENUM, "TEST"), //
+        OptionElement.create("deprecated", Kind.BOOLEAN, "true"));
   }
 
   @Test public void deprecatedSupportStringAndBoolean() {
@@ -34,7 +35,7 @@ public final class FieldElementTest {
         .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
-        .addOption(OptionElement.create("deprecated", "true"))
+        .addOption(OptionElement.create("deprecated", Kind.STRING, "true"))
         .build();
     assertThat(field1.isDeprecated()).isTrue();
     FieldElement field2 = FieldElement.builder()
@@ -42,7 +43,7 @@ public final class FieldElementTest {
         .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
-        .addOption(OptionElement.create("deprecated", true))
+        .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "true"))
         .build();
     assertThat(field2.isDeprecated()).isTrue();
   }
@@ -53,7 +54,7 @@ public final class FieldElementTest {
         .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
-        .addOption(OptionElement.create("packed", "true"))
+        .addOption(OptionElement.create("packed", Kind.STRING, "true"))
         .build();
     assertThat(field1.isPacked()).isTrue();
     FieldElement field2 = FieldElement.builder()
@@ -61,14 +62,14 @@ public final class FieldElementTest {
         .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
-        .addOption(OptionElement.create("packed", true))
+        .addOption(OptionElement.create("packed", Kind.BOOLEAN, "true"))
         .build();
     assertThat(field2.isPacked()).isTrue();
   }
 
   @Test public void addMultipleOptions() {
-    OptionElement kitKat = OptionElement.create("kit", "kat");
-    OptionElement fooBar = OptionElement.create("foo", "bar");
+    OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
+    OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
         .type(STRING)
@@ -76,12 +77,7 @@ public final class FieldElementTest {
         .tag(1)
         .addOptions(Arrays.asList(kitKat, fooBar))
         .build();
-    String expected = ""
-        + "required string name = 1 [\n"
-        + "  kit = \"kat\"\n"
-        + "  foo = \"bar\"\n"
-        + "];\n";
-    assertThat(field.toString()).isEqualTo(expected);
+    assertThat(field.options()).hasSize(2);
   }
 
   @Test public void labelRequired() {

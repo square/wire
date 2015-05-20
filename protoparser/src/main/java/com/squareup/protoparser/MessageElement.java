@@ -59,7 +59,7 @@ public abstract class MessageElement implements TypeElement {
   public abstract List<ExtensionsElement> extensions();
   @Override public abstract List<OptionElement> options();
 
-  @Override public final String toString() {
+  @Override public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append("message ")
@@ -68,31 +68,31 @@ public abstract class MessageElement implements TypeElement {
     if (!options().isEmpty()) {
       builder.append('\n');
       for (OptionElement option : options()) {
-        appendIndented(builder, option.toDeclaration());
+        appendIndented(builder, option.toSchemaDeclaration());
       }
     }
     if (!fields().isEmpty()) {
       builder.append('\n');
       for (FieldElement field : fields()) {
-        appendIndented(builder, field.toString());
+        appendIndented(builder, field.toSchema());
       }
     }
     if (!oneOfs().isEmpty()) {
       builder.append('\n');
       for (OneOfElement oneOf : oneOfs()) {
-        appendIndented(builder, oneOf.toString());
+        appendIndented(builder, oneOf.toSchema());
       }
     }
     if (!extensions().isEmpty()) {
       builder.append('\n');
       for (ExtensionsElement extension : extensions()) {
-        appendIndented(builder, extension.toString());
+        appendIndented(builder, extension.toSchema());
       }
     }
     if (!nestedElements().isEmpty()) {
       builder.append('\n');
       for (TypeElement type : nestedElements()) {
-        appendIndented(builder, type.toString());
+        appendIndented(builder, type.toSchema());
       }
     }
     return builder.append("}\n").toString();

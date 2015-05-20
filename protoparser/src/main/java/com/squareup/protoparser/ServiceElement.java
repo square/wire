@@ -26,7 +26,7 @@ public abstract class ServiceElement {
   ServiceElement() {
   }
 
-  @Override public final String toString() {
+  public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append("service ")
@@ -35,13 +35,13 @@ public abstract class ServiceElement {
     if (!options().isEmpty()) {
       builder.append('\n');
       for (OptionElement option : options()) {
-        appendIndented(builder, option.toDeclaration());
+        appendIndented(builder, option.toSchemaDeclaration());
       }
     }
     if (!rpcs().isEmpty()) {
       builder.append('\n');
       for (RpcElement rpc : rpcs()) {
-        appendIndented(builder, rpc.toString());
+        appendIndented(builder, rpc.toSchema());
       }
     }
     return builder.append("}\n").toString();

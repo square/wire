@@ -38,22 +38,22 @@ public abstract class FieldElement {
   /** Returns true when the {@code deprecated} option is present and set to true. */
   public final boolean isDeprecated() {
     OptionElement deprecatedOption = OptionElement.findByName(options(), "deprecated");
-    return deprecatedOption != null && "true".equals(String.valueOf(deprecatedOption.value()));
+    return deprecatedOption != null && "true".equals(deprecatedOption.value());
   }
 
   /** Returns true when the {@code packed} option is present and set to true. */
   public final boolean isPacked() {
     OptionElement packedOption = OptionElement.findByName(options(), "packed");
-    return packedOption != null && "true".equals(String.valueOf(packedOption.value()));
+    return packedOption != null && "true".equals(packedOption.value());
   }
 
   /** Returns the {@code default} option value or {@code null}. */
-  public final Object getDefault() {
+  public final OptionElement getDefault() {
     OptionElement defaultOption = OptionElement.findByName(options(), "default");
-    return defaultOption != null ? defaultOption.value() : null;
+    return defaultOption != null ? defaultOption : null;
   }
 
-  @Override public final String toString() {
+  public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     if (label() != Label.ONE_OF) {
@@ -67,7 +67,7 @@ public abstract class FieldElement {
     if (!options().isEmpty()) {
       builder.append(" [\n");
       for (OptionElement option : options()) {
-        appendIndented(builder, option.toString());
+        appendIndented(builder, option.toSchema());
       }
       builder.append(']');
     }

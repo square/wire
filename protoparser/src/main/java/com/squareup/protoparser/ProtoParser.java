@@ -1,6 +1,7 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.protoparser;
 
+import com.google.auto.value.AutoValue;
 import com.squareup.protoparser.DataType.MapType;
 import com.squareup.protoparser.DataType.NamedType;
 import com.squareup.protoparser.DataType.ScalarType;
@@ -399,33 +400,48 @@ public final class ProtoParser {
     if (c != keyValueSeparator) {
       throw unexpected("expected '" + keyValueSeparator + "' in option");
     }
-    Object value = readValue();
-    Object valueOrSubOption =
-        subName != null ? OptionElement.create(subName, value) : value;
-    return OptionElement.create(name, valueOrSubOption, isParenthesized);
+    OptionKindAndValue kindAndValue = readKindAndValue();
+    OptionElement.Kind kind = kindAndValue.kind();
+    Object value = kindAndValue.value();
+    if (subName != null) {
+      value = OptionElement.create(subName, kind, value);
+      kind = OptionElement.Kind.OPTION;
+    }
+    return OptionElement.create(name, kind, value, isParenthesized);
+  }
+
+  @AutoValue
+  abstract static class OptionKindAndValue {
+    static OptionKindAndValue of(OptionElement.Kind kind, Object value) {
+      return new AutoValue_ProtoParser_OptionKindAndValue(kind, value);
+    }
+
+    abstract OptionElement.Kind kind();
+    abstract Object value();
   }
 
   /** Reads a value that can be a map, list, string, number, boolean or enum. */
-  private Object readValue() {
-    switch (peekChar()) {
+  private OptionKindAndValue readKindAndValue() {
+    char peeked = peekChar();
+    switch (peeked) {
       case '{':
-        return readMap('{', '}', ':');
+        return OptionKindAndValue.of(OptionElement.Kind.MAP, readMap('{', '}', ':'));
       case '[':
-        return readList();
+        return OptionKindAndValue.of(OptionElement.Kind.LIST, readList());
       case '"':
-        return readString();
+        return OptionKindAndValue.of(OptionElement.Kind.STRING, readString());
       default:
-        if (Character.isDigit(peekChar())) {
-          return readInt();
+        if (Character.isDigit(peeked) || peeked == '-') {
+          return OptionKindAndValue.of(OptionElement.Kind.NUMBER, readWord());
         }
         String word = readWord();
         switch (word) {
           case "true":
-            return true;
+            return OptionKindAndValue.of(OptionElement.Kind.BOOLEAN, "true");
           case "false":
-            return false;
+            return OptionKindAndValue.of(OptionElement.Kind.BOOLEAN, "false");
           default:
-            return EnumConstantElement.anonymous(word);
+            return OptionKindAndValue.of(OptionElement.Kind.ENUM, word);
         }
     }
   }
@@ -506,7 +522,7 @@ public final class ProtoParser {
         return result;
       }
 
-      result.add(readValue());
+      result.add(readKindAndValue().value());
 
       char c = peekChar();
       if (c == ',') {

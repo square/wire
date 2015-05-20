@@ -1,5 +1,6 @@
 package com.squareup.protoparser;
 
+import com.squareup.protoparser.OptionElement.Kind;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -152,31 +153,31 @@ public class ProtoFileTest {
     assertThat(isValidTag(MAX_TAG_VALUE + 1)).isFalse(); // Greater than maximum.
   }
 
-  @Test public void emptyToString() {
+  @Test public void emptyToSchema() {
     ProtoFile file = ProtoFile.builder("file.proto").build();
     String expected = "// file.proto\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void emptyWithPackageToString() {
+  @Test public void emptyWithPackageToSchema() {
     ProtoFile file = ProtoFile.builder("file.proto").packageName("example.simple").build();
     String expected = ""
         + "// file.proto\n"
         + "package example.simple;\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void simpleToString() {
+  @Test public void simpleToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file = ProtoFile.builder("file.proto").addType(element).build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
         + "message Message {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void simpleWithImportsToString() {
+  @Test public void simpleWithImportsToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file =
         ProtoFile.builder("file.proto").addDependency("example.other").addType(element).build();
@@ -186,7 +187,7 @@ public class ProtoFileTest {
         + "import \"example.other\";\n"
         + "\n"
         + "message Message {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleDependencies() {
@@ -195,17 +196,10 @@ public class ProtoFileTest {
         .addDependencies(Arrays.asList("example.other", "example.another"))
         .addType(element)
         .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "import \"example.other\";\n"
-        + "import \"example.another\";\n"
-        + "\n"
-        + "message Message {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.dependencies()).hasSize(2);
   }
 
-  @Test public void simpleWithPublicImportsToString() {
+  @Test public void simpleWithPublicImportsToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file = ProtoFile.builder("file.proto")
         .addPublicDependency("example.other")
@@ -217,7 +211,7 @@ public class ProtoFileTest {
         + "import public \"example.other\";\n"
         + "\n"
         + "message Message {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultiplePublicDependencies() {
@@ -226,17 +220,10 @@ public class ProtoFileTest {
         .addPublicDependencies(Arrays.asList("example.other", "example.another"))
         .addType(element)
         .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "import public \"example.other\";\n"
-        + "import public \"example.another\";\n"
-        + "\n"
-        + "message Message {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.publicDependencies()).hasSize(2);
   }
 
-  @Test public void simpleWithBothImportsToString() {
+  @Test public void simpleWithBothImportsToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file = ProtoFile.builder("file.proto")
         .addDependency("example.thing")
@@ -250,10 +237,10 @@ public class ProtoFileTest {
         + "import public \"example.other\";\n"
         + "\n"
         + "message Message {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void simpleWithServicesToString() {
+  @Test public void simpleWithServicesToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
     ServiceElement service = ServiceElement.builder().name("Service").build();
     ProtoFile file = ProtoFile.builder("file.proto").addType(element).addService(service).build();
@@ -263,7 +250,7 @@ public class ProtoFileTest {
         + "message Message {}\n"
         + "\n"
         + "service Service {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleServices() {
@@ -272,17 +259,12 @@ public class ProtoFileTest {
     ProtoFile file = ProtoFile.builder("file.proto")
         .addServices(Arrays.asList(service1, service2))
         .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "service Service1 {}\n"
-        + "service Service2 {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.services()).hasSize(2);
   }
 
-  @Test public void simpleWithOptionsToString() {
+  @Test public void simpleWithOptionsToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    OptionElement option = OptionElement.create("kit", "kat");
+    OptionElement option = OptionElement.create("kit", Kind.STRING, "kat");
     ProtoFile file = ProtoFile.builder("file.proto").addOption(option).addType(element).build();
     String expected = ""
         + "// file.proto\n"
@@ -290,28 +272,21 @@ public class ProtoFileTest {
         + "option kit = \"kat\";\n"
         + "\n"
         + "message Message {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleOptions() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    OptionElement kitKat = OptionElement.create("kit", "kat");
-    OptionElement fooBar = OptionElement.create("foo", "bar");
+    OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
+    OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
     ProtoFile file = ProtoFile.builder("file.proto")
         .addOptions(Arrays.asList(kitKat, fooBar))
         .addType(element)
         .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "option kit = \"kat\";\n"
-        + "option foo = \"bar\";\n"
-        + "\n"
-        + "message Message {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.options()).hasSize(2);
   }
 
-  @Test public void simpleWithExtendsToString() {
+  @Test public void simpleWithExtendsToSchema() {
     ProtoFile file = ProtoFile.builder("file.proto")
         .addExtendDeclaration(ExtendElement.builder().name("Extend").build())
         .addType(MessageElement.builder().name("Message").build())
@@ -322,7 +297,7 @@ public class ProtoFileTest {
         + "message Message {}\n"
         + "\n"
         + "extend Extend {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleExtends() {
@@ -331,15 +306,10 @@ public class ProtoFileTest {
     ProtoFile file = ProtoFile.builder("file.proto")
         .addExtendDeclarations(Arrays.asList(extend1, extend2))
         .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "extend Extend1 {}\n"
-        + "extend Extend2 {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.extendDeclarations()).hasSize(2);
   }
 
-  @Test public void multipleEverythingToString() {
+  @Test public void multipleEverythingToSchema() {
     TypeElement element1 = MessageElement.builder()
         .name("Message1")
         .qualifiedName("example.simple.Message1")
@@ -356,8 +326,8 @@ public class ProtoFileTest {
         .name("Extend2")
         .qualifiedName("example.simple.Extend2")
         .build();
-    OptionElement option1 = OptionElement.create("kit", "kat");
-    OptionElement option2 = OptionElement.create("foo", "bar");
+    OptionElement option1 = OptionElement.create("kit", Kind.STRING, "kat");
+    OptionElement option2 = OptionElement.create("foo", Kind.STRING, "bar");
     ServiceElement service1 = ServiceElement.builder()
         .name("Service1")
         .qualifiedName("example.simple.Service1")
@@ -397,14 +367,14 @@ public class ProtoFileTest {
         + "\n"
         + "service Service1 {}\n"
         + "service Service2 {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
 
     // Re-parse the expected string into a ProtoFile and ensure they're equal.
     ProtoFile parsed = ProtoParser.parse("file.proto", expected);
     assertThat(parsed).isEqualTo(file);
   }
 
-  @Test public void syntaxToString() {
+  @Test public void syntaxToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
     ProtoFile file = ProtoFile.builder("file.proto").syntax(PROTO_2).addType(element).build();
     String expected = ""
@@ -412,6 +382,6 @@ public class ProtoFileTest {
         + "syntax \"proto2\";\n"
         + "\n"
         + "message Message {}\n";
-    assertThat(file.toString()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
   }
 }

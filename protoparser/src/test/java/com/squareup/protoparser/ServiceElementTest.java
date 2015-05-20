@@ -1,6 +1,7 @@
 package com.squareup.protoparser;
 
 import com.squareup.protoparser.DataType.NamedType;
+import com.squareup.protoparser.OptionElement.Kind;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -81,13 +82,13 @@ public class ServiceElementTest {
     }
   }
 
-  @Test public void emptyToString() {
+  @Test public void emptyToSchema() {
     ServiceElement service = ServiceElement.builder().name("Service").build();
     String expected = "service Service {}\n";
-    assertThat(service.toString()).isEqualTo(expected);
+    assertThat(service.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void singleToString() {
+  @Test public void singleToSchema() {
     ServiceElement service = ServiceElement.builder()
         .name("Service")
         .addRpc(RpcElement.builder()
@@ -100,7 +101,7 @@ public class ServiceElementTest {
         + "service Service {\n"
         + "  rpc Name (RequestType) returns (ResponseType);\n"
         + "}\n";
-    assertThat(service.toString()).isEqualTo(expected);
+    assertThat(service.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleRpcs() {
@@ -118,18 +119,13 @@ public class ServiceElementTest {
         .name("Service")
         .addRpcs(Arrays.asList(firstName, lastName))
         .build();
-    String expected = ""
-        + "service Service {\n"
-        + "  rpc FirstName (RequestType) returns (ResponseType);\n"
-        + "  rpc LastName (RequestType) returns (ResponseType);\n"
-        + "}\n";
-    assertThat(service.toString()).isEqualTo(expected);
+    assertThat(service.rpcs()).hasSize(2);
   }
 
-  @Test public void singleWithOptionsToString() {
+  @Test public void singleWithOptionsToSchema() {
     ServiceElement service = ServiceElement.builder()
         .name("Service")
-        .addOption(OptionElement.create("foo", "bar"))
+        .addOption(OptionElement.create("foo", Kind.STRING, "bar"))
         .addRpc(RpcElement.builder()
             .name("Name")
             .requestType(NamedType.create("RequestType"))
@@ -142,12 +138,12 @@ public class ServiceElementTest {
         + "\n"
         + "  rpc Name (RequestType) returns (ResponseType);\n"
         + "}\n";
-    assertThat(service.toString()).isEqualTo(expected);
+    assertThat(service.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleOptions() {
-    OptionElement kitKat = OptionElement.create("kit", "kat");
-    OptionElement fooBar = OptionElement.create("foo", "bar");
+    OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
+    OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
     ServiceElement service = ServiceElement.builder()
         .name("Service")
         .addOptions(Arrays.asList(kitKat, fooBar))
@@ -157,17 +153,10 @@ public class ServiceElementTest {
             .responseType(NamedType.create("ResponseType"))
             .build())
         .build();
-    String expected = ""
-        + "service Service {\n"
-        + "  option kit = \"kat\";\n"
-        + "  option foo = \"bar\";\n"
-        + "\n"
-        + "  rpc Name (RequestType) returns (ResponseType);\n"
-        + "}\n";
-    assertThat(service.toString()).isEqualTo(expected);
+    assertThat(service.options()).hasSize(2);
   }
 
-  @Test public void singleWithDocumentation() {
+  @Test public void singleWithDocumentationToSchema() {
     ServiceElement service = ServiceElement.builder()
         .name("Service")
         .documentation("Hello")
@@ -182,10 +171,10 @@ public class ServiceElementTest {
         + "service Service {\n"
         + "  rpc Name (RequestType) returns (ResponseType);\n"
         + "}\n";
-    assertThat(service.toString()).isEqualTo(expected);
+    assertThat(service.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void multipleToString() {
+  @Test public void multipleToSchema() {
     RpcElement rpc = RpcElement.builder()
         .name("Name")
         .requestType(NamedType.create("RequestType"))
@@ -198,20 +187,20 @@ public class ServiceElementTest {
         + "  rpc Name (RequestType) returns (ResponseType);\n"
         + "  rpc Name (RequestType) returns (ResponseType);\n"
         + "}\n";
-    assertThat(service.toString()).isEqualTo(expected);
+    assertThat(service.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void rpcToString() {
+  @Test public void rpcToSchema() {
     RpcElement rpc = RpcElement.builder()
         .name("Name")
         .requestType(NamedType.create("RequestType"))
         .responseType(NamedType.create("ResponseType"))
         .build();
     String expected = "rpc Name (RequestType) returns (ResponseType);\n";
-    assertThat(rpc.toString()).isEqualTo(expected);
+    assertThat(rpc.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void rpcWithDocumentationToString() {
+  @Test public void rpcWithDocumentationToSchema() {
     RpcElement rpc = RpcElement.builder()
         .name("Name")
         .documentation("Hello")
@@ -221,20 +210,20 @@ public class ServiceElementTest {
     String expected = ""
         + "// Hello\n"
         + "rpc Name (RequestType) returns (ResponseType);\n";
-    assertThat(rpc.toString()).isEqualTo(expected);
+    assertThat(rpc.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void rpcWithOptions() {
+  @Test public void rpcWithOptionsToSchema() {
     RpcElement rpc = RpcElement.builder()
         .name("Name")
         .requestType(NamedType.create("RequestType"))
         .responseType(NamedType.create("ResponseType"))
-        .addOption(OptionElement.create("foo", "bar"))
+        .addOption(OptionElement.create("foo", Kind.STRING, "bar"))
         .build();
     String expected = ""
         + "rpc Name (RequestType) returns (ResponseType) {\n"
         + "  option foo = \"bar\";\n"
         + "};\n";
-    assertThat(rpc.toString()).isEqualTo(expected);
+    assertThat(rpc.toSchema()).isEqualTo(expected);
   }
 }

@@ -3,6 +3,8 @@ package com.squareup.protoparser;
 
 import com.squareup.protoparser.DataType.MapType;
 import com.squareup.protoparser.DataType.NamedType;
+import com.squareup.protoparser.DataType.ScalarType;
+import com.squareup.protoparser.OptionElement.Kind;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -448,11 +450,11 @@ public final class ProtoParserTest {
             .name("Topping")
             .qualifiedName("Topping")
             .documentation("What's on my waffles.\nAlso works on pancakes.")
-            .addOption(OptionElement.create("max_choices", 2, true))
+            .addOption(OptionElement.create("max_choices", Kind.NUMBER, "2", true))
             .addConstant(EnumConstantElement.builder()
                 .name("FRUIT")
                 .tag(1)
-                .addOption(OptionElement.create("healthy", true, true))
+                .addOption(OptionElement.create("healthy", Kind.BOOLEAN, "true", true))
                 .build())
             .addConstant(EnumConstantElement.builder()
                 .name("CREAM")
@@ -486,7 +488,7 @@ public final class ProtoParserTest {
             .documentation(
                 "The protocol compiler can output a FileDescriptorSet containing the .proto\nfiles it parses.")
             .build())
-        .addOption(OptionElement.create("java_package", "com.google.protobuf"))
+        .addOption(OptionElement.create("java_package", Kind.STRING, "com.google.protobuf"))
         .build();
     assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
   }
@@ -508,8 +510,8 @@ public final class ProtoParserTest {
         .addConstant(EnumConstantElement.builder()
             .name("STRING")
             .tag(0)
-            .addOption(OptionElement.create("opt_a", 1, true))
-            .addOption(OptionElement.create("opt_b", 2, true))
+            .addOption(OptionElement.create("opt_a", Kind.NUMBER, "1", true))
+            .addOption(OptionElement.create("opt_b", Kind.NUMBER, "2", true))
             .build())
         .build();
     FieldElement field = FieldElement.builder()
@@ -517,12 +519,12 @@ public final class ProtoParserTest {
         .type(NamedType.create("CType"))
         .name("ctype")
         .tag(1)
-        .addOption(OptionElement.create("default", EnumConstantElement.anonymous("STRING")))
-        .addOption(OptionElement.create("deprecated", true))
+        .addOption(OptionElement.create("default", Kind.ENUM, "STRING"))
+        .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "true"))
         .build();
     assertThat(field.options()).containsOnly( //
-        OptionElement.create("default", EnumConstantElement.anonymous("STRING")), //
-        OptionElement.create("deprecated", true));
+        OptionElement.create("default", Kind.ENUM, "STRING"), //
+        OptionElement.create("deprecated", Kind.BOOLEAN, "true"));
 
     TypeElement messageElement = MessageElement.builder()
         .name("FieldOptions")
@@ -554,23 +556,23 @@ public final class ProtoParserTest {
                 .type(BOOL)
                 .name("koka_ko_koka_ko")
                 .tag(1)
-                .addOption(OptionElement.create("default", true))
+                .addOption(OptionElement.create("default", Kind.BOOLEAN, "true"))
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
                 .type(BOOL)
                 .name("coodle_doodle_do")
                 .tag(2)
-                .addOption(OptionElement.create("delay", 100, true))
-                .addOption(OptionElement.create("default", false))
+                .addOption(OptionElement.create("delay", Kind.NUMBER, "100", true))
+                .addOption(OptionElement.create("default", Kind.BOOLEAN, "false"))
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
                 .type(BOOL)
                 .name("coo_coo_ca_cha")
                 .tag(3)
-                .addOption(OptionElement.create("default", true))
-                .addOption(OptionElement.create("delay", 200, true))
+                .addOption(OptionElement.create("default", Kind.BOOLEAN, "true"))
+                .addOption(OptionElement.create("delay", Kind.NUMBER, "200", true))
                 .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
@@ -721,9 +723,10 @@ public final class ProtoParserTest {
         .type(STRING)
         .name("claim_token")
         .tag(2)
-        .addOption(OptionElement.create("squareup.redacted", true, true))
+        .addOption(OptionElement.create("squareup.redacted", Kind.BOOLEAN, "true", true))
         .build();
-    assertThat(field.options()).containsOnly(OptionElement.create("squareup.redacted", true, true));
+    assertThat(field.options()).containsOnly(
+        OptionElement.create("squareup.redacted", Kind.BOOLEAN, "true", true));
 
     TypeElement messageElement = MessageElement.builder().name("Foo").addField(field).build();
     ProtoFile expected = ProtoFile.builder("descriptor.proto").addType(messageElement).build();
@@ -744,10 +747,10 @@ public final class ProtoParserTest {
         .type(STRING)
         .name("name")
         .tag(1)
-        .addOption(OptionElement.create("default",
+        .addOption(OptionElement.create("default", Kind.STRING,
             "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"))
         .build();
-    assertThat(field.options()).containsOnly(OptionElement.create("default",
+    assertThat(field.options()).containsOnly(OptionElement.create("default", Kind.STRING,
         "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"));
 
     TypeElement messageElement = MessageElement.builder().name("Foo").addField(field).build();
@@ -778,13 +781,18 @@ public final class ProtoParserTest {
         + "  rpc Search (SearchRequest) returns (SearchResponse);"
         + "  rpc Purchase (PurchaseRequest) returns (PurchaseResponse) {\n"
         + "    option (squareup.sake.timeout) = 15; \n"
-        + "    option (squareup.a.b) = { value: [FOO, BAR] };\n"
+        + "    option (squareup.a.b) = {"
+        + "      value: ["
+        + "        FOO,"
+        + "        BAR"
+        + "      ]"
+        + "    };\n"
         + "  }\n"
         + "}";
     ProtoFile expected = ProtoFile.builder("descriptor.proto")
         .addService(ServiceElement.builder()
             .name("SearchService")
-            .addOption(OptionElement.create("default_timeout", 30, true))
+            .addOption(OptionElement.create("default_timeout", Kind.NUMBER, "30", true))
             .addRpc(RpcElement.builder()
                 .name("Search")
                 .requestType(NamedType.create("SearchRequest"))
@@ -794,10 +802,9 @@ public final class ProtoParserTest {
                 .name("Purchase")
                 .requestType(NamedType.create("PurchaseRequest"))
                 .responseType(NamedType.create("PurchaseResponse"))
-                .addOption(OptionElement.create("squareup.sake.timeout", 15, true))
-                .addOption(OptionElement.create("squareup.a.b", map("value", //
-                    list(EnumConstantElement.anonymous("FOO"),
-                        EnumConstantElement.anonymous("BAR"))), true))
+                .addOption(OptionElement.create("squareup.sake.timeout", Kind.NUMBER, "15", true))
+                .addOption(OptionElement.create("squareup.a.b", Kind.MAP, map("value", //
+                    list("FOO", "BAR")), true))
                 .build())
             .build())
         .build();
@@ -861,28 +868,28 @@ public final class ProtoParserTest {
     Map<String, String> option_one_map = new LinkedHashMap<>();
     option_one_map.put("name", "Name");
     option_one_map.put("class_name", "ClassName");
-    expectedBuilder.addOption(OptionElement.create("squareup.one", option_one_map, true));
+    expectedBuilder.addOption(OptionElement.create("squareup.one", Kind.MAP, option_one_map, true));
     Map<String, Object> option_two_a_map = new LinkedHashMap<>();
-    option_two_a_map.put("[squareup.options.type]", EnumConstantElement.anonymous("EXOTIC"));
-    expectedBuilder.addOption(OptionElement.create("squareup.two.a", option_two_a_map, true));
+    option_two_a_map.put("[squareup.options.type]", "EXOTIC");
+    expectedBuilder.addOption(OptionElement.create("squareup.two.a", Kind.MAP, option_two_a_map, true));
     Map<String, List<String>> option_two_b_map = new LinkedHashMap<>();
     option_two_b_map.put("names", Arrays.asList("Foo", "Bar"));
-    expectedBuilder.addOption(OptionElement.create("squareup.two.b", option_two_b_map, true));
+    expectedBuilder.addOption(OptionElement.create("squareup.two.b", Kind.MAP, option_two_b_map, true));
     Map<String, Map<String, ?>> option_three_map = new LinkedHashMap<>();
     Map<String, Object> option_three_nested_map = new LinkedHashMap<>();
-    option_three_nested_map.put("y", Arrays.asList(1, 2));
+    option_three_nested_map.put("y", Arrays.asList("1", "2"));
     option_three_map.put("x", option_three_nested_map);
-    expectedBuilder.addOption(OptionElement.create("squareup.three", option_three_map, true));
+    expectedBuilder.addOption(OptionElement.create("squareup.three", Kind.MAP, option_three_map, true));
 
     Map<String, Map<String, ?>> option_four_map = new LinkedHashMap<>();
     Map<String, Object> option_four_map_1 = new LinkedHashMap<>();
     Map<String, Object> option_four_map_2_a = new LinkedHashMap<>();
-    option_four_map_2_a.put("z", 1);
+    option_four_map_2_a.put("z", "1");
     Map<String, Object> option_four_map_2_b = new LinkedHashMap<>();
-    option_four_map_2_b.put("z", 2);
+    option_four_map_2_b.put("z", "2");
     option_four_map_1.put("y", Arrays.asList(option_four_map_2_a, option_four_map_2_b));
     option_four_map.put("x", option_four_map_1);
-    expectedBuilder.addOption(OptionElement.create("squareup.four", option_four_map, true));
+    expectedBuilder.addOption(OptionElement.create("squareup.four", Kind.MAP, option_four_map, true));
 
     ProtoFile expected = ProtoFile.builder("exotic.proto").addType(expectedBuilder.build()).build();
     assertThat(ProtoParser.parse("exotic.proto", proto)).isEqualTo(expected);
@@ -903,20 +910,162 @@ public final class ProtoParserTest {
         .type(NamedType.create("field.type"))
         .name("has_options")
         .tag(3)
-        .addOption(OptionElement.create("option_map",
+        .addOption(OptionElement.create("option_map", Kind.MAP,
             map("nested_map", map("key", "value", "key2", list("value2a", "value2b"))), true))
-        .addOption(OptionElement.create("option_string", list("string1", "string2"), true))
+        .addOption(OptionElement.create("option_string", Kind.LIST, list("string1", "string2"), true))
         .build();
     assertThat(field.options()).containsOnly( //
-        OptionElement.create("option_map",
+        OptionElement.create("option_map", Kind.MAP,
             map("nested_map", map("key", "value", "key2", list("value2a", "value2b"))), true),
-        OptionElement.create("option_string", list("string1", "string2"), true));
+        OptionElement.create("option_string", Kind.LIST, list("string1", "string2"), true));
 
     TypeElement expected =
         MessageElement.builder().name("StructuredOption").addField(field).build();
     ProtoFile protoFile = ProtoFile.builder("nestedmaps.proto").addType(expected).build();
     assertThat(ProtoParser.parse("nestedmaps.proto", proto))
         .isEqualTo(protoFile);
+  }
+
+  @Test public void optionNumericalBounds() {
+    String proto = ""
+        + "message Test {"
+        + "  optional int32 default_int32 = 401 [default = 2147483647 ];\n"
+        + "  optional uint32 default_uint32 = 402 [default = 4294967295 ];\n"
+        + "  optional sint32 default_sint32 = 403 [default = -2147483648 ];\n"
+        + "  optional fixed32 default_fixed32 = 404 [default = 4294967295 ];\n"
+        + "  optional sfixed32 default_sfixed32 = 405 [default = -2147483648 ];\n"
+        + "  optional int64 default_int64 = 406 [default = 9223372036854775807 ];\n"
+        + "  optional uint64 default_uint64 = 407 [default = 18446744073709551615 ];\n"
+        + "  optional sint64 default_sint64 = 408 [default = -9223372036854775808 ];\n"
+        + "  optional fixed64 default_fixed64 = 409 [default = 18446744073709551615 ];\n"
+        + "  optional sfixed64 default_sfixed64 = 410 [default = -9223372036854775808 ];\n"
+        + "  optional bool default_bool = 411 [default = true ];\n"
+        + "  optional float default_float = 412 [default = 123.456e7 ];\n"
+        + "  optional double default_double = 413 [default = 123.456e78 ];\n"
+        //+ "  optional string default_string = 414 [default = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
+        //+ "  optional bytes default_bytes = 415 [default = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
+        + "  optional NestedEnum default_nested_enum = 416 [default = A ];"
+        + "}";
+    ProtoFile expected = ProtoFile.builder("test.proto")
+        .addType(MessageElement.builder()
+            .name("Test")
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.INT32)
+                .name("default_int32")
+                .tag(401)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "2147483647"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.UINT32)
+                .name("default_uint32")
+                .tag(402)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "4294967295"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.SINT32)
+                .name("default_sint32")
+                .tag(403)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "-2147483648"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.FIXED32)
+                .name("default_fixed32")
+                .tag(404)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "4294967295"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.SFIXED32)
+                .name("default_sfixed32")
+                .tag(405)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "-2147483648"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.INT64)
+                .name("default_int64")
+                .tag(406)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "9223372036854775807"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.UINT64)
+                .name("default_uint64")
+                .tag(407)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "18446744073709551615"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.SINT64)
+                .name("default_sint64")
+                .tag(408)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "-9223372036854775808"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.FIXED64)
+                .name("default_fixed64")
+                .tag(409)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "18446744073709551615"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.SFIXED64)
+                .name("default_sfixed64")
+                .tag(410)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "-9223372036854775808"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.BOOL)
+                .name("default_bool")
+                .tag(411)
+                .addOption(OptionElement.create("default", Kind.BOOLEAN, "true"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.FLOAT)
+                .name("default_float")
+                .tag(412)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "123.456e7"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.DOUBLE)
+                .name("default_double")
+                .tag(413)
+                .addOption(OptionElement.create("default", Kind.NUMBER, "123.456e78"))
+                .build())
+            //.addField(FieldElement.builder()
+            //    .label(OPTIONAL)
+            //    .type(ScalarType.STRING)
+            //    .name("default_string")
+            //    .tag(414)
+            //    .addOption(OptionElement.create("default", Kind.STRING,
+            //        "çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel"))
+            //    .build())
+            //.addField(FieldElement.builder()
+            //    .label(OPTIONAL)
+            //    .type(ScalarType.BYTES)
+            //    .name("default_bytes")
+            //    .tag(415)
+            //    .addOption(OptionElement.create("default", Kind.STRING,
+            //        "çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel"))
+            //    .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(NamedType.create("NestedEnum"))
+                .name("default_nested_enum")
+                .tag(416)
+                .addOption(OptionElement.create("default", Kind.ENUM, "A"))
+                .build())
+            .build())
+        .build();
+    assertThat(ProtoParser.parse("test.proto", proto)).isEqualTo(expected);
   }
 
   @Test public void extensionWithNestedMessage() throws Exception {
@@ -928,21 +1077,23 @@ public final class ProtoParserTest {
         + "      default = 20\n"
         + "  ];\n"
         + "}";
-    FieldElement
-        field = FieldElement.builder()
+    FieldElement field = FieldElement.builder()
         .label(OPTIONAL)
         .type(INT32)
         .name("bar")
         .tag(1)
-        .addOption(
-            OptionElement.create("validation.range", OptionElement.create("min", 1), true))
-        .addOption(OptionElement.create("validation.range", OptionElement.create("max", 100), true))
-        .addOption(OptionElement.create("default", 20))
+        .addOption(OptionElement.create("validation.range", Kind.OPTION,
+            OptionElement.create("min", Kind.NUMBER, "1"), true))
+        .addOption(OptionElement.create("validation.range", Kind.OPTION,
+            OptionElement.create("max", Kind.NUMBER, "100"), true))
+        .addOption(OptionElement.create("default", Kind.NUMBER, "20"))
         .build();
     assertThat(field.options()).containsOnly( //
-        OptionElement.create("validation.range", OptionElement.create("min", 1), true), //
-        OptionElement.create("validation.range", OptionElement.create("max", 100), true), //
-        OptionElement.create("default", 20));
+        OptionElement.create("validation.range", Kind.OPTION,
+            OptionElement.create("min", Kind.NUMBER, "1"), true), //
+        OptionElement.create("validation.range", Kind.OPTION,
+            OptionElement.create("max", Kind.NUMBER, "100"), true), //
+        OptionElement.create("default", Kind.NUMBER, "20"));
 
     TypeElement expected = MessageElement.builder().name("Foo").addField(field).build();
     ProtoFile protoFile = ProtoFile.builder("foo.proto").addType(expected).build();

@@ -64,13 +64,13 @@ public class ExtendElementTest {
     }
   }
 
-  @Test public void emptyToString() {
+  @Test public void emptyToSchema() {
     ExtendElement extend = ExtendElement.builder().name("Name").build();
     String expected = "extend Name {}\n";
-    assertThat(extend.toString()).isEqualTo(expected);
+    assertThat(extend.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void simpleToString() {
+  @Test public void simpleToSchema() {
     ExtendElement extend = ExtendElement.builder()
         .name("Name")
         .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
@@ -79,7 +79,7 @@ public class ExtendElementTest {
         + "extend Name {\n"
         + "  required string name = 1;\n"
         + "}\n";
-    assertThat(extend.toString()).isEqualTo(expected);
+    assertThat(extend.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleFields() {
@@ -91,15 +91,10 @@ public class ExtendElementTest {
         .name("Name")
         .addFields(Arrays.asList(firstName, lastName))
         .build();
-    String expected = ""
-        + "extend Name {\n"
-        + "  required string first_name = 1;\n"
-        + "  required string last_name = 2;\n"
-        + "}\n";
-    assertThat(extend.toString()).isEqualTo(expected);
+    assertThat(extend.fields()).hasSize(2);
   }
 
-  @Test public void simpleWithDocumentationToString() {
+  @Test public void simpleWithDocumentationToSchema() {
     ExtendElement extend = ExtendElement.builder()
         .name("Name")
         .documentation("Hello")
@@ -115,7 +110,7 @@ public class ExtendElementTest {
         + "extend Name {\n"
         + "  required string name = 1;\n"
         + "}\n";
-    assertThat(extend.toString()).isEqualTo(expected);
+    assertThat(extend.toSchema()).isEqualTo(expected);
   }
 
   @Test public void duplicateTagValueThrows() {

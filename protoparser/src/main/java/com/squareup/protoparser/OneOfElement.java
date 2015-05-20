@@ -24,14 +24,14 @@ public abstract class OneOfElement {
   public abstract String documentation();
   public abstract List<FieldElement> fields();
 
-  @Override public final String toString() {
+  public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append("oneof ").append(name()).append(" {");
     if (!fields().isEmpty()) {
       builder.append('\n');
       for (FieldElement field : fields()) {
-        appendIndented(builder, field.toString());
+        appendIndented(builder, field.toSchema());
       }
     }
     return builder.append("}\n").toString();

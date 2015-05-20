@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
+import static com.squareup.protoparser.OptionElement.Kind.BOOLEAN;
+import static com.squareup.protoparser.OptionElement.Kind.STRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -80,13 +82,13 @@ public class EnumElementTest {
     }
   }
 
-  @Test public void emptyToString() {
+  @Test public void emptyToSchema() {
     EnumElement element = EnumElement.builder().name("Enum").build();
     String expected = "enum Enum {}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void simpleToString() {
+  @Test public void simpleToSchema() {
     EnumElement element = EnumElement.builder()
         .name("Enum")
         .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
@@ -99,7 +101,7 @@ public class EnumElementTest {
         + "  TWO = 2;\n"
         + "  SIX = 6;\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleConstants() {
@@ -110,19 +112,13 @@ public class EnumElementTest {
         .name("Enum")
         .addConstants(Arrays.asList(one, two, six))
         .build();
-    String expected = ""
-        + "enum Enum {\n"
-        + "  ONE = 1;\n"
-        + "  TWO = 2;\n"
-        + "  SIX = 6;\n"
-        + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.constants()).hasSize(3);
   }
 
-  @Test public void simpleWithOptionsToString() {
+  @Test public void simpleWithOptionsToSchema() {
     EnumElement element = EnumElement.builder()
         .name("Enum")
-        .addOption(OptionElement.create("kit", "kat"))
+        .addOption(OptionElement.create("kit", STRING, "kat"))
         .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
         .addConstant(EnumConstantElement.builder().name("TWO").tag(2).build())
         .addConstant(EnumConstantElement.builder().name("SIX").tag(6).build())
@@ -135,28 +131,21 @@ public class EnumElementTest {
         + "  TWO = 2;\n"
         + "  SIX = 6;\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleOptions() {
-    OptionElement kitKat = OptionElement.create("kit", "kat");
-    OptionElement fooBar = OptionElement.create("foo", "bar");
+    OptionElement kitKat = OptionElement.create("kit", STRING, "kat");
+    OptionElement fooBar = OptionElement.create("foo", STRING, "bar");
     EnumElement element = EnumElement.builder()
         .name("Enum")
         .addOptions(Arrays.asList(kitKat, fooBar))
         .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
         .build();
-    String expected = ""
-        + "enum Enum {\n"
-        + "  option kit = \"kat\";\n"
-        + "  option foo = \"bar\";\n"
-        + "\n"
-        + "  ONE = 1;\n"
-        + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.options()).hasSize(2);
   }
 
-  @Test public void simpleWithDocumentationToString() {
+  @Test public void simpleWithDocumentationToSchema() {
     EnumElement element = EnumElement.builder()
         .name("Enum")
         .documentation("Hello")
@@ -171,16 +160,16 @@ public class EnumElementTest {
         + "  TWO = 2;\n"
         + "  SIX = 6;\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void fieldToString() {
+  @Test public void fieldToSchema() {
     EnumConstantElement value = EnumConstantElement.builder().name("NAME").tag(1).build();
     String expected = "NAME = 1;\n";
-    assertThat(value.toString()).isEqualTo(expected);
+    assertThat(value.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void fieldWithDocumentationToString() {
+  @Test public void fieldWithDocumentationToSchema() {
     EnumConstantElement value = EnumConstantElement.builder()
         .name("NAME")
         .tag(1)
@@ -189,21 +178,21 @@ public class EnumElementTest {
     String expected = ""
         + "// Hello\n"
         + "NAME = 1;\n";
-    assertThat(value.toString()).isEqualTo(expected);
+    assertThat(value.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void fieldWithOptions() {
+  @Test public void fieldWithOptionsToSchema() {
     EnumConstantElement value = EnumConstantElement.builder()
         .name("NAME")
         .tag(1)
-        .addOption(OptionElement.create("kit", "kat", true))
-        .addOption(OptionElement.create("tit", "tat"))
+        .addOption(OptionElement.create("kit", STRING, "kat", true))
+        .addOption(OptionElement.create("tit", STRING, "tat"))
         .build();
     String expected = "NAME = 1 [\n"
         + "  (kit) = \"kat\",\n"
         + "  tit = \"tat\"\n"
         + "];\n";
-    assertThat(value.toString()).isEqualTo(expected);
+    assertThat(value.toSchema()).isEqualTo(expected);
   }
 
   @Test public void duplicateValueTagThrows() {
@@ -224,19 +213,10 @@ public class EnumElementTest {
     EnumElement element = EnumElement.builder()
         .name("Enum1")
         .qualifiedName("example.Enum")
-        .addOption(OptionElement.create("allow_alias", true))
+        .addOption(OptionElement.create("allow_alias", BOOLEAN, "true"))
         .addConstant(EnumConstantElement.builder().name("VALUE1").tag(1).build())
         .addConstant(EnumConstantElement.builder().name("VALUE2").tag(1).build())
         .build();
-
-    String expected = ""
-        + "enum Enum1 {\n"
-        + "  option allow_alias = true;\n"
-        + "\n"
-        + "  VALUE1 = 1;\n"
-        + "  VALUE2 = 1;\n"
-        + "}\n";
-
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.constants()).hasSize(2);
   }
 }
