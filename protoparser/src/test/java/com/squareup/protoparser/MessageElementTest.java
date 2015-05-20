@@ -1,5 +1,6 @@
 package com.squareup.protoparser;
 
+import com.squareup.protoparser.OptionElement.Kind;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -139,13 +140,13 @@ public class MessageElementTest {
     }
   }
 
-  @Test public void emptyToString() {
+  @Test public void emptyToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
     String expected = "message Message {}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void simpleToString() {
+  @Test public void simpleToSchema() {
     TypeElement element = MessageElement.builder()
         .name("Message")
         .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
@@ -154,7 +155,7 @@ public class MessageElementTest {
         + "message Message {\n"
         + "  required string name = 1;\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleFields() {
@@ -162,19 +163,14 @@ public class MessageElementTest {
         FieldElement.builder().label(REQUIRED).type(STRING).name("first_name").tag(1).build();
     FieldElement lastName =
         FieldElement.builder().label(REQUIRED).type(STRING).name("last_name").tag(2).build();
-    TypeElement element = MessageElement.builder()
+    MessageElement element = MessageElement.builder()
         .name("Message")
         .addFields(Arrays.asList(firstName, lastName))
         .build();
-    String expected = ""
-        + "message Message {\n"
-        + "  required string first_name = 1;\n"
-        + "  required string last_name = 2;\n"
-        + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.fields()).hasSize(2);
   }
 
-  @Test public void simpleWithDocumentationToString() {
+  @Test public void simpleWithDocumentationToSchema() {
     TypeElement element = MessageElement.builder()
         .name("Message")
         .documentation("Hello")
@@ -185,10 +181,10 @@ public class MessageElementTest {
         + "message Message {\n"
         + "  required string name = 1;\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void simpleWithOptionsToString() {
+  @Test public void simpleWithOptionsToSchema() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
         .type(STRING)
@@ -198,7 +194,7 @@ public class MessageElementTest {
     TypeElement element = MessageElement.builder()
         .name("Message")
         .addField(field)
-        .addOption(OptionElement.create("kit", "kat"))
+        .addOption(OptionElement.create("kit", Kind.STRING, "kat"))
         .build();
     String expected = ""
         + "message Message {\n"
@@ -206,7 +202,7 @@ public class MessageElementTest {
         + "\n"
         + "  required string name = 1;\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleOptions() {
@@ -216,24 +212,17 @@ public class MessageElementTest {
         .name("name")
         .tag(1)
         .build();
-    OptionElement kitKat = OptionElement.create("kit", "kat");
-    OptionElement fooBar = OptionElement.create("foo", "bar");
-    TypeElement element = MessageElement.builder()
+    OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
+    OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
+    MessageElement element = MessageElement.builder()
         .name("Message")
         .addField(field)
         .addOptions(Arrays.asList(kitKat, fooBar))
         .build();
-    String expected = ""
-        + "message Message {\n"
-        + "  option kit = \"kat\";\n"
-        + "  option foo = \"bar\";\n"
-        + "\n"
-        + "  required string name = 1;\n"
-        + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.options()).hasSize(2);
   }
 
-  @Test public void simpleWithNestedElementsToString() {
+  @Test public void simpleWithNestedElementsToSchema() {
     TypeElement element = MessageElement.builder()
         .name("Message")
         .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
@@ -251,7 +240,7 @@ public class MessageElementTest {
         + "    required string name = 1;\n"
         + "  }\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleTypes() {
@@ -267,17 +256,10 @@ public class MessageElementTest {
             .build())
         .addTypes(Arrays.asList(nested1, nested2))
         .build();
-    String expected = ""
-        + "message Message {\n"
-        + "  required string name = 1;\n"
-        + "\n"
-        + "  message Nested1 {}\n"
-        + "  message Nested2 {}\n"
-        + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.nestedElements()).hasSize(2);
   }
 
-  @Test public void simpleWithExtensionsToString() {
+  @Test public void simpleWithExtensionsToSchema() {
     TypeElement element = MessageElement.builder()
         .name("Message")
         .addField(FieldElement.builder()
@@ -294,13 +276,13 @@ public class MessageElementTest {
         + "\n"
         + "  extensions 500 to 501;\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleExtensions() {
     ExtensionsElement fives = ExtensionsElement.create(500, 501);
     ExtensionsElement sixes = ExtensionsElement.create(600, 601);
-    TypeElement element = MessageElement.builder()
+    MessageElement element = MessageElement.builder()
         .name("Message")
         .addField(FieldElement.builder()
             .label(REQUIRED)
@@ -310,17 +292,10 @@ public class MessageElementTest {
             .build())
         .addExtensions(Arrays.asList(fives, sixes))
         .build();
-    String expected = ""
-        + "message Message {\n"
-        + "  required string name = 1;\n"
-        + "\n"
-        + "  extensions 500 to 501;\n"
-        + "  extensions 600 to 601;\n"
-        + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.extensions()).hasSize(2);
   }
 
-  @Test public void oneOfToString() {
+  @Test public void oneOfToSchema() {
     TypeElement element = MessageElement.builder()
         .name("Message")
         .addOneOf(OneOfElement.builder()
@@ -334,7 +309,7 @@ public class MessageElementTest {
         + "    string name = 1;\n"
         + "  }\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void addMultipleOneOfs() {
@@ -346,23 +321,14 @@ public class MessageElementTest {
         .name("hey")
         .addField(FieldElement.builder().label(ONE_OF).type(STRING).name("city").tag(2).build())
         .build();
-    TypeElement element = MessageElement.builder()
+    MessageElement element = MessageElement.builder()
         .name("Message")
         .addOneOfs(Arrays.asList(hi, hey))
         .build();
-    String expected = ""
-        + "message Message {\n"
-        + "  oneof hi {\n"
-        + "    string name = 1;\n"
-        + "  }\n"
-        + "  oneof hey {\n"
-        + "    string city = 2;\n"
-        + "  }\n"
-        + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.oneOfs()).hasSize(2);
   }
 
-  @Test public void multipleEverythingToString() {
+  @Test public void multipleEverythingToSchema() {
     FieldElement field1 = FieldElement.builder()
         .label(REQUIRED)
         .type(STRING)
@@ -398,7 +364,7 @@ public class MessageElementTest {
     ExtensionsElement extensions1 = ExtensionsElement.create(500, 501);
     ExtensionsElement extensions2 = ExtensionsElement.create(503, 503);
     TypeElement nested = MessageElement.builder().name("Nested").addField(field1).build();
-    OptionElement option = OptionElement.create("kit", "kat");
+    OptionElement option = OptionElement.create("kit", Kind.STRING, "kat");
     TypeElement element = MessageElement.builder()
         .name("Message")
         .addField(field1)
@@ -431,10 +397,10 @@ public class MessageElementTest {
         + "    required string name = 1;\n"
         + "  }\n"
         + "}\n";
-    assertThat(element.toString()).isEqualTo(expected);
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void fieldToString() {
+  @Test public void fieldToSchema() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
         .type(STRING)
@@ -442,10 +408,10 @@ public class MessageElementTest {
         .tag(1)
         .build();
     String expected = "required string name = 1;\n";
-    assertThat(field.toString()).isEqualTo(expected);
+    assertThat(field.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void oneOfFieldToString() {
+  @Test public void oneOfFieldToSchema() {
     FieldElement field = FieldElement.builder()
         .label(ONE_OF)
         .type(STRING)
@@ -453,10 +419,10 @@ public class MessageElementTest {
         .tag(1)
         .build();
     String expected = "string name = 1;\n";
-    assertThat(field.toString()).isEqualTo(expected);
+    assertThat(field.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void fieldWithDocumentationToString() {
+  @Test public void fieldWithDocumentationToSchema() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
         .type(STRING)
@@ -467,21 +433,21 @@ public class MessageElementTest {
     String expected = ""
         + "// Hello\n"
         + "required string name = 1;\n";
-    assertThat(field.toString()).isEqualTo(expected);
+    assertThat(field.toSchema()).isEqualTo(expected);
   }
 
-  @Test public void fieldWithOptions() {
+  @Test public void fieldWithOptionsToSchema() {
     FieldElement field = FieldElement.builder()
         .label(REQUIRED)
         .type(STRING)
         .name("name")
         .tag(1)
-        .addOption(OptionElement.create("kit", "kat"))
+        .addOption(OptionElement.create("kit", Kind.STRING, "kat"))
         .build();
     String expected = "required string name = 1 [\n"
         + "  kit = \"kat\"\n"
         + "];\n";
-    assertThat(field.toString()).isEqualTo(expected);
+    assertThat(field.toSchema()).isEqualTo(expected);
   }
 
   @Test public void duplicateTagValueThrows() {
@@ -588,7 +554,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("deprecated", "true"))
+        .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "true"))
         .build();
     assertThat(field.isDeprecated()).isTrue();
   }
@@ -599,7 +565,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("deprecated", "false"))
+        .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "false"))
         .build();
     assertThat(field.isDeprecated()).isFalse();
   }
@@ -620,7 +586,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("packed", "true"))
+        .addOption(OptionElement.create("packed", Kind.BOOLEAN, "true"))
         .build();
     assertThat(field.isPacked()).isTrue();
   }
@@ -631,7 +597,7 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("packed", "false"))
+        .addOption(OptionElement.create("packed", Kind.BOOLEAN, "false"))
         .build();
     assertThat(field.isPacked()).isFalse();
   }
@@ -652,9 +618,9 @@ public class MessageElementTest {
         .type(STRING)
         .name("name1")
         .tag(1)
-        .addOption(OptionElement.create("default", "foo"))
+        .addOption(OptionElement.create("default", Kind.STRING, "foo"))
         .build();
-    assertThat(field.getDefault()).isEqualTo("foo");
+    assertThat(field.getDefault().value()).isEqualTo("foo");
   }
 
   @Test public void defaultMissing() {

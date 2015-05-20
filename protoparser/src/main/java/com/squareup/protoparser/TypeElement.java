@@ -10,4 +10,5 @@ public interface TypeElement {
   String documentation();
   List<OptionElement> options();
   List<TypeElement> nestedElements();
+  String toSchema();
 }

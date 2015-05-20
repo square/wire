@@ -27,7 +27,7 @@ public abstract class ExtensionsElement {
   public abstract int start();
   public abstract int end();
 
-  @Override public final String toString() {
+  public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append("extensions ")

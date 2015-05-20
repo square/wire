@@ -13,13 +13,6 @@ import static com.squareup.protoparser.Utils.immutableCopyOf;
 /** An enum constant. */
 @AutoValue
 public abstract class EnumConstantElement {
-  public static final int UNKNOWN_TAG = -1;
-
-  /** Used to represent enums constants where we just know the name. */
-  static EnumConstantElement anonymous(String name) {
-    return builder().name(name).tag(UNKNOWN_TAG).build();
-  }
-
   public static Builder builder() {
     return new Builder();
   }
@@ -32,7 +25,7 @@ public abstract class EnumConstantElement {
   public abstract String documentation();
   public abstract List<OptionElement> options();
 
-  @Override public final String toString() {
+  public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append(name())

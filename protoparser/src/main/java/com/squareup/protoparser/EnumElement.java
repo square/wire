@@ -32,11 +32,7 @@ public abstract class EnumElement implements TypeElement {
 
   private static boolean parseAllowAlias(List<OptionElement> options) {
     OptionElement option = OptionElement.findByName(options, "allow_alias");
-    if (option != null) {
-      Object value = option.value();
-      return value instanceof Boolean && (Boolean) value;
-    }
-    return false;
+    return option != null && "true".equals(option.value());
   }
 
   /**
@@ -77,7 +73,7 @@ public abstract class EnumElement implements TypeElement {
     return Collections.emptyList(); // Enums do not allow nested type declarations.
   }
 
-  @Override public final String toString() {
+  @Override public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append("enum ")
@@ -86,13 +82,13 @@ public abstract class EnumElement implements TypeElement {
     if (!options().isEmpty()) {
       builder.append('\n');
       for (OptionElement option : options()) {
-        appendIndented(builder, option.toDeclaration());
+        appendIndented(builder, option.toSchemaDeclaration());
       }
     }
     if (!constants().isEmpty()) {
       builder.append('\n');
       for (EnumConstantElement constant : constants()) {
-        appendIndented(builder, constant.toString());
+        appendIndented(builder, constant.toSchema());
       }
     }
     return builder.append("}\n").toString();
