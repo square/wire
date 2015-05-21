@@ -942,8 +942,8 @@ public final class ProtoParserTest {
         + "  optional bool default_bool = 411 [default = true ];\n"
         + "  optional float default_float = 412 [default = 123.456e7 ];\n"
         + "  optional double default_double = 413 [default = 123.456e78 ];\n"
-        //+ "  optional string default_string = 414 [default = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
-        //+ "  optional bytes default_bytes = 415 [default = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
+        + "  optional string default_string = 414 [default = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
+        + "  optional bytes default_bytes = 415 [default = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
         + "  optional NestedEnum default_nested_enum = 416 [default = A ];"
         + "}";
     ProtoFile expected = ProtoFile.builder("test.proto")
@@ -1040,22 +1040,22 @@ public final class ProtoParserTest {
                 .tag(413)
                 .addOption(OptionElement.create("default", Kind.NUMBER, "123.456e78"))
                 .build())
-            //.addField(FieldElement.builder()
-            //    .label(OPTIONAL)
-            //    .type(ScalarType.STRING)
-            //    .name("default_string")
-            //    .tag(414)
-            //    .addOption(OptionElement.create("default", Kind.STRING,
-            //        "çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel"))
-            //    .build())
-            //.addField(FieldElement.builder()
-            //    .label(OPTIONAL)
-            //    .type(ScalarType.BYTES)
-            //    .name("default_bytes")
-            //    .tag(415)
-            //    .addOption(OptionElement.create("default", Kind.STRING,
-            //        "çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel"))
-            //    .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.STRING)
+                .name("default_string")
+                .tag(414)
+                .addOption(OptionElement.create("default", Kind.STRING,
+                    "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"))
+                .build())
+            .addField(FieldElement.builder()
+                .label(OPTIONAL)
+                .type(ScalarType.BYTES)
+                .name("default_bytes")
+                .tag(415)
+                .addOption(OptionElement.create("default", Kind.STRING,
+                    "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"))
+                .build())
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
                 .type(NamedType.create("NestedEnum"))
