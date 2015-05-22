@@ -3,8 +3,7 @@ package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
-import com.squareup.protoparser.ProtoSchemaParser;
-
+import com.squareup.protoparser.ProtoParser;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,7 +38,7 @@ interface IO {
 
     @Override
     public ProtoFile parse(String filename) throws IOException {
-      return ProtoSchemaParser.parse(filename,
+      return ProtoParser.parse(filename,
           new InputStreamReader(new FileInputStream(filename), UTF_8));
     }
 

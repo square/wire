@@ -2,7 +2,7 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.Service;
+import com.squareup.protoparser.ServiceElement;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -35,5 +35,6 @@ public abstract class ServiceWriter {
    * @param service the service being generated.
    * @param importedTypes a set of strings containing known imports.
    */
-  public abstract void emitService(Service service, Set<String> importedTypes) throws IOException;
+  public abstract void emitService(ServiceElement service, Set<String> importedTypes)
+      throws IOException;
 }

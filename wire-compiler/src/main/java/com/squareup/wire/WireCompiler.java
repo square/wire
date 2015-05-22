@@ -16,13 +16,16 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.EnumType;
-import com.squareup.protoparser.ExtendDeclaration;
-import com.squareup.protoparser.MessageType;
-import com.squareup.protoparser.Option;
+import com.squareup.protoparser.DataType.ScalarType;
+import com.squareup.protoparser.EnumElement;
+import com.squareup.protoparser.ExtendElement;
+import com.squareup.protoparser.FieldElement;
+import com.squareup.protoparser.MessageElement;
+import com.squareup.protoparser.OptionElement;
 import com.squareup.protoparser.ProtoFile;
-import com.squareup.protoparser.Service;
-import com.squareup.protoparser.Type;
+import com.squareup.protoparser.RpcElement;
+import com.squareup.protoparser.ServiceElement;
+import com.squareup.protoparser.TypeElement;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -31,6 +34,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -40,7 +44,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import okio.ByteString;
 
-import static com.squareup.protoparser.MessageType.Field;
 import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
 import static javax.lang.model.element.Modifier.FINAL;
@@ -185,7 +188,7 @@ public class WireCompiler {
     for (Map.Entry<String, ProtoFile> entry : parsedFiles.entrySet()) {
       this.sourceFileName = entry.getKey();
       this.protoFile = entry.getValue();
-      this.protoFileName = protoFileName(protoFile.getFileName());
+      this.protoFileName = protoFileName(protoFile.filePath());
       log.info("Compiling proto source file " + sourceFileName);
       try {
         compileOne();
@@ -234,7 +237,7 @@ public class WireCompiler {
     return fieldMap.get(dollarName);
   }
 
-  String javaName(ProtoFile protoFile, MessageType messageType, String type) {
+  String javaName(ProtoFile protoFile, MessageElement messageType, String type) {
     String scalarType = TypeInfo.scalarType(type);
     return scalarType != null ? scalarType
         : shortenJavaName(protoFile, javaName(fullyQualifiedName(protoFile, messageType, type)));
@@ -248,12 +251,12 @@ public class WireCompiler {
     return prefixWithPackageName(protoFile, name);
   }
 
-  boolean hasFields(Type type) {
-    return type instanceof MessageType && !((MessageType) type).getFields().isEmpty();
+  boolean hasFields(TypeElement type) {
+    return type instanceof MessageElement && !((MessageElement) type).fields().isEmpty();
   }
 
-  boolean hasExtensions(MessageType messageType) {
-    return !messageType.getExtensions().isEmpty();
+  boolean hasExtensions(MessageElement messageType) {
+    return !messageType.extensions().isEmpty();
   }
 
   String getTrailingSegment(String name) {
@@ -265,27 +268,25 @@ public class WireCompiler {
     return extensionInfo.get(name);
   }
 
-  String getInitializerForType(String initialValue, String javaTypeName) {
+  String getInitializerForType(Object initialValue, String javaTypeName) {
     if ("Boolean".equals(javaTypeName)) {
-      return initialValue == null ? "false" : initialValue;
+      return initialValue == null ? "false" : String.valueOf(initialValue);
     } else if ("Integer".equals(javaTypeName)) {
-      // Wrap unsigned values
-      return initialValue == null ? "0" : toInt(initialValue);
+      return initialValue == null ? "0" : toInt(String.valueOf(initialValue));
     } else if ("Long".equals(javaTypeName)) {
-      // Wrap unsigned values and add an 'L'
-      return initialValue == null ? "0L" : toLong(initialValue) + "L";
+      return initialValue == null ? "0L" : toLong(String.valueOf(initialValue));
     } else if ("Float".equals(javaTypeName)) {
-      return initialValue == null ? "0F" : initialValue + "F";
+      return initialValue == null ? "0F" : String.valueOf(initialValue) + "F";
     } else if ("Double".equals(javaTypeName)) {
-      return initialValue == null ? "0D" : initialValue + "D";
+      return initialValue == null ? "0D" : String.valueOf(initialValue) + "D";
     } else if ("String".equals(javaTypeName)) {
-      return quoteString(initialValue);
+      return quoteString((String) initialValue);
     } else if ("ByteString".equals(javaTypeName)) {
       if (initialValue == null) {
         return "ByteString.EMPTY";
       } else {
-        return "ByteString.decodeBase64(\"" + ByteString.of(initialValue.getBytes(ISO_8859_1))
-            .base64() + "\")";
+        return "ByteString.decodeBase64(\"" + ByteString.of(
+            String.valueOf(initialValue).getBytes(ISO_8859_1)).base64() + "\")";
       }
     } else {
       throw new WireCompilerException(javaTypeName + " is not an allowed scalar type");
@@ -300,7 +301,7 @@ public class WireCompiler {
     return enumTypes.contains(type);
   }
 
-  String javaName(MessageType messageType, String type) {
+  String javaName(MessageElement messageType, String type) {
     String scalarType = TypeInfo.scalarType(type);
     return scalarType != null ? scalarType
         : shortenJavaName(javaName(fullyQualifiedName(messageType, type)));
@@ -310,8 +311,8 @@ public class WireCompiler {
     return javaSymbolMap.get(fqName);
   }
 
-  String fullyQualifiedName(Type scope, String type) {
-    String fqName = scope == null ? null : scope.getFullyQualifiedName();
+  String fullyQualifiedName(TypeElement scope, String type) {
+    String fqName = scope == null ? null : scope.qualifiedName();
     return fullyQualifiedName(protoFile, fqName, type);
   }
 
@@ -323,8 +324,8 @@ public class WireCompiler {
     return shortenJavaName(protoFile, fullyQualifiedName);
   }
 
-  boolean isRedacted(Option option) {
-    return option.getName().endsWith(".redacted") && "true".equals(option.getValue());
+  boolean isRedacted(OptionElement option) {
+    return option.name().endsWith(".redacted") && "true".equals(String.valueOf(option.value()));
   }
 
   private void compileOne() throws IOException {
@@ -341,12 +342,12 @@ public class WireCompiler {
       }
     }
 
-    for (Type type : protoFile.getTypes()) {
-      if (shouldEmitType(type.getFullyQualifiedName())) {
+    for (TypeElement type : protoFile.typeElements()) {
+      if (shouldEmitType(type.qualifiedName())) {
         String savedType = typeBeingGenerated;
-        typeBeingGenerated += type.getName() + ".";
+        typeBeingGenerated += type.name() + ".";
         OutputArtifact artifact = new OutputArtifact(options.javaOut, getJavaPackage(),
-            type.getName());
+            type.name());
         log.artifact(artifact);
         if (!options.dryRun) {
           emitMessageClass(type, artifact);
@@ -355,18 +356,22 @@ public class WireCompiler {
       }
     }
 
-    for (Service service : protoFile.getServices()) {
-      if (shouldEmitService(service.getFullyQualifiedName())) {
-        List<Service.Method> limitedMethods = new ArrayList<Service.Method>();
-        for (Service.Method method : service.getMethods()) {
-          if (shouldEmitServiceMethod(service.getFullyQualifiedName(), method.getName())) {
-            limitedMethods.add(method);
+    for (ServiceElement service : protoFile.services()) {
+      if (shouldEmitService(service.qualifiedName())) {
+        ServiceElement.Builder serviceBuilder = ServiceElement.builder()
+            .name(service.name())
+            .qualifiedName(service.qualifiedName())
+            .documentation(service.documentation())
+            .addOptions(service.options());
+        for (RpcElement method : service.rpcs()) {
+          if (shouldEmitServiceMethod(service.qualifiedName(), method.name())) {
+            serviceBuilder.addRpc(method);
           }
         }
-        Service limitedService = new Service(service.getName(), service.getFullyQualifiedName(),
-            service.getDocumentation(), service.getOptions(), limitedMethods);
+
+        ServiceElement limitedService = serviceBuilder.build();
         OutputArtifact artifact = new OutputArtifact(options.javaOut, getJavaPackage(),
-            service.getName());
+            service.name());
         log.artifact(artifact);
         if (!options.dryRun) {
           emitServiceInterface(limitedService, artifact);
@@ -375,12 +380,12 @@ public class WireCompiler {
     }
   }
 
-  private boolean hasFieldOption(List<Type> types) {
-    for (Type type : types) {
-      if (type instanceof MessageType) {
-        for (Field field : ((MessageType) type).getFields()) {
-          for (Option option : field.getOptions()) {
-            if (!WireCompiler.DEFAULT_FIELD_OPTION_KEYS.contains(option.getName())) {
+  private boolean hasFieldOption(List<TypeElement> types) {
+    for (TypeElement type : types) {
+      if (type instanceof MessageElement) {
+        for (FieldElement field : ((MessageElement) type).fields()) {
+          for (OptionElement option : field.options()) {
+            if (!WireCompiler.DEFAULT_FIELD_OPTION_KEYS.contains(option.name())) {
               return true;
             }
           }
@@ -390,27 +395,27 @@ public class WireCompiler {
     return false;
   }
 
-  private boolean hasMessageOption(List<Type> types) {
-    for (Type type : types) {
-      if (type instanceof MessageType && !type.getOptions().isEmpty()) {
+  private boolean hasMessageOption(List<TypeElement> types) {
+    for (TypeElement type : types) {
+      if (type instanceof MessageElement && !type.options().isEmpty()) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean hasEnumOption(List<Type> types) {
-    for (Type type : types) {
-      if (type instanceof EnumType && !type.getOptions().isEmpty()) {
+  private boolean hasEnumOption(List<TypeElement> types) {
+    for (TypeElement type : types) {
+      if (type instanceof EnumElement && !type.options().isEmpty()) {
         return true;
       }
     }
     return false;
   }
 
-  private void getTypes(Type parent, List<Type> types) {
+  private void getTypes(TypeElement parent, List<TypeElement> types) {
     types.add(parent);
-    for (Type nestedType : parent.getNestedTypes()) {
+    for (TypeElement nestedType : parent.nestedElements()) {
       getTypes(nestedType, types);
     }
   }
@@ -513,7 +518,7 @@ public class WireCompiler {
   private void findDependenciesHelper(ProtoFile protoFile, Set<String> loadedDependencies)
       throws WireException {
     // Load symbols from imports
-    for (String dependency : protoFile.getDependencies()) {
+    for (String dependency : protoFile.dependencies()) {
       if (!loadedDependencies.contains(dependency)) {
         String dep = repoPath + File.separator + dependency;
         try {
@@ -526,32 +531,32 @@ public class WireCompiler {
       }
     }
 
-    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
-      String typeName = extend.getFullyQualifiedName();
+    for (ExtendElement extend : protoFile.extendDeclarations()) {
+      String typeName = extend.qualifiedName();
       typesToEmit.add(typeName);
-      for (Field field : extend.getFields()) {
+      for (FieldElement field : extend.fields()) {
         // FIXME: we need to determine the fully-qualified name of the extension field.
         // For now, just prepend the proto file's package name unless the type already appears
         // to be complete.
-        String fieldTypeName = typeIsComplete(field.getType()) ? field.getType()
-            : prefixWithPackageName(protoFile, field.getType());
+        String fieldTypeName = typeIsComplete(field.type().toString()) ? field.type().toString()
+            : prefixWithPackageName(protoFile, field.type().toString());
         typesToEmit.add(fieldTypeName);
       }
     }
 
-    addDependencies(protoFile.getTypes(), getJavaPackage(protoFile) + ".");
-    addDependencies(protoFile.getServices());
+    addDependencies(protoFile.typeElements(), getJavaPackage(protoFile) + ".");
+    addDependencies(protoFile.services());
   }
 
   /** Expands the set of types to emit to include the request/response types of service methods. */
-  private void addDependencies(List<Service> services) {
-    for (Service service : services) {
-      String fqName = service.getFullyQualifiedName();
+  private void addDependencies(List<ServiceElement> services) {
+    for (ServiceElement service : services) {
+      String fqName = service.qualifiedName();
       if (shouldEmitService(fqName)) {
-        for (Service.Method method : service.getMethods()) {
-          if (shouldEmitServiceMethod(fqName, method.getName())) {
-            addDependencyBranch(fullyQualifiedName(fqName, method.getRequestType()));
-            addDependencyBranch(fullyQualifiedName(fqName, method.getResponseType()));
+        for (RpcElement rpc : service.rpcs()) {
+          if (shouldEmitServiceMethod(fqName, rpc.name())) {
+            addDependencyBranch(fullyQualifiedName(fqName, rpc.requestType().toString()));
+            addDependencyBranch(fullyQualifiedName(fqName, rpc.responseType().toString()));
           }
         }
       }
@@ -559,20 +564,20 @@ public class WireCompiler {
   }
 
   /** Expands the set of types to emit to include types of fields of current emittable types. */
-  private void addDependencies(List<Type> types, String javaPrefix) {
-    for (Type type : types) {
-      String name = type.getName();
-      String fqName = type.getFullyQualifiedName();
-      if (type instanceof MessageType && typesToEmit.contains(fqName)) {
-        for (MessageType.Field field : ((MessageType) type).getFields()) {
-          String fieldType = field.getType();
+  private void addDependencies(List<TypeElement> types, String javaPrefix) {
+    for (TypeElement type : types) {
+      String name = type.name();
+      String fqName = type.qualifiedName();
+      if (type instanceof MessageElement && typesToEmit.contains(fqName)) {
+        for (FieldElement field : ((MessageElement) type).fields()) {
+          String fieldType = field.type().toString();
           if (!TypeInfo.isScalar(fieldType)) {
-            String fqFieldType = fullyQualifiedName(fqName, field.getType());
+            String fqFieldType = fullyQualifiedName(fqName, field.type().toString());
             addDependencyBranch(fqFieldType);
           }
         }
       }
-      addDependencies(type.getNestedTypes(), javaPrefix + name + ".");
+      addDependencies(type.nestedElements(), javaPrefix + name + ".");
     }
   }
 
@@ -609,7 +614,7 @@ public class WireCompiler {
   private void loadSymbolsHelper(ProtoFile protoFile, Set<String> loadedDependencies,
       LoadSymbolsPass pass) throws IOException {
     // Load symbols from imports
-    for (String dependency : protoFile.getDependencies()) {
+    for (String dependency : protoFile.dependencies()) {
       if (!loadedDependencies.contains(dependency)) {
         String dep = repoPath + File.separator + dependency;
         ProtoFile dependencyFile = io.parse(dep);
@@ -618,27 +623,27 @@ public class WireCompiler {
       }
     }
 
-    addTypes(protoFile.getTypes(), getJavaPackage(protoFile) + ".", pass);
+    addTypes(protoFile.typeElements(), getJavaPackage(protoFile) + ".", pass);
     addExtensions(protoFile);
   }
 
   private void addExtensions(ProtoFile protoFile) {
-    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
-      for (MessageType.Field field : extend.getFields()) {
-        String fieldType = field.getType();
+    for (ExtendElement extend : protoFile.extendDeclarations()) {
+      for (FieldElement field : extend.fields()) {
+        String fieldType = field.type().toString();
         String type = javaName(protoFile, null, fieldType);
         if (type == null) {
           type = javaName(protoFile, null, prefixWithPackageName(protoFile, fieldType));
         }
         type = shortenJavaName(protoFile, type);
-        String fqName = prefixWithPackageName(protoFile, field.getName());
+        String fqName = prefixWithPackageName(protoFile, field.name());
         String fqType;
 
         boolean isScalar = TypeInfo.isScalar(fieldType);
         boolean isEnum =
             !isScalar && isEnum(fullyQualifiedName(protoFile, (String) null, fieldType));
         if (isScalar) {
-          type = field.getType();
+          type = field.type().toString();
           fqType = type;
         } else if (isEnum) {
           // Store fully-qualified name for enumerations so we can identify them later
@@ -648,10 +653,10 @@ public class WireCompiler {
           fqType = fullyQualifiedName(protoFile, (String) null, fieldType);
         }
 
-        String location = protoFileName(protoFile.getFileName());
+        String location = protoFileName(protoFile.filePath());
         String fqLocation = getJavaPackage(protoFile) + ".Ext_" + location;
         ExtensionInfo info =
-            new ExtensionInfo(type, fqType, location, fqLocation, field.getLabel());
+            new ExtensionInfo(type, fqType, location, fqLocation, field.label());
         extensionInfo.put(fqName, info);
       }
     }
@@ -659,50 +664,50 @@ public class WireCompiler {
 
   // Ensure a non-null value for the Java package name.
   String getJavaPackage(ProtoFile protoFile) {
-    Option javaPackage = Option.findByName(protoFile.getOptions(), "java_package");
+    OptionElement javaPackage = OptionElement.findByName(protoFile.options(), "java_package");
     if (javaPackage != null) {
-      return (String) javaPackage.getValue();
+      return (String) javaPackage.value();
     }
-    return protoFile.getPackageName() == null ? "" : protoFile.getPackageName();
+    return protoFile.packageName() == null ? "" : protoFile.packageName();
   }
 
   String getJavaPackage() {
     return getJavaPackage(protoFile);
   }
 
-  private void addTypes(List<Type> types, String javaPrefix, LoadSymbolsPass pass) {
-    for (Type type : types) {
-      String name = type.getName();
+  private void addTypes(List<TypeElement> types, String javaPrefix, LoadSymbolsPass pass) {
+    for (TypeElement type : types) {
+      String name = type.name();
       if (pass == LoadSymbolsPass.LOAD_TYPES) {
-        String fqName = type.getFullyQualifiedName();
+        String fqName = type.qualifiedName();
         javaSymbolMap.put(fqName, javaPrefix + name);
-        if (type instanceof EnumType) {
-          EnumType enumType = (EnumType) type;
+        if (type instanceof EnumElement) {
+          EnumElement enumType = (EnumElement) type;
           if (!enumTypes.contains(fqName)) {
             enumTypes.add(fqName);
-            enumDefaults.put(fqName, enumType.getValues().get(0).getName());
+            enumDefaults.put(fqName, enumType.constants().get(0).name());
           }
         }
-      } else if (type instanceof MessageType) {
-        addFields((MessageType) type);
+      } else if (type instanceof MessageElement) {
+        addFields((MessageElement) type);
       }
-      addTypes(type.getNestedTypes(), javaPrefix + name + ".", pass);
+      addTypes(type.nestedElements(), javaPrefix + name + ".", pass);
     }
   }
 
-  private void addFields(MessageType messageType) {
-    for (MessageType.Field field : messageType.getFields()) {
-      String fieldType = field.getType();
-      String fqMessageName = messageType.getFullyQualifiedName();
-      String key = fqMessageName + "$" + field.getName();
+  private void addFields(MessageElement messageType) {
+    for (FieldElement field : messageType.fields()) {
+      String fieldType = field.type().toString();
+      String fqMessageName = messageType.qualifiedName();
+      String key = fqMessageName + "$" + field.name();
       fieldMap.put(key, new FieldInfo(
           TypeInfo.isScalar(fieldType) ? fieldType : fullyQualifiedName(fqMessageName, fieldType),
-          field.getLabel()));
+          field.label()));
     }
   }
 
-  private String fullyQualifiedName(ProtoFile protoFile, Type scope, String type) {
-    String fqName = scope == null ? null : scope.getFullyQualifiedName();
+  private String fullyQualifiedName(ProtoFile protoFile, TypeElement scope, String type) {
+    String fqName = scope == null ? null : scope.qualifiedName();
     return fullyQualifiedName(protoFile, fqName, type);
   }
 
@@ -710,7 +715,7 @@ public class WireCompiler {
     if (typeIsComplete(type)) {
       return type;
     } else {
-      String prefix = fqName == null ? protoFile.getPackageName() : fqName;
+      String prefix = fqName == null ? protoFile.packageName() : fqName;
       while (!prefix.isEmpty()) {
         String fqname = prefix + "." + type;
         if (typeIsComplete(fqname)) return fqname;
@@ -751,7 +756,7 @@ public class WireCompiler {
     return path;
   }
 
-  private void emitMessageClass(Type type, OutputArtifact artifact) throws IOException {
+  private void emitMessageClass(TypeElement type, OutputArtifact artifact) throws IOException {
     JavaWriter writer = null;
     try {
       writer = io.getJavaWriter(artifact);
@@ -759,10 +764,10 @@ public class WireCompiler {
       writer.emitSingleLineComment("Source file: %s", sourceFileName);
       writer.emitPackage(getJavaPackage());
 
-      List<Type> types = new ArrayList<Type>();
+      List<TypeElement> types = new ArrayList<TypeElement>();
       getTypes(type, types);
       boolean hasMessage = hasMessage(types);
-      boolean hasExtensions = hasExtensions(Arrays.asList(type));
+      boolean hasExtensions = hasExtensions(Collections.singletonList(type));
 
       Set<String> imports = new LinkedHashSet<String>();
       if (hasMessage) {
@@ -804,13 +809,13 @@ public class WireCompiler {
 
       Map<String, ?> optionsMap = null;
       if (options.emitOptions) {
-        if (type instanceof MessageType) {
-          optionsMap = optionsMapMaker.createMessageOptionsMap((MessageType) type);
+        if (type instanceof MessageElement) {
+          optionsMap = optionsMapMaker.createMessageOptionsMap((MessageElement) type);
           optionsMapMaker.getOptionTypes(optionsMap, externalTypes);
 
-          for (Field field : ((MessageType) type).getFields()) {
+          for (FieldElement field : ((MessageElement) type).fields()) {
             Map<String, ?> fieldOptionsMap =
-                optionsMapMaker.createFieldOptionsMap((MessageType) type, field.getOptions());
+                optionsMapMaker.createFieldOptionsMap((MessageElement) type, field.options());
             optionsMapMaker.getOptionTypes(fieldOptionsMap, externalTypes);
           }
         }
@@ -826,7 +831,7 @@ public class WireCompiler {
 
       MessageWriter messageWriter = new MessageWriter(this);
       messageWriter.emitHeader(writer, imports, datatypes, labels);
-      messageWriter.emitType(writer, type, protoFile.getPackageName() + ".", optionsMap, true);
+      messageWriter.emitType(writer, type, protoFile.packageName() + ".", optionsMap, true);
     } finally {
       if (writer != null) {
         writer.close();
@@ -834,7 +839,8 @@ public class WireCompiler {
     }
   }
 
-  private void emitServiceInterface(Service service, OutputArtifact artifact) throws IOException {
+  private void emitServiceInterface(ServiceElement service, OutputArtifact artifact)
+      throws IOException {
     if (serviceWriterConstructor == null) return;
     JavaWriter writer = null;
     try {
@@ -866,11 +872,11 @@ public class WireCompiler {
     }
   }
 
-  private void getExternalTypes(Type parent, List<String> types) {
-    if (parent instanceof MessageType) {
-      MessageType messageType = (MessageType) parent;
-      for (Field field : messageType.getFields()) {
-        String fqName = fullyQualifiedJavaName(messageType, field.getType());
+  private void getExternalTypes(TypeElement parent, List<String> types) {
+    if (parent instanceof MessageElement) {
+      MessageElement messageType = (MessageElement) parent;
+      for (FieldElement field : messageType.fields()) {
+        String fqName = fullyQualifiedJavaName(messageType, field.type().toString());
         if (fqName == null) {
           continue;
         }
@@ -884,7 +890,7 @@ public class WireCompiler {
         }
       }
     }
-    for (Type nestedType : parent.getNestedTypes()) {
+    for (TypeElement nestedType : parent.nestedElements()) {
       getExternalTypes(nestedType, types);
     }
   }
@@ -902,17 +908,17 @@ public class WireCompiler {
     return fqName;
   }
 
-  private void getExternalTypes(Service service, List<String> types) {
-    for (Service.Method method : service.getMethods()) {
-      addType(service, method.getRequestType(), types);
-      addType(service, method.getResponseType(), types);
+  private void getExternalTypes(ServiceElement service, List<String> types) {
+    for (RpcElement rpc : service.rpcs()) {
+      addType(service, rpc.requestType().toString(), types);
+      addType(service, rpc.responseType().toString(), types);
     }
   }
 
-  private void addType(Service service, String method, List<String> types) {
-    String serviceFQName = service.getFullyQualifiedName();
+  private void addType(ServiceElement service, String method, List<String> types) {
+    String serviceFQName = service.qualifiedName();
     String servicePackage =
-        serviceFQName.substring(0, serviceFQName.length() - service.getName().length() - 1);
+        serviceFQName.substring(0, serviceFQName.length() - service.name().length() - 1);
     String fqName = javaName(fullyQualifiedName(servicePackage, method));
     if (fullyQualifiedNameIsOutsidePackage(fqName)) {
       types.add(fqName);
@@ -928,13 +934,13 @@ public class WireCompiler {
 
   private List<String> getExtensionTypes() {
     List<String> extensionClasses = new ArrayList<String>();
-    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
-      String fqName = fullyQualifiedJavaName(null, extend.getFullyQualifiedName());
+    for (ExtendElement extend : protoFile.extendDeclarations()) {
+      String fqName = fullyQualifiedJavaName(null, extend.qualifiedName());
       if (fullyQualifiedNameIsOutsidePackage(fqName)) {
         extensionClasses.add(fqName);
       }
-      for (Field field : extend.getFields()) {
-        String fqFieldType = fullyQualifiedJavaName(null, field.getType());
+      for (FieldElement field : extend.fields()) {
+        String fqFieldType = fullyQualifiedJavaName(null, field.type().toString());
         if (fullyQualifiedNameIsOutsidePackage(fqFieldType)) {
           extensionClasses.add(fqFieldType);
         }
@@ -944,10 +950,10 @@ public class WireCompiler {
   }
 
   private boolean hasExtends() {
-    List<ExtendDeclaration> declarations = protoFile.getExtendDeclarations();
+    List<ExtendElement> declarations = protoFile.extendDeclarations();
     if (!shouldEmitOptions()) {
-      for (ExtendDeclaration declaration : declarations) {
-        String name = declaration.getFullyQualifiedName();
+      for (ExtendElement declaration : declarations) {
+        String name = declaration.qualifiedName();
         if (!(isFieldOptions(name) || isMessageOptions(name))) {
           return true;
         }
@@ -1006,15 +1012,15 @@ public class WireCompiler {
   }
 
   private void emitExtensions(JavaWriter writer) throws IOException {
-    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
-      String fullyQualifiedName = extend.getFullyQualifiedName();
+    for (ExtendElement extend : protoFile.extendDeclarations()) {
+      String fullyQualifiedName = extend.qualifiedName();
       if (!shouldEmitOptions() && isOptionType(fullyQualifiedName)) {
         continue;
       }
       String javaName = javaName(null, fullyQualifiedName);
       String name = shortenJavaName(javaName);
-      for (MessageType.Field field : extend.getFields()) {
-        String fieldType = field.getType();
+      for (FieldElement field : extend.fields()) {
+        String fieldType = field.type().toString();
         String type = javaName(null, fieldType);
         if (type == null) {
           type = javaName(null, prefixWithPackageName(fieldType));
@@ -1022,9 +1028,9 @@ public class WireCompiler {
         type = shortenJavaName(type);
         String initialValue;
         String className = writer.compressType(name);
-        String extensionName = field.getName();
-        String fqName = prefixWithPackageName(field.getName());
-        int tag = field.getTag();
+        String extensionName = field.name();
+        String fqName = prefixWithPackageName(field.name());
+        int tag = field.tag();
 
         boolean isScalar = TypeInfo.isScalar(fieldType);
         boolean isEnum = !isScalar && isEnum(fullyQualifiedName((String) null, fieldType));
@@ -1034,7 +1040,7 @@ public class WireCompiler {
               + ".%1$sExtending(%2$s.class)%n"
               + ".setName(\"%3$s\")%n"
               + ".setTag(%4$d)%n"
-              + ".build%5$s()", field.getType(), className, fqName, tag, labelString);
+              + ".build%5$s()", field.type(), className, fqName, tag, labelString);
         } else if (isEnum) {
           initialValue = String.format("Extension%n"
               + ".enumExtending(%1$s.class, %2$s.class)%n"
@@ -1076,11 +1082,11 @@ public class WireCompiler {
   }
 
   private String prefixWithPackageName(ProtoFile protoFile, String name) {
-    return protoFile.getPackageName() + "." + name;
+    return protoFile.packageName() + "." + name;
   }
 
-  private String getLabelString(Field field, boolean isEnum) {
-    switch (field.getLabel()) {
+  private String getLabelString(FieldElement field, boolean isEnum) {
+    switch (field.label()) {
       case OPTIONAL:
         return "Optional";
       case REQUIRED:
@@ -1088,15 +1094,14 @@ public class WireCompiler {
       case REPEATED:
         return FieldInfo.isPacked(field, isEnum) ? "Packed" : "Repeated";
       default:
-        throw new WireCompilerException("Unknown extension label \"" + field.getLabel() + "\"");
+        throw new WireCompilerException("Unknown extension label \"" + field.label() + "\"");
     }
   }
 
   private boolean hasByteStringExtension() {
-    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
-      for (MessageType.Field field : extend.getFields()) {
-        String fieldType = field.getType();
-        if ("bytes".equals(fieldType)) {
+    for (ExtendElement extend : protoFile.extendDeclarations()) {
+      for (FieldElement field : extend.fields()) {
+        if (field.type() == ScalarType.BYTES) {
           return true;
         }
       }
@@ -1105,9 +1110,9 @@ public class WireCompiler {
   }
 
   private boolean hasRepeatedExtension() {
-    for (ExtendDeclaration extend : protoFile.getExtendDeclarations()) {
-      for (MessageType.Field field : extend.getFields()) {
-        if (field.getLabel() == MessageType.Label.REPEATED) {
+    for (ExtendElement extend : protoFile.extendDeclarations()) {
+      for (FieldElement field : extend.fields()) {
+        if (field.label() == FieldElement.Label.REPEATED) {
           return true;
         }
       }
@@ -1120,74 +1125,74 @@ public class WireCompiler {
   }
 
   private String toLong(String value) {
-    return Long.toString(new BigDecimal(value).longValue());
+    return Long.toString(new BigDecimal(value).longValue()) + "L";
   }
 
   private String quoteString(String initialValue) {
     return initialValue == null ? "\"\"" : JavaWriter.stringLiteral(initialValue);
   }
 
-  private boolean hasEnum(List<Type> types) {
-    for (Type type : types) {
-      if (type instanceof EnumType || hasEnum(type.getNestedTypes())) return true;
+  private boolean hasEnum(List<TypeElement> types) {
+    for (TypeElement type : types) {
+      if (type instanceof EnumElement || hasEnum(type.nestedElements())) return true;
     }
     return false;
   }
 
-  private boolean hasExtensions(List<Type> types) {
-    for (Type type : types) {
-      if (type instanceof MessageType && hasExtensions(((MessageType) type))) return true;
-      if (hasExtensions(type.getNestedTypes())) return true;
+  private boolean hasExtensions(List<TypeElement> types) {
+    for (TypeElement type : types) {
+      if (type instanceof MessageElement && hasExtensions(((MessageElement) type))) return true;
+      if (hasExtensions(type.nestedElements())) return true;
     }
     return false;
   }
 
-  private boolean hasMessage(List<Type> types) {
-    for (Type type : types) {
-      if (type instanceof MessageType && !hasExtensions(((MessageType) type))) return true;
-      if (hasMessage(type.getNestedTypes())) return true;
+  private boolean hasMessage(List<TypeElement> types) {
+    for (TypeElement type : types) {
+      if (type instanceof MessageElement && !hasExtensions(((MessageElement) type))) return true;
+      if (hasMessage(type.nestedElements())) return true;
     }
     return false;
   }
 
-  private boolean hasRepeatedField(List<Type> types) {
-    for (Type type : types) {
-      if (type instanceof MessageType) {
-        for (Field field : ((MessageType) type).getFields()) {
+  private boolean hasRepeatedField(List<TypeElement> types) {
+    for (TypeElement type : types) {
+      if (type instanceof MessageElement) {
+        for (FieldElement field : ((MessageElement) type).fields()) {
           if (FieldInfo.isRepeated(field)) return true;
         }
       }
-      if (hasRepeatedField(type.getNestedTypes())) return true;
+      if (hasRepeatedField(type.nestedElements())) return true;
     }
     return false;
   }
 
-  private boolean hasBytesField(List<Type> types) {
-    for (Type type : types) {
-      if (type instanceof MessageType) {
-        for (Field field : ((MessageType) type).getFields()) {
-          if ("bytes".equals(field.getType())) return true;
+  private boolean hasBytesField(List<TypeElement> types) {
+    for (TypeElement type : types) {
+      if (type instanceof MessageElement) {
+        for (FieldElement field : ((MessageElement) type).fields()) {
+          if (field.type() == ScalarType.BYTES) return true;
         }
       }
-      if (hasBytesField(type.getNestedTypes())) return true;
+      if (hasBytesField(type.nestedElements())) return true;
     }
     return false;
   }
 
-  private void getDatatypesAndLabels(Type type, Collection<Datatype> types,
+  private void getDatatypesAndLabels(TypeElement type, Collection<Datatype> types,
       Collection<Label> labels) {
-    if (type instanceof MessageType) {
-      for (MessageType.Field field : ((MessageType) type).getFields()) {
-        String fieldType = field.getType();
+    if (type instanceof MessageElement) {
+      for (FieldElement field : ((MessageElement) type).fields()) {
+        String fieldType = field.type().toString();
         Datatype datatype = Datatype.of(fieldType);
         // If not scalar, determine whether it is an enum
-        if (datatype == null && isEnum(fullyQualifiedName(type, field.getType()))) {
+        if (datatype == null && isEnum(fullyQualifiedName(type, field.type().toString()))) {
           datatype = Datatype.ENUM;
         }
         if (datatype != null) types.add(datatype);
 
         // Convert Protoparser label to Wire label
-        MessageType.Label label = field.getLabel();
+        FieldElement.Label label = field.label();
         switch (label) {
           case OPTIONAL:
             labels.add(Label.OPTIONAL);
@@ -1207,7 +1212,7 @@ public class WireCompiler {
         }
       }
 
-      for (Type nestedType : type.getNestedTypes()) {
+      for (TypeElement nestedType : type.nestedElements()) {
         getDatatypesAndLabels(nestedType, types, labels);
       }
     }
@@ -1224,7 +1229,7 @@ public class WireCompiler {
     return javaSymbols.contains(type);
   }
 
-  private String fullyQualifiedJavaName(MessageType messageType, String type) {
+  private String fullyQualifiedJavaName(MessageElement messageType, String type) {
     return TypeInfo.isScalar(type) ? null : javaName(fullyQualifiedName(messageType, type));
   }
 }

@@ -2,7 +2,8 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.Service;
+import com.squareup.protoparser.RpcElement;
+import com.squareup.protoparser.ServiceElement;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -22,9 +23,9 @@ public class RxJavaServiceWriter extends ServiceWriter {
   }
 
   @Override
-  public void emitService(Service service, Set<String> importedTypes) throws IOException {
+  public void emitService(ServiceElement service, Set<String> importedTypes) throws IOException {
     importedTypes.add("javax.inject.Inject");
-    if (!service.getMethods().isEmpty()) {
+    if (!service.rpcs().isEmpty()) {
       importedTypes.add("retrofit.http.Body");
       importedTypes.add("retrofit.http.POST");
       importedTypes.add("rx.functions.Func1");
@@ -33,36 +34,36 @@ public class RxJavaServiceWriter extends ServiceWriter {
     writer.emitImports(importedTypes);
     writer.emitEmptyLine();
 
-    if (!service.getDocumentation().isEmpty()) {
-      writer.emitJavadoc(service.getDocumentation());
+    if (!service.documentation().isEmpty()) {
+      writer.emitJavadoc(service.documentation());
     }
-    writer.beginType(service.getName(), "class", EnumSet.of(Modifier.PUBLIC, Modifier.FINAL));
+    writer.beginType(service.name(), "class", EnumSet.of(Modifier.PUBLIC, Modifier.FINAL));
 
     writer.emitEmptyLine();
     writer.beginType("Endpoint", "interface", EnumSet.of(Modifier.PUBLIC));
-    for (Service.Method method : service.getMethods()) {
+    for (RpcElement rpc : service.rpcs()) {
       writer.emitEmptyLine();
-      writer.emitJavadoc(method.getDocumentation());
+      writer.emitJavadoc(rpc.documentation());
 
-      setTypes(method);
+      setTypes(rpc);
       writer.emitAnnotation("POST",
-          "\"/" + service.getFullyQualifiedName() + "/" + method.getName() + "\"");
-      writer.beginMethod(responseType, getMethodName(method), EnumSet.noneOf(Modifier.class),
+          "\"/" + service.qualifiedName() + "/" + rpc.name() + "\"");
+      writer.beginMethod(responseType, getMethodName(rpc), EnumSet.noneOf(Modifier.class),
           Arrays.asList("@Body " + requestType, "request"), null);
       writer.endMethod();
     }
     writer.endType();
 
-    for (Service.Method method : service.getMethods()) {
+    for (RpcElement rpc : service.rpcs()) {
       writer.emitEmptyLine();
 
-      setTypes(method);
-      writer.emitField(func1Type, getMethodName(method),
+      setTypes(rpc);
+      writer.emitField(func1Type, getMethodName(rpc),
           EnumSet.of(Modifier.PRIVATE, Modifier.FINAL),
           "\nnew " + func1Type + "() {\n"
               + "  @Override\n"
               + "  public " + responseType + " call(" + requestType + " request) {\n"
-              + "    return endpoint." + getMethodName(method) + "(request);\n"
+              + "    return endpoint." + getMethodName(rpc) + "(request);\n"
               + "  }\n"
               + "}");
     }
@@ -76,25 +77,25 @@ public class RxJavaServiceWriter extends ServiceWriter {
     writer.emitStatement("this.endpoint = endpoint");
     writer.endConstructor();
 
-    for (Service.Method method : service.getMethods()) {
+    for (RpcElement rpc : service.rpcs()) {
       writer.emitEmptyLine();
 
-      setTypes(method);
-      writer.beginMethod(func1Type, "get" + method.getName(), EnumSet.of(Modifier.PUBLIC));
-      writer.emitStatement("return " + getMethodName(method));
+      setTypes(rpc);
+      writer.beginMethod(func1Type, "get" + rpc.name(), EnumSet.of(Modifier.PUBLIC));
+      writer.emitStatement("return " + getMethodName(rpc));
       writer.endMethod();
     }
 
     writer.endType();
   }
 
-  private String getMethodName(Service.Method method) {
-    return lowerCaseInitialLetter(method.getName());
+  private String getMethodName(RpcElement rpc) {
+    return lowerCaseInitialLetter(rpc.name());
   }
 
-  private void setTypes(Service.Method method) {
-    this.requestType = writer.compressType(method.getRequestType());
-    this.responseType = writer.compressType(method.getResponseType());
+  private void setTypes(RpcElement rpc) {
+    this.requestType = writer.compressType(rpc.requestType().toString());
+    this.responseType = writer.compressType(rpc.responseType().toString());
     this.func1Type = "Func1<" + requestType + ", " + responseType + ">";
   }
 

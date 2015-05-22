@@ -2,7 +2,8 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.Service;
+import com.squareup.protoparser.RpcElement;
+import com.squareup.protoparser.ServiceElement;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,16 +18,16 @@ public class RetrofitServiceWriter extends AbstractServiceWriter {
     super(writer, options);
   }
 
-  @Override List<String> getImports(Service service) {
-    if (!service.getMethods().isEmpty()) {
+  @Override List<String> getImports(ServiceElement service) {
+    if (!service.rpcs().isEmpty()) {
       return Arrays.asList("retrofit.http.Body", "retrofit.http.POST");
     }
     return Collections.emptyList();
   }
 
-  @Override void emitAnnotation(Service service, Service.Method method) throws IOException {
+  @Override void emitAnnotation(ServiceElement service, RpcElement rpc) throws IOException {
     writer.emitAnnotation("POST",
-        "\"/" + service.getFullyQualifiedName() + "/" + method.getName() + "\"");
+        "\"/" + service.qualifiedName() + "/" + rpc.name() + "\"");
   }
 
   @Override String getRequestType(String requestType) {

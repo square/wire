@@ -1,7 +1,7 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.Service;
+import com.squareup.protoparser.ServiceElement;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -12,11 +12,15 @@ public class TestRxJavaServiceWriter extends RxJavaServiceWriter {
     super(writer, options);
   }
 
-  @Override public void emitService(Service service, Set<String> importedTypes) throws IOException {
+  @Override public void emitService(ServiceElement service, Set<String> importedTypes) throws IOException {
     String serviceNameSuffix = options.get(0);
-    Service overriddenService = new Service(service.getName() + serviceNameSuffix,
-        service.getFullyQualifiedName() + serviceNameSuffix, service.getDocumentation(),
-        service.getOptions(), service.getMethods());
+    ServiceElement overriddenService = ServiceElement.builder()
+        .name(service.name() + serviceNameSuffix)
+        .qualifiedName(service.qualifiedName() + serviceNameSuffix)
+        .documentation(service.documentation())
+        .addOptions(service.options())
+        .addRpcs(service.rpcs())
+        .build();
     super.emitService(overriddenService, importedTypes);
   }
 }
