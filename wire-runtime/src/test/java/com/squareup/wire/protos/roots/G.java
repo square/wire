@@ -11,7 +11,7 @@ public enum G
 
   private final int value;
 
-  private G(int value) {
+  G(int value) {
     this.value = value;
   }
 

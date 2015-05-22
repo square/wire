@@ -151,7 +151,7 @@ public final class Person extends Message {
 
     private final int value;
 
-    private PhoneType(int value) {
+    PhoneType(int value) {
       this.value = value;
     }
 

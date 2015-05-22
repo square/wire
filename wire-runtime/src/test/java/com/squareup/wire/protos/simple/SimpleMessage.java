@@ -375,7 +375,7 @@ public final class SimpleMessage extends Message {
 
     private final int value;
 
-    private NestedEnum(int value) {
+    NestedEnum(int value) {
       this.value = value;
     }
 

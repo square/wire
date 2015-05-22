@@ -1233,7 +1233,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
     private final int value;
 
-    private NestedEnum(int value) {
+    NestedEnum(int value) {
       this.value = value;
     }
 
