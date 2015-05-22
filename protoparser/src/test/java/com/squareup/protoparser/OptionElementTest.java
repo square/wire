@@ -59,6 +59,20 @@ public class OptionElementTest {
     assertThat(option.toSchema()).isEqualTo(expected);
   }
 
+  @Test public void mapToSchema() {
+    OptionElement option =
+        OptionElement.create("foo", MAP, map("ping", "pong", "kit", list("kat", "kot")));
+    String expected = ""
+        + "foo = {\n"
+        + "  ping: \"pong\",\n"
+        + "  kit: [\n"
+        + "    \"kat\",\n"
+        + "    \"kot\"\n"
+        + "  ]\n"
+        + "}";
+    assertThat(option.toSchema()).isEqualTo(expected);
+  }
+
   @Test public void booleanToSchema() {
     OptionElement option = OptionElement.create("foo", BOOLEAN, "false");
     String expected = "foo = false";
@@ -126,13 +140,5 @@ public class OptionElementTest {
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Multiple options match name: one");
     }
-  }
-
-  @Test public void escape() {
-    assertThat(OptionElement.escape("h\"i")).isEqualTo("h\\\"i");
-    assertThat(OptionElement.escape("h\ti")).isEqualTo("h\\ti");
-    assertThat(OptionElement.escape("h\ri")).isEqualTo("h\\ri");
-    assertThat(OptionElement.escape("h\\i")).isEqualTo("h\\\\i");
-    assertThat(OptionElement.escape("h\ni")).isEqualTo("h\\ni");
   }
 }
