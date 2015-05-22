@@ -180,7 +180,8 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       } else {
         Type valueType = getType(fieldInfo);
         Object value = parseValue(fieldInfo.label, valueType, parse(in));
-        messageAdapter.setBuilderField(builder, fieldInfo.tag, value);
+        // Use the builder setter method to ensure proper 'oneof' behavior.
+        messageAdapter.setBuilderMethod(builder, fieldInfo, value);
       }
     }
 

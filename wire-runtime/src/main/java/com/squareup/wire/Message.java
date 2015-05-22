@@ -108,7 +108,7 @@ public abstract class Message implements Serializable {
    * A protocol buffer label. We treat "packed" as a label of its own that implies "repeated."
    */
   public enum Label {
-    REQUIRED(32), OPTIONAL(64), REPEATED(128), PACKED(256);
+    REQUIRED(32), OPTIONAL(64), REPEATED(128), PACKED(256), ONE_OF(512);
 
     public static final Comparator<Label> ORDER_BY_NAME = new Comparator<Label>() {
       @Override public int compare(Label o1, Label o2) {
@@ -132,6 +132,10 @@ public abstract class Message implements Serializable {
 
     public boolean isPacked() {
       return this == PACKED;
+    }
+
+    public boolean isOneOf() {
+      return this == ONE_OF;
     }
   }
 
