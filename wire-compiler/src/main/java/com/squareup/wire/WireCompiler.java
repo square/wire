@@ -16,13 +16,11 @@
 package com.squareup.wire;
 
 import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.DataType;
 import com.squareup.protoparser.DataType.ScalarType;
 import com.squareup.protoparser.EnumElement;
 import com.squareup.protoparser.ExtendElement;
 import com.squareup.protoparser.FieldElement;
 import com.squareup.protoparser.MessageElement;
-import com.squareup.protoparser.OneOfElement;
 import com.squareup.protoparser.OptionElement;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.RpcElement;
@@ -37,12 +35,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -137,7 +133,7 @@ public class WireCompiler {
       String outputDirectory, String registryClass, boolean emitOptions, List<String> enumOptions,
       Constructor<?> serviceWriterConstructor, List<String> serviceWriterOptions)
       throws WireException {
-    this(new CommandLineOptions(protoPath, outputDirectory, sourceFileNames, roots, registryClass,
+    this(new CommandLineOptions(protoPath, outputDirectory, sourceFileNames, roots,  registryClass,
         emitOptions, new LinkedHashSet<String>(enumOptions),
         serviceWriterConstructor == null ? null : serviceWriterConstructor.getName(),
         serviceWriterOptions, false, false));
@@ -256,7 +252,7 @@ public class WireCompiler {
   }
 
   boolean hasFields(TypeElement type) {
-    return type instanceof MessageElement && !allFields((MessageElement) type).isEmpty();
+    return type instanceof MessageElement && !((MessageElement) type).fields().isEmpty();
   }
 
   boolean hasExtensions(MessageElement messageType) {
@@ -387,7 +383,7 @@ public class WireCompiler {
   private boolean hasFieldOption(List<TypeElement> types) {
     for (TypeElement type : types) {
       if (type instanceof MessageElement) {
-        for (FieldElement field : allFields((MessageElement) type)) {
+        for (FieldElement field : ((MessageElement) type).fields()) {
           for (OptionElement option : field.options()) {
             if (!WireCompiler.DEFAULT_FIELD_OPTION_KEYS.contains(option.name())) {
               return true;
@@ -573,7 +569,7 @@ public class WireCompiler {
       String name = type.name();
       String fqName = type.qualifiedName();
       if (type instanceof MessageElement && typesToEmit.contains(fqName)) {
-        for (FieldElement field : allFields((MessageElement) type)) {
+        for (FieldElement field : ((MessageElement) type).fields()) {
           String fieldType = field.type().toString();
           if (!TypeInfo.isScalar(fieldType)) {
             String fqFieldType = fullyQualifiedName(fqName, field.type().toString());
@@ -700,7 +696,7 @@ public class WireCompiler {
   }
 
   private void addFields(MessageElement messageType) {
-    for (FieldElement field : allFields(messageType)) {
+    for (FieldElement field : messageType.fields()) {
       String fieldType = field.type().toString();
       String fqMessageName = messageType.qualifiedName();
       String key = fqMessageName + "$" + field.name();
@@ -785,7 +781,7 @@ public class WireCompiler {
       if (hasBytesField(types)) {
         imports.add("okio.ByteString");
       }
-      if (hasEnum(types) || hasOneOf(types)) {
+      if (hasEnum(types)) {
         imports.add("com.squareup.wire.ProtoEnum");
       }
       if (hasRepeatedField(types)) {
@@ -817,7 +813,7 @@ public class WireCompiler {
           optionsMap = optionsMapMaker.createMessageOptionsMap((MessageElement) type);
           optionsMapMaker.getOptionTypes(optionsMap, externalTypes);
 
-          for (FieldElement field : allFields((MessageElement) type)) {
+          for (FieldElement field : ((MessageElement) type).fields()) {
             Map<String, ?> fieldOptionsMap =
                 optionsMapMaker.createFieldOptionsMap((MessageElement) type, field.options());
             optionsMapMaker.getOptionTypes(fieldOptionsMap, externalTypes);
@@ -879,7 +875,7 @@ public class WireCompiler {
   private void getExternalTypes(TypeElement parent, List<String> types) {
     if (parent instanceof MessageElement) {
       MessageElement messageType = (MessageElement) parent;
-      for (FieldElement field : allFields(messageType)) {
+      for (FieldElement field : messageType.fields()) {
         String fqName = fullyQualifiedJavaName(messageType, field.type().toString());
         if (fqName == null) {
           continue;
@@ -1143,14 +1139,6 @@ public class WireCompiler {
     return false;
   }
 
-  private boolean hasOneOf(List<TypeElement> types) {
-    for (TypeElement type : types) {
-      if (type instanceof MessageElement && !((MessageElement) type).oneOfs().isEmpty()
-          || hasOneOf(type.nestedElements())) return true;
-    }
-    return false;
-  }
-
   private boolean hasExtensions(List<TypeElement> types) {
     for (TypeElement type : types) {
       if (type instanceof MessageElement && hasExtensions(((MessageElement) type))) return true;
@@ -1167,24 +1155,10 @@ public class WireCompiler {
     return false;
   }
 
-  static List<FieldElement> allFields(MessageElement messageType) {
-    List<FieldElement> allFields = new ArrayList<FieldElement>();
-    allFields.addAll(messageType.fields());
-    for (OneOfElement oneOfElement : messageType.oneOfs()) {
-      allFields.addAll(oneOfElement.fields());
-    }
-    Collections.sort(allFields, new Comparator<FieldElement>() {
-      @Override public int compare(FieldElement o1, FieldElement o2) {
-        return o1.tag() - o2.tag();
-      }
-    });
-    return allFields;
-  }
-
   private boolean hasRepeatedField(List<TypeElement> types) {
     for (TypeElement type : types) {
       if (type instanceof MessageElement) {
-        for (FieldElement field : allFields((MessageElement) type)) {
+        for (FieldElement field : ((MessageElement) type).fields()) {
           if (FieldInfo.isRepeated(field)) return true;
         }
       }
@@ -1196,7 +1170,7 @@ public class WireCompiler {
   private boolean hasBytesField(List<TypeElement> types) {
     for (TypeElement type : types) {
       if (type instanceof MessageElement) {
-        for (FieldElement field : allFields((MessageElement) type)) {
+        for (FieldElement field : ((MessageElement) type).fields()) {
           if (field.type() == ScalarType.BYTES) return true;
         }
       }
@@ -1208,7 +1182,7 @@ public class WireCompiler {
   private void getDatatypesAndLabels(TypeElement type, Collection<Datatype> types,
       Collection<Label> labels) {
     if (type instanceof MessageElement) {
-      for (FieldElement field : allFields((MessageElement) type)) {
+      for (FieldElement field : ((MessageElement) type).fields()) {
         String fieldType = field.type().toString();
         Datatype datatype = Datatype.of(fieldType);
         // If not scalar, determine whether it is an enum
@@ -1232,9 +1206,6 @@ public class WireCompiler {
             } else {
               labels.add(Label.REPEATED);
             }
-            break;
-          case ONE_OF:
-            labels.add(Label.ONE_OF);
             break;
           default:
             throw new AssertionError("Unknown label " + label);

@@ -18,8 +18,6 @@ package com.squareup.wire;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,11 +60,10 @@ final class MessageAdapter<M extends Message> {
 
     private final Field messageField;
     private final Field builderField;
-    private final Method builderMethod;
 
     @SuppressWarnings("unchecked")
     private FieldInfo(int tag, String name, Datatype datatype, Label label, boolean redacted,
-        Class<?> enumOrMessageType, Field messageField, Field builderField, Method builderMethod) {
+        Class<?> enumOrMessageType, Field messageField, Field builderField) {
       this.tag = tag;
       this.name = name;
       this.datatype = datatype;
@@ -86,7 +83,6 @@ final class MessageAdapter<M extends Message> {
       // private fields
       this.messageField = messageField;
       this.builderField = builderField;
-      this.builderMethod = builderMethod;
     }
   }
 
@@ -120,20 +116,10 @@ final class MessageAdapter<M extends Message> {
     }
   }
 
-  public void setBuilderField(Builder<M> builder, FieldInfo fieldInfo, Object value) {
+  public void setBuilderField(Builder<M> builder, int tag, Object value) {
     try {
-      fieldInfo.builderField.set(builder, value);
+      fieldInfoMap.get(tag).builderField.set(builder, value);
     } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    }
-  }
-
-  public void setBuilderMethod(Builder<M> builder, FieldInfo fieldInfo, Object value) {
-    try {
-      fieldInfo.builderMethod.invoke(builder, value);
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    } catch (InvocationTargetException e) {
       throw new AssertionError(e);
     }
   }
@@ -167,8 +153,7 @@ final class MessageAdapter<M extends Message> {
           enumOrMessageType = getMessageType(messageField);
         }
         map.put(tag, new FieldInfo(tag, name, datatype, annotation.label(), annotation.redacted(),
-            enumOrMessageType, messageField, getBuilderField(name),
-            getBuilderMethod(name, messageField.getType())));
+            enumOrMessageType, messageField, getBuilderField(name)));
       }
     }
 
@@ -189,17 +174,8 @@ final class MessageAdapter<M extends Message> {
     try {
       return builderType.getField(name);
     } catch (NoSuchFieldException e) {
-      throw new AssertionError("No builder method "
+      throw new AssertionError("No builder field "
           + builderType.getName() + "." + name);
-    }
-  }
-
-  private Method getBuilderMethod(String name, Class<?> type) {
-    try {
-      return builderType.getMethod(name, type);
-    } catch (NoSuchMethodException e) {
-      throw new AssertionError("No builder method "
-          + builderType.getName() + "." + name + "(" + type.getName() + ")");
     }
   }
 
@@ -551,20 +527,12 @@ final class MessageAdapter<M extends Message> {
         if (tag == 0) {
           // Set repeated fields
           for (int storedTag : storage.getTags()) {
-            FieldInfo fieldInfo = fieldInfoMap.get(storedTag);
-            List<Object> value = storage.get(storedTag);
-
-            if (fieldInfo != null) {
-              if (fieldInfo.label.isOneOf()) {
-                // Call the builder method to manage the 'oneof' logic.
-                setBuilderMethod(builder, fieldInfo, value);
-              } else {
-                // Setting the builder field directly is faster than calling a method.
-                setBuilderField(builder, fieldInfo, value);
-              }
+            boolean hasField = fieldInfoMap.containsKey(storedTag);
+            if (hasField) {
+              setBuilderField(builder, storedTag, storage.get(storedTag));
             } else {
               setExtension((ExtendableBuilder<?>) builder, getExtension(storedTag),
-                  value);
+                  storage.get(storedTag));
             }
           }
           return builder.build();
@@ -616,10 +584,8 @@ final class MessageAdapter<M extends Message> {
               storage.add(tag, value);
             } else if (extension != null) {
               setExtension((ExtendableBuilder<?>) builder, extension, value);
-            } else if (label.isOneOf()) {
-              setBuilderMethod(builder, fieldInfo, value);
             } else {
-              setBuilderField(builder, fieldInfo, value);
+              setBuilderField(builder, tag, value);
             }
           }
         }

@@ -180,7 +180,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       } else {
         Type valueType = getType(fieldInfo);
         Object value = parseValue(fieldInfo.label, valueType, parse(in));
-        messageAdapter.setBuilderField(builder, fieldInfo, value);
+        messageAdapter.setBuilderField(builder, fieldInfo.tag, value);
       }
     }
 
