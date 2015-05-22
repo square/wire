@@ -239,6 +239,16 @@ public class WireCompilerTest {
     testProto(sources, outputs);
   }
 
+  @Test public void testOneOf() throws Exception {
+    String[] sources = {
+        "one_of.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/oneof/OneOfMessage.java"
+    };
+    testProto(sources, outputs);
+  }
+
   @Test public void testSimpleService() throws Exception {
     String[] sources = {
         "request_response.proto",
