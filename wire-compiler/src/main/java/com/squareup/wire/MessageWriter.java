@@ -147,7 +147,7 @@ public class MessageWriter {
         parameters.add(trailingSegment(option.name));
       }
 
-      writer.beginConstructor(EnumSet.of(PRIVATE), parameters, null);
+      writer.beginConstructor(Collections.<Modifier>emptySet(), parameters, null);
       writer.emitStatement("this.value = value");
       for (EnumValueOptionInfo option : options) {
         String name = trailingSegment(option.name);

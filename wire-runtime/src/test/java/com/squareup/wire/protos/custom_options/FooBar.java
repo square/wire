@@ -339,7 +339,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     public final Integer enum_value_option;
     public final Boolean foreign_enum_value_option;
 
-    private FooBarBazEnum(int value, More complex_enum_value_option, Integer enum_value_option, Boolean foreign_enum_value_option) {
+    FooBarBazEnum(int value, More complex_enum_value_option, Integer enum_value_option, Boolean foreign_enum_value_option) {
       this.value = value;
       this.complex_enum_value_option = complex_enum_value_option;
       this.enum_value_option = enum_value_option;

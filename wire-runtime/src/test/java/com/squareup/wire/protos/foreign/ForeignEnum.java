@@ -11,7 +11,7 @@ public enum ForeignEnum
 
   private final int value;
 
-  private ForeignEnum(int value) {
+  ForeignEnum(int value) {
     this.value = value;
   }
 
