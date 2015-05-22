@@ -2,6 +2,7 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -119,17 +120,7 @@ public abstract class OptionElement {
         builder.append(formatName()).append(" = {\n");
         //noinspection unchecked
         Map<String, ?> valueMap = (Map<String, ?>) value;
-        boolean first = true;
-        for (Map.Entry<String, ?> entry : valueMap.entrySet()) {
-          if (!first) {
-            builder.append(",\n");
-          }
-          first = false;
-
-          String entryKey = entry.getKey();
-          Object entryValue = entry.getValue(); // TODO nested list, map, option
-          builder.append(entryKey).append(": ").append(entryValue);
-        }
+        formatOptionMap(builder, valueMap);
         builder.append('}');
         return builder.toString();
       }
@@ -151,20 +142,45 @@ public abstract class OptionElement {
     return "option " + toSchema() + ";\n";
   }
 
-  static String escape(String string) {
-    return string.replace("\\", "\\\\")
-        .replace("\t", "\\t")
-        .replace("\"", "\\\"")
-        .replace("\r", "\\r")
-        .replace("\n", "\\n");
-  }
-
-  static StringBuilder formatOptionList(StringBuilder builder, List<OptionElement> optionList) {
+  static void formatOptionList(StringBuilder builder, List<OptionElement> optionList) {
     for (int i = 0, count = optionList.size(); i < count; i++) {
       String endl = (i < count - 1) ? "," : "";
       appendIndented(builder, optionList.get(i).toSchema() + endl);
     }
-    return builder;
+  }
+
+  static void formatOptionMap(StringBuilder builder, Map<String, ?> valueMap) {
+    List<? extends Map.Entry<String, ?>> entries = new ArrayList<>(valueMap.entrySet());
+    for (int i = 0, count = entries.size(); i < count; i++) {
+      Map.Entry<String, ?> entry = entries.get(i);
+      String endl = (i < count - 1) ? "," : "";
+      appendIndented(builder,
+          entry.getKey() + ": " + formatOptionMapValue(entry.getValue()) + endl);
+    }
+  }
+
+  static String formatOptionMapValue(Object value) {
+    checkNotNull(value, "value == null");
+    if (value instanceof String) {
+      return "\"" + value + '"';
+    }
+    if (value instanceof Map) {
+      StringBuilder builder = new StringBuilder().append("{\n");
+      //noinspection unchecked
+      Map<String, ?> map = (Map<String, ?>) value;
+      formatOptionMap(builder, map);
+      return builder.append('}').toString();
+    }
+    if (value instanceof List) {
+      StringBuilder builder = new StringBuilder().append("[\n");
+      List<?> list = (List<?>) value;
+      for (int i = 0, count = list.size(); i < count; i++) {
+        String endl = (i < count - 1) ? "," : "";
+        appendIndented(builder, formatOptionMapValue(list.get(i)) + endl);
+      }
+      return builder.append("]").toString();
+    }
+    return value.toString();
   }
 
   private String formatName() {
