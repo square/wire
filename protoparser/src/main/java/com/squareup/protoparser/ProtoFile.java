@@ -2,10 +2,10 @@
 package com.squareup.protoparser;
 
 import com.google.auto.value.AutoValue;
+import com.squareup.protoparser.Utils.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import static com.squareup.protoparser.Utils.checkNotNull;
 import static com.squareup.protoparser.Utils.immutableCopyOf;
