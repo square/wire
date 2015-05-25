@@ -1,8 +1,10 @@
 package com.squareup.protoparser;
 
+import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 import static java.util.Collections.unmodifiableList;
 
 final class Utils {
@@ -39,6 +41,10 @@ final class Utils {
       }
       throw new IllegalArgumentException(message);
     }
+  }
+
+  @Retention(SOURCE)
+  @interface Nullable {
   }
 
   private Utils() {
