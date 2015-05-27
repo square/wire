@@ -131,6 +131,7 @@ public final class ProtoParser {
       return null;
     } else if (label.equals("syntax")) {
       if (!context.permitsSyntax()) throw unexpected("'syntax' in " + context);
+      if (readChar() != '=') throw unexpected("expected '='");
       String syntax = readQuotedString();
       switch (syntax) {
         case "proto2":
