@@ -291,7 +291,7 @@ public final class ProtoParserTest {
 
   @Test public void syntaxSpecified() throws Exception {
     String proto = ""
-        + "syntax \"proto3\";\n"
+        + "syntax = \"proto3\";\n"
         + "message Foo {}";
     ProtoFile expected = ProtoFile.builder("test.proto")
         .syntax(ProtoFile.Syntax.PROTO_3)
@@ -302,20 +302,20 @@ public final class ProtoParserTest {
 
   @Test public void invalidSyntaxValueThrows() throws Exception {
     String proto = ""
-        + "syntax \"proto4\";\n"
+        + "syntax = \"proto4\";\n"
         + "message Foo {}";
     try {
       ProtoParser.parse("test.proto", proto);
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage(
-          "Syntax error in test.proto at 1:16: 'syntax' must be 'proto2' or 'proto3'. Found: proto4");
+          "Syntax error in test.proto at 1:18: 'syntax' must be 'proto2' or 'proto3'. Found: proto4");
     }
   }
 
   @Test public void syntaxInWrongContextThrows() {
     String proto = ""
         + "message Foo {\n"
-        + "  syntax \"proto2\";\n"
+        + "  syntax = \"proto2\";\n"
         + "}";
     try {
       ProtoParser.parse("test.proto", proto);
