@@ -762,7 +762,7 @@ public class WireCompiler {
     try {
       writer = io.getJavaWriter(artifact);
       writer.emitSingleLineComment(CODE_GENERATED_BY_WIRE);
-      writer.emitSingleLineComment("Source file: %s", sourceFileName);
+      writer.emitSingleLineComment("Source file: %s", sourceFileName.replace("\\", "\\\\"));
       writer.emitPackage(getJavaPackage());
 
       List<TypeElement> types = new ArrayList<TypeElement>();
