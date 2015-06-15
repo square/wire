@@ -782,7 +782,7 @@ public class WireCompiler {
       if (hasBytesField(types)) {
         imports.add("okio.ByteString");
       }
-      if (hasEnum(types) || hasOneOf(types)) {
+      if (hasEnum(types)) {
         imports.add("com.squareup.wire.ProtoEnum");
       }
       if (hasRepeatedField(types)) {
