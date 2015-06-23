@@ -838,6 +838,7 @@ public final class ProtoParserTest {
     String proto = ""
         + "message HexTag {\n"
         + "  required string hex = 0x10;\n"
+        + "  required string uppercase_x_hex = 0X11;\n"
         + "}";
     ProtoFile expected = ProtoFile.builder("hex.proto")
         .addType(MessageElement.builder()
@@ -847,6 +848,12 @@ public final class ProtoParserTest {
                 .type(STRING)
                 .name("hex")
                 .tag(16)
+                .build())
+            .addField(FieldElement.builder()
+                .label(REQUIRED)
+                .type(STRING)
+                .name("uppercase_x_hex")
+                .tag(17)
                 .build())
             .build())
         .build();
