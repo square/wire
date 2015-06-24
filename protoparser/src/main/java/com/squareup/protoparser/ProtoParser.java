@@ -750,7 +750,7 @@ public final class ProtoParser {
     String tag = readWord();
     try {
       int radix = 10;
-      if (tag.startsWith("0x")) {
+      if (tag.startsWith("0x") || tag.startsWith("0X")) {
         tag = tag.substring("0x".length());
         radix = 16;
       }
