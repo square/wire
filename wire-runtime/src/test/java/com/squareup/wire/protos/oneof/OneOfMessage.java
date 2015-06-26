@@ -3,7 +3,6 @@
 package com.squareup.wire.protos.oneof;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 
 import static com.squareup.wire.Message.Datatype.INT32;
@@ -28,45 +27,13 @@ public final class OneOfMessage extends Message {
   @ProtoField(tag = 3, type = STRING, label = ONE_OF)
   public final String bar;
 
-  /**
-   * Must have a foo or a bar.
-   */
-  public final Choice choice;
-
-  public enum Choice
-      implements ProtoEnum {
-    CHOICE_NOT_SET(0),
-    FOO(1),
-    BAR(3);
-
-    private final int value;
-
-    Choice(int value) {
-      this.value = value;
-    }
-
-    public int getValue() {
-      return value;
-    }
-
-    public static Choice valueOf(int value) {
-      switch (value) {
-        case 0: return CHOICE_NOT_SET;
-        case 1: return FOO;
-        case 3: return BAR;
-      }
-      return null;
-    }
-  }
-
-  public OneOfMessage(Integer foo, String bar, Choice choice) {
+  public OneOfMessage(Integer foo, String bar) {
     this.foo = foo;
     this.bar = bar;
-    this.choice = choice;
   }
 
   private OneOfMessage(Builder builder) {
-    this(builder.foo, builder.bar, builder.choice);
+    this(builder.foo, builder.bar);
     setBuilder(builder);
   }
 
@@ -95,8 +62,6 @@ public final class OneOfMessage extends Message {
     public Integer foo;
     public String bar;
 
-    public Choice choice = Choice.CHOICE_NOT_SET;
-
     public Builder() {
     }
 
@@ -105,7 +70,6 @@ public final class OneOfMessage extends Message {
       if (message == null) return;
       this.foo = message.foo;
       this.bar = message.bar;
-      this.choice = message.choice;
     }
 
     /**
@@ -115,7 +79,6 @@ public final class OneOfMessage extends Message {
       this.foo = foo;
 
       this.bar = null;
-      this.choice = foo == null ? Choice.CHOICE_NOT_SET : Choice.FOO;
       return this;
     }
 
@@ -126,7 +89,6 @@ public final class OneOfMessage extends Message {
       this.bar = bar;
 
       this.foo = null;
-      this.choice = bar == null ? Choice.CHOICE_NOT_SET : Choice.BAR;
       return this;
     }
 
