@@ -263,12 +263,65 @@ public final class ProtoParserTest {
   @Test public void enumValueTrailingComment() {
     String proto = ""
         + "enum Test {\n"
-        + "  FOO = 1; // Test all the things!\n"
+        + "  FOO = 1; // Test all the things!   \n"
         + "}";
     ProtoFile parsed = ProtoParser.parse("test.proto", proto);
     EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
     EnumConstantElement value = enumElement.constants().get(0);
     assertThat(value.documentation()).isEqualTo("Test all the things!");
+  }
+
+  @Test public void trailingMultilineComment() {
+    String proto = ""
+        + "enum Test {\n"
+        + "  FOO = 1; /* Test all the things!  */  \n"
+        + "  BAR = 2;/*Test all the things!*/\n"
+        + "}";
+    ProtoFile parsed = ProtoParser.parse("test.proto", proto);
+    EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
+    EnumConstantElement foo = enumElement.constants().get(0);
+    assertThat(foo.documentation()).isEqualTo("Test all the things!");
+    EnumConstantElement bar = enumElement.constants().get(1);
+    assertThat(bar.documentation()).isEqualTo("Test all the things!");
+  }
+
+  @Test public void trailingUnclosedMultilineCommentThrows() {
+    String proto = ""
+        + "enum Test {\n"
+        + "  FOO = 1; /* Test all the things!   \n"
+        + "}";
+    try {
+      ProtoParser.parse("test.proto", proto);
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage(
+          "Syntax error in test.proto at 2:38: trailing comment must be closed on the same line");
+    }
+  }
+
+  @Test public void trailingMultilineCommentMustBeLastOnLineThrows() {
+    String proto = ""
+        + "enum Test {\n"
+        + "  FOO = 1; /* Test all the things! */ BAR = 2;\n"
+        + "}";
+    try {
+      ProtoParser.parse("test.proto", proto);
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage(
+          "Syntax error in test.proto at 2:40: no syntax may follow trailing comment");
+    }
+  }
+
+  @Test public void invalidTrailingComment() {
+    String proto = ""
+        + "enum Test {\n"
+        + "  FOO = 1; /\n"
+        + "}";
+    try {
+      ProtoParser.parse("test.proto", proto);
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage(
+          "Syntax error in test.proto at 2:12: expected '//' or '/*'");
+    }
   }
 
   @Test public void enumValueLeadingAndTrailingCommentsAreCombined() {
@@ -281,6 +334,18 @@ public final class ProtoParserTest {
     EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
     EnumConstantElement value = enumElement.constants().get(0);
     assertThat(value.documentation()).isEqualTo("Test all...\n...the things!");
+  }
+
+  @Test public void trailingCommentNotCombinedWhenEmpty() {
+    String proto = ""
+        + "enum Test {\n"
+        + "  // Test all...\n"
+        + "  FOO = 1; //      \n"
+        + "}";
+    ProtoFile parsed = ProtoParser.parse("test.proto", proto);
+    EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
+    EnumConstantElement value = enumElement.constants().get(0);
+    assertThat(value.documentation()).isEqualTo("Test all...");
   }
 
   @Test public void syntaxNotRequired() throws Exception {
