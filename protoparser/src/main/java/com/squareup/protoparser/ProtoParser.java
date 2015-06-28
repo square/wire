@@ -842,25 +842,69 @@ public final class ProtoParser {
       }
     }
 
-    if (pos == data.length || data[pos] != '/') {
-      throw unexpected("expected '/'");
+    if (pos == data.length || (data[pos] != '/' && data[pos] != '*')) {
+      pos--; // Backtrack to start of comment.
+      throw unexpected("expected '//' or '/*'");
     }
+    boolean isStar = data[pos] == '*';
     pos++;
+
     if (pos < data.length && data[pos] == ' ') {
       pos++; // Skip a single leading space, if present.
     }
 
-    // Consume comment until newline.
     int start = pos;
-    while (pos < data.length) {
-      char c = data[pos++];
-      if (c == '\n') {
-        newline();
-        break;
+    int end;
+
+    if (isStar) {
+      // Consume star comment until it closes on the same line.
+      while (true) {
+        if (pos == data.length || data[pos] == '\n') {
+          throw unexpected("trailing comment must be closed on the same line");
+        }
+        if (data[pos] == '*' && pos + 1 < data.length && data[pos + 1] == '/') {
+          end = pos - 1; // The character before '*'.
+          pos += 2; // Skip to the character after '/'.
+          break;
+        }
+        pos++;
+      }
+      // Ensure nothing follows a trailing star comment.
+      while (pos < data.length) {
+        char c = data[pos++];
+        if (c == '\n') {
+          newline();
+          break;
+        }
+        if (c != ' ' && c != '\t') {
+          throw unexpected("no syntax may follow trailing comment");
+        }
+      }
+    } else {
+      // Consume comment until newline.
+      while (true) {
+        if (pos == data.length) {
+          end = pos - 1;
+          break;
+        }
+        char c = data[pos++];
+        if (c == '\n') {
+          newline();
+          end = pos - 2; // Account for stepping past the newline.
+          break;
+        }
       }
     }
 
-    String trailingDocumentation = new String(data, start, pos - 1 - start);
+    // Remove trailing whitespace.
+    while (end > start && (data[end] == ' ' || data[end] == '\t')) {
+      end--;
+    }
+
+    if (end == start) {
+      return documentation;
+    }
+    String trailingDocumentation = new String(data, start, end - start + 1);
     if (documentation.isEmpty()) {
       return trailingDocumentation;
     }
