@@ -182,15 +182,13 @@ Download [the latest runtime .jar][dl_runtime] or depend via Maven:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>VERSION</version>
+  <version>1.8.0</version>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'com.squareup.wire:wire-runtime:VERSION'
+compile 'com.squareup.wire:wire-runtime:1.8.0'
 ```
-
-where `VERSION` is replaced by an actual version number such as `1.6.1`.
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 

@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 1.8.0 *(2015-06-27)*
+----------------------------
+
+ * New: `oneof` support!
+ * Fix: Correct serialization of repeated unknown fields.
+ * Fix: Removed superfluous `private` modifier on enum constructor.
+ * Warning: The 'protoparser' library was updated to version 4.0. This changes the type passed to
+   any `ServiceWriter` implementations.
+
+
 Version 1.7.0 *(2015-03-05)*
 ----------------------------
 
