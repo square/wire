@@ -50,4 +50,10 @@ public final class WireEnumConstant {
   public List<WireOption> options() {
     return options;
   }
+
+  void link(Linker linker) {
+    for (WireOption option : options) {
+      option.link(ProtoTypeName.ENUM_VALUE_OPTIONS, linker);
+    }
+  }
 }

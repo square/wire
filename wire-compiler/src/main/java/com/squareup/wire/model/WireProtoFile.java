@@ -94,5 +94,8 @@ public final class WireProtoFile {
     for (WireExtend extend : wireExtends) {
       extend.link(linker);
     }
+    for (WireOption option : options) {
+      option.link(ProtoTypeName.FILE_OPTIONS, linker);
+    }
   }
 }

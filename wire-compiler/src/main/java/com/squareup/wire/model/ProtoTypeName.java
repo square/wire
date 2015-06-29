@@ -45,14 +45,24 @@ public final class ProtoTypeName {
   public static final ProtoTypeName UINT32 = new ProtoTypeName("uint32");
   public static final ProtoTypeName UINT64 = new ProtoTypeName("uint64");
 
+  public static final ProtoTypeName FILE_OPTIONS = get("google.protobuf", "FileOptions");
+  public static final ProtoTypeName MESSAGE_OPTIONS = get("google.protobuf", "MessageOptions");
+  public static final ProtoTypeName FIELD_OPTIONS = get("google.protobuf", "FieldOptions");
+  public static final ProtoTypeName ENUM_OPTIONS = get("google.protobuf", "EnumOptions");
+  public static final ProtoTypeName ENUM_VALUE_OPTIONS = get("google.protobuf", "EnumValueOptions");
+  public static final ProtoTypeName SERVICE_OPTIONS = get("google.protobuf", "ServiceOptions");
+  public static final ProtoTypeName METHOD_OPTIONS = get("google.protobuf", "MethodOptions");
+
   private static final Map<String, ProtoTypeName> SCALAR_TYPES;
   static {
     Map<String, ProtoTypeName> scalarTypes = new LinkedHashMap<String, ProtoTypeName>();
     try {
       for (Field field : ProtoTypeName.class.getDeclaredFields()) {
         if (field.getType() == ProtoTypeName.class) {
-          ProtoTypeName scalar = (ProtoTypeName) field.get(null);
-          scalarTypes.put(scalar.names.get(0), scalar);
+          ProtoTypeName protoTypeName = (ProtoTypeName) field.get(null);
+          if (protoTypeName.isScalar) {
+            scalarTypes.put(protoTypeName.names.get(0), protoTypeName);
+          }
         }
       }
       SCALAR_TYPES = Collections.unmodifiableMap(scalarTypes);

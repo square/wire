@@ -65,5 +65,8 @@ public final class WireService {
     for (WireRpc rpc : rpcs) {
       rpc.link(linker);
     }
+    for (WireOption option : options) {
+      option.link(ProtoTypeName.SERVICE_OPTIONS, linker);
+    }
   }
 }

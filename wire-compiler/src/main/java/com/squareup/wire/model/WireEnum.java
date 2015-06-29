@@ -66,5 +66,11 @@ public final class WireEnum extends WireType {
   }
 
   @Override void link(Linker linker) {
+    for (WireEnumConstant constant : constants) {
+      constant.link(linker);
+    }
+    for (WireOption option : options) {
+      option.link(ProtoTypeName.ENUM_OPTIONS, linker);
+    }
   }
 }

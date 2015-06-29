@@ -16,9 +16,11 @@
 package com.squareup.wire.model;
 
 import com.squareup.protoparser.OptionElement;
+import java.util.List;
 
 public final class WireOption {
   private final OptionElement element;
+  private List<WireField> fieldPath;
 
   public WireOption(OptionElement element) {
     this.element = element;
@@ -38,5 +40,9 @@ public final class WireOption {
 
   public boolean isParenthesized() {
     return element.isParenthesized();
+  }
+
+  void link(ProtoTypeName optionType, Linker linker) {
+    fieldPath = linker.fieldPath(optionType, element.name());
   }
 }
