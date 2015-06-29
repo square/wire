@@ -27,9 +27,9 @@
       <artifactId>javawriter</artifactId>
     </dependency>
     <dependency>
-    <groupId>com.squareup.okio</groupId>
-    <artifactId>okio</artifactId>
-  </dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio</artifactId>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
