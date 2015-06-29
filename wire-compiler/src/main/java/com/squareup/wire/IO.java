@@ -14,7 +14,7 @@ import java.nio.charset.Charset;
 /**
  * Interface to abstract file reads and writes, may be mocked for testing.
  */
-interface IO {
+public interface IO {
   /**
    * Parses the given file.
    */
