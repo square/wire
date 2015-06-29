@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import okio.ByteString;
-
+import okio.BufferedSink;
 /**
  * Superclass for protocol buffer messages.
  */
@@ -225,6 +225,16 @@ public abstract class Message implements Serializable {
 
   public void writeTo(byte[] output, int offset, int count) {
     write(WireOutput.newInstance(output, offset, count));
+  }
+
+  /**
+   * Write this message with size prefix to output sink.
+   */
+  public void writeDelimitedTo(BufferedSink output) throws IOException {
+    MessageAdapter<Message> adapter = WIRE.messageAdapter((Class<Message>) getClass());
+    WireOutput wireOutput = WireOutput.newInstance(output);
+    wireOutput.writeVarint32(adapter.getSerializedSize(this));
+    adapter.write(this, wireOutput);
   }
 
   @SuppressWarnings("unchecked")

@@ -83,6 +83,10 @@ final class WireInput {
     return new WireInput(Okio.buffer(source));
   }
 
+  public static WireInput newInstance(BufferedSource source) {
+    return new WireInput(source);
+  }
+
   // -----------------------------------------------------------------
 
   /**
@@ -145,10 +149,16 @@ final class WireInput {
    * upper bits.
    */
   public int readVarint32() throws IOException {
+    int[] retVal = readVarint32(source, pos);
+    pos = retVal[1];
+    return retVal[0];
+  }
+
+  static int[] readVarint32(BufferedSource source, int pos) throws IOException {
     pos++;
     byte tmp = source.readByte();
     if (tmp >= 0) {
-      return tmp;
+      return new int[] {tmp, pos};
     }
     int result = tmp & 0x7f;
     pos++;
@@ -173,7 +183,7 @@ final class WireInput {
             for (int i = 0; i < 5; i++) {
               pos++;
               if (source.readByte() >= 0) {
-                return result;
+                return new int[] {result, pos};
               }
             }
             throw new IOException(ENCOUNTERED_A_MALFORMED_VARINT);
@@ -181,7 +191,7 @@ final class WireInput {
         }
       }
     }
-    return result;
+    return new int[] {result, pos};
   }
 
   /** Reads a raw varint up to 64 bits in length from the stream. */
