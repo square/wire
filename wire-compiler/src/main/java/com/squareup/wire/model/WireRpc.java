@@ -60,5 +60,8 @@ public final class WireRpc {
   void link(Linker linker) {
     requestType = linker.protoTypeName(element.requestType());
     responseType = linker.protoTypeName(element.responseType());
+    for (WireOption option : options) {
+      option.link(ProtoTypeName.METHOD_OPTIONS, linker);
+    }
   }
 }

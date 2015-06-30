@@ -74,5 +74,8 @@ public final class WireField {
 
   void link(Linker linker) {
     type = linker.protoTypeName(element.type());
+    for (WireOption option : options) {
+      option.link(ProtoTypeName.FIELD_OPTIONS, linker);
+    }
   }
 }

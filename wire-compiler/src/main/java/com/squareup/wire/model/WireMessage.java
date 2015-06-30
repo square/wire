@@ -82,6 +82,16 @@ public final class WireMessage extends WireType {
     return fields;
   }
 
+  /** Returns the field named {@code name}, or null if this type has no such field. */
+  public WireField getField(String name) {
+    for (WireField field : fields) {
+      if (field.name().equals(name)) {
+        return field;
+      }
+    }
+    return null;
+  }
+
   public List<WireOneOf> oneOfs() {
     return oneOfs;
   }
@@ -100,6 +110,9 @@ public final class WireMessage extends WireType {
     }
     for (WireType type : nestedTypes) {
       type.link(linker);
+    }
+    for (WireOption option : options) {
+      option.link(ProtoTypeName.MESSAGE_OPTIONS, linker);
     }
   }
 }
