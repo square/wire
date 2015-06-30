@@ -15,12 +15,10 @@
  */
 package com.squareup.wire.model;
 
-import com.squareup.protoparser.EnumConstantElement;
 import com.squareup.protoparser.EnumElement;
-import com.squareup.protoparser.OptionElement;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public final class WireEnum extends WireType {
   private final ProtoTypeName protoTypeName;
@@ -28,20 +26,11 @@ public final class WireEnum extends WireType {
   private final List<WireEnumConstant> constants;
   private final List<WireOption> options;
 
-  WireEnum(ProtoTypeName protoTypeName, EnumElement element) {
+  WireEnum(ProtoTypeName protoTypeName, EnumElement element, List<WireEnumConstant> constants,
+      List<WireOption> options) {
     this.protoTypeName = protoTypeName;
     this.element = element;
-
-    List<WireEnumConstant> constants = new ArrayList<WireEnumConstant>();
-    for (EnumConstantElement constant : this.element.constants()) {
-      constants.add(new WireEnumConstant(constant));
-    }
     this.constants = Collections.unmodifiableList(constants);
-
-    List<WireOption> options = new ArrayList<WireOption>();
-    for (OptionElement option : element.options()) {
-      options.add(new WireOption(option));
-    }
     this.options = Collections.unmodifiableList(options);
   }
 
@@ -72,5 +61,9 @@ public final class WireEnum extends WireType {
     for (WireOption option : options) {
       option.link(ProtoTypeName.ENUM_OPTIONS, linker);
     }
+  }
+
+  @Override WireType retainAll(Set<String> identifiers) {
+    return identifiers.contains(protoTypeName.toString()) ? this : null;
   }
 }

@@ -22,17 +22,23 @@ import java.util.Collections;
 import java.util.List;
 
 public final class WireEnumConstant {
+  private final String packageName;
   private final EnumConstantElement element;
   private final List<WireOption> options;
 
-  public WireEnumConstant(EnumConstantElement element) {
+  WireEnumConstant(String packageName, EnumConstantElement element) {
+    this.packageName = packageName;
     this.element = element;
 
     List<WireOption> options = new ArrayList<WireOption>();
     for (OptionElement option : element.options()) {
-      options.add(new WireOption(option));
+      options.add(new WireOption(packageName, option));
     }
     this.options = Collections.unmodifiableList(options);
+  }
+
+  public String packageName() {
+    return packageName;
   }
 
   public String name() {
