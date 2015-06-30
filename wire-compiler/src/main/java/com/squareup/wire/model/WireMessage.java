@@ -16,14 +16,11 @@
 package com.squareup.wire.model;
 
 import com.squareup.protoparser.ExtensionsElement;
-import com.squareup.protoparser.FieldElement;
 import com.squareup.protoparser.MessageElement;
-import com.squareup.protoparser.OneOfElement;
-import com.squareup.protoparser.OptionElement;
-import com.squareup.protoparser.TypeElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public final class WireMessage extends WireType {
   private final ProtoTypeName protoTypeName;
@@ -33,33 +30,15 @@ public final class WireMessage extends WireType {
   private final List<WireType> nestedTypes;
   private final List<WireOption> options;
 
-  WireMessage(ProtoTypeName protoTypeName, MessageElement element) {
+  public WireMessage(ProtoTypeName protoTypeName, MessageElement element,
+      List<WireField> fields, List<WireOneOf> oneOfs,
+      List<WireType> nestedTypes, List<WireOption> options) {
     this.protoTypeName = protoTypeName;
     this.element = element;
-
-    List<WireField> fields = new ArrayList<WireField>();
-    for (FieldElement field : element.fields()) {
-      fields.add(new WireField(field));
-    }
-    this.fields = Collections.unmodifiableList(fields);
-
-    List<WireOneOf> oneOfs = new ArrayList<WireOneOf>();
-    for (OneOfElement oneOf : element.oneOfs()) {
-      oneOfs.add(new WireOneOf(oneOf));
-    }
-    this.oneOfs = Collections.unmodifiableList(oneOfs);
-
-    List<WireType> nestedTypes = new ArrayList<WireType>();
-    for (TypeElement type : element.nestedElements()) {
-      nestedTypes.add(WireType.get(protoTypeName.nestedType(type.name()), type));
-    }
-    this.nestedTypes = Collections.unmodifiableList(nestedTypes);
-
-    List<WireOption> options = new ArrayList<WireOption>();
-    for (OptionElement option : element.options()) {
-      options.add(new WireOption(option));
-    }
-    this.options = Collections.unmodifiableList(options);
+    this.fields = Util.immutableList(fields);
+    this.oneOfs = Util.immutableList(oneOfs);
+    this.nestedTypes = Util.immutableList(nestedTypes);
+    this.options = Util.immutableList(options);
   }
 
   @Override public ProtoTypeName protoTypeName() {
@@ -83,7 +62,7 @@ public final class WireMessage extends WireType {
   }
 
   /** Returns the field named {@code name}, or null if this type has no such field. */
-  public WireField getField(String name) {
+  public WireField field(String name) {
     for (WireField field : fields) {
       if (field.name().equals(name)) {
         return field;
@@ -114,5 +93,29 @@ public final class WireMessage extends WireType {
     for (WireOption option : options) {
       option.link(ProtoTypeName.MESSAGE_OPTIONS, linker);
     }
+  }
+
+  @Override WireType retainAll(Set<String> identifiers) {
+    List<WireType> retainedNestedTypes = new ArrayList<WireType>();
+    for (WireType nestedType : nestedTypes) {
+      WireType retainedNestedType = nestedType.retainAll(identifiers);
+      if (retainedNestedType != null) {
+        retainedNestedTypes.add(retainedNestedType);
+      }
+    }
+
+    // If this type is retained, return it and all of its retained nested types.
+    if (identifiers.contains(protoTypeName.toString())) {
+      return new WireMessage(protoTypeName, element, fields, oneOfs, retainedNestedTypes, options);
+    }
+
+    // If this type is not retained, we may need it anyway to host nested types.
+    if (!retainedNestedTypes.isEmpty()) {
+      return new WireMessage(protoTypeName, element, Collections.<WireField>emptyList(),
+          Collections.<WireOneOf>emptyList(), retainedNestedTypes, options);
+    }
+
+    // Neither this type, nor its nested types are needed.
+    return null;
   }
 }

@@ -21,8 +21,8 @@ import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ServiceElement;
 import com.squareup.protoparser.TypeElement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public final class WireProtoFile {
   private final ProtoFile protoFile;
@@ -31,36 +31,41 @@ public final class WireProtoFile {
   private final List<WireExtend> wireExtends;
   private final List<WireOption> options;
 
-  WireProtoFile(ProtoFile protoFile) {
+  private WireProtoFile(ProtoFile protoFile, List<WireType> types, List<WireService> services,
+      List<WireExtend> wireExtends, List<WireOption> options) {
     this.protoFile = protoFile;
+    this.types = Util.immutableList(types);
+    this.services = Util.immutableList(services);
+    this.wireExtends = Util.immutableList(wireExtends);
+    this.options = Util.immutableList(options);
+  }
 
-    String protoPackage = protoFile.packageName();
+  public static WireProtoFile get(ProtoFile protoFile) {
+    String packageName = protoFile.packageName();
 
     List<WireType> types = new ArrayList<WireType>();
     for (TypeElement type : protoFile.typeElements()) {
-      ProtoTypeName protoTypeName = ProtoTypeName.get(protoPackage, type.name());
+      ProtoTypeName protoTypeName = ProtoTypeName.get(packageName, type.name());
       types.add(WireType.get(protoTypeName, type));
     }
-    this.types = Collections.unmodifiableList(types);
 
     List<WireService> services = new ArrayList<WireService>();
     for (ServiceElement service : protoFile.services()) {
-      ProtoTypeName protoTypeName = ProtoTypeName.get(protoPackage, service.name());
-      services.add(new WireService(protoTypeName, service));
+      ProtoTypeName protoTypeName = ProtoTypeName.get(packageName, service.name());
+      services.add(WireService.get(protoTypeName, service));
     }
-    this.services = Collections.unmodifiableList(services);
 
     List<WireExtend> wireExtends = new ArrayList<WireExtend>();
     for (ExtendElement extend : protoFile.extendDeclarations()) {
-      wireExtends.add(new WireExtend(extend));
+      wireExtends.add(new WireExtend(packageName, extend));
     }
-    this.wireExtends = Collections.unmodifiableList(wireExtends);
 
     List<WireOption> options = new ArrayList<WireOption>();
     for (OptionElement option : protoFile.options()) {
-      options.add(new WireOption(option));
+      options.add(new WireOption(packageName, option));
     }
-    this.options = Collections.unmodifiableList(options);
+
+    return new WireProtoFile(protoFile, types, services, wireExtends, options);
   }
 
   public String packageName() {
@@ -83,19 +88,24 @@ public final class WireProtoFile {
     return options;
   }
 
-  public void link(Linker linker) {
-    linker = linker.withProtoPackage(packageName());
+  /** Returns a new proto file that omits types and services not in {@code identifiers}. */
+  WireProtoFile retainAll(Set<String> identifiers) {
+    List<WireType> retainedTypes = new ArrayList<WireType>();
     for (WireType type : types) {
-      type.link(linker);
+      WireType retainedType = type.retainAll(identifiers);
+      if (retainedType != null) {
+        retainedTypes.add(retainedType);
+      }
     }
+
+    List<WireService> retainedServices = new ArrayList<WireService>();
     for (WireService service : services) {
-      service.link(linker);
+      WireService retainedService = service.retainAll(identifiers);
+      if (retainedService != null) {
+        retainedServices.add(retainedService);
+      }
     }
-    for (WireExtend extend : wireExtends) {
-      extend.link(linker);
-    }
-    for (WireOption option : options) {
-      option.link(ProtoTypeName.FILE_OPTIONS, linker);
-    }
+
+    return new WireProtoFile(protoFile, retainedTypes, retainedServices, wireExtends, options);
   }
 }

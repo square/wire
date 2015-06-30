@@ -22,18 +22,24 @@ import java.util.Collections;
 import java.util.List;
 
 public final class WireExtend {
+  private final String packageName;
   private final ExtendElement element;
   private final List<WireField> fields;
   private ProtoTypeName protoTypeName;
 
-  public WireExtend(ExtendElement element) {
+  public WireExtend(String packageName, ExtendElement element) {
+    this.packageName = packageName;
     this.element = element;
 
     List<WireField> fields = new ArrayList<WireField>();
     for (FieldElement field : element.fields()) {
-      fields.add(new WireField(field));
+      fields.add(new WireField(packageName, field));
     }
     this.fields = Collections.unmodifiableList(fields);
+  }
+
+  public String packageName() {
+    return packageName;
   }
 
   public ProtoTypeName protoTypeName() {
@@ -52,6 +58,6 @@ public final class WireExtend {
     for (WireField field : fields) {
       field.link(linker);
     }
-    protoTypeName = linker.wireType(element.name()).protoTypeName();
+    protoTypeName = linker.resolveNamedType(packageName, element.name());
   }
 }

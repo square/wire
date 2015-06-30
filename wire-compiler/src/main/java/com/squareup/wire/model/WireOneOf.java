@@ -22,17 +22,23 @@ import java.util.Collections;
 import java.util.List;
 
 public final class WireOneOf {
+  private final String packageName;
   private final OneOfElement element;
   private final List<WireField> fields;
 
-  WireOneOf(OneOfElement element) {
+  WireOneOf(String packageName, OneOfElement element) {
+    this.packageName = packageName;
     this.element = element;
 
     List<WireField> fields = new ArrayList<WireField>();
     for (FieldElement field : element.fields()) {
-      fields.add(new WireField(field));
+      fields.add(new WireField(packageName, field));
     }
     this.fields = Collections.unmodifiableList(fields);
+  }
+
+  public String packageName() {
+    return packageName;
   }
 
   public String name() {

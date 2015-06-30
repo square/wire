@@ -21,6 +21,7 @@ import com.squareup.protoparser.ServiceElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public final class WireService {
   private final ProtoTypeName protoTypeName;
@@ -28,21 +29,26 @@ public final class WireService {
   private final List<WireRpc> rpcs;
   private final List<WireOption> options;
 
-  WireService(ProtoTypeName protoTypeName, ServiceElement element) {
+  private WireService(ProtoTypeName protoTypeName, ServiceElement element, List<WireRpc> rpcs,
+      List<WireOption> options) {
     this.protoTypeName = protoTypeName;
     this.element = element;
+    this.rpcs = Collections.unmodifiableList(rpcs);
+    this.options = Collections.unmodifiableList(options);
+  }
 
+  public static WireService get(ProtoTypeName protoTypeName, ServiceElement element) {
     List<WireRpc> rpcs = new ArrayList<WireRpc>();
     for (RpcElement rpc : element.rpcs()) {
-      rpcs.add(new WireRpc(rpc));
+      rpcs.add(new WireRpc(protoTypeName.packageName(), rpc));
     }
-    this.rpcs = Collections.unmodifiableList(rpcs);
 
     List<WireOption> options = new ArrayList<WireOption>();
     for (OptionElement option : element.options()) {
-      options.add(new WireOption(option));
+      options.add(new WireOption(protoTypeName.packageName(), option));
     }
-    this.options = Collections.unmodifiableList(options);
+
+    return new WireService(protoTypeName, element, rpcs, options);
   }
 
   public ProtoTypeName protoTypeName() {
@@ -57,6 +63,16 @@ public final class WireService {
     return rpcs;
   }
 
+  /** Returns the RPC named {@code name}, or null if this service has no such method. */
+  public WireRpc rpc(String name) {
+    for (WireRpc rpc : rpcs) {
+      if (rpc.name().equals(name)) {
+        return rpc;
+      }
+    }
+    return null;
+  }
+
   public List<WireOption> options() {
     return options;
   }
@@ -68,5 +84,27 @@ public final class WireService {
     for (WireOption option : options) {
       option.link(ProtoTypeName.SERVICE_OPTIONS, linker);
     }
+  }
+
+  WireService retainAll(Set<String> identifiers) {
+    String serviceName = protoTypeName.toString();
+    if (identifiers.contains(serviceName)) {
+      return this; // Fully retained.
+    }
+
+    List<WireRpc> retainedRpcs = new ArrayList<WireRpc>();
+    for (WireRpc rpc : rpcs) {
+      if (identifiers.contains(serviceName + '#' + rpc.name())) {
+        retainedRpcs.add(rpc);
+      }
+    }
+
+    // If child RPCs are retained, return a subset of this service.
+    if (!retainedRpcs.isEmpty()) {
+      return new WireService(protoTypeName, element, retainedRpcs, options);
+    }
+
+    // Neither this service, nor any of its RPCs are retained.
+    return null;
   }
 }

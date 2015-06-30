@@ -45,13 +45,13 @@ public final class ProtoTypeName {
   public static final ProtoTypeName UINT32 = new ProtoTypeName("uint32");
   public static final ProtoTypeName UINT64 = new ProtoTypeName("uint64");
 
-  public static final ProtoTypeName FILE_OPTIONS = get("google.protobuf", "FileOptions");
-  public static final ProtoTypeName MESSAGE_OPTIONS = get("google.protobuf", "MessageOptions");
-  public static final ProtoTypeName FIELD_OPTIONS = get("google.protobuf", "FieldOptions");
-  public static final ProtoTypeName ENUM_OPTIONS = get("google.protobuf", "EnumOptions");
-  public static final ProtoTypeName ENUM_VALUE_OPTIONS = get("google.protobuf", "EnumValueOptions");
-  public static final ProtoTypeName SERVICE_OPTIONS = get("google.protobuf", "ServiceOptions");
-  public static final ProtoTypeName METHOD_OPTIONS = get("google.protobuf", "MethodOptions");
+  static final ProtoTypeName FILE_OPTIONS = get("google.protobuf", "FileOptions");
+  static final ProtoTypeName MESSAGE_OPTIONS = get("google.protobuf", "MessageOptions");
+  static final ProtoTypeName FIELD_OPTIONS = get("google.protobuf", "FieldOptions");
+  static final ProtoTypeName ENUM_OPTIONS = get("google.protobuf", "EnumOptions");
+  static final ProtoTypeName ENUM_VALUE_OPTIONS = get("google.protobuf", "EnumValueOptions");
+  static final ProtoTypeName SERVICE_OPTIONS = get("google.protobuf", "ServiceOptions");
+  static final ProtoTypeName METHOD_OPTIONS = get("google.protobuf", "MethodOptions");
 
   private static final Map<String, ProtoTypeName> SCALAR_TYPES;
   static {
@@ -85,6 +85,10 @@ public final class ProtoTypeName {
     this.protoPackage = protoPackage;
     this.names = names;
     this.isScalar = isScalar;
+  }
+
+  public String packageName() {
+    return protoPackage;
   }
 
   public String simpleName() {
