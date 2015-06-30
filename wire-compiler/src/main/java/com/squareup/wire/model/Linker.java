@@ -16,81 +16,71 @@
 package com.squareup.wire.model;
 
 import com.squareup.protoparser.DataType;
-import com.squareup.protoparser.ProtoFile;
-import com.squareup.wire.IO;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/** Links local field types and option types to the corresponding declarations. */
 public final class Linker {
-  private final String repoPath;
-  private final IO io;
-  private final Set<String> loadedDependencies;
   private final Map<String, WireType> protoTypeNames;
-  private final Map<ProtoFile, WireProtoFile> protoFilesMap;
   private final Map<ProtoTypeName, Map<String, WireField>> extensionsMap;
 
   // Context when linking.
-  private final String enclosingProtoPackage;
   private final List<WireType> enclosingTypes;
 
-  public Linker(String repoPath, IO io) {
-    this.repoPath = repoPath;
-    this.io = io;
-    this.loadedDependencies = new LinkedHashSet<String>();
+  public Linker() {
     this.protoTypeNames = new LinkedHashMap<String, WireType>();
-    this.protoFilesMap = new LinkedHashMap<ProtoFile, WireProtoFile>();
     this.extensionsMap = new LinkedHashMap<ProtoTypeName, Map<String, WireField>>();
-    this.enclosingProtoPackage = null;
     this.enclosingTypes = Collections.emptyList();
   }
 
-  private Linker(Linker enclosing, String protoPackage, WireType type) {
-    this.repoPath = enclosing.repoPath;
-    this.io = enclosing.io;
-    this.loadedDependencies = enclosing.loadedDependencies;
+  private Linker(Linker enclosing, WireType type) {
     this.protoTypeNames = enclosing.protoTypeNames;
-    this.protoFilesMap = enclosing.protoFilesMap;
     this.extensionsMap = enclosing.extensionsMap;
-    this.enclosingProtoPackage = protoPackage;
     this.enclosingTypes = type != null
         ? Util.concatenate(enclosing.enclosingTypes, type)
         : enclosing.enclosingTypes;
   }
 
-  /** Recursively add {@code protoFile} and its dependencies. */
-  public void add(ProtoFile protoFile) throws IOException {
-    WireProtoFile wireProtoFile = new WireProtoFile(protoFile);
-    protoFilesMap.put(protoFile, wireProtoFile);
-
+  public void link(Collection<WireProtoFile> wireProtoFiles) {
     // Register the types.
-    for (WireType type : wireProtoFile.types()) {
-      register(type);
+    for (WireProtoFile wireProtoFile : wireProtoFiles) {
+      for (WireType type : wireProtoFile.types()) {
+        register(type);
+      }
     }
 
     // Register the extensions.
-    for (WireExtend extend : wireProtoFile.wireExtends()) {
-      Map<String, WireField> map = extensionsMap.get(extend.protoTypeName());
-      if (map == null) {
-        map = new LinkedHashMap<String, WireField>();
-        extensionsMap.put(extend.protoTypeName(), map);
-      }
-      for (WireField field : extend.fields()) {
-        map.put(wireProtoFile.packageName() + "." + field.name(), field);
+    for (WireProtoFile wireProtoFile : wireProtoFiles) {
+      for (WireExtend extend : wireProtoFile.wireExtends()) {
+        Map<String, WireField> map = extensionsMap.get(extend.protoTypeName());
+        if (map == null) {
+          map = new LinkedHashMap<String, WireField>();
+          extensionsMap.put(extend.protoTypeName(), map);
+        }
+        for (WireField field : extend.fields()) {
+          map.put(extend.packageName() + "." + field.name(), field);
+        }
       }
     }
 
-    // Recursively load dependencies.
-    for (String dependency : protoFile.dependencies()) {
-      if (!loadedDependencies.contains(dependency)) {
-        add(io.parse(repoPath + File.separator + dependency));
-        loadedDependencies.add(dependency);
+    // Link.
+    for (WireProtoFile wireProtoFile : wireProtoFiles) {
+      for (WireType type : wireProtoFile.types()) {
+        type.link(this);
+      }
+      for (WireService service : wireProtoFile.services()) {
+        service.link(this);
+      }
+      for (WireExtend extend : wireProtoFile.wireExtends()) {
+        extend.link(this);
+      }
+      for (WireOption option : wireProtoFile.options()) {
+        option.link(ProtoTypeName.FILE_OPTIONS, this);
       }
     }
   }
@@ -102,20 +92,14 @@ public final class Linker {
     }
   }
 
-  public void link() {
-    for (WireProtoFile wireProtoFile : protoFilesMap.values()) {
-      wireProtoFile.link(this);
-    }
-  }
-
-  /** Returns the proto type for {@code type} according to this linker. */
-  ProtoTypeName protoTypeName(DataType type) {
+  /** Returns the type name for the scalar, relative or fully-qualified name {@code name}. */
+  ProtoTypeName resolveType(String packageName, DataType type) {
     switch (type.kind()) {
       case SCALAR:
         return ProtoTypeName.getScalar(type.toString());
 
       case NAMED:
-        return wireType(type.toString()).protoTypeName();
+        return resolveNamedType(packageName, type.toString());
 
       default:
         // TODO(jwilson): report an error and return a sentinel instead of crashing here.
@@ -123,14 +107,14 @@ public final class Linker {
     }
   }
 
-  /** Returns the wire type for the relative or fully-qualified name {@code name}. */
-  WireType wireType(String name) {
+  /** Returns the type name for the relative or fully-qualified name {@code name}. */
+  ProtoTypeName resolveNamedType(String packageName, String name) {
     WireType fullyQualified = protoTypeNames.get(name);
-    if (fullyQualified != null) return fullyQualified;
+    if (fullyQualified != null) return fullyQualified.protoTypeName();
 
-    if (enclosingProtoPackage != null) {
-      WireType samePackage = protoTypeNames.get(enclosingProtoPackage + "." + name);
-      if (samePackage != null) return samePackage;
+    if (packageName != null) {
+      WireType samePackage = protoTypeNames.get(packageName + "." + name);
+      if (samePackage != null) return samePackage.protoTypeName();
     }
 
     // Look at the enclosing type, and its children, all the way up the nesting hierarchy.
@@ -138,12 +122,12 @@ public final class Linker {
       WireType enclosingType = enclosingTypes.get(i);
 
       if (name.equals(enclosingType.protoTypeName().simpleName())) {
-        return enclosingType;
+        return enclosingType.protoTypeName();
       }
 
       for (WireType peerType : enclosingType.nestedTypes()) {
         if (name.equals(peerType.protoTypeName().simpleName())) {
-          return peerType;
+          return peerType.protoTypeName();
         }
       }
     }
@@ -158,16 +142,16 @@ public final class Linker {
    * This is particularly awkward because of the collision between the separators for package names
    * and fields.
    */
-  List<WireField> fieldPath(ProtoTypeName extensionType, String fieldPath) {
+  List<WireField> fieldPath(String packageName, ProtoTypeName extensionType, String fieldPath) {
     Map<String, WireField> extensionsForType = extensionsMap.get(extensionType);
     if (extensionsForType == null) {
       return null; // No known extensions for the given extension type.
     }
 
     String[] path = resolveFieldPath(fieldPath, extensionsForType.keySet());
-    if (path == null && enclosingProtoPackage != null) {
+    if (path == null && packageName != null) {
       // If the path couldn't be resolved, attempt again by prefixing it with the package name.
-      path = resolveFieldPath(enclosingProtoPackage + "." + fieldPath, extensionsForType.keySet());
+      path = resolveFieldPath(packageName + "." + fieldPath, extensionsForType.keySet());
     }
     if (path == null) {
       return null; // Unable to find the root of this field path.
@@ -182,7 +166,7 @@ public final class Linker {
       ProtoTypeName valueType = field.type();
       WireType wireType = protoTypeNames.get(valueType.toString());
       if (wireType instanceof WireMessage) {
-        field = ((WireMessage) wireType).getField(pathSegment);
+        field = ((WireMessage) wireType).field(pathSegment);
         fields.add(field);
       } else {
         return null; // Unable to traverse this field path.
@@ -222,13 +206,8 @@ public final class Linker {
     return null;
   }
 
-  /** Returns a new linker that uses {@code protoPackage} to resolve local type names. */
-  Linker withProtoPackage(String protoPackage) {
-    return new Linker(this, protoPackage, null);
-  }
-
   /** Returns a new linker that uses {@code message} to resolve local type names. */
   Linker withMessage(WireMessage message) {
-    return new Linker(this, enclosingProtoPackage, message);
+    return new Linker(this, message);
   }
 }

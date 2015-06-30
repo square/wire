@@ -955,7 +955,7 @@ public class WireCompiler {
     if (!shouldEmitOptions()) {
       for (ExtendElement declaration : declarations) {
         String name = declaration.qualifiedName();
-        if (!(isFieldOptions(name) || isMessageOptions(name))) {
+        if (!isFieldOptions(name) && !isMessageOptions(name)) {
           return true;
         }
       }

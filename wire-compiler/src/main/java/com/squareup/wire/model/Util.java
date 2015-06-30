@@ -16,7 +16,11 @@
 package com.squareup.wire.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 final class Util {
   private Util() {
@@ -60,5 +64,14 @@ final class Util {
 
   public static boolean equal(Object a, Object b) {
     return a == b || (a != null && a.equals(b));
+  }
+
+  /** Returns an immutable copy of {@code list}. */
+  public static <T> List<T> immutableList(Collection<T> list) {
+    return Collections.unmodifiableList(new ArrayList<T>(list));
+  }
+
+  public static <K, V> Map<K, V> immutableMap(Map<K, V> map) {
+    return Collections.unmodifiableMap(new LinkedHashMap<K, V>(map));
   }
 }

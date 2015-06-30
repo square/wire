@@ -22,18 +22,24 @@ import java.util.Collections;
 import java.util.List;
 
 public final class WireField {
+  private final String packageName;
   private final FieldElement element;
   private final List<WireOption> options;
   private ProtoTypeName type;
 
-  WireField(FieldElement element) {
+  WireField(String packageName, FieldElement element) {
+    this.packageName = packageName;
     this.element = element;
 
     List<WireOption> options = new ArrayList<WireOption>();
     for (OptionElement option : element.options()) {
-      options.add(new WireOption(option));
+      options.add(new WireOption(packageName, option));
     }
     this.options = Collections.unmodifiableList(options);
+  }
+
+  public String packageName() {
+    return packageName;
   }
 
   public FieldElement.Label label() {
@@ -73,7 +79,7 @@ public final class WireField {
   }
 
   void link(Linker linker) {
-    type = linker.protoTypeName(element.type());
+    type = linker.resolveType(packageName, element.type());
     for (WireOption option : options) {
       option.link(ProtoTypeName.FIELD_OPTIONS, linker);
     }
