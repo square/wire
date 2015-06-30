@@ -22,19 +22,25 @@ import java.util.Collections;
 import java.util.List;
 
 public final class WireRpc {
+  private final String packageName;
   private final RpcElement element;
   private final List<WireOption> options;
   private ProtoTypeName requestType;
   private ProtoTypeName responseType;
 
-  WireRpc(RpcElement element) {
+  WireRpc(String packageName, RpcElement element) {
+    this.packageName = packageName;
     this.element = element;
 
     List<WireOption> options = new ArrayList<WireOption>();
     for (OptionElement option : element.options()) {
-      options.add(new WireOption(option));
+      options.add(new WireOption(packageName, option));
     }
     this.options = Collections.unmodifiableList(options);
+  }
+
+  public String packageName() {
+    return packageName;
   }
 
   public String name() {
@@ -58,8 +64,8 @@ public final class WireRpc {
   }
 
   void link(Linker linker) {
-    requestType = linker.protoTypeName(element.requestType());
-    responseType = linker.protoTypeName(element.responseType());
+    requestType = linker.resolveNamedType(packageName, element.requestType().name());
+    responseType = linker.resolveNamedType(packageName, element.responseType().name());
     for (WireOption option : options) {
       option.link(ProtoTypeName.METHOD_OPTIONS, linker);
     }

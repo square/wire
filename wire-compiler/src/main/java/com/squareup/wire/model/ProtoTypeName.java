@@ -87,6 +87,10 @@ public final class ProtoTypeName {
     this.isScalar = isScalar;
   }
 
+  public String packageName() {
+    return protoPackage;
+  }
+
   public String simpleName() {
     return names.get(names.size() - 1);
   }

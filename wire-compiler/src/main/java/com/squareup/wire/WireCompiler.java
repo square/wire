@@ -27,6 +27,10 @@ import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.RpcElement;
 import com.squareup.protoparser.ServiceElement;
 import com.squareup.protoparser.TypeElement;
+import com.squareup.wire.model.Linker;
+import com.squareup.wire.model.Loader;
+import com.squareup.wire.model.RootSet;
+import com.squareup.wire.model.WireProtoFile;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -170,10 +174,14 @@ public class WireCompiler {
   public void compile() throws WireException {
     Map<String, ProtoFile> parsedFiles = new LinkedHashMap<String, ProtoFile>();
 
+
+    Loader loader = new Loader(repoPath, io);
+
     for (String sourceFilename : options.sourceFileNames) {
       String sourcePath = repoPath + File.separator + sourceFilename;
       try {
         ProtoFile protoFile = io.parse(sourcePath);
+        loader.add(sourceFilename);
         parsedFiles.put(sourcePath, protoFile);
         loadSymbols(protoFile);
       } catch (IOException e) {
@@ -181,8 +189,13 @@ public class WireCompiler {
       }
     }
 
+    List<WireProtoFile> wireProtoFiles = loader.loaded();
+    Linker linker = new Linker();
+    RootSet rootSet = linker.link(wireProtoFiles);
+
     if (!typesToEmit.isEmpty()) {
       log.info("Analyzing dependencies of root types.");
+      rootSet = rootSet.retainRoots(typesToEmit);
       findDependencies(parsedFiles.values());
     }
 
@@ -955,7 +968,7 @@ public class WireCompiler {
     if (!shouldEmitOptions()) {
       for (ExtendElement declaration : declarations) {
         String name = declaration.qualifiedName();
-        if (!(isFieldOptions(name) || isMessageOptions(name))) {
+        if (!isFieldOptions(name) && !isMessageOptions(name)) {
           return true;
         }
       }

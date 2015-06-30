@@ -19,15 +19,25 @@ import com.squareup.protoparser.OptionElement;
 import java.util.List;
 
 public final class WireOption {
+  private final String packageName;
   private final OptionElement element;
   private List<WireField> fieldPath;
 
-  public WireOption(OptionElement element) {
+  public WireOption(String packageName, OptionElement element) {
+    this.packageName = packageName;
     this.element = element;
+  }
+
+  public String packageName() {
+    return packageName;
   }
 
   public String name() {
     return element.name();
+  }
+
+  public List<WireField> fieldPath() {
+    return fieldPath;
   }
 
   public OptionElement.Kind kind() {
@@ -43,6 +53,6 @@ public final class WireOption {
   }
 
   void link(ProtoTypeName optionType, Linker linker) {
-    fieldPath = linker.fieldPath(optionType, element.name());
+    fieldPath = linker.fieldPath(packageName, optionType, element.name());
   }
 }
