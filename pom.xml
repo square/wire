@@ -58,6 +58,11 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>19.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>com.squareup</groupId>
         <artifactId>protoparser</artifactId>
         <version>4.0.3</version>
@@ -81,6 +86,11 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.10</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup</groupId>
+        <artifactId>javapoet</artifactId>
+        <version>1.2.0-SNAPSHOT</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

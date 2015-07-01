@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ExtendElement;
 import com.squareup.protoparser.OptionElement;
 import com.squareup.protoparser.ProtoFile;
@@ -25,22 +26,24 @@ import java.util.List;
 import java.util.Set;
 
 public final class WireProtoFile {
+  private final String sourcePath;
   private final ProtoFile protoFile;
   private final List<WireType> types;
   private final List<WireService> services;
   private final List<WireExtend> wireExtends;
   private final List<WireOption> options;
 
-  private WireProtoFile(ProtoFile protoFile, List<WireType> types, List<WireService> services,
-      List<WireExtend> wireExtends, List<WireOption> options) {
+  private WireProtoFile(String sourcePath, ProtoFile protoFile, List<WireType> types,
+      List<WireService> services, List<WireExtend> wireExtends, List<WireOption> options) {
+    this.sourcePath = sourcePath;
     this.protoFile = protoFile;
-    this.types = Util.immutableList(types);
-    this.services = Util.immutableList(services);
-    this.wireExtends = Util.immutableList(wireExtends);
-    this.options = Util.immutableList(options);
+    this.types = ImmutableList.copyOf(types);
+    this.services = ImmutableList.copyOf(services);
+    this.wireExtends = ImmutableList.copyOf(wireExtends);
+    this.options = ImmutableList.copyOf(options);
   }
 
-  public static WireProtoFile get(ProtoFile protoFile) {
+  public static WireProtoFile get(String sourcePath, ProtoFile protoFile) {
     String packageName = protoFile.packageName();
 
     List<WireType> types = new ArrayList<WireType>();
@@ -65,7 +68,11 @@ public final class WireProtoFile {
       options.add(new WireOption(packageName, option));
     }
 
-    return new WireProtoFile(protoFile, types, services, wireExtends, options);
+    return new WireProtoFile(sourcePath, protoFile, types, services, wireExtends, options);
+  }
+
+  public String sourcePath() {
+    return sourcePath;
   }
 
   public String packageName() {
@@ -106,6 +113,7 @@ public final class WireProtoFile {
       }
     }
 
-    return new WireProtoFile(protoFile, retainedTypes, retainedServices, wireExtends, options);
+    return new WireProtoFile(
+        sourcePath, protoFile, retainedTypes, retainedServices, wireExtends, options);
   }
 }

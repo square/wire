@@ -1,6 +1,9 @@
 package com.squareup.wire;
 
+import com.squareup.javapoet.ClassName;
 import java.io.File;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * A container class that represents an artifact output from the compiler.
@@ -14,6 +17,12 @@ final class OutputArtifact {
     this.outputDirectory = outputDirectory;
     this.className = className;
     this.javaPackage = javaPackage;
+  }
+
+  public OutputArtifact(String javaOut, ClassName className) {
+    this(javaOut, className.packageName(), className.simpleName());
+    checkArgument(className.enclosingClassName() == null,
+        "cannot output a nested class!");
   }
 
   public String outputDirectory() {

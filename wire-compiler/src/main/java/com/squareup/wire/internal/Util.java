@@ -13,30 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire.internal;
 
+import com.squareup.wire.model.WireOption;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-final class Util {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public final class Util {
   private Util() {
-  }
-
-  public static <T> T checkNotNull(T value, String name) {
-    if (value == null) {
-      throw new NullPointerException(name + " == null");
-    }
-    return value;
-  }
-
-  public static void checkState(boolean assertion) {
-    if (!assertion) {
-      throw new IllegalStateException();
-    }
   }
 
   public static <T> List<T> concatenate(List<T> a, T b) {
@@ -62,16 +50,20 @@ final class Util {
     return found;
   }
 
-  public static boolean equal(Object a, Object b) {
-    return a == b || (a != null && a.equals(b));
-  }
-
-  /** Returns an immutable copy of {@code list}. */
-  public static <T> List<T> immutableList(Collection<T> list) {
-    return Collections.unmodifiableList(new ArrayList<T>(list));
-  }
-
-  public static <K, V> Map<K, V> immutableMap(Map<K, V> map) {
-    return Collections.unmodifiableMap(new LinkedHashMap<K, V>(map));
+  /**
+   * Returns true if any of the options in {@code options} matches both of the regular expressions
+   * provided: its name matches the option's name and its value matches the option's value.
+   */
+  public static boolean optionMatches(
+      List<WireOption> options, String namePattern, String valuePattern) {
+    Matcher nameMatcher = Pattern.compile(namePattern).matcher("");
+    Matcher valueMatcher = Pattern.compile(valuePattern).matcher("");
+    for (WireOption option : options) {
+      if (nameMatcher.reset(option.name()).matches()
+          && valueMatcher.reset(String.valueOf(option.value())).matches()) {
+        return true;
+      }
+    }
+    return false;
   }
 }

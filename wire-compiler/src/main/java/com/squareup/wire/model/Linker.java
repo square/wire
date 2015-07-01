@@ -16,6 +16,7 @@
 package com.squareup.wire.model;
 
 import com.squareup.protoparser.DataType;
+import com.squareup.wire.internal.Util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

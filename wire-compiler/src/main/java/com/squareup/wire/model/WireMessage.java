@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ExtensionsElement;
 import com.squareup.protoparser.MessageElement;
 import java.util.ArrayList;
@@ -35,10 +36,10 @@ public final class WireMessage extends WireType {
       List<WireType> nestedTypes, List<WireOption> options) {
     this.protoTypeName = protoTypeName;
     this.element = element;
-    this.fields = Util.immutableList(fields);
-    this.oneOfs = Util.immutableList(oneOfs);
-    this.nestedTypes = Util.immutableList(nestedTypes);
-    this.options = Util.immutableList(options);
+    this.fields = ImmutableList.copyOf(fields);
+    this.oneOfs = ImmutableList.copyOf(oneOfs);
+    this.nestedTypes = ImmutableList.copyOf(nestedTypes);
+    this.options = ImmutableList.copyOf(options);
   }
 
   @Override public ProtoTypeName protoTypeName() {
@@ -59,6 +60,22 @@ public final class WireMessage extends WireType {
 
   public List<WireField> fields() {
     return fields;
+  }
+
+  public boolean hasRequiredFields() {
+    for (WireField field : fieldsAndOneOfFields()) {
+      if (field.isRequired()) return true;
+    }
+    return false;
+  }
+
+  public List<WireField> fieldsAndOneOfFields() {
+    ImmutableList.Builder<WireField> result = ImmutableList.builder();
+    result.addAll(fields);
+    for (WireOneOf oneOf : oneOfs) {
+      result.addAll(oneOf.fields());
+    }
+    return result.build();
   }
 
   /** Returns the field named {@code name}, or null if this type has no such field. */

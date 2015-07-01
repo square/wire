@@ -1,9 +1,11 @@
 // Copyright 2013 Square, Inc.
 package com.squareup.wire;
 
+import com.squareup.javapoet.JavaFile;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoParser;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,6 +32,8 @@ public interface IO {
   JavaWriter getJavaWriter(OutputArtifact outputArtifact)
       throws IOException;
 
+  void write(OutputArtifact outputArtifact, JavaFile javaFile) throws IOException;
+
   /**
    * Concrete implementation of the IO interface that proxies to the file system.
    */
@@ -47,6 +51,11 @@ public interface IO {
         throws IOException {
       artifact.dir().mkdirs();
       return new JavaWriter(new OutputStreamWriter(new FileOutputStream(artifact.file()), UTF_8));
+    }
+
+    @Override public void write(OutputArtifact outputArtifact, JavaFile javaFile)
+        throws IOException {
+      javaFile.writeTo(new File(outputArtifact.outputDirectory()));
     }
   }
 }
