@@ -18,7 +18,9 @@ package com.squareup.wire.model;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public final class ProtoTypeNameTest {
   @Test public void getScalar() throws Exception {
@@ -37,5 +39,29 @@ public final class ProtoTypeNameTest {
 
     ProtoTypeName phoneType = person.nestedType("PhoneType");
     assertEquals("squareup.protos.person.Person.PhoneType", phoneType.toString());
+  }
+
+  @Test public void enclosingTypeName() throws Exception {
+    assertEquals(null, ProtoTypeName.STRING.enclosingTypeName());
+
+    ProtoTypeName person = ProtoTypeName.get("squareup.protos.person", "Person");
+    assertEquals(null, person.enclosingTypeName());
+
+    ProtoTypeName phoneType = person.nestedType("PhoneType");
+    assertEquals(person, phoneType.enclosingTypeName());
+  }
+
+  @Test public void isScalar() throws Exception {
+    assertTrue(ProtoTypeName.INT32.isScalar());
+    assertTrue(ProtoTypeName.STRING.isScalar());
+    assertTrue(ProtoTypeName.BYTES.isScalar());
+    assertFalse(ProtoTypeName.get("squareup.protos.person", "Person").isScalar());
+  }
+
+  @Test public void isPackableScalar() throws Exception {
+    assertTrue(ProtoTypeName.INT32.isPackableScalar());
+    assertFalse(ProtoTypeName.STRING.isPackableScalar());
+    assertFalse(ProtoTypeName.BYTES.isPackableScalar());
+    assertFalse(ProtoTypeName.get("squareup.protos.person", "Person").isPackableScalar());
   }
 }

@@ -15,14 +15,16 @@
  */
 package com.squareup.wire.model;
 
+import com.squareup.wire.internal.Util;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import static com.squareup.wire.model.Util.checkNotNull;
-import static com.squareup.wire.model.Util.checkState;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Names a protocol buffer message, enumerated type or a scalar. This class models a fully-qualified
@@ -95,6 +97,20 @@ public final class ProtoTypeName {
     return names.get(names.size() - 1);
   }
 
+  /** Returns the enclosing type, or null if this type is not nested in another type. */
+  public ProtoTypeName enclosingTypeName() {
+    if (names.size() == 1) return null;
+    return new ProtoTypeName(protoPackage, names.subList(0, names.size() - 1), isScalar);
+  }
+
+  public boolean isScalar() {
+    return isScalar;
+  }
+
+  public boolean isPackableScalar() {
+    return isScalar && !equals(STRING) && !equals(BYTES);
+  }
+
   public static ProtoTypeName get(String protoPackage, String name) {
     checkNotNull(name, "name");
     return new ProtoTypeName(protoPackage, Collections.singletonList(name), false);
@@ -112,7 +128,7 @@ public final class ProtoTypeName {
 
   @Override public boolean equals(Object o) {
     return o instanceof ProtoTypeName
-        && Util.equal(((ProtoTypeName) o).protoPackage, protoPackage)
+        && Objects.equals(((ProtoTypeName) o).protoPackage, protoPackage)
         && ((ProtoTypeName) o).names.equals(names)
         && ((ProtoTypeName) o).isScalar == isScalar;
   }

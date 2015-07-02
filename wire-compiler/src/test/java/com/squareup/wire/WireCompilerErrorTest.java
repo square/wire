@@ -15,6 +15,7 @@
  */
 package com.squareup.wire;
 
+import com.squareup.javapoet.JavaFile;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoParser;
@@ -69,6 +70,13 @@ public class WireCompilerErrorTest {
         output.put(entry.getKey(), entry.getValue().toString());
       }
       return output;
+    }
+
+    @Override public void write(OutputArtifact outputArtifact, JavaFile javaFile)
+        throws IOException {
+      StringWriter writer = new StringWriter();
+      writers.put(outputArtifact.fullClassName(), writer);
+      javaFile.writeTo(writer);
     }
   }
 

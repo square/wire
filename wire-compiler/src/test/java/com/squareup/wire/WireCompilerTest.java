@@ -774,6 +774,6 @@ public class WireCompilerTest {
     // Normalize CRLF -> LF
     expected = expected.replace("\r\n", "\n");
     actual = actual.replace("\r\n", "\n");
-    assertEquals(expected, actual);
+    assertEquals(expectedFile.toString(), expected, actual);
   }
 }

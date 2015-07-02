@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.wire.IO;
 import java.io.File;
@@ -45,8 +46,9 @@ public final class Loader {
       return;
     }
 
-    ProtoFile protoFile = io.parse(repoPath + File.separator + protoFileName);
-    WireProtoFile wireProtoFile = WireProtoFile.get(protoFile);
+    String sourcePath = repoPath + File.separator + protoFileName;
+    ProtoFile protoFile = io.parse(sourcePath);
+    WireProtoFile wireProtoFile = WireProtoFile.get(sourcePath, protoFile);
     loaded.add(wireProtoFile);
 
     // Recursively add dependencies.
@@ -56,6 +58,6 @@ public final class Loader {
   }
 
   public List<WireProtoFile> loaded() {
-    return Util.immutableList(loaded);
+    return ImmutableList.copyOf(loaded);
   }
 }

@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -102,7 +104,7 @@ public final class Pruner {
       retained.add(protoFile.retainAll(marks));
     }
 
-    return Util.immutableList(retained);
+    return ImmutableList.copyOf(retained);
   }
 
   private static Map<String, WireType> buildTypesIndex(Collection<WireProtoFile> protoFiles) {
@@ -112,7 +114,7 @@ public final class Pruner {
         index(result, type);
       }
     }
-    return Util.immutableMap(result);
+    return ImmutableMap.copyOf(result);
   }
 
   private static void index(Map<String, WireType> typesByName, WireType type) {
@@ -129,7 +131,7 @@ public final class Pruner {
         result.put(service.protoTypeName().toString(), service);
       }
     }
-    return Util.immutableMap(result);
+    return ImmutableMap.copyOf(result);
   }
 
   private void mark(ProtoTypeName typeName) {

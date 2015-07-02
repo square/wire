@@ -15,6 +15,9 @@
  */
 package com.squareup.wire;
 
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.DataType.ScalarType;
 import com.squareup.protoparser.EnumElement;
@@ -27,6 +30,12 @@ import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.RpcElement;
 import com.squareup.protoparser.ServiceElement;
 import com.squareup.protoparser.TypeElement;
+import com.squareup.wire.java.JavaGenerator;
+import com.squareup.wire.java.TypeWriter;
+import com.squareup.wire.model.Linker;
+import com.squareup.wire.model.Loader;
+import com.squareup.wire.model.Pruner;
+import com.squareup.wire.model.WireProtoFile;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -54,6 +63,7 @@ import static javax.lang.model.element.Modifier.STATIC;
 
 /** Compiler for Wire protocol buffers. */
 public class WireCompiler {
+  static final boolean JAVAPOET = false;
   static final String LINE_WRAP_INDENT = "    ";
 
   /**
@@ -168,6 +178,11 @@ public class WireCompiler {
   }
 
   public void compile() throws WireException {
+    if (JAVAPOET) {
+      compileWithJavaPoet();
+      return;
+    }
+
     Map<String, ProtoFile> parsedFiles = new LinkedHashMap<String, ProtoFile>();
 
     for (String sourceFilename : options.sourceFileNames) {
@@ -1253,5 +1268,60 @@ public class WireCompiler {
 
   private String fullyQualifiedJavaName(MessageElement messageType, String type) {
     return TypeInfo.isScalar(type) ? null : javaName(fullyQualifiedName(messageType, type));
+  }
+
+  private void compileWithJavaPoet() throws WireException {
+    Set<String> parsedFiles = new LinkedHashSet<String>();
+    Loader loader = new Loader(repoPath, io);
+    for (String sourceFilename : options.sourceFileNames) {
+      String sourcePath = repoPath + File.separator + sourceFilename;
+      parsedFiles.add(sourcePath);
+      try {
+        loader.add(sourceFilename);
+      } catch (IOException e) {
+        throw new WireException("Error loading symbols for " + sourcePath, e);
+      }
+    }
+
+    List<WireProtoFile> wireProtoFiles = loader.loaded();
+    Linker linker = new Linker();
+    linker.link(wireProtoFiles);
+
+    if (!typesToEmit.isEmpty()) {
+      log.info("Analyzing dependencies of root types.");
+      wireProtoFiles = new Pruner().retainRoots(wireProtoFiles, typesToEmit);
+    }
+
+    JavaGenerator javaGenerator = JavaGenerator.get(wireProtoFiles);
+    for (WireProtoFile wireProtoFile : wireProtoFiles) {
+      if (!parsedFiles.contains(wireProtoFile.sourcePath())) {
+        continue; // Don't emit anything for files not explicitly compiled.
+      }
+
+      for (com.squareup.wire.model.WireType type : wireProtoFile.types()) {
+        ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.protoTypeName());
+        TypeSpec typeSpec = new TypeWriter(javaGenerator, shouldEmitOptions()).toTypeSpec(type);
+        writeJavaFile(javaTypeName, typeSpec, wireProtoFile.sourcePath());
+      }
+    }
+  }
+
+  private void writeJavaFile(
+      ClassName javaTypeName, TypeSpec typeSpec, String sourceFileName) throws WireException {
+    OutputArtifact artifact = new OutputArtifact(options.javaOut, javaTypeName);
+    log.artifact(artifact);
+
+    JavaFile javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
+        .addFileComment("$L\n", CODE_GENERATED_BY_WIRE)
+        .addFileComment("Source file: $L", sourceFileName)
+        .build();
+
+    try {
+      if (!options.dryRun) {
+        io.write(artifact, javaFile);
+      }
+    } catch (IOException e) {
+      throw new WireException("Error emitting " + artifact.file(), e);
+    }
   }
 }

@@ -17,6 +17,7 @@ package com.squareup.wire.model;
 
 import com.squareup.protoparser.FieldElement;
 import com.squareup.protoparser.OptionElement;
+import com.squareup.wire.internal.Util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +45,18 @@ public final class WireField {
 
   public FieldElement.Label label() {
     return element.label();
+  }
+
+  public boolean isRepeated() {
+    return label() == FieldElement.Label.REPEATED;
+  }
+
+  public boolean isOptional() {
+    return label() == FieldElement.Label.OPTIONAL;
+  }
+
+  public boolean isRequired() {
+    return label() == FieldElement.Label.REQUIRED;
   }
 
   public ProtoTypeName type() {
