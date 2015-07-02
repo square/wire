@@ -20,6 +20,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.wire.ExtendableMessage;
+import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.internal.Util;
 import com.squareup.wire.model.ProtoTypeName;
@@ -45,9 +46,12 @@ public final class JavaGenerator {
   public static final ClassName BYTE_STRING = ClassName.get(ByteString.class);
   public static final ClassName STRING = ClassName.get(String.class);
   public static final ClassName LIST = ClassName.get(List.class);
+  public static final ClassName MESSAGE = ClassName.get(Message.class);
+  public static final ClassName EXTENDABLE_MESSAGE = ClassName.get(ExtendableMessage.class);
+  public static final ClassName BUILDER = ClassName.get(Message.Builder.class);
   public static final ClassName EXTENDABLE_BUILDER
-      = (ClassName) TypeName.get(ExtendableMessage.ExtendableBuilder.class);
-  public static final ClassName BUILDER = (ClassName) TypeName.get(Message.Builder.class);
+      = ClassName.get(ExtendableMessage.ExtendableBuilder.class);
+  public static final ClassName EXTENSION = ClassName.get(Extension.class);
 
   private static final Map<ProtoTypeName, TypeName> SCALAR_TYPES_MAP =
       ImmutableMap.<ProtoTypeName, TypeName>builder()
@@ -104,6 +108,10 @@ public final class JavaGenerator {
     }
   }
 
+  public ClassName extensionsClass(WireProtoFile protoFile) {
+    return ClassName.get(javaPackage(protoFile), "Ext_" + protoFile.name());
+  }
+
   public TypeName typeName(ProtoTypeName protoTypeName) {
     TypeName candidate = wireToJava.get(protoTypeName);
     checkArgument(candidate != null, "unexpected type %s", protoTypeName);
@@ -133,5 +141,21 @@ public final class JavaGenerator {
 
   public static TypeName listOf(TypeName type) {
     return ParameterizedTypeName.get(LIST, type);
+  }
+
+  public static TypeName extendableMessageOf(TypeName type) {
+    return ParameterizedTypeName.get(JavaGenerator.EXTENDABLE_MESSAGE, type);
+  }
+
+  public static TypeName builderOf(TypeName messageType) {
+    return ParameterizedTypeName.get(BUILDER, messageType);
+  }
+
+  public static TypeName extendableBuilderOf(TypeName messageType) {
+    return ParameterizedTypeName.get(EXTENDABLE_BUILDER, messageType);
+  }
+
+  public static TypeName extensionOf(TypeName messageType, TypeName fieldType) {
+    return ParameterizedTypeName.get(EXTENSION, messageType, fieldType);
   }
 }

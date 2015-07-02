@@ -75,6 +75,25 @@ public final class WireProtoFile {
     return sourcePath;
   }
 
+  /**
+   * Returns the name of this proto file, like {@code simple_message} for {@code
+   * squareup/protos/person/simple_message.proto}.
+   */
+  public String name() {
+    String result = sourcePath;
+
+    int slashIndex = result.lastIndexOf('/');
+    if (slashIndex != -1) {
+      result = result.substring(slashIndex + 1);
+    }
+
+    if (result.endsWith(".proto")) {
+      result = result.substring(0, result.length() - ".proto".length());
+    }
+
+    return result;
+  }
+
   public String packageName() {
     return protoFile.packageName();
   }
