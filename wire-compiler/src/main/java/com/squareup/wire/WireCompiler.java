@@ -1298,9 +1298,17 @@ public class WireCompiler {
         continue; // Don't emit anything for files not explicitly compiled.
       }
 
+      TypeWriter typeWriter = new TypeWriter(javaGenerator, options.emitOptions);
+
       for (com.squareup.wire.model.WireType type : wireProtoFile.types()) {
         ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.protoTypeName());
-        TypeSpec typeSpec = new TypeWriter(javaGenerator, shouldEmitOptions()).toTypeSpec(type);
+        TypeSpec typeSpec = typeWriter.toTypeSpec(type);
+        writeJavaFile(javaTypeName, typeSpec, wireProtoFile.sourcePath());
+      }
+
+      if (options.emitOptions && !wireProtoFile.wireExtends().isEmpty()) {
+        ClassName javaTypeName = javaGenerator.extensionsClass(wireProtoFile);
+        TypeSpec typeSpec = typeWriter.extensionsType(javaTypeName, wireProtoFile);
         writeJavaFile(javaTypeName, typeSpec, wireProtoFile.sourcePath());
       }
     }

@@ -23,21 +23,23 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.ExtendableMessage;
+import com.squareup.javapoet.TypeVariableName;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.WireCompilerException;
 import com.squareup.wire.internal.Util;
+import com.squareup.wire.model.ProtoTypeName;
 import com.squareup.wire.model.WireEnum;
 import com.squareup.wire.model.WireEnumConstant;
+import com.squareup.wire.model.WireExtend;
 import com.squareup.wire.model.WireField;
 import com.squareup.wire.model.WireMessage;
 import com.squareup.wire.model.WireOneOf;
 import com.squareup.wire.model.WireOption;
+import com.squareup.wire.model.WireProtoFile;
 import com.squareup.wire.model.WireType;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -112,7 +114,7 @@ public final class TypeWriter {
     // Output Private tag field
     builder.addField(TypeName.INT, "value", PRIVATE, FINAL);
 
-    // TODO(jwilson): extensions.
+    // TODO(jwilson): options.
 
     MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
     constructorBuilder.addParameter(TypeName.INT, "value");
@@ -146,12 +148,9 @@ public final class TypeWriter {
       builder.addJavadoc("$L\n", type.documentation());
     }
 
-    // TODO(jwilson): extendable messages.
-    if (false) {
-      builder.superclass(ExtendableMessage.class);
-    } else {
-      builder.superclass(Message.class);
-    }
+    builder.superclass(type.extensions().isEmpty()
+        ? JavaGenerator.MESSAGE
+        : JavaGenerator.extendableMessageOf(javaType));
 
     builder.addField(FieldSpec.builder(TypeName.LONG, "serialVersionUID")
         .addModifiers(PRIVATE, STATIC, FINAL)
@@ -332,7 +331,7 @@ public final class TypeWriter {
         .addParameter(Object.class, "other");
 
     List<WireField> fields = type.fieldsAndOneOfFields();
-    if (fields.isEmpty()) {
+    if (fields.isEmpty() && type.extensions().isEmpty()) {
       result.addStatement("return other instanceof $T", javaType);
       return result.build();
     }
@@ -340,12 +339,7 @@ public final class TypeWriter {
     result.addStatement("if (other == this) return true");
     result.addStatement("if (!(other instanceof $T)) return false", javaType);
 
-    // TODO(jwilson): extensions!
-    //if (compiler.hasExtensions(messageType)) {
-    //  writer.emitStatement("if (!extensionsEqual(o)) return false");
-    //}
-
-    if (fields.size() == 1) {
+    if (fields.size() == 1 && type.extensions().isEmpty()) {
       String name = sanitize(fields.get(0).name());
       result.addStatement("return equals($L, (($T) other).$L)",
           addThisIfOneOf(name, "other", "o"), javaType, name);
@@ -353,6 +347,9 @@ public final class TypeWriter {
     }
 
     result.addStatement("$T o = ($T) other", javaType, javaType);
+    if (!type.extensions().isEmpty()) {
+      result.addStatement("if (!extensionsEqual(o)) return false");
+    }
     result.addCode("$[return ");
     for (int i = 0; i < fields.size(); i++) {
       if (i > 0) result.addCode("\n&& ");
@@ -387,12 +384,12 @@ public final class TypeWriter {
         .returns(int.class);
 
     List<WireField> fields = type.fieldsAndOneOfFields();
-    if (fields.isEmpty()) {
+    if (fields.isEmpty() && type.extensions().isEmpty()) {
       result.addStatement("return 0");
       return result.build();
     }
 
-    if (fields.size() == 1) {
+    if (fields.size() == 1 && type.extensions().isEmpty()) {
       WireField field = fields.get(0);
       String name = sanitize(field.name());
       result.addStatement("int result = hashCode");
@@ -405,11 +402,10 @@ public final class TypeWriter {
     result.addStatement("int result = hashCode");
     result.beginControlFlow("if (result == 0)");
     boolean afterFirstAssignment = false;
-    // TODO(jwilson): extensions!
-    //if (compiler.hasExtensions(messageType)) {
-    //  writer.emitStatement("result = extensionsHashCode()");
-    //  afterFirstAssignment = true;
-    //}
+    if (!type.extensions().isEmpty()) {
+      result.addStatement("result = extensionsHashCode()");
+      afterFirstAssignment = true;
+    }
     for (WireField field : fields) {
       String name = sanitize(field.name());
       name = addThisIfOneOf(name, "result");
@@ -428,16 +424,13 @@ public final class TypeWriter {
     return result.build();
   }
 
-  private TypeSpec builder(WireMessage type, ClassName javaType, TypeName builderType) {
+  private TypeSpec builder(WireMessage type, ClassName javaType, ClassName builderType) {
     TypeSpec.Builder result = TypeSpec.classBuilder("Builder")
         .addModifiers(PUBLIC, STATIC, FINAL);
 
-    if (false) {
-      // TODO(jwilson):
-      result.superclass(ParameterizedTypeName.get(JavaGenerator.EXTENDABLE_BUILDER, javaType));
-    } else {
-      result.superclass(ParameterizedTypeName.get(JavaGenerator.BUILDER, javaType));
-    }
+    result.superclass(type.extensions().isEmpty()
+        ? JavaGenerator.builderOf(javaType)
+        : JavaGenerator.extendableBuilderOf(javaType));
 
     List<WireField> fields = type.fieldsAndOneOfFields();
     for (WireField field : fields) {
@@ -458,11 +451,11 @@ public final class TypeWriter {
       }
     }
 
+    if (!type.extensions().isEmpty()) {
+      result.addMethod(builderSetExtension(javaType, builderType));
+    }
+
     result.addMethod(builderBuild(type, javaType));
-
-    // TODO(jwilson): extensions!
-    //if (compiler.hasExtensions(messageType)) emitBuilderSetExtension(writer, messageType);
-
     return result.build();
   }
 
@@ -544,6 +537,28 @@ public final class TypeWriter {
 
     result.addStatement("return this");
     return result.build();
+  }
+
+  // Example:
+  //
+  // @Override
+  // public <E> Builder setExtension(Extension<ExternalMessage, E> extension, E value) {
+  //   super.setExtension(extension, value);
+  //   return this;
+  // }
+  //
+  private MethodSpec builderSetExtension(ClassName javaType, ClassName builderType) {
+    TypeVariableName e = TypeVariableName.get("E");
+    return MethodSpec.methodBuilder("setExtension")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .addTypeVariable(e)
+        .returns(builderType)
+        .addParameter(JavaGenerator.extensionOf(javaType, e), "extension")
+        .addParameter(e, "value")
+        .addStatement("super.setExtension(extension, value)")
+        .addStatement("return this")
+        .build();
   }
 
   // Example:
@@ -648,5 +663,77 @@ public final class TypeWriter {
 
   private int nullHashValue(WireField field) {
     return field.isRepeated() ? 1 : 0;
+  }
+
+  public TypeSpec extensionsType(ClassName javaTypeName, WireProtoFile wireProtoFile) {
+    TypeSpec.Builder builder = TypeSpec.classBuilder(javaTypeName.simpleName())
+        .addModifiers(PUBLIC, FINAL);
+
+    // Private no-args constructor
+    builder.addMethod(MethodSpec.constructorBuilder()
+        .addModifiers(PRIVATE)
+        .build());
+
+    for (WireExtend extend : wireProtoFile.wireExtends()) {
+      ProtoTypeName extendType = extend.protoTypeName();
+      TypeName javaType = javaGenerator.typeName(extendType);
+
+      if (!emitOptions && (extendType.isFieldOptions() || extendType.isMessageOptions())) {
+        continue;
+      }
+
+      for (WireField field : extend.fields()) {
+        builder.addField(extensionField(wireProtoFile, javaType, field));
+      }
+    }
+
+    return builder.build();
+  }
+
+  private FieldSpec extensionField(
+      WireProtoFile wireProtoFile, TypeName extendType, WireField field) {
+    TypeName fieldType = javaGenerator.typeName(field.type());
+
+    CodeBlock.Builder initializer = CodeBlock.builder();
+    initializer.add("$[Extension\n");
+
+    if (field.type().isScalar()) {
+      initializer.add(".$LExtending($T.class)\n", field.type(), extendType);
+    } else if (javaGenerator.isEnum(field.type())) {
+      initializer.add(".enumExtending($T.class, $T.class)\n", fieldType, extendType);
+    } else {
+      initializer.add(".messageExtending($T.class, $T.class)\n", fieldType, extendType);
+    }
+
+    initializer.add(".setName($S)\n", wireProtoFile.packageName() + "." + field.name());
+    initializer.add(".setTag($L)\n", field.tag());
+    initializer.add(".build$L()$]", extensionLabel(field));
+
+    if (field.isRepeated()) {
+      fieldType = JavaGenerator.listOf(fieldType);
+    }
+
+    return FieldSpec.builder(JavaGenerator.extensionOf(extendType, fieldType), field.name())
+        .addModifiers(PUBLIC, STATIC, FINAL)
+        .initializer(initializer.build())
+        .build();
+  }
+
+  private String extensionLabel(WireField field) {
+    switch (field.label()) {
+      case OPTIONAL:
+        return "Optional";
+
+      case REQUIRED:
+        return "Required";
+
+      case REPEATED:
+        boolean packed = field.isPacked()
+            && (javaGenerator.isEnum(field.type()) || field.type().isPackableScalar());
+        return packed ? "Packed" : "Repeated";
+
+      default:
+        throw new WireCompilerException("Unknown extension label \"" + field.label() + "\"");
+    }
   }
 }

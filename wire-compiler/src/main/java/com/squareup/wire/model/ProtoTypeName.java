@@ -111,6 +111,14 @@ public final class ProtoTypeName {
     return isScalar && !equals(STRING) && !equals(BYTES);
   }
 
+  public boolean isFieldOptions() {
+    return equals(FIELD_OPTIONS);
+  }
+
+  public boolean isMessageOptions() {
+    return equals(MESSAGE_OPTIONS);
+  }
+
   public static ProtoTypeName get(String protoPackage, String name) {
     checkNotNull(name, "name");
     return new ProtoTypeName(protoPackage, Collections.singletonList(name), false);
