@@ -16,25 +16,17 @@
 package com.squareup.wire.model;
 
 import com.squareup.protoparser.EnumConstantElement;
-import com.squareup.protoparser.OptionElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public final class WireEnumConstant {
   private final String packageName;
   private final EnumConstantElement element;
-  private final List<WireOption> options;
+  private final Options options;
 
   WireEnumConstant(String packageName, EnumConstantElement element) {
     this.packageName = packageName;
     this.element = element;
-
-    List<WireOption> options = new ArrayList<WireOption>();
-    for (OptionElement option : element.options()) {
-      options.add(new WireOption(packageName, option));
-    }
-    this.options = Collections.unmodifiableList(options);
+    this.options = new Options(
+        ProtoTypeName.ENUM_VALUE_OPTIONS, packageName, element.options());
   }
 
   public String packageName() {
@@ -53,13 +45,11 @@ public final class WireEnumConstant {
     return element.documentation();
   }
 
-  public List<WireOption> options() {
+  public Options options() {
     return options;
   }
 
-  void link(Linker linker) {
-    for (WireOption option : options) {
-      option.link(ProtoTypeName.ENUM_VALUE_OPTIONS, linker);
-    }
+  void linkOptions(Linker linker) {
+    options.link(linker);
   }
 }

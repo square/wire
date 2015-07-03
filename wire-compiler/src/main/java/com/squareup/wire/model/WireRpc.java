@@ -15,28 +15,19 @@
  */
 package com.squareup.wire.model;
 
-import com.squareup.protoparser.OptionElement;
 import com.squareup.protoparser.RpcElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public final class WireRpc {
   private final String packageName;
   private final RpcElement element;
-  private final List<WireOption> options;
+  private final Options options;
   private ProtoTypeName requestType;
   private ProtoTypeName responseType;
 
   WireRpc(String packageName, RpcElement element) {
     this.packageName = packageName;
     this.element = element;
-
-    List<WireOption> options = new ArrayList<WireOption>();
-    for (OptionElement option : element.options()) {
-      options.add(new WireOption(packageName, option));
-    }
-    this.options = Collections.unmodifiableList(options);
+    this.options = new Options(ProtoTypeName.METHOD_OPTIONS, packageName, element.options());
   }
 
   public String packageName() {
@@ -59,15 +50,16 @@ public final class WireRpc {
     return responseType;
   }
 
-  public List<WireOption> options() {
+  public Options options() {
     return options;
   }
 
   void link(Linker linker) {
     requestType = linker.resolveNamedType(packageName, element.requestType().name());
     responseType = linker.resolveNamedType(packageName, element.responseType().name());
-    for (WireOption option : options) {
-      option.link(ProtoTypeName.METHOD_OPTIONS, linker);
-    }
+  }
+
+  void linkOptions(Linker linker) {
+    options.link(linker);
   }
 }

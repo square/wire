@@ -151,9 +151,16 @@ public final class Pruner {
 
   private void markType(WireType type) {
     markOptions(type.options());
+
+    ProtoTypeName enclosingTypeName = type.protoTypeName().enclosingTypeName();
+    if (enclosingTypeName != null) {
+      mark(enclosingTypeName);
+    }
+
     for (WireType nestedType : type.nestedTypes()) {
       mark(nestedType.protoTypeName());
     }
+
     if (type instanceof WireMessage) {
       markMessage((WireMessage) type);
     } else if (type instanceof WireEnum) {
@@ -186,11 +193,9 @@ public final class Pruner {
     mark(field.type());
   }
 
-  private void markOptions(List<WireOption> options) {
-    for (WireOption option : options) {
-      if (option.fieldPath() != null) {
-        markFields(option.fieldPath());
-      }
+  private void markOptions(Options options) {
+    for (WireField field : options.fields()) {
+      markField(field);
     }
   }
 

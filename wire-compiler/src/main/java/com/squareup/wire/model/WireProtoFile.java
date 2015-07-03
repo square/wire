@@ -17,7 +17,6 @@ package com.squareup.wire.model;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ExtendElement;
-import com.squareup.protoparser.OptionElement;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ServiceElement;
 import com.squareup.protoparser.TypeElement;
@@ -31,16 +30,16 @@ public final class WireProtoFile {
   private final List<WireType> types;
   private final List<WireService> services;
   private final List<WireExtend> wireExtends;
-  private final List<WireOption> options;
+  private final Options options;
 
   private WireProtoFile(String sourcePath, ProtoFile protoFile, List<WireType> types,
-      List<WireService> services, List<WireExtend> wireExtends, List<WireOption> options) {
+      List<WireService> services, List<WireExtend> wireExtends, Options options) {
     this.sourcePath = sourcePath;
     this.protoFile = protoFile;
     this.types = ImmutableList.copyOf(types);
     this.services = ImmutableList.copyOf(services);
     this.wireExtends = ImmutableList.copyOf(wireExtends);
-    this.options = ImmutableList.copyOf(options);
+    this.options = options;
   }
 
   public static WireProtoFile get(String sourcePath, ProtoFile protoFile) {
@@ -63,10 +62,8 @@ public final class WireProtoFile {
       wireExtends.add(new WireExtend(packageName, extend));
     }
 
-    List<WireOption> options = new ArrayList<WireOption>();
-    for (OptionElement option : protoFile.options()) {
-      options.add(new WireOption(packageName, option));
-    }
+    Options options = new Options(
+        ProtoTypeName.FILE_OPTIONS, packageName, protoFile.options());
 
     return new WireProtoFile(sourcePath, protoFile, types, services, wireExtends, options);
   }
@@ -110,7 +107,7 @@ public final class WireProtoFile {
     return wireExtends;
   }
 
-  public List<WireOption> options() {
+  public Options options() {
     return options;
   }
 

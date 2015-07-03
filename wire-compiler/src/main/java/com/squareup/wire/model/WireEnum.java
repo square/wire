@@ -24,14 +24,14 @@ public final class WireEnum extends WireType {
   private final ProtoTypeName protoTypeName;
   private final EnumElement element;
   private final List<WireEnumConstant> constants;
-  private final List<WireOption> options;
+  private final Options options;
 
   WireEnum(ProtoTypeName protoTypeName, EnumElement element, List<WireEnumConstant> constants,
-      List<WireOption> options) {
+      Options options) {
     this.protoTypeName = protoTypeName;
     this.element = element;
     this.constants = Collections.unmodifiableList(constants);
-    this.options = Collections.unmodifiableList(options);
+    this.options = options;
   }
 
   @Override public ProtoTypeName protoTypeName() {
@@ -42,7 +42,7 @@ public final class WireEnum extends WireType {
     return element.documentation();
   }
 
-  @Override public List<WireOption> options() {
+  @Override public Options options() {
     return options;
   }
 
@@ -55,11 +55,12 @@ public final class WireEnum extends WireType {
   }
 
   @Override void link(Linker linker) {
+  }
+
+  @Override void linkOptions(Linker linker) {
+    options.link(linker);
     for (WireEnumConstant constant : constants) {
-      constant.link(linker);
-    }
-    for (WireOption option : options) {
-      option.link(ProtoTypeName.ENUM_OPTIONS, linker);
+      constant.linkOptions(linker);
     }
   }
 

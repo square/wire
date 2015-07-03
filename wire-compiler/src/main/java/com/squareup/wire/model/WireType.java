@@ -20,7 +20,6 @@ import com.squareup.protoparser.EnumElement;
 import com.squareup.protoparser.FieldElement;
 import com.squareup.protoparser.MessageElement;
 import com.squareup.protoparser.OneOfElement;
-import com.squareup.protoparser.OptionElement;
 import com.squareup.protoparser.TypeElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +28,10 @@ import java.util.Set;
 public abstract class WireType {
   public abstract ProtoTypeName protoTypeName();
   public abstract String documentation();
-  public abstract List<WireOption> options();
+  public abstract Options options();
   public abstract List<WireType> nestedTypes();
   abstract void link(Linker linker);
+  abstract void linkOptions(Linker linker);
   abstract WireType retainAll(Set<String> identifiers);
 
   static WireType get(ProtoTypeName protoTypeName, TypeElement type) {
@@ -43,10 +43,8 @@ public abstract class WireType {
         constants.add(new WireEnumConstant(protoTypeName.packageName(), constant));
       }
 
-      List<WireOption> options = new ArrayList<WireOption>();
-      for (OptionElement option : enumElement.options()) {
-        options.add(new WireOption(protoTypeName.packageName(), option));
-      }
+      Options options = new Options(
+          ProtoTypeName.ENUM_OPTIONS, protoTypeName.packageName(), enumElement.options());
 
       return new WireEnum(protoTypeName, enumElement, constants, options);
 
@@ -69,10 +67,8 @@ public abstract class WireType {
         nestedTypes.add(WireType.get(protoTypeName.nestedType(nestedType.name()), nestedType));
       }
 
-      List<WireOption> options = new ArrayList<WireOption>();
-      for (OptionElement option : messageElement.options()) {
-        options.add(new WireOption(packageName, option));
-      }
+      Options options = new Options(
+          ProtoTypeName.MESSAGE_OPTIONS, protoTypeName.packageName(), messageElement.options());
 
       return new WireMessage(protoTypeName, messageElement, fields, oneOfs, nestedTypes, options);
 

@@ -22,11 +22,11 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
-import com.squareup.wire.internal.Util;
 import com.squareup.wire.model.ProtoTypeName;
 import com.squareup.wire.model.WireEnum;
 import com.squareup.wire.model.WireEnumConstant;
-import com.squareup.wire.model.WireOption;
+import com.squareup.wire.model.WireExtend;
+import com.squareup.wire.model.WireField;
 import com.squareup.wire.model.WireProtoFile;
 import com.squareup.wire.model.WireType;
 import java.util.List;
@@ -52,6 +52,7 @@ public final class JavaGenerator {
   public static final ClassName EXTENDABLE_BUILDER
       = ClassName.get(ExtendableMessage.ExtendableBuilder.class);
   public static final ClassName EXTENSION = ClassName.get(Extension.class);
+  public static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
 
   private static final Map<ProtoTypeName, TypeName> SCALAR_TYPES_MAP =
       ImmutableMap.<ProtoTypeName, TypeName>builder()
@@ -74,25 +75,36 @@ public final class JavaGenerator {
 
   private final ImmutableMap<ProtoTypeName, TypeName> wireToJava;
   private final ImmutableMap<ProtoTypeName, WireType> wireToType;
+  private final ImmutableMap<WireField, WireProtoFile> extensionFieldToFile;
 
   public JavaGenerator(
       ImmutableMap<ProtoTypeName, TypeName> wireToJava,
-      ImmutableMap<ProtoTypeName, WireType> wireToType) {
+      ImmutableMap<ProtoTypeName, WireType> wireToType,
+      ImmutableMap<WireField, WireProtoFile> extensionFieldToFile) {
     this.wireToJava = wireToJava;
     this.wireToType = wireToType;
+    this.extensionFieldToFile = extensionFieldToFile;
   }
 
   public static JavaGenerator get(List<WireProtoFile> wireProtoFiles) {
     ImmutableMap.Builder<ProtoTypeName, TypeName> wireToJava = ImmutableMap.builder();
     ImmutableMap.Builder<ProtoTypeName, WireType> wireToType = ImmutableMap.builder();
+    ImmutableMap.Builder<WireField, WireProtoFile> extensionFieldToFile = ImmutableMap.builder();
     wireToJava.putAll(SCALAR_TYPES_MAP);
 
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
       String javaPackage = javaPackage(wireProtoFile);
       putAll(wireToJava, wireToType, javaPackage, null, wireProtoFile.types());
+
+      for (WireExtend wireExtend : wireProtoFile.wireExtends()) {
+        for (WireField field : wireExtend.fields()) {
+          extensionFieldToFile.put(field, wireProtoFile);
+        }
+      }
     }
 
-    return new JavaGenerator(wireToJava.build(), wireToType.build());
+    return new JavaGenerator(wireToJava.build(), wireToType.build(),
+        extensionFieldToFile.build());
   }
 
   private static void putAll(ImmutableMap.Builder<ProtoTypeName, TypeName> wireToJava,
@@ -112,6 +124,12 @@ public final class JavaGenerator {
     return ClassName.get(javaPackage(protoFile), "Ext_" + protoFile.name());
   }
 
+  public ClassName extensionsClass(WireField extensionRoot) {
+    WireProtoFile protoFile = extensionFieldToFile.get(extensionRoot);
+    checkArgument(protoFile != null, "unrecognized extension %s", extensionRoot);
+    return extensionsClass(protoFile);
+  }
+
   public TypeName typeName(ProtoTypeName protoTypeName) {
     TypeName candidate = wireToJava.get(protoTypeName);
     checkArgument(candidate != null, "unexpected type %s", protoTypeName);
@@ -119,9 +137,9 @@ public final class JavaGenerator {
   }
 
   private static String javaPackage(WireProtoFile wireProtoFile) {
-    WireOption javaPackageOption = Util.findOption(wireProtoFile.options(), "java_package");
+    Object javaPackageOption = wireProtoFile.options().get("java_package");
     if (javaPackageOption != null) {
-      return String.valueOf(javaPackageOption.value());
+      return String.valueOf(javaPackageOption);
     } else if (wireProtoFile.packageName() != null) {
       return wireProtoFile.packageName();
     } else {

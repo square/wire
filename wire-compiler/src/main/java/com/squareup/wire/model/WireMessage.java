@@ -19,7 +19,6 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ExtensionsElement;
 import com.squareup.protoparser.MessageElement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -29,17 +28,17 @@ public final class WireMessage extends WireType {
   private final List<WireField> fields;
   private final List<WireOneOf> oneOfs;
   private final List<WireType> nestedTypes;
-  private final List<WireOption> options;
+  private final Options options;
 
   public WireMessage(ProtoTypeName protoTypeName, MessageElement element,
       List<WireField> fields, List<WireOneOf> oneOfs,
-      List<WireType> nestedTypes, List<WireOption> options) {
+      List<WireType> nestedTypes, Options options) {
     this.protoTypeName = protoTypeName;
     this.element = element;
     this.fields = ImmutableList.copyOf(fields);
     this.oneOfs = ImmutableList.copyOf(oneOfs);
     this.nestedTypes = ImmutableList.copyOf(nestedTypes);
-    this.options = ImmutableList.copyOf(options);
+    this.options = options;
   }
 
   @Override public ProtoTypeName protoTypeName() {
@@ -54,7 +53,7 @@ public final class WireMessage extends WireType {
     return nestedTypes;
   }
 
-  @Override public List<WireOption> options() {
+  @Override public Options options() {
     return options;
   }
 
@@ -107,9 +106,20 @@ public final class WireMessage extends WireType {
     for (WireType type : nestedTypes) {
       type.link(linker);
     }
-    for (WireOption option : options) {
-      option.link(ProtoTypeName.MESSAGE_OPTIONS, linker);
+  }
+
+  void linkOptions(Linker linker) {
+    linker = linker.withMessage(this);
+    for (WireType type : nestedTypes) {
+      type.linkOptions(linker);
     }
+    for (WireField field : fields) {
+      field.linkOptions(linker);
+    }
+    for (WireOneOf oneOf : oneOfs) {
+      oneOf.linkOptions(linker);
+    }
+    options.link(linker);
   }
 
   @Override WireType retainAll(Set<String> identifiers) {
@@ -121,18 +131,12 @@ public final class WireMessage extends WireType {
       }
     }
 
-    // If this type is retained, return it and all of its retained nested types.
-    if (identifiers.contains(protoTypeName.toString())) {
+    // If this type is retained, or any of its nested types are retained, keep it.
+    if (identifiers.contains(protoTypeName.toString()) || !retainedNestedTypes.isEmpty()) {
       return new WireMessage(protoTypeName, element, fields, oneOfs, retainedNestedTypes, options);
     }
 
-    // If this type is not retained, we may need it anyway to host nested types.
-    if (!retainedNestedTypes.isEmpty()) {
-      return new WireMessage(protoTypeName, element, Collections.<WireField>emptyList(),
-          Collections.<WireOneOf>emptyList(), retainedNestedTypes, options);
-    }
-
-    // Neither this type, nor its nested types are needed.
+    // This type isn't needed.
     return null;
   }
 }

@@ -23,33 +23,33 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public final class LinkerTest {
+public final class OptionsTest {
   @Test public void resolveFieldPathMatchesFirstSegment() throws Exception {
     assertEquals(
         asList("a", "b", "c", "d"),
-        asList(Linker.resolveFieldPath("a.b.c.d", set("a", "z", "y"))));
+        asList(Options.resolveFieldPath("a.b.c.d", set("a", "z", "y"))));
   }
 
   @Test public void resolveFieldPathMatchesMultipleSegments() throws Exception {
     assertEquals(
         asList("a.b", "c", "d"),
-        asList(Linker.resolveFieldPath("a.b.c.d", set("a.b", "z.b", "y.b"))));
+        asList(Options.resolveFieldPath("a.b.c.d", set("a.b", "z.b", "y.b"))));
   }
 
   @Test public void resolveFieldPathMatchesAllSegments() throws Exception {
     assertEquals(
         asList("a.b.c.d"),
-        asList(Linker.resolveFieldPath("a.b.c.d", set("a.b.c.d", "z.b.c.d"))));
+        asList(Options.resolveFieldPath("a.b.c.d", set("a.b.c.d", "z.b.c.d"))));
   }
 
   @Test public void resolveFieldPathMatchesOnlySegment() throws Exception {
     assertEquals(
         asList("a"),
-        asList(Linker.resolveFieldPath("a", set("a", "b"))));
+        asList(Options.resolveFieldPath("a", set("a", "b"))));
   }
 
   @Test public void resolveFieldPathDoesntMatch() throws Exception {
-    assertNull(Linker.resolveFieldPath("a.b", set("c", "d")));
+    assertNull(Options.resolveFieldPath("a.b", set("c", "d")));
   }
 
   private Set<String> set(String... elements) {
