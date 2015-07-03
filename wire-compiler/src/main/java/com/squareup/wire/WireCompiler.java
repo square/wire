@@ -1298,7 +1298,8 @@ public class WireCompiler {
         continue; // Don't emit anything for files not explicitly compiled.
       }
 
-      TypeWriter typeWriter = new TypeWriter(javaGenerator, options.emitOptions);
+      TypeWriter typeWriter = new TypeWriter(
+          javaGenerator, options.emitOptions, options.enumOptions);
 
       for (com.squareup.wire.model.WireType type : wireProtoFile.types()) {
         ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.protoTypeName());

@@ -53,6 +53,7 @@ public final class JavaGenerator {
       = ClassName.get(ExtendableMessage.ExtendableBuilder.class);
   public static final ClassName EXTENSION = ClassName.get(Extension.class);
   public static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
+  public static final TypeName ENUM_OPTIONS = ClassName.get("com.google.protobuf", "EnumOptions");
 
   private static final Map<ProtoTypeName, TypeName> SCALAR_TYPES_MAP =
       ImmutableMap.<ProtoTypeName, TypeName>builder()
