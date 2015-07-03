@@ -58,4 +58,10 @@ public final class WireOneOf {
       field.link(linker);
     }
   }
+
+  void linkOptions(Linker linker) {
+    for (WireField field : fields) {
+      field.linkOptions(linker);
+    }
+  }
 }

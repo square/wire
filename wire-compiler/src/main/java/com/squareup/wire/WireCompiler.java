@@ -1306,7 +1306,7 @@ public class WireCompiler {
         writeJavaFile(javaTypeName, typeSpec, wireProtoFile.sourcePath());
       }
 
-      if (options.emitOptions && !wireProtoFile.wireExtends().isEmpty()) {
+      if (!wireProtoFile.wireExtends().isEmpty()) {
         ClassName javaTypeName = javaGenerator.extensionsClass(wireProtoFile);
         TypeSpec typeSpec = typeWriter.extensionsType(javaTypeName, wireProtoFile);
         writeJavaFile(javaTypeName, typeSpec, wireProtoFile.sourcePath());

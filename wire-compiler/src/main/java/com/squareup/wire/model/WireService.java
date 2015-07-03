@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.model;
 
-import com.squareup.protoparser.OptionElement;
 import com.squareup.protoparser.RpcElement;
 import com.squareup.protoparser.ServiceElement;
 import java.util.ArrayList;
@@ -27,14 +26,14 @@ public final class WireService {
   private final ProtoTypeName protoTypeName;
   private final ServiceElement element;
   private final List<WireRpc> rpcs;
-  private final List<WireOption> options;
+  private final Options options;
 
   private WireService(ProtoTypeName protoTypeName, ServiceElement element, List<WireRpc> rpcs,
-      List<WireOption> options) {
+      Options options) {
     this.protoTypeName = protoTypeName;
     this.element = element;
     this.rpcs = Collections.unmodifiableList(rpcs);
-    this.options = Collections.unmodifiableList(options);
+    this.options = options;
   }
 
   public static WireService get(ProtoTypeName protoTypeName, ServiceElement element) {
@@ -43,10 +42,8 @@ public final class WireService {
       rpcs.add(new WireRpc(protoTypeName.packageName(), rpc));
     }
 
-    List<WireOption> options = new ArrayList<WireOption>();
-    for (OptionElement option : element.options()) {
-      options.add(new WireOption(protoTypeName.packageName(), option));
-    }
+    Options options = new Options(
+        ProtoTypeName.SERVICE_OPTIONS, protoTypeName.packageName(), element.options());
 
     return new WireService(protoTypeName, element, rpcs, options);
   }
@@ -73,7 +70,7 @@ public final class WireService {
     return null;
   }
 
-  public List<WireOption> options() {
+  public Options options() {
     return options;
   }
 
@@ -81,9 +78,13 @@ public final class WireService {
     for (WireRpc rpc : rpcs) {
       rpc.link(linker);
     }
-    for (WireOption option : options) {
-      option.link(ProtoTypeName.SERVICE_OPTIONS, linker);
+  }
+
+  void linkOptions(Linker linker) {
+    for (WireRpc rpc : rpcs) {
+      rpc.linkOptions(linker);
     }
+    options.link(linker);
   }
 
   WireService retainAll(Set<String> identifiers) {

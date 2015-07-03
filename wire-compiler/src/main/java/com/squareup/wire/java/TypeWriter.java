@@ -30,7 +30,6 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.WireCompilerException;
-import com.squareup.wire.internal.Util;
 import com.squareup.wire.model.ProtoTypeName;
 import com.squareup.wire.model.WireEnum;
 import com.squareup.wire.model.WireEnumConstant;
@@ -38,13 +37,14 @@ import com.squareup.wire.model.WireExtend;
 import com.squareup.wire.model.WireField;
 import com.squareup.wire.model.WireMessage;
 import com.squareup.wire.model.WireOneOf;
-import com.squareup.wire.model.WireOption;
 import com.squareup.wire.model.WireProtoFile;
 import com.squareup.wire.model.WireType;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import okio.ByteString;
 
 import static javax.lang.model.element.Modifier.FINAL;
@@ -157,6 +157,15 @@ public final class TypeWriter {
         .initializer("$LL", 0L)
         .build());
 
+    if (emitOptions) {
+      for (WireField field : type.fieldsAndOneOfFields()) {
+        FieldSpec options = fieldOptionsField(field);
+        if (options != null) {
+          builder.addField(options);
+        }
+      }
+    }
+
     for (WireField field : type.fieldsAndOneOfFields()) {
       TypeName fieldType = fieldType(field);
 
@@ -189,6 +198,41 @@ public final class TypeWriter {
     }
 
     return builder.build();
+  }
+
+
+  // Example:
+  //
+  // public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
+  //     .setExtension(Ext_custom_options.count, 42)
+  //     .build();
+  //
+  private FieldSpec fieldOptionsField(WireField field) {
+    CodeBlock.Builder initializer = CodeBlock.builder();
+    initializer.add("$[new $T.Builder()", JavaGenerator.FIELD_OPTIONS);
+
+    boolean empty = true;
+    for (Map.Entry<WireField, ?> entry : field.options().map().entrySet()) {
+      WireField extensionRoot = entry.getKey();
+      if (extensionRoot.name().equals("default")
+          || extensionRoot.name().equals("deprecated")
+          || extensionRoot.name().equals("packed")) {
+        continue; // TODO(jwilson): also check that the declaring types match.
+      }
+
+      ClassName extensionClass = javaGenerator.extensionsClass(extensionRoot);
+      initializer.add("\n.setExtension($T.$L, $L)", extensionClass, extensionRoot.name(),
+          fieldInitializer(extensionRoot.type(), entry.getValue()));
+      empty = false;
+    }
+    initializer.add("\n.build()$]");
+    if (empty) return null;
+
+    String optionsFieldName = "FIELD_OPTIONS_" + field.name().toUpperCase(Locale.US);
+    return FieldSpec.builder(JavaGenerator.FIELD_OPTIONS, optionsFieldName)
+        .addModifiers(PUBLIC, STATIC, FINAL)
+        .initializer(initializer.build())
+        .build();
   }
 
   private TypeName fieldType(WireField field) {
@@ -256,7 +300,7 @@ public final class TypeWriter {
     }
 
     // We allow any package name to be used as long as it ends with '.redacted'.
-    if (Util.optionMatches(field.options(), ".*\\.redacted", "true")) {
+    if (field.options().optionMatches(".*\\.redacted", "true")) {
       result.addMember("redacted", "true");
     }
 
@@ -589,56 +633,78 @@ public final class TypeWriter {
       return codeBlock("$T.emptyList()", Collections.class);
     }
 
-    WireOption fieldDefault = field.getDefault();
-    TypeName javaType = fieldType(field);
+    Object defaultValue = field.getDefault();
 
-    if (field.type().isScalar()) {
-      Object initialValue = fieldDefault != null ? fieldDefault.value() : null;
-      return fieldInitializer(javaType, initialValue);
+    if (defaultValue == null && javaGenerator.isEnum(field.type())) {
+      defaultValue = javaGenerator.enumDefault(field.type()).name();
     }
 
-    if (fieldDefault != null) {
-      return codeBlock("$T.$L", javaType, fieldDefault.value());
-    }
-
-    if (javaGenerator.isEnum(field.type())) {
-      WireEnumConstant defaultValue = javaGenerator.enumDefault(field.type());
-      return codeBlock("$T.$L", javaType, defaultValue.name());
+    if (field.type().isScalar() || defaultValue != null) {
+      return fieldInitializer(field.type(), defaultValue);
     }
 
     throw new WireCompilerException("Field " + field + " cannot have default value");
   }
 
-  private CodeBlock fieldInitializer(TypeName type, Object value) {
-    if (type.equals(TypeName.BOOLEAN.box())) {
+  private CodeBlock fieldInitializer(ProtoTypeName type, Object value) {
+    TypeName javaType = javaGenerator.typeName(type);
+
+    if (value instanceof List) {
+      CodeBlock.Builder builder = CodeBlock.builder();
+      builder.add("$T.asList(", Arrays.class);
+      boolean first = true;
+      for (Object o : (List<?>) value) {
+        if (!first) builder.add(",");
+        first = false;
+        builder.add("\n$>$>$L$<$<", fieldInitializer(type, o));
+      }
+      builder.add(")");
+      return builder.build();
+
+    } else if (value instanceof Map) {
+      CodeBlock.Builder builder = CodeBlock.builder();
+      builder.add("new $T.Builder()", javaType);
+      for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
+        WireField field = (WireField) entry.getKey();
+        builder.add("\n$>$>.$L($L)$<$<", field.name(), fieldInitializer(
+            field.type(), entry.getValue()));
+      }
+      builder.add("\n$>$>.build()$<$<");
+      return builder.build();
+
+    } else if (javaType.equals(TypeName.BOOLEAN.box())) {
       return codeBlock("$L", value != null ? value : false);
 
-    } else if (type.equals(TypeName.INT.box())) {
+    } else if (javaType.equals(TypeName.INT.box())) {
       return codeBlock("$L", value != null
           ? new BigDecimal(String.valueOf(value)).intValue()
           : 0);
 
-    } else if (type.equals(TypeName.LONG.box())) {
+    } else if (javaType.equals(TypeName.LONG.box())) {
       return codeBlock("$LL", value != null
           ? Long.toString(new BigDecimal(String.valueOf(value)).longValue())
           : 0L);
 
-    } else if (type.equals(TypeName.FLOAT.box())) {
+    } else if (javaType.equals(TypeName.FLOAT.box())) {
       return codeBlock("$Lf", value != null ? String.valueOf(value) : 0f);
 
-    } else if (type.equals(TypeName.DOUBLE.box())) {
+    } else if (javaType.equals(TypeName.DOUBLE.box())) {
       return codeBlock("$Ld", value != null ? String.valueOf(value) : 0d);
 
-    } else if (type.equals(JavaGenerator.STRING)) {
+    } else if (javaType.equals(JavaGenerator.STRING)) {
       return codeBlock("$S", value != null ? (String) value : "");
 
-    } else if (type.equals(JavaGenerator.BYTE_STRING)) {
+    } else if (javaType.equals(JavaGenerator.BYTE_STRING)) {
       if (value == null) {
         return codeBlock("$T.EMPTY", ByteString.class);
       } else {
         return codeBlock("$T.decodeBase64($S)", ByteString.class,
             ByteString.of(String.valueOf(value).getBytes(Charsets.ISO_8859_1)).base64());
       }
+
+    } else if (javaGenerator.isEnum(type) && value != null) {
+      return codeBlock("$T.$L", javaType, value);
+
     } else {
       throw new WireCompilerException(type + " is not an allowed scalar type");
     }

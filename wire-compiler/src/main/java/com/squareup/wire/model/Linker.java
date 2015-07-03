@@ -17,13 +17,11 @@ package com.squareup.wire.model;
 
 import com.squareup.protoparser.DataType;
 import com.squareup.wire.internal.Util;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /** Links local field types and option types to the corresponding declarations. */
 public final class Linker {
@@ -55,7 +53,14 @@ public final class Linker {
       }
     }
 
-    // Register the extensions.
+    // Link extensions. This depends on type registration.
+    for (WireProtoFile wireProtoFile : wireProtoFiles) {
+      for (WireExtend extend : wireProtoFile.wireExtends()) {
+        extend.link(this);
+      }
+    }
+
+    // Register extensions. This needs the extensions to be linked.
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
       for (WireExtend extend : wireProtoFile.wireExtends()) {
         Map<String, WireField> map = extensionsMap.get(extend.protoTypeName());
@@ -69,7 +74,7 @@ public final class Linker {
       }
     }
 
-    // Link.
+    // Link proto files and services.
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
       for (WireType type : wireProtoFile.types()) {
         type.link(this);
@@ -77,11 +82,16 @@ public final class Linker {
       for (WireService service : wireProtoFile.services()) {
         service.link(this);
       }
-      for (WireExtend extend : wireProtoFile.wireExtends()) {
-        extend.link(this);
+    }
+
+    // Finally link options. We can't link any options until we've linked all fields!
+    for (WireProtoFile wireProtoFile : wireProtoFiles) {
+      wireProtoFile.options().link(this);
+      for (WireType type : wireProtoFile.types()) {
+        type.linkOptions(this);
       }
-      for (WireOption option : wireProtoFile.options()) {
-        option.link(ProtoTypeName.FILE_OPTIONS, this);
+      for (WireService service : wireProtoFile.services()) {
+        service.linkOptions(this);
       }
     }
   }
@@ -137,74 +147,37 @@ public final class Linker {
     throw new IllegalArgumentException("unrecognized type name: " + name);
   }
 
-  /**
-   * Given a path of field references, this returns the corresponding fields. The path may be either
-   * relative (to the current proto package) or absolute. Each path segment is separated by a dot.
-   * This is particularly awkward because of the collision between the separators for package names
-   * and fields.
-   */
-  List<WireField> fieldPath(String packageName, ProtoTypeName extensionType, String fieldPath) {
-    Map<String, WireField> extensionsForType = extensionsMap.get(extensionType);
-    if (extensionsForType == null) {
-      return null; // No known extensions for the given extension type.
-    }
-
-    String[] path = resolveFieldPath(fieldPath, extensionsForType.keySet());
-    if (path == null && packageName != null) {
-      // If the path couldn't be resolved, attempt again by prefixing it with the package name.
-      path = resolveFieldPath(packageName + "." + fieldPath, extensionsForType.keySet());
-    }
-    if (path == null) {
-      return null; // Unable to find the root of this field path.
-    }
-
-    List<WireField> fields = new ArrayList<WireField>();
-    WireField field = extensionsForType.get(path[0]);
-    fields.add(field);
-
-    for (int i = 1; i < path.length; i++) {
-      String pathSegment = path[i];
-      ProtoTypeName valueType = field.type();
-      WireType wireType = protoTypeNames.get(valueType.toString());
-      if (wireType instanceof WireMessage) {
-        field = ((WireMessage) wireType).field(pathSegment);
-        fields.add(field);
-      } else {
-        return null; // Unable to traverse this field path.
-      }
-    }
-
-    return fields;
+  /** Returns the map of known extensions for {@code extensionType}. */
+  public Map<String, WireField> extensions(ProtoTypeName extensionType) {
+    return extensionsMap.get(extensionType);
   }
 
-  /**
-   * Given a path like {@code a.b.c.d} and a set of paths like {@code {a.b.c, a.f.g, h.j}}, this
-   * returns the original path split on dots such that the first element is in the set. For the
-   * above example it would return the array {@code [a.b.c, d]}.
-   *
-   * <p>Typically the input path is a package name like {@code a.b}, followed by a dot and a
-   * sequence of field names. The first field name is an extension field; subsequent field names
-   * make a path within that extension.
-   *
-   * <p>Note that a single input may yield multiple possible answers, such as when package names
-   * and field names collide. This method prefers shorter package names though that is an
-   * implementation detail.
-   */
-  static String[] resolveFieldPath(String name, Set<String> fullyQualifiedNames) {
-    // Try to resolve a local name.
-    for (int i = 0; i < name.length(); i++) {
-      i = name.indexOf('.', i);
-      if (i == -1) i = name.length();
+  /** Returns the field named {@code field} on the message type of {@code self}. */
+  WireField dereference(String packageName, WireField self, String field) {
+    if (field.startsWith("[") && field.endsWith("]")) {
+      field = field.substring(1, field.length() - 1);
+    }
 
-      String candidate = name.substring(0, i);
-      if (fullyQualifiedNames.contains(candidate)) {
-        String[] path = name.substring(i).split("\\.", -1);
-        path[0] = name.substring(0, i);
-        return path;
+    WireType wireType = protoTypeNames.get(self.type().toString());
+    if (wireType instanceof WireMessage) {
+      WireField messageField = ((WireMessage) wireType).field(field);
+      if (messageField != null) {
+        return messageField;
+      }
+
+      Map<String, WireField> typeExtensions = extensionsMap.get(self.type());
+      WireField extensionField = typeExtensions.get(field);
+      if (extensionField != null) {
+        return extensionField;
+      }
+
+      WireField fullyQualifiedExtensionField = typeExtensions.get(packageName + "." + field);
+      if (fullyQualifiedExtensionField != null) {
+        return fullyQualifiedExtensionField;
       }
     }
 
-    return null;
+    return null; // Unable to traverse this field path.
   }
 
   /** Returns a new linker that uses {@code message} to resolve local type names. */

@@ -16,27 +16,17 @@
 package com.squareup.wire.model;
 
 import com.squareup.protoparser.FieldElement;
-import com.squareup.protoparser.OptionElement;
-import com.squareup.wire.internal.Util;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public final class WireField {
   private final String packageName;
   private final FieldElement element;
-  private final List<WireOption> options;
+  private final Options options;
   private ProtoTypeName type;
 
   WireField(String packageName, FieldElement element) {
     this.packageName = packageName;
     this.element = element;
-
-    List<WireOption> options = new ArrayList<WireOption>();
-    for (OptionElement option : element.options()) {
-      options.add(new WireOption(packageName, option));
-    }
-    this.options = Collections.unmodifiableList(options);
+    this.options = new Options(ProtoTypeName.FIELD_OPTIONS, packageName, element.options());
   }
 
   public String packageName() {
@@ -75,7 +65,7 @@ public final class WireField {
     return element.documentation();
   }
 
-  public List<WireOption> options() {
+  public Options options() {
     return options;
   }
 
@@ -87,14 +77,19 @@ public final class WireField {
     return element.isPacked();
   }
 
-  public WireOption getDefault() {
-    return Util.findOption(options, "default");
+  public Object getDefault() {
+    return options.get("default");
   }
 
   void link(Linker linker) {
     type = linker.resolveType(packageName, element.type());
-    for (WireOption option : options) {
-      option.link(ProtoTypeName.FIELD_OPTIONS, linker);
-    }
+  }
+
+  void linkOptions(Linker linker) {
+    options.link(linker);
+  }
+
+  @Override public String toString() {
+    return name();
   }
 }
