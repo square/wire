@@ -16,7 +16,8 @@
 package com.squareup.wire.java;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -30,6 +31,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.WireCompilerException;
+import com.squareup.wire.model.Options;
 import com.squareup.wire.model.ProtoTypeName;
 import com.squareup.wire.model.WireEnum;
 import com.squareup.wire.model.WireEnumConstant;
@@ -42,9 +44,11 @@ import com.squareup.wire.model.WireType;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import okio.ByteString;
 
 import static javax.lang.model.element.Modifier.FINAL;
@@ -63,10 +67,12 @@ public final class TypeWriter {
 
   private final JavaGenerator javaGenerator;
   private final boolean emitOptions;
+  private final ImmutableSet<String> enumOptions;
 
-  public TypeWriter(JavaGenerator javaGenerator, boolean emitOptions) {
+  public TypeWriter(JavaGenerator javaGenerator, boolean emitOptions, Set<String> enumOptions) {
     this.javaGenerator = javaGenerator;
     this.emitOptions = emitOptions;
+    this.enumOptions = ImmutableSet.copyOf(enumOptions);
   }
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
@@ -91,36 +97,60 @@ public final class TypeWriter {
       builder.addJavadoc("$L\n", type.documentation());
     }
 
-    // TODO(jwilson): options.
+    // Output Private tag field
+    builder.addField(TypeName.INT, "value", PRIVATE, FINAL);
+
+    MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
+    constructorBuilder.addStatement("this.value = value");
+    constructorBuilder.addParameter(TypeName.INT, "value");
+
+    // Enum constant options, each of which requires a constructor parameter and a field.
+    Set<WireField> allOptionFieldsBuilder = new LinkedHashSet<WireField>();
+    for (WireEnumConstant constant : type.constants()) {
+      for (WireField optionField : constant.options().map().keySet()) {
+        String fullyQualifiedName = optionField.packageName() + "." + optionField.name();
+        if (!enumOptions.contains(fullyQualifiedName)) {
+          continue;
+        }
+
+        if (allOptionFieldsBuilder.add(optionField)) {
+          TypeName javaType = javaGenerator.typeName(optionField.type());
+          builder.addField(javaType, optionField.name(), PUBLIC, FINAL);
+          constructorBuilder.addParameter(javaType, optionField.name());
+          constructorBuilder.addStatement("this.$L = $L", optionField.name(), optionField.name());
+        }
+      }
+    }
+    ImmutableList<WireField> allOptionFields = ImmutableList.copyOf(allOptionFieldsBuilder);
+    String enumArgsFormat = "$L" + Strings.repeat(", $L", allOptionFields.size());
+    builder.addMethod(constructorBuilder.build());
 
     for (WireEnumConstant constant : type.constants()) {
-      Object[] enumArgs = new Object[1];
-      String[] enumArgsFormat = new String[1];
-
+      Object[] enumArgs = new Object[allOptionFields.size() + 1];
       enumArgs[0] = constant.tag();
-      enumArgsFormat[0] = "$L";
+      for (int i = 0; i < allOptionFields.size(); i++) {
+        WireField key = allOptionFields.get(i);
+        Object value = constant.options().map().get(key);
+        enumArgs[i + 1] = value != null
+            ? fieldInitializer(key.type(), value)
+            : null;
+      }
 
-      TypeSpec.Builder constantBuilder = TypeSpec.anonymousClassBuilder(
-          Joiner.on(", ").join(enumArgsFormat), enumArgs);
+      TypeSpec.Builder constantBuilder = TypeSpec.anonymousClassBuilder(enumArgsFormat, enumArgs);
       if (!constant.documentation().isEmpty()) {
         constantBuilder.addJavadoc("$L\n", constant.documentation());
       }
 
       builder.addEnumConstant(constant.name(), constantBuilder.build());
-
-      // TODO(jwilson): initializers.
     }
 
-    // Output Private tag field
-    builder.addField(TypeName.INT, "value", PRIVATE, FINAL);
-
-    // TODO(jwilson): options.
-
-    MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
-    constructorBuilder.addParameter(TypeName.INT, "value");
-    constructorBuilder.addStatement("this.value = value");
-    // TODO(jwilson): private constructor extensions.
-    builder.addMethod(constructorBuilder.build());
+    // Enum type options.
+    if (emitOptions) {
+      FieldSpec options = optionsField(JavaGenerator.ENUM_OPTIONS, "ENUM_OPTIONS", type.options());
+      if (options != null) {
+        builder.addField(options);
+      }
+    }
 
     // Public Getter
     builder.addMethod(MethodSpec.methodBuilder("getValue")
@@ -159,7 +189,8 @@ public final class TypeWriter {
 
     if (emitOptions) {
       for (WireField field : type.fieldsAndOneOfFields()) {
-        FieldSpec options = fieldOptionsField(field);
+        String fieldName = "FIELD_OPTIONS_" + field.name().toUpperCase(Locale.US);
+        FieldSpec options = optionsField(JavaGenerator.FIELD_OPTIONS, fieldName, field.options());
         if (options != null) {
           builder.addField(options);
         }
@@ -207,12 +238,12 @@ public final class TypeWriter {
   //     .setExtension(Ext_custom_options.count, 42)
   //     .build();
   //
-  private FieldSpec fieldOptionsField(WireField field) {
+  private FieldSpec optionsField(TypeName optionsType, String fieldName, Options options) {
     CodeBlock.Builder initializer = CodeBlock.builder();
-    initializer.add("$[new $T.Builder()", JavaGenerator.FIELD_OPTIONS);
+    initializer.add("$[new $T.Builder()", optionsType);
 
     boolean empty = true;
-    for (Map.Entry<WireField, ?> entry : field.options().map().entrySet()) {
+    for (Map.Entry<WireField, ?> entry : options.map().entrySet()) {
       WireField extensionRoot = entry.getKey();
       if (extensionRoot.name().equals("default")
           || extensionRoot.name().equals("deprecated")
@@ -228,8 +259,7 @@ public final class TypeWriter {
     initializer.add("\n.build()$]");
     if (empty) return null;
 
-    String optionsFieldName = "FIELD_OPTIONS_" + field.name().toUpperCase(Locale.US);
-    return FieldSpec.builder(JavaGenerator.FIELD_OPTIONS, optionsFieldName)
+    return FieldSpec.builder(optionsType, fieldName)
         .addModifiers(PUBLIC, STATIC, FINAL)
         .initializer(initializer.build())
         .build();
