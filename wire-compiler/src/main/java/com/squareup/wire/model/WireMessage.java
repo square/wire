@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public final class WireMessage extends WireType {
   private final ProtoTypeName protoTypeName;
   private final MessageElement element;
@@ -38,7 +40,7 @@ public final class WireMessage extends WireType {
     this.fields = ImmutableList.copyOf(fields);
     this.oneOfs = ImmutableList.copyOf(oneOfs);
     this.nestedTypes = ImmutableList.copyOf(nestedTypes);
-    this.options = options;
+    this.options = checkNotNull(options);
   }
 
   @Override public ProtoTypeName protoTypeName() {
