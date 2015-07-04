@@ -5,13 +5,12 @@ package com.squareup.wire.protos.roots;
 import com.squareup.wire.Extension;
 
 public final class Ext_roots {
-
-  private Ext_roots() {
-  }
-
   public static final Extension<I, J> j = Extension
       .messageExtending(J.class, I.class)
       .setName("squareup.protos.roots.j")
       .setTag(1000)
       .buildOptional();
+
+  private Ext_roots() {
+  }
 }

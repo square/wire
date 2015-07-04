@@ -4,19 +4,24 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.ENUM;
-import static com.squareup.wire.Message.Datatype.INT32;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class E extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final G DEFAULT_G = G.FOO;
 
-  @ProtoField(tag = 1)
+  @ProtoField(
+      tag = 1
+  )
   public final F f;
 
-  @ProtoField(tag = 2, type = ENUM)
+  @ProtoField(
+      tag = 2,
+      type = Message.Datatype.ENUM
+  )
   public final G g;
 
   public E(F f, G g) {
@@ -49,9 +54,9 @@ public final class E extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<E> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<E> {
     public F f;
+
     public G g;
 
     public Builder() {
@@ -85,7 +90,10 @@ public final class E extends Message {
 
     public static final Integer DEFAULT_I = 0;
 
-    @ProtoField(tag = 1, type = INT32)
+    @ProtoField(
+        tag = 1,
+        type = Message.Datatype.INT32
+    )
     public final Integer i;
 
     public F(Integer i) {
@@ -110,8 +118,7 @@ public final class E extends Message {
       return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
     }
 
-    public static final class Builder extends Message.Builder<F> {
-
+    public static final class Builder extends com.squareup.wire.Message.Builder<F> {
       public Integer i;
 
       public Builder() {

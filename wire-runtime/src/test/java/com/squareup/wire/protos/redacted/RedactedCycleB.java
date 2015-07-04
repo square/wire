@@ -4,11 +4,15 @@ package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class RedactedCycleB extends Message {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(tag = 1)
+  @ProtoField(
+      tag = 1
+  )
   public final RedactedCycleA a;
 
   public RedactedCycleB(RedactedCycleA a) {
@@ -33,8 +37,7 @@ public final class RedactedCycleB extends Message {
     return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<RedactedCycleB> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedCycleB> {
     public RedactedCycleA a;
 
     public Builder() {

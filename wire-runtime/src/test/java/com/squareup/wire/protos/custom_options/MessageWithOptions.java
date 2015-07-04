@@ -6,6 +6,9 @@ import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.protos.foreign.Ext_foreign;
 import com.squareup.wire.protos.foreign.ForeignMessage;
+import java.lang.Object;
+import java.lang.Override;
+import java.util.Arrays;
 
 public final class MessageWithOptions extends Message {
   private static final long serialVersionUID = 0L;
@@ -18,27 +21,28 @@ public final class MessageWithOptions extends Message {
               .value(FooBar.FooBarBazEnum.BAZ)
               .build())
           .qux(-1L)
-          .fred(java.util.Arrays.asList(
-              123.0F,
-              321.0F))
-          .daisy(456.0D)
+          .fred(Arrays.asList(
+              123.0f,
+              321.0f))
+          .daisy(456.0d)
           .build())
-      .setExtension(Ext_custom_options.my_message_option_two, 91011.0F)
+      .setExtension(Ext_custom_options.my_message_option_two, 91011.0f)
       .setExtension(Ext_custom_options.my_message_option_three, new FooBar.Builder()
           .foo(11)
           .bar("22")
           .baz(new FooBar.Nested.Builder()
               .value(FooBar.FooBarBazEnum.BAR)
               .build())
-          .fred(java.util.Arrays.asList(
-              444.0F,
-              555.0F))
-          .nested(java.util.Arrays.asList(new FooBar.Builder()
-              .foo(33)
-              .fred(java.util.Arrays.asList(
-                  100.0F,
-                  200.0F))
-              .build()))
+          .fred(Arrays.asList(
+              444.0f,
+              555.0f))
+          .nested(Arrays.asList(
+              new FooBar.Builder()
+                  .foo(33)
+                  .fred(Arrays.asList(
+                      100.0f,
+                      200.0f))
+                  .build()))
           .build())
       .setExtension(Ext_custom_options.my_message_option_four, FooBar.FooBarBazEnum.FOO)
       .setExtension(Ext_foreign.foreign_message_option, new ForeignMessage.Builder()
@@ -46,15 +50,15 @@ public final class MessageWithOptions extends Message {
           .build())
       .setExtension(Ext_custom_options.my_message_option_five, new FooBar.Builder()
           .setExtension(Ext_custom_options.ext, FooBar.FooBarBazEnum.BAZ)
-          .setExtension(Ext_custom_options.rep, java.util.Arrays.asList(
+          .setExtension(Ext_custom_options.rep, Arrays.asList(
               FooBar.FooBarBazEnum.FOO,
               FooBar.FooBarBazEnum.BAZ))
           .build())
       .setExtension(Ext_custom_options.my_message_option_six, new FooBar.Builder()
-          .setExtension(Ext_custom_options.rep, java.util.Arrays.asList(
+          .setExtension(Ext_custom_options.rep, Arrays.asList(
               FooBar.FooBarBazEnum.FOO,
               FooBar.FooBarBazEnum.BAR))
-          .nested(java.util.Arrays.asList(
+          .nested(Arrays.asList(
               new FooBar.Builder()
                   .foo(44)
                   .setExtension(Ext_custom_options.ext, FooBar.FooBarBazEnum.BAR)
@@ -82,8 +86,7 @@ public final class MessageWithOptions extends Message {
     return 0;
   }
 
-  public static final class Builder extends Message.Builder<MessageWithOptions> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions> {
     public Builder() {
     }
 

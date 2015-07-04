@@ -4,41 +4,64 @@ package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Integer;
+import java.lang.Long;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Collections;
 import java.util.List;
-
-import static com.squareup.wire.Message.Datatype.FIXED32;
-import static com.squareup.wire.Message.Datatype.FIXED64;
-import static com.squareup.wire.Message.Datatype.INT32;
-import static com.squareup.wire.Message.Datatype.STRING;
-import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class VersionTwo extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;
+
   public static final Integer DEFAULT_V2_I = 0;
+
   public static final String DEFAULT_V2_S = "";
+
   public static final Integer DEFAULT_V2_F32 = 0;
+
   public static final Long DEFAULT_V2_F64 = 0L;
+
   public static final List<String> DEFAULT_V2_RS = Collections.emptyList();
 
-  @ProtoField(tag = 1, type = INT32)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.INT32
+  )
   public final Integer i;
 
-  @ProtoField(tag = 2, type = INT32)
+  @ProtoField(
+      tag = 2,
+      type = Message.Datatype.INT32
+  )
   public final Integer v2_i;
 
-  @ProtoField(tag = 3, type = STRING)
+  @ProtoField(
+      tag = 3,
+      type = Message.Datatype.STRING
+  )
   public final String v2_s;
 
-  @ProtoField(tag = 4, type = FIXED32)
+  @ProtoField(
+      tag = 4,
+      type = Message.Datatype.FIXED32
+  )
   public final Integer v2_f32;
 
-  @ProtoField(tag = 5, type = FIXED64)
+  @ProtoField(
+      tag = 5,
+      type = Message.Datatype.FIXED64
+  )
   public final Long v2_f64;
 
-  @ProtoField(tag = 6, type = STRING, label = REPEATED)
+  @ProtoField(
+      tag = 6,
+      type = Message.Datatype.STRING,
+      label = Message.Label.REPEATED
+  )
   public final List<String> v2_rs;
 
   public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs) {
@@ -83,13 +106,17 @@ public final class VersionTwo extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<VersionTwo> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<VersionTwo> {
     public Integer i;
+
     public Integer v2_i;
+
     public String v2_s;
+
     public Integer v2_f32;
+
     public Long v2_f64;
+
     public List<String> v2_rs;
 
     public Builder() {

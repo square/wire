@@ -5,6 +5,5 @@ package com.squareup.wire.protos.roots;
 import java.io.IOException;
 
 public interface UnnecessaryService {
-  UnnecessaryResponse unnecessaryMethod(TheRequest theRequest)
-      throws IOException;
+  UnnecessaryResponse unnecessaryMethod(TheRequest theRequest) throws IOException;
 }

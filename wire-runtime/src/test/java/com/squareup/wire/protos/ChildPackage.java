@@ -5,15 +5,18 @@ package com.squareup.wire.protos;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
-
-import static com.squareup.wire.Message.Datatype.ENUM;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class ChildPackage extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final ForeignEnum DEFAULT_INNER_FOREIGN_ENUM = ForeignEnum.BAV;
 
-  @ProtoField(tag = 1, type = ENUM)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.ENUM
+  )
   public final ForeignEnum inner_foreign_enum;
 
   public ChildPackage(ForeignEnum inner_foreign_enum) {
@@ -38,8 +41,7 @@ public final class ChildPackage extends Message {
     return result != 0 ? result : (hashCode = inner_foreign_enum != null ? inner_foreign_enum.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<ChildPackage> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<ChildPackage> {
     public ForeignEnum inner_foreign_enum;
 
     public Builder() {

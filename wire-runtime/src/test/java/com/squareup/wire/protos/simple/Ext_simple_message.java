@@ -4,41 +4,46 @@ package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Extension;
 import com.squareup.wire.protos.foreign.ForeignMessage;
+import java.lang.Integer;
 import java.util.List;
 
 public final class Ext_simple_message {
-
-  private Ext_simple_message() {
-  }
-
   public static final Extension<ExternalMessage, List<Integer>> fooext = Extension
       .int32Extending(ExternalMessage.class)
       .setName("squareup.protos.simple.fooext")
       .setTag(125)
       .buildRepeated();
+
   public static final Extension<ExternalMessage, Integer> barext = Extension
       .int32Extending(ExternalMessage.class)
       .setName("squareup.protos.simple.barext")
       .setTag(126)
       .buildOptional();
+
   public static final Extension<ExternalMessage, Integer> bazext = Extension
       .int32Extending(ExternalMessage.class)
       .setName("squareup.protos.simple.bazext")
       .setTag(127)
       .buildRequired();
+
   public static final Extension<ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension
       .messageExtending(SimpleMessage.NestedMessage.class, ExternalMessage.class)
       .setName("squareup.protos.simple.nested_message_ext")
       .setTag(128)
       .buildOptional();
+
   public static final Extension<ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext = Extension
       .enumExtending(SimpleMessage.NestedEnum.class, ExternalMessage.class)
       .setName("squareup.protos.simple.nested_enum_ext")
       .setTag(129)
       .buildOptional();
+
   public static final Extension<ForeignMessage, Integer> j = Extension
       .int32Extending(ForeignMessage.class)
       .setName("squareup.protos.simple.j")
       .setTag(100)
       .buildOptional();
+
+  private Ext_simple_message() {
+  }
 }

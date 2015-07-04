@@ -4,27 +4,36 @@ package com.squareup.wire.protos.oneof;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.INT32;
-import static com.squareup.wire.Message.Datatype.STRING;
-import static com.squareup.wire.Message.Label.ONE_OF;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 
 public final class OneOfMessage extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_FOO = 0;
+
   public static final String DEFAULT_BAR = "";
 
   /**
    * What foo.
    */
-  @ProtoField(tag = 1, type = INT32, label = ONE_OF)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.INT32,
+      label = Message.Label.ONE_OF
+  )
   public final Integer foo;
 
   /**
    * Such bar.
    */
-  @ProtoField(tag = 3, type = STRING, label = ONE_OF)
+  @ProtoField(
+      tag = 3,
+      type = Message.Datatype.STRING,
+      label = Message.Label.ONE_OF
+  )
   public final String bar;
 
   public OneOfMessage(Integer foo, String bar) {
@@ -57,9 +66,9 @@ public final class OneOfMessage extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<OneOfMessage> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<OneOfMessage> {
     public Integer foo;
+
     public String bar;
 
     public Builder() {
@@ -77,7 +86,6 @@ public final class OneOfMessage extends Message {
      */
     public Builder foo(Integer foo) {
       this.foo = foo;
-
       this.bar = null;
       return this;
     }
@@ -87,7 +95,6 @@ public final class OneOfMessage extends Message {
      */
     public Builder bar(String bar) {
       this.bar = bar;
-
       this.foo = null;
       return this;
     }

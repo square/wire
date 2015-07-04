@@ -4,16 +4,21 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
+import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.INT32;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class I extends ExtendableMessage<I> {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;
 
-  @ProtoField(tag = 1, type = INT32)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.INT32
+  )
   public final Integer i;
 
   public I(Integer i) {
@@ -45,8 +50,7 @@ public final class I extends ExtendableMessage<I> {
     return result;
   }
 
-  public static final class Builder extends ExtendableBuilder<I> {
-
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<I> {
     public Integer i;
 
     public Builder() {

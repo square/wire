@@ -4,17 +4,21 @@ package com.squareup.wire.protos.single_level;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Object;
+import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
-
-import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class Foos extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final List<Foo> DEFAULT_FOOS = Collections.emptyList();
 
-  @ProtoField(tag = 1, label = REPEATED, messageType = Foo.class)
+  @ProtoField(
+      tag = 1,
+      label = Message.Label.REPEATED,
+      messageType = Foo.class
+  )
   public final List<Foo> foos;
 
   public Foos(List<Foo> foos) {
@@ -39,8 +43,7 @@ public final class Foos extends Message {
     return result != 0 ? result : (hashCode = foos != null ? foos.hashCode() : 1);
   }
 
-  public static final class Builder extends Message.Builder<Foos> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<Foos> {
     public List<Foo> foos;
 
     public Builder() {

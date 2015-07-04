@@ -5,8 +5,9 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.STRING;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 
 public final class Redacted extends Message {
   private static final long serialVersionUID = 0L;
@@ -14,21 +15,34 @@ public final class Redacted extends Message {
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
       .setExtension(Ext_redacted_test.redacted, true)
       .build();
+
   public static final FieldOptions FIELD_OPTIONS_B = new FieldOptions.Builder()
       .setExtension(Ext_redacted_test.redacted, false)
       .build();
 
   public static final String DEFAULT_A = "";
+
   public static final String DEFAULT_B = "";
+
   public static final String DEFAULT_C = "";
 
-  @ProtoField(tag = 1, type = STRING, redacted = true)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.STRING,
+      redacted = true
+  )
   public final String a;
 
-  @ProtoField(tag = 2, type = STRING)
+  @ProtoField(
+      tag = 2,
+      type = Message.Datatype.STRING
+  )
   public final String b;
 
-  @ProtoField(tag = 3, type = STRING)
+  @ProtoField(
+      tag = 3,
+      type = Message.Datatype.STRING
+  )
   public final String c;
 
   public Redacted(String a, String b, String c) {
@@ -64,10 +78,11 @@ public final class Redacted extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<Redacted> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<Redacted> {
     public String a;
+
     public String b;
+
     public String c;
 
     public Builder() {

@@ -4,6 +4,7 @@ package com.squareup.services;
 
 import com.squareup.services.anotherpackage.SendDataRequest;
 import com.squareup.services.anotherpackage.SendDataResponse;
+import java.lang.Override;
 import javax.inject.Inject;
 import retrofit.http.Body;
 import retrofit.http.POST;
@@ -13,23 +14,12 @@ import rx.functions.Func1;
  * An example service.
  */
 public final class RxJavaServiceSomeEndpoints {
-
-  public interface Endpoint {
-
-    /**
-     * Sends some data.
-     */
-    @POST("/com.squareup.services.RxJavaServiceSomeEndpoints/SendSomeData")
-    SendDataResponse sendSomeData(@Body SendDataRequest request);
-  }
-
-  private final Func1<SendDataRequest, SendDataResponse> sendSomeData =
-      new Func1<SendDataRequest, SendDataResponse>() {
-        @Override
-        public SendDataResponse call(SendDataRequest request) {
-          return endpoint.sendSomeData(request);
-        }
-      };
+  private final Func1<SendDataRequest, SendDataResponse> sendSomeData = new Func1<SendDataRequest, SendDataResponse>() {
+    @Override
+    public SendDataResponse call(SendDataRequest request) {
+      return endpoint.sendSomeData(request);
+    }
+  };
 
   private final Endpoint endpoint;
 
@@ -40,5 +30,13 @@ public final class RxJavaServiceSomeEndpoints {
 
   public Func1<SendDataRequest, SendDataResponse> getSendSomeData() {
     return sendSomeData;
+  }
+
+  public interface Endpoint {
+    /**
+     * Sends some data.
+     */
+    @POST("/com.squareup.services.RxJavaService/SendSomeData")
+    SendDataResponse sendSomeData(@Body SendDataRequest request);
   }
 }

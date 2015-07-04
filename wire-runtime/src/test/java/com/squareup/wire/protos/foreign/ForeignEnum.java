@@ -3,10 +3,11 @@
 package com.squareup.wire.protos.foreign;
 
 import com.squareup.wire.ProtoEnum;
+import java.lang.Override;
 
-public enum ForeignEnum
-    implements ProtoEnum {
+public enum ForeignEnum implements ProtoEnum {
   BAV(0),
+
   BAX(1);
 
   private final int value;

@@ -4,18 +4,24 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.INT32;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class Recursive extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_VALUE = 0;
 
-  @ProtoField(tag = 1, type = INT32)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.INT32
+  )
   public final Integer value;
 
-  @ProtoField(tag = 2)
+  @ProtoField(
+      tag = 2
+  )
   public final Recursive recursive;
 
   public Recursive(Integer value, Recursive recursive) {
@@ -48,9 +54,9 @@ public final class Recursive extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<Recursive> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<Recursive> {
     public Integer value;
+
     public Recursive recursive;
 
     public Builder() {
