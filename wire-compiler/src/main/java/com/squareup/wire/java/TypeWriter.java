@@ -188,11 +188,18 @@ public final class TypeWriter {
         .build());
 
     if (emitOptions) {
+      FieldSpec messageOptions = optionsField(
+          JavaGenerator.MESSAGE_OPTIONS, "MESSAGE_OPTIONS", type.options());
+      if (messageOptions != null) {
+        builder.addField(messageOptions);
+      }
+
       for (WireField field : type.fieldsAndOneOfFields()) {
         String fieldName = "FIELD_OPTIONS_" + field.name().toUpperCase(Locale.US);
-        FieldSpec options = optionsField(JavaGenerator.FIELD_OPTIONS, fieldName, field.options());
-        if (options != null) {
-          builder.addField(options);
+        FieldSpec fieldOptions = optionsField(
+            JavaGenerator.FIELD_OPTIONS, fieldName, field.options());
+        if (fieldOptions != null) {
+          builder.addField(fieldOptions);
         }
       }
     }
@@ -696,8 +703,14 @@ public final class TypeWriter {
       builder.add("new $T.Builder()", javaType);
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
         WireField field = (WireField) entry.getKey();
-        builder.add("\n$>$>.$L($L)$<$<", field.name(), fieldInitializer(
-            field.type(), entry.getValue()));
+        CodeBlock valueInitializer = fieldInitializer(field.type(), entry.getValue());
+        ClassName extensionClass = javaGenerator.extensionsClass(field);
+        if (extensionClass != null) {
+          builder.add("\n$>$>.setExtension($T.$L, $L)$<$<",
+              extensionClass, field.name(), valueInitializer);
+        } else {
+          builder.add("\n$>$>.$L($L)$<$<", field.name(), valueInitializer);
+        }
       }
       builder.add("\n$>$>.build()$<$<");
       return builder.build();

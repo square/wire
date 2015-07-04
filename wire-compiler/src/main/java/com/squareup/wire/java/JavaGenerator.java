@@ -52,6 +52,8 @@ public final class JavaGenerator {
   public static final ClassName EXTENDABLE_BUILDER
       = ClassName.get(ExtendableMessage.ExtendableBuilder.class);
   public static final ClassName EXTENSION = ClassName.get(Extension.class);
+  public static final TypeName MESSAGE_OPTIONS
+      = ClassName.get("com.google.protobuf", "MessageOptions");
   public static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
   public static final TypeName ENUM_OPTIONS = ClassName.get("com.google.protobuf", "EnumOptions");
 
@@ -125,10 +127,13 @@ public final class JavaGenerator {
     return ClassName.get(javaPackage(protoFile), "Ext_" + protoFile.name());
   }
 
-  public ClassName extensionsClass(WireField extensionRoot) {
-    WireProtoFile protoFile = extensionFieldToFile.get(extensionRoot);
-    checkArgument(protoFile != null, "unrecognized extension %s", extensionRoot);
-    return extensionsClass(protoFile);
+  /**
+   * Returns the extensions class like {@code Ext_person} for {@code field}, or null if the field
+   * wasn't declared by an extension.
+   */
+  public ClassName extensionsClass(WireField field) {
+    WireProtoFile protoFile = extensionFieldToFile.get(field);
+    return protoFile != null ? extensionsClass(protoFile) : null;
   }
 
   public TypeName typeName(ProtoTypeName protoTypeName) {
