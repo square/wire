@@ -88,7 +88,7 @@ public class WireCompilerErrorTest {
     StringIO io = new StringIO("test.proto", source);
 
     CommandLineOptions options = new CommandLineOptions(".",  ".", Arrays.asList("test.proto"),
-        new ArrayList<String>(), null, true, Collections.<String>emptySet(), null,
+        new ArrayList<String>(), null, true, Collections.<String>emptySet(), null, null,
         Collections.<String>emptyList(), false, false);
 
     try {

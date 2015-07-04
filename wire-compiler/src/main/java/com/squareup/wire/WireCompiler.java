@@ -36,6 +36,7 @@ import com.squareup.wire.model.Linker;
 import com.squareup.wire.model.Loader;
 import com.squareup.wire.model.Pruner;
 import com.squareup.wire.model.WireProtoFile;
+import com.squareup.wire.model.WireService;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -146,7 +147,7 @@ public class WireCompiler {
       throws WireException {
     this(new CommandLineOptions(protoPath, outputDirectory, sourceFileNames, roots, registryClass,
         emitOptions, new LinkedHashSet<String>(enumOptions),
-        serviceWriterConstructor == null ? null : serviceWriterConstructor.getName(),
+        serviceWriterConstructor == null ? null : serviceWriterConstructor.getName(), null,
         serviceWriterOptions, false, false));
   }
 
@@ -1293,18 +1294,29 @@ public class WireCompiler {
     }
 
     JavaGenerator javaGenerator = JavaGenerator.get(wireProtoFiles);
+    TypeWriter typeWriter = new TypeWriter(
+        javaGenerator, options.emitOptions, options.enumOptions);
+
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
       if (!parsedFiles.contains(wireProtoFile.sourcePath())) {
         continue; // Don't emit anything for files not explicitly compiled.
       }
 
-      TypeWriter typeWriter = new TypeWriter(
-          javaGenerator, options.emitOptions, options.enumOptions);
-
       for (com.squareup.wire.model.WireType type : wireProtoFile.types()) {
         ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.protoTypeName());
         TypeSpec typeSpec = typeWriter.toTypeSpec(type);
         writeJavaFile(javaTypeName, typeSpec, wireProtoFile.sourcePath());
+      }
+
+      if (options.serviceFactory != null) {
+        for (WireService service : wireProtoFile.services()) {
+          TypeSpec typeSpec = options.serviceFactory.create(
+              javaGenerator, options.serviceWriterOptions, service);
+          ClassName baseJavaTypeName = (ClassName) javaGenerator.typeName(service.protoTypeName());
+          // Use 'peerClass' to track service factories that add a prefix or suffix.
+          ClassName generatedJavaTypeName = baseJavaTypeName.peerClass(typeSpec.name);
+          writeJavaFile(generatedJavaTypeName, typeSpec, wireProtoFile.sourcePath());
+        }
       }
 
       if (!wireProtoFile.wireExtends().isEmpty()) {
@@ -1313,6 +1325,12 @@ public class WireCompiler {
         writeJavaFile(javaTypeName, typeSpec, wireProtoFile.sourcePath());
       }
     }
+
+    if (options.registryClass != null) {
+      ClassName className = ClassName.bestGuess(options.registryClass);
+      TypeSpec typeSpec = typeWriter.registryType(className, wireProtoFiles);
+      writeJavaFile(className, typeSpec, null);
+    }
   }
 
   private void writeJavaFile(
@@ -1320,14 +1338,15 @@ public class WireCompiler {
     OutputArtifact artifact = new OutputArtifact(options.javaOut, javaTypeName);
     log.artifact(artifact);
 
-    JavaFile javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
-        .addFileComment("$L\n", CODE_GENERATED_BY_WIRE)
-        .addFileComment("Source file: $L", sourceFileName)
-        .build();
+    JavaFile.Builder javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
+        .addFileComment("$L", CODE_GENERATED_BY_WIRE);
+    if (sourceFileName != null) {
+      javaFile.addFileComment("\nSource file: $L", sourceFileName);
+    }
 
     try {
       if (!options.dryRun) {
-        io.write(artifact, javaFile);
+        io.write(artifact, javaFile.build());
       }
     } catch (IOException e) {
       throw new WireException("Error emitting " + artifact.file(), e);

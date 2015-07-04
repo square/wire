@@ -24,9 +24,11 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import com.squareup.javapoet.WildcardTypeName;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -844,5 +846,52 @@ public final class TypeWriter {
       default:
         throw new WireCompilerException("Unknown extension label \"" + field.label() + "\"");
     }
+  }
+
+  public TypeSpec registryType(ClassName javaTypeName, List<WireProtoFile> wireProtoFiles) {
+    TypeSpec.Builder builder = TypeSpec.classBuilder(javaTypeName.simpleName())
+        .addModifiers(PUBLIC, FINAL);
+
+    ImmutableSet.Builder<TypeName> extensionClassesBuilder = ImmutableSet.builder();
+    for (WireProtoFile wireProtoFile : wireProtoFiles) {
+      if (!wireProtoFile.wireExtends().isEmpty()) {
+        extensionClassesBuilder.add(javaGenerator.extensionsClass(wireProtoFile));
+      }
+    }
+    ImmutableList<TypeName> extensionClasses = extensionClassesBuilder.build().asList();
+
+    CodeBlock.Builder initializer = CodeBlock.builder();
+    if (extensionClasses.isEmpty()) {
+      initializer.add("$T.emptyList()", Collections.class);
+    } else {
+      initializer.add("$>$>$T.unmodifiableList($T.asList(", Collections.class, Arrays.class);
+      for (int i = 0, size = extensionClasses.size(); i < size; i++) {
+        TypeName typeName = extensionClasses.get(i);
+        initializer.add("\n$T.class", typeName);
+        if (i + 1 < extensionClasses.size()) initializer.add(",");
+      }
+      initializer.add("))$<$<");
+    }
+
+    TypeName wildcard = extensionClasses.size() == 1
+        ? extensionClasses.get(0)
+        : WildcardTypeName.subtypeOf(Object.class);
+
+    TypeName listType = JavaGenerator.listOf(ParameterizedTypeName.get(
+        ClassName.get(Class.class), wildcard));
+
+    builder.addField(FieldSpec.builder(listType, "EXTENSIONS", PUBLIC, STATIC, FINAL)
+        .initializer(initializer.build())
+        .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
+            .addMember("value", "$S", "unchecked")
+            .build())
+        .build());
+
+    // Private no-args constructor
+    builder.addMethod(MethodSpec.constructorBuilder()
+        .addModifiers(PRIVATE)
+        .build());
+
+    return builder.build();
   }
 }
