@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Util {
+  private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
+
   private Util() {
   }
 
@@ -27,5 +29,16 @@ public final class Util {
     result.addAll(a);
     result.add(b);
     return result;
+  }
+
+  /** A grab-bag of fixes for things that can go wrong when converting to javadoc. */
+  public static String sanitizeJavadoc(String documentation) {
+    // Remove trailing whitespace on each line.
+    documentation = documentation.replaceAll("[^\\S\n]+\n", "\n");
+    documentation = documentation.replaceAll("\\s+$", "");
+    // Rewrite '@see <url>' to use an html anchor tag
+    documentation = documentation.replaceAll(
+        "@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
+    return documentation;
   }
 }

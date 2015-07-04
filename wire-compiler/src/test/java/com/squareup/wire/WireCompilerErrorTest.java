@@ -16,9 +16,9 @@
 package com.squareup.wire;
 
 import com.squareup.javapoet.JavaFile;
-import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoParser;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
@@ -56,14 +56,6 @@ public class WireCompilerErrorTest {
       }
     }
 
-    @Override
-    public JavaWriter getJavaWriter(OutputArtifact outputArtifact)
-        throws IOException {
-      StringWriter writer = new StringWriter();
-      writers.put(outputArtifact.fullClassName(), writer);
-      return new JavaWriter(writer);
-    }
-
     public Map<String, String> getOutput() {
       Map<String, String> output = new LinkedHashMap<String, String>();
       for (Map.Entry<String, StringWriter> entry : writers.entrySet()) {
@@ -72,10 +64,10 @@ public class WireCompilerErrorTest {
       return output;
     }
 
-    @Override public void write(OutputArtifact outputArtifact, JavaFile javaFile)
+    @Override public void write(File outputDirectory, JavaFile javaFile)
         throws IOException {
       StringWriter writer = new StringWriter();
-      writers.put(outputArtifact.fullClassName(), writer);
+      writers.put(javaFile.packageName + "." + javaFile.typeSpec.name, writer);
       javaFile.writeTo(writer);
     }
   }
@@ -87,9 +79,9 @@ public class WireCompilerErrorTest {
   private Map<String, String> compile(String source) {
     StringIO io = new StringIO("test.proto", source);
 
-    CommandLineOptions options = new CommandLineOptions(".",  ".", Arrays.asList("test.proto"),
-        new ArrayList<String>(), null, true, Collections.<String>emptySet(), null, null,
-        Collections.<String>emptyList(), false, false);
+    CommandLineOptions options = new CommandLineOptions(".",  new File("."),
+        Arrays.asList("test.proto"), new ArrayList<String>(), null, true,
+        Collections.<String>emptySet(), null, Collections.<String>emptyList(), false, false);
 
     try {
       new WireCompiler(options, io, new StringWireLogger(true)).compile();

@@ -23,10 +23,6 @@
       <artifactId>protoparser</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.squareup</groupId>
-      <artifactId>javawriter</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.squareup.okio</groupId>
       <artifactId>okio</artifactId>
     </dependency>

@@ -1,5 +1,6 @@
 package com.squareup.wire;
 
+import com.squareup.wire.java.SimpleServiceFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -29,7 +30,7 @@ public class CommandLineOptionsTest {
     assertNull(options.javaOut);
 
     options = new CommandLineOptions("--java_out=baz/qux");
-    assertEquals("baz/qux", options.javaOut);
+    assertEquals(new File("baz/qux"), options.javaOut);
   }
 
   @Test public void sourceFileNames() throws Exception {
@@ -107,26 +108,26 @@ public class CommandLineOptionsTest {
     assertEquals(expected, options.enumOptions);
   }
 
-  @Test public void serviceWriter() throws Exception {
+  @Test public void serviceFactory() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
-    assertNull(options.serviceWriter);
+    assertNull(options.serviceFactory);
 
-    String name = SimpleServiceWriter.class.getName();
-    options = new CommandLineOptions("--service_writer=" + name);
-    assertEquals("com.squareup.wire.SimpleServiceWriter", options.serviceWriter);
+    String name = SimpleServiceFactory.class.getName();
+    options = new CommandLineOptions("--service_factory=" + name);
+    assertTrue(options.serviceFactory instanceof SimpleServiceFactory);
   }
 
-  @Test public void serviceWriterOptions() throws Exception {
+  @Test public void serviceFactoryOptions() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
-    assertTrue(options.serviceWriterOptions.isEmpty());
+    assertTrue(options.serviceFactoryOptions.isEmpty());
 
-    options = new CommandLineOptions("--service_writer_opt=foo");
+    options = new CommandLineOptions("--service_factory_opt=foo");
     List<String> expected = new ArrayList<String>();
     expected.add("foo");
-    assertEquals(expected, options.serviceWriterOptions);
-    options = new CommandLineOptions("--service_writer_opt=foo", "--service_writer_opt=bar");
+    assertEquals(expected, options.serviceFactoryOptions);
+    options = new CommandLineOptions("--service_factory_opt=foo", "--service_factory_opt=bar");
     expected.add("bar");
-    assertEquals(expected, options.serviceWriterOptions);
+    assertEquals(expected, options.serviceFactoryOptions);
   }
 
 }

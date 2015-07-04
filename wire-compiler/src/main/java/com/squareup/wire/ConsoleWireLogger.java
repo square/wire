@@ -1,5 +1,8 @@
 package com.squareup.wire;
 
+import com.squareup.javapoet.JavaFile;
+import java.io.File;
+
 final class ConsoleWireLogger implements WireLogger {
   private final boolean isQuiet;
 
@@ -13,14 +16,14 @@ final class ConsoleWireLogger implements WireLogger {
     }
   }
 
-  public void artifact(OutputArtifact artifact) {
-    String msg;
+  public void artifact(File outputDirectory, JavaFile javaFile) {
     if (isQuiet) {
-      msg = artifact.file().toString();
+      System.out.printf("%s.%s%n",
+          javaFile.packageName, javaFile.typeSpec.name);
     } else {
-      msg = "Writing generated code to " + artifact.file().toString();
+      System.out.printf("Writing %s.%s to %s%n",
+          javaFile.packageName, javaFile.typeSpec.name, outputDirectory);
     }
-    System.out.println(msg);
   }
 
   public void error(String message) {

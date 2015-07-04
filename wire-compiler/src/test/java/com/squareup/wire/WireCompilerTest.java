@@ -16,26 +16,22 @@
 package com.squareup.wire;
 
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.javawriter.JavaWriter;
-import com.squareup.protoparser.ServiceElement;
+import com.squareup.wire.internal.Util;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.SimpleServiceFactory;
 import com.squareup.wire.model.WireService;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class WireCompilerTest {
   private StringWireLogger logger;
@@ -67,27 +63,22 @@ public class WireCompilerTest {
   }
 
   private void testProto(String[] sources, String[] outputs) throws Exception {
-    testProto(sources, outputs, null, null);
+    testProto(sources, outputs, null);
   }
 
-  private void testProto(String[] sources, String[] outputs, String serviceWriter,
-      String serviceFactory, String... serviceWriterOption) throws Exception {
+  private void testProto(String[] sources, String[] outputs,
+      String serviceFactory, String... options) throws Exception {
     List<String> args = new ArrayList<String>();
     args.add("--proto_path=../wire-runtime/src/test/proto");
     args.add("--java_out=" + testDir.getAbsolutePath());
     args.add("--enum_options=squareup.protos.custom_options.enum_value_option,"
         + "squareup.protos.custom_options.complex_enum_value_option,"
         + "squareup.protos.foreign.foreign_enum_value_option");
-    if (serviceWriter != null) {
-      args.add("--service_writer=" + serviceWriter);
-    }
     if (serviceFactory != null) {
       args.add("--service_factory=" + serviceFactory);
     }
-    if (serviceWriterOption != null) {
-      for (String option : serviceWriterOption) {
-        args.add("--service_writer_opt=" + option);
-      }
+    for (String option : options) {
+      args.add("--service_factory_opt=" + option);
     }
     args.addAll(Arrays.asList(sources));
     invokeCompiler(args.toArray(new String[args.size()]));
@@ -145,15 +136,13 @@ public class WireCompilerTest {
     this.testProtoWithRoots(sources, roots, outputs, extraArgs);
   }
 
-  private void testProtoWithRoots(String[] sources, String roots, String[] outputs,
-      String[] extraArgs)
-      throws Exception {
-    int numFlags = 5;
+  private void testProtoWithRoots(
+      String[] sources, String roots, String[] outputs, String[] extraArgs) throws Exception {
+    int numFlags = 4;
     String[] args = new String[numFlags + sources.length + extraArgs.length];
     int index = 0;
     args[index++] = "--proto_path=../wire-runtime/src/test/proto";
     args[index++] = "--java_out=" + testDir.getAbsolutePath();
-    args[index++] = "--service_writer=com.squareup.wire.SimpleServiceWriter";
     args[index++] = "--service_factory=com.squareup.wire.java.SimpleServiceFactory";
     args[index++] = "--roots=" + roots;
     for (int i = 0; i < extraArgs.length; i++) {
@@ -173,14 +162,13 @@ public class WireCompilerTest {
 
   private void testLimitedServiceGeneration(String[] sources, String roots, String[] outputs,
       String serviceSuffix) throws Exception {
-    int numFlags = 6;
+    int numFlags = 5;
     String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--java_out=" + testDir.getAbsolutePath();
-    args[2] = "--service_writer=com.squareup.wire.TestRxJavaServiceWriter";
-    args[3] = "--service_factory=com.squareup.wire.TestRxJavaServiceFactory";
-    args[4] = "--service_writer_opt=" + serviceSuffix;
-    args[5] = "--roots=" + roots;
+    args[2] = "--service_factory=com.squareup.wire.TestRxJavaServiceFactory";
+    args[3] = "--service_factory_opt=" + serviceSuffix;
+    args[4] = "--roots=" + roots;
     System.arraycopy(sources, 0, args, numFlags, sources.length);
 
     invokeCompiler(args);
@@ -264,7 +252,7 @@ public class WireCompilerTest {
         "com/squareup/services/anotherpackage/SendDataResponse.java",
         "com/squareup/services/ExampleService.java"
     };
-    testProto(sources, outputs, "com.squareup.wire.SimpleServiceWriter",
+    testProto(sources, outputs,
         "com.squareup.wire.java.SimpleServiceFactory");
   }
 
@@ -278,7 +266,7 @@ public class WireCompilerTest {
         "com/squareup/services/anotherpackage/SendDataResponse.java",
         "com/squareup/services/RetrofitService.java"
     };
-    testProto(sources, outputs, "com.squareup.wire.RetrofitServiceWriter",
+    testProto(sources, outputs,
         "com.squareup.wire.java.RetrofitServiceFactory");
   }
 
@@ -292,7 +280,7 @@ public class WireCompilerTest {
         "com/squareup/services/anotherpackage/SendDataResponse.java",
         "com/squareup/services/RxJavaService.java"
     };
-    testProto(sources, outputs, "com.squareup.wire.RxJavaServiceWriter",
+    testProto(sources, outputs,
         "com.squareup.wire.java.RxJavaServiceFactory");
   }
 
@@ -338,23 +326,7 @@ public class WireCompilerTest {
     testLimitedServiceGeneration(sources, roots, outputs, "SomeEndpoints");
   }
 
-  // Verify that the --service_writer_opt flag works correctly.
-  @SuppressWarnings("UnusedDeclaration")
-  public static class TestServiceWriter extends SimpleServiceWriter {
-    public TestServiceWriter(JavaWriter writer, List<String> options) {
-      super(writer, options);
-      if (!Arrays.asList("OPTION1", "OPTION2").equals(options)) {
-        fail();
-      }
-    }
-
-    @Override public void emitService(ServiceElement service, Set<String> importedTypes)
-        throws IOException {
-      super.emitService(service, importedTypes);
-    }
-  }
-
-  // Verify that the --service_writer_opt flag works correctly with --service_factory.
+  // Verify that the --service_factory_opt flag works correctly with --service_factory.
   @SuppressWarnings("UnusedDeclaration")
   public static class TestServiceFactory extends SimpleServiceFactory {
     @Override public TypeSpec create(
@@ -374,7 +346,7 @@ public class WireCompilerTest {
         "com/squareup/services/anotherpackage/SendDataResponse.java",
         "com/squareup/services/ExampleService.java"
     };
-    testProto(sources, outputs, "com.squareup.wire.WireCompilerTest$TestServiceWriter",
+    testProto(sources, outputs,
         "com.squareup.wire.WireCompilerTest$TestServiceFactory", "OPTION1", "OPTION2");
   }
 
@@ -678,28 +650,23 @@ public class WireCompilerTest {
         "--quiet"
     };
     testProtoWithRoots(sources, roots, outputs, extraArgs);
-    assertEquals(testDir.getAbsolutePath().toString() + "/com/squareup/wire/protos/roots/TheRequest.java\n"
-            + testDir.getAbsolutePath().toString() + "/com/squareup/wire/protos/roots/TheResponse.java\n"
-            + testDir.getAbsolutePath().toString() + "/com/squareup/wire/protos/roots/TheService.java\n",
+    assertEquals(""
+            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
+            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n"
+            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheService\n",
         logger.getLog());
   }
 
   @Test public void sanitizeJavadocStripsTrailingWhitespace() {
     String input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  ";
     String expected = "The quick brown fox\nJumps over\n\nThe lazy dog";
-    assertEquals(expected, MessageWriter.sanitizeJavadoc(input));
-  }
-
-  @Test public void sanitizeJavadocGuardsFormatCharacters() {
-    String input = "This is 12% of %s%d%f%c!";
-    String expected = "This is 12%% of %%s%%d%%f%%c!";
-    assertEquals(expected, MessageWriter.sanitizeJavadoc(input));
+    assertEquals(expected, Util.sanitizeJavadoc(input));
   }
 
   @Test public void sanitizeJavadocWrapsSeeLinks() {
     String input = "Google query.\n\n@see http://google.com";
     String expected = "Google query.\n\n@see <a href=\"http://google.com\">http://google.com</a>";
-    assertEquals(expected, MessageWriter.sanitizeJavadoc(input));
+    assertEquals(expected, Util.sanitizeJavadoc(input));
   }
 
   private void cleanup(File dir) {

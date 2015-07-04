@@ -1,5 +1,8 @@
 package com.squareup.wire;
 
+import com.squareup.javapoet.JavaFile;
+import java.io.File;
+
 final class StringWireLogger implements WireLogger {
   private final boolean isQuiet;
   private StringBuilder buffer = new StringBuilder();
@@ -13,8 +16,12 @@ final class StringWireLogger implements WireLogger {
     buffer.append('\n');
   }
 
-  @Override public void artifact(OutputArtifact artifact) {
-    buffer.append(artifact.file().toString());
+  @Override public void artifact(File outputDirectory, JavaFile javaFile) {
+    buffer.append(outputDirectory);
+    buffer.append(" ");
+    buffer.append(javaFile.packageName);
+    buffer.append(".");
+    buffer.append(javaFile.typeSpec.name);
     buffer.append('\n');
   }
 

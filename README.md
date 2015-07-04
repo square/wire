@@ -78,24 +78,23 @@ Generating service interfaces
 To generate interface definitions for `service` definitions in your `.proto` files, use the
 following compiler flag:
 
-`--service_writer=`*fully_qualified_class_name*
+`--service_factory=`*fully_qualified_class_name*
 
-The named class must be on the classpath, must extend the `com.squareup.wire.ServiceWriter` class,
-and must have a public constructor taking a first argument of type `JavaWriter` and a second
-argument of type `List<String>` which will contain user-specified options.
+The named class must be on the classpath, must implment the `com.squareup.wire.java.ServiceFactory`
+interface class, and must have a public no-arguments constructor.
 
 Three experimental sample implementations are currenly bundled with the compiler,
-`com.squareup.wire.SimpleServiceWriter`, `com.squareup.wire.RetrofitServiceWriter`, and
-`com.squareup.wire.RxJavaServiceWriter`. If the `--service_writer` flag is not present,
+`com.squareup.wire.java.SimpleServiceFactory`, `com.squareup.wire.java.RetrofitServiceFactory`, and
+`com.squareup.wire.java.RxJavaServiceFactory`. If the `--service_factory` flag is not present,
 `service` definitions are ignored.
 
-A list of options may be passed to the `ServiceWriter` using one or more instances of the
+A list of options may be passed to the `ServiceFactory` using one or more instances of the
 following compiler flag:
 
-`--service_writer_opt=`*option*
+`--service_factory_opt=`*option*
 
 The options from each instance of the flag will be placed into a `List` and passed as the
-second parameter of the `ServiceWriter`'s constructor.
+second parameter of the `create` method.
 
 Given the following service definition:
 
@@ -106,7 +105,7 @@ service ExampleService {
 }
 ```
 
-`com.squareup.wire.SimpleServiceWriter` will generate:
+`com.squareup.wire.java.SimpleServiceFactory` will generate:
 
 ```java
 public interface ExampleService {
@@ -118,7 +117,7 @@ public interface ExampleService {
 }
 ```
 
-`com.squareup.wire.RetrofitServiceWriter` will generate:
+`com.squareup.wire.java.RetrofitServiceFactory` will generate:
 
 ```java
 public interface ExampleService {
@@ -130,7 +129,7 @@ public interface ExampleService {
 }
 ```
 
-and `com.squareup.wire.RxJavaServiceWriter` will generate:
+and `com.squareup.wire.java.RxJavaServiceFactory` will generate:
 
 ```java
 public final class RxJavaService {

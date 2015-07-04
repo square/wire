@@ -42,7 +42,7 @@ public final class Pruner {
    * @param roots a set of identifiers to retain, which may be fully qualified type names, fully
    *     qualified service names, or service RPCs like {@code package.ServiceName#MethodName}.
    */
-  public List<WireProtoFile> retainRoots(List<WireProtoFile> protoFiles, Set<String> roots) {
+  public List<WireProtoFile> retainRoots(List<WireProtoFile> protoFiles, Collection<String> roots) {
     if (roots.isEmpty()) throw new IllegalArgumentException();
     if (!marks.isEmpty()) throw new IllegalStateException();
 
