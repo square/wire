@@ -4,16 +4,19 @@ package com.squareup.services.anotherpackage;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Object;
+import java.lang.Override;
 import okio.ByteString;
-
-import static com.squareup.wire.Message.Datatype.BYTES;
 
 public final class SendDataRequest extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final ByteString DEFAULT_DATA = ByteString.EMPTY;
 
-  @ProtoField(tag = 1, type = BYTES)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.BYTES
+  )
   public final ByteString data;
 
   public SendDataRequest(ByteString data) {
@@ -38,8 +41,7 @@ public final class SendDataRequest extends Message {
     return result != 0 ? result : (hashCode = data != null ? data.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<SendDataRequest> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<SendDataRequest> {
     public ByteString data;
 
     public Builder() {

@@ -4,16 +4,21 @@ package com.squareup.wire.protos.one_extension;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
+import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.STRING;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 
 public final class OneExtension extends ExtendableMessage<OneExtension> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_ID = "";
 
-  @ProtoField(tag = 1, type = STRING)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.STRING
+  )
   public final String id;
 
   public OneExtension(String id) {
@@ -45,8 +50,7 @@ public final class OneExtension extends ExtendableMessage<OneExtension> {
     return result;
   }
 
-  public static final class Builder extends ExtendableBuilder<OneExtension> {
-
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<OneExtension> {
     public String id;
 
     public Builder() {

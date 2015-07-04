@@ -3,8 +3,10 @@
 package com.squareup.differentpackage.protos.bar;
 
 import com.squareup.wire.Message;
-
-import static com.squareup.wire.Message.Datatype.STRING;
+import com.squareup.wire.ProtoField;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 
 public final class Bar extends Message {
   private static final long serialVersionUID = 0L;
@@ -26,8 +28,7 @@ public final class Bar extends Message {
     return 0;
   }
 
-  public static final class Builder extends Message.Builder<Bar> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<Bar> {
     public Builder() {
     }
 
@@ -61,8 +62,7 @@ public final class Bar extends Message {
       return 0;
     }
 
-    public static final class Builder extends Message.Builder<Baz> {
-
+    public static final class Builder extends com.squareup.wire.Message.Builder<Baz> {
       public Builder() {
       }
 
@@ -81,7 +81,10 @@ public final class Bar extends Message {
 
       public static final String DEFAULT_BOO = "";
 
-      @com.squareup.wire.ProtoField(tag = 1, type = STRING)
+      @ProtoField(
+          tag = 1,
+          type = Message.Datatype.STRING
+      )
       public final String boo;
 
       public Moo(String boo) {
@@ -106,8 +109,7 @@ public final class Bar extends Message {
         return result != 0 ? result : (hashCode = boo != null ? boo.hashCode() : 0);
       }
 
-      public static final class Builder extends Message.Builder<Moo> {
-
+      public static final class Builder extends com.squareup.wire.Message.Builder<Moo> {
         public String boo;
 
         public Builder() {

@@ -64,7 +64,7 @@ import static javax.lang.model.element.Modifier.STATIC;
 
 /** Compiler for Wire protocol buffers. */
 public class WireCompiler {
-  static final boolean JAVAPOET = false;
+  static final boolean JAVAPOET = true;
   static final String LINE_WRAP_INDENT = "    ";
 
   /**

@@ -6,15 +6,14 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
+import java.lang.Deprecated;
+import java.lang.Double;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Collections;
 import java.util.List;
-
-import static com.squareup.wire.Message.Datatype.DOUBLE;
-import static com.squareup.wire.Message.Datatype.ENUM;
-import static com.squareup.wire.Message.Datatype.INT32;
-import static com.squareup.wire.Message.Datatype.STRING;
-import static com.squareup.wire.Message.Label.REPEATED;
-import static com.squareup.wire.Message.Label.REQUIRED;
 
 /**
  * A message for testing.
@@ -23,52 +22,76 @@ public final class SimpleMessage extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
+
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.BAZ;
+
   public static final Integer DEFAULT_REQUIRED_INT32 = 456;
+
   public static final List<Double> DEFAULT_REPEATED_DOUBLE = Collections.emptyList();
+
   public static final ForeignEnum DEFAULT_DEFAULT_FOREIGN_ENUM = ForeignEnum.BAX;
+
   public static final ForeignEnum DEFAULT_NO_DEFAULT_FOREIGN_ENUM = ForeignEnum.BAV;
+
   public static final String DEFAULT_PACKAGE = "";
+
   public static final String DEFAULT_RESULT = "";
+
   public static final String DEFAULT_OTHER = "";
+
   public static final String DEFAULT_O = "";
 
   /**
    * An optional int32
    */
-  @ProtoField(tag = 1, type = INT32)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.INT32
+  )
   public final Integer optional_int32;
 
   /**
    * An optional NestedMessage, deprecated
    */
-  @ProtoField(tag = 2, deprecated = true)
+  @ProtoField(
+      tag = 2,
+      deprecated = true
+  )
   @Deprecated
   public final NestedMessage optional_nested_msg;
 
   /**
    * An optional ExternalMessage
    */
-  @ProtoField(tag = 3)
+  @ProtoField(
+      tag = 3
+  )
   public final ExternalMessage optional_external_msg;
 
-  @ProtoField(tag = 4, type = ENUM)
+  @ProtoField(
+      tag = 4,
+      type = Message.Datatype.ENUM
+  )
   public final NestedEnum default_nested_enum;
 
   /**
    * A required int32
    */
-  @ProtoField(tag = 5, type = INT32, label = REQUIRED)
+  @ProtoField(
+      tag = 5,
+      type = Message.Datatype.INT32,
+      label = Message.Label.REQUIRED
+  )
   public final Integer required_int32;
 
   /**
    * A repeated double, deprecated
    */
   @ProtoField(
-    tag = 6,
-    type = DOUBLE,
-    label = REPEATED,
-    deprecated = true
+      tag = 6,
+      type = Message.Datatype.DOUBLE,
+      label = Message.Label.REPEATED,
+      deprecated = true
   )
   @Deprecated
   public final List<Double> repeated_double;
@@ -76,37 +99,55 @@ public final class SimpleMessage extends Message {
   /**
    * enum from another package with an explicit default
    */
-  @ProtoField(tag = 7, type = ENUM)
+  @ProtoField(
+      tag = 7,
+      type = Message.Datatype.ENUM
+  )
   public final ForeignEnum default_foreign_enum;
 
   /**
    * enum from another package without an explicit default
    */
-  @ProtoField(tag = 8, type = ENUM)
+  @ProtoField(
+      tag = 8,
+      type = Message.Datatype.ENUM
+  )
   public final ForeignEnum no_default_foreign_enum;
 
   /**
    * field with the same name as a Java keyword
    */
-  @ProtoField(tag = 9, type = STRING)
+  @ProtoField(
+      tag = 9,
+      type = Message.Datatype.STRING
+  )
   public final String _package;
 
   /**
    * field with the name "result"
    */
-  @ProtoField(tag = 10, type = STRING)
+  @ProtoField(
+      tag = 10,
+      type = Message.Datatype.STRING
+  )
   public final String result;
 
   /**
    * field with the name "other"
    */
-  @ProtoField(tag = 11, type = STRING)
+  @ProtoField(
+      tag = 11,
+      type = Message.Datatype.STRING
+  )
   public final String other;
 
   /**
    * field with the name "o"
    */
-  @ProtoField(tag = 12, type = STRING)
+  @ProtoField(
+      tag = 12,
+      type = Message.Datatype.STRING
+  )
   public final String o;
 
   public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String _package, String result, String other, String o) {
@@ -169,19 +210,29 @@ public final class SimpleMessage extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<SimpleMessage> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<SimpleMessage> {
     public Integer optional_int32;
+
     public NestedMessage optional_nested_msg;
+
     public ExternalMessage optional_external_msg;
+
     public NestedEnum default_nested_enum;
+
     public Integer required_int32;
+
     public List<Double> repeated_double;
+
     public ForeignEnum default_foreign_enum;
+
     public ForeignEnum no_default_foreign_enum;
+
     public String _package;
+
     public String result;
+
     public String other;
+
     public String o;
 
     public Builder() {
@@ -314,7 +365,10 @@ public final class SimpleMessage extends Message {
     /**
      * An optional int32
      */
-    @ProtoField(tag = 1, type = INT32)
+    @ProtoField(
+        tag = 1,
+        type = Message.Datatype.INT32
+    )
     public final Integer bb;
 
     public NestedMessage(Integer bb) {
@@ -339,8 +393,7 @@ public final class SimpleMessage extends Message {
       return result != 0 ? result : (hashCode = bb != null ? bb.hashCode() : 0);
     }
 
-    public static final class Builder extends Message.Builder<NestedMessage> {
-
+    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage> {
       public Integer bb;
 
       public Builder() {
@@ -367,10 +420,11 @@ public final class SimpleMessage extends Message {
     }
   }
 
-  public enum NestedEnum
-      implements ProtoEnum {
+  public enum NestedEnum implements ProtoEnum {
     FOO(1),
+
     BAR(2),
+
     BAZ(3);
 
     private final int value;

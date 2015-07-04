@@ -4,6 +4,8 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Object;
+import java.lang.Override;
 
 /**
  * Used to test --roots flag of WireCompiler
@@ -23,10 +25,14 @@ import com.squareup.wire.ProtoField;
 public final class A extends Message {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(tag = 1)
+  @ProtoField(
+      tag = 1
+  )
   public final B c;
 
-  @ProtoField(tag = 2)
+  @ProtoField(
+      tag = 2
+  )
   public final D d;
 
   public A(B c, D d) {
@@ -59,9 +65,9 @@ public final class A extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<A> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<A> {
     public B c;
+
     public D d;
 
     public Builder() {

@@ -9,16 +9,17 @@ import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
+import java.lang.Boolean;
+import java.lang.Double;
+import java.lang.Float;
+import java.lang.Integer;
+import java.lang.Long;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static com.squareup.wire.Message.Datatype.DOUBLE;
-import static com.squareup.wire.Message.Datatype.ENUM;
-import static com.squareup.wire.Message.Datatype.FLOAT;
-import static com.squareup.wire.Message.Datatype.INT32;
-import static com.squareup.wire.Message.Datatype.STRING;
-import static com.squareup.wire.Message.Datatype.UINT64;
-import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class FooBar extends ExtendableMessage<FooBar> {
   private static final long serialVersionUID = 0L;
@@ -26,16 +27,20 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
       .setExtension(Ext_custom_options.my_field_option_one, 17)
       .build();
+
   public static final FieldOptions FIELD_OPTIONS_BAR = new FieldOptions.Builder()
-      .setExtension(Ext_custom_options.my_field_option_two, 33.5F)
+      .setExtension(Ext_custom_options.my_field_option_two, 33.5f)
       .build();
+
   public static final FieldOptions FIELD_OPTIONS_BAZ = new FieldOptions.Builder()
       .setExtension(Ext_custom_options.my_field_option_three, FooBarBazEnum.BAR)
       .build();
+
   public static final FieldOptions FIELD_OPTIONS_QUX = new FieldOptions.Builder()
       .setExtension(Ext_custom_options.my_field_option_one, 18)
-      .setExtension(Ext_custom_options.my_field_option_two, 34.5F)
+      .setExtension(Ext_custom_options.my_field_option_two, 34.5f)
       .build();
+
   public static final FieldOptions FIELD_OPTIONS_FRED = new FieldOptions.Builder()
       .setExtension(Ext_custom_options.my_field_option_four, new FooBar.Builder()
           .foo(11)
@@ -43,18 +48,20 @@ public final class FooBar extends ExtendableMessage<FooBar> {
           .baz(new Nested.Builder()
               .value(FooBarBazEnum.BAR)
               .build())
-          .fred(java.util.Arrays.asList(
-              444.0F,
-              555.0F))
-          .nested(java.util.Arrays.asList(new FooBar.Builder()
-              .foo(33)
-              .fred(java.util.Arrays.asList(
-                  100.0F,
-                  200.0F))
-              .build()))
+          .fred(Arrays.asList(
+              444.0f,
+              555.0f))
+          .nested(Arrays.asList(
+              new FooBar.Builder()
+                  .foo(33)
+                  .fred(Arrays.asList(
+                      100.0f,
+                      200.0f))
+                  .build()))
           .build())
-      .setExtension(Ext_custom_options.my_field_option_two, 99.9F)
+      .setExtension(Ext_custom_options.my_field_option_two, 99.9f)
       .build();
+
   public static final FieldOptions FIELD_OPTIONS_DAISY = new FieldOptions.Builder()
       .setExtension(Ext_custom_options.my_field_option_four, new FooBar.Builder()
           .baz(new Nested.Builder()
@@ -64,31 +71,58 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       .build();
 
   public static final Integer DEFAULT_FOO = 0;
+
   public static final String DEFAULT_BAR = "";
+
   public static final Long DEFAULT_QUX = 0L;
+
   public static final List<Float> DEFAULT_FRED = Collections.emptyList();
-  public static final Double DEFAULT_DAISY = 0D;
+
+  public static final Double DEFAULT_DAISY = 0.0d;
+
   public static final List<FooBar> DEFAULT_NESTED = Collections.emptyList();
 
-  @ProtoField(tag = 1, type = INT32)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.INT32
+  )
   public final Integer foo;
 
-  @ProtoField(tag = 2, type = STRING)
+  @ProtoField(
+      tag = 2,
+      type = Message.Datatype.STRING
+  )
   public final String bar;
 
-  @ProtoField(tag = 3)
+  @ProtoField(
+      tag = 3
+  )
   public final Nested baz;
 
-  @ProtoField(tag = 4, type = UINT64)
+  @ProtoField(
+      tag = 4,
+      type = Message.Datatype.UINT64
+  )
   public final Long qux;
 
-  @ProtoField(tag = 5, type = FLOAT, label = REPEATED)
+  @ProtoField(
+      tag = 5,
+      type = Message.Datatype.FLOAT,
+      label = Message.Label.REPEATED
+  )
   public final List<Float> fred;
 
-  @ProtoField(tag = 6, type = DOUBLE)
+  @ProtoField(
+      tag = 6,
+      type = Message.Datatype.DOUBLE
+  )
   public final Double daisy;
 
-  @ProtoField(tag = 7, label = REPEATED, messageType = FooBar.class)
+  @ProtoField(
+      tag = 7,
+      label = Message.Label.REPEATED,
+      messageType = FooBar.class
+  )
   public final List<FooBar> nested;
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested) {
@@ -138,14 +172,19 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     return result;
   }
 
-  public static final class Builder extends ExtendableBuilder<FooBar> {
-
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FooBar> {
     public Integer foo;
+
     public String bar;
+
     public Nested baz;
+
     public Long qux;
+
     public List<Float> fred;
+
     public Double daisy;
+
     public List<FooBar> nested;
 
     public Builder() {
@@ -215,7 +254,10 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
 
-    @ProtoField(tag = 1, type = ENUM)
+    @ProtoField(
+        tag = 1,
+        type = Message.Datatype.ENUM
+    )
     public final FooBarBazEnum value;
 
     public Nested(FooBarBazEnum value) {
@@ -240,8 +282,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       return result != 0 ? result : (hashCode = value != null ? value.hashCode() : 0);
     }
 
-    public static final class Builder extends Message.Builder<Nested> {
-
+    public static final class Builder extends com.squareup.wire.Message.Builder<Nested> {
       public FooBarBazEnum value;
 
       public Builder() {
@@ -270,7 +311,11 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
     public static final List<Integer> DEFAULT_SERIAL = Collections.emptyList();
 
-    @ProtoField(tag = 1, type = INT32, label = REPEATED)
+    @ProtoField(
+        tag = 1,
+        type = Message.Datatype.INT32,
+        label = Message.Label.REPEATED
+    )
     public final List<Integer> serial;
 
     public More(List<Integer> serial) {
@@ -295,8 +340,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 1);
     }
 
-    public static final class Builder extends Message.Builder<More> {
-
+    public static final class Builder extends com.squareup.wire.Message.Builder<More> {
       public List<Integer> serial;
 
       public Builder() {
@@ -320,29 +364,33 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
-  public enum FooBarBazEnum
-      implements ProtoEnum {
-    FOO(1, new More.Builder()
-        .serial(java.util.Arrays.asList(
+  public enum FooBarBazEnum implements ProtoEnum {
+    FOO(1, 17, new More.Builder()
+        .serial(Arrays.asList(
             99,
             199))
-        .build(), 17, null),
+        .build(), null),
+
     BAR(2, null, null, true),
-    BAZ(3, null, 18, false);
+
+    BAZ(3, 18, null, false);
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .setExtension(Ext_custom_options.enum_option, true)
         .build();
 
     private final int value;
-    public final More complex_enum_value_option;
+
     public final Integer enum_value_option;
+
+    public final More complex_enum_value_option;
+
     public final Boolean foreign_enum_value_option;
 
-    FooBarBazEnum(int value, More complex_enum_value_option, Integer enum_value_option, Boolean foreign_enum_value_option) {
+    FooBarBazEnum(int value, Integer enum_value_option, More complex_enum_value_option, Boolean foreign_enum_value_option) {
       this.value = value;
-      this.complex_enum_value_option = complex_enum_value_option;
       this.enum_value_option = enum_value_option;
+      this.complex_enum_value_option = complex_enum_value_option;
       this.foreign_enum_value_option = foreign_enum_value_option;
     }
 

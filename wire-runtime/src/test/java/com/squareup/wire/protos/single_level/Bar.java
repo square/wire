@@ -4,15 +4,19 @@ package com.squareup.wire.protos.single_level;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.INT32;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class Bar extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_BAZ = 0;
 
-  @ProtoField(tag = 1, type = INT32)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.INT32
+  )
   public final Integer baz;
 
   public Bar(Integer baz) {
@@ -37,8 +41,7 @@ public final class Bar extends Message {
     return result != 0 ? result : (hashCode = baz != null ? baz.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<Bar> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<Bar> {
     public Integer baz;
 
     public Builder() {

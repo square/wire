@@ -5,9 +5,9 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.STRING;
-import static com.squareup.wire.Message.Label.REQUIRED;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 
 public final class RedactedRequired extends Message {
   private static final long serialVersionUID = 0L;
@@ -19,10 +19,10 @@ public final class RedactedRequired extends Message {
   public static final String DEFAULT_A = "";
 
   @ProtoField(
-    tag = 1,
-    type = STRING,
-    label = REQUIRED,
-    redacted = true
+      tag = 1,
+      type = Message.Datatype.STRING,
+      label = Message.Label.REQUIRED,
+      redacted = true
   )
   public final String a;
 
@@ -48,8 +48,7 @@ public final class RedactedRequired extends Message {
     return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<RedactedRequired> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRequired> {
     public String a;
 
     public Builder() {

@@ -4,19 +4,27 @@ package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.STRING;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 
 public final class NotRedacted extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_A = "";
+
   public static final String DEFAULT_B = "";
 
-  @ProtoField(tag = 1, type = STRING)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.STRING
+  )
   public final String a;
 
-  @ProtoField(tag = 2, type = STRING)
+  @ProtoField(
+      tag = 2,
+      type = Message.Datatype.STRING
+  )
   public final String b;
 
   public NotRedacted(String a, String b) {
@@ -49,9 +57,9 @@ public final class NotRedacted extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<NotRedacted> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<NotRedacted> {
     public String a;
+
     public String b;
 
     public Builder() {
