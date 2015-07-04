@@ -15,8 +15,12 @@
  */
 package com.squareup.wire;
 
+import com.squareup.javapoet.TypeSpec;
 import com.squareup.javawriter.JavaWriter;
 import com.squareup.protoparser.ServiceElement;
+import com.squareup.wire.java.JavaGenerator;
+import com.squareup.wire.java.SimpleServiceFactory;
+import com.squareup.wire.model.WireService;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -63,31 +67,30 @@ public class WireCompilerTest {
   }
 
   private void testProto(String[] sources, String[] outputs) throws Exception {
-    testProto(sources, outputs, null);
+    testProto(sources, outputs, null, null);
   }
 
   private void testProto(String[] sources, String[] outputs, String serviceWriter,
-      String... serviceWriterOption) throws Exception {
-    int numFlags = 3;
-    if (serviceWriter != null) ++numFlags;
-    if (serviceWriterOption != null) numFlags += serviceWriterOption.length;
-    String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
-    args[1] = "--java_out=" + testDir.getAbsolutePath();
-    args[2] = "--enum_options=squareup.protos.custom_options.enum_value_option,"
+      String serviceFactory, String... serviceWriterOption) throws Exception {
+    List<String> args = new ArrayList<String>();
+    args.add("--proto_path=../wire-runtime/src/test/proto");
+    args.add("--java_out=" + testDir.getAbsolutePath());
+    args.add("--enum_options=squareup.protos.custom_options.enum_value_option,"
         + "squareup.protos.custom_options.complex_enum_value_option,"
-        + "squareup.protos.foreign.foreign_enum_value_option";
+        + "squareup.protos.foreign.foreign_enum_value_option");
     if (serviceWriter != null) {
-      args[3] = "--service_writer=" + serviceWriter;
-      if (serviceWriterOption != null) {
-        for (int i = 0; i < serviceWriterOption.length; i++) {
-          args[4 + i] = "--service_writer_opt=" + serviceWriterOption[i];
-        }
+      args.add("--service_writer=" + serviceWriter);
+    }
+    if (serviceFactory != null) {
+      args.add("--service_factory=" + serviceFactory);
+    }
+    if (serviceWriterOption != null) {
+      for (String option : serviceWriterOption) {
+        args.add("--service_writer_opt=" + option);
       }
     }
-    System.arraycopy(sources, 0, args, numFlags, sources.length);
-
-    invokeCompiler(args);
+    args.addAll(Arrays.asList(sources));
+    invokeCompiler(args.toArray(new String[args.size()]));
 
     List<String> filesAfter = getAllFiles(testDir);
     assertEquals(filesAfter.toString(), outputs.length, filesAfter.size());
@@ -145,12 +148,13 @@ public class WireCompilerTest {
   private void testProtoWithRoots(String[] sources, String roots, String[] outputs,
       String[] extraArgs)
       throws Exception {
-    int numFlags = 4;
+    int numFlags = 5;
     String[] args = new String[numFlags + sources.length + extraArgs.length];
     int index = 0;
     args[index++] = "--proto_path=../wire-runtime/src/test/proto";
     args[index++] = "--java_out=" + testDir.getAbsolutePath();
     args[index++] = "--service_writer=com.squareup.wire.SimpleServiceWriter";
+    args[index++] = "--service_factory=com.squareup.wire.java.SimpleServiceFactory";
     args[index++] = "--roots=" + roots;
     for (int i = 0; i < extraArgs.length; i++) {
       args[index++] = extraArgs[i];
@@ -169,13 +173,14 @@ public class WireCompilerTest {
 
   private void testLimitedServiceGeneration(String[] sources, String roots, String[] outputs,
       String serviceSuffix) throws Exception {
-    int numFlags = 5;
+    int numFlags = 6;
     String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--java_out=" + testDir.getAbsolutePath();
     args[2] = "--service_writer=com.squareup.wire.TestRxJavaServiceWriter";
-    args[3] = "--service_writer_opt=" + serviceSuffix;
-    args[4] = "--roots=" + roots;
+    args[3] = "--service_factory=com.squareup.wire.TestRxJavaServiceFactory";
+    args[4] = "--service_writer_opt=" + serviceSuffix;
+    args[5] = "--roots=" + roots;
     System.arraycopy(sources, 0, args, numFlags, sources.length);
 
     invokeCompiler(args);
@@ -259,7 +264,8 @@ public class WireCompilerTest {
         "com/squareup/services/anotherpackage/SendDataResponse.java",
         "com/squareup/services/ExampleService.java"
     };
-    testProto(sources, outputs, "com.squareup.wire.SimpleServiceWriter");
+    testProto(sources, outputs, "com.squareup.wire.SimpleServiceWriter",
+        "com.squareup.wire.java.SimpleServiceFactory");
   }
 
   @Test public void testRetrofitService() throws Exception {
@@ -272,7 +278,8 @@ public class WireCompilerTest {
         "com/squareup/services/anotherpackage/SendDataResponse.java",
         "com/squareup/services/RetrofitService.java"
     };
-    testProto(sources, outputs, "com.squareup.wire.RetrofitServiceWriter");
+    testProto(sources, outputs, "com.squareup.wire.RetrofitServiceWriter",
+        "com.squareup.wire.java.RetrofitServiceFactory");
   }
 
   @Test public void testRxJavaService() throws Exception {
@@ -285,7 +292,8 @@ public class WireCompilerTest {
         "com/squareup/services/anotherpackage/SendDataResponse.java",
         "com/squareup/services/RxJavaService.java"
     };
-    testProto(sources, outputs, "com.squareup.wire.RxJavaServiceWriter");
+    testProto(sources, outputs, "com.squareup.wire.RxJavaServiceWriter",
+        "com.squareup.wire.java.RxJavaServiceFactory");
   }
 
   @Test
@@ -346,6 +354,16 @@ public class WireCompilerTest {
     }
   }
 
+  // Verify that the --service_writer_opt flag works correctly with --service_factory.
+  @SuppressWarnings("UnusedDeclaration")
+  public static class TestServiceFactory extends SimpleServiceFactory {
+    @Override public TypeSpec create(
+        JavaGenerator javaGenerator, List<String> options, WireService service) {
+      assertEquals(Arrays.asList("OPTION1", "OPTION2"), options);
+      return super.create(javaGenerator, options, service);
+    }
+  }
+
   @Test public void testSimpleServiceOption() throws Exception {
     String[] sources = {
         "request_response.proto",
@@ -357,7 +375,7 @@ public class WireCompilerTest {
         "com/squareup/services/ExampleService.java"
     };
     testProto(sources, outputs, "com.squareup.wire.WireCompilerTest$TestServiceWriter",
-        "OPTION1", "OPTION2");
+        "com.squareup.wire.WireCompilerTest$TestServiceFactory", "OPTION1", "OPTION2");
   }
 
   @Test public void testRegistry() throws Exception {
@@ -763,7 +781,10 @@ public class WireCompilerTest {
     } else {
       expectedFile = new File("../wire-runtime/src/test/java/" + path + ".java");
     }
-    File actualFile = new File(outputDir, path + ".java");
+    File actualFile = new File(outputDir, path + suffix + ".java");
+    if (!actualFile.exists()) {
+      actualFile = new File(outputDir, path + ".java");
+    }
     assertFilesMatch(expectedFile, actualFile);
   }
 

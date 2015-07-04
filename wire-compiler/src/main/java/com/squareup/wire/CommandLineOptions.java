@@ -1,5 +1,6 @@
 package com.squareup.wire;
 
+import com.squareup.wire.java.ServiceFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ final class CommandLineOptions {
   public static final String NO_OPTIONS_FLAG = "--no_options";
   public static final String ENUM_OPTIONS_FLAG = "--enum_options=";
   public static final String SERVICE_WRITER_FLAG = "--service_writer=";
+  public static final String SERVICE_FACTORY_FLAG = "--service_factory=";
   public static final String SERVICE_WRITER_OPT_FLAG = "--service_writer_opt=";
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
@@ -30,6 +32,7 @@ final class CommandLineOptions {
   final boolean emitOptions;
   final Set<String> enumOptions;
   final String serviceWriter;
+  final ServiceFactory serviceFactory;
   final List<String> serviceWriterOptions;
   final boolean quiet;
   final boolean dryRun;
@@ -39,6 +42,7 @@ final class CommandLineOptions {
       String registryClass, boolean emitOptions,
       Set<String> enumOptions,
       String serviceWriter,
+      ServiceFactory serviceFactory,
       List<String> serviceWriterOptions,
       boolean quiet,
       boolean dryRun) {
@@ -50,6 +54,7 @@ final class CommandLineOptions {
     this.emitOptions = emitOptions;
     this.enumOptions = enumOptions;
     this.serviceWriter = serviceWriter;
+    this.serviceFactory = serviceFactory;
     this.serviceWriterOptions = serviceWriterOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;
@@ -110,6 +115,7 @@ final class CommandLineOptions {
     String registryClass = null;
     List<String> enumOptionsList = new ArrayList<String>();
     String serviceWriter = null;
+    ServiceFactory serviceFactory = null;
     boolean quiet = false;
     boolean dryRun = false;
 
@@ -137,6 +143,9 @@ final class CommandLineOptions {
         enumOptionsList.addAll(splitArg(args[index], ENUM_OPTIONS_FLAG.length()));
       } else if (args[index].startsWith(SERVICE_WRITER_FLAG)) {
         serviceWriter = args[index].substring(SERVICE_WRITER_FLAG.length());
+      } else if (args[index].startsWith(SERVICE_FACTORY_FLAG)) {
+        String serviceFactoryClassName = args[index].substring(SERVICE_FACTORY_FLAG.length());
+        serviceFactory = loadServiceFactory(serviceFactoryClassName);
       } else if (args[index].startsWith(SERVICE_WRITER_OPT_FLAG)) {
         serviceWriterOptions.add(args[index].substring(SERVICE_WRITER_OPT_FLAG.length()));
       } else if (args[index].startsWith(QUIET_FLAG)) {
@@ -157,9 +166,29 @@ final class CommandLineOptions {
     this.emitOptions = emitOptions;
     this.enumOptions = new LinkedHashSet<String>(enumOptionsList);
     this.serviceWriter = serviceWriter;
+    this.serviceFactory = serviceFactory;
     this.serviceWriterOptions = serviceWriterOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;
+  }
+
+  private ServiceFactory loadServiceFactory(String className) throws WireException {
+    try {
+      Class<?> serviceFactoryClass = Class.forName(className);
+      return (ServiceFactory) serviceFactoryClass.newInstance();
+    } catch (ClassNotFoundException e) {
+      throw new WireException(
+          "Failed to load ServiceFactory: " + className, e);
+    } catch (ClassCastException e) {
+      throw new WireException(
+          "Class " + className + " does not implement ServiceFactory interface.");
+    } catch (InstantiationException e) {
+      throw new WireException(
+          "Failed to instantiate ServiceFactory: " + className, e);
+    } catch (IllegalAccessException e) {
+      throw new WireException(
+          "Failed to access ServiceFactory: " + className, e);
+    }
   }
 
   private static List<String> splitArg(String arg, int flagLength) {

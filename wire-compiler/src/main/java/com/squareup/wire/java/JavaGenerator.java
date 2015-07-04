@@ -28,6 +28,7 @@ import com.squareup.wire.model.WireEnumConstant;
 import com.squareup.wire.model.WireExtend;
 import com.squareup.wire.model.WireField;
 import com.squareup.wire.model.WireProtoFile;
+import com.squareup.wire.model.WireService;
 import com.squareup.wire.model.WireType;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,10 @@ public final class JavaGenerator {
         for (WireField field : wireExtend.fields()) {
           extensionFieldToFile.put(field, wireProtoFile);
         }
+      }
+      for (WireService wireService : wireProtoFile.services()) {
+        ClassName className = ClassName.get(javaPackage, wireService.protoTypeName().simpleName());
+        wireToJava.put(wireService.protoTypeName(), className);
       }
     }
 
