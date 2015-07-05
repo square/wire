@@ -19,6 +19,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.internal.Util;
 import com.squareup.wire.model.ProtoTypeName;
 import com.squareup.wire.model.WireRpc;
 import com.squareup.wire.model.WireService;
@@ -38,7 +39,7 @@ public class SimpleServiceFactory implements ServiceFactory {
     typeBuilder.addModifiers(Modifier.PUBLIC);
 
     if (!service.documentation().isEmpty()) {
-      typeBuilder.addJavadoc("$L\n", service.documentation());
+      typeBuilder.addJavadoc("$L\n", Util.sanitizeJavadoc(service.documentation()));
     }
 
     for (WireRpc rpc : service.rpcs()) {
@@ -55,7 +56,7 @@ public class SimpleServiceFactory implements ServiceFactory {
       rpcBuilder.addParameter(requestJavaType, upperToLowerCamel(requestType.simpleName()));
 
       if (!rpc.documentation().isEmpty()) {
-        rpcBuilder.addJavadoc("$L\n", rpc.documentation());
+        rpcBuilder.addJavadoc("$L\n", Util.sanitizeJavadoc(rpc.documentation()));
       }
 
       typeBuilder.addMethod(rpcBuilder.build());

@@ -64,7 +64,7 @@
               <protoFiles>
                 <param>squareup/wire/exemplar.proto</param>
               </protoFiles>
-              <serviceWriter>com.squareup.wire.SimpleServiceWriter</serviceWriter>
+              <serviceFactory>com.squareup.wire.java.SimpleServiceFactory</serviceFactory>
             </configuration>
           </execution>
         </executions>

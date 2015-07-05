@@ -18,32 +18,29 @@ final class CommandLineOptions {
   public static final String REGISTRY_CLASS_FLAG = "--registry_class=";
   public static final String NO_OPTIONS_FLAG = "--no_options";
   public static final String ENUM_OPTIONS_FLAG = "--enum_options=";
-  public static final String SERVICE_WRITER_FLAG = "--service_writer=";
   public static final String SERVICE_FACTORY_FLAG = "--service_factory=";
-  public static final String SERVICE_WRITER_OPT_FLAG = "--service_writer_opt=";
+  public static final String SERVICE_FACTORY_OPT_FLAG = "--service_factory_opt=";
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
 
   final String protoPath;
-  final String javaOut;
+  final File javaOut;
   final List<String> sourceFileNames;
   final List<String> roots;
   final String registryClass;
   final boolean emitOptions;
   final Set<String> enumOptions;
-  final String serviceWriter;
   final ServiceFactory serviceFactory;
-  final List<String> serviceWriterOptions;
+  final List<String> serviceFactoryOptions;
   final boolean quiet;
   final boolean dryRun;
 
-  CommandLineOptions(String protoPath, String javaOut,
+  CommandLineOptions(String protoPath, File javaOut,
       List<String> sourceFileNames, List<String> roots,
       String registryClass, boolean emitOptions,
       Set<String> enumOptions,
-      String serviceWriter,
       ServiceFactory serviceFactory,
-      List<String> serviceWriterOptions,
+      List<String> serviceFactoryOptions,
       boolean quiet,
       boolean dryRun) {
     this.protoPath = protoPath;
@@ -53,9 +50,8 @@ final class CommandLineOptions {
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
     this.enumOptions = enumOptions;
-    this.serviceWriter = serviceWriter;
     this.serviceFactory = serviceFactory;
-    this.serviceWriterOptions = serviceWriterOptions;
+    this.serviceFactoryOptions = serviceFactoryOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;
   }
@@ -68,8 +64,8 @@ final class CommandLineOptions {
    *     [--files=&lt;protos.include&gt;] [--roots=&lt;message_name&gt;[,&lt;message_name&gt;...]]
    *     [--registry_class=&lt;class_name&gt;] [--no_options]
    *     [--enum_options=&lt;option_name&gt;[,&lt;option_name&gt;...]]
-   *     [--service_writer=&lt;class_name&gt;]
-   *     [--service_writer_opt=&lt;value&gt;] [--service_writer_opt=&lt;value&gt;]...]
+   *     [--service_factory=&lt;class_name&gt;]
+   *     [--service_factory_opt=&lt;value&gt;] [--service_factory_opt=&lt;value&gt;]...]
    *     [--quiet] [--dry_run]
    *     [file [file...]]
    * </pre>
@@ -107,14 +103,13 @@ final class CommandLineOptions {
     int index = 0;
 
     List<String> sourceFileNames = new ArrayList<String>();
-    List<String> serviceWriterOptions = new ArrayList<String>();
+    List<String> serviceFactoryOptions = new ArrayList<String>();
     List<String> roots = new ArrayList<String>();
     boolean emitOptions = true;
     String protoPath = null;
-    String javaOut = null;
+    File javaOut = null;
     String registryClass = null;
     List<String> enumOptionsList = new ArrayList<String>();
-    String serviceWriter = null;
     ServiceFactory serviceFactory = null;
     boolean quiet = false;
     boolean dryRun = false;
@@ -123,7 +118,7 @@ final class CommandLineOptions {
       if (args[index].startsWith(PROTO_PATH_FLAG)) {
         protoPath = args[index].substring(PROTO_PATH_FLAG.length());
       } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
-        javaOut = args[index].substring(JAVA_OUT_FLAG.length());
+        javaOut = new File(args[index].substring(JAVA_OUT_FLAG.length()));
       } else if (args[index].startsWith(FILES_FLAG)) {
         File files = new File(args[index].substring(FILES_FLAG.length()));
         String[] fileNames;
@@ -141,13 +136,11 @@ final class CommandLineOptions {
         emitOptions = false;
       } else if (args[index].startsWith(ENUM_OPTIONS_FLAG)) {
         enumOptionsList.addAll(splitArg(args[index], ENUM_OPTIONS_FLAG.length()));
-      } else if (args[index].startsWith(SERVICE_WRITER_FLAG)) {
-        serviceWriter = args[index].substring(SERVICE_WRITER_FLAG.length());
       } else if (args[index].startsWith(SERVICE_FACTORY_FLAG)) {
         String serviceFactoryClassName = args[index].substring(SERVICE_FACTORY_FLAG.length());
         serviceFactory = loadServiceFactory(serviceFactoryClassName);
-      } else if (args[index].startsWith(SERVICE_WRITER_OPT_FLAG)) {
-        serviceWriterOptions.add(args[index].substring(SERVICE_WRITER_OPT_FLAG.length()));
+      } else if (args[index].startsWith(SERVICE_FACTORY_OPT_FLAG)) {
+        serviceFactoryOptions.add(args[index].substring(SERVICE_FACTORY_OPT_FLAG.length()));
       } else if (args[index].startsWith(QUIET_FLAG)) {
         quiet = true;
       } else if (args[index].startsWith(DRY_RUN_FLAG)) {
@@ -165,9 +158,8 @@ final class CommandLineOptions {
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
     this.enumOptions = new LinkedHashSet<String>(enumOptionsList);
-    this.serviceWriter = serviceWriter;
     this.serviceFactory = serviceFactory;
-    this.serviceWriterOptions = serviceWriterOptions;
+    this.serviceFactoryOptions = serviceFactoryOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;
   }
