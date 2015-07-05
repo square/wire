@@ -34,7 +34,7 @@ public abstract class Message implements Serializable {
   private static final long serialVersionUID = 0L;
 
   // Hidden Wire instance that can perform work that does not require knowledge of extensions.
-  private static final Wire WIRE = new Wire();
+  static final Wire WIRE = new Wire();
 
   /**
    * A protocol buffer data type.

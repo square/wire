@@ -35,7 +35,7 @@ final class MessageSerializedForm implements Serializable {
     try {
       // Extensions are not supported at this time. Extension fields will be added to the
       // unknownFields map.
-      return new Wire().parseFrom(bytes, messageClass);
+      return Message.WIRE.parseFrom(bytes, messageClass);
     } catch (IOException e) {
       throw new StreamCorruptedException(e.getMessage());
     }
