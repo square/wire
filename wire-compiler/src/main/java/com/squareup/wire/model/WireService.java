@@ -15,29 +15,27 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.RpcElement;
 import com.squareup.protoparser.ServiceElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 public final class WireService {
   private final ProtoTypeName protoTypeName;
   private final ServiceElement element;
-  private final List<WireRpc> rpcs;
+  private final ImmutableList<WireRpc> rpcs;
   private final Options options;
 
-  private WireService(ProtoTypeName protoTypeName, ServiceElement element, List<WireRpc> rpcs,
-      Options options) {
+  private WireService(ProtoTypeName protoTypeName, ServiceElement element,
+      ImmutableList<WireRpc> rpcs, Options options) {
     this.protoTypeName = protoTypeName;
     this.element = element;
-    this.rpcs = Collections.unmodifiableList(rpcs);
+    this.rpcs = rpcs;
     this.options = options;
   }
 
   public static WireService get(ProtoTypeName protoTypeName, ServiceElement element) {
-    List<WireRpc> rpcs = new ArrayList<WireRpc>();
+    ImmutableList.Builder<WireRpc> rpcs = ImmutableList.builder();
     for (RpcElement rpc : element.rpcs()) {
       rpcs.add(new WireRpc(protoTypeName.packageName(), rpc));
     }
@@ -45,7 +43,7 @@ public final class WireService {
     Options options = new Options(
         ProtoTypeName.SERVICE_OPTIONS, protoTypeName.packageName(), element.options());
 
-    return new WireService(protoTypeName, element, rpcs, options);
+    return new WireService(protoTypeName, element, rpcs.build(), options);
   }
 
   public ProtoTypeName protoTypeName() {
@@ -56,7 +54,7 @@ public final class WireService {
     return element.documentation();
   }
 
-  public List<WireRpc> rpcs() {
+  public ImmutableList<WireRpc> rpcs() {
     return rpcs;
   }
 
@@ -93,14 +91,15 @@ public final class WireService {
       return this; // Fully retained.
     }
 
-    List<WireRpc> retainedRpcs = new ArrayList<WireRpc>();
+    ImmutableList.Builder<WireRpc> retainedRpcsBuilde = ImmutableList.builder();
     for (WireRpc rpc : rpcs) {
       if (identifiers.contains(serviceName + '#' + rpc.name())) {
-        retainedRpcs.add(rpc);
+        retainedRpcsBuilde.add(rpc);
       }
     }
 
     // If child RPCs are retained, return a subset of this service.
+    ImmutableList<WireRpc> retainedRpcs = retainedRpcsBuilde.build();
     if (!retainedRpcs.isEmpty()) {
       return new WireService(protoTypeName, element, retainedRpcs, options);
     }

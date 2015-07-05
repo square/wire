@@ -15,21 +15,20 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.EnumConstantElement;
 import com.squareup.protoparser.EnumElement;
 import com.squareup.protoparser.FieldElement;
 import com.squareup.protoparser.MessageElement;
 import com.squareup.protoparser.OneOfElement;
 import com.squareup.protoparser.TypeElement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public abstract class WireType {
   public abstract ProtoTypeName protoTypeName();
   public abstract String documentation();
   public abstract Options options();
-  public abstract List<WireType> nestedTypes();
+  public abstract ImmutableList<WireType> nestedTypes();
   abstract void link(Linker linker);
   abstract void linkOptions(Linker linker);
   abstract WireType retainAll(Set<String> identifiers);
@@ -38,7 +37,7 @@ public abstract class WireType {
     if (type instanceof EnumElement) {
       EnumElement enumElement = (EnumElement) type;
 
-      List<WireEnumConstant> constants = new ArrayList<WireEnumConstant>();
+      ImmutableList.Builder<WireEnumConstant> constants = ImmutableList.builder();
       for (EnumConstantElement constant : enumElement.constants()) {
         constants.add(new WireEnumConstant(protoTypeName.packageName(), constant));
       }
@@ -46,23 +45,23 @@ public abstract class WireType {
       Options options = new Options(
           ProtoTypeName.ENUM_OPTIONS, protoTypeName.packageName(), enumElement.options());
 
-      return new WireEnum(protoTypeName, enumElement, constants, options);
+      return new WireEnum(protoTypeName, enumElement, constants.build(), options);
 
     } else if (type instanceof MessageElement) {
       MessageElement messageElement = (MessageElement) type;
       String packageName = protoTypeName.packageName();
 
-      List<WireField> fields = new ArrayList<WireField>();
+      ImmutableList.Builder<WireField> fields = ImmutableList.builder();
       for (FieldElement field : messageElement.fields()) {
         fields.add(new WireField(packageName, field));
       }
 
-      List<WireOneOf> oneOfs = new ArrayList<WireOneOf>();
+      ImmutableList.Builder<WireOneOf> oneOfs = ImmutableList.builder();
       for (OneOfElement oneOf : messageElement.oneOfs()) {
         oneOfs.add(new WireOneOf(packageName, oneOf));
       }
 
-      List<WireType> nestedTypes = new ArrayList<WireType>();
+      ImmutableList.Builder<WireType> nestedTypes = ImmutableList.builder();
       for (TypeElement nestedType : messageElement.nestedElements()) {
         nestedTypes.add(WireType.get(protoTypeName.nestedType(nestedType.name()), nestedType));
       }
@@ -70,7 +69,8 @@ public abstract class WireType {
       Options options = new Options(
           ProtoTypeName.MESSAGE_OPTIONS, protoTypeName.packageName(), messageElement.options());
 
-      return new WireMessage(protoTypeName, messageElement, fields, oneOfs, nestedTypes, options);
+      return new WireMessage(protoTypeName, messageElement, fields.build(), oneOfs.build(),
+          nestedTypes.build(), options);
 
     } else {
       throw new IllegalArgumentException("unexpected type: " + type.getClass());

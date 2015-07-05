@@ -15,26 +15,24 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.FieldElement;
 import com.squareup.protoparser.OneOfElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public final class WireOneOf {
   private final String packageName;
   private final OneOfElement element;
-  private final List<WireField> fields;
+  private final ImmutableList<WireField> fields;
 
   WireOneOf(String packageName, OneOfElement element) {
     this.packageName = packageName;
     this.element = element;
 
-    List<WireField> fields = new ArrayList<WireField>();
+    ImmutableList.Builder<WireField> fields = ImmutableList.builder();
     for (FieldElement field : element.fields()) {
       fields.add(new WireField(packageName, field));
     }
-    this.fields = Collections.unmodifiableList(fields);
+    this.fields = fields.build();
   }
 
   public String packageName() {
@@ -49,7 +47,7 @@ public final class WireOneOf {
     return element.documentation();
   }
 
-  public List<WireField> fields() {
+  public ImmutableList<WireField> fields() {
     return fields;
   }
 

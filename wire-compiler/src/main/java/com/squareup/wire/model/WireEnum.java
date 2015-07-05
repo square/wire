@@ -15,22 +15,21 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.EnumElement;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 public final class WireEnum extends WireType {
   private final ProtoTypeName protoTypeName;
   private final EnumElement element;
-  private final List<WireEnumConstant> constants;
+  private final ImmutableList<WireEnumConstant> constants;
   private final Options options;
 
-  WireEnum(ProtoTypeName protoTypeName, EnumElement element, List<WireEnumConstant> constants,
-      Options options) {
+  WireEnum(ProtoTypeName protoTypeName, EnumElement element,
+      ImmutableList<WireEnumConstant> constants, Options options) {
     this.protoTypeName = protoTypeName;
     this.element = element;
-    this.constants = Collections.unmodifiableList(constants);
+    this.constants = constants;
     this.options = options;
   }
 
@@ -46,11 +45,11 @@ public final class WireEnum extends WireType {
     return options;
   }
 
-  @Override public List<WireType> nestedTypes() {
-    return Collections.emptyList(); // Enums do not allow nested type declarations.
+  @Override public ImmutableList<WireType> nestedTypes() {
+    return ImmutableList.of(); // Enums do not allow nested type declarations.
   }
 
-  public List<WireEnumConstant> constants() {
+  public ImmutableList<WireEnumConstant> constants() {
     return constants;
   }
 

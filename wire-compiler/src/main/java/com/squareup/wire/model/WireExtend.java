@@ -15,27 +15,25 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ExtendElement;
 import com.squareup.protoparser.FieldElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public final class WireExtend {
   private final String packageName;
   private final ExtendElement element;
-  private final List<WireField> fields;
+  private final ImmutableList<WireField> fields;
   private ProtoTypeName protoTypeName;
 
-  public WireExtend(String packageName, ExtendElement element) {
+  WireExtend(String packageName, ExtendElement element) {
     this.packageName = packageName;
     this.element = element;
 
-    List<WireField> fields = new ArrayList<WireField>();
+    ImmutableList.Builder<WireField> fields = ImmutableList.builder();
     for (FieldElement field : element.fields()) {
       fields.add(new WireField(packageName, field));
     }
-    this.fields = Collections.unmodifiableList(fields);
+    this.fields = fields.build();
   }
 
   public String packageName() {
@@ -50,7 +48,7 @@ public final class WireExtend {
     return element.documentation();
   }
 
-  public List<WireField> fields() {
+  public ImmutableList<WireField> fields() {
     return fields;
   }
 

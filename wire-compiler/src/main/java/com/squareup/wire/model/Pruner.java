@@ -18,7 +18,6 @@ package com.squareup.wire.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -42,7 +41,8 @@ public final class Pruner {
    * @param roots a set of identifiers to retain, which may be fully qualified type names, fully
    *     qualified service names, or service RPCs like {@code package.ServiceName#MethodName}.
    */
-  public List<WireProtoFile> retainRoots(List<WireProtoFile> protoFiles, Collection<String> roots) {
+  public ImmutableList<WireProtoFile> retainRoots(
+      List<WireProtoFile> protoFiles, Collection<String> roots) {
     if (roots.isEmpty()) throw new IllegalArgumentException();
     if (!marks.isEmpty()) throw new IllegalStateException();
 
@@ -99,12 +99,12 @@ public final class Pruner {
       throw new IllegalArgumentException("Unexpected type: " + name);
     }
 
-    List<WireProtoFile> retained = new ArrayList<WireProtoFile>();
+    ImmutableList.Builder<WireProtoFile> retained = ImmutableList.builder();
     for (WireProtoFile protoFile : protoFiles) {
       retained.add(protoFile.retainAll(marks));
     }
 
-    return ImmutableList.copyOf(retained);
+    return retained.build();
   }
 
   private static Map<String, WireType> buildTypesIndex(Collection<WireProtoFile> protoFiles) {
@@ -124,14 +124,15 @@ public final class Pruner {
     }
   }
 
-  private static Map<String, WireService> buildServicesIndex(Collection<WireProtoFile> protoFiles) {
-    Map<String, WireService> result = new LinkedHashMap<String, WireService>();
+  private static ImmutableMap<String, WireService> buildServicesIndex(
+      Collection<WireProtoFile> protoFiles) {
+    ImmutableMap.Builder<String, WireService> result = ImmutableMap.builder();
     for (WireProtoFile protoFile : protoFiles) {
       for (WireService service : protoFile.services()) {
         result.put(service.protoTypeName().toString(), service);
       }
     }
-    return ImmutableMap.copyOf(result);
+    return result.build();
   }
 
   private void mark(ProtoTypeName typeName) {
@@ -182,7 +183,7 @@ public final class Pruner {
     }
   }
 
-  private void markFields(List<WireField> fields) {
+  private void markFields(ImmutableList<WireField> fields) {
     for (WireField field : fields) {
       markField(field);
     }
