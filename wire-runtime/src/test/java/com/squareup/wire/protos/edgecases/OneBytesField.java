@@ -4,16 +4,19 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Object;
+import java.lang.Override;
 import okio.ByteString;
-
-import static com.squareup.wire.Message.Datatype.BYTES;
 
 public final class OneBytesField extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
 
-  @ProtoField(tag = 1, type = BYTES)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.BYTES
+  )
   public final ByteString opt_bytes;
 
   public OneBytesField(ByteString opt_bytes) {
@@ -38,8 +41,7 @@ public final class OneBytesField extends Message {
     return result != 0 ? result : (hashCode = opt_bytes != null ? opt_bytes.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<OneBytesField> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<OneBytesField> {
     public ByteString opt_bytes;
 
     public Builder() {

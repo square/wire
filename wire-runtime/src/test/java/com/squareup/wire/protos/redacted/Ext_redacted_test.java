@@ -4,15 +4,15 @@ package com.squareup.wire.protos.redacted;
 
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Extension;
+import java.lang.Boolean;
 
 public final class Ext_redacted_test {
-
-  private Ext_redacted_test() {
-  }
-
   public static final Extension<FieldOptions, Boolean> redacted = Extension
       .boolExtending(FieldOptions.class)
       .setName("squareup.protos.redacted_test.redacted")
       .setTag(22200)
       .buildOptional();
+
+  private Ext_redacted_test() {
+  }
 }

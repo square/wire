@@ -5,6 +5,5 @@ package com.squareup.wire.protos.roots;
 import java.io.IOException;
 
 public interface TheService {
-  TheResponse theMethod(TheRequest theRequest)
-      throws IOException;
+  TheResponse theMethod(TheRequest theRequest) throws IOException;
 }

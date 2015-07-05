@@ -3,6 +3,8 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class NoFields extends Message {
   private static final long serialVersionUID = 0L;
@@ -24,8 +26,7 @@ public final class NoFields extends Message {
     return 0;
   }
 
-  public static final class Builder extends Message.Builder<NoFields> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<NoFields> {
     public Builder() {
     }
 

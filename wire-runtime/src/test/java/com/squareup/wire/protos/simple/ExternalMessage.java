@@ -4,16 +4,21 @@ package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
+import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.FLOAT;
+import java.lang.Float;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
   private static final long serialVersionUID = 0L;
 
-  public static final Float DEFAULT_F = 20F;
+  public static final Float DEFAULT_F = 20f;
 
-  @ProtoField(tag = 1, type = FLOAT)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.FLOAT
+  )
   public final Float f;
 
   public ExternalMessage(Float f) {
@@ -45,8 +50,7 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
     return result;
   }
 
-  public static final class Builder extends ExtendableBuilder<ExternalMessage> {
-
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<ExternalMessage> {
     public Float f;
 
     public Builder() {

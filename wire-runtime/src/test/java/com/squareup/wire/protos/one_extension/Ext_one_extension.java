@@ -5,13 +5,12 @@ package com.squareup.wire.protos.one_extension;
 import com.squareup.wire.Extension;
 
 public final class Ext_one_extension {
-
-  private Ext_one_extension() {
-  }
-
   public static final Extension<OneExtension, Foo> foo = Extension
       .messageExtending(Foo.class, OneExtension.class)
       .setName("squareup.protos.one_extension.foo")
       .setTag(1000)
       .buildOptional();
+
+  private Ext_one_extension() {
+  }
 }

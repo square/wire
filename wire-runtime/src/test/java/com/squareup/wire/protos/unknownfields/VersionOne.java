@@ -4,15 +4,19 @@ package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Datatype.INT32;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class VersionOne extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;
 
-  @ProtoField(tag = 1, type = INT32)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.INT32
+  )
   public final Integer i;
 
   public VersionOne(Integer i) {
@@ -37,8 +41,7 @@ public final class VersionOne extends Message {
     return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<VersionOne> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<VersionOne> {
     public Integer i;
 
     public Builder() {

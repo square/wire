@@ -13,6 +13,5 @@ public interface ExampleService {
   /**
    * Sends some data.
    */
-  SendDataResponse sendSomeData(SendDataRequest sendDataRequest)
-      throws IOException;
+  SendDataResponse sendSomeData(SendDataRequest sendDataRequest) throws IOException;
 }

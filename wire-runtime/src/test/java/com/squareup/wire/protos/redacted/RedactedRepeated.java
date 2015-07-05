@@ -5,11 +5,11 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Collections;
 import java.util.List;
-
-import static com.squareup.wire.Message.Datatype.STRING;
-import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class RedactedRepeated extends Message {
   private static final long serialVersionUID = 0L;
@@ -21,10 +21,10 @@ public final class RedactedRepeated extends Message {
   public static final List<String> DEFAULT_A = Collections.emptyList();
 
   @ProtoField(
-    tag = 1,
-    type = STRING,
-    label = REPEATED,
-    redacted = true
+      tag = 1,
+      type = Message.Datatype.STRING,
+      label = Message.Label.REPEATED,
+      redacted = true
   )
   public final List<String> a;
 
@@ -50,8 +50,7 @@ public final class RedactedRepeated extends Message {
     return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 1);
   }
 
-  public static final class Builder extends Message.Builder<RedactedRepeated> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRepeated> {
     public List<String> a;
 
     public Builder() {

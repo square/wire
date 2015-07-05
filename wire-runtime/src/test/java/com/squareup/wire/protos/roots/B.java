@@ -4,13 +4,16 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
-
-import static com.squareup.wire.Message.Label.REQUIRED;
+import java.lang.Object;
+import java.lang.Override;
 
 public final class B extends Message {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(tag = 1, label = REQUIRED)
+  @ProtoField(
+      tag = 1,
+      label = Message.Label.REQUIRED
+  )
   public final C c;
 
   public B(C c) {
@@ -35,8 +38,7 @@ public final class B extends Message {
     return result != 0 ? result : (hashCode = c != null ? c.hashCode() : 0);
   }
 
-  public static final class Builder extends Message.Builder<B> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<B> {
     public C c;
 
     public Builder() {

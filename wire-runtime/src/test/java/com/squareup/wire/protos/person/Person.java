@@ -5,45 +5,61 @@ package com.squareup.wire.protos.person;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Collections;
 import java.util.List;
-
-import static com.squareup.wire.Message.Datatype.ENUM;
-import static com.squareup.wire.Message.Datatype.INT32;
-import static com.squareup.wire.Message.Datatype.STRING;
-import static com.squareup.wire.Message.Label.REPEATED;
-import static com.squareup.wire.Message.Label.REQUIRED;
 
 public final class Person extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
+
   public static final Integer DEFAULT_ID = 0;
+
   public static final String DEFAULT_EMAIL = "";
+
   public static final List<PhoneNumber> DEFAULT_PHONE = Collections.emptyList();
 
   /**
    * The customer's full name.
    */
-  @ProtoField(tag = 1, type = STRING, label = REQUIRED)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.STRING,
+      label = Message.Label.REQUIRED
+  )
   public final String name;
 
   /**
    * The customer's ID number.
    */
-  @ProtoField(tag = 2, type = INT32, label = REQUIRED)
+  @ProtoField(
+      tag = 2,
+      type = Message.Datatype.INT32,
+      label = Message.Label.REQUIRED
+  )
   public final Integer id;
 
   /**
    * Email address for the customer.
    */
-  @ProtoField(tag = 3, type = STRING)
+  @ProtoField(
+      tag = 3,
+      type = Message.Datatype.STRING
+  )
   public final String email;
 
   /**
    * A list of the customer's phone numbers.
    */
-  @ProtoField(tag = 4, label = REPEATED, messageType = PhoneNumber.class)
+  @ProtoField(
+      tag = 4,
+      label = Message.Label.REPEATED,
+      messageType = PhoneNumber.class
+  )
   public final List<PhoneNumber> phone;
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
@@ -82,11 +98,13 @@ public final class Person extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<Person> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<Person> {
     public String name;
+
     public Integer id;
+
     public String email;
+
     public List<PhoneNumber> phone;
 
     public Builder() {
@@ -140,10 +158,11 @@ public final class Person extends Message {
     }
   }
 
-  public enum PhoneType
-      implements ProtoEnum {
+  public enum PhoneType implements ProtoEnum {
     MOBILE(0),
+
     HOME(1),
+
     /**
      * Could be phone or fax.
      */
@@ -165,18 +184,26 @@ public final class Person extends Message {
     private static final long serialVersionUID = 0L;
 
     public static final String DEFAULT_NUMBER = "";
+
     public static final PhoneType DEFAULT_TYPE = PhoneType.HOME;
 
     /**
      * The customer's phone number.
      */
-    @ProtoField(tag = 1, type = STRING, label = REQUIRED)
+    @ProtoField(
+        tag = 1,
+        type = Message.Datatype.STRING,
+        label = Message.Label.REQUIRED
+    )
     public final String number;
 
     /**
      * The type of phone stored here.
      */
-    @ProtoField(tag = 2, type = ENUM)
+    @ProtoField(
+        tag = 2,
+        type = Message.Datatype.ENUM
+    )
     public final PhoneType type;
 
     public PhoneNumber(String number, PhoneType type) {
@@ -209,9 +236,9 @@ public final class Person extends Message {
       return result;
     }
 
-    public static final class Builder extends Message.Builder<PhoneNumber> {
-
+    public static final class Builder extends com.squareup.wire.Message.Builder<PhoneNumber> {
       public String number;
+
       public PhoneType type;
 
       public Builder() {

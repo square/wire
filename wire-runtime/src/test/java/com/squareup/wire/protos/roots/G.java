@@ -3,10 +3,11 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.ProtoEnum;
+import java.lang.Override;
 
-public enum G
-    implements ProtoEnum {
+public enum G implements ProtoEnum {
   FOO(1),
+
   BAR(2);
 
   private final int value;
