@@ -108,13 +108,12 @@ public class WireTest {
     }
 
     Wire wire = new Wire();
+    MessageAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
-    assertEquals(46, msg.getSerializedSize());
-    byte[] result = new byte[msg.getSerializedSize()];
-    msg.writeTo(result, 0, result.length);
+    byte[] result = adapter.writeBytes(msg);
     assertEquals(46, result.length);
 
-    SimpleMessage newMsg = wire.parseFrom(result, SimpleMessage.class);
+    SimpleMessage newMsg = adapter.readBytes(result);
     assertEquals(new Integer(789), newMsg.optional_int32);
     assertEquals(new Integer(2), newMsg.optional_nested_msg.bb);
     assertEquals(new Float(99.9F), newMsg.optional_external_msg.f);
@@ -135,9 +134,11 @@ public class WireTest {
             .build()))
         .build();
 
-    byte[] data = person.toByteArray();
     Wire wire = new Wire();
-    wire.parseFrom(data, Person.class);
+    MessageAdapter<Person> adapter = wire.adapter(Person.class);
+
+    byte[] data = adapter.writeBytes(person);
+    adapter.readBytes(data);
   }
 
   @Test
@@ -164,13 +165,12 @@ public class WireTest {
         Ext_simple_message.nested_enum_ext));
 
     Wire wire = new Wire(Ext_simple_message.class);
-    int msgSerializedSize = msg.getSerializedSize();
-    assertEquals(29, msgSerializedSize);
-    byte[] result = new byte[msgSerializedSize];
-    msg.writeTo(result);
+    MessageAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
+
+    byte[] result = adapter.writeBytes(msg);
     assertEquals(29, result.length);
 
-    SimpleMessage newMsg = wire.parseFrom(result, SimpleMessage.class);
+    SimpleMessage newMsg = adapter.readBytes(result);
     assertEquals(Arrays.asList(444, 555), newMsg.optional_external_msg.getExtension(fooext));
     assertEquals(new Integer(333), newMsg.optional_external_msg.getExtension(barext));
     assertEquals(new Integer(222), newMsg.optional_external_msg.getExtension(bazext));
@@ -187,13 +187,18 @@ public class WireTest {
         .required_int32(456)
         .build();
 
-    byte[] data = msg.toByteArray();
+    Wire wireNoExt = new Wire();
+    MessageAdapter<SimpleMessage> adapterNoExt = wireNoExt.adapter(SimpleMessage.class);
+    Wire wireExt = new Wire(Ext_simple_message.class);
+    MessageAdapter<SimpleMessage> adapterExt = wireExt.adapter(SimpleMessage.class);
+
+    byte[] data = adapterNoExt.writeBytes(msg);
 
     // Change BAZ enum to a value not known by this client.
     data[4] = 17;
 
     // Parse the altered message.
-    SimpleMessage newMsg = new Wire(Ext_simple_message.class).parseFrom(data, SimpleMessage.class);
+    SimpleMessage newMsg = adapterExt.readBytes(data);
 
     // Original value shows up as an extension.
     assertTrue(msg.toString().contains("extensions={129=BAZ}"));
@@ -201,7 +206,7 @@ public class WireTest {
     assertTrue(newMsg.toString().contains("extensions={}"));
 
     // Serialized outputs are the same.
-    byte[] newData = newMsg.toByteArray();
+    byte[] newData = adapterExt.writeBytes(newMsg);
     assertTrue(Arrays.equals(data, newData));
   }
 
@@ -238,13 +243,12 @@ public class WireTest {
     assertEquals(new Integer(222), msg.optional_external_msg.getExtension(bazext));
 
     Wire wire = new Wire();
-    int msgSerializedSize = msg.getSerializedSize();
-    assertEquals(21, msgSerializedSize);
-    byte[] result = new byte[msgSerializedSize];
-    msg.writeTo(result);
+    MessageAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
+
+    byte[] result = adapter.writeBytes(msg);
     assertEquals(21, result.length);
 
-    SimpleMessage newMsg = wire.parseFrom(result, SimpleMessage.class);
+    SimpleMessage newMsg = adapter.readBytes(result);
     assertNull(newMsg.optional_external_msg.getExtension(fooext));
     assertNull(newMsg.optional_external_msg.getExtension(barext));
     assertNull(newMsg.optional_external_msg.getExtension(bazext));
@@ -273,9 +277,12 @@ public class WireTest {
     int emptyListHashCode = emptyListMessage.hashCode();
     assertTrue(noListHashCode == emptyListHashCode);
 
+    Wire wire = new Wire();
+    MessageAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
+
     // Empty lists and null lists occupy 0 bytes in the wire encoding
-    byte[] noListBytes = noListMessage.toByteArray();
-    byte[] emptyListBytes = emptyListMessage.toByteArray();
+    byte[] noListBytes = adapter.writeBytes(noListMessage);
+    byte[] emptyListBytes = adapter.writeBytes(emptyListMessage);
 
     assertEquals(2, noListBytes.length);
     assertEquals(2, emptyListBytes.length);
@@ -284,8 +291,8 @@ public class WireTest {
     assertEquals(noListBytes[1], emptyListBytes[1]);
 
     // Parsed results have a null list
-    SimpleMessage noListParsed = new Wire().parseFrom(noListBytes, SimpleMessage.class);
-    SimpleMessage emptyListParsed = new Wire().parseFrom(emptyListBytes, SimpleMessage.class);
+    SimpleMessage noListParsed = adapter.readBytes(noListBytes);
+    SimpleMessage emptyListParsed = adapter.readBytes(emptyListBytes);
 
     assertNotNull(noListParsed.repeated_double);
     assertEquals(0, noListParsed.repeated_double.size());
@@ -304,14 +311,16 @@ public class WireTest {
 
     assertEquals(PhoneType.WORK, person.phone.get(0).type);
 
-    byte[] data = person.toByteArray();
+    Wire wire = new Wire();
+    MessageAdapter<Person> adapter = wire.adapter(Person.class);
+
+    byte[] data = adapter.writeBytes(person);
     assertEquals(PhoneType.WORK.getValue(), data[27]);
 
     // Corrupt the PhoneNumber type field with an undefined value
     data[27] = 17;
     // Parsed PhoneNumber has no value set
-    Wire wire = new Wire();
-    Person result = wire.parseFrom(data, Person.class);
+    Person result = adapter.readBytes(data);
     assertEquals(null, result.phone.get(0).type);
 
     // The value 17 will be stored as an unknown varint with tag number 2
@@ -323,13 +332,13 @@ public class WireTest {
     assertEquals(Long.valueOf(17L), fieldValues.get(0).getAsLong());
 
     // Serialize again, value is preserved
-    byte[] newData = result.toByteArray();
+    byte[] newData = adapter.writeBytes(result);
     assertTrue(Arrays.equals(data, newData));
   }
 
   @Test public void missingRepeatedAndPackedFieldsBecomesEmptyList() throws IOException {
     byte[] bytes = new byte[0];
-    RepeatedAndPacked data = new Wire().parseFrom(bytes, RepeatedAndPacked.class);
+    RepeatedAndPacked data = new Wire().adapter(RepeatedAndPacked.class).readBytes(bytes);
     assertEquals(Collections.emptyList(), data.rep_int32);
     assertEquals(Collections.emptyList(), data.pack_int32);
   }

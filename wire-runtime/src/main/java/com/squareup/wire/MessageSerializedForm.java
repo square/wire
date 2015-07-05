@@ -27,15 +27,17 @@ final class MessageSerializedForm implements Serializable {
   private final Class<? extends Message> messageClass;
 
   public MessageSerializedForm(Message message, Class<? extends Message> messageClass) {
-    this.bytes = message.toByteArray();
+    //noinspection unchecked
+    this.bytes = Message.WIRE.adapter((Class<Message>) messageClass).writeBytes(message);
     this.messageClass = messageClass;
   }
 
   Object readResolve() throws ObjectStreamException {
+    MessageAdapter<? extends Message> adapter = Message.WIRE.adapter(messageClass);
     try {
       // Extensions are not supported at this time. Extension fields will be added to the
       // unknownFields map.
-      return Message.WIRE.parseFrom(bytes, messageClass);
+      return adapter.readBytes(bytes);
     } catch (IOException e) {
       throw new StreamCorruptedException(e.getMessage());
     }

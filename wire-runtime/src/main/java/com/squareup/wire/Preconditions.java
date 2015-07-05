@@ -4,17 +4,10 @@ final class Preconditions {
   private Preconditions() {
   }
 
-  /** Throw {@link NullPointerException} for variable {@code name} if {@code o} is null. */
-  static void checkNotNull(Object o, String name) {
+  /** Throw {@link NullPointerException} with {@code message} if {@code o} is null. */
+  static void checkNotNull(Object o, String message) {
     if (o == null) {
-      throw new NullPointerException(name + " == null");
-    }
-  }
-
-  /** Throw {@link IllegalArgumentException} with {@code message} if {@code assertion} is false. */
-  static void checkArgument(boolean assertion, String message) {
-    if (!assertion) {
-      throw new IllegalArgumentException(message);
+      throw new NullPointerException(message);
     }
   }
 }

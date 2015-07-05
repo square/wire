@@ -16,6 +16,8 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -29,25 +31,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.RandomAccess;
 import java.util.Set;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.BufferedSource;
 import okio.ByteString;
+import okio.Okio;
 
 import static com.squareup.wire.ExtendableMessage.ExtendableBuilder;
 import static com.squareup.wire.Message.Builder;
 import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
+import static com.squareup.wire.Preconditions.checkNotNull;
 
-/**
- * An adapter than can perform I/O on a given Message type.
- *
- * @param <M> the Message class handled by this adapter.
- */
-final class MessageAdapter<M extends Message> {
+public final class MessageAdapter<M extends Message> {
   // Unicode character "Full Block" (U+2588)
   private static final String FULL_BLOCK = "█";
   // The string to use when redacting fields from toString.
   private static final String REDACTED = FULL_BLOCK + FULL_BLOCK;
 
-  public static final class FieldInfo {
+  static final class FieldInfo {
     final int tag;
     final String name;
     final Datatype datatype;
@@ -120,7 +122,7 @@ final class MessageAdapter<M extends Message> {
     }
   }
 
-  public void setBuilderField(Builder<M> builder, FieldInfo fieldInfo, Object value) {
+  void setBuilderField(Builder<M> builder, FieldInfo fieldInfo, Object value) {
     try {
       fieldInfo.builderField.set(builder, value);
     } catch (IllegalAccessException e) {
@@ -128,7 +130,7 @@ final class MessageAdapter<M extends Message> {
     }
   }
 
-  public void setBuilderMethod(Builder<M> builder, FieldInfo fieldInfo, Object value) {
+  void setBuilderMethod(Builder<M> builder, FieldInfo fieldInfo, Object value) {
     try {
       fieldInfo.builderMethod.invoke(builder, value);
     } catch (IllegalAccessException e) {
@@ -302,8 +304,35 @@ final class MessageAdapter<M extends Message> {
     return size;
   }
 
-  /** Uses reflection to write {@code message} to {@code output} in serialized form. */
-  void write(M message, WireOutput output) throws IOException {
+  /** Encode {@code value} as a {@code byte[]}. */
+  public byte[] writeBytes(M value) {
+    checkNotNull(value, "value == null");
+    Buffer buffer = new Buffer();
+    try {
+      write(value, buffer);
+    } catch (IOException e) {
+      throw new AssertionError(e); // No I/O writing to Buffer.
+    }
+    return buffer.readByteArray();
+  }
+
+  /** Encode {@code value} and write it to {@code stream}. */
+  public void writeStream(M value, OutputStream stream) throws IOException {
+    checkNotNull(value, "value == null");
+    checkNotNull(stream, "stream == null");
+    BufferedSink buffer = Okio.buffer(Okio.sink(stream));
+    write(value, buffer);
+    buffer.emit();
+  }
+
+  /** Encode {@code value} and write it to {@code stream}. */
+  public void write(M value, BufferedSink sink) throws IOException {
+    checkNotNull(value, "value == null");
+    checkNotNull(sink, "sink == null");
+    write(value, new WireOutput(sink));
+  }
+
+  private void write(M message, WireOutput output) throws IOException {
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
       if (value == null) {
@@ -371,19 +400,6 @@ final class MessageAdapter<M extends Message> {
     for (int i = 0, count = value.size(); i < count; i++) {
       writeValueNoTag(output, value.get(i), datatype);
     }
-  }
-
-  /**
-   * Serializes a given {@link Message} and returns the results as a byte array.
-   */
-  byte[] toByteArray(M message) {
-    byte[] result = new byte[getSerializedSize(message)];
-    try {
-      write(message, WireOutput.newInstance(result));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return result;
   }
 
   /**
@@ -477,8 +493,12 @@ final class MessageAdapter<M extends Message> {
 
   @SuppressWarnings("unchecked")
   private <MM extends Message> int getMessageSize(MM message) {
-    int messageSize = message.getSerializedSize();
-    return WireOutput.varint32Size(messageSize) + messageSize;
+    int size = message.cachedSerializedSize;
+    if (size == -1) {
+      MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
+      size = message.cachedSerializedSize = adapter.getSerializedSize(message);
+    }
+    return WireOutput.varint32Size(size) + size;
   }
 
   private void writeValue(WireOutput output, int tag, Object value, Datatype datatype)
@@ -521,8 +541,12 @@ final class MessageAdapter<M extends Message> {
 
   @SuppressWarnings("unchecked")
   private <MM extends Message> void writeMessage(MM message, WireOutput output) throws IOException {
-    output.writeVarint32(message.getSerializedSize());
     MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
+    int size = message.cachedSerializedSize;
+    if (size == -1) {
+      size = message.cachedSerializedSize = adapter.getSerializedSize(message);
+    }
+    output.writeVarint32(size);
     adapter.write(message, output);
   }
 
@@ -533,6 +557,29 @@ final class MessageAdapter<M extends Message> {
   }
 
   // Reading
+
+  /** Read an encoded message from {@code source}. */
+  public M read(BufferedSource source) throws IOException {
+    checkNotNull(source, "source == null");
+    return read(new WireInput(source));
+  }
+
+  /** Read an encoded message from {@code bytes}. */
+  public M readBytes(byte[] bytes) throws IOException {
+    checkNotNull(bytes, "bytes == null");
+    Buffer buffer = new Buffer();
+    M message = read(buffer.write(bytes));
+    if (!buffer.exhausted()) {
+      throw new IllegalArgumentException("");
+    }
+    return message;
+  }
+
+  /** Read an encoded message from {@code stream}. */
+  public M readStream(InputStream stream) throws IOException {
+    checkNotNull(stream, "stream == null");
+    return read(Okio.buffer(Okio.source(stream)));
+  }
 
   /** Uses reflection to read an instance from {@code input}. */
   M read(WireInput input) throws IOException {

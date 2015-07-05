@@ -35,13 +35,9 @@ package com.squareup.wire;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
-import okio.Buffer;
 import okio.BufferedSource;
 import okio.ByteString;
-import okio.Okio;
-import okio.Source;
 
 /**
  * Reads and decodes protocol message fields.
@@ -60,30 +56,6 @@ final class WireInput {
       "Protocol message end-group tag did not match expected tag.";
   private static final String ENCOUNTERED_A_MALFORMED_VARINT =
       "WireInput encountered a malformed varint.";
-
-  /**
-   * Create a new WireInput wrapping the given byte array.
-   */
-  public static WireInput newInstance(byte[] buf) {
-    return new WireInput(new Buffer().write(buf));
-  }
-
-  /**
-   * Create a new WireInput wrapping the given byte array slice.
-   */
-  public static WireInput newInstance(byte[] buf, int offset, int count) {
-    return new WireInput(new Buffer().write(buf, offset, count));
-  }
-
-  public static WireInput newInstance(InputStream source) {
-    return new WireInput(Okio.buffer(Okio.source(source)));
-  }
-
-  public static WireInput newInstance(Source source) {
-    return new WireInput(Okio.buffer(source));
-  }
-
-  // -----------------------------------------------------------------
 
   /**
    * Attempt to read a field tag, returning zero if we have reached EOF.
@@ -262,7 +234,7 @@ final class WireInput {
   /** The last tag that was read. */
   private int lastTag;
 
-  private WireInput(BufferedSource source) {
+  WireInput(BufferedSource source) {
     this.source = source;
   }
 

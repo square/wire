@@ -24,13 +24,14 @@ import static org.junit.Assert.assertEquals;
 
 public class OneOfTest {
 
-  private static final Wire wire = new Wire();
-
   private static final byte[] INITIAL_BYTES = {};
   // (Tag #1 << 3 | VARINT) = 8.
   private static final byte[] FOO_BYTES = { 8, 17 };
   // (Tag #3 << 3 | LENGTH_DELIMITED) = 26, string length = 6.
   private static final byte[] BAR_BYTES = { 26, 6, 'b', 'a', 'r', 'b', 'a', 'r'};
+
+  private final Wire wire = new Wire();
+  private final MessageAdapter<OneOfMessage> adapter = wire.adapter(OneOfMessage.class);
 
   @Test
   public void testOneOf() throws Exception {
@@ -68,11 +69,11 @@ public class OneOfTest {
     assertEquals(expectedBar, message.bar);
 
     // Check serialized bytes.
-    byte[] bytes = message.toByteArray();
+    byte[] bytes = adapter.writeBytes(message);
     assertArrayEquals(expectedBytes, bytes);
 
     // Check result of deserialization.
-    OneOfMessage newMessage = wire.parseFrom(bytes, OneOfMessage.class);
+    OneOfMessage newMessage = adapter.readBytes(bytes);
     assertEquals(expectedFoo, newMessage.foo);
     assertEquals(expectedBar, newMessage.bar);
   }

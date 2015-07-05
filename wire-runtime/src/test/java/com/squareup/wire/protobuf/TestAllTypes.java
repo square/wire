@@ -17,10 +17,12 @@ package com.squareup.wire.protobuf;
 
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
+import com.squareup.wire.MessageAdapter;
 import com.squareup.wire.Wire;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ import java.util.Arrays;
 import java.util.List;
 import okio.Buffer;
 import okio.ByteString;
+import okio.ForwardingSource;
+import okio.Okio;
+import okio.Source;
 import org.junit.Test;
 
 import static com.squareup.wire.protos.alltypes.AllTypes.NestedEnum.A;
@@ -132,6 +137,7 @@ public class TestAllTypes {
 
   private final AllTypes allTypes = createAllTypes();
   private final Wire wire = new Wire(Ext_all_types.class);
+  private final MessageAdapter<AllTypes> adapter = wire.adapter(AllTypes.class);
 
   private AllTypes createAllTypes(int numRepeated) {
     return getBuilder(numRepeated).build();
@@ -316,85 +322,41 @@ public class TestAllTypes {
 
   @Test
   public void testWrite() {
-    int count = allTypes.getSerializedSize();
-    assertEquals(TestAllTypesData.expectedOutput.length, count);
-    byte[] output = new byte[count];
-    allTypes.writeTo(output, 0, count);
-    assertEquals(ByteString.of(TestAllTypesData.expectedOutput), ByteString.of(output));
-
-    output = new byte[count];
-    allTypes.writeTo(output);
-    assertEquals(ByteString.of(TestAllTypesData.expectedOutput), ByteString.of(output));
-
-    output = allTypes.toByteArray();
+    byte[] output = adapter.writeBytes(allTypes);
     assertEquals(TestAllTypesData.expectedOutput.length, output.length);
     assertEquals(ByteString.of(TestAllTypesData.expectedOutput), ByteString.of(output));
   }
 
   @Test
-  public void testRead() throws IOException {
-    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
-    allTypes.writeTo(data, 0, data.length);
-    AllTypes parsed = wire.parseFrom(data, AllTypes.class);
-    assertEquals(allTypes, parsed);
-
-    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
-    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
-    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
-
-    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
-    assertEquals(3, extensions.size());
-    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
-    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
-    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  public void testWriteSource() throws IOException {
+    Buffer sink = new Buffer();
+    adapter.write(allTypes, sink);
+    assertEquals(TestAllTypesData.expectedOutput.length, sink.size());
+    assertEquals(ByteString.of(TestAllTypesData.expectedOutput), sink.readByteString());
   }
 
   @Test
-  public void testReadWithOffset() throws IOException {
-    byte[] data = new byte[TestAllTypesData.expectedOutput.length + 100];
-    allTypes.writeTo(data, 50, TestAllTypesData.expectedOutput.length);
-    AllTypes parsed = wire.parseFrom(data, 50, TestAllTypesData.expectedOutput.length,
-        AllTypes.class);
-    assertEquals(allTypes, parsed);
-
-    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
-    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
-    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
-
-    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
-    assertEquals(3, extensions.size());
-    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
-    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
-    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  public void testWriteBytes() throws IOException {
+    byte[] output = adapter.writeBytes(allTypes);
+    assertEquals(TestAllTypesData.expectedOutput.length, output.length);
+    assertEquals(ByteString.of(TestAllTypesData.expectedOutput), ByteString.of(output));
   }
 
   @Test
-  public void testReadFromInputStream() throws IOException {
-    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
-    allTypes.writeTo(data, 0, data.length);
-
-    InputStream input = new ByteArrayInputStream(data);
-    AllTypes parsed = wire.parseFrom(input, AllTypes.class);
-    assertEquals(allTypes, parsed);
-
-    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
-    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
-    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
-
-    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
-    assertEquals(3, extensions.size());
-    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
-    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
-    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  public void testWriteStream() throws IOException {
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    adapter.writeStream(allTypes, stream);
+    byte[] output = stream.toByteArray();
+    assertEquals(TestAllTypesData.expectedOutput.length, output.length);
+    assertEquals(ByteString.of(TestAllTypesData.expectedOutput), ByteString.of(output));
   }
 
   @Test
-  public void testReadFromOkioBuffer() throws IOException {
-    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
-    allTypes.writeTo(data, 0, data.length);
-
+  public void testReadSource() throws IOException {
+    byte[] data = adapter.writeBytes(allTypes);
     Buffer input = new Buffer().write(data);
-    AllTypes parsed = wire.parseFrom(input, AllTypes.class);
+
+    AllTypes parsed = wire.adapter(AllTypes.class).read(input);
     assertEquals(allTypes, parsed);
 
     assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
@@ -409,13 +371,48 @@ public class TestAllTypes {
   }
 
   @Test
-  public void testReadLongMessagesFromInputStream() throws IOException {
-    AllTypes allTypes = createAllTypes(50);
-    byte[] data = new byte[allTypes.getSerializedSize()];
-    allTypes.writeTo(data, 0, data.length);
+  public void testReadBytes() throws IOException {
+    byte[] data = adapter.writeBytes(allTypes);
 
-    InputStream input = new ByteArrayInputStream(data);
-    AllTypes parsed = wire.parseFrom(input, AllTypes.class);
+    AllTypes parsed = wire.adapter(AllTypes.class).readBytes(data);
+    assertEquals(allTypes, parsed);
+
+    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
+
+    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    assertEquals(3, extensions.size());
+    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  }
+
+  @Test
+  public void testReadStream() throws IOException {
+    byte[] data = adapter.writeBytes(allTypes);
+    InputStream stream = new ByteArrayInputStream(data);
+
+    AllTypes parsed = wire.adapter(AllTypes.class).readStream(stream);
+    assertEquals(allTypes, parsed);
+
+    assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_rep_bool));
+    assertEquals(list(true), allTypes.getExtension(Ext_all_types.ext_pack_bool));
+
+    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    assertEquals(3, extensions.size());
+    assertTrue(extensions.contains(Ext_all_types.ext_opt_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_rep_bool));
+    assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
+  }
+
+  @Test
+  public void testReadLongMessages() throws IOException {
+    AllTypes allTypes = createAllTypes(50);
+    byte[] data = adapter.writeBytes(allTypes);
+
+    AllTypes parsed = wire.adapter(AllTypes.class).readBytes(data);
     assertEquals(allTypes, parsed);
 
     assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
@@ -429,41 +426,27 @@ public class TestAllTypes {
     assertTrue(extensions.contains(Ext_all_types.ext_pack_bool));
   }
 
-  // An input stream that returns 1, 2, 3, or 4 bytes at a time
-  private static class SlowInputStream extends InputStream {
-    private final byte[] data;
-    private int pos;
+  /** A source that returns 1, 2, 3, or 4 bytes at a time. */
+  private static class SlowSource extends ForwardingSource {
+    private long pos;
 
-    public SlowInputStream(byte[] data) {
-      this.data = data;
+    SlowSource(Source delegate) {
+      super(delegate);
     }
 
-    @Override public int read(byte[] output, int offset, int count) {
-      if (pos == data.length) {
-        return -1;
-      }
-      int bytesToReturn = Math.min(data.length - pos, (pos % 4) + 1);
-      for (int i = 0; i < bytesToReturn; i++) {
-        output[offset++] = data[pos++];
-      }
-      return bytesToReturn;
-    }
-
-    @Override public int read() {
-      if (pos == data.length) {
-        return -1;
-      }
-      return (int) data[pos++];
+    @Override public long read(Buffer sink, long byteCount) throws IOException {
+      long bytesToReturn = Math.min(byteCount, (pos % 4) + 1);
+      pos += bytesToReturn;
+      return super.read(sink, byteCount);
     }
   }
 
   @Test
-  public void testReadFromSlowInputStream() throws IOException {
-    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
-    allTypes.writeTo(data, 0, data.length);
+  public void testReadFromSlowSource() throws IOException {
+    byte[] data = adapter.writeBytes(allTypes);
 
-    InputStream input = new SlowInputStream(data);
-    AllTypes parsed = wire.parseFrom(input, AllTypes.class);
+    Source input = new SlowSource(new Buffer().write(data));
+    AllTypes parsed = wire.adapter(AllTypes.class).read(Okio.buffer(input));
     assertEquals(allTypes, parsed);
 
     assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
@@ -479,23 +462,21 @@ public class TestAllTypes {
 
   @Test
   public void testReadNoExtension() throws IOException {
-    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
-    allTypes.writeTo(data, 0, data.length);
-    AllTypes parsed = new Wire().parseFrom(data, AllTypes.class);
+    byte[] data = adapter.writeBytes(allTypes);
+    AllTypes parsed = new Wire().adapter(AllTypes.class).readBytes(data);
     assertFalse(allTypes.equals(parsed));
   }
 
   @Test
   public void testReadNonPacked() throws IOException {
-    AllTypes parsed = wire.parseFrom(TestAllTypesData.nonPacked, AllTypes.class);
+    AllTypes parsed = adapter.readBytes(TestAllTypesData.nonPacked);
     assertEquals(allTypes, parsed);
   }
 
   @Test
   public void testToString() throws IOException {
-    byte[] data = new byte[TestAllTypesData.expectedOutput.length];
-    allTypes.writeTo(data, 0, data.length);
-    AllTypes parsed = wire.parseFrom(data, AllTypes.class);
+    byte[] data = adapter.writeBytes(allTypes);
+    AllTypes parsed = wire.adapter(AllTypes.class).readBytes(data);
     assertEquals(TestAllTypesData.expectedToString, parsed.toString());
   }
 
@@ -576,7 +557,7 @@ public class TestAllTypes {
     System.arraycopy(TestAllTypesData.expectedOutput, 17, data, index,
         TestAllTypesData.expectedOutput.length - 17);
 
-    AllTypes parsed = wire.parseFrom(data, AllTypes.class);
+    AllTypes parsed = wire.adapter(AllTypes.class).readBytes(data);
     assertEquals(allTypes, parsed);
   }
 
@@ -585,7 +566,7 @@ public class TestAllTypes {
     AllTypes.Builder builder = getBuilder();
     builder.addVarint(10000, 1);
     AllTypes withUnknownField = builder.build();
-    byte[] data = withUnknownField.toByteArray();
+    byte[] data = adapter.writeBytes(withUnknownField);
     int count = TestAllTypesData.expectedOutput.length;
     assertEquals(count + 4, data.length);
     assertEquals((byte) 0x80, data[count]);
