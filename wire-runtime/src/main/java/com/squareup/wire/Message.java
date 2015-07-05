@@ -190,19 +190,6 @@ public abstract class Message implements Serializable {
   }
 
   /**
-   * Returns the integer value tagged associated with the given enum instance.
-   * If the enum instance is not initialized with an integer tag value, an exception
-   * will be thrown.
-   *
-   * @param <E> the enum class type
-   */
-  @SuppressWarnings("unchecked")
-  public static <E extends Enum & ProtoEnum> int intFromEnum(E value) {
-    EnumAdapter<E> adapter = WIRE.enumAdapter((Class<E>) value.getClass());
-    return adapter.toInt(value);
-  }
-
-  /**
    * Returns the enumerated value tagged with the given integer value for the
    * given enum class. If no enum value in the given class is initialized
    * with the given integer tag value, an exception will be thrown.

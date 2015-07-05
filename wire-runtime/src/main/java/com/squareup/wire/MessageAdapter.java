@@ -473,7 +473,7 @@ final class MessageAdapter<M extends Message> {
   @SuppressWarnings("unchecked")
   private <E extends ProtoEnum> int getEnumSize(E value) {
     EnumAdapter<E> adapter = (EnumAdapter<E>) wire.enumAdapter(value.getClass());
-    return WireOutput.varint32Size(adapter.toInt(value));
+    return WireOutput.varint32Size(value.getValue());
   }
 
   @SuppressWarnings("unchecked")
@@ -530,8 +530,7 @@ final class MessageAdapter<M extends Message> {
   @SuppressWarnings("unchecked")
   private <E extends ProtoEnum> void writeEnum(E value, WireOutput output)
       throws IOException {
-    EnumAdapter<E> adapter = (EnumAdapter<E>) wire.enumAdapter(value.getClass());
-    output.writeVarint32(adapter.toInt(value));
+    output.writeVarint32(value.getValue());
   }
 
   // Reading

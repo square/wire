@@ -54,10 +54,6 @@ final class EnumAdapter<E extends ProtoEnum> {
     }
   }
 
-  public int toInt(E e) {
-    return e.getValue();
-  }
-
   public E fromInt(int value) {
     int index = isDense ? value - 1 : Arrays.binarySearch(values, value);
     try {
