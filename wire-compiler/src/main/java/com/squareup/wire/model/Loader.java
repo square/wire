@@ -20,7 +20,6 @@ import com.squareup.protoparser.ProtoFile;
 import com.squareup.wire.IO;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +32,7 @@ public final class Loader {
   private final String repoPath;
   private final IO io;
   private final Set<String> protoFileNames = new LinkedHashSet<String>();
-  private final List<WireProtoFile> loaded = new ArrayList<WireProtoFile>();
+  private final ImmutableList.Builder<WireProtoFile> loaded = ImmutableList.builder();
 
   public Loader(String repoPath, IO io) {
     this.repoPath = repoPath;
@@ -58,6 +57,6 @@ public final class Loader {
   }
 
   public List<WireProtoFile> loaded() {
-    return ImmutableList.copyOf(loaded);
+    return loaded.build();
   }
 }

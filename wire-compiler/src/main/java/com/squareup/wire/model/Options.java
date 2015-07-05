@@ -94,7 +94,7 @@ public final class Options {
   }
 
   void link(Linker linker) {
-    Map<WireField, Object> map = new LinkedHashMap<WireField, Object>();
+    ImmutableMap<WireField, Object> map = ImmutableMap.of();
     for (OptionElement option : optionElements) {
       Map<WireField, Object> canonicalOption = canonicalizeOption(linker, optionType, option);
       if (canonicalOption != null) {
@@ -102,7 +102,7 @@ public final class Options {
       }
     }
 
-    this.map = ImmutableMap.copyOf(map);
+    this.map = map;
   }
 
   Map<WireField, Object> canonicalizeOption(
@@ -220,7 +220,8 @@ public final class Options {
     }
   }
 
-  private Map<WireField, Object> union(Map<WireField, Object> a, Map<WireField, Object> b) {
+  private ImmutableMap<WireField, Object> union(
+      Map<WireField, Object> a, Map<WireField, Object> b) {
     Map<WireField, Object> result = new LinkedHashMap<WireField, Object>(a);
     for (Map.Entry<WireField, Object> entry : b.entrySet()) {
       Object aValue = result.get(entry.getKey());

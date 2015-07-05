@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.internal;
 
-import java.util.ArrayList;
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 
 public final class Util {
@@ -24,11 +24,11 @@ public final class Util {
   private Util() {
   }
 
-  public static <T> List<T> concatenate(List<T> a, T b) {
-    List<T> result = new ArrayList<T>();
-    result.addAll(a);
-    result.add(b);
-    return result;
+  public static <T> ImmutableList<T> concatenate(List<T> a, T b) {
+    return ImmutableList.<T>builder()
+        .addAll(a)
+        .add(b)
+        .build();
   }
 
   /** A grab-bag of fixes for things that can go wrong when converting to javadoc. */

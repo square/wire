@@ -15,12 +15,11 @@
  */
 package com.squareup.wire.model;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.squareup.wire.internal.Util;
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -55,9 +54,9 @@ public final class ProtoTypeName {
   static final ProtoTypeName SERVICE_OPTIONS = get("google.protobuf", "ServiceOptions");
   static final ProtoTypeName METHOD_OPTIONS = get("google.protobuf", "MethodOptions");
 
-  private static final Map<String, ProtoTypeName> SCALAR_TYPES;
+  private static final ImmutableMap<String, ProtoTypeName> SCALAR_TYPES;
   static {
-    Map<String, ProtoTypeName> scalarTypes = new LinkedHashMap<String, ProtoTypeName>();
+    ImmutableMap.Builder<String, ProtoTypeName> scalarTypes = ImmutableMap.builder();
     try {
       for (Field field : ProtoTypeName.class.getDeclaredFields()) {
         if (field.getType() == ProtoTypeName.class) {
@@ -67,7 +66,7 @@ public final class ProtoTypeName {
           }
         }
       }
-      SCALAR_TYPES = Collections.unmodifiableMap(scalarTypes);
+      SCALAR_TYPES = scalarTypes.build();
     } catch (IllegalAccessException e) {
       throw new AssertionError();
     }
@@ -76,17 +75,19 @@ public final class ProtoTypeName {
   private final String protoPackage;
 
   /** A chain of enclosed message names, outermost is first. */
-  private final List<String> names;
+  private final ImmutableList<String> names;
   private final boolean isScalar;
+  private final String string;
 
   private ProtoTypeName(String scalarName) {
-    this(null, Collections.singletonList(scalarName), true);
+    this(null, ImmutableList.of(scalarName), true);
   }
 
-  private ProtoTypeName(String protoPackage, List<String> names, boolean isScalar) {
+  private ProtoTypeName(String protoPackage, ImmutableList<String> names, boolean isScalar) {
     this.protoPackage = protoPackage;
     this.names = names;
     this.isScalar = isScalar;
+    this.string = (protoPackage != null ? (protoPackage + '.') : "") + Joiner.on('.').join(names);
   }
 
   public String packageName() {
@@ -121,7 +122,7 @@ public final class ProtoTypeName {
 
   public static ProtoTypeName get(String protoPackage, String name) {
     checkNotNull(name, "name");
-    return new ProtoTypeName(protoPackage, Collections.singletonList(name), false);
+    return new ProtoTypeName(protoPackage, ImmutableList.of(name), false);
   }
 
   public static ProtoTypeName getScalar(String name) {
@@ -136,27 +137,14 @@ public final class ProtoTypeName {
 
   @Override public boolean equals(Object o) {
     return o instanceof ProtoTypeName
-        && Objects.equals(((ProtoTypeName) o).protoPackage, protoPackage)
-        && ((ProtoTypeName) o).names.equals(names)
-        && ((ProtoTypeName) o).isScalar == isScalar;
+        && Objects.equals(((ProtoTypeName) o).string, string);
   }
 
   @Override public int hashCode() {
-    int result = (protoPackage != null ? protoPackage.hashCode() : 0);
-    result = result * 37 + names.hashCode();
-    return result;
+    return string.hashCode();
   }
 
   @Override public String toString() {
-    StringBuilder result = new StringBuilder();
-    if (protoPackage != null) {
-      result.append(protoPackage);
-      result.append('.');
-    }
-    for (int i = 0, size = names.size(); i < size; i++) {
-      if (i > 0) result.append('.');
-      result.append(names.get(i));
-    }
-    return result.toString();
+    return string;
   }
 }
