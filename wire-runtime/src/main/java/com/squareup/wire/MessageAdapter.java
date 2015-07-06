@@ -472,7 +472,6 @@ final class MessageAdapter<M extends Message> {
 
   @SuppressWarnings("unchecked")
   private <E extends ProtoEnum> int getEnumSize(E value) {
-    EnumAdapter<E> adapter = (EnumAdapter<E>) wire.enumAdapter(value.getClass());
     return WireOutput.varint32Size(value.getValue());
   }
 
