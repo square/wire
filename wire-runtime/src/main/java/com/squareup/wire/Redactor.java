@@ -111,11 +111,11 @@ public class Redactor<T extends Message> {
     try {
       Message.Builder<T> builder = (Message.Builder<T>) builderConstructor.newInstance(message);
 
-      for (Field field : redactedFields) {
-        field.set(builder, null);
+      for (int i = 0, count = redactedFields.size(); i < count; i++) {
+        redactedFields.get(i).set(builder, null);
       }
 
-      for (int i = 0; i < messageFields.size(); i++) {
+      for (int i = 0, count = messageFields.size(); i < count; i++) {
         Field field = messageFields.get(i);
         Redactor<Message> r = (Redactor<Message>) messageRedactors.get(i);
         field.set(builder, r.redact((Message) field.get(builder)));
