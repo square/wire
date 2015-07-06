@@ -21,10 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import okio.ByteString;
 
 /**
@@ -45,37 +42,9 @@ public abstract class Message implements Serializable {
     MESSAGE(11), FIXED32(12), SFIXED32(13), FIXED64(14),
     SFIXED64(15), FLOAT(16), DOUBLE(17);
 
-    public static final Comparator<Datatype> ORDER_BY_NAME = new Comparator<Datatype>() {
-      @Override public int compare(Datatype o1, Datatype o2) {
-        return o1.name().compareTo(o2.name());
-      }
-    };
-
-    private static final Map<String, Datatype> TYPES_BY_NAME =
-        new LinkedHashMap<String, Datatype>();
-    static {
-      TYPES_BY_NAME.put("int32", INT32);
-      TYPES_BY_NAME.put("int64", INT64);
-      TYPES_BY_NAME.put("uint32", UINT32);
-      TYPES_BY_NAME.put("uint64", UINT64);
-      TYPES_BY_NAME.put("sint32", SINT32);
-      TYPES_BY_NAME.put("sint64", SINT64);
-      TYPES_BY_NAME.put("bool", BOOL);
-      TYPES_BY_NAME.put("enum", ENUM);
-      TYPES_BY_NAME.put("string", STRING);
-      TYPES_BY_NAME.put("bytes", BYTES);
-      TYPES_BY_NAME.put("message", MESSAGE);
-      TYPES_BY_NAME.put("fixed32", FIXED32);
-      TYPES_BY_NAME.put("sfixed32", SFIXED32);
-      TYPES_BY_NAME.put("fixed64", FIXED64);
-      TYPES_BY_NAME.put("sfixed64", SFIXED64);
-      TYPES_BY_NAME.put("float", FLOAT);
-      TYPES_BY_NAME.put("double", DOUBLE);
-    }
-
     private final int value;
 
-    private Datatype(int value) {
+    Datatype(int value) {
       this.value = value;
     }
 
@@ -98,10 +67,6 @@ public abstract class Message implements Serializable {
           throw new AssertionError("No wiretype for datatype " + this);
       }
     }
-
-    public static Datatype of(String typeString) {
-      return TYPES_BY_NAME.get(typeString);
-    }
   }
 
   /**
@@ -110,15 +75,9 @@ public abstract class Message implements Serializable {
   public enum Label {
     REQUIRED(32), OPTIONAL(64), REPEATED(128), PACKED(256), ONE_OF(512);
 
-    public static final Comparator<Label> ORDER_BY_NAME = new Comparator<Label>() {
-      @Override public int compare(Label o1, Label o2) {
-        return o1.name().compareTo(o2.name());
-      }
-    };
-
     private final int value;
 
-    private Label(int value) {
+    Label(int value) {
       this.value = value;
     }
 
