@@ -4,11 +4,12 @@ package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
+import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Object;
+import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
-
-import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class EnumOptions extends ExtendableMessage<EnumOptions> {
   private static final long serialVersionUID = 0L;
@@ -18,7 +19,11 @@ public final class EnumOptions extends ExtendableMessage<EnumOptions> {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(tag = 999, label = REPEATED, messageType = UninterpretedOption.class)
+  @ProtoField(
+      tag = 999,
+      label = Message.Label.REPEATED,
+      messageType = UninterpretedOption.class
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public EnumOptions(List<UninterpretedOption> uninterpreted_option) {
@@ -50,8 +55,7 @@ public final class EnumOptions extends ExtendableMessage<EnumOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableBuilder<EnumOptions> {
-
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<EnumOptions> {
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {

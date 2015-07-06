@@ -4,18 +4,15 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Boolean;
+import java.lang.Double;
+import java.lang.Long;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
-
-import static com.squareup.wire.Message.Datatype.BOOL;
-import static com.squareup.wire.Message.Datatype.BYTES;
-import static com.squareup.wire.Message.Datatype.DOUBLE;
-import static com.squareup.wire.Message.Datatype.INT64;
-import static com.squareup.wire.Message.Datatype.STRING;
-import static com.squareup.wire.Message.Datatype.UINT64;
-import static com.squareup.wire.Message.Label.REPEATED;
-import static com.squareup.wire.Message.Label.REQUIRED;
 
 /**
  * A message representing a option the parser does not recognize. This only
@@ -29,36 +26,64 @@ public final class UninterpretedOption extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final List<NamePart> DEFAULT_NAME = Collections.emptyList();
+
   public static final String DEFAULT_IDENTIFIER_VALUE = "";
+
   public static final Long DEFAULT_POSITIVE_INT_VALUE = 0L;
+
   public static final Long DEFAULT_NEGATIVE_INT_VALUE = 0L;
-  public static final Double DEFAULT_DOUBLE_VALUE = 0D;
+
+  public static final Double DEFAULT_DOUBLE_VALUE = 0.0d;
+
   public static final ByteString DEFAULT_STRING_VALUE = ByteString.EMPTY;
+
   public static final String DEFAULT_AGGREGATE_VALUE = "";
 
-  @ProtoField(tag = 2, label = REPEATED, messageType = NamePart.class)
+  @ProtoField(
+      tag = 2,
+      label = Message.Label.REPEATED,
+      messageType = NamePart.class
+  )
   public final List<NamePart> name;
 
   /**
    * The value of the uninterpreted option, in whatever type the tokenizer
    * identified it as during parsing. Exactly one of these should be set.
    */
-  @ProtoField(tag = 3, type = STRING)
+  @ProtoField(
+      tag = 3,
+      type = Message.Datatype.STRING
+  )
   public final String identifier_value;
 
-  @ProtoField(tag = 4, type = UINT64)
+  @ProtoField(
+      tag = 4,
+      type = Message.Datatype.UINT64
+  )
   public final Long positive_int_value;
 
-  @ProtoField(tag = 5, type = INT64)
+  @ProtoField(
+      tag = 5,
+      type = Message.Datatype.INT64
+  )
   public final Long negative_int_value;
 
-  @ProtoField(tag = 6, type = DOUBLE)
+  @ProtoField(
+      tag = 6,
+      type = Message.Datatype.DOUBLE
+  )
   public final Double double_value;
 
-  @ProtoField(tag = 7, type = BYTES)
+  @ProtoField(
+      tag = 7,
+      type = Message.Datatype.BYTES
+  )
   public final ByteString string_value;
 
-  @ProtoField(tag = 8, type = STRING)
+  @ProtoField(
+      tag = 8,
+      type = Message.Datatype.STRING
+  )
   public final String aggregate_value;
 
   public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value) {
@@ -106,14 +131,19 @@ public final class UninterpretedOption extends Message {
     return result;
   }
 
-  public static final class Builder extends Message.Builder<UninterpretedOption> {
-
+  public static final class Builder extends com.squareup.wire.Message.Builder<UninterpretedOption> {
     public List<NamePart> name;
+
     public String identifier_value;
+
     public Long positive_int_value;
+
     public Long negative_int_value;
+
     public Double double_value;
+
     public ByteString string_value;
+
     public String aggregate_value;
 
     public Builder() {
@@ -187,12 +217,21 @@ public final class UninterpretedOption extends Message {
     private static final long serialVersionUID = 0L;
 
     public static final String DEFAULT_NAME_PART = "";
+
     public static final Boolean DEFAULT_IS_EXTENSION = false;
 
-    @ProtoField(tag = 1, type = STRING, label = REQUIRED)
+    @ProtoField(
+        tag = 1,
+        type = Message.Datatype.STRING,
+        label = Message.Label.REQUIRED
+    )
     public final String name_part;
 
-    @ProtoField(tag = 2, type = BOOL, label = REQUIRED)
+    @ProtoField(
+        tag = 2,
+        type = Message.Datatype.BOOL,
+        label = Message.Label.REQUIRED
+    )
     public final Boolean is_extension;
 
     public NamePart(String name_part, Boolean is_extension) {
@@ -225,9 +264,9 @@ public final class UninterpretedOption extends Message {
       return result;
     }
 
-    public static final class Builder extends Message.Builder<NamePart> {
-
+    public static final class Builder extends com.squareup.wire.Message.Builder<NamePart> {
       public String name_part;
+
       public Boolean is_extension;
 
       public Builder() {
