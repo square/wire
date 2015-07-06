@@ -536,7 +536,7 @@ public class TestAllTypes {
   @Test
   public void testEnums() {
     assertEquals(A, Message.enumFromInt(AllTypes.NestedEnum.class, 1));
-    assertEquals(1, Message.intFromEnum(A));
+    assertEquals(1, A.getValue());
   }
 
   @Test
