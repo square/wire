@@ -203,11 +203,11 @@ public abstract class Message implements Serializable {
     return unknownFields == null ? 0 : unknownFields.getSerializedSize();
   }
 
-  protected boolean equals(Object a, Object b) {
+  protected static boolean equals(Object a, Object b) {
     return a == b || (a != null && a.equals(b));
   }
 
-  protected boolean equals(List<?> a, List<?> b) {
+  protected static boolean equals(List<?> a, List<?> b) {
     // Canonicalize empty -> null
     if (a != null && a.isEmpty()) a = null;
     if (b != null && b.isEmpty()) b = null;
