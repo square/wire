@@ -11,12 +11,16 @@ import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
 
-public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> {
+public final class MethodOptions extends ExtendableMessage<MethodOptions> {
   private static final long serialVersionUID = 0L;
 
   public static final List<UninterpretedOption> DEFAULT_UNINTERPRETED_OPTION = Collections.emptyList();
 
   /**
+   * Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
+   *   framework.  We apologize for hoarding these numbers to ourselves, but
+   *   we were already using them long before we decided to release Protocol
+   *   Buffers.
    * The parser stores options it doesn't recognize here. See above.
    */
   @ProtoField(
@@ -26,11 +30,11 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
   )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  public EnumValueOptions(List<UninterpretedOption> uninterpreted_option) {
+  public MethodOptions(List<UninterpretedOption> uninterpreted_option) {
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
   }
 
-  private EnumValueOptions(Builder builder) {
+  private MethodOptions(Builder builder) {
     this(builder.uninterpreted_option);
     setBuilder(builder);
   }
@@ -38,8 +42,8 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
-    if (!(other instanceof EnumValueOptions)) return false;
-    EnumValueOptions o = (EnumValueOptions) other;
+    if (!(other instanceof MethodOptions)) return false;
+    MethodOptions o = (MethodOptions) other;
     if (!extensionsEqual(o)) return false;
     return equals(uninterpreted_option, o.uninterpreted_option);
   }
@@ -55,19 +59,23 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<EnumValueOptions> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<MethodOptions> {
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
     }
 
-    public Builder(EnumValueOptions message) {
+    public Builder(MethodOptions message) {
       super(message);
       if (message == null) return;
       this.uninterpreted_option = copyOf(message.uninterpreted_option);
     }
 
     /**
+     * Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
+     *   framework.  We apologize for hoarding these numbers to ourselves, but
+     *   we were already using them long before we decided to release Protocol
+     *   Buffers.
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
@@ -76,14 +84,14 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
     }
 
     @Override
-    public <E> Builder setExtension(Extension<EnumValueOptions, E> extension, E value) {
+    public <E> Builder setExtension(Extension<MethodOptions, E> extension, E value) {
       super.setExtension(extension, value);
       return this;
     }
 
     @Override
-    public EnumValueOptions build() {
-      return new EnumValueOptions(this);
+    public MethodOptions build() {
+      return new MethodOptions(this);
     }
   }
 }

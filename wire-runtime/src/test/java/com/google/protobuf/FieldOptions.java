@@ -4,23 +4,27 @@ package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
+import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
+import java.lang.Boolean;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Collections;
 import java.util.List;
-
-import static com.squareup.wire.Message.Datatype.BOOL;
-import static com.squareup.wire.Message.Datatype.ENUM;
-import static com.squareup.wire.Message.Datatype.STRING;
-import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class FieldOptions extends ExtendableMessage<FieldOptions> {
   private static final long serialVersionUID = 0L;
 
   public static final CType DEFAULT_CTYPE = CType.STRING;
+
   public static final Boolean DEFAULT_PACKED = false;
+
   public static final Boolean DEFAULT_DEPRECATED = false;
+
   public static final String DEFAULT_EXPERIMENTAL_MAP_KEY = "";
+
   public static final List<UninterpretedOption> DEFAULT_UNINTERPRETED_OPTION = Collections.emptyList();
 
   /**
@@ -29,7 +33,10 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
    * options below.  This option is not yet implemented in the open source
    * release -- sorry, we'll try to include it in a future version!
    */
-  @ProtoField(tag = 1, type = ENUM)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.ENUM
+  )
   public final CType ctype;
 
   /**
@@ -38,7 +45,10 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
    * writing the tag and type for each element, the entire array is encoded as
    * a single length-delimited blob.
    */
-  @ProtoField(tag = 2, type = BOOL)
+  @ProtoField(
+      tag = 2,
+      type = Message.Datatype.BOOL
+  )
   public final Boolean packed;
 
   /**
@@ -47,7 +57,10 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
    * for accessors, or it will be completely ignored; in the very least, this
    * is a formalization for deprecating fields.
    */
-  @ProtoField(tag = 3, type = BOOL)
+  @ProtoField(
+      tag = 3,
+      type = Message.Datatype.BOOL
+  )
   public final Boolean deprecated;
 
   /**
@@ -64,13 +77,20 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
    * In this situation, the map key for Item will be set to "name".
    * TODO: Fully-implement this, then remove the "experimental_" prefix.
    */
-  @ProtoField(tag = 9, type = STRING)
+  @ProtoField(
+      tag = 9,
+      type = Message.Datatype.STRING
+  )
   public final String experimental_map_key;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(tag = 999, label = REPEATED, messageType = UninterpretedOption.class)
+  @ProtoField(
+      tag = 999,
+      label = Message.Label.REPEATED,
+      messageType = UninterpretedOption.class
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option) {
@@ -114,12 +134,15 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableBuilder<FieldOptions> {
-
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FieldOptions> {
     public CType ctype;
+
     public Boolean packed;
+
     public Boolean deprecated;
+
     public String experimental_map_key;
+
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
@@ -207,18 +230,19 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     }
   }
 
-  public enum CType
-      implements ProtoEnum {
+  public enum CType implements ProtoEnum {
     /**
      * Default mode.
      */
     STRING(0),
+
     CORD(1),
+
     STRING_PIECE(2);
 
     private final int value;
 
-    private CType(int value) {
+    CType(int value) {
       this.value = value;
     }
 

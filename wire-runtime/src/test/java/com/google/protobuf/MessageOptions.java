@@ -4,18 +4,21 @@ package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
+import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.lang.Boolean;
+import java.lang.Object;
+import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
-
-import static com.squareup.wire.Message.Datatype.BOOL;
-import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class MessageOptions extends ExtendableMessage<MessageOptions> {
   private static final long serialVersionUID = 0L;
 
   public static final Boolean DEFAULT_MESSAGE_SET_WIRE_FORMAT = false;
+
   public static final Boolean DEFAULT_NO_STANDARD_DESCRIPTOR_ACCESSOR = false;
+
   public static final List<UninterpretedOption> DEFAULT_UNINTERPRETED_OPTION = Collections.emptyList();
 
   /**
@@ -38,7 +41,10 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
    * Because this is an option, the above two restrictions are not enforced by
    * the protocol compiler.
    */
-  @ProtoField(tag = 1, type = BOOL)
+  @ProtoField(
+      tag = 1,
+      type = Message.Datatype.BOOL
+  )
   public final Boolean message_set_wire_format;
 
   /**
@@ -46,13 +52,20 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
    * conflict with a field of the same name.  This is meant to make migration
    * from proto1 easier; new code should avoid fields named "descriptor".
    */
-  @ProtoField(tag = 2, type = BOOL)
+  @ProtoField(
+      tag = 2,
+      type = Message.Datatype.BOOL
+  )
   public final Boolean no_standard_descriptor_accessor;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(tag = 999, label = REPEATED, messageType = UninterpretedOption.class)
+  @ProtoField(
+      tag = 999,
+      label = Message.Label.REPEATED,
+      messageType = UninterpretedOption.class
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option) {
@@ -90,10 +103,11 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableBuilder<MessageOptions> {
-
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<MessageOptions> {
     public Boolean message_set_wire_format;
+
     public Boolean no_standard_descriptor_accessor;
+
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
