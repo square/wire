@@ -1221,7 +1221,42 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
     @Override
     public AllTypes build() {
-      checkRequiredFields();
+      if (req_int32 == null
+          || req_uint32 == null
+          || req_sint32 == null
+          || req_fixed32 == null
+          || req_sfixed32 == null
+          || req_int64 == null
+          || req_uint64 == null
+          || req_sint64 == null
+          || req_fixed64 == null
+          || req_sfixed64 == null
+          || req_bool == null
+          || req_float == null
+          || req_double == null
+          || req_string == null
+          || req_bytes == null
+          || req_nested_enum == null
+          || req_nested_message == null) {
+        throw missingRequiredFields(req_int32, "req_int32",
+            req_uint32, "req_uint32",
+            req_sint32, "req_sint32",
+            req_fixed32, "req_fixed32",
+            req_sfixed32, "req_sfixed32",
+            req_int64, "req_int64",
+            req_uint64, "req_uint64",
+            req_sint64, "req_sint64",
+            req_fixed64, "req_fixed64",
+            req_sfixed64, "req_sfixed64",
+            req_bool, "req_bool",
+            req_float, "req_float",
+            req_double, "req_double",
+            req_string, "req_string",
+            req_bytes, "req_bytes",
+            req_nested_enum, "req_nested_enum",
+            req_nested_message, "req_nested_message");
+      }
+
       return new AllTypes(this);
     }
   }

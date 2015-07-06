@@ -649,7 +649,9 @@ public final class TypeWriter {
   //
   // @Override
   // public SimpleMessage build() {
-  //   checkRequiredFields();
+  //   if (field_one == null) {
+  //     throw missingRequiredFields(field_one, "field_one");
+  //   }
   //   return new SimpleMessage(this);
   // }
   //
@@ -661,9 +663,24 @@ public final class TypeWriter {
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .returns(javaType);
-    if (message.hasRequiredFields()) {
-      result.addStatement("checkRequiredFields()");
+
+    List<WireField> requiredFields = message.getRequiredFields();
+    if (!requiredFields.isEmpty()) {
+      CodeBlock.Builder conditionals = CodeBlock.builder().add("$[");
+      CodeBlock.Builder missingArgs = CodeBlock.builder();
+      for (int i = 0; i < requiredFields.size(); i++) {
+        WireField requiredField = requiredFields.get(i);
+        if (i > 0) conditionals.add("\n|| ");
+        conditionals.add("$L == null", requiredField.name());
+        if (i > 0) missingArgs.add(",\n");
+        missingArgs.add("$1L, $1S", requiredField.name());
+      }
+
+      result.beginControlFlow("if ($L)", conditionals.add("$]").build())
+          .addStatement("throw missingRequiredFields($L)", missingArgs.build())
+          .endControlFlow();
     }
+
     result.addStatement("return new $T(this)", javaType);
     return result.build();
   }

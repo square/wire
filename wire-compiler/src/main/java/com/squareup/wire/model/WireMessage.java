@@ -61,11 +61,14 @@ public final class WireMessage extends WireType {
     return fields;
   }
 
-  public boolean hasRequiredFields() {
+  public ImmutableList<WireField> getRequiredFields() {
+    ImmutableList.Builder<WireField> required = ImmutableList.builder();
     for (WireField field : fieldsAndOneOfFields()) {
-      if (field.isRequired()) return true;
+      if (field.isRequired()) {
+        required.add(field);
+      }
     }
-    return false;
+    return required.build();
   }
 
   public ImmutableList<WireField> fieldsAndOneOfFields() {

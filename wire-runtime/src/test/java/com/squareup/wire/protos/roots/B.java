@@ -57,7 +57,9 @@ public final class B extends Message {
 
     @Override
     public B build() {
-      checkRequiredFields();
+      if (c == null) {
+        throw missingRequiredFields(c, "c");
+      }
       return new B(this);
     }
   }

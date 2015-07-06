@@ -1,4 +1,8 @@
-mvn clean package -U -DskipTests
+#!/bin/bash
+
+set -e
+
+mvn clean package -pl wire-compiler -am -Dmaven.test.skip
 cd wire-runtime
 pushd src/test/proto
 PROTOS=`find . -name '*.proto' | sed 's/^\.\///'`
