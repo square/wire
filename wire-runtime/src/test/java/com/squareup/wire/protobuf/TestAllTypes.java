@@ -353,7 +353,8 @@ public class TestAllTypes {
   public void testReadWithOffset() throws IOException {
     byte[] data = new byte[TestAllTypesData.expectedOutput.length + 100];
     allTypes.writeTo(data, 50, TestAllTypesData.expectedOutput.length);
-    AllTypes parsed = wire.parseFrom(data, 50, TestAllTypesData.expectedOutput.length, AllTypes.class);
+    AllTypes parsed = wire.parseFrom(data, 50, TestAllTypesData.expectedOutput.length,
+        AllTypes.class);
     assertEquals(allTypes, parsed);
 
     assertEquals(Boolean.TRUE, allTypes.getExtension(Ext_all_types.ext_opt_bool));
@@ -517,7 +518,7 @@ public class TestAllTypes {
       builder.build();
       fail();
     } catch (IllegalStateException e) {
-      assertEquals("Required fields not set:\n  req_bool\n  req_int32\n  req_sfixed64",
+      assertEquals("Required fields not set:\n  req_int32\n  req_sfixed64\n  req_bool",
         e.getMessage());
     }
   }

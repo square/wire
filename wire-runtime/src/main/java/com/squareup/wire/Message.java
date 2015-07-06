@@ -298,10 +298,23 @@ public abstract class Message implements Serializable {
     }
 
     /**
-     * Throws an exception if a required field has not been set.
+     * Create an exception for missing required fields.
+     *
+     * @param args Alternating field value and field name pairs.
      */
-    public void checkRequiredFields() {
-      WIRE.builderAdapter(getClass()).checkRequiredFields(this);
+    protected IllegalStateException missingRequiredFields(Object... args) {
+      StringBuilder sb = new StringBuilder();
+      String plural = "";
+      for (int i = 0, size = args.length; i < size; i += 2) {
+        if (args[i] == null) {
+          if (sb.length() > 0) {
+            plural = "s"; // Found more than one missing field
+          }
+          sb.append("\n  ");
+          sb.append(args[i + 1]);
+        }
+      }
+      throw new IllegalStateException("Required field" + plural + " not set:" + sb);
     }
 
     /**

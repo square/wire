@@ -67,7 +67,9 @@ public final class RedactedRequired extends Message {
 
     @Override
     public RedactedRequired build() {
-      checkRequiredFields();
+      if (a == null) {
+        throw missingRequiredFields(a, "a");
+      }
       return new RedactedRequired(this);
     }
   }

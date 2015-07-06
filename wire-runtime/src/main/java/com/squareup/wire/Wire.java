@@ -34,10 +34,6 @@ public final class Wire {
 
   private final Map<Class<? extends Message>, MessageAdapter<? extends Message>> messageAdapters =
       new LinkedHashMap<Class<? extends Message>, MessageAdapter<? extends Message>>();
-  private final Map<Class<? extends Message.Builder>,
-      BuilderAdapter<? extends Message.Builder>> builderAdapters =
-          new LinkedHashMap<Class<? extends Message.Builder>,
-              BuilderAdapter<? extends Message.Builder>>();
   private final Map<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>> enumAdapters =
       new LinkedHashMap<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>>();
 
@@ -83,20 +79,6 @@ public final class Wire {
     if (adapter == null) {
       adapter = new MessageAdapter<M>(this, messageType);
       messageAdapters.put(messageType, adapter);
-    }
-    return adapter;
-  }
-
-  /**
-   * Returns a builder adapter for {@code builderType}.
-   */
-  @SuppressWarnings("unchecked")
-  synchronized <B extends Message.Builder> BuilderAdapter<B>
-      builderAdapter(Class<B> builderType) {
-    BuilderAdapter<B> adapter = (BuilderAdapter<B>) builderAdapters.get(builderType);
-    if (adapter == null) {
-      adapter = new BuilderAdapter<B>(builderType);
-      builderAdapters.put(builderType, adapter);
     }
     return adapter;
   }

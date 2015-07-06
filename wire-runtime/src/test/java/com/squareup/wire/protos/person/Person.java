@@ -153,7 +153,11 @@ public final class Person extends Message {
 
     @Override
     public Person build() {
-      checkRequiredFields();
+      if (name == null
+          || id == null) {
+        throw missingRequiredFields(name, "name",
+            id, "id");
+      }
       return new Person(this);
     }
   }
@@ -269,7 +273,9 @@ public final class Person extends Message {
 
       @Override
       public PhoneNumber build() {
-        checkRequiredFields();
+        if (number == null) {
+          throw missingRequiredFields(number, "number");
+        }
         return new PhoneNumber(this);
       }
     }

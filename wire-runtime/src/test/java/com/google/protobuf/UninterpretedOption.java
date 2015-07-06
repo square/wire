@@ -252,7 +252,11 @@ public final class UninterpretedOption extends Message {
 
       @Override
       public NamePart build() {
-        checkRequiredFields();
+        if (name_part == null
+            || is_extension == null) {
+          throw missingRequiredFields(name_part, "name_part",
+              is_extension, "is_extension");
+        }
         return new NamePart(this);
       }
     }

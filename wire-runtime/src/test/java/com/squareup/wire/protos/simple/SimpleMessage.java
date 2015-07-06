@@ -352,7 +352,9 @@ public final class SimpleMessage extends Message {
 
     @Override
     public SimpleMessage build() {
-      checkRequiredFields();
+      if (required_int32 == null) {
+        throw missingRequiredFields(required_int32, "required_int32");
+      }
       return new SimpleMessage(this);
     }
   }
