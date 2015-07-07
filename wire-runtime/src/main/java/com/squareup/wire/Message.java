@@ -85,15 +85,15 @@ public abstract class Message implements Serializable {
       return value;
     }
 
-    public boolean isRepeated() {
+    boolean isRepeated() {
       return this == REPEATED || this == PACKED;
     }
 
-    public boolean isPacked() {
+    boolean isPacked() {
       return this == PACKED;
     }
 
-    public boolean isOneOf() {
+    boolean isOneOf() {
       return this == ONE_OF;
     }
   }
