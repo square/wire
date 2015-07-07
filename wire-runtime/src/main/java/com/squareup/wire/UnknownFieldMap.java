@@ -155,7 +155,7 @@ final class UnknownFieldMap {
     @Override public void write(int tag, WireOutput output) throws IOException {
       output.writeTag(tag, WireType.LENGTH_DELIMITED);
       output.writeVarint32(value.size());
-      output.writeRawBytes(value.toByteArray());
+      output.writeRawBytes(value);
     }
 
     @Override public ByteString getAsBytes() {
