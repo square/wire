@@ -263,7 +263,7 @@ final class MessageAdapter<M extends Message> {
 
   private <T extends ExtendableMessage<?>> int getExtensionsSerializedSize(ExtensionMap<T> map) {
     int size = 0;
-    for (int i = 0; i < map.size(); i++) {
+    for (int i = 0, count = map.size(); i < count; i++) {
       Extension<T, ?> extension = map.getExtension(i);
       Object value = map.getExtensionValue(i);
       int tag = extension.getTag();
@@ -284,16 +284,16 @@ final class MessageAdapter<M extends Message> {
 
   private int getRepeatedSize(List<?> value, int tag, Datatype datatype) {
     int size = 0;
-    for (Object o : value) {
-      size += getSerializedSize(tag, o, datatype);
+    for (int i = 0, count = value.size(); i < count; i++) {
+      size += getSerializedSize(tag, value.get(i), datatype);
     }
     return size;
   }
 
   private int getPackedSize(List<?> value, int tag, Datatype datatype) {
     int packedLength = 0;
-    for (Object o : value) {
-      packedLength += getSerializedSizeNoTag(o, datatype);
+    for (int i = 0, count = value.size(); i < count; i++) {
+      packedLength += getSerializedSizeNoTag(value.get(i), datatype);
     }
     // tag + length + value + value + ...
     int size = WireOutput.varint32Size(WireOutput.makeTag(tag, WireType.LENGTH_DELIMITED));
@@ -335,7 +335,7 @@ final class MessageAdapter<M extends Message> {
 
   private <T extends ExtendableMessage<?>> void writeExtensions(WireOutput output,
       ExtensionMap<T> extensionMap) throws IOException {
-    for (int i = 0; i < extensionMap.size(); i++) {
+    for (int i = 0, count = extensionMap.size(); i < count; i++) {
       Extension<T, ?> extension = extensionMap.getExtension(i);
       Object value = extensionMap.getExtensionValue(i);
       int tag = extension.getTag();
@@ -355,21 +355,21 @@ final class MessageAdapter<M extends Message> {
 
   private void writeRepeated(WireOutput output, List<?> value, int tag, Datatype datatype)
       throws IOException {
-    for (Object o : value) {
-      writeValue(output, tag, o, datatype);
+    for (int i = 0, count = value.size(); i < count; i++) {
+      writeValue(output, tag, value.get(i), datatype);
     }
   }
 
   private void writePacked(WireOutput output, List<?> value, int tag, Datatype datatype)
       throws IOException {
     int packedLength = 0;
-    for (Object o : value) {
-      packedLength += getSerializedSizeNoTag(o, datatype);
+    for (int i = 0, count = value.size(); i < count; i++) {
+      packedLength += getSerializedSizeNoTag(value.get(i), datatype);
     }
     output.writeTag(tag, WireType.LENGTH_DELIMITED);
     output.writeVarint32(packedLength);
-    for (Object o : value) {
-      writeValueNoTag(output, o, datatype);
+    for (int i = 0, count = value.size(); i < count; i++) {
+      writeValueNoTag(output, value.get(i), datatype);
     }
   }
 

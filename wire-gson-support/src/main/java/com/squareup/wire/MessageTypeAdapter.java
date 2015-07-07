@@ -79,7 +79,8 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
         out.name("" + tag);
         out.beginArray();
         boolean first = true;
-        for (UnknownFieldMap.FieldValue unknownField : fieldList) {
+        for (int i = 0, count = fieldList.size(); i < count; i++) {
+          UnknownFieldMap.FieldValue unknownField = fieldList.get(i);
           switch (unknownField.getWireType()) {
             case VARINT:
               if (first) out.value("varint");
@@ -113,7 +114,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
   private <M extends ExtendableMessage<?>, E> void emitExtensions(ExtendableMessage<M> message,
       JsonWriter out) throws IOException {
     if (message.extensionMap == null) return;
-    for (int i = 0; i < message.extensionMap.size(); i++) {
+    for (int i = 0, count = message.extensionMap.size(); i < count; i++) {
       Extension<M, E> extension = (Extension<M, E>) message.extensionMap.getExtension(i);
       E value = (E) message.extensionMap.getExtensionValue(i);
       emitExtension(extension, value, out);
