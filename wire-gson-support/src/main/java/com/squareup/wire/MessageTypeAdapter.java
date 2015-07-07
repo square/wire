@@ -32,9 +32,20 @@ import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
-import static com.squareup.wire.UnknownFieldMap.UnknownFieldType;
 
 class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
+
+  enum UnknownFieldType {
+    VARINT, FIXED32, FIXED64, LENGTH_DELIMITED;
+
+    public static UnknownFieldType of(String name) {
+      if ("varint".equals(name)) return VARINT;
+      if ("fixed32".equals(name)) return FIXED32;
+      if ("fixed64".equals(name)) return FIXED64;
+      if ("length-delimited".equals(name)) return LENGTH_DELIMITED;
+      throw new IllegalArgumentException("Unknown type " + name);
+    }
+  }
 
   // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
   private static final BigInteger POWER_64 = new BigInteger("18446744073709551616");
