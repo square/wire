@@ -17,7 +17,7 @@ package com.squareup.wire;
 
 import java.io.IOException;
 
-public enum WireType {
+enum WireType {
   VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), START_GROUP(3), END_GROUP(4), FIXED32(5);
 
   private static final int TAG_TYPE_MASK = 0x7;
@@ -41,7 +41,7 @@ public enum WireType {
 
   private final int value;
 
-  private WireType(int value) {
+  WireType(int value) {
     this.value = value;
   }
 

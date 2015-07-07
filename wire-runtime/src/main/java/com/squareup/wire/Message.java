@@ -52,7 +52,7 @@ public abstract class Message implements Serializable {
       return value;
     }
 
-    public WireType wireType() {
+    WireType wireType() {
       switch (this) {
         case INT32: case INT64: case UINT32: case UINT64:
         case SINT32: case SINT64: case BOOL: case ENUM:
