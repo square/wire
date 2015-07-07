@@ -55,7 +55,7 @@ import okio.ByteString;
 /**
  * Utilities for encoding and writing protocol message fields.
  */
-public final class WireOutput {
+final class WireOutput {
 
   // Public utility methods
 
@@ -70,82 +70,6 @@ public final class WireOutput {
       // Must sign-extend.
       return 10;
     }
-  }
-
-  /**
-   * Computes the number of bytes that would be needed to encode a signed variable-length integer
-   * of up to 64 bits.
-   */
-  public static int int64Size(long value) {
-    if (value >= 0L) {
-      return varint64Size(value);
-    } else {
-      // Must sign-extend.
-      return 10;
-    }
-  }
-
-  /** Computes the number of bytes that would be needed to encode a tag. */
-  public static int tagSize(int fieldNumber, WireType wireType) {
-    return int32Size(makeTag(fieldNumber, wireType));
-  }
-
-  /**
-   * Computes the number of bytes that would be needed to encode a message
-   * field with a given tag number and length.
-   */
-  public static int messageSize(int fieldNumber, int messageLength) {
-    return tagSize(fieldNumber, WireType.LENGTH_DELIMITED) + int32Size(messageLength)
-        + messageLength;
-  }
-
-  /**
-   * Writes a tag value (as a variable-length integer combining a field number and
-   * wire type) to the given output array.
-   */
-  public static int writeTag(int fieldNumber, WireType wireType, byte[] buffer, int offset) {
-    return writeVarint(makeTag(fieldNumber, wireType), buffer, offset);
-  }
-
-  /**
-   * Writes a variable-length integer into the given output array. The input value is treated as
-   * unsigned.
-   */
-  public static int writeVarint(long value, byte[] buffer, int offset) {
-    int start = offset;
-    while (true) {
-      if ((value & ~0x7FL) == 0) {
-        buffer[offset++] = (byte) value;
-        return offset - start;
-      } else {
-        buffer[offset++] = (byte) ((value & 0x7F) | 0x80);
-        value >>>= 7;
-      }
-    }
-  }
-
-  /**
-   * Returns the length in bytes of a message header consisting of a field number, wire type,
-   * and message length in bytes.
-   */
-  public static int messageHeaderSize(int fieldNumber, int byteCount) {
-    return WireOutput.tagSize(fieldNumber, WireType.LENGTH_DELIMITED)
-        + WireOutput.int32Size(byteCount);
-  }
-
-  /**
-   * Writes a message header into the given output array, consisting
-   * of the field number, wire type, and message length in bytes.
-   *
-   * @param bufferOffset the offset at which to start writing to the output buffer
-   * @return the number of bytes written to form the header
-   */
-  public static int writeMessageHeader(int fieldNumber, byte[] buffer, int bufferOffset,
-      int byteCount) {
-    int start = bufferOffset;
-    bufferOffset += writeTag(fieldNumber, WireType.LENGTH_DELIMITED, buffer, bufferOffset);
-    bufferOffset += writeVarint(byteCount, buffer, bufferOffset);
-    return bufferOffset - start;
   }
 
   /** Makes a tag value given a field number and wire type. */

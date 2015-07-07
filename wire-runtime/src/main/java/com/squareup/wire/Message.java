@@ -183,7 +183,7 @@ public abstract class Message implements Serializable {
     }
   }
 
-  public void writeUnknownFieldMap(WireOutput output) throws IOException {
+  void writeUnknownFieldMap(WireOutput output) throws IOException {
     if (unknownFields != null) {
       unknownFields.write(output);
     }
