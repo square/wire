@@ -501,14 +501,14 @@ final class MessageAdapter<M extends Message> {
       case BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
       case ENUM: writeEnum((ProtoEnum) value, output); break;
       case STRING:
-        final byte[] bytes = ((String) value).getBytes("UTF-8");
-        output.writeVarint32(bytes.length);
+        ByteString bytes = ByteString.encodeUtf8((String) value);
+        output.writeVarint32(bytes.size());
         output.writeRawBytes(bytes);
         break;
       case BYTES:
         ByteString byteString = (ByteString) value;
         output.writeVarint32(byteString.size());
-        output.writeRawBytes(byteString.toByteArray());
+        output.writeRawBytes(byteString);
         break;
       case MESSAGE: writeMessage((Message) value, output); break;
       case FIXED32: case SFIXED32: output.writeFixed32((Integer) value); break;

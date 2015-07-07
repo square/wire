@@ -50,6 +50,7 @@ package com.squareup.wire;
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import java.io.IOException;
+import okio.ByteString;
 
 /**
  * Utilities for encoding and writing protocol message fields.
@@ -214,31 +215,22 @@ public final class WireOutput {
     return 10;
   }
 
-  /** Write a single byte. */
-  void writeRawByte(byte value) throws IOException {
+  /** Write a single byte, represented by an integer value. */
+  void writeRawByte(int value) throws IOException {
     if (position == limit) {
       // We're writing to a single buffer.
       throw new IOException("Out of space: position=" + position + ", limit=" + limit);
     }
-    buffer[position++] = value;
+    buffer[position++] = (byte) value;
   }
 
-  /** Write a single byte, represented by an integer value. */
-  void writeRawByte(int value) throws IOException {
-    writeRawByte((byte) value);
-  }
-
-  /** Write an array of bytes. */
-  void writeRawBytes(byte[] value) throws IOException {
-    writeRawBytes(value, 0, value.length);
-  }
-
-  /** Write part of an array of bytes. */
-  void writeRawBytes(byte[] value, int offset, int length) throws IOException {
-    if (limit - position >= length) {
+  /** Write a string of bytes. */
+  void writeRawBytes(ByteString bytes) throws IOException {
+    byte[] value = bytes.toByteArray();
+    if (limit - position >= value.length) {
       // We have room in the current buffer.
-      System.arraycopy(value, offset, buffer, position, length);
-      position += length;
+      System.arraycopy(value, 0, buffer, position, value.length);
+      position += value.length;
     } else {
       // We're writing to a single buffer.
       throw new IOException("Out of space: position=" + position + ", limit=" + limit);
