@@ -76,11 +76,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
   public static final Long DEFAULT_QUX = 0L;
 
-  public static final List<Float> DEFAULT_FRED = Collections.emptyList();
-
   public static final Double DEFAULT_DAISY = 0.0d;
-
-  public static final List<FooBar> DEFAULT_NESTED = Collections.emptyList();
 
   @ProtoField(
       tag = 1,
@@ -181,11 +177,11 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
     public Long qux;
 
-    public List<Float> fred;
+    public List<Float> fred = Collections.emptyList();
 
     public Double daisy;
 
-    public List<FooBar> nested;
+    public List<FooBar> nested = Collections.emptyList();
 
     public Builder() {
     }
@@ -223,7 +219,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     public Builder fred(List<Float> fred) {
-      this.fred = checkForNulls(fred);
+      this.fred = canonicalizeList(fred);
       return this;
     }
 
@@ -233,7 +229,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     public Builder nested(List<FooBar> nested) {
-      this.nested = checkForNulls(nested);
+      this.nested = canonicalizeList(nested);
       return this;
     }
 
@@ -309,8 +305,6 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   public static final class More extends Message {
     private static final long serialVersionUID = 0L;
 
-    public static final List<Integer> DEFAULT_SERIAL = Collections.emptyList();
-
     @ProtoField(
         tag = 1,
         type = Message.Datatype.INT32,
@@ -341,7 +335,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<More> {
-      public List<Integer> serial;
+      public List<Integer> serial = Collections.emptyList();
 
       public Builder() {
       }
@@ -353,7 +347,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       }
 
       public Builder serial(List<Integer> serial) {
-        this.serial = checkForNulls(serial);
+        this.serial = canonicalizeList(serial);
         return this;
       }
 

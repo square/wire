@@ -20,16 +20,6 @@ public final class FileDescriptorProto extends Message {
 
   public static final String DEFAULT_PACKAGE = "";
 
-  public static final List<String> DEFAULT_DEPENDENCY = Collections.emptyList();
-
-  public static final List<DescriptorProto> DEFAULT_MESSAGE_TYPE = Collections.emptyList();
-
-  public static final List<EnumDescriptorProto> DEFAULT_ENUM_TYPE = Collections.emptyList();
-
-  public static final List<ServiceDescriptorProto> DEFAULT_SERVICE = Collections.emptyList();
-
-  public static final List<FieldDescriptorProto> DEFAULT_EXTENSION = Collections.emptyList();
-
   /**
    * file name, relative to root of source tree
    */
@@ -161,15 +151,15 @@ public final class FileDescriptorProto extends Message {
 
     public String _package;
 
-    public List<String> dependency;
+    public List<String> dependency = Collections.emptyList();
 
-    public List<DescriptorProto> message_type;
+    public List<DescriptorProto> message_type = Collections.emptyList();
 
-    public List<EnumDescriptorProto> enum_type;
+    public List<EnumDescriptorProto> enum_type = Collections.emptyList();
 
-    public List<ServiceDescriptorProto> service;
+    public List<ServiceDescriptorProto> service = Collections.emptyList();
 
-    public List<FieldDescriptorProto> extension;
+    public List<FieldDescriptorProto> extension = Collections.emptyList();
 
     public FileOptions options;
 
@@ -212,7 +202,7 @@ public final class FileDescriptorProto extends Message {
      * Names of files imported by this file.
      */
     public Builder dependency(List<String> dependency) {
-      this.dependency = checkForNulls(dependency);
+      this.dependency = canonicalizeList(dependency);
       return this;
     }
 
@@ -220,22 +210,22 @@ public final class FileDescriptorProto extends Message {
      * All top-level definitions in this file.
      */
     public Builder message_type(List<DescriptorProto> message_type) {
-      this.message_type = checkForNulls(message_type);
+      this.message_type = canonicalizeList(message_type);
       return this;
     }
 
     public Builder enum_type(List<EnumDescriptorProto> enum_type) {
-      this.enum_type = checkForNulls(enum_type);
+      this.enum_type = canonicalizeList(enum_type);
       return this;
     }
 
     public Builder service(List<ServiceDescriptorProto> service) {
-      this.service = checkForNulls(service);
+      this.service = canonicalizeList(service);
       return this;
     }
 
     public Builder extension(List<FieldDescriptorProto> extension) {
-      this.extension = checkForNulls(extension);
+      this.extension = canonicalizeList(extension);
       return this;
     }
 

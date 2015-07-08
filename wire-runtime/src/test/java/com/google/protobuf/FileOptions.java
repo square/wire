@@ -60,8 +60,6 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
 
   public static final Boolean DEFAULT_PY_GENERIC_SERVICES = false;
 
-  public static final List<UninterpretedOption> DEFAULT_UNINTERPRETED_OPTION = Collections.emptyList();
-
   /**
    * Sets the Java package where classes generated from this .proto will be
    * placed.  By default, the proto package is used, but this is often
@@ -229,7 +227,7 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
 
     public Boolean py_generic_services;
 
-    public List<UninterpretedOption> uninterpreted_option;
+    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
     }
@@ -331,7 +329,7 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      this.uninterpreted_option = checkForNulls(uninterpreted_option);
+      this.uninterpreted_option = canonicalizeList(uninterpreted_option);
       return this;
     }
 

@@ -14,8 +14,6 @@ import java.util.List;
 public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> {
   private static final long serialVersionUID = 0L;
 
-  public static final List<UninterpretedOption> DEFAULT_UNINTERPRETED_OPTION = Collections.emptyList();
-
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
@@ -56,7 +54,7 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
   }
 
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<EnumValueOptions> {
-    public List<UninterpretedOption> uninterpreted_option;
+    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
     }
@@ -71,7 +69,7 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      this.uninterpreted_option = checkForNulls(uninterpreted_option);
+      this.uninterpreted_option = canonicalizeList(uninterpreted_option);
       return this;
     }
 

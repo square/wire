@@ -21,8 +21,6 @@ public final class Person extends Message {
 
   public static final String DEFAULT_EMAIL = "";
 
-  public static final List<PhoneNumber> DEFAULT_PHONE = Collections.emptyList();
-
   /**
    * The customer's full name.
    */
@@ -105,7 +103,7 @@ public final class Person extends Message {
 
     public String email;
 
-    public List<PhoneNumber> phone;
+    public List<PhoneNumber> phone = Collections.emptyList();
 
     public Builder() {
     }
@@ -147,7 +145,7 @@ public final class Person extends Message {
      * A list of the customer's phone numbers.
      */
     public Builder phone(List<PhoneNumber> phone) {
-      this.phone = checkForNulls(phone);
+      this.phone = canonicalizeList(phone);
       return this;
     }
 

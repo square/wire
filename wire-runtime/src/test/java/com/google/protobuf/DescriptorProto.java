@@ -21,16 +21,6 @@ public final class DescriptorProto extends Message {
 
   public static final String DEFAULT_DOC = "";
 
-  public static final List<FieldDescriptorProto> DEFAULT_FIELD = Collections.emptyList();
-
-  public static final List<FieldDescriptorProto> DEFAULT_EXTENSION = Collections.emptyList();
-
-  public static final List<DescriptorProto> DEFAULT_NESTED_TYPE = Collections.emptyList();
-
-  public static final List<EnumDescriptorProto> DEFAULT_ENUM_TYPE = Collections.emptyList();
-
-  public static final List<ExtensionRange> DEFAULT_EXTENSION_RANGE = Collections.emptyList();
-
   @ProtoField(
       tag = 1,
       type = Message.Datatype.STRING
@@ -139,15 +129,15 @@ public final class DescriptorProto extends Message {
 
     public String doc;
 
-    public List<FieldDescriptorProto> field;
+    public List<FieldDescriptorProto> field = Collections.emptyList();
 
-    public List<FieldDescriptorProto> extension;
+    public List<FieldDescriptorProto> extension = Collections.emptyList();
 
-    public List<DescriptorProto> nested_type;
+    public List<DescriptorProto> nested_type = Collections.emptyList();
 
-    public List<EnumDescriptorProto> enum_type;
+    public List<EnumDescriptorProto> enum_type = Collections.emptyList();
 
-    public List<ExtensionRange> extension_range;
+    public List<ExtensionRange> extension_range = Collections.emptyList();
 
     public MessageOptions options;
 
@@ -181,27 +171,27 @@ public final class DescriptorProto extends Message {
     }
 
     public Builder field(List<FieldDescriptorProto> field) {
-      this.field = checkForNulls(field);
+      this.field = canonicalizeList(field);
       return this;
     }
 
     public Builder extension(List<FieldDescriptorProto> extension) {
-      this.extension = checkForNulls(extension);
+      this.extension = canonicalizeList(extension);
       return this;
     }
 
     public Builder nested_type(List<DescriptorProto> nested_type) {
-      this.nested_type = checkForNulls(nested_type);
+      this.nested_type = canonicalizeList(nested_type);
       return this;
     }
 
     public Builder enum_type(List<EnumDescriptorProto> enum_type) {
-      this.enum_type = checkForNulls(enum_type);
+      this.enum_type = canonicalizeList(enum_type);
       return this;
     }
 
     public Builder extension_range(List<ExtensionRange> extension_range) {
-      this.extension_range = checkForNulls(extension_range);
+      this.extension_range = canonicalizeList(extension_range);
       return this;
     }
 

@@ -207,13 +207,6 @@ public abstract class Message implements Serializable {
     return a == b || (a != null && a.equals(b));
   }
 
-  protected static boolean equals(List<?> a, List<?> b) {
-    // Canonicalize empty -> null
-    if (a != null && a.isEmpty()) a = null;
-    if (b != null && b.isEmpty()) b = null;
-    return a == b || (a != null && a.equals(b));
-  }
-
   @SuppressWarnings("unchecked")
   @Override public String toString() {
     return WIRE.messageAdapter((Class<Message>) getClass()).toString(this);
@@ -318,22 +311,20 @@ public abstract class Message implements Serializable {
     }
 
     /**
-     * Checks incoming {@code List}s for null elements and throws an exception if one is
-     * present. A null list is allowed.
-     *
-     * @return the incoming list.
-     * @throws NullPointerException if a null element is present in the list.
+     * If {@code list} is null it will be replaced with {@link Collections#emptyList()}.
+     * Otherwise look for null items and throw {@link NullPointerException} if one is found.
      */
-    protected static <T> List<T> checkForNulls(List<T> elements) {
-      if (elements != null && !elements.isEmpty()) {
-        for (int i = 0, size = elements.size(); i < size; i++) {
-          T element = elements.get(i);
-          if (element == null) {
-            throw new NullPointerException("Element at index " + i + " is null");
-          }
+    protected static <T> List<T> canonicalizeList(List<T> list) {
+      if (list == null) {
+        return Collections.emptyList();
+      }
+      for (int i = 0, size = list.size(); i < size; i++) {
+        T element = list.get(i);
+        if (element == null) {
+          throw new NullPointerException("Element at index " + i + " is null");
         }
       }
-      return elements;
+      return list;
     }
 
     /**

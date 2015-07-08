@@ -27,8 +27,6 @@ public final class SimpleMessage extends Message {
 
   public static final Integer DEFAULT_REQUIRED_INT32 = 456;
 
-  public static final List<Double> DEFAULT_REPEATED_DOUBLE = Collections.emptyList();
-
   public static final ForeignEnum DEFAULT_DEFAULT_FOREIGN_ENUM = ForeignEnum.BAX;
 
   public static final ForeignEnum DEFAULT_NO_DEFAULT_FOREIGN_ENUM = ForeignEnum.BAV;
@@ -221,7 +219,7 @@ public final class SimpleMessage extends Message {
 
     public Integer required_int32;
 
-    public List<Double> repeated_double;
+    public List<Double> repeated_double = Collections.emptyList();
 
     public ForeignEnum default_foreign_enum;
 
@@ -298,7 +296,7 @@ public final class SimpleMessage extends Message {
      */
     @Deprecated
     public Builder repeated_double(List<Double> repeated_double) {
-      this.repeated_double = checkForNulls(repeated_double);
+      this.repeated_double = canonicalizeList(repeated_double);
       return this;
     }
 

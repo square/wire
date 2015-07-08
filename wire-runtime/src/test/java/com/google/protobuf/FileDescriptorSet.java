@@ -16,8 +16,6 @@ import java.util.List;
 public final class FileDescriptorSet extends Message {
   private static final long serialVersionUID = 0L;
 
-  public static final List<FileDescriptorProto> DEFAULT_FILE = Collections.emptyList();
-
   @ProtoField(
       tag = 1,
       label = Message.Label.REPEATED,
@@ -48,7 +46,7 @@ public final class FileDescriptorSet extends Message {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorSet> {
-    public List<FileDescriptorProto> file;
+    public List<FileDescriptorProto> file = Collections.emptyList();
 
     public Builder() {
     }
@@ -60,7 +58,7 @@ public final class FileDescriptorSet extends Message {
     }
 
     public Builder file(List<FileDescriptorProto> file) {
-      this.file = checkForNulls(file);
+      this.file = canonicalizeList(file);
       return this;
     }
 

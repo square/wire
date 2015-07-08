@@ -210,9 +210,9 @@ public final class TypeWriter {
     for (WireField field : type.fieldsAndOneOfFields()) {
       TypeName fieldType = fieldType(field);
 
-      if (field.type().isScalar()
-          || javaGenerator.isEnum(field.type())
-          || field.isRepeated()) {
+      if ((field.type().isScalar() || javaGenerator.isEnum(field.type()))
+          && !field.isRepeated()
+          && !field.isPacked()) {
         builder.addField(defaultField(field, fieldType));
       }
 
@@ -519,7 +519,12 @@ public final class TypeWriter {
     List<WireField> fields = type.fieldsAndOneOfFields();
     for (WireField field : fields) {
       TypeName fieldJavaType = fieldType(field);
-      result.addField(fieldJavaType, sanitize(field.name()), PUBLIC);
+      FieldSpec.Builder fieldSpec =
+          FieldSpec.builder(fieldJavaType, sanitize(field.name()), PUBLIC);
+      if (field.isPacked() || field.isRepeated()) {
+        fieldSpec.initializer("$T.emptyList()", Collections.class);
+      }
+      result.addField(fieldSpec.build());
     }
 
     result.addMethod(builderNoArgsConstructor());
@@ -606,7 +611,7 @@ public final class TypeWriter {
     }
 
     if (field.isRepeated()) {
-      result.addStatement("this.$L = checkForNulls($L)", fieldName, fieldName);
+      result.addStatement("this.$L = canonicalizeList($L)", fieldName, fieldName);
     } else {
       result.addStatement("this.$L = $L", fieldName, fieldName);
 
@@ -686,10 +691,6 @@ public final class TypeWriter {
   }
 
   private CodeBlock defaultValue(WireField field) {
-    if (field.isRepeated()) {
-      return codeBlock("$T.emptyList()", Collections.class);
-    }
-
     Object defaultValue = field.getDefault();
 
     if (defaultValue == null && javaGenerator.isEnum(field.type())) {

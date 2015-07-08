@@ -20,8 +20,6 @@ public final class EnumDescriptorProto extends Message {
 
   public static final String DEFAULT_DOC = "";
 
-  public static final List<EnumValueDescriptorProto> DEFAULT_VALUE = Collections.emptyList();
-
   @ProtoField(
       tag = 1,
       type = Message.Datatype.STRING
@@ -90,7 +88,7 @@ public final class EnumDescriptorProto extends Message {
 
     public String doc;
 
-    public List<EnumValueDescriptorProto> value;
+    public List<EnumValueDescriptorProto> value = Collections.emptyList();
 
     public EnumOptions options;
 
@@ -120,7 +118,7 @@ public final class EnumDescriptorProto extends Message {
     }
 
     public Builder value(List<EnumValueDescriptorProto> value) {
-      this.value = checkForNulls(value);
+      this.value = canonicalizeList(value);
       return this;
     }
 

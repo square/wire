@@ -19,8 +19,6 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
 
   public static final Boolean DEFAULT_NO_STANDARD_DESCRIPTOR_ACCESSOR = false;
 
-  public static final List<UninterpretedOption> DEFAULT_UNINTERPRETED_OPTION = Collections.emptyList();
-
   /**
    * Set true to use the old proto1 MessageSet wire format for extensions.
    * This is provided for backwards-compatibility with the MessageSet wire
@@ -108,7 +106,7 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
 
     public Boolean no_standard_descriptor_accessor;
 
-    public List<UninterpretedOption> uninterpreted_option;
+    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
     }
@@ -160,7 +158,7 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      this.uninterpreted_option = checkForNulls(uninterpreted_option);
+      this.uninterpreted_option = canonicalizeList(uninterpreted_option);
       return this;
     }
 
