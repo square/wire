@@ -567,12 +567,7 @@ public final class MessageAdapter<M extends Message> {
   /** Read an encoded message from {@code bytes}. */
   public M readBytes(byte[] bytes) throws IOException {
     checkNotNull(bytes, "bytes == null");
-    Buffer buffer = new Buffer();
-    M message = read(buffer.write(bytes));
-    if (!buffer.exhausted()) {
-      throw new IllegalArgumentException("");
-    }
-    return message;
+    return read(new Buffer().write(bytes));
   }
 
   /** Read an encoded message from {@code stream}. */
