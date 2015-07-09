@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
-import com.squareup.protoparser.EnumConstantElement;
+import com.squareup.protoparser.RpcElement;
 
-public final class WireEnumConstant {
+public final class Rpc {
   private final String packageName;
-  private final EnumConstantElement element;
+  private final RpcElement element;
   private final Options options;
+  private Type.Name requestType;
+  private Type.Name responseType;
 
-  WireEnumConstant(String packageName, EnumConstantElement element) {
+  Rpc(String packageName, RpcElement element) {
     this.packageName = packageName;
     this.element = element;
-    this.options = new Options(
-        ProtoTypeName.ENUM_VALUE_OPTIONS, packageName, element.options());
+    this.options = new Options(Type.Name.METHOD_OPTIONS, packageName, element.options());
   }
 
   public String packageName() {
@@ -37,16 +38,25 @@ public final class WireEnumConstant {
     return element.name();
   }
 
-  public int tag() {
-    return element.tag();
-  }
-
   public String documentation() {
     return element.documentation();
   }
 
+  public Type.Name requestType() {
+    return requestType;
+  }
+
+  public Type.Name responseType() {
+    return responseType;
+  }
+
   public Options options() {
     return options;
+  }
+
+  void link(Linker linker) {
+    requestType = linker.resolveNamedType(packageName, element.requestType().name());
+    responseType = linker.resolveNamedType(packageName, element.responseType().name());
   }
 
   void linkOptions(Linker linker) {

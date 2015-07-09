@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -36,12 +36,12 @@ import static com.google.common.collect.Iterables.getOnlyElement;
  * messages.
  */
 public final class Options {
-  private final ProtoTypeName optionType;
+  private final Type.Name optionType;
   private final String packageName;
   private final ImmutableList<OptionElement> optionElements;
-  private ImmutableMap<WireField, Object> map;
+  private ImmutableMap<Field, Object> map;
 
-  public Options(ProtoTypeName optionType, String packageName, List<OptionElement> elements) {
+  public Options(Type.Name optionType, String packageName, List<OptionElement> elements) {
     this.optionType = optionType;
     this.packageName = packageName;
     this.optionElements = ImmutableList.copyOf(elements);
@@ -55,10 +55,10 @@ public final class Options {
    * Returns a map with the values for these options. Map values may be either a single entry, like
    * {@code {default: "5"}}, or more sophisticated, with nested maps and lists.
    *
-   * <p>The map keys are always {@link WireField} instances, even for nested maps. The values are
+   * <p>The map keys are always {@link Field} instances, even for nested maps. The values are
    * always either lists, maps, or strings.
    */
-  public Map<WireField, Object> map() {
+  public Map<Field, Object> map() {
     return map;
   }
 
@@ -94,9 +94,9 @@ public final class Options {
   }
 
   void link(Linker linker) {
-    ImmutableMap<WireField, Object> map = ImmutableMap.of();
+    ImmutableMap<Field, Object> map = ImmutableMap.of();
     for (OptionElement option : optionElements) {
-      Map<WireField, Object> canonicalOption = canonicalizeOption(linker, optionType, option);
+      Map<Field, Object> canonicalOption = canonicalizeOption(linker, optionType, option);
       if (canonicalOption != null) {
         map = union(map, canonicalOption);
       }
@@ -105,9 +105,9 @@ public final class Options {
     this.map = map;
   }
 
-  Map<WireField, Object> canonicalizeOption(
-      Linker linker, ProtoTypeName extensionType, OptionElement option) {
-    Map<String, WireField> extensionsForType = linker.extensions(extensionType);
+  Map<Field, Object> canonicalizeOption(
+      Linker linker, Type.Name extensionType, OptionElement option) {
+    Map<String, Field> extensionsForType = linker.extensions(extensionType);
     if (extensionsForType == null) {
       return null; // No known extensions for the given extension type.
     }
@@ -121,12 +121,12 @@ public final class Options {
       return null; // Unable to find the root of this field path.
     }
 
-    Map<WireField, Object> result = new LinkedHashMap<WireField, Object>();
-    Map<WireField, Object> last = result;
+    Map<Field, Object> result = new LinkedHashMap<Field, Object>();
+    Map<Field, Object> last = result;
 
-    WireField field = extensionsForType.get(path[0]);
+    Field field = extensionsForType.get(path[0]);
     for (int i = 1; i < path.length; i++) {
-      Map<WireField, Object> nested = new LinkedHashMap<WireField, Object>();
+      Map<Field, Object> nested = new LinkedHashMap<Field, Object>();
       last.put(field, nested);
       last = nested;
       field = linker.dereference(packageName, field, path[i]);
@@ -166,20 +166,20 @@ public final class Options {
     return null;
   }
 
-  private Object canonicalizeValue(Linker linker, WireField context, Object value) {
+  private Object canonicalizeValue(Linker linker, Field context, Object value) {
     if (value instanceof OptionElement) {
-      ImmutableMap.Builder<WireField, Object> result = ImmutableMap.builder();
+      ImmutableMap.Builder<Field, Object> result = ImmutableMap.builder();
       OptionElement option = (OptionElement) value;
-      WireField field = linker.dereference(packageName, context, option.name());
+      Field field = linker.dereference(packageName, context, option.name());
       result.put(field, canonicalizeValue(linker, field, option.value()));
       return coerceValueForField(context, result.build());
     }
 
     if (value instanceof Map) {
-      ImmutableMap.Builder<WireField, Object> result = ImmutableMap.builder();
+      ImmutableMap.Builder<Field, Object> result = ImmutableMap.builder();
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
         String name = (String) entry.getKey();
-        WireField field = linker.dereference(packageName, context, name);
+        Field field = linker.dereference(packageName, context, name);
         result.put(field, canonicalizeValue(linker, field, entry.getValue()));
       }
       return coerceValueForField(context, result.build());
@@ -200,7 +200,7 @@ public final class Options {
     throw new IllegalArgumentException("Unexpected option value: " + value);
   }
 
-  private Object coerceValueForField(WireField context, Object value) {
+  private Object coerceValueForField(Field context, Object value) {
     if (context.isRepeated()) {
       return value instanceof List ? value : ImmutableList.of(value);
     } else {
@@ -214,16 +214,16 @@ public final class Options {
     if (a instanceof List) {
       return union((List<?>) a, (List<?>) b);
     } else if (a instanceof Map) {
-      return union((Map<WireField, Object>) a, (Map<WireField, Object>) b);
+      return union((Map<Field, Object>) a, (Map<Field, Object>) b);
     } else {
       throw new IllegalArgumentException("Unable to union values: " + a + ", " + b);
     }
   }
 
-  private ImmutableMap<WireField, Object> union(
-      Map<WireField, Object> a, Map<WireField, Object> b) {
-    Map<WireField, Object> result = new LinkedHashMap<WireField, Object>(a);
-    for (Map.Entry<WireField, Object> entry : b.entrySet()) {
+  private ImmutableMap<Field, Object> union(
+      Map<Field, Object> a, Map<Field, Object> b) {
+    Map<Field, Object> result = new LinkedHashMap<Field, Object>(a);
+    for (Map.Entry<Field, Object> entry : b.entrySet()) {
       Object aValue = result.get(entry.getKey());
       Object bValue = entry.getValue();
       Object union = aValue != null ? union(aValue, bValue) : bValue;
@@ -236,16 +236,16 @@ public final class Options {
     return ImmutableList.builder().addAll(a).addAll(b).build();
   }
 
-  public ImmutableSet<WireField> fields() {
-    ImmutableSet.Builder<WireField> result = ImmutableSet.builder();
+  public ImmutableSet<Field> fields() {
+    ImmutableSet.Builder<Field> result = ImmutableSet.builder();
     gatherFields(result, map);
     return result.build();
   }
 
-  private void gatherFields(ImmutableSet.Builder<WireField> sink, Object o) {
+  private void gatherFields(ImmutableSet.Builder<Field> sink, Object o) {
     if (o instanceof Map) {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) o).entrySet()) {
-        sink.add((WireField) entry.getKey());
+        sink.add((Field) entry.getKey());
         gatherFields(sink, entry.getValue());
       }
     } else if (o instanceof List) {

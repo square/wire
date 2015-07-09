@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
 import com.squareup.protoparser.FieldElement;
 
-public final class WireField {
+public final class Field {
   private final String packageName;
   private final FieldElement element;
   private final Options options;
-  private ProtoTypeName type;
+  private Type.Name type;
 
-  WireField(String packageName, FieldElement element) {
+  Field(String packageName, FieldElement element) {
     this.packageName = packageName;
     this.element = element;
-    this.options = new Options(ProtoTypeName.FIELD_OPTIONS, packageName, element.options());
+    this.options = new Options(Type.Name.FIELD_OPTIONS, packageName, element.options());
   }
 
   public String packageName() {
@@ -49,7 +49,7 @@ public final class WireField {
     return label() == FieldElement.Label.REQUIRED;
   }
 
-  public ProtoTypeName type() {
+  public Type.Name type() {
     return type;
   }
 

@@ -16,7 +16,7 @@
 package com.squareup.wire.java;
 
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.model.WireService;
+import com.squareup.wire.Service;
 import java.util.List;
 
 /**
@@ -24,5 +24,5 @@ import java.util.List;
  * arguments constructor.
  */
 public interface ServiceFactory {
-  TypeSpec create(JavaGenerator javaGenerator, List<String> options, WireService service);
+  TypeSpec create(JavaGenerator javaGenerator, List<String> options, Service service);
 }

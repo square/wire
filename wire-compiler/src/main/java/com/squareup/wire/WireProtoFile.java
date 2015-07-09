@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ExtendElement;
@@ -25,43 +25,43 @@ import java.util.Set;
 public final class WireProtoFile {
   private final String sourcePath;
   private final ProtoFile protoFile;
-  private final ImmutableList<WireType> types;
-  private final ImmutableList<WireService> services;
-  private final ImmutableList<WireExtend> wireExtends;
+  private final ImmutableList<Type> types;
+  private final ImmutableList<Service> services;
+  private final ImmutableList<Extend> extendList;
   private final Options options;
 
-  private WireProtoFile(String sourcePath, ProtoFile protoFile, ImmutableList<WireType> types,
-      ImmutableList<WireService> services, ImmutableList<WireExtend> wireExtends, Options options) {
+  private WireProtoFile(String sourcePath, ProtoFile protoFile, ImmutableList<Type> types,
+      ImmutableList<Service> services, ImmutableList<Extend> extendList, Options options) {
     this.sourcePath = sourcePath;
     this.protoFile = protoFile;
     this.types = types;
     this.services = services;
-    this.wireExtends = wireExtends;
+    this.extendList = extendList;
     this.options = options;
   }
 
   public static WireProtoFile get(String sourcePath, ProtoFile protoFile) {
     String packageName = protoFile.packageName();
 
-    ImmutableList.Builder<WireType> types = ImmutableList.builder();
+    ImmutableList.Builder<Type> types = ImmutableList.builder();
     for (TypeElement type : protoFile.typeElements()) {
-      ProtoTypeName protoTypeName = ProtoTypeName.get(packageName, type.name());
-      types.add(WireType.get(protoTypeName, type));
+      Type.Name name = Type.Name.get(packageName, type.name());
+      types.add(Type.get(name, type));
     }
 
-    ImmutableList.Builder<WireService> services = ImmutableList.builder();
+    ImmutableList.Builder<Service> services = ImmutableList.builder();
     for (ServiceElement service : protoFile.services()) {
-      ProtoTypeName protoTypeName = ProtoTypeName.get(packageName, service.name());
-      services.add(WireService.get(protoTypeName, service));
+      Type.Name name = Type.Name.get(packageName, service.name());
+      services.add(Service.get(name, service));
     }
 
-    ImmutableList.Builder<WireExtend> wireExtends = ImmutableList.builder();
+    ImmutableList.Builder<Extend> wireExtends = ImmutableList.builder();
     for (ExtendElement extend : protoFile.extendDeclarations()) {
-      wireExtends.add(new WireExtend(packageName, extend));
+      wireExtends.add(new Extend(packageName, extend));
     }
 
     Options options = new Options(
-        ProtoTypeName.FILE_OPTIONS, packageName, protoFile.options());
+        Type.Name.FILE_OPTIONS, packageName, protoFile.options());
 
     return new WireProtoFile(sourcePath, protoFile, types.build(), services.build(),
         wireExtends.build(), options);
@@ -94,16 +94,16 @@ public final class WireProtoFile {
     return protoFile.packageName();
   }
 
-  public ImmutableList<WireType> types() {
+  public ImmutableList<Type> types() {
     return types;
   }
 
-  public ImmutableList<WireService> services() {
+  public ImmutableList<Service> services() {
     return services;
   }
 
-  public ImmutableList<WireExtend> wireExtends() {
-    return wireExtends;
+  public ImmutableList<Extend> extendList() {
+    return extendList;
   }
 
   public Options options() {
@@ -112,23 +112,23 @@ public final class WireProtoFile {
 
   /** Returns a new proto file that omits types and services not in {@code identifiers}. */
   WireProtoFile retainAll(Set<String> identifiers) {
-    ImmutableList.Builder<WireType> retainedTypes = ImmutableList.builder();
-    for (WireType type : types) {
-      WireType retainedType = type.retainAll(identifiers);
+    ImmutableList.Builder<Type> retainedTypes = ImmutableList.builder();
+    for (Type type : types) {
+      Type retainedType = type.retainAll(identifiers);
       if (retainedType != null) {
         retainedTypes.add(retainedType);
       }
     }
 
-    ImmutableList.Builder<WireService> retainedServices = ImmutableList.builder();
-    for (WireService service : services) {
-      WireService retainedService = service.retainAll(identifiers);
+    ImmutableList.Builder<Service> retainedServices = ImmutableList.builder();
+    for (Service service : services) {
+      Service retainedService = service.retainAll(identifiers);
       if (retainedService != null) {
         retainedServices.add(retainedService);
       }
     }
 
     return new WireProtoFile(sourcePath, protoFile, retainedTypes.build(), retainedServices.build(),
-        wireExtends, options);
+        extendList, options);
   }
 }

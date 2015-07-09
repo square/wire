@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
 import com.squareup.protoparser.DataType;
 import com.squareup.wire.internal.Util;
@@ -24,20 +24,20 @@ import java.util.List;
 import java.util.Map;
 
 /** Links local field types and option types to the corresponding declarations. */
-public final class Linker {
-  private final Map<String, WireType> protoTypeNames;
-  private final Map<ProtoTypeName, Map<String, WireField>> extensionsMap;
+final class Linker {
+  private final Map<String, Type> protoTypeNames;
+  private final Map<Type.Name, Map<String, Field>> extensionsMap;
 
   // Context when linking.
-  private final List<WireType> enclosingTypes;
+  private final List<Type> enclosingTypes;
 
   public Linker() {
-    this.protoTypeNames = new LinkedHashMap<String, WireType>();
-    this.extensionsMap = new LinkedHashMap<ProtoTypeName, Map<String, WireField>>();
+    this.protoTypeNames = new LinkedHashMap<String, Type>();
+    this.extensionsMap = new LinkedHashMap<Type.Name, Map<String, Field>>();
     this.enclosingTypes = Collections.emptyList();
   }
 
-  private Linker(Linker enclosing, WireType type) {
+  private Linker(Linker enclosing, Type type) {
     this.protoTypeNames = enclosing.protoTypeNames;
     this.extensionsMap = enclosing.extensionsMap;
     this.enclosingTypes = type != null
@@ -48,27 +48,27 @@ public final class Linker {
   public void link(Collection<WireProtoFile> wireProtoFiles) {
     // Register the types.
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      for (WireType type : wireProtoFile.types()) {
+      for (Type type : wireProtoFile.types()) {
         register(type);
       }
     }
 
     // Link extensions. This depends on type registration.
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      for (WireExtend extend : wireProtoFile.wireExtends()) {
+      for (Extend extend : wireProtoFile.extendList()) {
         extend.link(this);
       }
     }
 
     // Register extensions. This needs the extensions to be linked.
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      for (WireExtend extend : wireProtoFile.wireExtends()) {
-        Map<String, WireField> map = extensionsMap.get(extend.protoTypeName());
+      for (Extend extend : wireProtoFile.extendList()) {
+        Map<String, Field> map = extensionsMap.get(extend.type());
         if (map == null) {
-          map = new LinkedHashMap<String, WireField>();
-          extensionsMap.put(extend.protoTypeName(), map);
+          map = new LinkedHashMap<String, Field>();
+          extensionsMap.put(extend.type(), map);
         }
-        for (WireField field : extend.fields()) {
+        for (Field field : extend.fields()) {
           map.put(extend.packageName() + "." + field.name(), field);
         }
       }
@@ -76,10 +76,10 @@ public final class Linker {
 
     // Link proto files and services.
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      for (WireType type : wireProtoFile.types()) {
+      for (Type type : wireProtoFile.types()) {
         type.link(this);
       }
-      for (WireService service : wireProtoFile.services()) {
+      for (Service service : wireProtoFile.services()) {
         service.link(this);
       }
     }
@@ -87,27 +87,27 @@ public final class Linker {
     // Finally link options. We can't link any options until we've linked all fields!
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
       wireProtoFile.options().link(this);
-      for (WireType type : wireProtoFile.types()) {
+      for (Type type : wireProtoFile.types()) {
         type.linkOptions(this);
       }
-      for (WireService service : wireProtoFile.services()) {
+      for (Service service : wireProtoFile.services()) {
         service.linkOptions(this);
       }
     }
   }
 
-  private void register(WireType type) {
-    protoTypeNames.put(type.protoTypeName().toString(), type);
-    for (WireType nestedType : type.nestedTypes()) {
+  private void register(Type type) {
+    protoTypeNames.put(type.name().toString(), type);
+    for (Type nestedType : type.nestedTypes()) {
       register(nestedType);
     }
   }
 
   /** Returns the type name for the scalar, relative or fully-qualified name {@code name}. */
-  ProtoTypeName resolveType(String packageName, DataType type) {
+  Type.Name resolveType(String packageName, DataType type) {
     switch (type.kind()) {
       case SCALAR:
-        return ProtoTypeName.getScalar(type.toString());
+        return Type.Name.getScalar(type.toString());
 
       case NAMED:
         return resolveNamedType(packageName, type.toString());
@@ -119,26 +119,26 @@ public final class Linker {
   }
 
   /** Returns the type name for the relative or fully-qualified name {@code name}. */
-  ProtoTypeName resolveNamedType(String packageName, String name) {
-    WireType fullyQualified = protoTypeNames.get(name);
-    if (fullyQualified != null) return fullyQualified.protoTypeName();
+  Type.Name resolveNamedType(String packageName, String name) {
+    Type fullyQualified = protoTypeNames.get(name);
+    if (fullyQualified != null) return fullyQualified.name();
 
     if (packageName != null) {
-      WireType samePackage = protoTypeNames.get(packageName + "." + name);
-      if (samePackage != null) return samePackage.protoTypeName();
+      Type samePackage = protoTypeNames.get(packageName + "." + name);
+      if (samePackage != null) return samePackage.name();
     }
 
     // Look at the enclosing type, and its children, all the way up the nesting hierarchy.
     for (int i = enclosingTypes.size() - 1; i >= 0; i--) {
-      WireType enclosingType = enclosingTypes.get(i);
+      Type enclosingType = enclosingTypes.get(i);
 
-      if (name.equals(enclosingType.protoTypeName().simpleName())) {
-        return enclosingType.protoTypeName();
+      if (name.equals(enclosingType.name().simpleName())) {
+        return enclosingType.name();
       }
 
-      for (WireType peerType : enclosingType.nestedTypes()) {
-        if (name.equals(peerType.protoTypeName().simpleName())) {
-          return peerType.protoTypeName();
+      for (Type peerType : enclosingType.nestedTypes()) {
+        if (name.equals(peerType.name().simpleName())) {
+          return peerType.name();
         }
       }
     }
@@ -148,30 +148,30 @@ public final class Linker {
   }
 
   /** Returns the map of known extensions for {@code extensionType}. */
-  public Map<String, WireField> extensions(ProtoTypeName extensionType) {
+  public Map<String, Field> extensions(Type.Name extensionType) {
     return extensionsMap.get(extensionType);
   }
 
   /** Returns the field named {@code field} on the message type of {@code self}. */
-  WireField dereference(String packageName, WireField self, String field) {
+  Field dereference(String packageName, Field self, String field) {
     if (field.startsWith("[") && field.endsWith("]")) {
       field = field.substring(1, field.length() - 1);
     }
 
-    WireType wireType = protoTypeNames.get(self.type().toString());
-    if (wireType instanceof WireMessage) {
-      WireField messageField = ((WireMessage) wireType).field(field);
+    Type type = protoTypeNames.get(self.type().toString());
+    if (type instanceof MessageType) {
+      Field messageField = ((MessageType) type).field(field);
       if (messageField != null) {
         return messageField;
       }
 
-      Map<String, WireField> typeExtensions = extensionsMap.get(self.type());
-      WireField extensionField = typeExtensions.get(field);
+      Map<String, Field> typeExtensions = extensionsMap.get(self.type());
+      Field extensionField = typeExtensions.get(field);
       if (extensionField != null) {
         return extensionField;
       }
 
-      WireField fullyQualifiedExtensionField = typeExtensions.get(packageName + "." + field);
+      Field fullyQualifiedExtensionField = typeExtensions.get(packageName + "." + field);
       if (fullyQualifiedExtensionField != null) {
         return fullyQualifiedExtensionField;
       }
@@ -181,7 +181,7 @@ public final class Linker {
   }
 
   /** Returns a new linker that uses {@code message} to resolve local type names. */
-  Linker withMessage(WireMessage message) {
+  Linker withMessage(MessageType message) {
     return new Linker(this, message);
   }
 }

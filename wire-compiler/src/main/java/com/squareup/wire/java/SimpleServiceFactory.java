@@ -19,10 +19,10 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.Rpc;
+import com.squareup.wire.Service;
+import com.squareup.wire.Type;
 import com.squareup.wire.internal.Util;
-import com.squareup.wire.model.ProtoTypeName;
-import com.squareup.wire.model.WireRpc;
-import com.squareup.wire.model.WireService;
 import java.io.IOException;
 import java.util.List;
 import javax.lang.model.element.Modifier;
@@ -32,8 +32,8 @@ import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 
 public class SimpleServiceFactory implements ServiceFactory {
   @Override public TypeSpec create(
-      JavaGenerator javaGenerator, List<String> options, WireService service) {
-    ClassName interfaceName = (ClassName) javaGenerator.typeName(service.protoTypeName());
+      JavaGenerator javaGenerator, List<String> options, Service service) {
+    ClassName interfaceName = (ClassName) javaGenerator.typeName(service.name());
 
     TypeSpec.Builder typeBuilder = TypeSpec.interfaceBuilder(interfaceName.simpleName());
     typeBuilder.addModifiers(Modifier.PUBLIC);
@@ -42,10 +42,10 @@ public class SimpleServiceFactory implements ServiceFactory {
       typeBuilder.addJavadoc("$L\n", Util.sanitizeJavadoc(service.documentation()));
     }
 
-    for (WireRpc rpc : service.rpcs()) {
-      ProtoTypeName requestType = rpc.requestType();
+    for (Rpc rpc : service.rpcs()) {
+      Type.Name requestType = rpc.requestType();
       TypeName requestJavaType = javaGenerator.typeName(requestType);
-      ProtoTypeName responseType = rpc.responseType();
+      Type.Name responseType = rpc.responseType();
       TypeName responseJavaType = javaGenerator.typeName(responseType);
 
       MethodSpec.Builder rpcBuilder = MethodSpec.methodBuilder(upperToLowerCamel(rpc.name()));

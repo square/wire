@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
-import com.squareup.protoparser.RpcElement;
+import com.google.common.collect.ImmutableList;
+import com.squareup.protoparser.FieldElement;
+import com.squareup.protoparser.OneOfElement;
 
-public final class WireRpc {
+public final class OneOf {
   private final String packageName;
-  private final RpcElement element;
-  private final Options options;
-  private ProtoTypeName requestType;
-  private ProtoTypeName responseType;
+  private final OneOfElement element;
+  private final ImmutableList<Field> fields;
 
-  WireRpc(String packageName, RpcElement element) {
+  OneOf(String packageName, OneOfElement element) {
     this.packageName = packageName;
     this.element = element;
-    this.options = new Options(ProtoTypeName.METHOD_OPTIONS, packageName, element.options());
+
+    ImmutableList.Builder<Field> fields = ImmutableList.builder();
+    for (FieldElement field : element.fields()) {
+      fields.add(new Field(packageName, field));
+    }
+    this.fields = fields.build();
   }
 
   public String packageName() {
@@ -42,24 +47,19 @@ public final class WireRpc {
     return element.documentation();
   }
 
-  public ProtoTypeName requestType() {
-    return requestType;
-  }
-
-  public ProtoTypeName responseType() {
-    return responseType;
-  }
-
-  public Options options() {
-    return options;
+  public ImmutableList<Field> fields() {
+    return fields;
   }
 
   void link(Linker linker) {
-    requestType = linker.resolveNamedType(packageName, element.requestType().name());
-    responseType = linker.resolveNamedType(packageName, element.responseType().name());
+    for (Field field : fields) {
+      field.link(linker);
+    }
   }
 
   void linkOptions(Linker linker) {
-    options.link(linker);
+    for (Field field : fields) {
+      field.linkOptions(linker);
+    }
   }
 }

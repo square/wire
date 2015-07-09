@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.EnumElement;
 import java.util.Set;
 
-public final class WireEnum extends WireType {
-  private final ProtoTypeName protoTypeName;
+public final class EnumType extends Type {
+  private final Name name;
   private final EnumElement element;
-  private final ImmutableList<WireEnumConstant> constants;
+  private final ImmutableList<EnumConstant> constants;
   private final Options options;
 
-  WireEnum(ProtoTypeName protoTypeName, EnumElement element,
-      ImmutableList<WireEnumConstant> constants, Options options) {
-    this.protoTypeName = protoTypeName;
+  EnumType(Name name, EnumElement element,
+      ImmutableList<EnumConstant> constants, Options options) {
+    this.name = name;
     this.element = element;
     this.constants = constants;
     this.options = options;
   }
 
-  @Override public ProtoTypeName protoTypeName() {
-    return protoTypeName;
+  @Override public Name name() {
+    return name;
   }
 
   @Override public String documentation() {
@@ -45,11 +45,11 @@ public final class WireEnum extends WireType {
     return options;
   }
 
-  @Override public ImmutableList<WireType> nestedTypes() {
+  @Override public ImmutableList<Type> nestedTypes() {
     return ImmutableList.of(); // Enums do not allow nested type declarations.
   }
 
-  public ImmutableList<WireEnumConstant> constants() {
+  public ImmutableList<EnumConstant> constants() {
     return constants;
   }
 
@@ -58,12 +58,12 @@ public final class WireEnum extends WireType {
 
   @Override void linkOptions(Linker linker) {
     options.link(linker);
-    for (WireEnumConstant constant : constants) {
+    for (EnumConstant constant : constants) {
       constant.linkOptions(linker);
     }
   }
 
-  @Override WireType retainAll(Set<String> identifiers) {
-    return identifiers.contains(protoTypeName.toString()) ? this : null;
+  @Override Type retainAll(Set<String> identifiers) {
+    return identifiers.contains(name.toString()) ? this : null;
   }
 }

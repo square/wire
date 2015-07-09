@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ExtendElement;
 import com.squareup.protoparser.FieldElement;
 
-public final class WireExtend {
+public final class Extend {
   private final String packageName;
   private final ExtendElement element;
-  private final ImmutableList<WireField> fields;
-  private ProtoTypeName protoTypeName;
+  private final ImmutableList<Field> fields;
+  private Type.Name name;
 
-  WireExtend(String packageName, ExtendElement element) {
+  Extend(String packageName, ExtendElement element) {
     this.packageName = packageName;
     this.element = element;
 
-    ImmutableList.Builder<WireField> fields = ImmutableList.builder();
+    ImmutableList.Builder<Field> fields = ImmutableList.builder();
     for (FieldElement field : element.fields()) {
-      fields.add(new WireField(packageName, field));
+      fields.add(new Field(packageName, field));
     }
     this.fields = fields.build();
   }
@@ -40,22 +40,22 @@ public final class WireExtend {
     return packageName;
   }
 
-  public ProtoTypeName protoTypeName() {
-    return protoTypeName;
+  public Type.Name type() {
+    return name;
   }
 
   public String documentation() {
     return element.documentation();
   }
 
-  public ImmutableList<WireField> fields() {
+  public ImmutableList<Field> fields() {
     return fields;
   }
 
   void link(Linker linker) {
-    for (WireField field : fields) {
+    for (Field field : fields) {
       field.link(linker);
     }
-    protoTypeName = linker.resolveNamedType(packageName, element.name());
+    name = linker.resolveNamedType(packageName, element.name());
   }
 }

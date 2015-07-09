@@ -13,26 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.protoparser.FieldElement;
-import com.squareup.protoparser.OneOfElement;
+import com.squareup.protoparser.EnumConstantElement;
 
-public final class WireOneOf {
+public final class EnumConstant {
   private final String packageName;
-  private final OneOfElement element;
-  private final ImmutableList<WireField> fields;
+  private final EnumConstantElement element;
+  private final Options options;
 
-  WireOneOf(String packageName, OneOfElement element) {
+  EnumConstant(String packageName, EnumConstantElement element) {
     this.packageName = packageName;
     this.element = element;
-
-    ImmutableList.Builder<WireField> fields = ImmutableList.builder();
-    for (FieldElement field : element.fields()) {
-      fields.add(new WireField(packageName, field));
-    }
-    this.fields = fields.build();
+    this.options = new Options(
+        Type.Name.ENUM_VALUE_OPTIONS, packageName, element.options());
   }
 
   public String packageName() {
@@ -43,23 +37,19 @@ public final class WireOneOf {
     return element.name();
   }
 
+  public int tag() {
+    return element.tag();
+  }
+
   public String documentation() {
     return element.documentation();
   }
 
-  public ImmutableList<WireField> fields() {
-    return fields;
-  }
-
-  void link(Linker linker) {
-    for (WireField field : fields) {
-      field.link(linker);
-    }
+  public Options options() {
+    return options;
   }
 
   void linkOptions(Linker linker) {
-    for (WireField field : fields) {
-      field.linkOptions(linker);
-    }
+    options.link(linker);
   }
 }
