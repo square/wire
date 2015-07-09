@@ -101,11 +101,8 @@ public abstract class Message implements Serializable {
   /** Set to null until a field is added. */
   private transient UnknownFieldMap unknownFields;
 
-  /** False upon construction or deserialization. */
-  private transient boolean haveCachedSerializedSize;
-
-  /** If {@code haveCachedSerializedSize} is true, the serialized size of this message. */
-  private transient int cachedSerializedSize;
+  /** If not {@code -1} then the serialized size of this message. */
+  transient int cachedSerializedSize = -1;
 
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected transient int hashCode = 0;
@@ -160,46 +157,13 @@ public abstract class Message implements Serializable {
     return adapter.fromInt(value);
   }
 
-  @SuppressWarnings("unchecked")
-  public byte[] toByteArray() {
-    return WIRE.messageAdapter((Class<Message>) getClass()).toByteArray(this);
-  }
-
-  public void writeTo(byte[] output) {
-    writeTo(output, 0, output.length);
-  }
-
-  public void writeTo(byte[] output, int offset, int count) {
-    write(WireOutput.newInstance(output, offset, count));
-  }
-
-  @SuppressWarnings("unchecked")
-  private void write(WireOutput output) {
-    MessageAdapter<Message> adapter = WIRE.messageAdapter((Class<Message>) getClass());
-    try {
-      adapter.write(this, output);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   void writeUnknownFieldMap(WireOutput output) throws IOException {
     if (unknownFields != null) {
       unknownFields.write(output);
     }
   }
 
-  @SuppressWarnings("unchecked")
-  public int getSerializedSize() {
-    if (!haveCachedSerializedSize) {
-      MessageAdapter<Message> adapter = WIRE.messageAdapter((Class<Message>) getClass());
-      cachedSerializedSize = adapter.getSerializedSize(this);
-      haveCachedSerializedSize = true;
-    }
-    return cachedSerializedSize;
-  }
-
-  public int getUnknownFieldsSerializedSize() {
+  int getUnknownFieldsSerializedSize() {
     return unknownFields == null ? 0 : unknownFields.getSerializedSize();
   }
 

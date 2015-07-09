@@ -50,6 +50,7 @@ package com.squareup.wire;
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import java.io.IOException;
+import okio.BufferedSink;
 import okio.ByteString;
 
 /**
@@ -57,13 +58,11 @@ import okio.ByteString;
  */
 final class WireOutput {
 
-  // Public utility methods
-
   /**
    * Computes the number of bytes that would be needed to encode a signed variable-length integer
    * of up to 32 bits.
    */
-  public static int int32Size(int value) {
+  static int int32Size(int value) {
     if (value >= 0) {
       return varint32Size(value);
     } else {
@@ -73,38 +72,8 @@ final class WireOutput {
   }
 
   /** Makes a tag value given a field number and wire type. */
-  public static int makeTag(int fieldNumber, WireType wireType) {
+  static int makeTag(int fieldNumber, WireType wireType) {
     return (fieldNumber << WireType.TAG_TYPE_BITS) | wireType.value();
-  }
-
-  private final byte[] buffer;
-  private final int limit;
-  private int position;
-
-  private WireOutput(byte[] buffer, int offset, int length) {
-    this.buffer = buffer;
-    position = offset;
-    limit = offset + length;
-  }
-
-  /**
-   * Create a new {@code CodedOutputStream} that writes directly to the given
-   * byte array.  If more bytes are written than fit in the array, an
-   * {@link IOException} will be thrown.  Writing directly to a flat
-   * array is faster than writing to an {@code OutputStream}.
-   */
-  static WireOutput newInstance(byte[] flatArray) {
-    return newInstance(flatArray, 0, flatArray.length);
-  }
-
-  /**
-   * Create a new {@code CodedOutputStream} that writes directly to the given
-   * byte array slice.  If more bytes are written than fit in the slice, an
-   * {@link IOException} will be thrown.  Writing directly to a flat
-   * array is faster than writing to an {@code OutputStream}.
-   */
-  static WireOutput newInstance(byte[] flatArray, int offset, int length) {
-    return new WireOutput(flatArray, offset, length);
   }
 
   /** Compute the number of bytes that would be needed to encode a tag. */
@@ -113,9 +82,8 @@ final class WireOutput {
   }
 
   /**
-   * Compute the number of bytes that would be needed to encode a varint.
-   * {@code value} is treated as unsigned, so it won't be sign-extended if
-   * negative.
+   * Compute the number of bytes that would be needed to encode a varint. {@code value} is treated
+   * as unsigned, so it won't be sign-extended if negative.
    */
   static int varint32Size(int value) {
     if ((value & (0xffffffff <<  7)) == 0) return 1;
@@ -139,26 +107,46 @@ final class WireOutput {
     return 10;
   }
 
-  /** Write a single byte, represented by an integer value. */
-  void writeRawByte(int value) throws IOException {
-    if (position == limit) {
-      // We're writing to a single buffer.
-      throw new IOException("Out of space: position=" + position + ", limit=" + limit);
-    }
-    buffer[position++] = (byte) value;
+  /**
+   * Encode a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
+   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+   * to be varint encoded, thus always taking 10 bytes on the wire.)
+   *
+   * @param n A signed 32-bit integer.
+   * @return An unsigned 32-bit integer, stored in a signed int because Java has no explicit
+   * unsigned support.
+   */
+  static int zigZag32(int n) {
+    // Note:  the right-shift must be arithmetic
+    return (n << 1) ^ (n >> 31);
   }
 
-  /** Write a string of bytes. */
-  void writeRawBytes(ByteString bytes) throws IOException {
-    byte[] value = bytes.toByteArray();
-    if (limit - position >= value.length) {
-      // We have room in the current buffer.
-      System.arraycopy(value, 0, buffer, position, value.length);
-      position += value.length;
-    } else {
-      // We're writing to a single buffer.
-      throw new IOException("Out of space: position=" + position + ", limit=" + limit);
-    }
+  /**
+   * Encode a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
+   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+   * to be varint encoded, thus always taking 10 bytes on the wire.)
+   *
+   * @param n A signed 64-bit integer.
+   * @return An unsigned 64-bit integer, stored in a signed int because Java has no explicit
+   * unsigned support.
+   */
+  static long zigZag64(long n) {
+    // Note:  the right-shift must be arithmetic
+    return (n << 1) ^ (n >> 63);
+  }
+
+  private final BufferedSink sink;
+
+  WireOutput(BufferedSink sink) {
+    this.sink = sink;
+  }
+
+  void writeRawByte(int value) throws IOException {
+    sink.writeByte(value);
+  }
+
+  void writeRawBytes(ByteString value) throws IOException {
+    sink.write(value);
   }
 
   /** Encode and write a tag. */
@@ -177,16 +165,16 @@ final class WireOutput {
   }
 
   /**
-   * Encode and write a varint.  {@code value} is treated as
-   * unsigned, so it won't be sign-extended if negative.
+   * Encode and write a varint. {@code value} is treated as unsigned, so it won't be sign-extended
+   * if negative.
    */
   void writeVarint32(int value) throws IOException {
     while (true) {
       if ((value & ~0x7F) == 0) {
-        writeRawByte(value);
+        sink.writeByte(value);
         return;
       } else {
-        writeRawByte((value & 0x7F) | 0x80);
+        sink.writeByte((value & 0x7F) | 0x80);
         value >>>= 7;
       }
     }
@@ -196,10 +184,10 @@ final class WireOutput {
   void writeVarint64(long value) throws IOException {
     while (true) {
       if ((value & ~0x7FL) == 0) {
-        writeRawByte((int) value);
+        sink.writeByte((int) value);
         return;
       } else {
-        writeRawByte(((int) value & 0x7F) | 0x80);
+        sink.writeByte(((int) value & 0x7F) | 0x80);
         value >>>= 7;
       }
     }
@@ -207,55 +195,11 @@ final class WireOutput {
 
   /** Write a little-endian 32-bit integer. */
   void writeFixed32(int value) throws IOException {
-    // CHECKSTYLE.OFF: ParenPad
-    writeRawByte((value      ) & 0xFF);
-    writeRawByte((value >>  8) & 0xFF);
-    writeRawByte((value >> 16) & 0xFF);
-    writeRawByte((value >> 24) & 0xFF);
-    // CHECKSTYLE.ON: ParenPad
+    sink.writeIntLe(value);
   }
 
   /** Write a little-endian 64-bit integer. */
   void writeFixed64(long value) throws IOException {
-    // CHECKSTYLE.OFF: ParenPad
-    writeRawByte((int) (value      ) & 0xFF);
-    writeRawByte((int) (value >>  8) & 0xFF);
-    writeRawByte((int) (value >> 16) & 0xFF);
-    writeRawByte((int) (value >> 24) & 0xFF);
-    writeRawByte((int) (value >> 32) & 0xFF);
-    writeRawByte((int) (value >> 40) & 0xFF);
-    writeRawByte((int) (value >> 48) & 0xFF);
-    writeRawByte((int) (value >> 56) & 0xFF);
-    // CHECKSTYLE.ON: ParenPad
-  }
-
-  /**
-   * Encode a ZigZag-encoded 32-bit value.  ZigZag encodes signed integers
-   * into values that can be efficiently encoded with varint.  (Otherwise,
-   * negative values must be sign-extended to 64 bits to be varint encoded,
-   * thus always taking 10 bytes on the wire.)
-   *
-   * @param n A signed 32-bit integer.
-   * @return An unsigned 32-bit integer, stored in a signed int because
-   *         Java has no explicit unsigned support.
-   */
-  static int zigZag32(int n) {
-    // Note:  the right-shift must be arithmetic
-    return (n << 1) ^ (n >> 31);
-  }
-
-  /**
-   * Encode a ZigZag-encoded 64-bit value.  ZigZag encodes signed integers
-   * into values that can be efficiently encoded with varint.  (Otherwise,
-   * negative values must be sign-extended to 64 bits to be varint encoded,
-   * thus always taking 10 bytes on the wire.)
-   *
-   * @param n A signed 64-bit integer.
-   * @return An unsigned 64-bit integer, stored in a signed int because
-   *         Java has no explicit unsigned support.
-   */
-  static long zigZag64(long n) {
-    // Note:  the right-shift must be arithmetic
-    return (n << 1) ^ (n >> 63);
+    sink.writeLongLe(value);
   }
 }
