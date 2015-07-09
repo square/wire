@@ -14,8 +14,6 @@ import java.util.List;
 public final class ServiceOptions extends ExtendableMessage<ServiceOptions> {
   private static final long serialVersionUID = 0L;
 
-  public static final List<UninterpretedOption> DEFAULT_UNINTERPRETED_OPTION = Collections.emptyList();
-
   /**
    * Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
    *   framework.  We apologize for hoarding these numbers to ourselves, but
@@ -60,7 +58,7 @@ public final class ServiceOptions extends ExtendableMessage<ServiceOptions> {
   }
 
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<ServiceOptions> {
-    public List<UninterpretedOption> uninterpreted_option;
+    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
     }
@@ -79,7 +77,7 @@ public final class ServiceOptions extends ExtendableMessage<ServiceOptions> {
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      this.uninterpreted_option = checkForNulls(uninterpreted_option);
+      this.uninterpreted_option = canonicalizeList(uninterpreted_option);
       return this;
     }
 

@@ -18,8 +18,6 @@ public final class ServiceDescriptorProto extends Message {
 
   public static final String DEFAULT_NAME = "";
 
-  public static final List<MethodDescriptorProto> DEFAULT_METHOD = Collections.emptyList();
-
   public static final String DEFAULT_DOC = "";
 
   @ProtoField(
@@ -88,7 +86,7 @@ public final class ServiceDescriptorProto extends Message {
   public static final class Builder extends com.squareup.wire.Message.Builder<ServiceDescriptorProto> {
     public String name;
 
-    public List<MethodDescriptorProto> method;
+    public List<MethodDescriptorProto> method = Collections.emptyList();
 
     public String doc;
 
@@ -112,7 +110,7 @@ public final class ServiceDescriptorProto extends Message {
     }
 
     public Builder method(List<MethodDescriptorProto> method) {
-      this.method = checkForNulls(method);
+      this.method = canonicalizeList(method);
       return this;
     }
 

@@ -86,68 +86,6 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
   public static final NestedEnum DEFAULT_REQ_NESTED_ENUM = NestedEnum.A;
 
-  public static final List<Integer> DEFAULT_REP_INT32 = Collections.emptyList();
-
-  public static final List<Integer> DEFAULT_REP_UINT32 = Collections.emptyList();
-
-  public static final List<Integer> DEFAULT_REP_SINT32 = Collections.emptyList();
-
-  public static final List<Integer> DEFAULT_REP_FIXED32 = Collections.emptyList();
-
-  public static final List<Integer> DEFAULT_REP_SFIXED32 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_REP_INT64 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_REP_UINT64 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_REP_SINT64 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_REP_FIXED64 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_REP_SFIXED64 = Collections.emptyList();
-
-  public static final List<Boolean> DEFAULT_REP_BOOL = Collections.emptyList();
-
-  public static final List<Float> DEFAULT_REP_FLOAT = Collections.emptyList();
-
-  public static final List<Double> DEFAULT_REP_DOUBLE = Collections.emptyList();
-
-  public static final List<String> DEFAULT_REP_STRING = Collections.emptyList();
-
-  public static final List<ByteString> DEFAULT_REP_BYTES = Collections.emptyList();
-
-  public static final List<NestedEnum> DEFAULT_REP_NESTED_ENUM = Collections.emptyList();
-
-  public static final List<NestedMessage> DEFAULT_REP_NESTED_MESSAGE = Collections.emptyList();
-
-  public static final List<Integer> DEFAULT_PACK_INT32 = Collections.emptyList();
-
-  public static final List<Integer> DEFAULT_PACK_UINT32 = Collections.emptyList();
-
-  public static final List<Integer> DEFAULT_PACK_SINT32 = Collections.emptyList();
-
-  public static final List<Integer> DEFAULT_PACK_FIXED32 = Collections.emptyList();
-
-  public static final List<Integer> DEFAULT_PACK_SFIXED32 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_PACK_INT64 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_PACK_UINT64 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_PACK_SINT64 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_PACK_FIXED64 = Collections.emptyList();
-
-  public static final List<Long> DEFAULT_PACK_SFIXED64 = Collections.emptyList();
-
-  public static final List<Boolean> DEFAULT_PACK_BOOL = Collections.emptyList();
-
-  public static final List<Float> DEFAULT_PACK_FLOAT = Collections.emptyList();
-
-  public static final List<Double> DEFAULT_PACK_DOUBLE = Collections.emptyList();
-
-  public static final List<NestedEnum> DEFAULT_PACK_NESTED_ENUM = Collections.emptyList();
-
   public static final Integer DEFAULT_DEFAULT_INT32 = 2147483647;
 
   public static final Integer DEFAULT_DEFAULT_UINT32 = -1;
@@ -1053,67 +991,67 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
     public NestedMessage req_nested_message;
 
-    public List<Integer> rep_int32;
+    public List<Integer> rep_int32 = Collections.emptyList();
 
-    public List<Integer> rep_uint32;
+    public List<Integer> rep_uint32 = Collections.emptyList();
 
-    public List<Integer> rep_sint32;
+    public List<Integer> rep_sint32 = Collections.emptyList();
 
-    public List<Integer> rep_fixed32;
+    public List<Integer> rep_fixed32 = Collections.emptyList();
 
-    public List<Integer> rep_sfixed32;
+    public List<Integer> rep_sfixed32 = Collections.emptyList();
 
-    public List<Long> rep_int64;
+    public List<Long> rep_int64 = Collections.emptyList();
 
-    public List<Long> rep_uint64;
+    public List<Long> rep_uint64 = Collections.emptyList();
 
-    public List<Long> rep_sint64;
+    public List<Long> rep_sint64 = Collections.emptyList();
 
-    public List<Long> rep_fixed64;
+    public List<Long> rep_fixed64 = Collections.emptyList();
 
-    public List<Long> rep_sfixed64;
+    public List<Long> rep_sfixed64 = Collections.emptyList();
 
-    public List<Boolean> rep_bool;
+    public List<Boolean> rep_bool = Collections.emptyList();
 
-    public List<Float> rep_float;
+    public List<Float> rep_float = Collections.emptyList();
 
-    public List<Double> rep_double;
+    public List<Double> rep_double = Collections.emptyList();
 
-    public List<String> rep_string;
+    public List<String> rep_string = Collections.emptyList();
 
-    public List<ByteString> rep_bytes;
+    public List<ByteString> rep_bytes = Collections.emptyList();
 
-    public List<NestedEnum> rep_nested_enum;
+    public List<NestedEnum> rep_nested_enum = Collections.emptyList();
 
-    public List<NestedMessage> rep_nested_message;
+    public List<NestedMessage> rep_nested_message = Collections.emptyList();
 
-    public List<Integer> pack_int32;
+    public List<Integer> pack_int32 = Collections.emptyList();
 
-    public List<Integer> pack_uint32;
+    public List<Integer> pack_uint32 = Collections.emptyList();
 
-    public List<Integer> pack_sint32;
+    public List<Integer> pack_sint32 = Collections.emptyList();
 
-    public List<Integer> pack_fixed32;
+    public List<Integer> pack_fixed32 = Collections.emptyList();
 
-    public List<Integer> pack_sfixed32;
+    public List<Integer> pack_sfixed32 = Collections.emptyList();
 
-    public List<Long> pack_int64;
+    public List<Long> pack_int64 = Collections.emptyList();
 
-    public List<Long> pack_uint64;
+    public List<Long> pack_uint64 = Collections.emptyList();
 
-    public List<Long> pack_sint64;
+    public List<Long> pack_sint64 = Collections.emptyList();
 
-    public List<Long> pack_fixed64;
+    public List<Long> pack_fixed64 = Collections.emptyList();
 
-    public List<Long> pack_sfixed64;
+    public List<Long> pack_sfixed64 = Collections.emptyList();
 
-    public List<Boolean> pack_bool;
+    public List<Boolean> pack_bool = Collections.emptyList();
 
-    public List<Float> pack_float;
+    public List<Float> pack_float = Collections.emptyList();
 
-    public List<Double> pack_double;
+    public List<Double> pack_double = Collections.emptyList();
 
-    public List<NestedEnum> pack_nested_enum;
+    public List<NestedEnum> pack_nested_enum = Collections.emptyList();
 
     public Integer default_int32;
 
@@ -1407,157 +1345,157 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     public Builder rep_int32(List<Integer> rep_int32) {
-      this.rep_int32 = checkForNulls(rep_int32);
+      this.rep_int32 = canonicalizeList(rep_int32);
       return this;
     }
 
     public Builder rep_uint32(List<Integer> rep_uint32) {
-      this.rep_uint32 = checkForNulls(rep_uint32);
+      this.rep_uint32 = canonicalizeList(rep_uint32);
       return this;
     }
 
     public Builder rep_sint32(List<Integer> rep_sint32) {
-      this.rep_sint32 = checkForNulls(rep_sint32);
+      this.rep_sint32 = canonicalizeList(rep_sint32);
       return this;
     }
 
     public Builder rep_fixed32(List<Integer> rep_fixed32) {
-      this.rep_fixed32 = checkForNulls(rep_fixed32);
+      this.rep_fixed32 = canonicalizeList(rep_fixed32);
       return this;
     }
 
     public Builder rep_sfixed32(List<Integer> rep_sfixed32) {
-      this.rep_sfixed32 = checkForNulls(rep_sfixed32);
+      this.rep_sfixed32 = canonicalizeList(rep_sfixed32);
       return this;
     }
 
     public Builder rep_int64(List<Long> rep_int64) {
-      this.rep_int64 = checkForNulls(rep_int64);
+      this.rep_int64 = canonicalizeList(rep_int64);
       return this;
     }
 
     public Builder rep_uint64(List<Long> rep_uint64) {
-      this.rep_uint64 = checkForNulls(rep_uint64);
+      this.rep_uint64 = canonicalizeList(rep_uint64);
       return this;
     }
 
     public Builder rep_sint64(List<Long> rep_sint64) {
-      this.rep_sint64 = checkForNulls(rep_sint64);
+      this.rep_sint64 = canonicalizeList(rep_sint64);
       return this;
     }
 
     public Builder rep_fixed64(List<Long> rep_fixed64) {
-      this.rep_fixed64 = checkForNulls(rep_fixed64);
+      this.rep_fixed64 = canonicalizeList(rep_fixed64);
       return this;
     }
 
     public Builder rep_sfixed64(List<Long> rep_sfixed64) {
-      this.rep_sfixed64 = checkForNulls(rep_sfixed64);
+      this.rep_sfixed64 = canonicalizeList(rep_sfixed64);
       return this;
     }
 
     public Builder rep_bool(List<Boolean> rep_bool) {
-      this.rep_bool = checkForNulls(rep_bool);
+      this.rep_bool = canonicalizeList(rep_bool);
       return this;
     }
 
     public Builder rep_float(List<Float> rep_float) {
-      this.rep_float = checkForNulls(rep_float);
+      this.rep_float = canonicalizeList(rep_float);
       return this;
     }
 
     public Builder rep_double(List<Double> rep_double) {
-      this.rep_double = checkForNulls(rep_double);
+      this.rep_double = canonicalizeList(rep_double);
       return this;
     }
 
     public Builder rep_string(List<String> rep_string) {
-      this.rep_string = checkForNulls(rep_string);
+      this.rep_string = canonicalizeList(rep_string);
       return this;
     }
 
     public Builder rep_bytes(List<ByteString> rep_bytes) {
-      this.rep_bytes = checkForNulls(rep_bytes);
+      this.rep_bytes = canonicalizeList(rep_bytes);
       return this;
     }
 
     public Builder rep_nested_enum(List<NestedEnum> rep_nested_enum) {
-      this.rep_nested_enum = checkForNulls(rep_nested_enum);
+      this.rep_nested_enum = canonicalizeList(rep_nested_enum);
       return this;
     }
 
     public Builder rep_nested_message(List<NestedMessage> rep_nested_message) {
-      this.rep_nested_message = checkForNulls(rep_nested_message);
+      this.rep_nested_message = canonicalizeList(rep_nested_message);
       return this;
     }
 
     public Builder pack_int32(List<Integer> pack_int32) {
-      this.pack_int32 = checkForNulls(pack_int32);
+      this.pack_int32 = canonicalizeList(pack_int32);
       return this;
     }
 
     public Builder pack_uint32(List<Integer> pack_uint32) {
-      this.pack_uint32 = checkForNulls(pack_uint32);
+      this.pack_uint32 = canonicalizeList(pack_uint32);
       return this;
     }
 
     public Builder pack_sint32(List<Integer> pack_sint32) {
-      this.pack_sint32 = checkForNulls(pack_sint32);
+      this.pack_sint32 = canonicalizeList(pack_sint32);
       return this;
     }
 
     public Builder pack_fixed32(List<Integer> pack_fixed32) {
-      this.pack_fixed32 = checkForNulls(pack_fixed32);
+      this.pack_fixed32 = canonicalizeList(pack_fixed32);
       return this;
     }
 
     public Builder pack_sfixed32(List<Integer> pack_sfixed32) {
-      this.pack_sfixed32 = checkForNulls(pack_sfixed32);
+      this.pack_sfixed32 = canonicalizeList(pack_sfixed32);
       return this;
     }
 
     public Builder pack_int64(List<Long> pack_int64) {
-      this.pack_int64 = checkForNulls(pack_int64);
+      this.pack_int64 = canonicalizeList(pack_int64);
       return this;
     }
 
     public Builder pack_uint64(List<Long> pack_uint64) {
-      this.pack_uint64 = checkForNulls(pack_uint64);
+      this.pack_uint64 = canonicalizeList(pack_uint64);
       return this;
     }
 
     public Builder pack_sint64(List<Long> pack_sint64) {
-      this.pack_sint64 = checkForNulls(pack_sint64);
+      this.pack_sint64 = canonicalizeList(pack_sint64);
       return this;
     }
 
     public Builder pack_fixed64(List<Long> pack_fixed64) {
-      this.pack_fixed64 = checkForNulls(pack_fixed64);
+      this.pack_fixed64 = canonicalizeList(pack_fixed64);
       return this;
     }
 
     public Builder pack_sfixed64(List<Long> pack_sfixed64) {
-      this.pack_sfixed64 = checkForNulls(pack_sfixed64);
+      this.pack_sfixed64 = canonicalizeList(pack_sfixed64);
       return this;
     }
 
     public Builder pack_bool(List<Boolean> pack_bool) {
-      this.pack_bool = checkForNulls(pack_bool);
+      this.pack_bool = canonicalizeList(pack_bool);
       return this;
     }
 
     public Builder pack_float(List<Float> pack_float) {
-      this.pack_float = checkForNulls(pack_float);
+      this.pack_float = canonicalizeList(pack_float);
       return this;
     }
 
     public Builder pack_double(List<Double> pack_double) {
-      this.pack_double = checkForNulls(pack_double);
+      this.pack_double = canonicalizeList(pack_double);
       return this;
     }
 
     public Builder pack_nested_enum(List<NestedEnum> pack_nested_enum) {
-      this.pack_nested_enum = checkForNulls(pack_nested_enum);
+      this.pack_nested_enum = canonicalizeList(pack_nested_enum);
       return this;
     }
 

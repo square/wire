@@ -25,8 +25,6 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
 
   public static final String DEFAULT_EXPERIMENTAL_MAP_KEY = "";
 
-  public static final List<UninterpretedOption> DEFAULT_UNINTERPRETED_OPTION = Collections.emptyList();
-
   /**
    * The ctype option instructs the C++ code generator to use a different
    * representation of the field than it normally would.  See the specific
@@ -143,7 +141,7 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
 
     public String experimental_map_key;
 
-    public List<UninterpretedOption> uninterpreted_option;
+    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
     }
@@ -214,7 +212,7 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      this.uninterpreted_option = checkForNulls(uninterpreted_option);
+      this.uninterpreted_option = canonicalizeList(uninterpreted_option);
       return this;
     }
 

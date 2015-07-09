@@ -18,8 +18,6 @@ public final class RedactedRepeated extends Message {
       .setExtension(Ext_redacted_test.redacted, true)
       .build();
 
-  public static final List<String> DEFAULT_A = Collections.emptyList();
-
   @ProtoField(
       tag = 1,
       type = Message.Datatype.STRING,
@@ -51,7 +49,7 @@ public final class RedactedRepeated extends Message {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRepeated> {
-    public List<String> a;
+    public List<String> a = Collections.emptyList();
 
     public Builder() {
     }
@@ -63,7 +61,7 @@ public final class RedactedRepeated extends Message {
     }
 
     public Builder a(List<String> a) {
-      this.a = checkForNulls(a);
+      this.a = canonicalizeList(a);
       return this;
     }
 

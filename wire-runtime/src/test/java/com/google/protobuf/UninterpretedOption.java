@@ -25,8 +25,6 @@ import okio.ByteString;
 public final class UninterpretedOption extends Message {
   private static final long serialVersionUID = 0L;
 
-  public static final List<NamePart> DEFAULT_NAME = Collections.emptyList();
-
   public static final String DEFAULT_IDENTIFIER_VALUE = "";
 
   public static final Long DEFAULT_POSITIVE_INT_VALUE = 0L;
@@ -132,7 +130,7 @@ public final class UninterpretedOption extends Message {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<UninterpretedOption> {
-    public List<NamePart> name;
+    public List<NamePart> name = Collections.emptyList();
 
     public String identifier_value;
 
@@ -162,7 +160,7 @@ public final class UninterpretedOption extends Message {
     }
 
     public Builder name(List<NamePart> name) {
-      this.name = checkForNulls(name);
+      this.name = canonicalizeList(name);
       return this;
     }
 

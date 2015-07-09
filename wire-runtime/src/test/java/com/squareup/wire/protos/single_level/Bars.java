@@ -12,8 +12,6 @@ import java.util.List;
 public final class Bars extends Message {
   private static final long serialVersionUID = 0L;
 
-  public static final List<Bar> DEFAULT_BARS = Collections.emptyList();
-
   @ProtoField(
       tag = 1,
       label = Message.Label.REPEATED,
@@ -44,7 +42,7 @@ public final class Bars extends Message {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Bars> {
-    public List<Bar> bars;
+    public List<Bar> bars = Collections.emptyList();
 
     public Builder() {
     }
@@ -56,7 +54,7 @@ public final class Bars extends Message {
     }
 
     public Builder bars(List<Bar> bars) {
-      this.bars = checkForNulls(bars);
+      this.bars = canonicalizeList(bars);
       return this;
     }
 

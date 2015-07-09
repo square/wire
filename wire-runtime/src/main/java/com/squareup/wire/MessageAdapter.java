@@ -603,7 +603,7 @@ final class MessageAdapter<M extends Message> {
             builder.addVarint(tag, (Integer) value);
           } else {
             if (label.isRepeated()) {
-              storage.add(tag, value);
+              storage.add(tag, value != null ? value : Collections.emptyList());
             } else if (extension != null) {
               setExtension((ExtendableBuilder<?>) builder, extension, value);
             } else if (label.isOneOf()) {

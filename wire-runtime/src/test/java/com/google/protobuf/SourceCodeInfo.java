@@ -19,8 +19,6 @@ import java.util.List;
 public final class SourceCodeInfo extends Message {
   private static final long serialVersionUID = 0L;
 
-  public static final List<Location> DEFAULT_LOCATION = Collections.emptyList();
-
   /**
    * A Location identifies a piece of source code in a .proto file which
    * corresponds to a particular definition.  This information is intended
@@ -96,7 +94,7 @@ public final class SourceCodeInfo extends Message {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<SourceCodeInfo> {
-    public List<Location> location;
+    public List<Location> location = Collections.emptyList();
 
     public Builder() {
     }
@@ -153,7 +151,7 @@ public final class SourceCodeInfo extends Message {
      *   be recorded in the future.
      */
     public Builder location(List<Location> location) {
-      this.location = checkForNulls(location);
+      this.location = canonicalizeList(location);
       return this;
     }
 
@@ -165,10 +163,6 @@ public final class SourceCodeInfo extends Message {
 
   public static final class Location extends Message {
     private static final long serialVersionUID = 0L;
-
-    public static final List<Integer> DEFAULT_PATH = Collections.emptyList();
-
-    public static final List<Integer> DEFAULT_SPAN = Collections.emptyList();
 
     /**
      * Identifies which part of the FileDescriptorProto was defined at this
@@ -247,9 +241,9 @@ public final class SourceCodeInfo extends Message {
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Location> {
-      public List<Integer> path;
+      public List<Integer> path = Collections.emptyList();
 
-      public List<Integer> span;
+      public List<Integer> span = Collections.emptyList();
 
       public Builder() {
       }
@@ -287,7 +281,7 @@ public final class SourceCodeInfo extends Message {
        * of the label to the terminating semicolon).
        */
       public Builder path(List<Integer> path) {
-        this.path = checkForNulls(path);
+        this.path = canonicalizeList(path);
         return this;
       }
 
@@ -299,7 +293,7 @@ public final class SourceCodeInfo extends Message {
        * 1 to each before displaying to a user.
        */
       public Builder span(List<Integer> span) {
-        this.span = checkForNulls(span);
+        this.span = canonicalizeList(span);
         return this;
       }
 

@@ -25,8 +25,6 @@ public final class VersionTwo extends Message {
 
   public static final Long DEFAULT_V2_F64 = 0L;
 
-  public static final List<String> DEFAULT_V2_RS = Collections.emptyList();
-
   @ProtoField(
       tag = 1,
       type = Message.Datatype.INT32
@@ -117,7 +115,7 @@ public final class VersionTwo extends Message {
 
     public Long v2_f64;
 
-    public List<String> v2_rs;
+    public List<String> v2_rs = Collections.emptyList();
 
     public Builder() {
     }
@@ -159,7 +157,7 @@ public final class VersionTwo extends Message {
     }
 
     public Builder v2_rs(List<String> v2_rs) {
-      this.v2_rs = checkForNulls(v2_rs);
+      this.v2_rs = canonicalizeList(v2_rs);
       return this;
     }
 
