@@ -11,11 +11,6 @@ final class StringWireLogger implements WireLogger {
     this.isQuiet = quiet;
   }
 
-  @Override public void error(String message) {
-    buffer.append(message);
-    buffer.append('\n');
-  }
-
   @Override public void artifact(File outputDirectory, JavaFile javaFile) {
     buffer.append(outputDirectory);
     buffer.append(" ");

@@ -13,54 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.RpcElement;
 import com.squareup.protoparser.ServiceElement;
 import java.util.Set;
 
-public final class WireService {
-  private final ProtoTypeName protoTypeName;
+public final class Service {
+  private final Type.Name name;
   private final ServiceElement element;
-  private final ImmutableList<WireRpc> rpcs;
+  private final ImmutableList<Rpc> rpcs;
   private final Options options;
 
-  private WireService(ProtoTypeName protoTypeName, ServiceElement element,
-      ImmutableList<WireRpc> rpcs, Options options) {
-    this.protoTypeName = protoTypeName;
+  private Service(Type.Name name, ServiceElement element,
+      ImmutableList<Rpc> rpcs, Options options) {
+    this.name = name;
     this.element = element;
     this.rpcs = rpcs;
     this.options = options;
   }
 
-  public static WireService get(ProtoTypeName protoTypeName, ServiceElement element) {
-    ImmutableList.Builder<WireRpc> rpcs = ImmutableList.builder();
+  public static Service get(Type.Name name, ServiceElement element) {
+    ImmutableList.Builder<Rpc> rpcs = ImmutableList.builder();
     for (RpcElement rpc : element.rpcs()) {
-      rpcs.add(new WireRpc(protoTypeName.packageName(), rpc));
+      rpcs.add(new Rpc(name.packageName(), rpc));
     }
 
     Options options = new Options(
-        ProtoTypeName.SERVICE_OPTIONS, protoTypeName.packageName(), element.options());
+        Type.Name.SERVICE_OPTIONS, name.packageName(), element.options());
 
-    return new WireService(protoTypeName, element, rpcs.build(), options);
+    return new Service(name, element, rpcs.build(), options);
   }
 
-  public ProtoTypeName protoTypeName() {
-    return protoTypeName;
+  public Type.Name name() {
+    return name;
   }
 
   public String documentation() {
     return element.documentation();
   }
 
-  public ImmutableList<WireRpc> rpcs() {
+  public ImmutableList<Rpc> rpcs() {
     return rpcs;
   }
 
   /** Returns the RPC named {@code name}, or null if this service has no such method. */
-  public WireRpc rpc(String name) {
-    for (WireRpc rpc : rpcs) {
+  public Rpc rpc(String name) {
+    for (Rpc rpc : rpcs) {
       if (rpc.name().equals(name)) {
         return rpc;
       }
@@ -73,35 +73,35 @@ public final class WireService {
   }
 
   void link(Linker linker) {
-    for (WireRpc rpc : rpcs) {
+    for (Rpc rpc : rpcs) {
       rpc.link(linker);
     }
   }
 
   void linkOptions(Linker linker) {
-    for (WireRpc rpc : rpcs) {
+    for (Rpc rpc : rpcs) {
       rpc.linkOptions(linker);
     }
     options.link(linker);
   }
 
-  WireService retainAll(Set<String> identifiers) {
-    String serviceName = protoTypeName.toString();
+  Service retainAll(Set<String> identifiers) {
+    String serviceName = name.toString();
     if (identifiers.contains(serviceName)) {
       return this; // Fully retained.
     }
 
-    ImmutableList.Builder<WireRpc> retainedRpcsBuilde = ImmutableList.builder();
-    for (WireRpc rpc : rpcs) {
+    ImmutableList.Builder<Rpc> retainedRpcsBuilde = ImmutableList.builder();
+    for (Rpc rpc : rpcs) {
       if (identifiers.contains(serviceName + '#' + rpc.name())) {
         retainedRpcsBuilde.add(rpc);
       }
     }
 
     // If child RPCs are retained, return a subset of this service.
-    ImmutableList<WireRpc> retainedRpcs = retainedRpcsBuilde.build();
+    ImmutableList<Rpc> retainedRpcs = retainedRpcsBuilde.build();
     if (!retainedRpcs.isEmpty()) {
-      return new WireService(protoTypeName, element, retainedRpcs, options);
+      return new Service(name, element, retainedRpcs, options);
     }
 
     // Neither this service, nor any of its RPCs are retained.

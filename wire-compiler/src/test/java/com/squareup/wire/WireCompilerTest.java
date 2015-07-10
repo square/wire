@@ -19,7 +19,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.internal.Util;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.SimpleServiceFactory;
-import com.squareup.wire.model.WireService;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -330,7 +329,7 @@ public class WireCompilerTest {
   @SuppressWarnings("UnusedDeclaration")
   public static class TestServiceFactory extends SimpleServiceFactory {
     @Override public TypeSpec create(
-        JavaGenerator javaGenerator, List<String> options, WireService service) {
+        JavaGenerator javaGenerator, List<String> options, Service service) {
       assertEquals(Arrays.asList("OPTION1", "OPTION2"), options);
       return super.create(javaGenerator, options, service);
     }

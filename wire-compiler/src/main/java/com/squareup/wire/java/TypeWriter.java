@@ -29,21 +29,20 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
+import com.squareup.wire.EnumConstant;
+import com.squareup.wire.EnumType;
+import com.squareup.wire.Extend;
+import com.squareup.wire.Field;
 import com.squareup.wire.Message;
+import com.squareup.wire.MessageType;
+import com.squareup.wire.OneOf;
+import com.squareup.wire.Options;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
+import com.squareup.wire.Type;
 import com.squareup.wire.WireCompilerException;
+import com.squareup.wire.WireProtoFile;
 import com.squareup.wire.internal.Util;
-import com.squareup.wire.model.Options;
-import com.squareup.wire.model.ProtoTypeName;
-import com.squareup.wire.model.WireEnum;
-import com.squareup.wire.model.WireEnumConstant;
-import com.squareup.wire.model.WireExtend;
-import com.squareup.wire.model.WireField;
-import com.squareup.wire.model.WireMessage;
-import com.squareup.wire.model.WireOneOf;
-import com.squareup.wire.model.WireProtoFile;
-import com.squareup.wire.model.WireType;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -79,18 +78,18 @@ public final class TypeWriter {
   }
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
-  public TypeSpec toTypeSpec(WireType type) {
-    if (type instanceof WireMessage) {
-      return toTypeSpec((WireMessage) type);
-    } else if (type instanceof WireEnum) {
-      return toTypeSpec((WireEnum) type);
+  public TypeSpec toTypeSpec(Type type) {
+    if (type instanceof MessageType) {
+      return toTypeSpec((MessageType) type);
+    } else if (type instanceof EnumType) {
+      return toTypeSpec((EnumType) type);
     } else {
       throw new IllegalArgumentException("unexpected type: " + type);
     }
   }
 
-  private TypeSpec toTypeSpec(WireEnum type) {
-    ClassName typeName = (ClassName) javaGenerator.typeName(type.protoTypeName());
+  private TypeSpec toTypeSpec(EnumType type) {
+    ClassName typeName = (ClassName) javaGenerator.typeName(type.name());
 
     TypeSpec.Builder builder = TypeSpec.enumBuilder(typeName.simpleName())
         .addModifiers(PUBLIC)
@@ -108,9 +107,9 @@ public final class TypeWriter {
     constructorBuilder.addParameter(TypeName.INT, "value");
 
     // Enum constant options, each of which requires a constructor parameter and a field.
-    Set<WireField> allOptionFieldsBuilder = new LinkedHashSet<WireField>();
-    for (WireEnumConstant constant : type.constants()) {
-      for (WireField optionField : constant.options().map().keySet()) {
+    Set<Field> allOptionFieldsBuilder = new LinkedHashSet<Field>();
+    for (EnumConstant constant : type.constants()) {
+      for (Field optionField : constant.options().map().keySet()) {
         String fullyQualifiedName = optionField.packageName() + "." + optionField.name();
         if (!enumOptions.contains(fullyQualifiedName)) {
           continue;
@@ -124,15 +123,15 @@ public final class TypeWriter {
         }
       }
     }
-    ImmutableList<WireField> allOptionFields = ImmutableList.copyOf(allOptionFieldsBuilder);
+    ImmutableList<Field> allOptionFields = ImmutableList.copyOf(allOptionFieldsBuilder);
     String enumArgsFormat = "$L" + Strings.repeat(", $L", allOptionFields.size());
     builder.addMethod(constructorBuilder.build());
 
-    for (WireEnumConstant constant : type.constants()) {
+    for (EnumConstant constant : type.constants()) {
       Object[] enumArgs = new Object[allOptionFields.size() + 1];
       enumArgs[0] = constant.tag();
       for (int i = 0; i < allOptionFields.size(); i++) {
-        WireField key = allOptionFields.get(i);
+        Field key = allOptionFields.get(i);
         Object value = constant.options().map().get(key);
         enumArgs[i + 1] = value != null
             ? fieldInitializer(key.type(), value)
@@ -166,8 +165,8 @@ public final class TypeWriter {
     return builder.build();
   }
 
-  private TypeSpec toTypeSpec(WireMessage type) {
-    ClassName javaType = (ClassName) javaGenerator.typeName(type.protoTypeName());
+  private TypeSpec toTypeSpec(MessageType type) {
+    ClassName javaType = (ClassName) javaGenerator.typeName(type.name());
     ClassName builderJavaType = javaType.nestedClass("Builder");
 
     TypeSpec.Builder builder = TypeSpec.classBuilder(javaType.simpleName());
@@ -197,7 +196,7 @@ public final class TypeWriter {
         builder.addField(messageOptions);
       }
 
-      for (WireField field : type.fieldsAndOneOfFields()) {
+      for (Field field : type.fieldsAndOneOfFields()) {
         String fieldName = "FIELD_OPTIONS_" + field.name().toUpperCase(Locale.US);
         FieldSpec fieldOptions = optionsField(
             JavaGenerator.FIELD_OPTIONS, fieldName, field.options());
@@ -207,7 +206,7 @@ public final class TypeWriter {
       }
     }
 
-    for (WireField field : type.fieldsAndOneOfFields()) {
+    for (Field field : type.fieldsAndOneOfFields()) {
       TypeName fieldType = fieldType(field);
 
       if ((field.type().isScalar() || javaGenerator.isEnum(field.type()))
@@ -234,7 +233,7 @@ public final class TypeWriter {
     builder.addMethod(messageHashCode(type));
     builder.addType(builder(type, javaType, builderJavaType));
 
-    for (WireType nestedType : type.nestedTypes()) {
+    for (Type nestedType : type.nestedTypes()) {
       builder.addType(toTypeSpec(nestedType));
     }
 
@@ -253,8 +252,8 @@ public final class TypeWriter {
     initializer.add("$[new $T.Builder()", optionsType);
 
     boolean empty = true;
-    for (Map.Entry<WireField, ?> entry : options.map().entrySet()) {
-      WireField extensionRoot = entry.getKey();
+    for (Map.Entry<Field, ?> entry : options.map().entrySet()) {
+      Field extensionRoot = entry.getKey();
       if (extensionRoot.name().equals("default")
           || extensionRoot.name().equals("deprecated")
           || extensionRoot.name().equals("packed")) {
@@ -275,7 +274,7 @@ public final class TypeWriter {
         .build();
   }
 
-  private TypeName fieldType(WireField field) {
+  private TypeName fieldType(Field field) {
     TypeName messageType = javaGenerator.typeName(field.type());
     return field.isRepeated() ? JavaGenerator.listOf(messageType) : messageType;
   }
@@ -284,7 +283,7 @@ public final class TypeWriter {
   //
   // public static final Integer DEFAULT_OPT_INT32 = 123;
   //
-  private FieldSpec defaultField(WireField field, TypeName fieldType) {
+  private FieldSpec defaultField(Field field, TypeName fieldType) {
     String defaultFieldName = "DEFAULT_" + field.name().toUpperCase(Locale.US);
     return FieldSpec.builder(fieldType, defaultFieldName, PUBLIC, STATIC, FINAL)
         .initializer(defaultValue(field))
@@ -298,7 +297,7 @@ public final class TypeWriter {
   //   type = INT32
   // )
   //
-  private AnnotationSpec protoFieldAnnotation(WireField field, TypeName messageType) {
+  private AnnotationSpec protoFieldAnnotation(Field field, TypeName messageType) {
     AnnotationSpec.Builder result = AnnotationSpec.builder(ProtoField.class);
 
     int tag = field.tag();
@@ -354,10 +353,10 @@ public final class TypeWriter {
   //   this.optional_int64 = optional_int64;
   // }
   //
-  private MethodSpec messageFieldsConstructor(WireMessage type) {
+  private MethodSpec messageFieldsConstructor(MessageType type) {
     MethodSpec.Builder result = MethodSpec.constructorBuilder();
     result.addModifiers(PUBLIC);
-    for (WireField field : type.fieldsAndOneOfFields()) {
+    for (Field field : type.fieldsAndOneOfFields()) {
       TypeName javaType = fieldType(field);
       String sanitizedName = sanitize(field.name());
       result.addParameter(javaType, sanitizedName);
@@ -377,17 +376,17 @@ public final class TypeWriter {
   //   setBuilder(builder);
   // }
   //
-  private MethodSpec messageBuilderConstructor(WireMessage type, ClassName builderJavaType) {
+  private MethodSpec messageBuilderConstructor(MessageType type, ClassName builderJavaType) {
     MethodSpec.Builder result = MethodSpec.constructorBuilder()
         .addModifiers(PRIVATE)
         .addParameter(builderJavaType, "builder");
 
-    List<WireField> fields = type.fieldsAndOneOfFields();
+    List<Field> fields = type.fieldsAndOneOfFields();
     if (fields.size() > 0) {
       result.addCode("this(");
       for (int i = 0; i < fields.size(); i++) {
         if (i > 0) result.addCode(", ");
-        WireField field = fields.get(i);
+        Field field = fields.get(i);
         result.addCode("builder.$L", sanitize(field.name()));
       }
       result.addCode(");\n");
@@ -406,15 +405,15 @@ public final class TypeWriter {
   //   if (!Wire.equals(optional_int32, o.optional_int32)) return false;
   //   return true;
   //
-  private MethodSpec messageEquals(WireMessage type) {
-    TypeName javaType = javaGenerator.typeName(type.protoTypeName());
+  private MethodSpec messageEquals(MessageType type) {
+    TypeName javaType = javaGenerator.typeName(type.name());
     MethodSpec.Builder result = MethodSpec.methodBuilder("equals")
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .returns(boolean.class)
         .addParameter(Object.class, "other");
 
-    List<WireField> fields = type.fieldsAndOneOfFields();
+    List<Field> fields = type.fieldsAndOneOfFields();
     if (fields.isEmpty() && type.extensions().isEmpty()) {
       result.addStatement("return other instanceof $T", javaType);
       return result.build();
@@ -437,7 +436,7 @@ public final class TypeWriter {
     result.addCode("$[return ");
     for (int i = 0; i < fields.size(); i++) {
       if (i > 0) result.addCode("\n&& ");
-      WireField field = fields.get(i);
+      Field field = fields.get(i);
       String name = sanitize(field.name());
       result.addCode("equals($L, o.$L)", addThisIfOneOf(name, "other", "o"), name);
     }
@@ -461,20 +460,20 @@ public final class TypeWriter {
   // For repeated fields, the final "0" in the example above changes to a "1"
   // in order to be the same as the system hash code for an empty list.
   //
-  private MethodSpec messageHashCode(WireMessage type) {
+  private MethodSpec messageHashCode(MessageType type) {
     MethodSpec.Builder result = MethodSpec.methodBuilder("hashCode")
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .returns(int.class);
 
-    List<WireField> fields = type.fieldsAndOneOfFields();
+    List<Field> fields = type.fieldsAndOneOfFields();
     if (fields.isEmpty() && type.extensions().isEmpty()) {
       result.addStatement("return 0");
       return result.build();
     }
 
     if (fields.size() == 1 && type.extensions().isEmpty()) {
-      WireField field = fields.get(0);
+      Field field = fields.get(0);
       String name = sanitize(field.name());
       result.addStatement("int result = hashCode");
       result.addStatement(
@@ -490,7 +489,7 @@ public final class TypeWriter {
       result.addStatement("result = extensionsHashCode()");
       afterFirstAssignment = true;
     }
-    for (WireField field : fields) {
+    for (Field field : fields) {
       String name = sanitize(field.name());
       name = addThisIfOneOf(name, "result");
       if (afterFirstAssignment) {
@@ -508,7 +507,7 @@ public final class TypeWriter {
     return result.build();
   }
 
-  private TypeSpec builder(WireMessage type, ClassName javaType, ClassName builderType) {
+  private TypeSpec builder(MessageType type, ClassName javaType, ClassName builderType) {
     TypeSpec.Builder result = TypeSpec.classBuilder("Builder")
         .addModifiers(PUBLIC, STATIC, FINAL);
 
@@ -516,8 +515,8 @@ public final class TypeWriter {
         ? JavaGenerator.builderOf(javaType)
         : JavaGenerator.extendableBuilderOf(javaType));
 
-    List<WireField> fields = type.fieldsAndOneOfFields();
-    for (WireField field : fields) {
+    List<Field> fields = type.fieldsAndOneOfFields();
+    for (Field field : fields) {
       TypeName fieldJavaType = fieldType(field);
       FieldSpec.Builder fieldSpec =
           FieldSpec.builder(fieldJavaType, sanitize(field.name()), PUBLIC);
@@ -530,12 +529,12 @@ public final class TypeWriter {
     result.addMethod(builderNoArgsConstructor());
     result.addMethod(builderCopyConstructor(type));
 
-    for (WireField field : type.fields()) {
+    for (Field field : type.fields()) {
       result.addMethod(setter(builderType, null, field));
     }
 
-    for (WireOneOf oneOf : type.oneOfs()) {
-      for (WireField field : oneOf.fields()) {
+    for (OneOf oneOf : type.oneOfs()) {
+      for (Field field : oneOf.fields()) {
         result.addMethod(setter(builderType, oneOf, field));
       }
     }
@@ -568,20 +567,20 @@ public final class TypeWriter {
   //   ...
   // }
   //
-  private MethodSpec builderCopyConstructor(WireMessage message) {
-    TypeName javaType = javaGenerator.typeName(message.protoTypeName());
+  private MethodSpec builderCopyConstructor(MessageType message) {
+    TypeName javaType = javaGenerator.typeName(message.name());
 
     MethodSpec.Builder result = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameter(javaType, "message");
     result.addStatement("super(message)");
 
-    List<WireField> fields = message.fieldsAndOneOfFields();
+    List<Field> fields = message.fieldsAndOneOfFields();
     if (!fields.isEmpty()) {
       result.addStatement("if (message == null) return");
     }
 
-    for (WireField field : fields) {
+    for (Field field : fields) {
       String fieldName = sanitize(field.name());
       if (field.isRepeated()) {
         result.addStatement("this.$L = copyOf(message.$L)", fieldName, fieldName);
@@ -593,7 +592,7 @@ public final class TypeWriter {
     return result.build();
   }
 
-  private MethodSpec setter(TypeName builderType, WireOneOf oneOf, WireField field) {
+  private MethodSpec setter(TypeName builderType, OneOf oneOf, Field field) {
     TypeName javaType = fieldType(field);
     String fieldName = sanitize(field.name());
 
@@ -616,7 +615,7 @@ public final class TypeWriter {
       result.addStatement("this.$L = $L", fieldName, fieldName);
 
       if (oneOf != null) {
-        for (WireField other : oneOf.fields()) {
+        for (Field other : oneOf.fields()) {
           if (field != other) {
             result.addStatement("this.$L = null", sanitize(other.name()));
           }
@@ -663,18 +662,18 @@ public final class TypeWriter {
   // The call to checkRequiredFields will be emitted only if the message has
   // required fields.
   //
-  private MethodSpec builderBuild(WireMessage message, ClassName javaType) {
+  private MethodSpec builderBuild(MessageType message, ClassName javaType) {
     MethodSpec.Builder result = MethodSpec.methodBuilder("build")
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .returns(javaType);
 
-    List<WireField> requiredFields = message.getRequiredFields();
+    List<Field> requiredFields = message.getRequiredFields();
     if (!requiredFields.isEmpty()) {
       CodeBlock.Builder conditionals = CodeBlock.builder().add("$[");
       CodeBlock.Builder missingArgs = CodeBlock.builder();
       for (int i = 0; i < requiredFields.size(); i++) {
-        WireField requiredField = requiredFields.get(i);
+        Field requiredField = requiredFields.get(i);
         if (i > 0) conditionals.add("\n|| ");
         conditionals.add("$L == null", requiredField.name());
         if (i > 0) missingArgs.add(",\n");
@@ -690,7 +689,7 @@ public final class TypeWriter {
     return result.build();
   }
 
-  private CodeBlock defaultValue(WireField field) {
+  private CodeBlock defaultValue(Field field) {
     Object defaultValue = field.getDefault();
 
     if (defaultValue == null && javaGenerator.isEnum(field.type())) {
@@ -704,7 +703,7 @@ public final class TypeWriter {
     throw new WireCompilerException("Field " + field + " cannot have default value");
   }
 
-  private CodeBlock fieldInitializer(ProtoTypeName type, Object value) {
+  private CodeBlock fieldInitializer(Type.Name type, Object value) {
     TypeName javaType = javaGenerator.typeName(type);
 
     if (value instanceof List) {
@@ -723,7 +722,7 @@ public final class TypeWriter {
       CodeBlock.Builder builder = CodeBlock.builder();
       builder.add("new $T.Builder()", javaType);
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-        WireField field = (WireField) entry.getKey();
+        Field field = (Field) entry.getKey();
         CodeBlock valueInitializer = fieldInitializer(field.type(), entry.getValue());
         ClassName extensionClass = javaGenerator.extensionsClass(field);
         if (extensionClass != null) {
@@ -791,7 +790,7 @@ public final class TypeWriter {
     return CodeBlock.builder().add(format, args).build();
   }
 
-  private int nullHashValue(WireField field) {
+  private int nullHashValue(Field field) {
     return field.isRepeated() ? 1 : 0;
   }
 
@@ -804,15 +803,15 @@ public final class TypeWriter {
         .addModifiers(PRIVATE)
         .build());
 
-    for (WireExtend extend : wireProtoFile.wireExtends()) {
-      ProtoTypeName extendType = extend.protoTypeName();
+    for (Extend extend : wireProtoFile.extendList()) {
+      Type.Name extendType = extend.type();
       TypeName javaType = javaGenerator.typeName(extendType);
 
       if (!emitOptions && (extendType.isFieldOptions() || extendType.isMessageOptions())) {
         continue;
       }
 
-      for (WireField field : extend.fields()) {
+      for (Field field : extend.fields()) {
         builder.addField(extensionField(wireProtoFile, javaType, field));
       }
     }
@@ -821,7 +820,7 @@ public final class TypeWriter {
   }
 
   private FieldSpec extensionField(
-      WireProtoFile wireProtoFile, TypeName extendType, WireField field) {
+      WireProtoFile wireProtoFile, TypeName extendType, Field field) {
     TypeName fieldType = javaGenerator.typeName(field.type());
 
     CodeBlock.Builder initializer = CodeBlock.builder();
@@ -849,7 +848,7 @@ public final class TypeWriter {
         .build();
   }
 
-  private String extensionLabel(WireField field) {
+  private String extensionLabel(Field field) {
     switch (field.label()) {
       case OPTIONAL:
         return "Optional";
@@ -873,7 +872,7 @@ public final class TypeWriter {
 
     ImmutableSet.Builder<TypeName> extensionClassesBuilder = ImmutableSet.builder();
     for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      if (!wireProtoFile.wireExtends().isEmpty()) {
+      if (!wireProtoFile.extendList().isEmpty()) {
         extensionClassesBuilder.add(javaGenerator.extensionsClass(wireProtoFile));
       }
     }

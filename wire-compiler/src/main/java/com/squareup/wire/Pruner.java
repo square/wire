@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Removes unused types and services. */
-public final class Pruner {
+final class Pruner {
   /** Homogeneous identifiers including type names, service names, and RPC names. */
   final Set<String> marks = new LinkedHashSet<String>();
 
@@ -46,8 +46,8 @@ public final class Pruner {
     if (roots.isEmpty()) throw new IllegalArgumentException();
     if (!marks.isEmpty()) throw new IllegalStateException();
 
-    Map<String, WireType> typesIndex = buildTypesIndex(protoFiles);
-    Map<String, WireService> servicesIndex = buildServicesIndex(protoFiles);
+    Map<String, Type> typesIndex = buildTypesIndex(protoFiles);
+    Map<String, Service> servicesIndex = buildServicesIndex(protoFiles);
 
     // Mark and enqueue the roots.
     for (String s : roots) {
@@ -56,7 +56,7 @@ public final class Pruner {
 
     // Extensions and options are also roots.
     for (WireProtoFile protoFile : protoFiles) {
-      for (WireExtend extend : protoFile.wireExtends()) {
+      for (Extend extend : protoFile.extendList()) {
         markExtend(extend);
       }
       markOptions(protoFile.options());
@@ -64,17 +64,17 @@ public final class Pruner {
 
     // Mark everything reachable by what's enqueued, queueing new things as we go.
     for (String name; (name = queue.poll()) != null;) {
-      if (ProtoTypeName.getScalar(name) != null) {
+      if (Type.Name.getScalar(name) != null) {
         continue; // Skip scalar types.
       }
 
-      WireType type = typesIndex.get(name);
+      Type type = typesIndex.get(name);
       if (type != null) {
         markType(type);
         continue;
       }
 
-      WireService service = servicesIndex.get(name);
+      Service service = servicesIndex.get(name);
       if (service != null) {
         markService(service);
         continue;
@@ -85,9 +85,9 @@ public final class Pruner {
       if (hash != -1) {
         String serviceName = name.substring(0, hash);
         String rpcName = name.substring(hash + 1);
-        WireService partialService = servicesIndex.get(serviceName);
+        Service partialService = servicesIndex.get(serviceName);
         if (partialService != null) {
-          WireRpc rpc = partialService.rpc(rpcName);
+          Rpc rpc = partialService.rpc(rpcName);
           if (rpc != null) {
             markOptions(partialService.options());
             markRpc(rpc);
@@ -107,35 +107,35 @@ public final class Pruner {
     return retained.build();
   }
 
-  private static Map<String, WireType> buildTypesIndex(Collection<WireProtoFile> protoFiles) {
-    Map<String, WireType> result = new LinkedHashMap<String, WireType>();
+  private static Map<String, Type> buildTypesIndex(Collection<WireProtoFile> protoFiles) {
+    Map<String, Type> result = new LinkedHashMap<String, Type>();
     for (WireProtoFile protoFile : protoFiles) {
-      for (WireType type : protoFile.types()) {
+      for (Type type : protoFile.types()) {
         index(result, type);
       }
     }
     return ImmutableMap.copyOf(result);
   }
 
-  private static void index(Map<String, WireType> typesByName, WireType type) {
-    typesByName.put(type.protoTypeName().toString(), type);
-    for (WireType nested : type.nestedTypes()) {
+  private static void index(Map<String, Type> typesByName, Type type) {
+    typesByName.put(type.name().toString(), type);
+    for (Type nested : type.nestedTypes()) {
       index(typesByName, nested);
     }
   }
 
-  private static ImmutableMap<String, WireService> buildServicesIndex(
+  private static ImmutableMap<String, Service> buildServicesIndex(
       Collection<WireProtoFile> protoFiles) {
-    ImmutableMap.Builder<String, WireService> result = ImmutableMap.builder();
+    ImmutableMap.Builder<String, Service> result = ImmutableMap.builder();
     for (WireProtoFile protoFile : protoFiles) {
-      for (WireService service : protoFile.services()) {
-        result.put(service.protoTypeName().toString(), service);
+      for (Service service : protoFile.services()) {
+        result.put(service.name().toString(), service);
       }
     }
     return result.build();
   }
 
-  private void mark(ProtoTypeName typeName) {
+  private void mark(Type.Name typeName) {
     mark(typeName.toString());
   }
 
@@ -145,69 +145,69 @@ public final class Pruner {
     }
   }
 
-  private void markExtend(WireExtend extend) {
-    mark(extend.protoTypeName());
+  private void markExtend(Extend extend) {
+    mark(extend.type());
     markFields(extend.fields());
   }
 
-  private void markType(WireType type) {
+  private void markType(Type type) {
     markOptions(type.options());
 
-    ProtoTypeName enclosingTypeName = type.protoTypeName().enclosingTypeName();
+    Type.Name enclosingTypeName = type.name().enclosingTypeName();
     if (enclosingTypeName != null) {
       mark(enclosingTypeName);
     }
 
-    for (WireType nestedType : type.nestedTypes()) {
-      mark(nestedType.protoTypeName());
+    for (Type nestedType : type.nestedTypes()) {
+      mark(nestedType.name());
     }
 
-    if (type instanceof WireMessage) {
-      markMessage((WireMessage) type);
-    } else if (type instanceof WireEnum) {
-      markEnum((WireEnum) type);
+    if (type instanceof MessageType) {
+      markMessage((MessageType) type);
+    } else if (type instanceof EnumType) {
+      markEnum((EnumType) type);
     }
   }
 
-  private void markMessage(WireMessage message) {
+  private void markMessage(MessageType message) {
     markFields(message.fields());
-    for (WireOneOf oneOf : message.oneOfs()) {
+    for (OneOf oneOf : message.oneOfs()) {
       markFields(oneOf.fields());
     }
   }
 
-  private void markEnum(WireEnum wireEnum) {
+  private void markEnum(EnumType wireEnum) {
     markOptions(wireEnum.options());
-    for (WireEnumConstant constant : wireEnum.constants()) {
+    for (EnumConstant constant : wireEnum.constants()) {
       markOptions(constant.options());
     }
   }
 
-  private void markFields(ImmutableList<WireField> fields) {
-    for (WireField field : fields) {
+  private void markFields(ImmutableList<Field> fields) {
+    for (Field field : fields) {
       markField(field);
     }
   }
 
-  private void markField(WireField field) {
+  private void markField(Field field) {
     markOptions(field.options());
     mark(field.type());
   }
 
   private void markOptions(Options options) {
-    for (WireField field : options.fields()) {
+    for (Field field : options.fields()) {
       markField(field);
     }
   }
 
-  private void markService(WireService service) {
+  private void markService(Service service) {
     markOptions(service.options());
-    for (WireRpc rpc : service.rpcs()) {
+    for (Rpc rpc : service.rpcs()) {
       markRpc(rpc);
     }
   }
 
-  private void markRpc(WireRpc rpc) {
+  private void markRpc(Rpc rpc) {
     markOptions(rpc.options());
     mark(rpc.requestType());
     mark(rpc.responseType());

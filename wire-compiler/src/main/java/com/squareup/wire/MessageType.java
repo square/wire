@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.model;
+package com.squareup.wire;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ExtensionsElement;
@@ -22,18 +22,18 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class WireMessage extends WireType {
-  private final ProtoTypeName protoTypeName;
+public final class MessageType extends Type {
+  private final Name name;
   private final MessageElement element;
-  private final ImmutableList<WireField> fields;
-  private final ImmutableList<WireOneOf> oneOfs;
-  private final ImmutableList<WireType> nestedTypes;
+  private final ImmutableList<Field> fields;
+  private final ImmutableList<OneOf> oneOfs;
+  private final ImmutableList<Type> nestedTypes;
   private final Options options;
 
-  WireMessage(ProtoTypeName protoTypeName, MessageElement element,
-      ImmutableList<WireField> fields, ImmutableList<WireOneOf> oneOfs,
-      ImmutableList<WireType> nestedTypes, Options options) {
-    this.protoTypeName = protoTypeName;
+  MessageType(Name name, MessageElement element,
+      ImmutableList<Field> fields, ImmutableList<OneOf> oneOfs,
+      ImmutableList<Type> nestedTypes, Options options) {
+    this.name = name;
     this.element = element;
     this.fields = fields;
     this.oneOfs = oneOfs;
@@ -41,15 +41,15 @@ public final class WireMessage extends WireType {
     this.options = checkNotNull(options);
   }
 
-  @Override public ProtoTypeName protoTypeName() {
-    return protoTypeName;
+  @Override public Name name() {
+    return name;
   }
 
   @Override public String documentation() {
     return element.documentation();
   }
 
-  @Override public ImmutableList<WireType> nestedTypes() {
+  @Override public ImmutableList<Type> nestedTypes() {
     return nestedTypes;
   }
 
@@ -57,13 +57,13 @@ public final class WireMessage extends WireType {
     return options;
   }
 
-  public ImmutableList<WireField> fields() {
+  public ImmutableList<Field> fields() {
     return fields;
   }
 
-  public ImmutableList<WireField> getRequiredFields() {
-    ImmutableList.Builder<WireField> required = ImmutableList.builder();
-    for (WireField field : fieldsAndOneOfFields()) {
+  public ImmutableList<Field> getRequiredFields() {
+    ImmutableList.Builder<Field> required = ImmutableList.builder();
+    for (Field field : fieldsAndOneOfFields()) {
       if (field.isRequired()) {
         required.add(field);
       }
@@ -71,18 +71,18 @@ public final class WireMessage extends WireType {
     return required.build();
   }
 
-  public ImmutableList<WireField> fieldsAndOneOfFields() {
-    ImmutableList.Builder<WireField> result = ImmutableList.builder();
+  public ImmutableList<Field> fieldsAndOneOfFields() {
+    ImmutableList.Builder<Field> result = ImmutableList.builder();
     result.addAll(fields);
-    for (WireOneOf oneOf : oneOfs) {
+    for (OneOf oneOf : oneOfs) {
       result.addAll(oneOf.fields());
     }
     return result.build();
   }
 
   /** Returns the field named {@code name}, or null if this type has no such field. */
-  public WireField field(String name) {
-    for (WireField field : fields) {
+  public Field field(String name) {
+    for (Field field : fields) {
       if (field.name().equals(name)) {
         return field;
       }
@@ -90,7 +90,7 @@ public final class WireMessage extends WireType {
     return null;
   }
 
-  public ImmutableList<WireOneOf> oneOfs() {
+  public ImmutableList<OneOf> oneOfs() {
     return oneOfs;
   }
 
@@ -100,44 +100,44 @@ public final class WireMessage extends WireType {
 
   void link(Linker linker) {
     linker = linker.withMessage(this);
-    for (WireField field : fields) {
+    for (Field field : fields) {
       field.link(linker);
     }
-    for (WireOneOf oneOf : oneOfs) {
+    for (OneOf oneOf : oneOfs) {
       oneOf.link(linker);
     }
-    for (WireType type : nestedTypes) {
+    for (Type type : nestedTypes) {
       type.link(linker);
     }
   }
 
   void linkOptions(Linker linker) {
     linker = linker.withMessage(this);
-    for (WireType type : nestedTypes) {
+    for (Type type : nestedTypes) {
       type.linkOptions(linker);
     }
-    for (WireField field : fields) {
+    for (Field field : fields) {
       field.linkOptions(linker);
     }
-    for (WireOneOf oneOf : oneOfs) {
+    for (OneOf oneOf : oneOfs) {
       oneOf.linkOptions(linker);
     }
     options.link(linker);
   }
 
-  @Override WireType retainAll(Set<String> identifiers) {
-    ImmutableList.Builder<WireType> retainedNestedTypesBuilder = ImmutableList.builder();
-    for (WireType nestedType : nestedTypes) {
-      WireType retainedNestedType = nestedType.retainAll(identifiers);
+  @Override Type retainAll(Set<String> identifiers) {
+    ImmutableList.Builder<Type> retainedNestedTypesBuilder = ImmutableList.builder();
+    for (Type nestedType : nestedTypes) {
+      Type retainedNestedType = nestedType.retainAll(identifiers);
       if (retainedNestedType != null) {
         retainedNestedTypesBuilder.add(retainedNestedType);
       }
     }
 
     // If this type is retained, or any of its nested types are retained, keep it.
-    ImmutableList<WireType> retainedNestedTypes = retainedNestedTypesBuilder.build();
-    if (identifiers.contains(protoTypeName.toString()) || !retainedNestedTypes.isEmpty()) {
-      return new WireMessage(protoTypeName, element, fields, oneOfs, retainedNestedTypes, options);
+    ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
+    if (identifiers.contains(name.toString()) || !retainedNestedTypes.isEmpty()) {
+      return new MessageType(name, element, fields, oneOfs, retainedNestedTypes, options);
     }
 
     // This type isn't needed.

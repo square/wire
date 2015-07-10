@@ -18,13 +18,12 @@ package com.squareup.wire;
 import com.squareup.javapoet.ClassName;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.RxJavaServiceFactory;
-import com.squareup.wire.model.WireService;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
 public class TestRxJavaServiceFactory extends RxJavaServiceFactory {
   @Override protected ClassName interfaceName(
-      JavaGenerator javaGenerator, List<String> options, WireService service) {
+      JavaGenerator javaGenerator, List<String> options, Service service) {
     String serviceNameSuffix = options.get(0);
     ClassName baseName = super.interfaceName(javaGenerator, options, service);
     return baseName.peerClass(baseName.simpleName() + serviceNameSuffix);

@@ -23,10 +23,10 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.Rpc;
+import com.squareup.wire.Service;
+import com.squareup.wire.Type;
 import com.squareup.wire.internal.Util;
-import com.squareup.wire.model.ProtoTypeName;
-import com.squareup.wire.model.WireRpc;
-import com.squareup.wire.model.WireService;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 
@@ -43,7 +43,7 @@ public class RxJavaServiceFactory implements ServiceFactory {
   public static final ClassName INJECT = ClassName.get("javax.inject", "Inject");
 
   @Override public TypeSpec create(
-      JavaGenerator javaGenerator, List<String> options, WireService service) {
+      JavaGenerator javaGenerator, List<String> options, Service service) {
     ClassName interfaceName = interfaceName(javaGenerator, options, service);
     ClassName endpointName = interfaceName.nestedClass("Endpoint");
 
@@ -64,10 +64,10 @@ public class RxJavaServiceFactory implements ServiceFactory {
         .addStatement("this.endpoint = endpoint")
         .build());
 
-    for (WireRpc rpc : service.rpcs()) {
-      ProtoTypeName requestType = rpc.requestType();
+    for (Rpc rpc : service.rpcs()) {
+      Type.Name requestType = rpc.requestType();
       TypeName requestJavaType = javaGenerator.typeName(requestType);
-      ProtoTypeName responseType = rpc.responseType();
+      Type.Name responseType = rpc.responseType();
       TypeName responseJavaType = javaGenerator.typeName(responseType);
 
       String methodName = upperToLowerCamel(rpc.name());
@@ -75,7 +75,7 @@ public class RxJavaServiceFactory implements ServiceFactory {
       rpcBuilder.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT);
       rpcBuilder.returns(responseJavaType);
       rpcBuilder.addAnnotation(AnnotationSpec.builder(POST)
-          .addMember("value", "$S", "/" + service.protoTypeName() + "/" + rpc.name())
+          .addMember("value", "$S", "/" + service.name() + "/" + rpc.name())
           .build());
 
       rpcBuilder.addParameter(ParameterSpec.builder(requestJavaType, "request")
@@ -120,7 +120,7 @@ public class RxJavaServiceFactory implements ServiceFactory {
   }
 
   protected ClassName interfaceName(
-      JavaGenerator javaGenerator, List<String> options, WireService service) {
-    return (ClassName) javaGenerator.typeName(service.protoTypeName());
+      JavaGenerator javaGenerator, List<String> options, Service service) {
+    return (ClassName) javaGenerator.typeName(service.name());
   }
 }
