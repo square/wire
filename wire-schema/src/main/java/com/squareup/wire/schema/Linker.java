@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire.schema;
 
 import com.squareup.protoparser.DataType;
-import com.squareup.wire.internal.Util;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Links local field types and option types to the corresponding declarations. */
-final class Linker {
+public final class Linker {
   private final Map<String, Type> protoTypeNames;
   private final Map<Type.Name, Map<String, Field>> extensionsMap;
 

@@ -29,20 +29,19 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
-import com.squareup.wire.EnumConstant;
-import com.squareup.wire.EnumType;
-import com.squareup.wire.Extend;
-import com.squareup.wire.Field;
 import com.squareup.wire.Message;
-import com.squareup.wire.MessageType;
-import com.squareup.wire.OneOf;
-import com.squareup.wire.Options;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
-import com.squareup.wire.Type;
 import com.squareup.wire.WireCompilerException;
-import com.squareup.wire.WireProtoFile;
-import com.squareup.wire.internal.Util;
+import com.squareup.wire.schema.EnumConstant;
+import com.squareup.wire.schema.EnumType;
+import com.squareup.wire.schema.Extend;
+import com.squareup.wire.schema.Field;
+import com.squareup.wire.schema.MessageType;
+import com.squareup.wire.schema.OneOf;
+import com.squareup.wire.schema.Options;
+import com.squareup.wire.schema.Type;
+import com.squareup.wire.schema.WireProtoFile;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -96,7 +95,7 @@ public final class TypeWriter {
         .addSuperinterface(ProtoEnum.class);
 
     if (!type.documentation().isEmpty()) {
-      builder.addJavadoc("$L\n", Util.sanitizeJavadoc(type.documentation()));
+      builder.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(type.documentation()));
     }
 
     // Output Private tag field
@@ -140,7 +139,7 @@ public final class TypeWriter {
 
       TypeSpec.Builder constantBuilder = TypeSpec.anonymousClassBuilder(enumArgsFormat, enumArgs);
       if (!constant.documentation().isEmpty()) {
-        constantBuilder.addJavadoc("$L\n", Util.sanitizeJavadoc(constant.documentation()));
+        constantBuilder.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(constant.documentation()));
       }
 
       builder.addEnumConstant(constant.name(), constantBuilder.build());
@@ -177,7 +176,7 @@ public final class TypeWriter {
     }
 
     if (!type.documentation().isEmpty()) {
-      builder.addJavadoc("$L\n", Util.sanitizeJavadoc(type.documentation()));
+      builder.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(type.documentation()));
     }
 
     builder.superclass(type.extensions().isEmpty()
@@ -219,7 +218,7 @@ public final class TypeWriter {
       FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, name, PUBLIC, FINAL);
       fieldBuilder.addAnnotation(protoFieldAnnotation(field, javaGenerator.typeName(field.type())));
       if (!field.documentation().isEmpty()) {
-        fieldBuilder.addJavadoc("$L\n", Util.sanitizeJavadoc(field.documentation()));
+        fieldBuilder.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(field.documentation()));
       }
       if (field.isDeprecated()) {
         fieldBuilder.addAnnotation(Deprecated.class);
@@ -602,7 +601,7 @@ public final class TypeWriter {
         .returns(builderType);
 
     if (!field.documentation().isEmpty()) {
-      result.addJavadoc("$L\n", Util.sanitizeJavadoc(field.documentation()));
+      result.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(field.documentation()));
     }
 
     if (field.isDeprecated()) {

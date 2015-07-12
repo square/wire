@@ -21,10 +21,9 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.Rpc;
-import com.squareup.wire.Service;
-import com.squareup.wire.Type;
-import com.squareup.wire.internal.Util;
+import com.squareup.wire.schema.Rpc;
+import com.squareup.wire.schema.Service;
+import com.squareup.wire.schema.Type;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 
@@ -44,7 +43,7 @@ public final class RetrofitServiceFactory implements ServiceFactory {
     typeBuilder.addModifiers(Modifier.PUBLIC);
 
     if (!service.documentation().isEmpty()) {
-      typeBuilder.addJavadoc("$L\n", Util.sanitizeJavadoc(service.documentation()));
+      typeBuilder.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(service.documentation()));
     }
 
     for (Rpc rpc : service.rpcs()) {
@@ -65,7 +64,7 @@ public final class RetrofitServiceFactory implements ServiceFactory {
           .build());
 
       if (!rpc.documentation().isEmpty()) {
-        rpcBuilder.addJavadoc("$L\n", Util.sanitizeJavadoc(rpc.documentation()));
+        rpcBuilder.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(rpc.documentation()));
       }
 
       typeBuilder.addMethod(rpcBuilder.build());

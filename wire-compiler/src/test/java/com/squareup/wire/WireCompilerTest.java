@@ -16,9 +16,10 @@
 package com.squareup.wire;
 
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.internal.Util;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.SimpleServiceFactory;
+import com.squareup.wire.schema.Loader;
+import com.squareup.wire.schema.Service;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -656,18 +657,6 @@ public class WireCompilerTest {
         logger.getLog());
   }
 
-  @Test public void sanitizeJavadocStripsTrailingWhitespace() {
-    String input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  ";
-    String expected = "The quick brown fox\nJumps over\n\nThe lazy dog";
-    assertEquals(expected, Util.sanitizeJavadoc(input));
-  }
-
-  @Test public void sanitizeJavadocWrapsSeeLinks() {
-    String input = "Google query.\n\n@see http://google.com";
-    String expected = "Google query.\n\n@see <a href=\"http://google.com\">http://google.com</a>";
-    assertEquals(expected, Util.sanitizeJavadoc(input));
-  }
-
   private void cleanup(File dir) {
     Assert.assertNotNull(dir);
     Assert.assertTrue(dir.isDirectory());
@@ -715,7 +704,7 @@ public class WireCompilerTest {
   private void invokeCompiler(String[] args) throws WireException {
     CommandLineOptions options = new CommandLineOptions(args);
     logger = new StringWireLogger(options.quiet);
-    new WireCompiler(options, new IO.FileIO(), logger).compile();
+    new WireCompiler(options, Loader.IO.DEFAULT, JavaGenerator.IO.DEFAULT, logger).compile();
   }
 
   private void assertFilesMatch(File outputDir, String path) throws FileNotFoundException {

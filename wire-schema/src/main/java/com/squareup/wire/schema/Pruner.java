@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Removes unused types and services. */
-final class Pruner {
+public final class Pruner {
   /** Homogeneous identifiers including type names, service names, and RPC names. */
   final Set<String> marks = new LinkedHashSet<String>();
 

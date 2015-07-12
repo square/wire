@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire.schema;
 
-import com.squareup.protoparser.EnumConstantElement;
+import com.google.common.collect.ImmutableList;
+import com.squareup.protoparser.FieldElement;
+import com.squareup.protoparser.OneOfElement;
 
-public final class EnumConstant {
+public final class OneOf {
   private final String packageName;
-  private final EnumConstantElement element;
-  private final Options options;
+  private final OneOfElement element;
+  private final ImmutableList<Field> fields;
 
-  EnumConstant(String packageName, EnumConstantElement element) {
+  OneOf(String packageName, OneOfElement element) {
     this.packageName = packageName;
     this.element = element;
-    this.options = new Options(
-        Type.Name.ENUM_VALUE_OPTIONS, packageName, element.options());
+
+    ImmutableList.Builder<Field> fields = ImmutableList.builder();
+    for (FieldElement field : element.fields()) {
+      fields.add(new Field(packageName, field));
+    }
+    this.fields = fields.build();
   }
 
   public String packageName() {
@@ -37,19 +43,23 @@ public final class EnumConstant {
     return element.name();
   }
 
-  public int tag() {
-    return element.tag();
-  }
-
   public String documentation() {
     return element.documentation();
   }
 
-  public Options options() {
-    return options;
+  public ImmutableList<Field> fields() {
+    return fields;
+  }
+
+  void link(Linker linker) {
+    for (Field field : fields) {
+      field.link(linker);
+    }
   }
 
   void linkOptions(Linker linker) {
-    options.link(linker);
+    for (Field field : fields) {
+      field.linkOptions(linker);
+    }
   }
 }

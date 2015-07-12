@@ -18,6 +18,7 @@ package com.squareup.wire;
 import com.squareup.javapoet.ClassName;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.RxJavaServiceFactory;
+import com.squareup.wire.schema.Service;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")

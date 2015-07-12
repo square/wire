@@ -18,6 +18,8 @@ package com.squareup.wire;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.protoparser.ProtoFile;
 import com.squareup.protoparser.ProtoParser;
+import com.squareup.wire.java.JavaGenerator;
+import com.squareup.wire.schema.Loader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,7 +39,7 @@ import static org.junit.Assert.fail;
 
 public class WireCompilerErrorTest {
 
-  static class StringIO implements IO {
+  static class StringIO implements Loader.IO, JavaGenerator.IO {
     private final String protoFileName;
     private final String source;
     private final Map<String, StringWriter> writers = new LinkedHashMap<String, StringWriter>();
@@ -84,7 +86,7 @@ public class WireCompilerErrorTest {
         Collections.<String>emptySet(), null, Collections.<String>emptyList(), false, false);
 
     try {
-      new WireCompiler(options, io, new StringWireLogger(true)).compile();
+      new WireCompiler(options, io, io, new StringWireLogger(true)).compile();
     } catch (WireException e) {
       fail();
     }
