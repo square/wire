@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire.schema;
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.protoparser.FieldElement;
-import com.squareup.protoparser.OneOfElement;
+import com.squareup.protoparser.RpcElement;
 
-public final class OneOf {
+public final class Rpc {
   private final String packageName;
-  private final OneOfElement element;
-  private final ImmutableList<Field> fields;
+  private final RpcElement element;
+  private final Options options;
+  private Type.Name requestType;
+  private Type.Name responseType;
 
-  OneOf(String packageName, OneOfElement element) {
+  Rpc(String packageName, RpcElement element) {
     this.packageName = packageName;
     this.element = element;
-
-    ImmutableList.Builder<Field> fields = ImmutableList.builder();
-    for (FieldElement field : element.fields()) {
-      fields.add(new Field(packageName, field));
-    }
-    this.fields = fields.build();
+    this.options = new Options(Type.Name.METHOD_OPTIONS, packageName, element.options());
   }
 
   public String packageName() {
@@ -47,19 +42,24 @@ public final class OneOf {
     return element.documentation();
   }
 
-  public ImmutableList<Field> fields() {
-    return fields;
+  public Type.Name requestType() {
+    return requestType;
+  }
+
+  public Type.Name responseType() {
+    return responseType;
+  }
+
+  public Options options() {
+    return options;
   }
 
   void link(Linker linker) {
-    for (Field field : fields) {
-      field.link(linker);
-    }
+    requestType = linker.resolveNamedType(packageName, element.requestType().name());
+    responseType = linker.resolveNamedType(packageName, element.responseType().name());
   }
 
   void linkOptions(Linker linker) {
-    for (Field field : fields) {
-      field.linkOptions(linker);
-    }
+    options.link(linker);
   }
 }

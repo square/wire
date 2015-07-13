@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire.schema;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.ProtoFile;
+import com.squareup.protoparser.ProtoParser;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +31,7 @@ import java.util.Set;
  * Load proto files and their transitive dependencies, parse them, and prepare for linking. The
  * returned values are not linked and should not be used prior to linking.
  */
-final class Loader {
+public final class Loader {
   private final String repoPath;
   private final IO io;
   private final Set<String> protoFileNames = new LinkedHashSet<String>();
@@ -57,5 +61,16 @@ final class Loader {
 
   public List<WireProtoFile> loaded() {
     return loaded.build();
+  }
+
+  public interface IO {
+    IO DEFAULT = new IO() {
+      @Override public ProtoFile parse(String filename) throws IOException {
+        return ProtoParser.parse(filename,
+            new InputStreamReader(new FileInputStream(filename), Charsets.UTF_8));
+      }
+    };
+
+    ProtoFile parse(String filename) throws IOException;
   }
 }

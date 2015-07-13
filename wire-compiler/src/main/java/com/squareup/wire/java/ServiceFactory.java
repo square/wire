@@ -16,7 +16,7 @@
 package com.squareup.wire.java;
 
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.Service;
+import com.squareup.wire.schema.Service;
 import java.util.List;
 
 /**

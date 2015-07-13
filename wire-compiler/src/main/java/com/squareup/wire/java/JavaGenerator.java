@@ -17,18 +17,21 @@ package com.squareup.wire.java;
 
 import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
-import com.squareup.wire.EnumConstant;
-import com.squareup.wire.EnumType;
-import com.squareup.wire.Extend;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
-import com.squareup.wire.Field;
 import com.squareup.wire.Message;
-import com.squareup.wire.Service;
-import com.squareup.wire.Type;
-import com.squareup.wire.WireProtoFile;
+import com.squareup.wire.schema.EnumConstant;
+import com.squareup.wire.schema.EnumType;
+import com.squareup.wire.schema.Extend;
+import com.squareup.wire.schema.Field;
+import com.squareup.wire.schema.Service;
+import com.squareup.wire.schema.Type;
+import com.squareup.wire.schema.WireProtoFile;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import okio.ByteString;
@@ -75,6 +78,8 @@ public final class JavaGenerator {
           .put(Type.Name.UINT32, TypeName.INT.box())
           .put(Type.Name.UINT64, TypeName.LONG.box())
           .build();
+
+  private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
 
   private final ImmutableMap<Type.Name, TypeName> nameToJavaName;
   private final ImmutableMap<Type.Name, Type> nameToType;
@@ -185,5 +190,26 @@ public final class JavaGenerator {
 
   public static TypeName extensionOf(TypeName messageType, TypeName fieldType) {
     return ParameterizedTypeName.get(EXTENSION, messageType, fieldType);
+  }
+
+  /** A grab-bag of fixes for things that can go wrong when converting to javadoc. */
+  public static String sanitizeJavadoc(String documentation) {
+    // Remove trailing whitespace on each line.
+    documentation = documentation.replaceAll("[^\\S\n]+\n", "\n");
+    documentation = documentation.replaceAll("\\s+$", "");
+    // Rewrite '@see <url>' to use an html anchor tag
+    documentation = documentation.replaceAll(
+        "@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
+    return documentation;
+  }
+
+  public interface IO {
+    IO DEFAULT = new IO() {
+      @Override public void write(File outputDirectory, JavaFile javaFile) throws IOException {
+        javaFile.writeTo(outputDirectory);
+      }
+    };
+
+    void write(File outputDirectory, JavaFile javaFile) throws IOException;
   }
 }

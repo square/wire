@@ -48,6 +48,7 @@
     <module>wire-runtime</module>
     <module>wire-gson-support</module>
     <module>wire-maven-plugin</module>
+    <module>wire-schema</module>
   </modules>
 
  <properties>

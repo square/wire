@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.protoparser.EnumElement;

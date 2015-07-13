@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire.schema;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
@@ -24,7 +24,6 @@ import com.squareup.protoparser.FieldElement;
 import com.squareup.protoparser.MessageElement;
 import com.squareup.protoparser.OneOfElement;
 import com.squareup.protoparser.TypeElement;
-import com.squareup.wire.internal.Util;
 import java.util.Objects;
 import java.util.Set;
 

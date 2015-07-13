@@ -9,18 +9,12 @@
     <version>2.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>wire-compiler</artifactId>
-  <name>Wire Protocol Buffer Compiler</name>
+  <artifactId>wire-schema</artifactId>
 
   <dependencies>
     <dependency>
       <groupId>com.squareup.wire</groupId>
       <artifactId>wire-runtime</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.wire</groupId>
-      <artifactId>wire-schema</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -36,40 +30,10 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.squareup</groupId>
-      <artifactId>javapoet</artifactId>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-              <mainClass>com.squareup.wire.WireCompiler</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
