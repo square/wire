@@ -24,7 +24,7 @@ import java.util.List;
 import okio.ByteString;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
 
@@ -252,12 +252,12 @@ public class GsonTest {
 
     AllTypes allTypes = createBuilder().build();
     String json = gson.toJson(allTypes);
-    assertEquals("{" + JSON_BASE + "}", json);
+    assertThat(json).isEqualTo("{" + JSON_BASE + "}");
 
     AllTypes parsed = gson.fromJson(json, AllTypes.class);
-    assertEquals(allTypes, parsed);
-    assertEquals(allTypes.toString(), parsed.toString());
-    assertEquals(gson.toJson(allTypes), gson.toJson(parsed));
+    assertThat(parsed).isEqualTo(allTypes);
+    assertThat(parsed.toString()).isEqualTo(allTypes.toString());
+    assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
   }
 
   @Test
@@ -266,12 +266,12 @@ public class GsonTest {
 
     AllTypes allTypes = setExtensions(createBuilder()).build();
     String json = gson.toJson(allTypes);
-    assertEquals("{"+ JSON_BASE + JSON_EXTENSIONS + "}", json);
+    assertThat(json).isEqualTo("{"+ JSON_BASE + JSON_EXTENSIONS + "}");
 
     AllTypes parsed = gson.fromJson(json, AllTypes.class);
-    assertEquals(allTypes, parsed);
-    assertEquals(allTypes.toString(), parsed.toString());
-    assertEquals(gson.toJson(allTypes), gson.toJson(parsed));
+    assertThat(parsed).isEqualTo(allTypes);
+    assertThat(parsed.toString()).isEqualTo(allTypes.toString());
+    assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
   }
 
   @Test
@@ -286,12 +286,12 @@ public class GsonTest {
 
     AllTypes allTypes = builder.build();
     String json = gson.toJson(allTypes);
-    assertEquals("{" + JSON_BASE + JSON_UNKNOWN_FIELDS + "}", json);
+    assertThat(json).isEqualTo("{" + JSON_BASE + JSON_UNKNOWN_FIELDS + "}");
 
     AllTypes parsed = gson.fromJson(json, AllTypes.class);
-    assertEquals(allTypes, parsed);
-    assertEquals(allTypes.toString(), parsed.toString());
-    assertEquals(gson.toJson(allTypes), gson.toJson(parsed));
+    assertThat(parsed).isEqualTo(allTypes);
+    assertThat(parsed.toString()).isEqualTo(allTypes.toString());
+    assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
   }
 
   @Test public void testGsonWithUnknownFieldsAndExtensions() {
@@ -305,11 +305,11 @@ public class GsonTest {
 
     AllTypes allTypes = setExtensions(builder).build();
     String json = gson.toJson(allTypes);
-    assertEquals("{" + JSON_BASE + JSON_EXTENSIONS + JSON_UNKNOWN_FIELDS + "}", json);
+    assertThat(json).isEqualTo("{" + JSON_BASE + JSON_EXTENSIONS + JSON_UNKNOWN_FIELDS + "}");
 
     AllTypes parsed = gson.fromJson(json, AllTypes.class);
-    assertEquals(allTypes, parsed);
-    assertEquals(allTypes.toString(), parsed.toString());
-    assertEquals(gson.toJson(allTypes), gson.toJson(parsed));
+    assertThat(parsed).isEqualTo(allTypes);
+    assertThat(parsed.toString()).isEqualTo(allTypes.toString());
+    assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
   }
 }

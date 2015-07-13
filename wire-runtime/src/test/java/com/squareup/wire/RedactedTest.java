@@ -15,35 +15,39 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.protos.redacted.*;
-import org.junit.Test;
-
+import com.squareup.wire.protos.redacted.NotRedacted;
+import com.squareup.wire.protos.redacted.Redacted;
+import com.squareup.wire.protos.redacted.RedactedChild;
+import com.squareup.wire.protos.redacted.RedactedCycleA;
+import com.squareup.wire.protos.redacted.RedactedRepeated;
+import com.squareup.wire.protos.redacted.RedactedRequired;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class RedactedTest {
 
   @Test
   public void testRedacted() throws IOException {
-    assertEquals("Redacted{a=██, b=b, c=c}",
-        new Redacted.Builder().a("a").b("b").c("c").build().toString());
+    assertThat(new Redacted.Builder().a("a").b("b").c("c").build().toString())
+        .isEqualTo("Redacted{a=██, b=b, c=c}");
   }
 
   @Test
   public void testRedactor() {
     Redacted message = new Redacted.Builder().a("a").b("b").c("c").build();
     Redacted expected = new Redacted.Builder(message).a(null).build();
-    assertEquals(expected, Redactor.get(Redacted.class).redact(message));
+    assertThat(Redactor.get(Redacted.class).redact(message)).isEqualTo(expected);
   }
 
   @Test
   public void testRedactorNoRedactions() {
     NotRedacted message = new NotRedacted.Builder().a("a").b("b").build();
-    assertEquals(message, Redactor.get(NotRedacted.class).redact(message));
+    assertThat(Redactor.get(NotRedacted.class).redact(message)).isEqualTo(message);
   }
 
   @Test
@@ -56,13 +60,13 @@ public class RedactedTest {
     RedactedChild expected = new RedactedChild.Builder(message)
         .b(new Redacted.Builder(message.b).a(null).build())
         .build();
-    assertEquals(expected, Redactor.get(RedactedChild.class).redact(message));
+    assertThat(Redactor.get(RedactedChild.class).redact(message)).isEqualTo(expected);
   }
 
   @Test
   public void testRedactorCycle() {
     RedactedCycleA message = new RedactedCycleA.Builder().build();
-    assertEquals(message, Redactor.get(RedactedCycleA.class).redact(message));
+    assertThat(Redactor.get(RedactedCycleA.class).redact(message)).isEqualTo(message);
   }
 
   @Test
@@ -70,7 +74,7 @@ public class RedactedTest {
     RedactedRepeated message = new RedactedRepeated.Builder().a(Arrays.asList("a", "b")).build();
     RedactedRepeated expected =
         new RedactedRepeated.Builder(message).a(Collections.<String>emptyList()).build();
-    assertEquals(expected, Redactor.get(RedactedRepeated.class).redact(message));
+    assertThat(Redactor.get(RedactedRepeated.class).redact(message)).isEqualTo(expected);
   }
 
   @Test

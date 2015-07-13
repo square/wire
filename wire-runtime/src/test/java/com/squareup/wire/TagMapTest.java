@@ -4,11 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class TagMapTest {
@@ -22,7 +18,7 @@ public class TagMapTest {
       TagMap.of(map);
       fail();
     } catch (Exception e) {
-      assertEquals("Input map key is negative or zero", e.getMessage());
+      assertThat(e).hasMessage("Input map key is negative or zero");
     }
   }
 
@@ -35,7 +31,7 @@ public class TagMapTest {
     map.put(3, "Three");
 
     TagMap<String> tagMap = TagMap.of(map);
-    assertEquals("One Two Three Four", joinValues(tagMap));
+    assertThat(joinValues(tagMap)).isEqualTo("One Two Three Four");
   }
 
   @Test
@@ -47,25 +43,25 @@ public class TagMapTest {
     map.put(5, "Five");
 
     TagMap<String> tagMap = TagMap.of(map);
-    assertTrue(tagMap instanceof TagMap.Compact);
+    assertThat(tagMap).isInstanceOf(TagMap.Compact.class);
 
-    assertEquals(null, tagMap.get(0));
-    assertEquals("One", tagMap.get(1));
-    assertEquals("Two", tagMap.get(2));
-    assertEquals("Three", tagMap.get(3));
-    assertEquals(null, tagMap.get(4));
-    assertEquals("Five", tagMap.get(5));
-    assertEquals(null, tagMap.get(6));
+    assertThat(tagMap.get(0)).isNull();
+    assertThat(tagMap.get(1)).isEqualTo("One");
+    assertThat(tagMap.get(2)).isEqualTo("Two");
+    assertThat(tagMap.get(3)).isEqualTo("Three");
+    assertThat(tagMap.get(4)).isNull();
+    assertThat(tagMap.get(5)).isEqualTo("Five");
+    assertThat(tagMap.get(6)).isNull();
 
-    assertFalse(tagMap.containsKey(0));
-    assertTrue(tagMap.containsKey(1));
-    assertTrue(tagMap.containsKey(2));
-    assertTrue(tagMap.containsKey(3));
-    assertFalse(tagMap.containsKey(4));
-    assertTrue(tagMap.containsKey(5));
-    assertFalse(tagMap.containsKey(6));
+    assertThat(tagMap.containsKey(0)).isFalse();
+    assertThat(tagMap.containsKey(1)).isTrue();
+    assertThat(tagMap.containsKey(2)).isTrue();
+    assertThat(tagMap.containsKey(3)).isTrue();
+    assertThat(tagMap.containsKey(4)).isFalse();
+    assertThat(tagMap.containsKey(5)).isTrue();
+    assertThat(tagMap.containsKey(6)).isFalse();
 
-    assertEquals("One Two Three Five", joinValues(tagMap));
+    assertThat(joinValues(tagMap)).isEqualTo("One Two Three Five");
   }
 
   @Test
@@ -79,28 +75,28 @@ public class TagMapTest {
     map.put(200, "Two Hundred");
 
     TagMap<String> tagMap = TagMap.of(map);
-    assertTrue(tagMap instanceof TagMap.Sparse);
+    assertThat(tagMap).isInstanceOf(TagMap.Sparse.class);
 
-    assertEquals(null, tagMap.get(0));
-    assertEquals("One", tagMap.get(1));
-    assertEquals("Two", tagMap.get(2));
-    assertEquals("Three", tagMap.get(3));
-    assertEquals(null, tagMap.get(4));
-    assertEquals("Five", tagMap.get(5));
-    assertEquals(null, tagMap.get(6));
-    assertEquals("One Hundred", tagMap.get(100));
-    assertEquals("Two Hundred", tagMap.get(200));
+    assertThat(tagMap.get(0)).isNull();
+    assertThat(tagMap.get(1)).isEqualTo("One");
+    assertThat(tagMap.get(2)).isEqualTo("Two");
+    assertThat(tagMap.get(3)).isEqualTo("Three");
+    assertThat(tagMap.get(4)).isNull();
+    assertThat(tagMap.get(5)).isEqualTo("Five");
+    assertThat(tagMap.get(6)).isNull();
+    assertThat(tagMap.get(100)).isEqualTo("One Hundred");
+    assertThat(tagMap.get(200)).isEqualTo("Two Hundred");
 
-    assertFalse(tagMap.containsKey(0));
-    assertTrue(tagMap.containsKey(1));
-    assertTrue(tagMap.containsKey(2));
-    assertTrue(tagMap.containsKey(3));
-    assertFalse(tagMap.containsKey(4));
-    assertTrue(tagMap.containsKey(5));
-    assertTrue(tagMap.containsKey(100));
-    assertTrue(tagMap.containsKey(200));
+    assertThat(tagMap.containsKey(0)).isFalse();
+    assertThat(tagMap.containsKey(1)).isTrue();
+    assertThat(tagMap.containsKey(2)).isTrue();
+    assertThat(tagMap.containsKey(3)).isTrue();
+    assertThat(tagMap.containsKey(4)).isFalse();
+    assertThat(tagMap.containsKey(5)).isTrue();
+    assertThat(tagMap.containsKey(100)).isTrue();
+    assertThat(tagMap.containsKey(200)).isTrue();
 
-    assertEquals("One Two Three Five One Hundred Two Hundred", joinValues(tagMap));
+    assertThat(joinValues(tagMap)).isEqualTo("One Two Three Five One Hundred Two Hundred");
   }
 
   private String joinValues(TagMap<String> tagMap) {

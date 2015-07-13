@@ -32,9 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class WireCompilerErrorTest {
@@ -99,7 +97,7 @@ public class WireCompilerErrorTest {
         + "  optional int32 f = 1;\n"
         + "}\n");
     String generatedSource = output.get("com.squareup.protos.test.Simple");
-    assertTrue(generatedSource.contains("public final class Simple extends Message {"));
+    assertThat(generatedSource).contains("public final class Simple extends Message {");
   }
 
   @Test public void testZeroTag() {
@@ -110,7 +108,7 @@ public class WireCompilerErrorTest {
           + "}\n");
       fail();
     } catch (IllegalArgumentException e) {
-      assertEquals("Illegal tag value: 0", e.getMessage());
+      assertThat(e).hasMessage("Illegal tag value: 0");
     }
   }
 
@@ -123,7 +121,7 @@ public class WireCompilerErrorTest {
           + "}\n");
       fail();
     } catch (IllegalStateException e) {
-      assertEquals("Duplicate tag 1 in com.squareup.protos.test.Simple", e.getMessage());
+      assertThat(e).hasMessage("Duplicate tag 1 in com.squareup.protos.test.Simple");
     }
   }
 
@@ -143,14 +141,15 @@ public class WireCompilerErrorTest {
           + "}\n");
       fail();
     } catch (IllegalStateException e) {
-      assertEquals("Duplicate enum constant QUIX in scope com.squareup.protos.test.Foo", e.getMessage());
+      assertThat(e)
+          .hasMessage("Duplicate enum constant QUIX in scope com.squareup.protos.test.Foo");
     }
   }
 
   @Test public void testNoPackageNameIsLegal() {
     Map<String, String> output = compile("message Simple { optional int32 f = 1; }");
-    assertTrue(output.containsKey(".Simple"));
+    assertThat(output).containsKey(".Simple");
     // Output should not have a 'package' declaration.
-    assertFalse(output.get(".Simple").contains("package"));
+    assertThat(output.get(".Simple").contains("package")).isFalse();
   }
 }
