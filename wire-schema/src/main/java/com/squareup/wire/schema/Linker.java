@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.protoparser.DataType;
+import com.squareup.wire.internal.protoparser.DataType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;

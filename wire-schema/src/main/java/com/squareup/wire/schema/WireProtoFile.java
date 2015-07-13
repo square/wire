@@ -16,10 +16,10 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.protoparser.ExtendElement;
-import com.squareup.protoparser.ProtoFile;
-import com.squareup.protoparser.ServiceElement;
-import com.squareup.protoparser.TypeElement;
+import com.squareup.wire.internal.protoparser.ExtendElement;
+import com.squareup.wire.internal.protoparser.ProtoFile;
+import com.squareup.wire.internal.protoparser.ServiceElement;
+import com.squareup.wire.internal.protoparser.TypeElement;
 import java.util.Set;
 
 public final class WireProtoFile {

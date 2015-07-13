@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.protoparser.EnumConstantElement;
+import com.squareup.wire.internal.protoparser.EnumConstantElement;
 
 public final class EnumConstant {
   private final String packageName;

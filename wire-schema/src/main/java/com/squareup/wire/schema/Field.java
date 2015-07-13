@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.protoparser.FieldElement;
+import com.squareup.wire.internal.protoparser.FieldElement;
 
 public final class Field {
   private final String packageName;

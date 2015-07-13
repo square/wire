@@ -16,7 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.protoparser.EnumElement;
+import com.squareup.wire.internal.protoparser.EnumElement;
 import java.util.Set;
 
 public final class EnumType extends Type {

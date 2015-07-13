@@ -16,8 +16,8 @@
 package com.squareup.wire;
 
 import com.squareup.javapoet.JavaFile;
-import com.squareup.protoparser.ProtoFile;
-import com.squareup.protoparser.ProtoParser;
+import com.squareup.wire.internal.protoparser.ProtoFile;
+import com.squareup.wire.internal.protoparser.ProtoParser;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.Loader;
 import java.io.File;
