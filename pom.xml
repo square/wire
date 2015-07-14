@@ -30,7 +30,7 @@
     <url>http://squareup.com</url>
   </organization>
 
- <issueManagement>
+  <issueManagement>
     <system>GitHub Issues</system>
     <url>http://github.com/square/wire/issues</url>
   </issueManagement>
@@ -51,9 +51,10 @@
     <module>wire-schema</module>
   </modules>
 
- <properties>
+  <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.6</java.version>
+    <compiler.java.version>1.7</compiler.java.version>
   </properties>
 
   <dependencyManagement>
@@ -62,11 +63,6 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>19.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>com.squareup</groupId>
-        <artifactId>protoparser</artifactId>
-        <version>4.0.3</version>
       </dependency>
       <dependency>
         <groupId>com.squareup.okio</groupId>
@@ -87,6 +83,17 @@
         <groupId>com.squareup</groupId>
         <artifactId>javapoet</artifactId>
         <version>1.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.auto.value</groupId>
+        <artifactId>auto-value</artifactId>
+        <version>1.0-rc2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>1.7.0</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>

@@ -16,8 +16,8 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.protoparser.ExtendElement;
-import com.squareup.protoparser.FieldElement;
+import com.squareup.wire.internal.protoparser.ExtendElement;
+import com.squareup.wire.internal.protoparser.FieldElement;
 
 public final class Extend {
   private final String packageName;

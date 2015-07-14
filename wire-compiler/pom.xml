@@ -24,10 +24,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.squareup</groupId>
-      <artifactId>protoparser</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.squareup.okio</groupId>
       <artifactId>okio</artifactId>
     </dependency>
@@ -54,6 +50,15 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>${compiler.java.version}</source>
+          <target>${compiler.java.version}</target>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>

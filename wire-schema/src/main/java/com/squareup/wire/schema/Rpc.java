@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.protoparser.RpcElement;
+import com.squareup.wire.internal.protoparser.RpcElement;
 
 public final class Rpc {
   private final String packageName;

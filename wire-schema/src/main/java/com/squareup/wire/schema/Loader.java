@@ -17,8 +17,8 @@ package com.squareup.wire.schema;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
-import com.squareup.protoparser.ProtoFile;
-import com.squareup.protoparser.ProtoParser;
+import com.squareup.wire.internal.protoparser.ProtoFile;
+import com.squareup.wire.internal.protoparser.ProtoParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

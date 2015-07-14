@@ -18,12 +18,12 @@ package com.squareup.wire.schema;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.squareup.protoparser.EnumConstantElement;
-import com.squareup.protoparser.EnumElement;
-import com.squareup.protoparser.FieldElement;
-import com.squareup.protoparser.MessageElement;
-import com.squareup.protoparser.OneOfElement;
-import com.squareup.protoparser.TypeElement;
+import com.squareup.wire.internal.protoparser.EnumConstantElement;
+import com.squareup.wire.internal.protoparser.EnumElement;
+import com.squareup.wire.internal.protoparser.FieldElement;
+import com.squareup.wire.internal.protoparser.MessageElement;
+import com.squareup.wire.internal.protoparser.OneOfElement;
+import com.squareup.wire.internal.protoparser.TypeElement;
 import java.util.Objects;
 import java.util.Set;
 
