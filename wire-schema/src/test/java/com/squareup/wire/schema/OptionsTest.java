@@ -20,36 +20,30 @@ import java.util.Set;
 import org.junit.Test;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class OptionsTest {
   @Test public void resolveFieldPathMatchesFirstSegment() throws Exception {
-    assertEquals(
-        asList("a", "b", "c", "d"),
-        asList(Options.resolveFieldPath("a.b.c.d", set("a", "z", "y"))));
+    assertThat(asList(Options.resolveFieldPath("a.b.c.d", set("a", "z", "y"))))
+        .isEqualTo(asList("a", "b", "c", "d"));
   }
 
   @Test public void resolveFieldPathMatchesMultipleSegments() throws Exception {
-    assertEquals(
-        asList("a.b", "c", "d"),
-        asList(Options.resolveFieldPath("a.b.c.d", set("a.b", "z.b", "y.b"))));
+    assertThat(asList(Options.resolveFieldPath("a.b.c.d", set("a.b", "z.b", "y.b"))))
+        .isEqualTo(asList("a.b", "c", "d"));
   }
 
   @Test public void resolveFieldPathMatchesAllSegments() throws Exception {
-    assertEquals(
-        asList("a.b.c.d"),
-        asList(Options.resolveFieldPath("a.b.c.d", set("a.b.c.d", "z.b.c.d"))));
+    assertThat(asList(Options.resolveFieldPath("a.b.c.d", set("a.b.c.d", "z.b.c.d"))))
+        .isEqualTo(asList("a.b.c.d"));
   }
 
   @Test public void resolveFieldPathMatchesOnlySegment() throws Exception {
-    assertEquals(
-        asList("a"),
-        asList(Options.resolveFieldPath("a", set("a", "b"))));
+    assertThat(asList(Options.resolveFieldPath("a", set("a", "b")))).isEqualTo(asList("a"));
   }
 
   @Test public void resolveFieldPathDoesntMatch() throws Exception {
-    assertNull(Options.resolveFieldPath("a.b", set("c", "d")));
+    assertThat(Options.resolveFieldPath("a.b", set("c", "d"))).isNull();
   }
 
   private Set<String> set(String... elements) {

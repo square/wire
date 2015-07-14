@@ -27,11 +27,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class WireCompilerTest {
   private StringWireLogger logger;
@@ -47,7 +46,7 @@ public class WireCompilerTest {
     dir.mkdir();
     cleanup(dir);
     List<String> filesBefore = getAllFiles(dir);
-    assertEquals(0, filesBefore.size());
+    assertThat(filesBefore.size()).isEqualTo(0);
     return dir;
   }
 
@@ -84,7 +83,9 @@ public class WireCompilerTest {
     invokeCompiler(args.toArray(new String[args.size()]));
 
     List<String> filesAfter = getAllFiles(testDir);
-    assertEquals(filesAfter.toString(), outputs.length, filesAfter.size());
+    assertThat(filesAfter.size())
+        .overridingErrorMessage(filesAfter.toString())
+        .isEqualTo(outputs.length);
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
@@ -104,7 +105,7 @@ public class WireCompilerTest {
     invokeCompiler(args);
 
     List<String> filesAfter = getAllFiles(testDir);
-    assertEquals(outputs.length, filesAfter.size());
+    assertThat(filesAfter.size()).isEqualTo(outputs.length);
 
     for (String output : outputs) {
       assertFilesMatchNoOptions(testDir, output);
@@ -123,7 +124,7 @@ public class WireCompilerTest {
     invokeCompiler(args);
 
     List<String> filesAfter = getAllFiles(testDir);
-    assertEquals(outputs.length, filesAfter.size());
+    assertThat(filesAfter.size()).isEqualTo(outputs.length);
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
@@ -153,7 +154,9 @@ public class WireCompilerTest {
     invokeCompiler(args);
 
     List<String> filesAfter = getAllFiles(testDir);
-    assertEquals("Wrong number of files written", outputs.length, filesAfter.size());
+    assertThat(filesAfter.size())
+        .overridingErrorMessage("Wrong number of files written")
+        .isEqualTo(outputs.length);
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
@@ -174,7 +177,9 @@ public class WireCompilerTest {
     invokeCompiler(args);
 
     List<String> filesAfter = getAllFiles(testDir);
-    assertEquals(filesAfter.toString(), outputs.length, filesAfter.size());
+    assertThat(filesAfter.size())
+        .overridingErrorMessage(filesAfter.toString())
+        .isEqualTo(outputs.length);
 
     for (String output : outputs) {
       assertJavaFilesMatchWithSuffix(testDir, output, serviceSuffix);
@@ -331,7 +336,7 @@ public class WireCompilerTest {
   public static class TestServiceFactory extends SimpleServiceFactory {
     @Override public TypeSpec create(
         JavaGenerator javaGenerator, List<String> options, Service service) {
-      assertEquals(Arrays.asList("OPTION1", "OPTION2"), options);
+      assertThat(options).containsExactly("OPTION1", "OPTION2");
       return super.create(javaGenerator, options, service);
     }
   }
@@ -650,16 +655,15 @@ public class WireCompilerTest {
         "--quiet"
     };
     testProtoWithRoots(sources, roots, outputs, extraArgs);
-    assertEquals(""
+    assertThat(logger.getLog()).isEqualTo(""
             + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
             + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n"
-            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheService\n",
-        logger.getLog());
+            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheService\n");
   }
 
   private void cleanup(File dir) {
-    Assert.assertNotNull(dir);
-    Assert.assertTrue(dir.isDirectory());
+    assertThat(dir).isNotNull();
+    assertThat(dir.isDirectory()).isTrue();
     File[] files = dir.listFiles();
     if (files != null) {
       for (File f : files) {
@@ -669,7 +673,7 @@ public class WireCompilerTest {
   }
 
   private void cleanupHelper(File f) {
-    Assert.assertNotNull(f);
+    assertThat(f).isNotNull();
     if (f.isDirectory()) {
       File[] files = f.listFiles();
       if (files != null) {
@@ -750,6 +754,6 @@ public class WireCompilerTest {
     // Normalize CRLF -> LF
     expected = expected.replace("\r\n", "\n");
     actual = actual.replace("\r\n", "\n");
-    assertEquals(expectedFile.toString(), expected, actual);
+    assertThat(actual).overridingErrorMessage(expectedFile.toString()).isEqualTo(expected);
   }
 }

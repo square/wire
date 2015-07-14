@@ -25,13 +25,13 @@ import okio.Buffer;
 import okio.ByteString;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SerializableTest {
 
   @Test public void testSimpleSerializable() throws Exception {
     SimpleMessage message = new SimpleMessage.Builder().required_int32(42).build();
-    assertEquals(message, serializeDeserialize(message));
+    assertThat(serializeDeserialize(message)).isEqualTo(message);
   }
 
   @Test public void testNestedMessageSerializable() throws Exception {
@@ -44,12 +44,12 @@ public class SerializableTest {
             .type(Person.PhoneType.MOBILE)
             .build()))
         .build();
-    assertEquals(person, serializeDeserialize(person));
+    assertThat(serializeDeserialize(person)).isEqualTo(person);
   }
 
   @Test public void testNoFieldsSerializable() throws Exception {
     NoFields noFields = new NoFields();
-    assertEquals(noFields, serializeDeserialize(noFields));
+    assertThat(serializeDeserialize(noFields)).isEqualTo(noFields);
   }
 
   @Test public void decodeGolden() throws Exception {
@@ -72,7 +72,7 @@ public class SerializableTest {
     );
     Buffer buffer = new Buffer();
     buffer.write(goldenSerialized);
-    assertEquals(goldenValue, new ObjectInputStream(buffer.inputStream()).readObject());
+    assertThat(new ObjectInputStream(buffer.inputStream()).readObject()).isEqualTo(goldenValue);
   }
 
   private static Object serializeDeserialize(Message message) throws Exception {

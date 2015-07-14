@@ -23,7 +23,7 @@ import java.io.IOException;
 import okio.ByteString;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class ParseTest {
@@ -34,7 +34,7 @@ public final class ParseTest {
     // tag 2 / type 0: 789
     ByteString data = ByteString.decodeHex("08c803109506");
     OneField oneField = wire.adapter(OneField.class).readBytes(data.toByteArray());
-    assertEquals(new OneField.Builder().opt_int32(456).build(), oneField);
+    assertThat(oneField).isEqualTo(new OneField.Builder().opt_int32(456).build());
   }
 
   @Test public void unknownTypeThrowsIOException() throws Exception {
@@ -45,7 +45,7 @@ public final class ParseTest {
       wire.adapter(OneField.class).readBytes(data.toByteArray());
       fail();
     } catch (IOException expected) {
-      assertEquals("No WireType for type 7", expected.getMessage());
+      assertThat(expected).hasMessage("No WireType for type 7");
     }
   }
 
@@ -54,7 +54,7 @@ public final class ParseTest {
     // (0x109506 is a well-formed proto message that sets tag 2 to 456).
     ByteString data = ByteString.decodeHex("0a03109506");
     OneField oneField = wire.adapter(OneField.class).readBytes(data.toByteArray());
-    assertEquals(oneField, new OneField.Builder().opt_int32(3).build());
+    assertThat(new OneField.Builder().opt_int32(3).build()).isEqualTo(oneField);
   }
 
   @Test public void truncatedMessageThrowsEOFException() throws Exception {
@@ -75,8 +75,8 @@ public final class ParseTest {
       wire.adapter(OneField.class).readBytes(data.toByteArray());
       fail();
     } catch (IOException expected) {
-      assertEquals("Wire type VARINT differs from previous type LENGTH_DELIMITED for tag 2",
-          expected.getMessage());
+      assertThat(expected).hasMessage(
+          "Wire type VARINT differs from previous type LENGTH_DELIMITED for tag 2");
     }
   }
 
@@ -85,7 +85,7 @@ public final class ParseTest {
     // tag 1 / type 0: 789
     ByteString data = ByteString.decodeHex("08c803089506");
     OneField oneField = wire.adapter(OneField.class).readBytes(data.toByteArray());
-    assertEquals(oneField, new OneField.Builder().opt_int32(789).build());
+    assertThat(new OneField.Builder().opt_int32(789).build()).isEqualTo(oneField);
   }
 
   @Test public void upToRecursionLimit() throws Exception {
@@ -97,7 +97,7 @@ public final class ParseTest {
         + "c120a1208120612041202120008c803");
     Recursive recursive =
         wire.adapter(Recursive.class).readBytes(data.toByteArray());
-    assertEquals(456, recursive.value.intValue());
+    assertThat(recursive.value.intValue()).isEqualTo(456);
   }
 
   @Test public void overRecursionLimitThrowsIOException() throws Exception {
@@ -111,7 +111,7 @@ public final class ParseTest {
       wire.adapter(Recursive.class).readBytes(data.toByteArray());
       fail();
     } catch (IOException expected) {
-      assertEquals("Wire recursion limit exceeded", expected.getMessage());
+      assertThat(expected).hasMessage("Wire recursion limit exceeded");
     }
   }
 }

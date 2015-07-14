@@ -17,18 +17,18 @@ package com.squareup.wire.java;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class JavaGeneratorTest {
   @Test public void sanitizeJavadocStripsTrailingWhitespace() {
     String input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  ";
     String expected = "The quick brown fox\nJumps over\n\nThe lazy dog";
-    assertEquals(expected, JavaGenerator.sanitizeJavadoc(input));
+    assertThat(JavaGenerator.sanitizeJavadoc(input)).isEqualTo(expected);
   }
 
   @Test public void sanitizeJavadocWrapsSeeLinks() {
     String input = "Google query.\n\n@see http://google.com";
     String expected = "Google query.\n\n@see <a href=\"http://google.com\">http://google.com</a>";
-    assertEquals(expected, JavaGenerator.sanitizeJavadoc(input));
+    assertThat(JavaGenerator.sanitizeJavadoc(input)).isEqualTo(expected);
   }
 }
