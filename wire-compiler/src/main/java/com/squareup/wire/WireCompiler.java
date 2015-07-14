@@ -25,7 +25,7 @@ import com.squareup.wire.schema.Loader;
 import com.squareup.wire.schema.Pruner;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
-import com.squareup.wire.schema.WireProtoFile;
+import com.squareup.wire.schema.ProtoFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashSet;
@@ -94,51 +94,51 @@ public final class WireCompiler {
       }
     }
 
-    List<WireProtoFile> wireProtoFiles = loader.loaded();
+    List<ProtoFile> protoFiles = loader.loaded();
     Linker linker = new Linker();
-    linker.link(wireProtoFiles);
+    linker.link(protoFiles);
 
     if (!options.roots.isEmpty()) {
       log.info("Analyzing dependencies of root types.");
-      wireProtoFiles = new Pruner().retainRoots(wireProtoFiles, options.roots);
+      protoFiles = new Pruner().retainRoots(protoFiles, options.roots);
     }
 
-    JavaGenerator javaGenerator = JavaGenerator.get(wireProtoFiles);
+    JavaGenerator javaGenerator = JavaGenerator.get(protoFiles);
     TypeWriter typeWriter = new TypeWriter(
         javaGenerator, options.emitOptions, options.enumOptions);
 
-    for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      if (!parsedFiles.contains(wireProtoFile.sourcePath())) {
+    for (ProtoFile protoFile : protoFiles) {
+      if (!parsedFiles.contains(protoFile.sourcePath())) {
         continue; // Don't emit anything for files not explicitly compiled.
       }
 
-      for (Type type : wireProtoFile.types()) {
+      for (Type type : protoFile.types()) {
         ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.name());
         TypeSpec typeSpec = typeWriter.toTypeSpec(type);
-        writeJavaFile(javaTypeName, typeSpec, wireProtoFile.sourcePath());
+        writeJavaFile(javaTypeName, typeSpec, protoFile.sourcePath());
       }
 
       if (options.serviceFactory != null) {
-        for (Service service : wireProtoFile.services()) {
+        for (Service service : protoFile.services()) {
           TypeSpec typeSpec = options.serviceFactory.create(
               javaGenerator, options.serviceFactoryOptions, service);
           ClassName baseJavaTypeName = (ClassName) javaGenerator.typeName(service.name());
           // Use 'peerClass' to track service factories that add a prefix or suffix.
           ClassName generatedJavaTypeName = baseJavaTypeName.peerClass(typeSpec.name);
-          writeJavaFile(generatedJavaTypeName, typeSpec, wireProtoFile.sourcePath());
+          writeJavaFile(generatedJavaTypeName, typeSpec, protoFile.sourcePath());
         }
       }
 
-      if (!wireProtoFile.extendList().isEmpty()) {
-        ClassName javaTypeName = javaGenerator.extensionsClass(wireProtoFile);
-        TypeSpec typeSpec = typeWriter.extensionsType(javaTypeName, wireProtoFile);
-        writeJavaFile(javaTypeName, typeSpec, wireProtoFile.sourcePath());
+      if (!protoFile.extendList().isEmpty()) {
+        ClassName javaTypeName = javaGenerator.extensionsClass(protoFile);
+        TypeSpec typeSpec = typeWriter.extensionsType(javaTypeName, protoFile);
+        writeJavaFile(javaTypeName, typeSpec, protoFile.sourcePath());
       }
     }
 
     if (options.registryClass != null) {
       ClassName className = ClassName.bestGuess(options.registryClass);
-      TypeSpec typeSpec = typeWriter.registryType(className, wireProtoFiles);
+      TypeSpec typeSpec = typeWriter.registryType(className, protoFiles);
       writeJavaFile(className, typeSpec, null);
     }
   }

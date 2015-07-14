@@ -20,138 +20,141 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.ProtoFile.MAX_TAG_VALUE;
-import static com.squareup.wire.internal.protoparser.ProtoFile.MIN_TAG_VALUE;
-import static com.squareup.wire.internal.protoparser.ProtoFile.Syntax.PROTO_2;
-import static com.squareup.wire.internal.protoparser.ProtoFile.isValidTag;
+import static com.squareup.wire.internal.protoparser.ProtoFileElement.MAX_TAG_VALUE;
+import static com.squareup.wire.internal.protoparser.ProtoFileElement.MIN_TAG_VALUE;
+import static com.squareup.wire.internal.protoparser.ProtoFileElement.Syntax.PROTO_2;
+import static com.squareup.wire.internal.protoparser.ProtoFileElement.isValidTag;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public class ProtoFileTest {
+public class ProtoFileElementTest {
   @Test public void nullBuilderValuesThrow() {
     try {
-      ProtoFile.builder(null);
+      ProtoFileElement.builder(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("filePath");
     }
     try {
-      ProtoFile.builder("test.proto").packageName(null);
+      ProtoFileElement.builder("test.proto").packageName(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("packageName");
     }
     try {
-      ProtoFile.builder("test.proto").syntax(null);
+      ProtoFileElement.builder("test.proto").syntax(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("syntax");
     }
     try {
-      ProtoFile.builder("test.proto").addDependency(null);
+      ProtoFileElement.builder("test.proto").addDependency(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependency");
     }
     try {
-      ProtoFile.builder("test.proto").addDependencies(null);
+      ProtoFileElement.builder("test.proto").addDependencies(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependencies");
     }
     try {
-      ProtoFile.builder("test.proto").addDependencies(Collections.<String>singleton(null));
+      ProtoFileElement.builder("test.proto").addDependencies(Collections.<String>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependency");
     }
     try {
-      ProtoFile.builder("test.proto").addPublicDependency(null);
+      ProtoFileElement.builder("test.proto").addPublicDependency(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependency");
     }
     try {
-      ProtoFile.builder("test.proto").addPublicDependencies(null);
+      ProtoFileElement.builder("test.proto").addPublicDependencies(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependencies");
     }
     try {
-      ProtoFile.builder("test.proto").addPublicDependencies(Collections.<String>singleton(null));
+      ProtoFileElement.builder("test.proto")
+          .addPublicDependencies(Collections.<String>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependency");
     }
     try {
-      ProtoFile.builder("test.proto").addType(null);
+      ProtoFileElement.builder("test.proto").addType(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("type");
     }
     try {
-      ProtoFile.builder("test.proto").addTypes(null);
+      ProtoFileElement.builder("test.proto").addTypes(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("types");
     }
     try {
-      ProtoFile.builder("test.proto").addTypes(Collections.<TypeElement>singleton(null));
+      ProtoFileElement.builder("test.proto").addTypes(Collections.<TypeElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("type");
     }
     try {
-      ProtoFile.builder("test.proto").addService(null);
+      ProtoFileElement.builder("test.proto").addService(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("service");
     }
     try {
-      ProtoFile.builder("test.proto").addServices(null);
+      ProtoFileElement.builder("test.proto").addServices(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("services");
     }
     try {
-      ProtoFile.builder("test.proto").addServices(Collections.<ServiceElement>singleton(null));
+      ProtoFileElement.builder("test.proto")
+          .addServices(Collections.<ServiceElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("service");
     }
     try {
-      ProtoFile.builder("test.proto").addExtendDeclaration(null);
+      ProtoFileElement.builder("test.proto").addExtendDeclaration(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extend");
     }
     try {
-      ProtoFile.builder("test.proto").addExtendDeclarations(null);
+      ProtoFileElement.builder("test.proto").addExtendDeclarations(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extendDeclarations");
     }
     try {
-      ProtoFile.builder("test.proto").addExtendDeclarations(
+      ProtoFileElement.builder("test.proto").addExtendDeclarations(
           Collections.<ExtendElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extend");
     }
     try {
-      ProtoFile.builder("test.proto").addOption(null);
+      ProtoFileElement.builder("test.proto").addOption(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
     }
     try {
-      ProtoFile.builder("test.proto").addOptions(null);
+      ProtoFileElement.builder("test.proto").addOptions(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("options");
     }
     try {
-      ProtoFile.builder("test.proto").addOptions(Collections.<OptionElement>singleton(null));
+      ProtoFileElement.builder("test.proto")
+          .addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
@@ -169,13 +172,14 @@ public class ProtoFileTest {
   }
 
   @Test public void emptyToSchema() {
-    ProtoFile file = ProtoFile.builder("file.proto").build();
+    ProtoFileElement file = ProtoFileElement.builder("file.proto").build();
     String expected = "// file.proto\n";
     assertThat(file.toSchema()).isEqualTo(expected);
   }
 
   @Test public void emptyWithPackageToSchema() {
-    ProtoFile file = ProtoFile.builder("file.proto").packageName("example.simple").build();
+    ProtoFileElement
+        file = ProtoFileElement.builder("file.proto").packageName("example.simple").build();
     String expected = ""
         + "// file.proto\n"
         + "package example.simple;\n";
@@ -184,7 +188,7 @@ public class ProtoFileTest {
 
   @Test public void simpleToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFile file = ProtoFile.builder("file.proto").addType(element).build();
+    ProtoFileElement file = ProtoFileElement.builder("file.proto").addType(element).build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -194,8 +198,10 @@ public class ProtoFileTest {
 
   @Test public void simpleWithImportsToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFile file =
-        ProtoFile.builder("file.proto").addDependency("example.other").addType(element).build();
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+        .addDependency("example.other")
+        .addType(element)
+        .build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -207,7 +213,7 @@ public class ProtoFileTest {
 
   @Test public void addMultipleDependencies() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFile file = ProtoFile.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
         .addDependencies(Arrays.asList("example.other", "example.another"))
         .addType(element)
         .build();
@@ -216,7 +222,7 @@ public class ProtoFileTest {
 
   @Test public void simpleWithPublicImportsToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFile file = ProtoFile.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
         .addPublicDependency("example.other")
         .addType(element)
         .build();
@@ -231,7 +237,7 @@ public class ProtoFileTest {
 
   @Test public void addMultiplePublicDependencies() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFile file = ProtoFile.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
         .addPublicDependencies(Arrays.asList("example.other", "example.another"))
         .addType(element)
         .build();
@@ -240,7 +246,7 @@ public class ProtoFileTest {
 
   @Test public void simpleWithBothImportsToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFile file = ProtoFile.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
         .addDependency("example.thing")
         .addPublicDependency("example.other")
         .addType(element)
@@ -258,7 +264,8 @@ public class ProtoFileTest {
   @Test public void simpleWithServicesToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
     ServiceElement service = ServiceElement.builder().name("Service").build();
-    ProtoFile file = ProtoFile.builder("file.proto").addType(element).addService(service).build();
+    ProtoFileElement
+        file = ProtoFileElement.builder("file.proto").addType(element).addService(service).build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -271,7 +278,7 @@ public class ProtoFileTest {
   @Test public void addMultipleServices() {
     ServiceElement service1 = ServiceElement.builder().name("Service1").build();
     ServiceElement service2 = ServiceElement.builder().name("Service2").build();
-    ProtoFile file = ProtoFile.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
         .addServices(Arrays.asList(service1, service2))
         .build();
     assertThat(file.services()).hasSize(2);
@@ -280,7 +287,8 @@ public class ProtoFileTest {
   @Test public void simpleWithOptionsToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
     OptionElement option = OptionElement.create("kit", Kind.STRING, "kat");
-    ProtoFile file = ProtoFile.builder("file.proto").addOption(option).addType(element).build();
+    ProtoFileElement
+        file = ProtoFileElement.builder("file.proto").addOption(option).addType(element).build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -294,7 +302,7 @@ public class ProtoFileTest {
     TypeElement element = MessageElement.builder().name("Message").build();
     OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
     OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
-    ProtoFile file = ProtoFile.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
         .addOptions(Arrays.asList(kitKat, fooBar))
         .addType(element)
         .build();
@@ -302,7 +310,7 @@ public class ProtoFileTest {
   }
 
   @Test public void simpleWithExtendsToSchema() {
-    ProtoFile file = ProtoFile.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
         .addExtendDeclaration(ExtendElement.builder().name("Extend").build())
         .addType(MessageElement.builder().name("Message").build())
         .build();
@@ -318,7 +326,7 @@ public class ProtoFileTest {
   @Test public void addMultipleExtends() {
     ExtendElement extend1 = ExtendElement.builder().name("Extend1").build();
     ExtendElement extend2 = ExtendElement.builder().name("Extend2").build();
-    ProtoFile file = ProtoFile.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
         .addExtendDeclarations(Arrays.asList(extend1, extend2))
         .build();
     assertThat(file.extendDeclarations()).hasSize(2);
@@ -351,7 +359,7 @@ public class ProtoFileTest {
         .name("Service2")
         .qualifiedName("example.simple.Service2")
         .build();
-    ProtoFile file = ProtoFile.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder("file.proto")
         .packageName("example.simple")
         .addDependency("example.thing")
         .addPublicDependency("example.other")
@@ -385,13 +393,14 @@ public class ProtoFileTest {
     assertThat(file.toSchema()).isEqualTo(expected);
 
     // Re-parse the expected string into a ProtoFile and ensure they're equal.
-    ProtoFile parsed = ProtoParser.parse("file.proto", expected);
+    ProtoFileElement parsed = ProtoParser.parse("file.proto", expected);
     assertThat(parsed).isEqualTo(file);
   }
 
   @Test public void syntaxToSchema() {
     TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFile file = ProtoFile.builder("file.proto").syntax(PROTO_2).addType(element).build();
+    ProtoFileElement
+        file = ProtoFileElement.builder("file.proto").syntax(PROTO_2).addType(element).build();
     String expected = ""
         + "// file.proto\n"
         + "syntax \"proto2\";\n"

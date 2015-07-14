@@ -17,7 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.internal.protoparser.ProtoFile;
+import com.squareup.wire.internal.protoparser.ProtoFileElement;
 import com.squareup.wire.internal.protoparser.ProtoParser;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,8 +34,8 @@ import java.util.Set;
 public final class Loader {
   private final String repoPath;
   private final IO io;
-  private final Set<String> protoFileNames = new LinkedHashSet<String>();
-  private final ImmutableList.Builder<WireProtoFile> loaded = ImmutableList.builder();
+  private final Set<String> protoFileNames = new LinkedHashSet<>();
+  private final ImmutableList.Builder<ProtoFile> loaded = ImmutableList.builder();
 
   public Loader(String repoPath, IO io) {
     this.repoPath = repoPath;
@@ -49,28 +49,28 @@ public final class Loader {
     }
 
     String sourcePath = repoPath + File.separator + protoFileName;
-    ProtoFile protoFile = io.parse(sourcePath);
-    WireProtoFile wireProtoFile = WireProtoFile.get(sourcePath, protoFile);
-    loaded.add(wireProtoFile);
+    ProtoFileElement element = io.parse(sourcePath);
+    ProtoFile protoFile = ProtoFile.get(sourcePath, element);
+    loaded.add(protoFile);
 
     // Recursively add dependencies.
-    for (String dependency : protoFile.dependencies()) {
+    for (String dependency : element.dependencies()) {
       add(dependency);
     }
   }
 
-  public List<WireProtoFile> loaded() {
+  public List<ProtoFile> loaded() {
     return loaded.build();
   }
 
   public interface IO {
     IO DEFAULT = new IO() {
-      @Override public ProtoFile parse(String filename) throws IOException {
+      @Override public ProtoFileElement parse(String filename) throws IOException {
         return ProtoParser.parse(filename,
             new InputStreamReader(new FileInputStream(filename), Charsets.UTF_8));
       }
     };
 
-    ProtoFile parse(String filename) throws IOException;
+    ProtoFileElement parse(String filename) throws IOException;
   }
 }

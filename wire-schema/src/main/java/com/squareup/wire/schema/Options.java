@@ -121,12 +121,12 @@ public final class Options {
       return null; // Unable to find the root of this field path.
     }
 
-    Map<Field, Object> result = new LinkedHashMap<Field, Object>();
+    Map<Field, Object> result = new LinkedHashMap<>();
     Map<Field, Object> last = result;
 
     Field field = extensionsForType.get(path[0]);
     for (int i = 1; i < path.length; i++) {
-      Map<Field, Object> nested = new LinkedHashMap<Field, Object>();
+      Map<Field, Object> nested = new LinkedHashMap<>();
       last.put(field, nested);
       last = nested;
       field = linker.dereference(packageName, field, path[i]);
@@ -222,7 +222,7 @@ public final class Options {
 
   private ImmutableMap<Field, Object> union(
       Map<Field, Object> a, Map<Field, Object> b) {
-    Map<Field, Object> result = new LinkedHashMap<Field, Object>(a);
+    Map<Field, Object> result = new LinkedHashMap<>(a);
     for (Map.Entry<Field, Object> entry : b.entrySet()) {
       Object aValue = result.get(entry.getKey());
       Object bValue = entry.getValue();

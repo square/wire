@@ -18,7 +18,7 @@ package com.squareup.wire.internal.protoparser;
 import com.google.auto.value.AutoValue;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.squareup.wire.internal.protoparser.ProtoFile.isValidTag;
+import static com.squareup.wire.internal.protoparser.ProtoFileElement.isValidTag;
 import static com.squareup.wire.internal.protoparser.Utils.appendDocumentation;
 
 @AutoValue
@@ -48,7 +48,7 @@ public abstract class ExtensionsElement {
         .append(start());
     if (start() != end()) {
       builder.append(" to ");
-      if (end() < ProtoFile.MAX_TAG_VALUE) {
+      if (end() < ProtoFileElement.MAX_TAG_VALUE) {
         builder.append(end());
       } else {
         builder.append("max");

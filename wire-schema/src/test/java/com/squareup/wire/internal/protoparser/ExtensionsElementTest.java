@@ -49,7 +49,7 @@ public class ExtensionsElementTest {
   }
 
   @Test public void maxRangeToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(500, ProtoFile.MAX_TAG_VALUE);
+    ExtensionsElement actual = ExtensionsElement.create(500, ProtoFileElement.MAX_TAG_VALUE);
     String expected = "extensions 500 to max;\n";
     assertThat(actual.toSchema()).isEqualTo(expected);
   }

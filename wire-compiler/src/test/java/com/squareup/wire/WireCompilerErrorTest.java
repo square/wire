@@ -16,7 +16,7 @@
 package com.squareup.wire;
 
 import com.squareup.javapoet.JavaFile;
-import com.squareup.wire.internal.protoparser.ProtoFile;
+import com.squareup.wire.internal.protoparser.ProtoFileElement;
 import com.squareup.wire.internal.protoparser.ProtoParser;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.Loader;
@@ -48,7 +48,7 @@ public class WireCompilerErrorTest {
     }
 
     @Override
-    public ProtoFile parse(String filename) throws IOException {
+    public ProtoFileElement parse(String filename) throws IOException {
       if (filename.equals(protoFileName)) {
         return ProtoParser.parse(filename, new StringReader(source));
       } else {
