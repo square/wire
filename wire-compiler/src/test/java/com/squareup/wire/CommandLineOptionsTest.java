@@ -32,7 +32,7 @@ public class CommandLineOptionsTest {
 
   @Test public void sourceFileNames() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.sourceFileNames.isEmpty()).isTrue();
+    assertThat(options.sourceFileNames).isEmpty();
 
     List<String> expected = new ArrayList<String>();
     options = new CommandLineOptions("baz", "qux");
@@ -66,7 +66,7 @@ public class CommandLineOptionsTest {
 
   @Test public void roots() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.roots.isEmpty()).isTrue();
+    assertThat(options.roots).isEmpty();
 
     options = new CommandLineOptions("--roots=com.example.foo");
     List<String> expected = new ArrayList<String>();
@@ -94,7 +94,7 @@ public class CommandLineOptionsTest {
 
   @Test public void enumOptions() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.enumOptions.isEmpty()).isTrue();
+    assertThat(options.enumOptions).isEmpty();
 
     options = new CommandLineOptions("--enum_options=foo");
     Set<String> expected = new HashSet<String>();
@@ -116,7 +116,7 @@ public class CommandLineOptionsTest {
 
   @Test public void serviceFactoryOptions() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.serviceFactoryOptions.isEmpty()).isTrue();
+    assertThat(options.serviceFactoryOptions).isEmpty();
 
     options = new CommandLineOptions("--service_factory_opt=foo");
     List<String> expected = new ArrayList<String>();

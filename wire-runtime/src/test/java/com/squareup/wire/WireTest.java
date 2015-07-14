@@ -51,7 +51,7 @@ public class WireTest {
     assertThat(msg.default_nested_enum).isNull();
     assertThat(msg.required_int32).isEqualTo(new Integer(456));
     assertThat(msg.repeated_double).isNotNull();
-    assertThat(msg.repeated_double.size()).isEqualTo(0);
+    assertThat(msg.repeated_double).hasSize(0);
 
     SimpleMessage.Builder builder = new SimpleMessage.Builder();
     builder.optional_int32(789);
@@ -261,9 +261,9 @@ public class WireTest {
         .build();
 
     assertThat(noListMessage.repeated_double).isNotNull();
-    assertThat(noListMessage.repeated_double.size()).isEqualTo(0);
+    assertThat(noListMessage.repeated_double).hasSize(0);
     assertThat(emptyListMessage.repeated_double).isNotNull();
-    assertThat(emptyListMessage.repeated_double.size()).isEqualTo(0);
+    assertThat(emptyListMessage.repeated_double).hasSize(0);
 
     // Empty lists and null lists compare as equals()
     assertThat(noListMessage).isEqualTo(emptyListMessage);
@@ -321,9 +321,9 @@ public class WireTest {
 
     // The value 17 will be stored as an unknown varint with tag number 2
     Collection<List<UnknownFieldMap.FieldValue>> unknownFields = result.phone.get(0).unknownFields();
-    assertThat(unknownFields.size()).isEqualTo(1);
+    assertThat(unknownFields).hasSize(1);
     List<UnknownFieldMap.FieldValue> fieldValues = unknownFields.iterator().next();
-    assertThat(fieldValues.size()).isEqualTo(1);
+    assertThat(fieldValues).hasSize(1);
     assertThat(fieldValues.get(0).getTag()).isEqualTo(2);
     assertThat(fieldValues.get(0).getAsLong()).isEqualTo(Long.valueOf(17L));
 

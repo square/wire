@@ -45,7 +45,7 @@ public class UnknownFieldsTest {
     assertThat(v2.v2_s).isEqualTo("222");
     assertThat(v2.v2_f32).isEqualTo(new Integer(67890));
     assertThat(v2.v2_f64).isEqualTo(new Long(98765L));
-    assertThat(v2.v2_rs).isEqualTo(Arrays.asList("1", "2"));
+    assertThat(v2.v2_rs).containsExactly("1", "2");
     // Serialized
     byte[] v2Bytes = v2Adapter.writeBytes(v2);
 
