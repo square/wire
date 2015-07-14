@@ -5,6 +5,7 @@ import com.google.common.collect.Lists
 import org.gradle.api.DomainObjectCollection
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.tasks.compile.JavaCompile
 
 /**
@@ -56,6 +57,8 @@ class WirePlugin implements Plugin<Project> {
       String taskName = "main".equals(sourceSetName) ? "" : sourceSetName
       WireGeneratorTask task =
           createGeneratorTask(project, taskName, sourceSetName, [sourceSet])
+      Task classesTask = project.tasks.getByName(taskName.isEmpty() ? "classes" : "${taskName}Classes")
+      classesTask.mustRunAfter task
       JavaCompile compileTask =
           (JavaCompile) project.tasks.getByName("compile${taskName.capitalize()}Java")
       compileTask.source += project.fileTree(task.outputDir)
