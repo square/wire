@@ -17,53 +17,53 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.protoparser.ExtendElement;
-import com.squareup.wire.internal.protoparser.ProtoFile;
+import com.squareup.wire.internal.protoparser.ProtoFileElement;
 import com.squareup.wire.internal.protoparser.ServiceElement;
 import com.squareup.wire.internal.protoparser.TypeElement;
 import java.util.Set;
 
-public final class WireProtoFile {
+public final class ProtoFile {
   private final String sourcePath;
-  private final ProtoFile protoFile;
+  private final ProtoFileElement element;
   private final ImmutableList<Type> types;
   private final ImmutableList<Service> services;
   private final ImmutableList<Extend> extendList;
   private final Options options;
 
-  private WireProtoFile(String sourcePath, ProtoFile protoFile, ImmutableList<Type> types,
+  private ProtoFile(String sourcePath, ProtoFileElement element, ImmutableList<Type> types,
       ImmutableList<Service> services, ImmutableList<Extend> extendList, Options options) {
     this.sourcePath = sourcePath;
-    this.protoFile = protoFile;
+    this.element = element;
     this.types = types;
     this.services = services;
     this.extendList = extendList;
     this.options = options;
   }
 
-  public static WireProtoFile get(String sourcePath, ProtoFile protoFile) {
-    String packageName = protoFile.packageName();
+  public static ProtoFile get(String sourcePath, ProtoFileElement protoFileElement) {
+    String packageName = protoFileElement.packageName();
 
     ImmutableList.Builder<Type> types = ImmutableList.builder();
-    for (TypeElement type : protoFile.typeElements()) {
+    for (TypeElement type : protoFileElement.typeElements()) {
       Type.Name name = Type.Name.get(packageName, type.name());
       types.add(Type.get(name, type));
     }
 
     ImmutableList.Builder<Service> services = ImmutableList.builder();
-    for (ServiceElement service : protoFile.services()) {
+    for (ServiceElement service : protoFileElement.services()) {
       Type.Name name = Type.Name.get(packageName, service.name());
       services.add(Service.get(name, service));
     }
 
     ImmutableList.Builder<Extend> wireExtends = ImmutableList.builder();
-    for (ExtendElement extend : protoFile.extendDeclarations()) {
+    for (ExtendElement extend : protoFileElement.extendDeclarations()) {
       wireExtends.add(new Extend(packageName, extend));
     }
 
     Options options = new Options(
-        Type.Name.FILE_OPTIONS, packageName, protoFile.options());
+        Type.Name.FILE_OPTIONS, packageName, protoFileElement.options());
 
-    return new WireProtoFile(sourcePath, protoFile, types.build(), services.build(),
+    return new ProtoFile(sourcePath, protoFileElement, types.build(), services.build(),
         wireExtends.build(), options);
   }
 
@@ -91,7 +91,7 @@ public final class WireProtoFile {
   }
 
   public String packageName() {
-    return protoFile.packageName();
+    return element.packageName();
   }
 
   public ImmutableList<Type> types() {
@@ -111,7 +111,7 @@ public final class WireProtoFile {
   }
 
   /** Returns a new proto file that omits types and services not in {@code identifiers}. */
-  WireProtoFile retainAll(Set<String> identifiers) {
+  ProtoFile retainAll(Set<String> identifiers) {
     ImmutableList.Builder<Type> retainedTypes = ImmutableList.builder();
     for (Type type : types) {
       Type retainedType = type.retainAll(identifiers);
@@ -128,7 +128,7 @@ public final class WireProtoFile {
       }
     }
 
-    return new WireProtoFile(sourcePath, protoFile, retainedTypes.build(), retainedServices.build(),
+    return new ProtoFile(sourcePath, element, retainedTypes.build(), retainedServices.build(),
         extendList, options);
   }
 }

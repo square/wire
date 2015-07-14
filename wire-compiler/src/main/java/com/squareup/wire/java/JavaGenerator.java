@@ -29,7 +29,7 @@ import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
-import com.squareup.wire.schema.WireProtoFile;
+import com.squareup.wire.schema.ProtoFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -83,33 +83,33 @@ public final class JavaGenerator {
 
   private final ImmutableMap<Type.Name, TypeName> nameToJavaName;
   private final ImmutableMap<Type.Name, Type> nameToType;
-  private final ImmutableMap<Field, WireProtoFile> extensionFieldToFile;
+  private final ImmutableMap<Field, ProtoFile> extensionFieldToFile;
 
   private JavaGenerator(
       ImmutableMap<Type.Name, TypeName> nameToJavaName,
       ImmutableMap<Type.Name, Type> nameToType,
-      ImmutableMap<Field, WireProtoFile> extensionFieldToFile) {
+      ImmutableMap<Field, ProtoFile> extensionFieldToFile) {
     this.nameToJavaName = nameToJavaName;
     this.nameToType = nameToType;
     this.extensionFieldToFile = extensionFieldToFile;
   }
 
-  public static JavaGenerator get(List<WireProtoFile> wireProtoFiles) {
+  public static JavaGenerator get(List<ProtoFile> protoFiles) {
     ImmutableMap.Builder<Type.Name, TypeName> nameToJavaName = ImmutableMap.builder();
     ImmutableMap.Builder<Type.Name, Type> nameToType = ImmutableMap.builder();
-    ImmutableMap.Builder<Field, WireProtoFile> extensionFieldToFile = ImmutableMap.builder();
+    ImmutableMap.Builder<Field, ProtoFile> extensionFieldToFile = ImmutableMap.builder();
     nameToJavaName.putAll(SCALAR_TYPES_MAP);
 
-    for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      String javaPackage = javaPackage(wireProtoFile);
-      putAll(nameToJavaName, nameToType, javaPackage, null, wireProtoFile.types());
+    for (ProtoFile protoFile : protoFiles) {
+      String javaPackage = javaPackage(protoFile);
+      putAll(nameToJavaName, nameToType, javaPackage, null, protoFile.types());
 
-      for (Extend extend : wireProtoFile.extendList()) {
+      for (Extend extend : protoFile.extendList()) {
         for (Field field : extend.fields()) {
-          extensionFieldToFile.put(field, wireProtoFile);
+          extensionFieldToFile.put(field, protoFile);
         }
       }
-      for (Service service : wireProtoFile.services()) {
+      for (Service service : protoFile.services()) {
         ClassName className = ClassName.get(javaPackage, service.name().simpleName());
         nameToJavaName.put(service.name(), className);
       }
@@ -132,7 +132,7 @@ public final class JavaGenerator {
     }
   }
 
-  public ClassName extensionsClass(WireProtoFile protoFile) {
+  public ClassName extensionsClass(ProtoFile protoFile) {
     return ClassName.get(javaPackage(protoFile), "Ext_" + protoFile.name());
   }
 
@@ -141,7 +141,7 @@ public final class JavaGenerator {
    * wasn't declared by an extension.
    */
   public ClassName extensionsClass(Field field) {
-    WireProtoFile protoFile = extensionFieldToFile.get(field);
+    ProtoFile protoFile = extensionFieldToFile.get(field);
     return protoFile != null ? extensionsClass(protoFile) : null;
   }
 
@@ -151,12 +151,12 @@ public final class JavaGenerator {
     return candidate;
   }
 
-  private static String javaPackage(WireProtoFile wireProtoFile) {
-    Object javaPackageOption = wireProtoFile.options().get("java_package");
+  private static String javaPackage(ProtoFile protoFile) {
+    Object javaPackageOption = protoFile.options().get("java_package");
     if (javaPackageOption != null) {
       return String.valueOf(javaPackageOption);
-    } else if (wireProtoFile.packageName() != null) {
-      return wireProtoFile.packageName();
+    } else if (protoFile.packageName() != null) {
+      return protoFile.packageName();
     } else {
       return "";
     }

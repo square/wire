@@ -34,33 +34,33 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.squareup.wire.internal.protoparser.ProtoFile.Syntax.PROTO_2;
-import static com.squareup.wire.internal.protoparser.ProtoFile.Syntax.PROTO_3;
+import static com.squareup.wire.internal.protoparser.ProtoFileElement.Syntax.PROTO_2;
+import static com.squareup.wire.internal.protoparser.ProtoFileElement.Syntax.PROTO_3;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /** Basic parser for {@code .proto} schema declarations. */
 public final class ProtoParser {
   /** Parse a {@code .proto} definition file. */
-  public static ProtoFile parseUtf8(File file) throws IOException {
+  public static ProtoFileElement parseUtf8(File file) throws IOException {
     try (InputStream is = new FileInputStream(file)) {
       return parseUtf8(file.getPath(), is);
     }
   }
 
   /** Parse a {@code .proto} definition file. */
-  public static ProtoFile parseUtf8(Path path) throws IOException {
+  public static ProtoFileElement parseUtf8(Path path) throws IOException {
     try (Reader reader = Files.newBufferedReader(path, UTF_8)) {
       return parse(path.toString(), reader);
     }
   }
 
   /** Parse a named {@code .proto} schema. The {@code InputStream} is not closed. */
-  public static ProtoFile parseUtf8(String name, InputStream is) throws IOException {
+  public static ProtoFileElement parseUtf8(String name, InputStream is) throws IOException {
     return parse(name, new InputStreamReader(is, UTF_8));
   }
 
   /** Parse a named {@code .proto} schema. The {@code Reader} is not closed. */
-  public static ProtoFile parse(String name, Reader reader) throws IOException {
+  public static ProtoFileElement parse(String name, Reader reader) throws IOException {
     CharArrayWriter writer = new CharArrayWriter();
     char[] buffer = new char[1024];
     int count;
@@ -71,13 +71,13 @@ public final class ProtoParser {
   }
 
   /** Parse a named {@code .proto} schema. */
-  public static ProtoFile parse(String name, String data) {
+  public static ProtoFileElement parse(String name, String data) {
     return new ProtoParser(name, data.toCharArray()).readProtoFile();
   }
 
   private final String filePath;
   private final char[] data;
-  private final ProtoFile.Builder fileBuilder;
+  private final ProtoFileElement.Builder fileBuilder;
 
   /** Our cursor within the document. {@code data[pos]} is the next character to be read. */
   private int pos;
@@ -94,10 +94,10 @@ public final class ProtoParser {
   ProtoParser(String filePath, char[] data) {
     this.filePath = filePath;
     this.data = data;
-    this.fileBuilder = ProtoFile.builder(filePath);
+    this.fileBuilder = ProtoFileElement.builder(filePath);
   }
 
-  ProtoFile readProtoFile() {
+  ProtoFileElement readProtoFile() {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
@@ -388,7 +388,7 @@ public final class ProtoParser {
       if (!"to".equals(readWord())) throw unexpected("expected ';' or 'to'");
       String s = readWord(); // Range end.
       if (s.equals("max")) {
-        end = ProtoFile.MAX_TAG_VALUE;
+        end = ProtoFileElement.MAX_TAG_VALUE;
       } else {
         end = Integer.parseInt(s);
       }

@@ -29,10 +29,10 @@ import java.util.Set;
 /** Removes unused types and services. */
 public final class Pruner {
   /** Homogeneous identifiers including type names, service names, and RPC names. */
-  final Set<String> marks = new LinkedHashSet<String>();
+  final Set<String> marks = new LinkedHashSet<>();
 
   /** Identifiers whose immediate dependencies have not yet been marked. */
-  final Deque<String> queue = new ArrayDeque<String>();
+  final Deque<String> queue = new ArrayDeque<>();
 
   /**
    * Returns a new root set that contains only the types in {@code roots} and their transitive
@@ -41,8 +41,8 @@ public final class Pruner {
    * @param roots a set of identifiers to retain, which may be fully qualified type names, fully
    *     qualified service names, or service RPCs like {@code package.ServiceName#MethodName}.
    */
-  public ImmutableList<WireProtoFile> retainRoots(
-      List<WireProtoFile> protoFiles, Collection<String> roots) {
+  public ImmutableList<ProtoFile> retainRoots(
+      List<ProtoFile> protoFiles, Collection<String> roots) {
     if (roots.isEmpty()) throw new IllegalArgumentException();
     if (!marks.isEmpty()) throw new IllegalStateException();
 
@@ -55,7 +55,7 @@ public final class Pruner {
     }
 
     // Extensions and options are also roots.
-    for (WireProtoFile protoFile : protoFiles) {
+    for (ProtoFile protoFile : protoFiles) {
       for (Extend extend : protoFile.extendList()) {
         markExtend(extend);
       }
@@ -99,17 +99,17 @@ public final class Pruner {
       throw new IllegalArgumentException("Unexpected type: " + name);
     }
 
-    ImmutableList.Builder<WireProtoFile> retained = ImmutableList.builder();
-    for (WireProtoFile protoFile : protoFiles) {
+    ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
+    for (ProtoFile protoFile : protoFiles) {
       retained.add(protoFile.retainAll(marks));
     }
 
     return retained.build();
   }
 
-  private static Map<String, Type> buildTypesIndex(Collection<WireProtoFile> protoFiles) {
-    Map<String, Type> result = new LinkedHashMap<String, Type>();
-    for (WireProtoFile protoFile : protoFiles) {
+  private static Map<String, Type> buildTypesIndex(Collection<ProtoFile> protoFiles) {
+    Map<String, Type> result = new LinkedHashMap<>();
+    for (ProtoFile protoFile : protoFiles) {
       for (Type type : protoFile.types()) {
         index(result, type);
       }
@@ -125,9 +125,9 @@ public final class Pruner {
   }
 
   private static ImmutableMap<String, Service> buildServicesIndex(
-      Collection<WireProtoFile> protoFiles) {
+      Collection<ProtoFile> protoFiles) {
     ImmutableMap.Builder<String, Service> result = ImmutableMap.builder();
-    for (WireProtoFile protoFile : protoFiles) {
+    for (ProtoFile protoFile : protoFiles) {
       for (Service service : protoFile.services()) {
         result.put(service.name().toString(), service);
       }

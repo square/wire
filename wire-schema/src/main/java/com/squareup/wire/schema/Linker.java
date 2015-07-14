@@ -31,8 +31,8 @@ public final class Linker {
   private final List<Type> enclosingTypes;
 
   public Linker() {
-    this.protoTypeNames = new LinkedHashMap<String, Type>();
-    this.extensionsMap = new LinkedHashMap<Type.Name, Map<String, Field>>();
+    this.protoTypeNames = new LinkedHashMap<>();
+    this.extensionsMap = new LinkedHashMap<>();
     this.enclosingTypes = Collections.emptyList();
   }
 
@@ -44,27 +44,27 @@ public final class Linker {
         : enclosing.enclosingTypes;
   }
 
-  public void link(Collection<WireProtoFile> wireProtoFiles) {
+  public void link(Collection<ProtoFile> protoFiles) {
     // Register the types.
-    for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      for (Type type : wireProtoFile.types()) {
+    for (ProtoFile protoFile : protoFiles) {
+      for (Type type : protoFile.types()) {
         register(type);
       }
     }
 
     // Link extensions. This depends on type registration.
-    for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      for (Extend extend : wireProtoFile.extendList()) {
+    for (ProtoFile protoFile : protoFiles) {
+      for (Extend extend : protoFile.extendList()) {
         extend.link(this);
       }
     }
 
     // Register extensions. This needs the extensions to be linked.
-    for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      for (Extend extend : wireProtoFile.extendList()) {
+    for (ProtoFile protoFile : protoFiles) {
+      for (Extend extend : protoFile.extendList()) {
         Map<String, Field> map = extensionsMap.get(extend.type());
         if (map == null) {
-          map = new LinkedHashMap<String, Field>();
+          map = new LinkedHashMap<>();
           extensionsMap.put(extend.type(), map);
         }
         for (Field field : extend.fields()) {
@@ -74,22 +74,22 @@ public final class Linker {
     }
 
     // Link proto files and services.
-    for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      for (Type type : wireProtoFile.types()) {
+    for (ProtoFile protoFile : protoFiles) {
+      for (Type type : protoFile.types()) {
         type.link(this);
       }
-      for (Service service : wireProtoFile.services()) {
+      for (Service service : protoFile.services()) {
         service.link(this);
       }
     }
 
     // Finally link options. We can't link any options until we've linked all fields!
-    for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      wireProtoFile.options().link(this);
-      for (Type type : wireProtoFile.types()) {
+    for (ProtoFile protoFile : protoFiles) {
+      protoFile.options().link(this);
+      for (Type type : protoFile.types()) {
         type.linkOptions(this);
       }
-      for (Service service : wireProtoFile.services()) {
+      for (Service service : protoFile.services()) {
         service.linkOptions(this);
       }
     }

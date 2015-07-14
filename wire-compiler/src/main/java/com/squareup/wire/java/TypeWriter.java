@@ -41,7 +41,7 @@ import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
 import com.squareup.wire.schema.Options;
 import com.squareup.wire.schema.Type;
-import com.squareup.wire.schema.WireProtoFile;
+import com.squareup.wire.schema.ProtoFile;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -793,7 +793,7 @@ public final class TypeWriter {
     return field.isRepeated() ? 1 : 0;
   }
 
-  public TypeSpec extensionsType(ClassName javaTypeName, WireProtoFile wireProtoFile) {
+  public TypeSpec extensionsType(ClassName javaTypeName, ProtoFile protoFile) {
     TypeSpec.Builder builder = TypeSpec.classBuilder(javaTypeName.simpleName())
         .addModifiers(PUBLIC, FINAL);
 
@@ -802,7 +802,7 @@ public final class TypeWriter {
         .addModifiers(PRIVATE)
         .build());
 
-    for (Extend extend : wireProtoFile.extendList()) {
+    for (Extend extend : protoFile.extendList()) {
       Type.Name extendType = extend.type();
       TypeName javaType = javaGenerator.typeName(extendType);
 
@@ -811,7 +811,7 @@ public final class TypeWriter {
       }
 
       for (Field field : extend.fields()) {
-        builder.addField(extensionField(wireProtoFile, javaType, field));
+        builder.addField(extensionField(protoFile, javaType, field));
       }
     }
 
@@ -819,7 +819,7 @@ public final class TypeWriter {
   }
 
   private FieldSpec extensionField(
-      WireProtoFile wireProtoFile, TypeName extendType, Field field) {
+      ProtoFile protoFile, TypeName extendType, Field field) {
     TypeName fieldType = javaGenerator.typeName(field.type());
 
     CodeBlock.Builder initializer = CodeBlock.builder();
@@ -833,7 +833,7 @@ public final class TypeWriter {
       initializer.add(".messageExtending($T.class, $T.class)\n", fieldType, extendType);
     }
 
-    initializer.add(".setName($S)\n", wireProtoFile.packageName() + "." + field.name());
+    initializer.add(".setName($S)\n", protoFile.packageName() + "." + field.name());
     initializer.add(".setTag($L)\n", field.tag());
     initializer.add(".build$L()$]", extensionLabel(field));
 
@@ -865,14 +865,14 @@ public final class TypeWriter {
     }
   }
 
-  public TypeSpec registryType(ClassName javaTypeName, List<WireProtoFile> wireProtoFiles) {
+  public TypeSpec registryType(ClassName javaTypeName, List<ProtoFile> protoFiles) {
     TypeSpec.Builder builder = TypeSpec.classBuilder(javaTypeName.simpleName())
         .addModifiers(PUBLIC, FINAL);
 
     ImmutableSet.Builder<TypeName> extensionClassesBuilder = ImmutableSet.builder();
-    for (WireProtoFile wireProtoFile : wireProtoFiles) {
-      if (!wireProtoFile.extendList().isEmpty()) {
-        extensionClassesBuilder.add(javaGenerator.extensionsClass(wireProtoFile));
+    for (ProtoFile protoFile : protoFiles) {
+      if (!protoFile.extendList().isEmpty()) {
+        extensionClassesBuilder.add(javaGenerator.extensionsClass(protoFile));
       }
     }
     ImmutableList<TypeName> extensionClasses = extensionClassesBuilder.build().asList();

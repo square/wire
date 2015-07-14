@@ -26,7 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /** A single {@code .proto} file. */
 @AutoValue
-public abstract class ProtoFile {
+public abstract class ProtoFileElement {
   static final int MIN_TAG_VALUE = 1;
   static final int MAX_TAG_VALUE = (1 << 29) - 1; // 536,870,911
   private static final int RESERVED_TAG_VALUE_START = 19000;
@@ -54,7 +54,7 @@ public abstract class ProtoFile {
     return new Builder(checkNotNull(filePath, "filePath"));
   }
 
-  ProtoFile() {
+  ProtoFileElement() {
   }
 
   public abstract String filePath();
@@ -212,8 +212,8 @@ public abstract class ProtoFile {
       return this;
     }
 
-    public ProtoFile build() {
-      return new AutoValue_ProtoFile(filePath, packageName, syntax,
+    public ProtoFileElement build() {
+      return new AutoValue_ProtoFileElement(filePath, packageName, syntax,
           ImmutableList.copyOf(dependencies),
           ImmutableList.copyOf(publicDependencies), ImmutableList.copyOf(types),
           ImmutableList.copyOf(services),
