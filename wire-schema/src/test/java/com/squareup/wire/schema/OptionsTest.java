@@ -25,21 +25,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 public final class OptionsTest {
   @Test public void resolveFieldPathMatchesFirstSegment() throws Exception {
     assertThat(asList(Options.resolveFieldPath("a.b.c.d", set("a", "z", "y"))))
-        .isEqualTo(asList("a", "b", "c", "d"));
+        .containsExactly("a", "b", "c", "d");
   }
 
   @Test public void resolveFieldPathMatchesMultipleSegments() throws Exception {
     assertThat(asList(Options.resolveFieldPath("a.b.c.d", set("a.b", "z.b", "y.b"))))
-        .isEqualTo(asList("a.b", "c", "d"));
+        .containsExactly("a.b", "c", "d");
   }
 
   @Test public void resolveFieldPathMatchesAllSegments() throws Exception {
     assertThat(asList(Options.resolveFieldPath("a.b.c.d", set("a.b.c.d", "z.b.c.d"))))
-        .isEqualTo(asList("a.b.c.d"));
+        .containsExactly("a.b.c.d");
   }
 
   @Test public void resolveFieldPathMatchesOnlySegment() throws Exception {
-    assertThat(asList(Options.resolveFieldPath("a", set("a", "b")))).isEqualTo(asList("a"));
+    assertThat(asList(Options.resolveFieldPath("a", set("a", "b")))).containsExactly("a");
   }
 
   @Test public void resolveFieldPathDoesntMatch() throws Exception {

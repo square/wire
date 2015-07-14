@@ -171,9 +171,7 @@ public class TestAllTypes {
     assertThat(builder.opt_float).isEqualTo(new Float(122.0F));
     assertThat(builder.opt_double).isEqualTo(new Double(123.0));
     assertThat(builder.opt_string).isEqualTo("124");
-    assertThat(builder.opt_bytes.size()).isEqualTo(2);
-    assertThat(builder.opt_bytes.getByte(0)).isEqualTo((byte) 125);
-    assertThat(builder.opt_bytes.getByte(1)).isEqualTo((byte) 225);
+    assertThat(builder.opt_bytes).isEqualTo(ByteString.of((byte) 125, (byte) 225));
     assertThat(builder.opt_nested_enum).isEqualTo(A);
     assertThat(builder.opt_nested_message).isEqualTo(nestedMessage);
 
@@ -191,108 +189,102 @@ public class TestAllTypes {
     assertThat(builder.req_float).isEqualTo(new Float(122.0F));
     assertThat(builder.req_double).isEqualTo(new Double(123.0));
     assertThat(builder.req_string).isEqualTo("124");
-    assertThat(builder.req_bytes.size()).isEqualTo(2);
-    assertThat(builder.req_bytes.getByte(0)).isEqualTo((byte) 125);
-    assertThat(builder.req_bytes.getByte(1)).isEqualTo((byte) 225);
+    assertThat(builder.req_bytes).isEqualTo(ByteString.of((byte) 125, (byte) 225));
     assertThat(builder.req_nested_enum).isEqualTo(A);
     assertThat(builder.req_nested_message).isEqualTo(nestedMessage);
 
-    assertThat(builder.rep_int32.size()).isEqualTo(2);
+    assertThat(builder.rep_int32).hasSize(2);
     assertThat(builder.rep_int32.get(0)).isEqualTo(new Integer(111));
     assertThat(builder.rep_int32.get(1)).isEqualTo(new Integer(111));
-    assertThat(builder.rep_uint32.size()).isEqualTo(2);
+    assertThat(builder.rep_uint32).hasSize(2);
     assertThat(builder.rep_uint32.get(0)).isEqualTo(new Integer(112));
     assertThat(builder.rep_uint32.get(1)).isEqualTo(new Integer(112));
-    assertThat(builder.rep_sint32.size()).isEqualTo(2);
+    assertThat(builder.rep_sint32).hasSize(2);
     assertThat(builder.rep_sint32.get(0)).isEqualTo(new Integer(113));
     assertThat(builder.rep_sint32.get(1)).isEqualTo(new Integer(113));
-    assertThat(builder.rep_fixed32.size()).isEqualTo(2);
+    assertThat(builder.rep_fixed32).hasSize(2);
     assertThat(builder.rep_fixed32.get(0)).isEqualTo(new Integer(114));
     assertThat(builder.rep_fixed32.get(1)).isEqualTo(new Integer(114));
-    assertThat(builder.rep_sfixed32.size()).isEqualTo(2);
+    assertThat(builder.rep_sfixed32).hasSize(2);
     assertThat(builder.rep_sfixed32.get(0)).isEqualTo(new Integer(115));
     assertThat(builder.rep_sfixed32.get(1)).isEqualTo(new Integer(115));
-    assertThat(builder.rep_int64.size()).isEqualTo(2);
+    assertThat(builder.rep_int64).hasSize(2);
     assertThat(builder.rep_int64.get(0)).isEqualTo(new Long(116L));
     assertThat(builder.rep_int64.get(1)).isEqualTo(new Long(116L));
-    assertThat(builder.rep_uint64.size()).isEqualTo(2);
+    assertThat(builder.rep_uint64).hasSize(2);
     assertThat(builder.rep_uint64.get(0)).isEqualTo(new Long(117L));
     assertThat(builder.rep_uint64.get(1)).isEqualTo(new Long(117L));
-    assertThat(builder.rep_sint64.size()).isEqualTo(2);
+    assertThat(builder.rep_sint64).hasSize(2);
     assertThat(builder.rep_sint64.get(0)).isEqualTo(new Long(118L));
     assertThat(builder.rep_sint64.get(1)).isEqualTo(new Long(118L));
-    assertThat(builder.rep_fixed64.size()).isEqualTo(2);
+    assertThat(builder.rep_fixed64).hasSize(2);
     assertThat(builder.rep_fixed64.get(0)).isEqualTo(new Long(119L));
     assertThat(builder.rep_fixed64.get(1)).isEqualTo(new Long(119L));
-    assertThat(builder.rep_sfixed64.size()).isEqualTo(2);
+    assertThat(builder.rep_sfixed64).hasSize(2);
     assertThat(builder.rep_sfixed64.get(0)).isEqualTo(new Long(120L));
     assertThat(builder.rep_sfixed64.get(1)).isEqualTo(new Long(120L));
-    assertThat(builder.rep_bool.size()).isEqualTo(2);
+    assertThat(builder.rep_bool).hasSize(2);
     assertThat(builder.rep_bool.get(0)).isEqualTo(Boolean.TRUE);
     assertThat(builder.rep_bool.get(1)).isEqualTo(Boolean.TRUE);
-    assertThat(builder.rep_float.size()).isEqualTo(2);
+    assertThat(builder.rep_float).hasSize(2);
     assertThat(builder.rep_float.get(0)).isEqualTo(new Float(122.0F));
     assertThat(builder.rep_float.get(1)).isEqualTo(new Float(122.0F));
-    assertThat(builder.rep_double.size()).isEqualTo(2);
+    assertThat(builder.rep_double).hasSize(2);
     assertThat(builder.rep_double.get(0)).isEqualTo(new Double(123.0));
     assertThat(builder.rep_double.get(1)).isEqualTo(new Double(123.0));
-    assertThat(builder.rep_string.size()).isEqualTo(2);
+    assertThat(builder.rep_string).hasSize(2);
     assertThat(builder.rep_string.get(0)).isEqualTo("124");
     assertThat(builder.rep_string.get(1)).isEqualTo("124");
-    assertThat(builder.rep_bytes.size()).isEqualTo(2);
-    assertThat(builder.rep_bytes.get(0).size()).isEqualTo(2);
-    assertThat(builder.rep_bytes.get(0).getByte(0)).isEqualTo((byte) 125);
-    assertThat(builder.rep_bytes.get(0).getByte(1)).isEqualTo((byte) 225);
-    assertThat(builder.rep_bytes.get(1).size()).isEqualTo(2);
-    assertThat(builder.rep_bytes.get(1).getByte(0)).isEqualTo((byte) 125);
-    assertThat(builder.rep_bytes.get(1).getByte(1)).isEqualTo((byte) 225);
-    assertThat(builder.rep_nested_enum.size()).isEqualTo(2);
+    assertThat(builder.rep_bytes).hasSize(2);
+    assertThat(builder.rep_bytes.get(0)).isEqualTo(ByteString.of((byte) 125, (byte) 225));
+    assertThat(builder.rep_bytes.get(1)).isEqualTo(ByteString.of((byte) 125, (byte) 225));
+    assertThat(builder.rep_nested_enum).hasSize(2);
     assertThat(builder.rep_nested_enum.get(0)).isEqualTo(A);
     assertThat(builder.rep_nested_enum.get(1)).isEqualTo(A);
-    assertThat(builder.rep_nested_message.size()).isEqualTo(2);
+    assertThat(builder.rep_nested_message).hasSize(2);
     assertThat(builder.rep_nested_message.get(0)).isEqualTo(nestedMessage);
     assertThat(builder.rep_nested_message.get(1)).isEqualTo(nestedMessage);
 
-    assertThat(builder.pack_int32.size()).isEqualTo(2);
+    assertThat(builder.pack_int32).hasSize(2);
     assertThat(builder.pack_int32.get(0)).isEqualTo(new Integer(111));
     assertThat(builder.pack_int32.get(1)).isEqualTo(new Integer(111));
-    assertThat(builder.pack_uint32.size()).isEqualTo(2);
+    assertThat(builder.pack_uint32).hasSize(2);
     assertThat(builder.pack_uint32.get(0)).isEqualTo(new Integer(112));
     assertThat(builder.pack_uint32.get(1)).isEqualTo(new Integer(112));
-    assertThat(builder.pack_sint32.size()).isEqualTo(2);
+    assertThat(builder.pack_sint32).hasSize(2);
     assertThat(builder.pack_sint32.get(0)).isEqualTo(new Integer(113));
     assertThat(builder.pack_sint32.get(1)).isEqualTo(new Integer(113));
-    assertThat(builder.pack_fixed32.size()).isEqualTo(2);
+    assertThat(builder.pack_fixed32).hasSize(2);
     assertThat(builder.pack_fixed32.get(0)).isEqualTo(new Integer(114));
     assertThat(builder.pack_fixed32.get(1)).isEqualTo(new Integer(114));
-    assertThat(builder.pack_sfixed32.size()).isEqualTo(2);
+    assertThat(builder.pack_sfixed32).hasSize(2);
     assertThat(builder.pack_sfixed32.get(0)).isEqualTo(new Integer(115));
     assertThat(builder.pack_sfixed32.get(1)).isEqualTo(new Integer(115));
-    assertThat(builder.pack_int64.size()).isEqualTo(2);
+    assertThat(builder.pack_int64).hasSize(2);
     assertThat(builder.pack_int64.get(0)).isEqualTo(new Long(116L));
     assertThat(builder.pack_int64.get(1)).isEqualTo(new Long(116L));
-    assertThat(builder.pack_uint64.size()).isEqualTo(2);
+    assertThat(builder.pack_uint64).hasSize(2);
     assertThat(builder.pack_uint64.get(0)).isEqualTo(new Long(117L));
     assertThat(builder.pack_uint64.get(1)).isEqualTo(new Long(117L));
-    assertThat(builder.pack_sint64.size()).isEqualTo(2);
+    assertThat(builder.pack_sint64).hasSize(2);
     assertThat(builder.pack_sint64.get(0)).isEqualTo(new Long(118L));
     assertThat(builder.pack_sint64.get(1)).isEqualTo(new Long(118L));
-    assertThat(builder.pack_fixed64.size()).isEqualTo(2);
+    assertThat(builder.pack_fixed64).hasSize(2);
     assertThat(builder.pack_fixed64.get(0)).isEqualTo(new Long(119L));
     assertThat(builder.pack_fixed64.get(1)).isEqualTo(new Long(119L));
-    assertThat(builder.pack_sfixed64.size()).isEqualTo(2);
+    assertThat(builder.pack_sfixed64).hasSize(2);
     assertThat(builder.pack_sfixed64.get(0)).isEqualTo(new Long(120L));
     assertThat(builder.pack_sfixed64.get(1)).isEqualTo(new Long(120L));
-    assertThat(builder.pack_bool.size()).isEqualTo(2);
+    assertThat(builder.pack_bool).hasSize(2);
     assertThat(builder.pack_bool.get(0)).isEqualTo(Boolean.TRUE);
     assertThat(builder.pack_bool.get(1)).isEqualTo(Boolean.TRUE);
-    assertThat(builder.pack_float.size()).isEqualTo(2);
+    assertThat(builder.pack_float).hasSize(2);
     assertThat(builder.pack_float.get(0)).isEqualTo(new Float(122.0F));
     assertThat(builder.pack_float.get(1)).isEqualTo(new Float(122.0F));
-    assertThat(builder.pack_double.size()).isEqualTo(2);
+    assertThat(builder.pack_double).hasSize(2);
     assertThat(builder.pack_double.get(0)).isEqualTo(new Double(123.0));
     assertThat(builder.pack_double.get(1)).isEqualTo(new Double(123.0));
-    assertThat(builder.pack_nested_enum.size()).isEqualTo(2);
+    assertThat(builder.pack_nested_enum).hasSize(2);
     assertThat(builder.pack_nested_enum.get(0)).isEqualTo(A);
     assertThat(builder.pack_nested_enum.get(1)).isEqualTo(A);
 
@@ -328,7 +320,6 @@ public class TestAllTypes {
   public void testWriteSource() throws IOException {
     Buffer sink = new Buffer();
     adapter.write(allTypes, sink);
-    assertThat(sink.size()).isEqualTo(TestAllTypesData.expectedOutput.length);
     assertThat(sink.readByteString()).isEqualTo(ByteString.of(TestAllTypesData.expectedOutput));
   }
 
@@ -361,7 +352,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
 
     List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions.size()).isEqualTo(3);
+    assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
@@ -379,7 +370,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
 
     List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions.size()).isEqualTo(3);
+    assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
@@ -398,7 +389,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
 
     List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions.size()).isEqualTo(3);
+    assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
@@ -417,7 +408,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true, 50));
 
     List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions.size()).isEqualTo(3);
+    assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
@@ -451,7 +442,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
 
     List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions.size()).isEqualTo(3);
+    assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
@@ -461,7 +452,7 @@ public class TestAllTypes {
   public void testReadNoExtension() throws IOException {
     byte[] data = adapter.writeBytes(allTypes);
     AllTypes parsed = new Wire().adapter(AllTypes.class).readBytes(data);
-    assertThat(allTypes.equals(parsed)).isFalse();
+    assertThat(allTypes).isNotEqualTo(parsed);
   }
 
   @Test

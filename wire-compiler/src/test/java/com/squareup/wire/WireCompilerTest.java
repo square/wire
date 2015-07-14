@@ -46,7 +46,7 @@ public class WireCompilerTest {
     dir.mkdir();
     cleanup(dir);
     List<String> filesBefore = getAllFiles(dir);
-    assertThat(filesBefore.size()).isEqualTo(0);
+    assertThat(filesBefore).hasSize(0);
     return dir;
   }
 
@@ -105,7 +105,7 @@ public class WireCompilerTest {
     invokeCompiler(args);
 
     List<String> filesAfter = getAllFiles(testDir);
-    assertThat(filesAfter.size()).isEqualTo(outputs.length);
+    assertThat(filesAfter).hasSize(outputs.length);
 
     for (String output : outputs) {
       assertFilesMatchNoOptions(testDir, output);
@@ -124,7 +124,7 @@ public class WireCompilerTest {
     invokeCompiler(args);
 
     List<String> filesAfter = getAllFiles(testDir);
-    assertThat(filesAfter.size()).isEqualTo(outputs.length);
+    assertThat(filesAfter).hasSize(outputs.length);
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);

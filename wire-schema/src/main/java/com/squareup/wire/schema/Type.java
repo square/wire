@@ -112,23 +112,24 @@ public abstract class Type {
     static final Name SERVICE_OPTIONS = get("google.protobuf", "ServiceOptions");
     static final Name METHOD_OPTIONS = get("google.protobuf", "MethodOptions");
 
-    private static final ImmutableMap<String, Name> SCALAR_TYPES;
-    static {
-      ImmutableMap.Builder<String, Name> scalarTypes = ImmutableMap.builder();
-      try {
-        for (java.lang.reflect.Field field : Name.class.getDeclaredFields()) {
-          if (field.getType() == Name.class) {
-            Name name = (Name) field.get(null);
-            if (name.isScalar) {
-              scalarTypes.put(name.names.get(0), name);
-            }
-          }
-        }
-        SCALAR_TYPES = scalarTypes.build();
-      } catch (IllegalAccessException e) {
-        throw new AssertionError();
-      }
-    }
+    private static final ImmutableMap<String, Name> SCALAR_TYPES
+        = ImmutableMap.<String, Name>builder()
+        .put(BOOL.string, BOOL)
+        .put(BYTES.string, BYTES)
+        .put(DOUBLE.string, DOUBLE)
+        .put(FLOAT.string, FLOAT)
+        .put(FIXED32.string, FIXED32)
+        .put(FIXED64.string, FIXED64)
+        .put(INT32.string, INT32)
+        .put(INT64.string, INT64)
+        .put(SFIXED32.string, SFIXED32)
+        .put(SFIXED64.string, SFIXED64)
+        .put(SINT32.string, SINT32)
+        .put(SINT64.string, SINT64)
+        .put(STRING.string, STRING)
+        .put(UINT32.string, UINT32)
+        .put(UINT64.string, UINT64)
+        .build();
 
     private final String protoPackage;
 

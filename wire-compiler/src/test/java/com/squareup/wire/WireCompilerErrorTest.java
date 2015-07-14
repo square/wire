@@ -150,6 +150,6 @@ public class WireCompilerErrorTest {
     Map<String, String> output = compile("message Simple { optional int32 f = 1; }");
     assertThat(output).containsKey(".Simple");
     // Output should not have a 'package' declaration.
-    assertThat(output.get(".Simple").contains("package")).isFalse();
+    assertThat(output.get(".Simple")).doesNotContain("package");
   }
 }

@@ -42,7 +42,7 @@ public class CustomOptionsTest {
     long expected = new BigInteger("18446744073709551615").longValue();
     assertThat(expected).isEqualTo(-1L);
     assertThat(option_one.qux).isEqualTo(Long.valueOf(expected));
-    assertThat(option_one.fred.size()).isEqualTo(2);
+    assertThat(option_one.fred).hasSize(2);
     assertThat(option_one.fred.get(0)).isEqualTo(123.0F, Offset.offset(0.0000001f));
     assertThat(option_one.fred.get(1)).isEqualTo(321f, Offset.offset(0.0000001f));
     assertThat(option_one.daisy).isEqualTo(456.0, Offset.offset(0.0000001));
@@ -57,11 +57,11 @@ public class CustomOptionsTest {
     assertThat(option_three.bar).isEqualTo("22");
     FooBar.Nested baz3 = option_three.baz;
     assertThat(baz3.value).isEqualTo(BAR);
-    assertThat(option_three.fred.size()).isEqualTo(2);
+    assertThat(option_three.fred).hasSize(2);
     assertThat(option_three.fred.get(0)).isEqualTo(444.0F, Offset.offset(0.0000001f));
     assertThat(option_three.fred.get(1)).isEqualTo(555.0F, Offset.offset(0.0000001f));
     assertThat(option_three.nested).isNotNull();
-    assertThat(option_three.nested.size()).isEqualTo(1);
+    assertThat(option_three.nested).hasSize(1);
     assertThat(option_three.nested.get(0).foo).isEqualTo(new Integer(33));
 
     ForeignMessage foreign_option =
