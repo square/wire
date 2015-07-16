@@ -570,7 +570,7 @@ public class TestAllTypes {
       fail();
     } catch (IllegalArgumentException expected) {
       assertThat(expected).hasMessage(
-          "Wire type FIXED32 differs from previous type VARINT for tag 10000");
+          "Wire type Fixed32Value differs from previous type VarintValue for tag 10000");
     }
   }
 
