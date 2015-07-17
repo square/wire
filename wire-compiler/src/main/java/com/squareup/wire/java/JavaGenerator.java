@@ -173,6 +173,10 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(LIST, type);
   }
 
+  public static TypeName messageOf(TypeName type) {
+    return ParameterizedTypeName.get(JavaGenerator.MESSAGE, type);
+  }
+
   public static TypeName extendableMessageOf(TypeName type) {
     return ParameterizedTypeName.get(JavaGenerator.EXTENDABLE_MESSAGE, type);
   }
@@ -185,8 +189,8 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(EXTENDABLE_BUILDER, messageType, builderType);
   }
 
-  public static TypeName extensionOf(TypeName messageType, TypeName fieldType) {
-    return ParameterizedTypeName.get(EXTENSION, messageType, fieldType);
+  public static TypeName extensionOf(TypeName messageType, TypeName fieldType, TypeName returnType) {
+    return ParameterizedTypeName.get(EXTENSION, messageType, fieldType, returnType);
   }
 
   /** A grab-bag of fixes for things that can go wrong when converting to javadoc. */

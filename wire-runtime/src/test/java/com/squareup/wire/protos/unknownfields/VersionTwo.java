@@ -3,17 +3,25 @@
 package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Long;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
 import java.util.List;
 
-public final class VersionTwo extends Message {
+public final class VersionTwo extends Message<VersionTwo> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<VersionTwo> ADAPTER = new TypeAdapter.MessageAdapter<VersionTwo>() {
+    @Override
+    public VersionTwo read(ProtoReader reader) throws IOException {
+      return VersionTwo.read(reader);
+    }
+  };
 
   public static final Integer DEFAULT_I = 0;
 
@@ -25,44 +33,20 @@ public final class VersionTwo extends Message {
 
   public static final Long DEFAULT_V2_F64 = 0L;
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.INT32
-  )
   public final Integer i;
 
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.INT32
-  )
   public final Integer v2_i;
 
-  @ProtoField(
-      tag = 3,
-      type = Message.Datatype.STRING
-  )
   public final String v2_s;
 
-  @ProtoField(
-      tag = 4,
-      type = Message.Datatype.FIXED32
-  )
   public final Integer v2_f32;
 
-  @ProtoField(
-      tag = 5,
-      type = Message.Datatype.FIXED64
-  )
   public final Long v2_f64;
 
-  @ProtoField(
-      tag = 6,
-      type = Message.Datatype.STRING,
-      label = Message.Label.REPEATED
-  )
   public final List<String> v2_rs;
 
   public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs) {
+    super("VersionTwo");
     this.i = i;
     this.v2_i = v2_i;
     this.v2_s = v2_s;
@@ -77,31 +61,31 @@ public final class VersionTwo extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof VersionTwo)) return false;
-    VersionTwo o = (VersionTwo) other;
-    return equals(i, o.i)
-        && equals(v2_i, o.v2_i)
-        && equals(v2_s, o.v2_s)
-        && equals(v2_f32, o.v2_f32)
-        && equals(v2_f64, o.v2_f64)
-        && equals(v2_rs, o.v2_rs);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "i", i, TypeAdapter.INT32, false);
+    visitor.value(2, "v2_i", v2_i, TypeAdapter.INT32, false);
+    visitor.value(3, "v2_s", v2_s, TypeAdapter.STRING, false);
+    visitor.value(4, "v2_f32", v2_f32, TypeAdapter.FIXED32, false);
+    visitor.value(5, "v2_f64", v2_f64, TypeAdapter.FIXED64, false);
+    visitor.repeated(6, "v2_rs", v2_rs, TypeAdapter.STRING, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = i != null ? i.hashCode() : 0;
-      result = result * 37 + (v2_i != null ? v2_i.hashCode() : 0);
-      result = result * 37 + (v2_s != null ? v2_s.hashCode() : 0);
-      result = result * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
-      result = result * 37 + (v2_f64 != null ? v2_f64.hashCode() : 0);
-      result = result * 37 + (v2_rs != null ? v2_rs.hashCode() : 1);
-      hashCode = result;
+  public static VersionTwo read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.i = reader.value(TypeAdapter.INT32); break;
+        case 2: builder.v2_i = reader.value(TypeAdapter.INT32); break;
+        case 3: builder.v2_s = reader.value(TypeAdapter.STRING); break;
+        case 4: builder.v2_f32 = reader.value(TypeAdapter.FIXED32); break;
+        case 5: builder.v2_f64 = reader.value(TypeAdapter.FIXED64); break;
+        case 6: builder.v2_rs = repeated(builder.v2_rs, reader.value(TypeAdapter.STRING)); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<VersionTwo> {

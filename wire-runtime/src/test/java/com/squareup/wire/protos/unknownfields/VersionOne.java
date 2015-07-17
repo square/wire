@@ -3,23 +3,28 @@
 package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Integer;
-import java.lang.Object;
 import java.lang.Override;
 
-public final class VersionOne extends Message {
+public final class VersionOne extends Message<VersionOne> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<VersionOne> ADAPTER = new TypeAdapter.MessageAdapter<VersionOne>() {
+    @Override
+    public VersionOne read(ProtoReader reader) throws IOException {
+      return VersionOne.read(reader);
+    }
+  };
 
   public static final Integer DEFAULT_I = 0;
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.INT32
-  )
   public final Integer i;
 
   public VersionOne(Integer i) {
+    super("VersionOne");
     this.i = i;
   }
 
@@ -29,16 +34,21 @@ public final class VersionOne extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof VersionOne)) return false;
-    return equals(i, ((VersionOne) other).i);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "i", i, TypeAdapter.INT32, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
+  public static VersionOne read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.i = reader.value(TypeAdapter.INT32); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<VersionOne> {

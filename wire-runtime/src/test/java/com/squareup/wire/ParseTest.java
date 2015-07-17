@@ -45,7 +45,7 @@ public final class ParseTest {
       wire.adapter(OneField.class).readBytes(data.toByteArray());
       fail();
     } catch (IOException expected) {
-      assertThat(expected).hasMessage("No WireType for type 7");
+      assertThat(expected).hasMessage("Unknown tag type 7");
     }
   }
 
@@ -76,7 +76,7 @@ public final class ParseTest {
       fail();
     } catch (IOException expected) {
       assertThat(expected).hasMessage(
-          "Wire type VarintValue differs from previous type LengthDelimitedValue for tag 2");
+          "Wire type varint differs from previous type length-delimited for tag 2");
     }
   }
 

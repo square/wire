@@ -2,13 +2,21 @@
 // Source file: ../wire-runtime/src/test/proto/foreign.proto at 23:1
 package com.squareup.wire.protos.foreign;
 
-import com.squareup.wire.ProtoEnum;
+import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
-public enum ForeignEnum implements ProtoEnum {
+public enum ForeignEnum implements WireEnum {
   BAV(0),
 
   BAX(1);
+
+  public static final TypeAdapter.EnumAdapter<ForeignEnum> ADAPTER = new TypeAdapter.EnumAdapter<ForeignEnum>() {
+    @Override
+    public ForeignEnum fromValue(int value) {
+      return ForeignEnum.fromValue(value);
+    }
+  };
 
   private final int value;
 
@@ -17,7 +25,15 @@ public enum ForeignEnum implements ProtoEnum {
   }
 
   @Override
-  public int getValue() {
+  public int value() {
     return value;
+  }
+
+  public static ForeignEnum fromValue(int value) {
+    switch (value) {
+      case 0: return BAV;
+      case 1: return BAX;
+      default: return null;
+    }
   }
 }

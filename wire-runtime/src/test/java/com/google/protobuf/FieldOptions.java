@@ -4,10 +4,11 @@ package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireEnum;
+import java.io.IOException;
 import java.lang.Boolean;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
@@ -15,6 +16,13 @@ import java.util.List;
 
 public final class FieldOptions extends ExtendableMessage<FieldOptions> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<FieldOptions> ADAPTER = new TypeAdapter.MessageAdapter<FieldOptions>() {
+    @Override
+    public FieldOptions read(ProtoReader reader) throws IOException {
+      return FieldOptions.read(reader);
+    }
+  };
 
   public static final CType DEFAULT_CTYPE = CType.STRING;
 
@@ -30,10 +38,6 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
    * options below.  This option is not yet implemented in the open source
    * release -- sorry, we'll try to include it in a future version!
    */
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.ENUM
-  )
   public final CType ctype;
 
   /**
@@ -42,10 +46,6 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
    * writing the tag and type for each element, the entire array is encoded as
    * a single length-delimited blob.
    */
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.BOOL
-  )
   public final Boolean packed;
 
   /**
@@ -54,10 +54,6 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
    * for accessors, or it will be completely ignored; in the very least, this
    * is a formalization for deprecating fields.
    */
-  @ProtoField(
-      tag = 3,
-      type = Message.Datatype.BOOL
-  )
   public final Boolean deprecated;
 
   /**
@@ -74,23 +70,15 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
    * In this situation, the map key for Item will be set to "name".
    * TODO: Fully-implement this, then remove the "experimental_" prefix.
    */
-  @ProtoField(
-      tag = 9,
-      type = Message.Datatype.STRING
-  )
   public final String experimental_map_key;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(
-      tag = 999,
-      label = Message.Label.REPEATED,
-      messageType = UninterpretedOption.class
-  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option) {
+    super("FieldOptions");
     this.ctype = ctype;
     this.packed = packed;
     this.deprecated = deprecated;
@@ -104,31 +92,30 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof FieldOptions)) return false;
-    FieldOptions o = (FieldOptions) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(ctype, o.ctype)
-        && equals(packed, o.packed)
-        && equals(deprecated, o.deprecated)
-        && equals(experimental_map_key, o.experimental_map_key)
-        && equals(uninterpreted_option, o.uninterpreted_option);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "ctype", ctype, CType.ADAPTER, false);
+    visitor.value(2, "packed", packed, TypeAdapter.BOOL, false);
+    visitor.value(3, "deprecated", deprecated, TypeAdapter.BOOL, false);
+    visitor.value(9, "experimental_map_key", experimental_map_key, TypeAdapter.STRING, false);
+    visitor.repeated(999, "uninterpreted_option", uninterpreted_option, UninterpretedOption.ADAPTER, false);
+    visitor.extensions(this);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = extensionsHashCode();
-      result = result * 37 + (ctype != null ? ctype.hashCode() : 0);
-      result = result * 37 + (packed != null ? packed.hashCode() : 0);
-      result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
-      result = result * 37 + (experimental_map_key != null ? experimental_map_key.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
-      hashCode = result;
+  public static FieldOptions read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.ctype = enumOrUnknown(1, reader, CType.ADAPTER, builder); break;
+        case 2: builder.packed = reader.value(TypeAdapter.BOOL); break;
+        case 3: builder.deprecated = reader.value(TypeAdapter.BOOL); break;
+        case 9: builder.experimental_map_key = reader.value(TypeAdapter.STRING); break;
+        case 999: builder.uninterpreted_option = repeatedMessage(builder.uninterpreted_option, reader, UninterpretedOption.ADAPTER); break;
+        default: builder.readExtensionOrUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<FieldOptions, Builder> {
@@ -143,11 +130,11 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
+      super(FieldOptions.class, Builder.class);
     }
 
     public Builder(FieldOptions message) {
-      super(Builder.class, message);
+      super(FieldOptions.class, Builder.class, message);
       if (message == null) return;
       this.ctype = message.ctype;
       this.packed = message.packed;
@@ -222,7 +209,7 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     }
   }
 
-  public enum CType implements ProtoEnum {
+  public enum CType implements WireEnum {
     /**
      * Default mode.
      */
@@ -232,6 +219,13 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
 
     STRING_PIECE(2);
 
+    public static final TypeAdapter.EnumAdapter<CType> ADAPTER = new TypeAdapter.EnumAdapter<CType>() {
+      @Override
+      public CType fromValue(int value) {
+        return CType.fromValue(value);
+      }
+    };
+
     private final int value;
 
     CType(int value) {
@@ -239,8 +233,17 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     }
 
     @Override
-    public int getValue() {
+    public int value() {
       return value;
+    }
+
+    public static CType fromValue(int value) {
+      switch (value) {
+        case 0: return STRING;
+        case 1: return CORD;
+        case 2: return STRING_PIECE;
+        default: return null;
+      }
     }
   }
 }

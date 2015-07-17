@@ -15,16 +15,10 @@
  */
 package com.squareup.wire;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
-/**
- * Maps {@link Extension} keys to their values.
- *
- * @param <T> the type of the containing {@link ExtendableMessage}
- */
+/** Maps {@link Extension} keys to their values. */
 final class ExtensionMap<T extends ExtendableMessage<T>> {
 
   private static final int INITIAL_SIZE = 1;
@@ -34,18 +28,36 @@ final class ExtensionMap<T extends ExtendableMessage<T>> {
   private Object[] data;
   private int size;
 
-  /** Constructs an ExtensionMap with a single value. */
-  public <E> ExtensionMap(Extension<T, E> extension, E value) {
+  public <E> ExtensionMap(Extension<T, ?, E> extension, E value) {
     data = new Object[2 * INITIAL_SIZE];
     data[0] = extension;
     data[1] = value;
     size = 1;
   }
 
-  /** Constructs an ExtensionMap that is a copy of an existing ExtensionMap. */
   public ExtensionMap(ExtensionMap<T> other) {
     data = other.data.clone();
     size = other.size;
+  }
+
+  int serializedSize() {
+    int size = 0;
+    for (int i = 0; i < this.size; i++) {
+      //noinspection unchecked
+      Extension<T, ?, Object> extension = (Extension<T, ?, Object>) data[i];
+      Object value = data[this.size + i];
+      size += extension.serializedSize(value);
+    }
+    return size;
+  }
+
+  void write(ProtoWriter writer) throws IOException {
+    for (int i = 0; i < size; i++) {
+      //noinspection unchecked
+      Extension<T, ?, Object> extension = (Extension<T, ?, Object>) data[i];
+      Object value = data[size + i];
+      extension.write(value, writer);
+    }
   }
 
   public int size() {
@@ -53,11 +65,11 @@ final class ExtensionMap<T extends ExtendableMessage<T>> {
   }
 
   @SuppressWarnings("unchecked")
-  public Extension<T, ?> getExtension(int index) {
+  public Extension<T, ?, Object> getExtension(int index) {
     if (index < 0 || index >= size) {
       throw new IndexOutOfBoundsException("" + index);
     }
-    return (Extension<T, ?>) data[index];
+    return (Extension<T, ?, Object>) data[index];
   }
 
   public Object getExtensionValue(int index) {
@@ -68,25 +80,13 @@ final class ExtensionMap<T extends ExtendableMessage<T>> {
   }
 
   /**
-   * Returns a {@link List} of {@link Extension}s in this map in tag order.
-   */
-  @SuppressWarnings("unchecked")
-  public List<Extension<T, ?>> getExtensions() {
-    List<Extension<T, ?>> keyList = new ArrayList<Extension<T, ?>>(size);
-    for (int i = 0; i < size; i++) {
-      keyList.add((Extension<T, ?>) data[i]);
-    }
-    return Collections.unmodifiableList(keyList);
-  }
-
-  /**
    * Returns the value associated with the given {@link Extension}, or null.
    *
    * @param <E> the (boxed) Java data type of the {@link Extension} value
    * @return a value of type E, or null
    */
   @SuppressWarnings("unchecked")
-  public <E> E get(Extension<T, E> extension) {
+  public <E> E get(Extension<T, ?, E> extension) {
     int index = Arrays.binarySearch(data, 0, size, extension);
     return index < 0 ? null : (E) data[size + index];
   }
@@ -97,7 +97,7 @@ final class ExtensionMap<T extends ExtendableMessage<T>> {
    * @param value a non-null value of type E
    * @param <E> the (boxed) Java data type of the {@link Extension} value
    */
-  public <E> void put(Extension<T, E> extension, E value) {
+  public <E> void put(Extension<T, ?, E> extension, E value) {
     int index = Arrays.binarySearch(data, 0, size, extension);
     if (index >= 0) {
       data[size + index] = value;
@@ -106,7 +106,7 @@ final class ExtensionMap<T extends ExtendableMessage<T>> {
     }
   }
 
-  private <E> void insert(Extension<T, E> key, E value, int insertionPoint) {
+  private <E> void insert(Extension<T, ?, E> key, E value, int insertionPoint) {
     // Grow the array and copy over the initial segment if necessary.
     Object[] dest = data;
     if (data.length < 2 * (size + 1)) {
@@ -147,12 +147,11 @@ final class ExtensionMap<T extends ExtendableMessage<T>> {
     data[size + insertionPoint] = value;
   }
 
-  @SuppressWarnings("unchecked")
   @Override public boolean equals(Object o) {
     if (!(o instanceof ExtensionMap<?>)) {
       return false;
     }
-    ExtensionMap<T> other = (ExtensionMap<T>) o;
+    ExtensionMap<?> other = (ExtensionMap<?>) o;
     if (size != other.size) {
       return false;
     }
@@ -172,14 +171,13 @@ final class ExtensionMap<T extends ExtendableMessage<T>> {
     return result;
   }
 
-  @SuppressWarnings("unchecked")
   @Override public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("{");
+    sb.append('{');
     String sep = "";
     for (int i = 0; i < size; i++) {
       sb.append(sep);
-      sb.append(((Extension<T, ?>) data[i]).getTag());
+      sb.append(((Extension<?, ?, ?>) data[i]).tag);
       sb.append("=");
       sb.append(data[size + i]);
       sep = ", ";

@@ -4,14 +4,15 @@ package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireEnum;
+import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Float;
 import java.lang.Integer;
 import java.lang.Long;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
@@ -20,6 +21,13 @@ import okio.ByteString;
 
 public final class AllTypes extends ExtendableMessage<AllTypes> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<AllTypes> ADAPTER = new TypeAdapter.MessageAdapter<AllTypes>() {
+    @Override
+    public AllTypes read(ProtoReader reader) throws IOException {
+      return AllTypes.read(reader);
+    }
+  };
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
 
@@ -118,541 +126,170 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.A;
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.INT32
-  )
   public final Integer opt_int32;
 
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.UINT32
-  )
   public final Integer opt_uint32;
 
-  @ProtoField(
-      tag = 3,
-      type = Message.Datatype.SINT32
-  )
   public final Integer opt_sint32;
 
-  @ProtoField(
-      tag = 4,
-      type = Message.Datatype.FIXED32
-  )
   public final Integer opt_fixed32;
 
-  @ProtoField(
-      tag = 5,
-      type = Message.Datatype.SFIXED32
-  )
   public final Integer opt_sfixed32;
 
-  @ProtoField(
-      tag = 6,
-      type = Message.Datatype.INT64
-  )
   public final Long opt_int64;
 
-  @ProtoField(
-      tag = 7,
-      type = Message.Datatype.UINT64
-  )
   public final Long opt_uint64;
 
-  @ProtoField(
-      tag = 8,
-      type = Message.Datatype.SINT64
-  )
   public final Long opt_sint64;
 
-  @ProtoField(
-      tag = 9,
-      type = Message.Datatype.FIXED64
-  )
   public final Long opt_fixed64;
 
-  @ProtoField(
-      tag = 10,
-      type = Message.Datatype.SFIXED64
-  )
   public final Long opt_sfixed64;
 
-  @ProtoField(
-      tag = 11,
-      type = Message.Datatype.BOOL
-  )
   public final Boolean opt_bool;
 
-  @ProtoField(
-      tag = 12,
-      type = Message.Datatype.FLOAT
-  )
   public final Float opt_float;
 
-  @ProtoField(
-      tag = 13,
-      type = Message.Datatype.DOUBLE
-  )
   public final Double opt_double;
 
-  @ProtoField(
-      tag = 14,
-      type = Message.Datatype.STRING
-  )
   public final String opt_string;
 
-  @ProtoField(
-      tag = 15,
-      type = Message.Datatype.BYTES
-  )
   public final ByteString opt_bytes;
 
-  @ProtoField(
-      tag = 16,
-      type = Message.Datatype.ENUM
-  )
   public final NestedEnum opt_nested_enum;
 
-  @ProtoField(
-      tag = 17
-  )
   public final NestedMessage opt_nested_message;
 
-  @ProtoField(
-      tag = 101,
-      type = Message.Datatype.INT32,
-      label = Message.Label.REQUIRED
-  )
   public final Integer req_int32;
 
-  @ProtoField(
-      tag = 102,
-      type = Message.Datatype.UINT32,
-      label = Message.Label.REQUIRED
-  )
   public final Integer req_uint32;
 
-  @ProtoField(
-      tag = 103,
-      type = Message.Datatype.SINT32,
-      label = Message.Label.REQUIRED
-  )
   public final Integer req_sint32;
 
-  @ProtoField(
-      tag = 104,
-      type = Message.Datatype.FIXED32,
-      label = Message.Label.REQUIRED
-  )
   public final Integer req_fixed32;
 
-  @ProtoField(
-      tag = 105,
-      type = Message.Datatype.SFIXED32,
-      label = Message.Label.REQUIRED
-  )
   public final Integer req_sfixed32;
 
-  @ProtoField(
-      tag = 106,
-      type = Message.Datatype.INT64,
-      label = Message.Label.REQUIRED
-  )
   public final Long req_int64;
 
-  @ProtoField(
-      tag = 107,
-      type = Message.Datatype.UINT64,
-      label = Message.Label.REQUIRED
-  )
   public final Long req_uint64;
 
-  @ProtoField(
-      tag = 108,
-      type = Message.Datatype.SINT64,
-      label = Message.Label.REQUIRED
-  )
   public final Long req_sint64;
 
-  @ProtoField(
-      tag = 109,
-      type = Message.Datatype.FIXED64,
-      label = Message.Label.REQUIRED
-  )
   public final Long req_fixed64;
 
-  @ProtoField(
-      tag = 110,
-      type = Message.Datatype.SFIXED64,
-      label = Message.Label.REQUIRED
-  )
   public final Long req_sfixed64;
 
-  @ProtoField(
-      tag = 111,
-      type = Message.Datatype.BOOL,
-      label = Message.Label.REQUIRED
-  )
   public final Boolean req_bool;
 
-  @ProtoField(
-      tag = 112,
-      type = Message.Datatype.FLOAT,
-      label = Message.Label.REQUIRED
-  )
   public final Float req_float;
 
-  @ProtoField(
-      tag = 113,
-      type = Message.Datatype.DOUBLE,
-      label = Message.Label.REQUIRED
-  )
   public final Double req_double;
 
-  @ProtoField(
-      tag = 114,
-      type = Message.Datatype.STRING,
-      label = Message.Label.REQUIRED
-  )
   public final String req_string;
 
-  @ProtoField(
-      tag = 115,
-      type = Message.Datatype.BYTES,
-      label = Message.Label.REQUIRED
-  )
   public final ByteString req_bytes;
 
-  @ProtoField(
-      tag = 116,
-      type = Message.Datatype.ENUM,
-      label = Message.Label.REQUIRED
-  )
   public final NestedEnum req_nested_enum;
 
-  @ProtoField(
-      tag = 117,
-      label = Message.Label.REQUIRED
-  )
   public final NestedMessage req_nested_message;
 
-  @ProtoField(
-      tag = 201,
-      type = Message.Datatype.INT32,
-      label = Message.Label.REPEATED
-  )
   public final List<Integer> rep_int32;
 
-  @ProtoField(
-      tag = 202,
-      type = Message.Datatype.UINT32,
-      label = Message.Label.REPEATED
-  )
   public final List<Integer> rep_uint32;
 
-  @ProtoField(
-      tag = 203,
-      type = Message.Datatype.SINT32,
-      label = Message.Label.REPEATED
-  )
   public final List<Integer> rep_sint32;
 
-  @ProtoField(
-      tag = 204,
-      type = Message.Datatype.FIXED32,
-      label = Message.Label.REPEATED
-  )
   public final List<Integer> rep_fixed32;
 
-  @ProtoField(
-      tag = 205,
-      type = Message.Datatype.SFIXED32,
-      label = Message.Label.REPEATED
-  )
   public final List<Integer> rep_sfixed32;
 
-  @ProtoField(
-      tag = 206,
-      type = Message.Datatype.INT64,
-      label = Message.Label.REPEATED
-  )
   public final List<Long> rep_int64;
 
-  @ProtoField(
-      tag = 207,
-      type = Message.Datatype.UINT64,
-      label = Message.Label.REPEATED
-  )
   public final List<Long> rep_uint64;
 
-  @ProtoField(
-      tag = 208,
-      type = Message.Datatype.SINT64,
-      label = Message.Label.REPEATED
-  )
   public final List<Long> rep_sint64;
 
-  @ProtoField(
-      tag = 209,
-      type = Message.Datatype.FIXED64,
-      label = Message.Label.REPEATED
-  )
   public final List<Long> rep_fixed64;
 
-  @ProtoField(
-      tag = 210,
-      type = Message.Datatype.SFIXED64,
-      label = Message.Label.REPEATED
-  )
   public final List<Long> rep_sfixed64;
 
-  @ProtoField(
-      tag = 211,
-      type = Message.Datatype.BOOL,
-      label = Message.Label.REPEATED
-  )
   public final List<Boolean> rep_bool;
 
-  @ProtoField(
-      tag = 212,
-      type = Message.Datatype.FLOAT,
-      label = Message.Label.REPEATED
-  )
   public final List<Float> rep_float;
 
-  @ProtoField(
-      tag = 213,
-      type = Message.Datatype.DOUBLE,
-      label = Message.Label.REPEATED
-  )
   public final List<Double> rep_double;
 
-  @ProtoField(
-      tag = 214,
-      type = Message.Datatype.STRING,
-      label = Message.Label.REPEATED
-  )
   public final List<String> rep_string;
 
-  @ProtoField(
-      tag = 215,
-      type = Message.Datatype.BYTES,
-      label = Message.Label.REPEATED
-  )
   public final List<ByteString> rep_bytes;
 
-  @ProtoField(
-      tag = 216,
-      type = Message.Datatype.ENUM,
-      label = Message.Label.REPEATED,
-      enumType = NestedEnum.class
-  )
   public final List<NestedEnum> rep_nested_enum;
 
-  @ProtoField(
-      tag = 217,
-      label = Message.Label.REPEATED,
-      messageType = NestedMessage.class
-  )
   public final List<NestedMessage> rep_nested_message;
 
-  @ProtoField(
-      tag = 301,
-      type = Message.Datatype.INT32,
-      label = Message.Label.PACKED
-  )
   public final List<Integer> pack_int32;
 
-  @ProtoField(
-      tag = 302,
-      type = Message.Datatype.UINT32,
-      label = Message.Label.PACKED
-  )
   public final List<Integer> pack_uint32;
 
-  @ProtoField(
-      tag = 303,
-      type = Message.Datatype.SINT32,
-      label = Message.Label.PACKED
-  )
   public final List<Integer> pack_sint32;
 
-  @ProtoField(
-      tag = 304,
-      type = Message.Datatype.FIXED32,
-      label = Message.Label.PACKED
-  )
   public final List<Integer> pack_fixed32;
 
-  @ProtoField(
-      tag = 305,
-      type = Message.Datatype.SFIXED32,
-      label = Message.Label.PACKED
-  )
   public final List<Integer> pack_sfixed32;
 
-  @ProtoField(
-      tag = 306,
-      type = Message.Datatype.INT64,
-      label = Message.Label.PACKED
-  )
   public final List<Long> pack_int64;
 
-  @ProtoField(
-      tag = 307,
-      type = Message.Datatype.UINT64,
-      label = Message.Label.PACKED
-  )
   public final List<Long> pack_uint64;
 
-  @ProtoField(
-      tag = 308,
-      type = Message.Datatype.SINT64,
-      label = Message.Label.PACKED
-  )
   public final List<Long> pack_sint64;
 
-  @ProtoField(
-      tag = 309,
-      type = Message.Datatype.FIXED64,
-      label = Message.Label.PACKED
-  )
   public final List<Long> pack_fixed64;
 
-  @ProtoField(
-      tag = 310,
-      type = Message.Datatype.SFIXED64,
-      label = Message.Label.PACKED
-  )
   public final List<Long> pack_sfixed64;
 
-  @ProtoField(
-      tag = 311,
-      type = Message.Datatype.BOOL,
-      label = Message.Label.PACKED
-  )
   public final List<Boolean> pack_bool;
 
-  @ProtoField(
-      tag = 312,
-      type = Message.Datatype.FLOAT,
-      label = Message.Label.PACKED
-  )
   public final List<Float> pack_float;
 
-  @ProtoField(
-      tag = 313,
-      type = Message.Datatype.DOUBLE,
-      label = Message.Label.PACKED
-  )
   public final List<Double> pack_double;
 
-  @ProtoField(
-      tag = 316,
-      type = Message.Datatype.ENUM,
-      label = Message.Label.PACKED,
-      enumType = NestedEnum.class
-  )
   public final List<NestedEnum> pack_nested_enum;
 
-  @ProtoField(
-      tag = 401,
-      type = Message.Datatype.INT32
-  )
   public final Integer default_int32;
 
-  @ProtoField(
-      tag = 402,
-      type = Message.Datatype.UINT32
-  )
   public final Integer default_uint32;
 
-  @ProtoField(
-      tag = 403,
-      type = Message.Datatype.SINT32
-  )
   public final Integer default_sint32;
 
-  @ProtoField(
-      tag = 404,
-      type = Message.Datatype.FIXED32
-  )
   public final Integer default_fixed32;
 
-  @ProtoField(
-      tag = 405,
-      type = Message.Datatype.SFIXED32
-  )
   public final Integer default_sfixed32;
 
-  @ProtoField(
-      tag = 406,
-      type = Message.Datatype.INT64
-  )
   public final Long default_int64;
 
-  @ProtoField(
-      tag = 407,
-      type = Message.Datatype.UINT64
-  )
   public final Long default_uint64;
 
-  @ProtoField(
-      tag = 408,
-      type = Message.Datatype.SINT64
-  )
   public final Long default_sint64;
 
-  @ProtoField(
-      tag = 409,
-      type = Message.Datatype.FIXED64
-  )
   public final Long default_fixed64;
 
-  @ProtoField(
-      tag = 410,
-      type = Message.Datatype.SFIXED64
-  )
   public final Long default_sfixed64;
 
-  @ProtoField(
-      tag = 411,
-      type = Message.Datatype.BOOL
-  )
   public final Boolean default_bool;
 
-  @ProtoField(
-      tag = 412,
-      type = Message.Datatype.FLOAT
-  )
   public final Float default_float;
 
-  @ProtoField(
-      tag = 413,
-      type = Message.Datatype.DOUBLE
-  )
   public final Double default_double;
 
-  @ProtoField(
-      tag = 414,
-      type = Message.Datatype.STRING
-  )
   public final String default_string;
 
-  @ProtoField(
-      tag = 415,
-      type = Message.Datatype.BYTES
-  )
   public final ByteString default_bytes;
 
-  @ProtoField(
-      tag = 416,
-      type = Message.Datatype.ENUM
-  )
   public final NestedEnum default_nested_enum;
 
   public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum) {
+    super("AllTypes");
     this.opt_int32 = opt_int32;
     this.opt_uint32 = opt_uint32;
     this.opt_sint32 = opt_sint32;
@@ -742,183 +379,182 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof AllTypes)) return false;
-    AllTypes o = (AllTypes) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(opt_int32, o.opt_int32)
-        && equals(opt_uint32, o.opt_uint32)
-        && equals(opt_sint32, o.opt_sint32)
-        && equals(opt_fixed32, o.opt_fixed32)
-        && equals(opt_sfixed32, o.opt_sfixed32)
-        && equals(opt_int64, o.opt_int64)
-        && equals(opt_uint64, o.opt_uint64)
-        && equals(opt_sint64, o.opt_sint64)
-        && equals(opt_fixed64, o.opt_fixed64)
-        && equals(opt_sfixed64, o.opt_sfixed64)
-        && equals(opt_bool, o.opt_bool)
-        && equals(opt_float, o.opt_float)
-        && equals(opt_double, o.opt_double)
-        && equals(opt_string, o.opt_string)
-        && equals(opt_bytes, o.opt_bytes)
-        && equals(opt_nested_enum, o.opt_nested_enum)
-        && equals(opt_nested_message, o.opt_nested_message)
-        && equals(req_int32, o.req_int32)
-        && equals(req_uint32, o.req_uint32)
-        && equals(req_sint32, o.req_sint32)
-        && equals(req_fixed32, o.req_fixed32)
-        && equals(req_sfixed32, o.req_sfixed32)
-        && equals(req_int64, o.req_int64)
-        && equals(req_uint64, o.req_uint64)
-        && equals(req_sint64, o.req_sint64)
-        && equals(req_fixed64, o.req_fixed64)
-        && equals(req_sfixed64, o.req_sfixed64)
-        && equals(req_bool, o.req_bool)
-        && equals(req_float, o.req_float)
-        && equals(req_double, o.req_double)
-        && equals(req_string, o.req_string)
-        && equals(req_bytes, o.req_bytes)
-        && equals(req_nested_enum, o.req_nested_enum)
-        && equals(req_nested_message, o.req_nested_message)
-        && equals(rep_int32, o.rep_int32)
-        && equals(rep_uint32, o.rep_uint32)
-        && equals(rep_sint32, o.rep_sint32)
-        && equals(rep_fixed32, o.rep_fixed32)
-        && equals(rep_sfixed32, o.rep_sfixed32)
-        && equals(rep_int64, o.rep_int64)
-        && equals(rep_uint64, o.rep_uint64)
-        && equals(rep_sint64, o.rep_sint64)
-        && equals(rep_fixed64, o.rep_fixed64)
-        && equals(rep_sfixed64, o.rep_sfixed64)
-        && equals(rep_bool, o.rep_bool)
-        && equals(rep_float, o.rep_float)
-        && equals(rep_double, o.rep_double)
-        && equals(rep_string, o.rep_string)
-        && equals(rep_bytes, o.rep_bytes)
-        && equals(rep_nested_enum, o.rep_nested_enum)
-        && equals(rep_nested_message, o.rep_nested_message)
-        && equals(pack_int32, o.pack_int32)
-        && equals(pack_uint32, o.pack_uint32)
-        && equals(pack_sint32, o.pack_sint32)
-        && equals(pack_fixed32, o.pack_fixed32)
-        && equals(pack_sfixed32, o.pack_sfixed32)
-        && equals(pack_int64, o.pack_int64)
-        && equals(pack_uint64, o.pack_uint64)
-        && equals(pack_sint64, o.pack_sint64)
-        && equals(pack_fixed64, o.pack_fixed64)
-        && equals(pack_sfixed64, o.pack_sfixed64)
-        && equals(pack_bool, o.pack_bool)
-        && equals(pack_float, o.pack_float)
-        && equals(pack_double, o.pack_double)
-        && equals(pack_nested_enum, o.pack_nested_enum)
-        && equals(default_int32, o.default_int32)
-        && equals(default_uint32, o.default_uint32)
-        && equals(default_sint32, o.default_sint32)
-        && equals(default_fixed32, o.default_fixed32)
-        && equals(default_sfixed32, o.default_sfixed32)
-        && equals(default_int64, o.default_int64)
-        && equals(default_uint64, o.default_uint64)
-        && equals(default_sint64, o.default_sint64)
-        && equals(default_fixed64, o.default_fixed64)
-        && equals(default_sfixed64, o.default_sfixed64)
-        && equals(default_bool, o.default_bool)
-        && equals(default_float, o.default_float)
-        && equals(default_double, o.default_double)
-        && equals(default_string, o.default_string)
-        && equals(default_bytes, o.default_bytes)
-        && equals(default_nested_enum, o.default_nested_enum);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "opt_int32", opt_int32, TypeAdapter.INT32, false);
+    visitor.value(2, "opt_uint32", opt_uint32, TypeAdapter.UINT32, false);
+    visitor.value(3, "opt_sint32", opt_sint32, TypeAdapter.SINT32, false);
+    visitor.value(4, "opt_fixed32", opt_fixed32, TypeAdapter.FIXED32, false);
+    visitor.value(5, "opt_sfixed32", opt_sfixed32, TypeAdapter.SFIXED32, false);
+    visitor.value(6, "opt_int64", opt_int64, TypeAdapter.INT64, false);
+    visitor.value(7, "opt_uint64", opt_uint64, TypeAdapter.UINT64, false);
+    visitor.value(8, "opt_sint64", opt_sint64, TypeAdapter.SINT64, false);
+    visitor.value(9, "opt_fixed64", opt_fixed64, TypeAdapter.FIXED64, false);
+    visitor.value(10, "opt_sfixed64", opt_sfixed64, TypeAdapter.SFIXED64, false);
+    visitor.value(11, "opt_bool", opt_bool, TypeAdapter.BOOL, false);
+    visitor.value(12, "opt_float", opt_float, TypeAdapter.FLOAT, false);
+    visitor.value(13, "opt_double", opt_double, TypeAdapter.DOUBLE, false);
+    visitor.value(14, "opt_string", opt_string, TypeAdapter.STRING, false);
+    visitor.value(15, "opt_bytes", opt_bytes, TypeAdapter.BYTES, false);
+    visitor.value(16, "opt_nested_enum", opt_nested_enum, NestedEnum.ADAPTER, false);
+    visitor.value(17, "opt_nested_message", opt_nested_message, NestedMessage.ADAPTER, false);
+    visitor.value(101, "req_int32", req_int32, TypeAdapter.INT32, false);
+    visitor.value(102, "req_uint32", req_uint32, TypeAdapter.UINT32, false);
+    visitor.value(103, "req_sint32", req_sint32, TypeAdapter.SINT32, false);
+    visitor.value(104, "req_fixed32", req_fixed32, TypeAdapter.FIXED32, false);
+    visitor.value(105, "req_sfixed32", req_sfixed32, TypeAdapter.SFIXED32, false);
+    visitor.value(106, "req_int64", req_int64, TypeAdapter.INT64, false);
+    visitor.value(107, "req_uint64", req_uint64, TypeAdapter.UINT64, false);
+    visitor.value(108, "req_sint64", req_sint64, TypeAdapter.SINT64, false);
+    visitor.value(109, "req_fixed64", req_fixed64, TypeAdapter.FIXED64, false);
+    visitor.value(110, "req_sfixed64", req_sfixed64, TypeAdapter.SFIXED64, false);
+    visitor.value(111, "req_bool", req_bool, TypeAdapter.BOOL, false);
+    visitor.value(112, "req_float", req_float, TypeAdapter.FLOAT, false);
+    visitor.value(113, "req_double", req_double, TypeAdapter.DOUBLE, false);
+    visitor.value(114, "req_string", req_string, TypeAdapter.STRING, false);
+    visitor.value(115, "req_bytes", req_bytes, TypeAdapter.BYTES, false);
+    visitor.value(116, "req_nested_enum", req_nested_enum, NestedEnum.ADAPTER, false);
+    visitor.value(117, "req_nested_message", req_nested_message, NestedMessage.ADAPTER, false);
+    visitor.repeated(201, "rep_int32", rep_int32, TypeAdapter.INT32, false);
+    visitor.repeated(202, "rep_uint32", rep_uint32, TypeAdapter.UINT32, false);
+    visitor.repeated(203, "rep_sint32", rep_sint32, TypeAdapter.SINT32, false);
+    visitor.repeated(204, "rep_fixed32", rep_fixed32, TypeAdapter.FIXED32, false);
+    visitor.repeated(205, "rep_sfixed32", rep_sfixed32, TypeAdapter.SFIXED32, false);
+    visitor.repeated(206, "rep_int64", rep_int64, TypeAdapter.INT64, false);
+    visitor.repeated(207, "rep_uint64", rep_uint64, TypeAdapter.UINT64, false);
+    visitor.repeated(208, "rep_sint64", rep_sint64, TypeAdapter.SINT64, false);
+    visitor.repeated(209, "rep_fixed64", rep_fixed64, TypeAdapter.FIXED64, false);
+    visitor.repeated(210, "rep_sfixed64", rep_sfixed64, TypeAdapter.SFIXED64, false);
+    visitor.repeated(211, "rep_bool", rep_bool, TypeAdapter.BOOL, false);
+    visitor.repeated(212, "rep_float", rep_float, TypeAdapter.FLOAT, false);
+    visitor.repeated(213, "rep_double", rep_double, TypeAdapter.DOUBLE, false);
+    visitor.repeated(214, "rep_string", rep_string, TypeAdapter.STRING, false);
+    visitor.repeated(215, "rep_bytes", rep_bytes, TypeAdapter.BYTES, false);
+    visitor.repeated(216, "rep_nested_enum", rep_nested_enum, NestedEnum.ADAPTER, false);
+    visitor.repeated(217, "rep_nested_message", rep_nested_message, NestedMessage.ADAPTER, false);
+    visitor.packed(301, "pack_int32", pack_int32, TypeAdapter.INT32, false);
+    visitor.packed(302, "pack_uint32", pack_uint32, TypeAdapter.UINT32, false);
+    visitor.packed(303, "pack_sint32", pack_sint32, TypeAdapter.SINT32, false);
+    visitor.packed(304, "pack_fixed32", pack_fixed32, TypeAdapter.FIXED32, false);
+    visitor.packed(305, "pack_sfixed32", pack_sfixed32, TypeAdapter.SFIXED32, false);
+    visitor.packed(306, "pack_int64", pack_int64, TypeAdapter.INT64, false);
+    visitor.packed(307, "pack_uint64", pack_uint64, TypeAdapter.UINT64, false);
+    visitor.packed(308, "pack_sint64", pack_sint64, TypeAdapter.SINT64, false);
+    visitor.packed(309, "pack_fixed64", pack_fixed64, TypeAdapter.FIXED64, false);
+    visitor.packed(310, "pack_sfixed64", pack_sfixed64, TypeAdapter.SFIXED64, false);
+    visitor.packed(311, "pack_bool", pack_bool, TypeAdapter.BOOL, false);
+    visitor.packed(312, "pack_float", pack_float, TypeAdapter.FLOAT, false);
+    visitor.packed(313, "pack_double", pack_double, TypeAdapter.DOUBLE, false);
+    visitor.packed(316, "pack_nested_enum", pack_nested_enum, NestedEnum.ADAPTER, false);
+    visitor.value(401, "default_int32", default_int32, TypeAdapter.INT32, false);
+    visitor.value(402, "default_uint32", default_uint32, TypeAdapter.UINT32, false);
+    visitor.value(403, "default_sint32", default_sint32, TypeAdapter.SINT32, false);
+    visitor.value(404, "default_fixed32", default_fixed32, TypeAdapter.FIXED32, false);
+    visitor.value(405, "default_sfixed32", default_sfixed32, TypeAdapter.SFIXED32, false);
+    visitor.value(406, "default_int64", default_int64, TypeAdapter.INT64, false);
+    visitor.value(407, "default_uint64", default_uint64, TypeAdapter.UINT64, false);
+    visitor.value(408, "default_sint64", default_sint64, TypeAdapter.SINT64, false);
+    visitor.value(409, "default_fixed64", default_fixed64, TypeAdapter.FIXED64, false);
+    visitor.value(410, "default_sfixed64", default_sfixed64, TypeAdapter.SFIXED64, false);
+    visitor.value(411, "default_bool", default_bool, TypeAdapter.BOOL, false);
+    visitor.value(412, "default_float", default_float, TypeAdapter.FLOAT, false);
+    visitor.value(413, "default_double", default_double, TypeAdapter.DOUBLE, false);
+    visitor.value(414, "default_string", default_string, TypeAdapter.STRING, false);
+    visitor.value(415, "default_bytes", default_bytes, TypeAdapter.BYTES, false);
+    visitor.value(416, "default_nested_enum", default_nested_enum, NestedEnum.ADAPTER, false);
+    visitor.extensions(this);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = extensionsHashCode();
-      result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
-      result = result * 37 + (opt_uint32 != null ? opt_uint32.hashCode() : 0);
-      result = result * 37 + (opt_sint32 != null ? opt_sint32.hashCode() : 0);
-      result = result * 37 + (opt_fixed32 != null ? opt_fixed32.hashCode() : 0);
-      result = result * 37 + (opt_sfixed32 != null ? opt_sfixed32.hashCode() : 0);
-      result = result * 37 + (opt_int64 != null ? opt_int64.hashCode() : 0);
-      result = result * 37 + (opt_uint64 != null ? opt_uint64.hashCode() : 0);
-      result = result * 37 + (opt_sint64 != null ? opt_sint64.hashCode() : 0);
-      result = result * 37 + (opt_fixed64 != null ? opt_fixed64.hashCode() : 0);
-      result = result * 37 + (opt_sfixed64 != null ? opt_sfixed64.hashCode() : 0);
-      result = result * 37 + (opt_bool != null ? opt_bool.hashCode() : 0);
-      result = result * 37 + (opt_float != null ? opt_float.hashCode() : 0);
-      result = result * 37 + (opt_double != null ? opt_double.hashCode() : 0);
-      result = result * 37 + (opt_string != null ? opt_string.hashCode() : 0);
-      result = result * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
-      result = result * 37 + (opt_nested_enum != null ? opt_nested_enum.hashCode() : 0);
-      result = result * 37 + (opt_nested_message != null ? opt_nested_message.hashCode() : 0);
-      result = result * 37 + (req_int32 != null ? req_int32.hashCode() : 0);
-      result = result * 37 + (req_uint32 != null ? req_uint32.hashCode() : 0);
-      result = result * 37 + (req_sint32 != null ? req_sint32.hashCode() : 0);
-      result = result * 37 + (req_fixed32 != null ? req_fixed32.hashCode() : 0);
-      result = result * 37 + (req_sfixed32 != null ? req_sfixed32.hashCode() : 0);
-      result = result * 37 + (req_int64 != null ? req_int64.hashCode() : 0);
-      result = result * 37 + (req_uint64 != null ? req_uint64.hashCode() : 0);
-      result = result * 37 + (req_sint64 != null ? req_sint64.hashCode() : 0);
-      result = result * 37 + (req_fixed64 != null ? req_fixed64.hashCode() : 0);
-      result = result * 37 + (req_sfixed64 != null ? req_sfixed64.hashCode() : 0);
-      result = result * 37 + (req_bool != null ? req_bool.hashCode() : 0);
-      result = result * 37 + (req_float != null ? req_float.hashCode() : 0);
-      result = result * 37 + (req_double != null ? req_double.hashCode() : 0);
-      result = result * 37 + (req_string != null ? req_string.hashCode() : 0);
-      result = result * 37 + (req_bytes != null ? req_bytes.hashCode() : 0);
-      result = result * 37 + (req_nested_enum != null ? req_nested_enum.hashCode() : 0);
-      result = result * 37 + (req_nested_message != null ? req_nested_message.hashCode() : 0);
-      result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 1);
-      result = result * 37 + (rep_uint32 != null ? rep_uint32.hashCode() : 1);
-      result = result * 37 + (rep_sint32 != null ? rep_sint32.hashCode() : 1);
-      result = result * 37 + (rep_fixed32 != null ? rep_fixed32.hashCode() : 1);
-      result = result * 37 + (rep_sfixed32 != null ? rep_sfixed32.hashCode() : 1);
-      result = result * 37 + (rep_int64 != null ? rep_int64.hashCode() : 1);
-      result = result * 37 + (rep_uint64 != null ? rep_uint64.hashCode() : 1);
-      result = result * 37 + (rep_sint64 != null ? rep_sint64.hashCode() : 1);
-      result = result * 37 + (rep_fixed64 != null ? rep_fixed64.hashCode() : 1);
-      result = result * 37 + (rep_sfixed64 != null ? rep_sfixed64.hashCode() : 1);
-      result = result * 37 + (rep_bool != null ? rep_bool.hashCode() : 1);
-      result = result * 37 + (rep_float != null ? rep_float.hashCode() : 1);
-      result = result * 37 + (rep_double != null ? rep_double.hashCode() : 1);
-      result = result * 37 + (rep_string != null ? rep_string.hashCode() : 1);
-      result = result * 37 + (rep_bytes != null ? rep_bytes.hashCode() : 1);
-      result = result * 37 + (rep_nested_enum != null ? rep_nested_enum.hashCode() : 1);
-      result = result * 37 + (rep_nested_message != null ? rep_nested_message.hashCode() : 1);
-      result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
-      result = result * 37 + (pack_uint32 != null ? pack_uint32.hashCode() : 1);
-      result = result * 37 + (pack_sint32 != null ? pack_sint32.hashCode() : 1);
-      result = result * 37 + (pack_fixed32 != null ? pack_fixed32.hashCode() : 1);
-      result = result * 37 + (pack_sfixed32 != null ? pack_sfixed32.hashCode() : 1);
-      result = result * 37 + (pack_int64 != null ? pack_int64.hashCode() : 1);
-      result = result * 37 + (pack_uint64 != null ? pack_uint64.hashCode() : 1);
-      result = result * 37 + (pack_sint64 != null ? pack_sint64.hashCode() : 1);
-      result = result * 37 + (pack_fixed64 != null ? pack_fixed64.hashCode() : 1);
-      result = result * 37 + (pack_sfixed64 != null ? pack_sfixed64.hashCode() : 1);
-      result = result * 37 + (pack_bool != null ? pack_bool.hashCode() : 1);
-      result = result * 37 + (pack_float != null ? pack_float.hashCode() : 1);
-      result = result * 37 + (pack_double != null ? pack_double.hashCode() : 1);
-      result = result * 37 + (pack_nested_enum != null ? pack_nested_enum.hashCode() : 1);
-      result = result * 37 + (default_int32 != null ? default_int32.hashCode() : 0);
-      result = result * 37 + (default_uint32 != null ? default_uint32.hashCode() : 0);
-      result = result * 37 + (default_sint32 != null ? default_sint32.hashCode() : 0);
-      result = result * 37 + (default_fixed32 != null ? default_fixed32.hashCode() : 0);
-      result = result * 37 + (default_sfixed32 != null ? default_sfixed32.hashCode() : 0);
-      result = result * 37 + (default_int64 != null ? default_int64.hashCode() : 0);
-      result = result * 37 + (default_uint64 != null ? default_uint64.hashCode() : 0);
-      result = result * 37 + (default_sint64 != null ? default_sint64.hashCode() : 0);
-      result = result * 37 + (default_fixed64 != null ? default_fixed64.hashCode() : 0);
-      result = result * 37 + (default_sfixed64 != null ? default_sfixed64.hashCode() : 0);
-      result = result * 37 + (default_bool != null ? default_bool.hashCode() : 0);
-      result = result * 37 + (default_float != null ? default_float.hashCode() : 0);
-      result = result * 37 + (default_double != null ? default_double.hashCode() : 0);
-      result = result * 37 + (default_string != null ? default_string.hashCode() : 0);
-      result = result * 37 + (default_bytes != null ? default_bytes.hashCode() : 0);
-      result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
-      hashCode = result;
+  public static AllTypes read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.opt_int32 = reader.value(TypeAdapter.INT32); break;
+        case 2: builder.opt_uint32 = reader.value(TypeAdapter.UINT32); break;
+        case 3: builder.opt_sint32 = reader.value(TypeAdapter.SINT32); break;
+        case 4: builder.opt_fixed32 = reader.value(TypeAdapter.FIXED32); break;
+        case 5: builder.opt_sfixed32 = reader.value(TypeAdapter.SFIXED32); break;
+        case 6: builder.opt_int64 = reader.value(TypeAdapter.INT64); break;
+        case 7: builder.opt_uint64 = reader.value(TypeAdapter.UINT64); break;
+        case 8: builder.opt_sint64 = reader.value(TypeAdapter.SINT64); break;
+        case 9: builder.opt_fixed64 = reader.value(TypeAdapter.FIXED64); break;
+        case 10: builder.opt_sfixed64 = reader.value(TypeAdapter.SFIXED64); break;
+        case 11: builder.opt_bool = reader.value(TypeAdapter.BOOL); break;
+        case 12: builder.opt_float = reader.value(TypeAdapter.FLOAT); break;
+        case 13: builder.opt_double = reader.value(TypeAdapter.DOUBLE); break;
+        case 14: builder.opt_string = reader.value(TypeAdapter.STRING); break;
+        case 15: builder.opt_bytes = reader.value(TypeAdapter.BYTES); break;
+        case 16: builder.opt_nested_enum = enumOrUnknown(16, reader, NestedEnum.ADAPTER, builder); break;
+        case 17: builder.opt_nested_message = message(reader, NestedMessage.ADAPTER); break;
+        case 101: builder.req_int32 = reader.value(TypeAdapter.INT32); break;
+        case 102: builder.req_uint32 = reader.value(TypeAdapter.UINT32); break;
+        case 103: builder.req_sint32 = reader.value(TypeAdapter.SINT32); break;
+        case 104: builder.req_fixed32 = reader.value(TypeAdapter.FIXED32); break;
+        case 105: builder.req_sfixed32 = reader.value(TypeAdapter.SFIXED32); break;
+        case 106: builder.req_int64 = reader.value(TypeAdapter.INT64); break;
+        case 107: builder.req_uint64 = reader.value(TypeAdapter.UINT64); break;
+        case 108: builder.req_sint64 = reader.value(TypeAdapter.SINT64); break;
+        case 109: builder.req_fixed64 = reader.value(TypeAdapter.FIXED64); break;
+        case 110: builder.req_sfixed64 = reader.value(TypeAdapter.SFIXED64); break;
+        case 111: builder.req_bool = reader.value(TypeAdapter.BOOL); break;
+        case 112: builder.req_float = reader.value(TypeAdapter.FLOAT); break;
+        case 113: builder.req_double = reader.value(TypeAdapter.DOUBLE); break;
+        case 114: builder.req_string = reader.value(TypeAdapter.STRING); break;
+        case 115: builder.req_bytes = reader.value(TypeAdapter.BYTES); break;
+        case 116: builder.req_nested_enum = enumOrUnknown(116, reader, NestedEnum.ADAPTER, builder); break;
+        case 117: builder.req_nested_message = message(reader, NestedMessage.ADAPTER); break;
+        case 201: builder.rep_int32 = repeated(builder.rep_int32, reader.value(TypeAdapter.INT32)); break;
+        case 202: builder.rep_uint32 = repeated(builder.rep_uint32, reader.value(TypeAdapter.UINT32)); break;
+        case 203: builder.rep_sint32 = repeated(builder.rep_sint32, reader.value(TypeAdapter.SINT32)); break;
+        case 204: builder.rep_fixed32 = repeated(builder.rep_fixed32, reader.value(TypeAdapter.FIXED32)); break;
+        case 205: builder.rep_sfixed32 = repeated(builder.rep_sfixed32, reader.value(TypeAdapter.SFIXED32)); break;
+        case 206: builder.rep_int64 = repeated(builder.rep_int64, reader.value(TypeAdapter.INT64)); break;
+        case 207: builder.rep_uint64 = repeated(builder.rep_uint64, reader.value(TypeAdapter.UINT64)); break;
+        case 208: builder.rep_sint64 = repeated(builder.rep_sint64, reader.value(TypeAdapter.SINT64)); break;
+        case 209: builder.rep_fixed64 = repeated(builder.rep_fixed64, reader.value(TypeAdapter.FIXED64)); break;
+        case 210: builder.rep_sfixed64 = repeated(builder.rep_sfixed64, reader.value(TypeAdapter.SFIXED64)); break;
+        case 211: builder.rep_bool = repeated(builder.rep_bool, reader.value(TypeAdapter.BOOL)); break;
+        case 212: builder.rep_float = repeated(builder.rep_float, reader.value(TypeAdapter.FLOAT)); break;
+        case 213: builder.rep_double = repeated(builder.rep_double, reader.value(TypeAdapter.DOUBLE)); break;
+        case 214: builder.rep_string = repeated(builder.rep_string, reader.value(TypeAdapter.STRING)); break;
+        case 215: builder.rep_bytes = repeated(builder.rep_bytes, reader.value(TypeAdapter.BYTES)); break;
+        case 216: builder.rep_nested_enum = repeatedEnumOrUnknown(216, builder.rep_nested_enum, reader, NestedEnum.ADAPTER, builder); break;
+        case 217: builder.rep_nested_message = repeatedMessage(builder.rep_nested_message, reader, NestedMessage.ADAPTER); break;
+        case 301: builder.pack_int32 = reader.packed(builder.pack_int32, TypeAdapter.INT32); break;
+        case 302: builder.pack_uint32 = reader.packed(builder.pack_uint32, TypeAdapter.UINT32); break;
+        case 303: builder.pack_sint32 = reader.packed(builder.pack_sint32, TypeAdapter.SINT32); break;
+        case 304: builder.pack_fixed32 = reader.packed(builder.pack_fixed32, TypeAdapter.FIXED32); break;
+        case 305: builder.pack_sfixed32 = reader.packed(builder.pack_sfixed32, TypeAdapter.SFIXED32); break;
+        case 306: builder.pack_int64 = reader.packed(builder.pack_int64, TypeAdapter.INT64); break;
+        case 307: builder.pack_uint64 = reader.packed(builder.pack_uint64, TypeAdapter.UINT64); break;
+        case 308: builder.pack_sint64 = reader.packed(builder.pack_sint64, TypeAdapter.SINT64); break;
+        case 309: builder.pack_fixed64 = reader.packed(builder.pack_fixed64, TypeAdapter.FIXED64); break;
+        case 310: builder.pack_sfixed64 = reader.packed(builder.pack_sfixed64, TypeAdapter.SFIXED64); break;
+        case 311: builder.pack_bool = reader.packed(builder.pack_bool, TypeAdapter.BOOL); break;
+        case 312: builder.pack_float = reader.packed(builder.pack_float, TypeAdapter.FLOAT); break;
+        case 313: builder.pack_double = reader.packed(builder.pack_double, TypeAdapter.DOUBLE); break;
+        case 316: builder.pack_nested_enum = packedEnumOrUnknown(316, builder.pack_nested_enum, reader, NestedEnum.ADAPTER, builder); break;
+        case 401: builder.default_int32 = reader.value(TypeAdapter.INT32); break;
+        case 402: builder.default_uint32 = reader.value(TypeAdapter.UINT32); break;
+        case 403: builder.default_sint32 = reader.value(TypeAdapter.SINT32); break;
+        case 404: builder.default_fixed32 = reader.value(TypeAdapter.FIXED32); break;
+        case 405: builder.default_sfixed32 = reader.value(TypeAdapter.SFIXED32); break;
+        case 406: builder.default_int64 = reader.value(TypeAdapter.INT64); break;
+        case 407: builder.default_uint64 = reader.value(TypeAdapter.UINT64); break;
+        case 408: builder.default_sint64 = reader.value(TypeAdapter.SINT64); break;
+        case 409: builder.default_fixed64 = reader.value(TypeAdapter.FIXED64); break;
+        case 410: builder.default_sfixed64 = reader.value(TypeAdapter.SFIXED64); break;
+        case 411: builder.default_bool = reader.value(TypeAdapter.BOOL); break;
+        case 412: builder.default_float = reader.value(TypeAdapter.FLOAT); break;
+        case 413: builder.default_double = reader.value(TypeAdapter.DOUBLE); break;
+        case 414: builder.default_string = reader.value(TypeAdapter.STRING); break;
+        case 415: builder.default_bytes = reader.value(TypeAdapter.BYTES); break;
+        case 416: builder.default_nested_enum = enumOrUnknown(416, reader, NestedEnum.ADAPTER, builder); break;
+        default: builder.readExtensionOrUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<AllTypes, Builder> {
@@ -1085,11 +721,11 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     public NestedEnum default_nested_enum;
 
     public Builder() {
-      super(Builder.class);
+      super(AllTypes.class, Builder.class);
     }
 
     public Builder(AllTypes message) {
-      super(Builder.class, message);
+      super(AllTypes.class, Builder.class, message);
       if (message == null) return;
       this.opt_int32 = message.opt_int32;
       this.opt_uint32 = message.opt_uint32;
@@ -1620,8 +1256,15 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
   }
 
-  public enum NestedEnum implements ProtoEnum {
+  public enum NestedEnum implements WireEnum {
     A(1);
+
+    public static final TypeAdapter.EnumAdapter<NestedEnum> ADAPTER = new TypeAdapter.EnumAdapter<NestedEnum>() {
+      @Override
+      public NestedEnum fromValue(int value) {
+        return NestedEnum.fromValue(value);
+      }
+    };
 
     private final int value;
 
@@ -1630,23 +1273,34 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     @Override
-    public int getValue() {
+    public int value() {
       return value;
+    }
+
+    public static NestedEnum fromValue(int value) {
+      switch (value) {
+        case 1: return A;
+        default: return null;
+      }
     }
   }
 
-  public static final class NestedMessage extends Message {
+  public static final class NestedMessage extends Message<NestedMessage> {
     private static final long serialVersionUID = 0L;
+
+    public static final TypeAdapter<NestedMessage> ADAPTER = new TypeAdapter.MessageAdapter<NestedMessage>() {
+      @Override
+      public NestedMessage read(ProtoReader reader) throws IOException {
+        return NestedMessage.read(reader);
+      }
+    };
 
     public static final Integer DEFAULT_A = 0;
 
-    @ProtoField(
-        tag = 1,
-        type = Message.Datatype.INT32
-    )
     public final Integer a;
 
     public NestedMessage(Integer a) {
+      super("NestedMessage");
       this.a = a;
     }
 
@@ -1656,16 +1310,21 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
 
     @Override
-    public boolean equals(Object other) {
-      if (other == this) return true;
-      if (!(other instanceof NestedMessage)) return false;
-      return equals(a, ((NestedMessage) other).a);
+    protected void visitFields(Message.Visitor visitor) {
+      visitor.value(1, "a", a, TypeAdapter.INT32, false);
+      visitor.unknowns(this);
     }
 
-    @Override
-    public int hashCode() {
-      int result = hashCode;
-      return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
+    public static NestedMessage read(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      while (reader.hasNext()) {
+        int tag = reader.nextTag();
+        switch (tag) {
+          case 1: builder.a = reader.value(TypeAdapter.INT32); break;
+          default: builder.readUnknown(tag, reader); break;
+        }
+      }
+      return builder.build();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage> {

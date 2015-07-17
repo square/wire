@@ -3,28 +3,30 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Integer;
-import java.lang.Object;
 import java.lang.Override;
 
-public final class E extends Message {
+public final class E extends Message<E> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<E> ADAPTER = new TypeAdapter.MessageAdapter<E>() {
+    @Override
+    public E read(ProtoReader reader) throws IOException {
+      return E.read(reader);
+    }
+  };
 
   public static final G DEFAULT_G = G.FOO;
 
-  @ProtoField(
-      tag = 1
-  )
   public final F f;
 
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.ENUM
-  )
   public final G g;
 
   public E(F f, G g) {
+    super("E");
     this.f = f;
     this.g = g;
   }
@@ -35,23 +37,23 @@ public final class E extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof E)) return false;
-    E o = (E) other;
-    return equals(f, o.f)
-        && equals(g, o.g);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "f", f, F.ADAPTER, false);
+    visitor.value(2, "g", g, G.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = f != null ? f.hashCode() : 0;
-      result = result * 37 + (g != null ? g.hashCode() : 0);
-      hashCode = result;
+  public static E read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.f = message(reader, F.ADAPTER); break;
+        case 2: builder.g = enumOrUnknown(2, reader, G.ADAPTER, builder); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<E> {
@@ -85,18 +87,22 @@ public final class E extends Message {
     }
   }
 
-  public static final class F extends Message {
+  public static final class F extends Message<F> {
     private static final long serialVersionUID = 0L;
+
+    public static final TypeAdapter<F> ADAPTER = new TypeAdapter.MessageAdapter<F>() {
+      @Override
+      public F read(ProtoReader reader) throws IOException {
+        return F.read(reader);
+      }
+    };
 
     public static final Integer DEFAULT_I = 0;
 
-    @ProtoField(
-        tag = 1,
-        type = Message.Datatype.INT32
-    )
     public final Integer i;
 
     public F(Integer i) {
+      super("F");
       this.i = i;
     }
 
@@ -106,16 +112,21 @@ public final class E extends Message {
     }
 
     @Override
-    public boolean equals(Object other) {
-      if (other == this) return true;
-      if (!(other instanceof F)) return false;
-      return equals(i, ((F) other).i);
+    protected void visitFields(Message.Visitor visitor) {
+      visitor.value(1, "i", i, TypeAdapter.INT32, false);
+      visitor.unknowns(this);
     }
 
-    @Override
-    public int hashCode() {
-      int result = hashCode;
-      return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
+    public static F read(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      while (reader.hasNext()) {
+        int tag = reader.nextTag();
+        switch (tag) {
+          case 1: builder.i = reader.value(TypeAdapter.INT32); break;
+          default: builder.readUnknown(tag, reader); break;
+        }
+      }
+      return builder.build();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<F> {

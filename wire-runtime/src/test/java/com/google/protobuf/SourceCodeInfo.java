@@ -3,9 +3,10 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Integer;
-import java.lang.Object;
 import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
@@ -16,8 +17,15 @@ import java.util.List;
  * Encapsulates information about the original source file from which a
  * FileDescriptorProto was generated.
  */
-public final class SourceCodeInfo extends Message {
+public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<SourceCodeInfo> ADAPTER = new TypeAdapter.MessageAdapter<SourceCodeInfo>() {
+    @Override
+    public SourceCodeInfo read(ProtoReader reader) throws IOException {
+      return SourceCodeInfo.read(reader);
+    }
+  };
 
   /**
    * A Location identifies a piece of source code in a .proto file which
@@ -64,14 +72,10 @@ public final class SourceCodeInfo extends Message {
    *   ignore those that it doesn't understand, as more types of locations could
    *   be recorded in the future.
    */
-  @ProtoField(
-      tag = 1,
-      label = Message.Label.REPEATED,
-      messageType = Location.class
-  )
   public final List<Location> location;
 
   public SourceCodeInfo(List<Location> location) {
+    super("SourceCodeInfo");
     this.location = immutableCopyOf(location);
   }
 
@@ -81,16 +85,21 @@ public final class SourceCodeInfo extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof SourceCodeInfo)) return false;
-    return equals(location, ((SourceCodeInfo) other).location);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.repeated(1, "location", location, Location.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = location != null ? location.hashCode() : 1);
+  public static SourceCodeInfo read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.location = repeatedMessage(builder.location, reader, Location.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<SourceCodeInfo> {
@@ -161,8 +170,15 @@ public final class SourceCodeInfo extends Message {
     }
   }
 
-  public static final class Location extends Message {
+  public static final class Location extends Message<Location> {
     private static final long serialVersionUID = 0L;
+
+    public static final TypeAdapter<Location> ADAPTER = new TypeAdapter.MessageAdapter<Location>() {
+      @Override
+      public Location read(ProtoReader reader) throws IOException {
+        return Location.read(reader);
+      }
+    };
 
     /**
      * Identifies which part of the FileDescriptorProto was defined at this
@@ -189,11 +205,6 @@ public final class SourceCodeInfo extends Message {
      * this path refers to the whole field declaration (from the beginning
      * of the label to the terminating semicolon).
      */
-    @ProtoField(
-        tag = 1,
-        type = Message.Datatype.INT32,
-        label = Message.Label.PACKED
-    )
     public final List<Integer> path;
 
     /**
@@ -203,14 +214,10 @@ public final class SourceCodeInfo extends Message {
      * and column numbers are zero-based -- typically you will want to add
      * 1 to each before displaying to a user.
      */
-    @ProtoField(
-        tag = 2,
-        type = Message.Datatype.INT32,
-        label = Message.Label.PACKED
-    )
     public final List<Integer> span;
 
     public Location(List<Integer> path, List<Integer> span) {
+      super("Location");
       this.path = immutableCopyOf(path);
       this.span = immutableCopyOf(span);
     }
@@ -221,23 +228,23 @@ public final class SourceCodeInfo extends Message {
     }
 
     @Override
-    public boolean equals(Object other) {
-      if (other == this) return true;
-      if (!(other instanceof Location)) return false;
-      Location o = (Location) other;
-      return equals(path, o.path)
-          && equals(span, o.span);
+    protected void visitFields(Message.Visitor visitor) {
+      visitor.packed(1, "path", path, TypeAdapter.INT32, false);
+      visitor.packed(2, "span", span, TypeAdapter.INT32, false);
+      visitor.unknowns(this);
     }
 
-    @Override
-    public int hashCode() {
-      int result = hashCode;
-      if (result == 0) {
-        result = path != null ? path.hashCode() : 1;
-        result = result * 37 + (span != null ? span.hashCode() : 1);
-        hashCode = result;
+    public static Location read(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      while (reader.hasNext()) {
+        int tag = reader.nextTag();
+        switch (tag) {
+          case 1: builder.path = reader.packed(builder.path, TypeAdapter.INT32); break;
+          case 2: builder.span = reader.packed(builder.span, TypeAdapter.INT32); break;
+          default: builder.readUnknown(tag, reader); break;
+        }
       }
-      return result;
+      return builder.build();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Location> {

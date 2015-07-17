@@ -3,18 +3,26 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireEnum;
+import java.io.IOException;
 import java.lang.Integer;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
 /**
  * Describes a field within a message.
  */
-public final class FieldDescriptorProto extends Message {
+public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<FieldDescriptorProto> ADAPTER = new TypeAdapter.MessageAdapter<FieldDescriptorProto>() {
+    @Override
+    public FieldDescriptorProto read(ProtoReader reader) throws IOException {
+      return FieldDescriptorProto.read(reader);
+    }
+  };
 
   public static final String DEFAULT_NAME = "";
 
@@ -32,41 +40,21 @@ public final class FieldDescriptorProto extends Message {
 
   public static final String DEFAULT_DEFAULT_VALUE = "";
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String name;
 
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
-      tag = 9,
-      type = Message.Datatype.STRING
-  )
   public final String doc;
 
-  @ProtoField(
-      tag = 3,
-      type = Message.Datatype.INT32
-  )
   public final Integer number;
 
-  @ProtoField(
-      tag = 4,
-      type = Message.Datatype.ENUM
-  )
   public final Label label;
 
   /**
    * If type_name is set, this need not be set.  If both this and type_name
    * are set, this must be either TYPE_ENUM or TYPE_MESSAGE.
    */
-  @ProtoField(
-      tag = 5,
-      type = Message.Datatype.ENUM
-  )
   public final Type type;
 
   /**
@@ -76,20 +64,12 @@ public final class FieldDescriptorProto extends Message {
    * message are searched, then within the parent, on up to the root
    * namespace).
    */
-  @ProtoField(
-      tag = 6,
-      type = Message.Datatype.STRING
-  )
   public final String type_name;
 
   /**
    * For extensions, this is the name of the type being extended.  It is
    * resolved in the same manner as type_name.
    */
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.STRING
-  )
   public final String extendee;
 
   /**
@@ -99,18 +79,12 @@ public final class FieldDescriptorProto extends Message {
    * For bytes, contains the C escaped value.  All bytes >= 128 are escaped.
    * TODO(kenton):  Base-64 encode?
    */
-  @ProtoField(
-      tag = 7,
-      type = Message.Datatype.STRING
-  )
   public final String default_value;
 
-  @ProtoField(
-      tag = 8
-  )
   public final FieldOptions options;
 
   public FieldDescriptorProto(String name, String doc, Integer number, Label label, Type type, String type_name, String extendee, String default_value, FieldOptions options) {
+    super("FieldDescriptorProto");
     this.name = name;
     this.doc = doc;
     this.number = number;
@@ -128,37 +102,37 @@ public final class FieldDescriptorProto extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof FieldDescriptorProto)) return false;
-    FieldDescriptorProto o = (FieldDescriptorProto) other;
-    return equals(name, o.name)
-        && equals(doc, o.doc)
-        && equals(number, o.number)
-        && equals(label, o.label)
-        && equals(type, o.type)
-        && equals(type_name, o.type_name)
-        && equals(extendee, o.extendee)
-        && equals(default_value, o.default_value)
-        && equals(options, o.options);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "name", name, TypeAdapter.STRING, false);
+    visitor.value(9, "doc", doc, TypeAdapter.STRING, false);
+    visitor.value(3, "number", number, TypeAdapter.INT32, false);
+    visitor.value(4, "label", label, Label.ADAPTER, false);
+    visitor.value(5, "type", type, Type.ADAPTER, false);
+    visitor.value(6, "type_name", type_name, TypeAdapter.STRING, false);
+    visitor.value(2, "extendee", extendee, TypeAdapter.STRING, false);
+    visitor.value(7, "default_value", default_value, TypeAdapter.STRING, false);
+    visitor.value(8, "options", options, FieldOptions.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
-      result = result * 37 + (doc != null ? doc.hashCode() : 0);
-      result = result * 37 + (number != null ? number.hashCode() : 0);
-      result = result * 37 + (label != null ? label.hashCode() : 0);
-      result = result * 37 + (type != null ? type.hashCode() : 0);
-      result = result * 37 + (type_name != null ? type_name.hashCode() : 0);
-      result = result * 37 + (extendee != null ? extendee.hashCode() : 0);
-      result = result * 37 + (default_value != null ? default_value.hashCode() : 0);
-      result = result * 37 + (options != null ? options.hashCode() : 0);
-      hashCode = result;
+  public static FieldDescriptorProto read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.name = reader.value(TypeAdapter.STRING); break;
+        case 9: builder.doc = reader.value(TypeAdapter.STRING); break;
+        case 3: builder.number = reader.value(TypeAdapter.INT32); break;
+        case 4: builder.label = enumOrUnknown(4, reader, Label.ADAPTER, builder); break;
+        case 5: builder.type = enumOrUnknown(5, reader, Type.ADAPTER, builder); break;
+        case 6: builder.type_name = reader.value(TypeAdapter.STRING); break;
+        case 2: builder.extendee = reader.value(TypeAdapter.STRING); break;
+        case 7: builder.default_value = reader.value(TypeAdapter.STRING); break;
+        case 8: builder.options = message(reader, FieldOptions.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FieldDescriptorProto> {
@@ -273,7 +247,7 @@ public final class FieldDescriptorProto extends Message {
     }
   }
 
-  public enum Type implements ProtoEnum {
+  public enum Type implements WireEnum {
     /**
      * 0 is reserved for errors.
      * Order is weird for historical reasons.
@@ -343,6 +317,13 @@ public final class FieldDescriptorProto extends Message {
      */
     TYPE_SINT64(18);
 
+    public static final TypeAdapter.EnumAdapter<Type> ADAPTER = new TypeAdapter.EnumAdapter<Type>() {
+      @Override
+      public Type fromValue(int value) {
+        return Type.fromValue(value);
+      }
+    };
+
     private final int value;
 
     Type(int value) {
@@ -350,12 +331,36 @@ public final class FieldDescriptorProto extends Message {
     }
 
     @Override
-    public int getValue() {
+    public int value() {
       return value;
+    }
+
+    public static Type fromValue(int value) {
+      switch (value) {
+        case 1: return TYPE_DOUBLE;
+        case 2: return TYPE_FLOAT;
+        case 3: return TYPE_INT64;
+        case 4: return TYPE_UINT64;
+        case 5: return TYPE_INT32;
+        case 6: return TYPE_FIXED64;
+        case 7: return TYPE_FIXED32;
+        case 8: return TYPE_BOOL;
+        case 9: return TYPE_STRING;
+        case 10: return TYPE_GROUP;
+        case 11: return TYPE_MESSAGE;
+        case 12: return TYPE_BYTES;
+        case 13: return TYPE_UINT32;
+        case 14: return TYPE_ENUM;
+        case 15: return TYPE_SFIXED32;
+        case 16: return TYPE_SFIXED64;
+        case 17: return TYPE_SINT32;
+        case 18: return TYPE_SINT64;
+        default: return null;
+      }
     }
   }
 
-  public enum Label implements ProtoEnum {
+  public enum Label implements WireEnum {
     /**
      * 0 is reserved for errors
      */
@@ -365,6 +370,13 @@ public final class FieldDescriptorProto extends Message {
 
     LABEL_REPEATED(3);
 
+    public static final TypeAdapter.EnumAdapter<Label> ADAPTER = new TypeAdapter.EnumAdapter<Label>() {
+      @Override
+      public Label fromValue(int value) {
+        return Label.fromValue(value);
+      }
+    };
+
     private final int value;
 
     Label(int value) {
@@ -372,8 +384,17 @@ public final class FieldDescriptorProto extends Message {
     }
 
     @Override
-    public int getValue() {
+    public int value() {
       return value;
+    }
+
+    public static Label fromValue(int value) {
+      switch (value) {
+        case 1: return LABEL_OPTIONAL;
+        case 2: return LABEL_REQUIRED;
+        case 3: return LABEL_REPEATED;
+        default: return null;
+      }
     }
   }
 }

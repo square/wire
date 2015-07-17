@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Square Inc.
+ * Copyright 2013 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.protos.redacted.Redacted;
-import java.io.IOException;
-import org.junit.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class RedactedTest {
-  @Test
-  public void testRedacted() throws IOException {
-    assertThat(new Redacted.Builder().a("a").b("b").c("c").build().toString())
-        .isEqualTo("Redacted{a=██, b=b, c=c}");
-  }
+public interface WireEnum {
+  int value();
 }

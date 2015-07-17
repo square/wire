@@ -20,11 +20,9 @@ import java.io.IOException;
 enum WireType {
   VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), START_GROUP(3), END_GROUP(4), FIXED32(5);
 
-  private static final int TAG_TYPE_MASK = 0x7;
+  static final int TAG_TYPE_MASK = 0x7;
 
-  public static final int FIXED_32_SIZE = 4;
-  public static final int FIXED_64_SIZE = 8;
-  public static final int TAG_TYPE_BITS = 3;
+  static final int TAG_TYPE_BITS = 3;
 
   public static WireType valueOf(int tagAndType) throws IOException {
     switch (tagAndType & TAG_TYPE_MASK) {

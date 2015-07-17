@@ -4,10 +4,11 @@ package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireEnum;
+import java.io.IOException;
 import java.lang.Boolean;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
@@ -43,6 +44,13 @@ import java.util.List;
 public final class FileOptions extends ExtendableMessage<FileOptions> {
   private static final long serialVersionUID = 0L;
 
+  public static final TypeAdapter<FileOptions> ADAPTER = new TypeAdapter.MessageAdapter<FileOptions>() {
+    @Override
+    public FileOptions read(ProtoReader reader) throws IOException {
+      return FileOptions.read(reader);
+    }
+  };
+
   public static final String DEFAULT_JAVA_PACKAGE = "";
 
   public static final String DEFAULT_JAVA_OUTER_CLASSNAME = "";
@@ -65,10 +73,6 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
    * inappropriate because proto packages do not normally start with backwards
    * domain names.
    */
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String java_package;
 
   /**
@@ -78,10 +82,6 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
    * a .proto always translates to a single class, but you may want to
    * explicitly choose the class name).
    */
-  @ProtoField(
-      tag = 8,
-      type = Message.Datatype.STRING
-  )
   public final String java_outer_classname;
 
   /**
@@ -92,10 +92,6 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
    * generated to contain the file's getDescriptor() method as well as any
    * top-level extensions defined in the file.
    */
-  @ProtoField(
-      tag = 10,
-      type = Message.Datatype.BOOL
-  )
   public final Boolean java_multiple_files;
 
   /**
@@ -104,16 +100,8 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
    * purely a speed optimization, as the AbstractMessage base class includes
    * reflection-based implementations of these methods.
    */
-  @ProtoField(
-      tag = 20,
-      type = Message.Datatype.BOOL
-  )
   public final Boolean java_generate_equals_and_hash;
 
-  @ProtoField(
-      tag = 9,
-      type = Message.Datatype.ENUM
-  )
   public final OptimizeMode optimize_for;
 
   /**
@@ -128,35 +116,19 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
    * these default to false.  Old code which depends on generic services should
    * explicitly set them to true.
    */
-  @ProtoField(
-      tag = 16,
-      type = Message.Datatype.BOOL
-  )
   public final Boolean cc_generic_services;
 
-  @ProtoField(
-      tag = 17,
-      type = Message.Datatype.BOOL
-  )
   public final Boolean java_generic_services;
 
-  @ProtoField(
-      tag = 18,
-      type = Message.Datatype.BOOL
-  )
   public final Boolean py_generic_services;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(
-      tag = 999,
-      label = Message.Label.REPEATED,
-      messageType = UninterpretedOption.class
-  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, OptimizeMode optimize_for, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, List<UninterpretedOption> uninterpreted_option) {
+    super("FileOptions");
     this.java_package = java_package;
     this.java_outer_classname = java_outer_classname;
     this.java_multiple_files = java_multiple_files;
@@ -174,39 +146,38 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof FileOptions)) return false;
-    FileOptions o = (FileOptions) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(java_package, o.java_package)
-        && equals(java_outer_classname, o.java_outer_classname)
-        && equals(java_multiple_files, o.java_multiple_files)
-        && equals(java_generate_equals_and_hash, o.java_generate_equals_and_hash)
-        && equals(optimize_for, o.optimize_for)
-        && equals(cc_generic_services, o.cc_generic_services)
-        && equals(java_generic_services, o.java_generic_services)
-        && equals(py_generic_services, o.py_generic_services)
-        && equals(uninterpreted_option, o.uninterpreted_option);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "java_package", java_package, TypeAdapter.STRING, false);
+    visitor.value(8, "java_outer_classname", java_outer_classname, TypeAdapter.STRING, false);
+    visitor.value(10, "java_multiple_files", java_multiple_files, TypeAdapter.BOOL, false);
+    visitor.value(20, "java_generate_equals_and_hash", java_generate_equals_and_hash, TypeAdapter.BOOL, false);
+    visitor.value(9, "optimize_for", optimize_for, OptimizeMode.ADAPTER, false);
+    visitor.value(16, "cc_generic_services", cc_generic_services, TypeAdapter.BOOL, false);
+    visitor.value(17, "java_generic_services", java_generic_services, TypeAdapter.BOOL, false);
+    visitor.value(18, "py_generic_services", py_generic_services, TypeAdapter.BOOL, false);
+    visitor.repeated(999, "uninterpreted_option", uninterpreted_option, UninterpretedOption.ADAPTER, false);
+    visitor.extensions(this);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = extensionsHashCode();
-      result = result * 37 + (java_package != null ? java_package.hashCode() : 0);
-      result = result * 37 + (java_outer_classname != null ? java_outer_classname.hashCode() : 0);
-      result = result * 37 + (java_multiple_files != null ? java_multiple_files.hashCode() : 0);
-      result = result * 37 + (java_generate_equals_and_hash != null ? java_generate_equals_and_hash.hashCode() : 0);
-      result = result * 37 + (optimize_for != null ? optimize_for.hashCode() : 0);
-      result = result * 37 + (cc_generic_services != null ? cc_generic_services.hashCode() : 0);
-      result = result * 37 + (java_generic_services != null ? java_generic_services.hashCode() : 0);
-      result = result * 37 + (py_generic_services != null ? py_generic_services.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
-      hashCode = result;
+  public static FileOptions read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.java_package = reader.value(TypeAdapter.STRING); break;
+        case 8: builder.java_outer_classname = reader.value(TypeAdapter.STRING); break;
+        case 10: builder.java_multiple_files = reader.value(TypeAdapter.BOOL); break;
+        case 20: builder.java_generate_equals_and_hash = reader.value(TypeAdapter.BOOL); break;
+        case 9: builder.optimize_for = enumOrUnknown(9, reader, OptimizeMode.ADAPTER, builder); break;
+        case 16: builder.cc_generic_services = reader.value(TypeAdapter.BOOL); break;
+        case 17: builder.java_generic_services = reader.value(TypeAdapter.BOOL); break;
+        case 18: builder.py_generic_services = reader.value(TypeAdapter.BOOL); break;
+        case 999: builder.uninterpreted_option = repeatedMessage(builder.uninterpreted_option, reader, UninterpretedOption.ADAPTER); break;
+        default: builder.readExtensionOrUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<FileOptions, Builder> {
@@ -229,11 +200,11 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
+      super(FileOptions.class, Builder.class);
     }
 
     public Builder(FileOptions message) {
-      super(Builder.class, message);
+      super(FileOptions.class, Builder.class, message);
       if (message == null) return;
       this.java_package = message.java_package;
       this.java_outer_classname = message.java_outer_classname;
@@ -342,7 +313,7 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
   /**
    * Generated classes can be optimized for speed or code size.
    */
-  public enum OptimizeMode implements ProtoEnum {
+  public enum OptimizeMode implements WireEnum {
     /**
      * Generate complete code for parsing, serialization,
      */
@@ -359,6 +330,13 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
      */
     LITE_RUNTIME(3);
 
+    public static final TypeAdapter.EnumAdapter<OptimizeMode> ADAPTER = new TypeAdapter.EnumAdapter<OptimizeMode>() {
+      @Override
+      public OptimizeMode fromValue(int value) {
+        return OptimizeMode.fromValue(value);
+      }
+    };
+
     private final int value;
 
     OptimizeMode(int value) {
@@ -366,8 +344,17 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
     }
 
     @Override
-    public int getValue() {
+    public int value() {
       return value;
+    }
+
+    public static OptimizeMode fromValue(int value) {
+      switch (value) {
+        case 1: return SPEED;
+        case 2: return CODE_SIZE;
+        case 3: return LITE_RUNTIME;
+        default: return null;
+      }
     }
   }
 }

@@ -4,14 +4,23 @@ package com.squareup.wire.protos.custom_options;
 
 import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
 import com.squareup.wire.protos.foreign.Ext_foreign;
 import com.squareup.wire.protos.foreign.ForeignMessage;
-import java.lang.Object;
+import java.io.IOException;
 import java.lang.Override;
 import java.util.Arrays;
 
-public final class MessageWithOptions extends Message {
+public final class MessageWithOptions extends Message<MessageWithOptions> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<MessageWithOptions> ADAPTER = new TypeAdapter.MessageAdapter<MessageWithOptions>() {
+    @Override
+    public MessageWithOptions read(ProtoReader reader) throws IOException {
+      return MessageWithOptions.read(reader);
+    }
+  };
 
   public static final MessageOptions MESSAGE_OPTIONS = new MessageOptions.Builder()
       .setExtension(Ext_custom_options.my_message_option_one, new FooBar.Builder()
@@ -70,20 +79,28 @@ public final class MessageWithOptions extends Message {
       .build();
 
   public MessageWithOptions() {
+    super("MessageWithOptions");
   }
 
   private MessageWithOptions(Builder builder) {
+    this();
     setBuilder(builder);
   }
 
   @Override
-  public boolean equals(Object other) {
-    return other instanceof MessageWithOptions;
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    return 0;
+  public static MessageWithOptions read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions> {

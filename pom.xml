@@ -46,7 +46,7 @@
   <modules>
     <module>wire-compiler</module>
     <module>wire-runtime</module>
-    <module>wire-gson-support</module>
+    <!--<module>wire-gson-support</module>-->
     <module>wire-maven-plugin</module>
     <module>wire-schema</module>
   </modules>
@@ -67,7 +67,7 @@
       <dependency>
         <groupId>com.squareup.okio</groupId>
         <artifactId>okio</artifactId>
-        <version>1.2.0</version>
+        <version>1.4.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>

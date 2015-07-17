@@ -3,31 +3,32 @@
 package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 
-public final class NotRedacted extends Message {
+public final class NotRedacted extends Message<NotRedacted> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<NotRedacted> ADAPTER = new TypeAdapter.MessageAdapter<NotRedacted>() {
+    @Override
+    public NotRedacted read(ProtoReader reader) throws IOException {
+      return NotRedacted.read(reader);
+    }
+  };
 
   public static final String DEFAULT_A = "";
 
   public static final String DEFAULT_B = "";
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String a;
 
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.STRING
-  )
   public final String b;
 
   public NotRedacted(String a, String b) {
+    super("NotRedacted");
     this.a = a;
     this.b = b;
   }
@@ -38,23 +39,23 @@ public final class NotRedacted extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof NotRedacted)) return false;
-    NotRedacted o = (NotRedacted) other;
-    return equals(a, o.a)
-        && equals(b, o.b);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "a", a, TypeAdapter.STRING, false);
+    visitor.value(2, "b", b, TypeAdapter.STRING, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = a != null ? a.hashCode() : 0;
-      result = result * 37 + (b != null ? b.hashCode() : 0);
-      hashCode = result;
+  public static NotRedacted read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.a = reader.value(TypeAdapter.STRING); break;
+        case 2: builder.b = reader.value(TypeAdapter.STRING); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<NotRedacted> {

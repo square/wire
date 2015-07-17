@@ -7,101 +7,42 @@ import com.google.protobuf.EnumValueOptions;
 import com.google.protobuf.FieldOptions;
 import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Extension;
+import com.squareup.wire.TypeAdapter;
 import java.lang.Boolean;
 import java.lang.Float;
 import java.lang.Integer;
 import java.util.List;
 
 public final class Ext_custom_options {
-  public static final Extension<MessageOptions, FooBar> my_message_option_one = Extension
-      .messageExtending(FooBar.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_one")
-      .setTag(50001)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar, FooBar> my_message_option_one = Extension.optional(MessageOptions.class, 50001, FooBar.ADAPTER);
 
-  public static final Extension<MessageOptions, Float> my_message_option_two = Extension
-      .floatExtending(MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_two")
-      .setTag(50002)
-      .buildOptional();
+  public static final Extension<MessageOptions, Float, Float> my_message_option_two = Extension.optional(MessageOptions.class, 50002, TypeAdapter.FLOAT);
 
-  public static final Extension<MessageOptions, FooBar> my_message_option_three = Extension
-      .messageExtending(FooBar.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_three")
-      .setTag(50003)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar, FooBar> my_message_option_three = Extension.optional(MessageOptions.class, 50003, FooBar.ADAPTER);
 
-  public static final Extension<MessageOptions, FooBar.FooBarBazEnum> my_message_option_four = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_four")
-      .setTag(50004)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar.FooBarBazEnum, FooBar.FooBarBazEnum> my_message_option_four = Extension.optional(MessageOptions.class, 50004, FooBar.FooBarBazEnum.ADAPTER);
 
-  public static final Extension<MessageOptions, FooBar> my_message_option_five = Extension
-      .messageExtending(FooBar.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_five")
-      .setTag(50005)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar, FooBar> my_message_option_five = Extension.optional(MessageOptions.class, 50005, FooBar.ADAPTER);
 
-  public static final Extension<MessageOptions, FooBar> my_message_option_six = Extension
-      .messageExtending(FooBar.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_six")
-      .setTag(50006)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar, FooBar> my_message_option_six = Extension.optional(MessageOptions.class, 50006, FooBar.ADAPTER);
 
-  public static final Extension<FieldOptions, Integer> my_field_option_one = Extension
-      .int32Extending(FieldOptions.class)
-      .setName("squareup.protos.custom_options.my_field_option_one")
-      .setTag(60001)
-      .buildOptional();
+  public static final Extension<FieldOptions, Integer, Integer> my_field_option_one = Extension.optional(FieldOptions.class, 60001, TypeAdapter.INT32);
 
-  public static final Extension<FieldOptions, Float> my_field_option_two = Extension
-      .floatExtending(FieldOptions.class)
-      .setName("squareup.protos.custom_options.my_field_option_two")
-      .setTag(60002)
-      .buildOptional();
+  public static final Extension<FieldOptions, Float, Float> my_field_option_two = Extension.optional(FieldOptions.class, 60002, TypeAdapter.FLOAT);
 
-  public static final Extension<FieldOptions, FooBar.FooBarBazEnum> my_field_option_three = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FieldOptions.class)
-      .setName("squareup.protos.custom_options.my_field_option_three")
-      .setTag(60003)
-      .buildOptional();
+  public static final Extension<FieldOptions, FooBar.FooBarBazEnum, FooBar.FooBarBazEnum> my_field_option_three = Extension.optional(FieldOptions.class, 60003, FooBar.FooBarBazEnum.ADAPTER);
 
-  public static final Extension<FieldOptions, FooBar> my_field_option_four = Extension
-      .messageExtending(FooBar.class, FieldOptions.class)
-      .setName("squareup.protos.custom_options.my_field_option_four")
-      .setTag(60004)
-      .buildOptional();
+  public static final Extension<FieldOptions, FooBar, FooBar> my_field_option_four = Extension.optional(FieldOptions.class, 60004, FooBar.ADAPTER);
 
-  public static final Extension<EnumValueOptions, Integer> enum_value_option = Extension
-      .int32Extending(EnumValueOptions.class)
-      .setName("squareup.protos.custom_options.enum_value_option")
-      .setTag(70000)
-      .buildOptional();
+  public static final Extension<EnumValueOptions, Integer, Integer> enum_value_option = Extension.optional(EnumValueOptions.class, 70000, TypeAdapter.INT32);
 
-  public static final Extension<EnumValueOptions, FooBar.More> complex_enum_value_option = Extension
-      .messageExtending(FooBar.More.class, EnumValueOptions.class)
-      .setName("squareup.protos.custom_options.complex_enum_value_option")
-      .setTag(70001)
-      .buildOptional();
+  public static final Extension<EnumValueOptions, FooBar.More, FooBar.More> complex_enum_value_option = Extension.optional(EnumValueOptions.class, 70001, FooBar.More.ADAPTER);
 
-  public static final Extension<EnumOptions, Boolean> enum_option = Extension
-      .boolExtending(EnumOptions.class)
-      .setName("squareup.protos.custom_options.enum_option")
-      .setTag(71000)
-      .buildOptional();
+  public static final Extension<EnumOptions, Boolean, Boolean> enum_option = Extension.optional(EnumOptions.class, 71000, TypeAdapter.BOOL);
 
-  public static final Extension<FooBar, FooBar.FooBarBazEnum> ext = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)
-      .setName("squareup.protos.custom_options.ext")
-      .setTag(101)
-      .buildOptional();
+  public static final Extension<FooBar, FooBar.FooBarBazEnum, FooBar.FooBarBazEnum> ext = Extension.optional(FooBar.class, 101, FooBar.FooBarBazEnum.ADAPTER);
 
-  public static final Extension<FooBar, List<FooBar.FooBarBazEnum>> rep = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)
-      .setName("squareup.protos.custom_options.rep")
-      .setTag(102)
-      .buildRepeated();
+  public static final Extension<FooBar, FooBar.FooBarBazEnum, List<FooBar.FooBarBazEnum>> rep = Extension.repeated(FooBar.class, 102, FooBar.FooBarBazEnum.ADAPTER);
 
   private Ext_custom_options() {
   }

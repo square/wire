@@ -4,19 +4,25 @@ package com.squareup.differentpackage.protos.foo;
 
 import com.squareup.differentpackage.protos.bar.Bar;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 
-public final class Foo extends Message {
+public final class Foo extends Message<Foo> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
-      tag = 1
-  )
+  public static final TypeAdapter<Foo> ADAPTER = new TypeAdapter.MessageAdapter<Foo>() {
+    @Override
+    public Foo read(ProtoReader reader) throws IOException {
+      return Foo.read(reader);
+    }
+  };
+
   public final Bar.Baz.Moo moo;
 
   public Foo(Bar.Baz.Moo moo) {
+    super("Foo");
     this.moo = moo;
   }
 
@@ -26,16 +32,21 @@ public final class Foo extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof Foo)) return false;
-    return equals(moo, ((Foo) other).moo);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "moo", moo, Bar.Baz.Moo.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = moo != null ? moo.hashCode() : 0);
+  public static Foo read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.moo = message(reader, Bar.Baz.Moo.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Foo> {

@@ -3,28 +3,30 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Integer;
-import java.lang.Object;
 import java.lang.Override;
 
-public final class Recursive extends Message {
+public final class Recursive extends Message<Recursive> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<Recursive> ADAPTER = new TypeAdapter.MessageAdapter<Recursive>() {
+    @Override
+    public Recursive read(ProtoReader reader) throws IOException {
+      return Recursive.read(reader);
+    }
+  };
 
   public static final Integer DEFAULT_VALUE = 0;
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.INT32
-  )
   public final Integer value;
 
-  @ProtoField(
-      tag = 2
-  )
   public final Recursive recursive;
 
   public Recursive(Integer value, Recursive recursive) {
+    super("Recursive");
     this.value = value;
     this.recursive = recursive;
   }
@@ -35,23 +37,23 @@ public final class Recursive extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof Recursive)) return false;
-    Recursive o = (Recursive) other;
-    return equals(value, o.value)
-        && equals(recursive, o.recursive);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "value", value, TypeAdapter.INT32, false);
+    visitor.value(2, "recursive", recursive, Recursive.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = value != null ? value.hashCode() : 0;
-      result = result * 37 + (recursive != null ? recursive.hashCode() : 0);
-      hashCode = result;
+  public static Recursive read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.value = reader.value(TypeAdapter.INT32); break;
+        case 2: builder.recursive = message(reader, Recursive.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Recursive> {

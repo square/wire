@@ -3,9 +3,10 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Integer;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
@@ -14,69 +15,41 @@ import java.util.List;
 /**
  * Describes a message type.
  */
-public final class DescriptorProto extends Message {
+public final class DescriptorProto extends Message<DescriptorProto> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<DescriptorProto> ADAPTER = new TypeAdapter.MessageAdapter<DescriptorProto>() {
+    @Override
+    public DescriptorProto read(ProtoReader reader) throws IOException {
+      return DescriptorProto.read(reader);
+    }
+  };
 
   public static final String DEFAULT_NAME = "";
 
   public static final String DEFAULT_DOC = "";
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String name;
 
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
-      tag = 8,
-      type = Message.Datatype.STRING
-  )
   public final String doc;
 
-  @ProtoField(
-      tag = 2,
-      label = Message.Label.REPEATED,
-      messageType = FieldDescriptorProto.class
-  )
   public final List<FieldDescriptorProto> field;
 
-  @ProtoField(
-      tag = 6,
-      label = Message.Label.REPEATED,
-      messageType = FieldDescriptorProto.class
-  )
   public final List<FieldDescriptorProto> extension;
 
-  @ProtoField(
-      tag = 3,
-      label = Message.Label.REPEATED,
-      messageType = DescriptorProto.class
-  )
   public final List<DescriptorProto> nested_type;
 
-  @ProtoField(
-      tag = 4,
-      label = Message.Label.REPEATED,
-      messageType = EnumDescriptorProto.class
-  )
   public final List<EnumDescriptorProto> enum_type;
 
-  @ProtoField(
-      tag = 5,
-      label = Message.Label.REPEATED,
-      messageType = ExtensionRange.class
-  )
   public final List<ExtensionRange> extension_range;
 
-  @ProtoField(
-      tag = 7
-  )
   public final MessageOptions options;
 
   public DescriptorProto(String name, String doc, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, MessageOptions options) {
+    super("DescriptorProto");
     this.name = name;
     this.doc = doc;
     this.field = immutableCopyOf(field);
@@ -93,35 +66,35 @@ public final class DescriptorProto extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof DescriptorProto)) return false;
-    DescriptorProto o = (DescriptorProto) other;
-    return equals(name, o.name)
-        && equals(doc, o.doc)
-        && equals(field, o.field)
-        && equals(extension, o.extension)
-        && equals(nested_type, o.nested_type)
-        && equals(enum_type, o.enum_type)
-        && equals(extension_range, o.extension_range)
-        && equals(options, o.options);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "name", name, TypeAdapter.STRING, false);
+    visitor.value(8, "doc", doc, TypeAdapter.STRING, false);
+    visitor.repeated(2, "field", field, FieldDescriptorProto.ADAPTER, false);
+    visitor.repeated(6, "extension", extension, FieldDescriptorProto.ADAPTER, false);
+    visitor.repeated(3, "nested_type", nested_type, DescriptorProto.ADAPTER, false);
+    visitor.repeated(4, "enum_type", enum_type, EnumDescriptorProto.ADAPTER, false);
+    visitor.repeated(5, "extension_range", extension_range, ExtensionRange.ADAPTER, false);
+    visitor.value(7, "options", options, MessageOptions.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
-      result = result * 37 + (doc != null ? doc.hashCode() : 0);
-      result = result * 37 + (field != null ? field.hashCode() : 1);
-      result = result * 37 + (extension != null ? extension.hashCode() : 1);
-      result = result * 37 + (nested_type != null ? nested_type.hashCode() : 1);
-      result = result * 37 + (enum_type != null ? enum_type.hashCode() : 1);
-      result = result * 37 + (extension_range != null ? extension_range.hashCode() : 1);
-      result = result * 37 + (options != null ? options.hashCode() : 0);
-      hashCode = result;
+  public static DescriptorProto read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.name = reader.value(TypeAdapter.STRING); break;
+        case 8: builder.doc = reader.value(TypeAdapter.STRING); break;
+        case 2: builder.field = repeatedMessage(builder.field, reader, FieldDescriptorProto.ADAPTER); break;
+        case 6: builder.extension = repeatedMessage(builder.extension, reader, FieldDescriptorProto.ADAPTER); break;
+        case 3: builder.nested_type = repeatedMessage(builder.nested_type, reader, DescriptorProto.ADAPTER); break;
+        case 4: builder.enum_type = repeatedMessage(builder.enum_type, reader, EnumDescriptorProto.ADAPTER); break;
+        case 5: builder.extension_range = repeatedMessage(builder.extension_range, reader, ExtensionRange.ADAPTER); break;
+        case 7: builder.options = message(reader, MessageOptions.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<DescriptorProto> {
@@ -206,26 +179,26 @@ public final class DescriptorProto extends Message {
     }
   }
 
-  public static final class ExtensionRange extends Message {
+  public static final class ExtensionRange extends Message<ExtensionRange> {
     private static final long serialVersionUID = 0L;
+
+    public static final TypeAdapter<ExtensionRange> ADAPTER = new TypeAdapter.MessageAdapter<ExtensionRange>() {
+      @Override
+      public ExtensionRange read(ProtoReader reader) throws IOException {
+        return ExtensionRange.read(reader);
+      }
+    };
 
     public static final Integer DEFAULT_START = 0;
 
     public static final Integer DEFAULT_END = 0;
 
-    @ProtoField(
-        tag = 1,
-        type = Message.Datatype.INT32
-    )
     public final Integer start;
 
-    @ProtoField(
-        tag = 2,
-        type = Message.Datatype.INT32
-    )
     public final Integer end;
 
     public ExtensionRange(Integer start, Integer end) {
+      super("ExtensionRange");
       this.start = start;
       this.end = end;
     }
@@ -236,23 +209,23 @@ public final class DescriptorProto extends Message {
     }
 
     @Override
-    public boolean equals(Object other) {
-      if (other == this) return true;
-      if (!(other instanceof ExtensionRange)) return false;
-      ExtensionRange o = (ExtensionRange) other;
-      return equals(start, o.start)
-          && equals(end, o.end);
+    protected void visitFields(Message.Visitor visitor) {
+      visitor.value(1, "start", start, TypeAdapter.INT32, false);
+      visitor.value(2, "end", end, TypeAdapter.INT32, false);
+      visitor.unknowns(this);
     }
 
-    @Override
-    public int hashCode() {
-      int result = hashCode;
-      if (result == 0) {
-        result = start != null ? start.hashCode() : 0;
-        result = result * 37 + (end != null ? end.hashCode() : 0);
-        hashCode = result;
+    public static ExtensionRange read(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      while (reader.hasNext()) {
+        int tag = reader.nextTag();
+        switch (tag) {
+          case 1: builder.start = reader.value(TypeAdapter.INT32); break;
+          case 2: builder.end = reader.value(TypeAdapter.INT32); break;
+          default: builder.readUnknown(tag, reader); break;
+        }
       }
-      return result;
+      return builder.build();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<ExtensionRange> {

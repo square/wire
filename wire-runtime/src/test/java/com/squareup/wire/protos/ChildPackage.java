@@ -3,23 +3,28 @@
 package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
 import com.squareup.wire.protos.foreign.ForeignEnum;
-import java.lang.Object;
+import java.io.IOException;
 import java.lang.Override;
 
-public final class ChildPackage extends Message {
+public final class ChildPackage extends Message<ChildPackage> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<ChildPackage> ADAPTER = new TypeAdapter.MessageAdapter<ChildPackage>() {
+    @Override
+    public ChildPackage read(ProtoReader reader) throws IOException {
+      return ChildPackage.read(reader);
+    }
+  };
 
   public static final ForeignEnum DEFAULT_INNER_FOREIGN_ENUM = ForeignEnum.BAV;
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.ENUM
-  )
   public final ForeignEnum inner_foreign_enum;
 
   public ChildPackage(ForeignEnum inner_foreign_enum) {
+    super("ChildPackage");
     this.inner_foreign_enum = inner_foreign_enum;
   }
 
@@ -29,16 +34,21 @@ public final class ChildPackage extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof ChildPackage)) return false;
-    return equals(inner_foreign_enum, ((ChildPackage) other).inner_foreign_enum);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "inner_foreign_enum", inner_foreign_enum, ForeignEnum.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = inner_foreign_enum != null ? inner_foreign_enum.hashCode() : 0);
+  public static ChildPackage read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.inner_foreign_enum = enumOrUnknown(1, reader, ForeignEnum.ADAPTER, builder); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<ChildPackage> {

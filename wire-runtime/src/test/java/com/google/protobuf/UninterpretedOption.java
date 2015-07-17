@@ -3,11 +3,12 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Long;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
@@ -22,8 +23,15 @@ import okio.ByteString;
  * or produced by Descriptor::CopyTo()) will never have UninterpretedOptions
  * in them.
  */
-public final class UninterpretedOption extends Message {
+public final class UninterpretedOption extends Message<UninterpretedOption> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<UninterpretedOption> ADAPTER = new TypeAdapter.MessageAdapter<UninterpretedOption>() {
+    @Override
+    public UninterpretedOption read(ProtoReader reader) throws IOException {
+      return UninterpretedOption.read(reader);
+    }
+  };
 
   public static final String DEFAULT_IDENTIFIER_VALUE = "";
 
@@ -37,54 +45,26 @@ public final class UninterpretedOption extends Message {
 
   public static final String DEFAULT_AGGREGATE_VALUE = "";
 
-  @ProtoField(
-      tag = 2,
-      label = Message.Label.REPEATED,
-      messageType = NamePart.class
-  )
   public final List<NamePart> name;
 
   /**
    * The value of the uninterpreted option, in whatever type the tokenizer
    * identified it as during parsing. Exactly one of these should be set.
    */
-  @ProtoField(
-      tag = 3,
-      type = Message.Datatype.STRING
-  )
   public final String identifier_value;
 
-  @ProtoField(
-      tag = 4,
-      type = Message.Datatype.UINT64
-  )
   public final Long positive_int_value;
 
-  @ProtoField(
-      tag = 5,
-      type = Message.Datatype.INT64
-  )
   public final Long negative_int_value;
 
-  @ProtoField(
-      tag = 6,
-      type = Message.Datatype.DOUBLE
-  )
   public final Double double_value;
 
-  @ProtoField(
-      tag = 7,
-      type = Message.Datatype.BYTES
-  )
   public final ByteString string_value;
 
-  @ProtoField(
-      tag = 8,
-      type = Message.Datatype.STRING
-  )
   public final String aggregate_value;
 
   public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value) {
+    super("UninterpretedOption");
     this.name = immutableCopyOf(name);
     this.identifier_value = identifier_value;
     this.positive_int_value = positive_int_value;
@@ -100,33 +80,33 @@ public final class UninterpretedOption extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof UninterpretedOption)) return false;
-    UninterpretedOption o = (UninterpretedOption) other;
-    return equals(name, o.name)
-        && equals(identifier_value, o.identifier_value)
-        && equals(positive_int_value, o.positive_int_value)
-        && equals(negative_int_value, o.negative_int_value)
-        && equals(double_value, o.double_value)
-        && equals(string_value, o.string_value)
-        && equals(aggregate_value, o.aggregate_value);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.repeated(2, "name", name, NamePart.ADAPTER, false);
+    visitor.value(3, "identifier_value", identifier_value, TypeAdapter.STRING, false);
+    visitor.value(4, "positive_int_value", positive_int_value, TypeAdapter.UINT64, false);
+    visitor.value(5, "negative_int_value", negative_int_value, TypeAdapter.INT64, false);
+    visitor.value(6, "double_value", double_value, TypeAdapter.DOUBLE, false);
+    visitor.value(7, "string_value", string_value, TypeAdapter.BYTES, false);
+    visitor.value(8, "aggregate_value", aggregate_value, TypeAdapter.STRING, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = name != null ? name.hashCode() : 1;
-      result = result * 37 + (identifier_value != null ? identifier_value.hashCode() : 0);
-      result = result * 37 + (positive_int_value != null ? positive_int_value.hashCode() : 0);
-      result = result * 37 + (negative_int_value != null ? negative_int_value.hashCode() : 0);
-      result = result * 37 + (double_value != null ? double_value.hashCode() : 0);
-      result = result * 37 + (string_value != null ? string_value.hashCode() : 0);
-      result = result * 37 + (aggregate_value != null ? aggregate_value.hashCode() : 0);
-      hashCode = result;
+  public static UninterpretedOption read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 2: builder.name = repeatedMessage(builder.name, reader, NamePart.ADAPTER); break;
+        case 3: builder.identifier_value = reader.value(TypeAdapter.STRING); break;
+        case 4: builder.positive_int_value = reader.value(TypeAdapter.UINT64); break;
+        case 5: builder.negative_int_value = reader.value(TypeAdapter.INT64); break;
+        case 6: builder.double_value = reader.value(TypeAdapter.DOUBLE); break;
+        case 7: builder.string_value = reader.value(TypeAdapter.BYTES); break;
+        case 8: builder.aggregate_value = reader.value(TypeAdapter.STRING); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<UninterpretedOption> {
@@ -211,28 +191,26 @@ public final class UninterpretedOption extends Message {
    * E.g.,{ ["foo", false], ["bar.baz", true], ["qux", false] } represents
    * "foo.(bar.baz).qux".
    */
-  public static final class NamePart extends Message {
+  public static final class NamePart extends Message<NamePart> {
     private static final long serialVersionUID = 0L;
+
+    public static final TypeAdapter<NamePart> ADAPTER = new TypeAdapter.MessageAdapter<NamePart>() {
+      @Override
+      public NamePart read(ProtoReader reader) throws IOException {
+        return NamePart.read(reader);
+      }
+    };
 
     public static final String DEFAULT_NAME_PART = "";
 
     public static final Boolean DEFAULT_IS_EXTENSION = false;
 
-    @ProtoField(
-        tag = 1,
-        type = Message.Datatype.STRING,
-        label = Message.Label.REQUIRED
-    )
     public final String name_part;
 
-    @ProtoField(
-        tag = 2,
-        type = Message.Datatype.BOOL,
-        label = Message.Label.REQUIRED
-    )
     public final Boolean is_extension;
 
     public NamePart(String name_part, Boolean is_extension) {
+      super("NamePart");
       this.name_part = name_part;
       this.is_extension = is_extension;
     }
@@ -243,23 +221,23 @@ public final class UninterpretedOption extends Message {
     }
 
     @Override
-    public boolean equals(Object other) {
-      if (other == this) return true;
-      if (!(other instanceof NamePart)) return false;
-      NamePart o = (NamePart) other;
-      return equals(name_part, o.name_part)
-          && equals(is_extension, o.is_extension);
+    protected void visitFields(Message.Visitor visitor) {
+      visitor.value(1, "name_part", name_part, TypeAdapter.STRING, false);
+      visitor.value(2, "is_extension", is_extension, TypeAdapter.BOOL, false);
+      visitor.unknowns(this);
     }
 
-    @Override
-    public int hashCode() {
-      int result = hashCode;
-      if (result == 0) {
-        result = name_part != null ? name_part.hashCode() : 0;
-        result = result * 37 + (is_extension != null ? is_extension.hashCode() : 0);
-        hashCode = result;
+    public static NamePart read(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      while (reader.hasNext()) {
+        int tag = reader.nextTag();
+        switch (tag) {
+          case 1: builder.name_part = reader.value(TypeAdapter.STRING); break;
+          case 2: builder.is_extension = reader.value(TypeAdapter.BOOL); break;
+          default: builder.readUnknown(tag, reader); break;
+        }
       }
-      return result;
+      return builder.build();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<NamePart> {

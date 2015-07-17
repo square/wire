@@ -3,8 +3,9 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 
 /**
@@ -22,20 +23,22 @@ import java.lang.Override;
  *
  * I -> nothing
  */
-public final class A extends Message {
+public final class A extends Message<A> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
-      tag = 1
-  )
+  public static final TypeAdapter<A> ADAPTER = new TypeAdapter.MessageAdapter<A>() {
+    @Override
+    public A read(ProtoReader reader) throws IOException {
+      return A.read(reader);
+    }
+  };
+
   public final B c;
 
-  @ProtoField(
-      tag = 2
-  )
   public final D d;
 
   public A(B c, D d) {
+    super("A");
     this.c = c;
     this.d = d;
   }
@@ -46,23 +49,23 @@ public final class A extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof A)) return false;
-    A o = (A) other;
-    return equals(c, o.c)
-        && equals(d, o.d);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "c", c, B.ADAPTER, false);
+    visitor.value(2, "d", d, D.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = c != null ? c.hashCode() : 0;
-      result = result * 37 + (d != null ? d.hashCode() : 0);
-      hashCode = result;
+  public static A read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.c = message(reader, B.ADAPTER); break;
+        case 2: builder.d = message(reader, D.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<A> {

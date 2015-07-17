@@ -15,7 +15,7 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.UnknownFieldMap.VarintValue;
+import com.squareup.wire.UnknownFieldMap.Value;
 import com.squareup.wire.protos.RepeatedAndPacked;
 import com.squareup.wire.protos.person.Person;
 import com.squareup.wire.protos.person.Person.PhoneNumber;
@@ -208,20 +208,6 @@ public class WireTest {
   }
 
   @Test
-  public void extensionToString() {
-    assertThat(Ext_simple_message.fooext.toString()).isEqualTo(
-        "[REPEATED INT32 squareup.protos.simple.fooext = 125]");
-    assertThat(Ext_simple_message.barext.toString()).isEqualTo(
-        "[OPTIONAL INT32 squareup.protos.simple.barext = 126]");
-    assertThat(Ext_simple_message.bazext.toString()).isEqualTo(
-        "[REQUIRED INT32 squareup.protos.simple.bazext = 127]");
-    assertThat(Ext_simple_message.nested_message_ext.toString()).isEqualTo(
-        "[OPTIONAL MESSAGE squareup.protos.simple.nested_message_ext = 128]");
-    assertThat(Ext_simple_message.nested_enum_ext.toString()).isEqualTo(
-        "[OPTIONAL ENUM squareup.protos.simple.nested_enum_ext = 129]");
-  }
-
-  @Test
   public void testExtensionsNoRegistry() throws Exception {
     ExternalMessage optional_external_msg =
         new ExternalMessage.Builder()
@@ -312,7 +298,7 @@ public class WireTest {
     MessageAdapter<Person> adapter = wire.adapter(Person.class);
 
     byte[] data = adapter.writeBytes(person);
-    assertThat(data[27]).isEqualTo((byte) PhoneType.WORK.getValue());
+    assertThat(data[27]).isEqualTo((byte) PhoneType.WORK.value());
 
     // Corrupt the PhoneNumber type field with an undefined value
     data[27] = 17;
@@ -321,11 +307,11 @@ public class WireTest {
     assertThat(result.phone.get(0).type).isNull();
 
     // The value 17 will be stored as an unknown varint with tag number 2
-    Collection<List<UnknownFieldMap.Value>> unknownFields = result.phone.get(0).unknownFields();
+    Collection<List<Value<?>>> unknownFields = result.phone.get(0).unknownFields();
     assertThat(unknownFields).hasSize(1);
-    List<UnknownFieldMap.Value> values = unknownFields.iterator().next();
+    List<Value<?>> values = unknownFields.iterator().next();
     assertThat(values).hasSize(1);
-    VarintValue value = (VarintValue) values.get(0);
+    Value<Long> value = (Value<Long>) values.get(0);
     assertThat(value.tag).isEqualTo(2);
     assertThat(value.value).isEqualTo(Long.valueOf(17L));
 

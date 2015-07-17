@@ -3,23 +3,28 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import okio.ByteString;
 
-public final class OneBytesField extends Message {
+public final class OneBytesField extends Message<OneBytesField> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<OneBytesField> ADAPTER = new TypeAdapter.MessageAdapter<OneBytesField>() {
+    @Override
+    public OneBytesField read(ProtoReader reader) throws IOException {
+      return OneBytesField.read(reader);
+    }
+  };
 
   public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.BYTES
-  )
   public final ByteString opt_bytes;
 
   public OneBytesField(ByteString opt_bytes) {
+    super("OneBytesField");
     this.opt_bytes = opt_bytes;
   }
 
@@ -29,16 +34,21 @@ public final class OneBytesField extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof OneBytesField)) return false;
-    return equals(opt_bytes, ((OneBytesField) other).opt_bytes);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "opt_bytes", opt_bytes, TypeAdapter.BYTES, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = opt_bytes != null ? opt_bytes.hashCode() : 0);
+  public static OneBytesField read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.opt_bytes = reader.value(TypeAdapter.BYTES); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<OneBytesField> {
