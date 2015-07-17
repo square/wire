@@ -13,3 +13,5 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
   --java_out=../wire-runtime/src/test/java \
   --enum_options=squareup.protos.custom_options.enum_value_option,squareup.protos.custom_options.complex_enum_value_option,squareup.protos.foreign.foreign_enum_value_option \
   ${PROTOS}
+
+cp src/test/java/com/squareup/wire/protos/alltypes/* ../wire-gson-support/src/test/java/com/squareup/wire/protos/alltypes/

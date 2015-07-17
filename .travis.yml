@@ -4,6 +4,10 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 
+before_script:
+  - ./gen_tests.sh
+  - if [ ! -z "$(git status --porcelain)" ]; then echo "Test files changed. Did you run gen_tests.sh?"; exit 1; fi
+
 after_success:
   - .buildscript/deploy_snapshot.sh
 
