@@ -119,7 +119,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
   }
 
   @SuppressWarnings("unchecked")
-  private <M extends ExtendableMessage<?>, E> void emitExtensions(ExtendableMessage<M> message,
+  private <M extends ExtendableMessage<M>, E> void emitExtensions(ExtendableMessage<M> message,
       JsonWriter out) throws IOException {
     if (message.extensionMap == null) return;
     for (int i = 0, count = message.extensionMap.size(); i < count; i++) {
@@ -129,7 +129,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     }
   }
 
-  private <M extends ExtendableMessage<?>, E> void emitExtension(Extension<M, E> extension,
+  private <M extends ExtendableMessage<M>, E> void emitExtension(Extension<M, E> extension,
       E value, JsonWriter out) throws IOException {
     out.name(extension.getName());
     emitJson(out, value, extension.getDatatype(), extension.getLabel());
@@ -178,7 +178,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       String name = in.nextName();
       MessageAdapter.FieldInfo fieldInfo = messageAdapter.getField(name);
       if (fieldInfo == null) {
-        Extension<ExtendableMessage<?>, ?> extension = messageAdapter.getExtension(name);
+        Extension<?, ?> extension = messageAdapter.getExtension(name);
         if (extension == null) {
           parseUnknownField(in, builder, Integer.parseInt(name));
         } else {
@@ -226,7 +226,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     }
   }
 
-  private Type getType(Extension<ExtendableMessage<?>, ?> extension) {
+  private Type getType(Extension<?, ?> extension) {
     Datatype datatype = extension.getDatatype();
     if (datatype == Datatype.ENUM) {
       return extension.getEnumType();

@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @param <T> the type of the containing {@link ExtendableMessage}
  */
-final class ExtensionMap<T extends ExtendableMessage<?>> {
+final class ExtensionMap<T extends ExtendableMessage<T>> {
 
   private static final int INITIAL_SIZE = 1;
 

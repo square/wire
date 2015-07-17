@@ -53,10 +53,10 @@ import static com.squareup.wire.Message.Label;
  * @param <T> the type of message being extended
  * @param <E> the (boxed) Java data type of the extension value
  */
-public final class Extension<T extends ExtendableMessage<?>, E>
+public final class Extension<T extends ExtendableMessage<T>, E>
     implements Comparable<Extension<?, ?>> {
 
-  public static final class Builder<T extends ExtendableMessage<?>, E> {
+  public static final class Builder<T extends ExtendableMessage<T>, E> {
     private final Class<T> extendedType;
     private final Class<? extends Message> messageType;
     private final Class<? extends ProtoEnum> enumType;
@@ -148,87 +148,87 @@ public final class Extension<T extends ExtendableMessage<?>, E>
     }
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Integer> int32Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Integer> int32Extending(
       Class<T> extendedType) {
     return new Builder<T, Integer>(extendedType, Datatype.INT32);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Integer> sint32Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Integer> sint32Extending(
       Class<T> extendedType) {
     return new Builder<T, Integer>(extendedType, Datatype.SINT32);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Integer> uint32Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Integer> uint32Extending(
       Class<T> extendedType) {
     return new Builder<T, Integer>(extendedType, Datatype.UINT32);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Integer> fixed32Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Integer> fixed32Extending(
       Class<T> extendedType) {
     return new Builder<T, Integer>(extendedType, Datatype.FIXED32);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Integer> sfixed32Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Integer> sfixed32Extending(
       Class<T> extendedType) {
     return new Builder<T, Integer>(extendedType, Datatype.SFIXED32);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Long> int64Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Long> int64Extending(
       Class<T> extendedType) {
     return new Builder<T, Long>(extendedType, Datatype.INT64);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Long> sint64Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Long> sint64Extending(
       Class<T> extendedType) {
     return new Builder<T, Long>(extendedType, Datatype.SINT64);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Long> uint64Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Long> uint64Extending(
       Class<T> extendedType) {
     return new Builder<T, Long>(extendedType, Datatype.UINT64);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Long> fixed64Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Long> fixed64Extending(
       Class<T> extendedType) {
     return new Builder<T, Long>(extendedType, Datatype.FIXED64);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Long> sfixed64Extending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Long> sfixed64Extending(
       Class<T> extendedType) {
     return new Builder<T, Long>(extendedType, Datatype.SFIXED64);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Boolean> boolExtending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Boolean> boolExtending(
       Class<T> extendedType) {
     return new Builder<T, Boolean>(extendedType, Datatype.BOOL);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, String> stringExtending(
+  public static <T extends ExtendableMessage<T>> Builder<T, String> stringExtending(
       Class<T> extendedType) {
     return new Builder<T, String>(extendedType, Datatype.STRING);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, ByteString> bytesExtending(
+  public static <T extends ExtendableMessage<T>> Builder<T, ByteString> bytesExtending(
       Class<T> extendedType) {
     return new Builder<T, ByteString>(extendedType, Datatype.BYTES);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Float> floatExtending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Float> floatExtending(
       Class<T> extendedType) {
     return new Builder<T, Float>(extendedType, Datatype.FLOAT);
   }
 
-  public static <T extends ExtendableMessage<?>> Builder<T, Double> doubleExtending(
+  public static <T extends ExtendableMessage<T>> Builder<T, Double> doubleExtending(
       Class<T> extendedType) {
     return new Builder<T, Double>(extendedType, Datatype.DOUBLE);
   }
 
-  public static <T extends ExtendableMessage<?>, E extends Enum & ProtoEnum> Builder<T, E> //
+  public static <T extends ExtendableMessage<T>, E extends Enum & ProtoEnum> Builder<T, E> //
   enumExtending(Class<E> enumType, Class<T> extendedType) {
     return new Builder<T, E>(extendedType, null, enumType, Datatype.ENUM);
   }
 
-  public static <T extends ExtendableMessage<?>, M extends Message> Builder<T, M> messageExtending(
+  public static <T extends ExtendableMessage<T>, M extends Message> Builder<T, M> messageExtending(
       Class<M> messageType, Class<T> extendedType) {
     return new Builder<T, M>(extendedType, messageType, null, Datatype.MESSAGE);
   }

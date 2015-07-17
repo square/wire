@@ -20,14 +20,14 @@ import java.util.Map;
 
 final class ExtensionRegistry {
 
-  private final Map<Class<? extends ExtendableMessage>, Map<Integer, Extension<?, ?>>>
-      extensionsByTag = new LinkedHashMap<Class<? extends ExtendableMessage>,
+  private final Map<Class<? extends ExtendableMessage<?>>, Map<Integer, Extension<?, ?>>>
+      extensionsByTag = new LinkedHashMap<Class<? extends ExtendableMessage<?>>,
                 Map<Integer, Extension<?, ?>>>();
-  private final Map<Class<? extends ExtendableMessage>, Map<String, Extension<?, ?>>>
-      extensionsByName = new LinkedHashMap<Class<? extends ExtendableMessage>,
+  private final Map<Class<? extends ExtendableMessage<?>>, Map<String, Extension<?, ?>>>
+      extensionsByName = new LinkedHashMap<Class<? extends ExtendableMessage<?>>,
           Map<String, Extension<?, ?>>>();
 
-  public <T extends ExtendableMessage<?>, E> void add(Extension<T, E> extension) {
+  public <T extends ExtendableMessage<T>, E> void add(Extension<T, E> extension) {
     Class<? extends ExtendableMessage<?>> messageClass = extension.getExtendedType();
     Map<Integer, Extension<?, ?>> tagMap = extensionsByTag.get(messageClass);
     Map<String, Extension<?, ?>> nameMap = extensionsByName.get(messageClass);
@@ -42,14 +42,14 @@ final class ExtensionRegistry {
   }
 
   @SuppressWarnings("unchecked")
-  public <T extends ExtendableMessage<?>, E> Extension<T, E>
+  public <T extends ExtendableMessage<T>, E> Extension<T, E>
       getExtension(Class<T> messageClass, int tag) {
     Map<Integer, Extension<?, ?>> map = extensionsByTag.get(messageClass);
     return map == null ? null : (Extension<T, E>) map.get(tag);
   }
 
   @SuppressWarnings("unchecked")
-  public <T extends ExtendableMessage<?>, E> Extension<T, E>
+  public <T extends ExtendableMessage<T>, E> Extension<T, E>
       getExtension(Class<T> messageClass, String name) {
     Map<String, Extension<?, ?>> nameMap = extensionsByName.get(messageClass);
     return nameMap == null ? null : (Extension<T, E>) nameMap.get(name);

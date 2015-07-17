@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @param <T> the message type being extended.
  */
-public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends Message {
+public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends Message {
   private static final long serialVersionUID = 0L;
 
   @SuppressWarnings("unchecked")
@@ -86,7 +86,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<?>> extends 
   /**
    * Builds a message that declares an extension range.
    */
-  public abstract static class ExtendableBuilder<T extends ExtendableMessage<?>>
+  public abstract static class ExtendableBuilder<T extends ExtendableMessage<T>>
       extends Builder<T> {
 
     @SuppressWarnings("unchecked")
