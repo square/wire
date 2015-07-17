@@ -16,6 +16,7 @@
 package com.squareup.wire.internal.protoparser;
 
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
+import com.squareup.wire.schema.Location;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,9 +30,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class MessageElementTest {
+  Location location = Location.get("file.proto");
+
+  @Test public void locationRequired() {
+    try {
+      MessageElement.builder(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("location");
+    }
+  }
+
   @Test public void nameRequired() {
     try {
-      MessageElement.builder().qualifiedName("Test").build();
+      MessageElement.builder(location).qualifiedName("Test").build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
@@ -39,116 +51,116 @@ public class MessageElementTest {
   }
 
   @Test public void nameSetsQualifiedName() {
-    MessageElement test = MessageElement.builder().name("Test").build();
+    MessageElement test = MessageElement.builder(location).name("Test").build();
     assertThat(test.name()).isEqualTo("Test");
     assertThat(test.qualifiedName()).isEqualTo("Test");
   }
 
   @Test public void nullBuilderValuesThrow() {
     try {
-      MessageElement.builder().name(null);
+      MessageElement.builder(location).name(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
     }
     try {
-      MessageElement.builder().qualifiedName(null);
+      MessageElement.builder(location).qualifiedName(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("qualifiedName");
     }
     try {
-      MessageElement.builder().documentation(null);
+      MessageElement.builder(location).documentation(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("documentation");
     }
     try {
-      MessageElement.builder().addField(null);
+      MessageElement.builder(location).addField(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("field");
     }
     try {
-      MessageElement.builder().addFields(null);
+      MessageElement.builder(location).addFields(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("fields");
     }
     try {
-      MessageElement.builder().addFields(Collections.<FieldElement>singleton(null));
+      MessageElement.builder(location).addFields(Collections.<FieldElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("field");
     }
     try {
-      MessageElement.builder().addType(null);
+      MessageElement.builder(location).addType(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("type");
     }
     try {
-      MessageElement.builder().addTypes(null);
+      MessageElement.builder(location).addTypes(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("types");
     }
     try {
-      MessageElement.builder().addTypes(Collections.<TypeElement>singleton(null));
+      MessageElement.builder(location).addTypes(Collections.<TypeElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("type");
     }
     try {
-      MessageElement.builder().addOneOf(null);
+      MessageElement.builder(location).addOneOf(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("oneOf");
     }
     try {
-      MessageElement.builder().addOneOfs(null);
+      MessageElement.builder(location).addOneOfs(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("oneOfs");
     }
     try {
-      MessageElement.builder().addOneOfs(Collections.<OneOfElement>singleton(null));
+      MessageElement.builder(location).addOneOfs(Collections.<OneOfElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("oneOf");
     }
     try {
-      MessageElement.builder().addExtensions((ExtensionsElement) null);
+      MessageElement.builder(location).addExtensions((ExtensionsElement) null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extensions");
     }
     try {
-      MessageElement.builder().addExtensions((Collection<ExtensionsElement>) null);
+      MessageElement.builder(location).addExtensions((Collection<ExtensionsElement>) null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extensions");
     }
     try {
-      MessageElement.builder().addExtensions(Collections.<ExtensionsElement>singleton(null));
+      MessageElement.builder(location).addExtensions(Collections.<ExtensionsElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extensions");
     }
     try {
-      MessageElement.builder().addOption(null);
+      MessageElement.builder(location).addOption(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
     }
     try {
-      MessageElement.builder().addOptions(null);
+      MessageElement.builder(location).addOptions(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("options");
     }
     try {
-      MessageElement.builder().addOptions(Collections.<OptionElement>singleton(null));
+      MessageElement.builder(location).addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
@@ -156,13 +168,13 @@ public class MessageElementTest {
   }
 
   @Test public void emptyToSchema() {
-    TypeElement element = MessageElement.builder().name("Message").build();
+    TypeElement element = MessageElement.builder(location).name("Message").build();
     String expected = "message Message {}\n";
     assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void simpleToSchema() {
-    TypeElement element = MessageElement.builder()
+    TypeElement element = MessageElement.builder(location)
         .name("Message")
         .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
         .build();
@@ -178,7 +190,7 @@ public class MessageElementTest {
         FieldElement.builder().label(REQUIRED).type(STRING).name("first_name").tag(1).build();
     FieldElement lastName =
         FieldElement.builder().label(REQUIRED).type(STRING).name("last_name").tag(2).build();
-    MessageElement element = MessageElement.builder()
+    MessageElement element = MessageElement.builder(location)
         .name("Message")
         .addFields(Arrays.asList(firstName, lastName))
         .build();
@@ -186,7 +198,7 @@ public class MessageElementTest {
   }
 
   @Test public void simpleWithDocumentationToSchema() {
-    TypeElement element = MessageElement.builder()
+    TypeElement element = MessageElement.builder(location)
         .name("Message")
         .documentation("Hello")
         .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
@@ -206,7 +218,7 @@ public class MessageElementTest {
         .name("name")
         .tag(1)
         .build();
-    TypeElement element = MessageElement.builder()
+    TypeElement element = MessageElement.builder(location)
         .name("Message")
         .addField(field)
         .addOption(OptionElement.create("kit", Kind.STRING, "kat"))
@@ -229,7 +241,7 @@ public class MessageElementTest {
         .build();
     OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
     OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
-    MessageElement element = MessageElement.builder()
+    MessageElement element = MessageElement.builder(location)
         .name("Message")
         .addField(field)
         .addOptions(Arrays.asList(kitKat, fooBar))
@@ -238,10 +250,10 @@ public class MessageElementTest {
   }
 
   @Test public void simpleWithNestedElementsToSchema() {
-    TypeElement element = MessageElement.builder()
+    TypeElement element = MessageElement.builder(location)
         .name("Message")
         .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
-        .addType(MessageElement.builder()
+        .addType(MessageElement.builder(location)
             .name("Nested")
             .addField(
                 FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
@@ -259,9 +271,9 @@ public class MessageElementTest {
   }
 
   @Test public void addMultipleTypes() {
-    TypeElement nested1 = MessageElement.builder().name("Nested1").build();
-    TypeElement nested2 = MessageElement.builder().name("Nested2").build();
-    TypeElement element = MessageElement.builder()
+    TypeElement nested1 = MessageElement.builder(location).name("Nested1").build();
+    TypeElement nested2 = MessageElement.builder(location).name("Nested2").build();
+    TypeElement element = MessageElement.builder(location)
         .name("Message")
         .addField(FieldElement.builder()
             .label(REQUIRED)
@@ -275,7 +287,7 @@ public class MessageElementTest {
   }
 
   @Test public void simpleWithExtensionsToSchema() {
-    TypeElement element = MessageElement.builder()
+    TypeElement element = MessageElement.builder(location)
         .name("Message")
         .addField(FieldElement.builder()
             .label(REQUIRED)
@@ -297,7 +309,7 @@ public class MessageElementTest {
   @Test public void addMultipleExtensions() {
     ExtensionsElement fives = ExtensionsElement.create(500, 501);
     ExtensionsElement sixes = ExtensionsElement.create(600, 601);
-    MessageElement element = MessageElement.builder()
+    MessageElement element = MessageElement.builder(location)
         .name("Message")
         .addField(FieldElement.builder()
             .label(REQUIRED)
@@ -311,7 +323,7 @@ public class MessageElementTest {
   }
 
   @Test public void oneOfToSchema() {
-    TypeElement element = MessageElement.builder()
+    TypeElement element = MessageElement.builder(location)
         .name("Message")
         .addOneOf(OneOfElement.builder()
             .name("hi")
@@ -336,7 +348,7 @@ public class MessageElementTest {
         .name("hey")
         .addField(FieldElement.builder().label(ONE_OF).type(STRING).name("city").tag(2).build())
         .build();
-    MessageElement element = MessageElement.builder()
+    MessageElement element = MessageElement.builder(location)
         .name("Message")
         .addOneOfs(Arrays.asList(hi, hey))
         .build();
@@ -378,9 +390,9 @@ public class MessageElementTest {
         .build();
     ExtensionsElement extensions1 = ExtensionsElement.create(500, 501);
     ExtensionsElement extensions2 = ExtensionsElement.create(503, 503);
-    TypeElement nested = MessageElement.builder().name("Nested").addField(field1).build();
+    TypeElement nested = MessageElement.builder(location).name("Nested").addField(field1).build();
     OptionElement option = OptionElement.create("kit", Kind.STRING, "kat");
-    TypeElement element = MessageElement.builder()
+    TypeElement element = MessageElement.builder(location)
         .name("Message")
         .addField(field1)
         .addField(field2)
@@ -479,7 +491,7 @@ public class MessageElementTest {
         .tag(1)
         .build();
     try {
-      MessageElement.builder()
+      MessageElement.builder(location)
           .name("Message")
           .qualifiedName("example.Message")
           .addField(field1)
@@ -507,7 +519,7 @@ public class MessageElementTest {
     OneOfElement oneOf = OneOfElement.builder().name("name3").addField(field2).build();
 
     try {
-      MessageElement.builder()
+      MessageElement.builder(location)
           .name("Message")
           .qualifiedName("example.Message")
           .addField(field1)
@@ -527,7 +539,7 @@ public class MessageElementTest {
         .tag(1)
         .build();
     try {
-      MessageElement.builder()
+      MessageElement.builder(location)
           .name("Message")
           .qualifiedName("example.Message")
           .addField(field1)
@@ -540,18 +552,18 @@ public class MessageElementTest {
 
   @Test public void duplicateEnumValueTagInScopeThrows() {
     EnumConstantElement value = EnumConstantElement.builder().name("VALUE").tag(1).build();
-    TypeElement enum1 = EnumElement.builder()
+    TypeElement enum1 = EnumElement.builder(location)
         .name("Enum1")
         .qualifiedName("example.Enum1")
         .addConstant(value)
         .build();
-    TypeElement enum2 = EnumElement.builder()
+    TypeElement enum2 = EnumElement.builder(location)
         .name("Enum2")
         .qualifiedName("example.Enum2")
         .addConstant(value)
         .build();
     try {
-      MessageElement.builder()
+      MessageElement.builder(location)
           .name("Message")
           .qualifiedName("example.Message")
           .addType(enum1)

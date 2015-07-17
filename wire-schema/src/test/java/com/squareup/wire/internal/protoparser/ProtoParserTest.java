@@ -21,6 +21,7 @@ import com.squareup.wire.internal.protoparser.DataType.MapType;
 import com.squareup.wire.internal.protoparser.DataType.NamedType;
 import com.squareup.wire.internal.protoparser.DataType.ScalarType;
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
+import com.squareup.wire.schema.Location;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,6 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class ProtoParserTest {
+  Location location = Location.get("file.proto");
+
   @Test public void typeParsing() {
     String proto = ""
         + "message Types {\n"
@@ -74,8 +77,8 @@ public final class ProtoParserTest {
         + "  required arbitrary f19 = 19;\n"
         + "  required nested.nested f20 = 20;\n"
         + "}\n";
-    ProtoFileElement expected = ProtoFileElement.builder("test.proto")
-        .addType(MessageElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(MessageElement.builder(location.at(1, 1))
             .name("Types")
             .addField(FieldElement.builder().label(REQUIRED).type(ANY).name("f1").tag(1).build())
             .addField(FieldElement.builder().label(REQUIRED).type(BOOL).name("f2").tag(2).build())
@@ -129,14 +132,14 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("test.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void singleLineComment() {
     String proto = ""
         + "// Test all the things!\n"
         + "message Test {}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     TypeElement type = parsed.typeElements().get(0);
     assertThat(type.documentation()).isEqualTo("Test all the things!");
   }
@@ -149,7 +152,7 @@ public final class ProtoParserTest {
     String expected = ""
         + "Test all\n"
         + "the things!";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     TypeElement type = parsed.typeElements().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
@@ -158,7 +161,7 @@ public final class ProtoParserTest {
     String proto = ""
         + "/** Test */\n"
         + "message Test {}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     TypeElement type = parsed.typeElements().get(0);
     assertThat(type.documentation()).isEqualTo("Test");
   }
@@ -175,7 +178,7 @@ public final class ProtoParserTest {
         + "Test\n"
         + "\n"
         + "Foo";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     TypeElement type = parsed.typeElements().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
@@ -192,7 +195,7 @@ public final class ProtoParserTest {
         + "  All\n"
         + "    The\n"
         + "      Things!";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     TypeElement type = parsed.typeElements().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
@@ -211,7 +214,7 @@ public final class ProtoParserTest {
         + "  All\n"
         + "    The\n"
         + "      Things!";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     TypeElement type = parsed.typeElements().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
@@ -231,7 +234,7 @@ public final class ProtoParserTest {
         + "All\n"
         + "The\n"
         + "Things!";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     TypeElement type = parsed.typeElements().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
@@ -242,7 +245,7 @@ public final class ProtoParserTest {
         + "message Test {\n"
         + "  optional string name = 1; // Test all the things!\n"
         + "}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     MessageElement message = (MessageElement) parsed.typeElements().get(0);
     FieldElement field = message.fields().get(0);
     assertThat(field.documentation()).isEqualTo("Test all the things!");
@@ -254,7 +257,7 @@ public final class ProtoParserTest {
         + "  // Test all...\n"
         + "  optional string name = 1; // ...the things!\n"
         + "}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     MessageElement message = (MessageElement) parsed.typeElements().get(0);
     FieldElement field = message.fields().get(0);
     assertThat(field.documentation()).isEqualTo("Test all...\n...the things!");
@@ -266,7 +269,7 @@ public final class ProtoParserTest {
         + "  optional string first_name = 1; // Testing!\n"
         + "  optional string last_name = 2;\n"
         + "}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     MessageElement message = (MessageElement) parsed.typeElements().get(0);
     FieldElement field1 = message.fields().get(0);
     assertThat(field1.documentation()).isEqualTo("Testing!");
@@ -279,7 +282,7 @@ public final class ProtoParserTest {
         + "enum Test {\n"
         + "  FOO = 1; // Test all the things!   \n"
         + "}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
     EnumConstantElement value = enumElement.constants().get(0);
     assertThat(value.documentation()).isEqualTo("Test all the things!");
@@ -291,7 +294,7 @@ public final class ProtoParserTest {
         + "  FOO = 1; /* Test all the things!  */  \n"
         + "  BAR = 2;/*Test all the things!*/\n"
         + "}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
     EnumConstantElement foo = enumElement.constants().get(0);
     assertThat(foo.documentation()).isEqualTo("Test all the things!");
@@ -305,10 +308,10 @@ public final class ProtoParserTest {
         + "  FOO = 1; /* Test all the things!   \n"
         + "}";
     try {
-      ProtoParser.parse("test.proto", proto);
+      ProtoParser.parse(location, proto);
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage(
-          "Syntax error in test.proto at 2:38: trailing comment must be closed on the same line");
+          "Syntax error in file.proto at 2:38: trailing comment must be closed on the same line");
     }
   }
 
@@ -318,10 +321,10 @@ public final class ProtoParserTest {
         + "  FOO = 1; /* Test all the things! */ BAR = 2;\n"
         + "}";
     try {
-      ProtoParser.parse("test.proto", proto);
+      ProtoParser.parse(location, proto);
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage(
-          "Syntax error in test.proto at 2:40: no syntax may follow trailing comment");
+          "Syntax error in file.proto at 2:40: no syntax may follow trailing comment");
     }
   }
 
@@ -331,10 +334,10 @@ public final class ProtoParserTest {
         + "  FOO = 1; /\n"
         + "}";
     try {
-      ProtoParser.parse("test.proto", proto);
+      ProtoParser.parse(location, proto);
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage(
-          "Syntax error in test.proto at 2:12: expected '//' or '/*'");
+          "Syntax error in file.proto at 2:12: expected '//' or '/*'");
     }
   }
 
@@ -344,7 +347,7 @@ public final class ProtoParserTest {
         + "  // Test all...\n"
         + "  FOO = 1; // ...the things!\n"
         + "}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
     EnumConstantElement value = enumElement.constants().get(0);
     assertThat(value.documentation()).isEqualTo("Test all...\n...the things!");
@@ -356,7 +359,7 @@ public final class ProtoParserTest {
         + "  // Test all...\n"
         + "  FOO = 1; //      \n"
         + "}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
     EnumConstantElement value = enumElement.constants().get(0);
     assertThat(value.documentation()).isEqualTo("Test all...");
@@ -364,7 +367,7 @@ public final class ProtoParserTest {
 
   @Test public void syntaxNotRequired() throws Exception {
     String proto = "message Foo {}";
-    ProtoFileElement parsed = ProtoParser.parse("test.proto", proto);
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
     assertThat(parsed.syntax()).isNull();
   }
 
@@ -372,11 +375,11 @@ public final class ProtoParserTest {
     String proto = ""
         + "syntax = \"proto3\";\n"
         + "message Foo {}";
-    ProtoFileElement expected = ProtoFileElement.builder("test.proto")
+    ProtoFileElement expected = ProtoFileElement.builder(location)
         .syntax(ProtoFileElement.Syntax.PROTO_3)
-        .addType(MessageElement.builder().name("Foo").build())
+        .addType(MessageElement.builder(location.at(2, 1)).name("Foo").build())
         .build();
-    assertThat(ProtoParser.parse("test.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void invalidSyntaxValueThrows() throws Exception {
@@ -384,10 +387,10 @@ public final class ProtoParserTest {
         + "syntax = \"proto4\";\n"
         + "message Foo {}";
     try {
-      ProtoParser.parse("test.proto", proto);
+      ProtoParser.parse(location, proto);
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage(
-          "Syntax error in test.proto at 1:18: 'syntax' must be 'proto2' or 'proto3'. Found: proto4");
+          "Syntax error in file.proto at 1:18: 'syntax' must be 'proto2' or 'proto3'. Found: proto4");
     }
   }
 
@@ -397,9 +400,9 @@ public final class ProtoParserTest {
         + "  syntax = \"proto2\";\n"
         + "}";
     try {
-      ProtoParser.parse("test.proto", proto);
+      ProtoParser.parse(location, proto);
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Syntax error in test.proto at 2:9: 'syntax' in MESSAGE");
+      assertThat(e).hasMessage("Syntax error in file.proto at 2:9: 'syntax' in MESSAGE");
     }
   }
 
@@ -410,8 +413,8 @@ public final class ProtoParserTest {
         + "  optional int32 page_number = 2;\n"
         + "  optional int32 result_per_page = 3;\n"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("search.proto")
-        .addType(MessageElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(MessageElement.builder(location.at(1, 1))
             .name("SearchRequest")
             .addField(FieldElement.builder()
                 .label(REQUIRED)
@@ -433,7 +436,7 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("search.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void parseMessageAndOneOf() throws Exception {
@@ -445,8 +448,8 @@ public final class ProtoParserTest {
         + "    int32 result_per_page = 3;\n"
         + "  }\n"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("search.proto")
-        .addType(MessageElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(MessageElement.builder(location.at(1, 1))
             .name("SearchRequest")
             .addField(FieldElement.builder()
                 .label(REQUIRED)
@@ -471,7 +474,7 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("search.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void parseEnum() throws Exception {
@@ -488,8 +491,8 @@ public final class ProtoParserTest {
         + "  // Quebec Maple syrup\n"
         + "  SYRUP = 3;\n"
         + "}\n";
-    ProtoFileElement expected = ProtoFileElement.builder("waffles.proto")
-        .addType(EnumElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(EnumElement.builder(location.at(5, 1))
             .name("Topping")
             .documentation("What's on my waffles.\nAlso works on pancakes.")
             .addConstant(EnumConstantElement.builder().name("FRUIT").tag(1).build())
@@ -505,7 +508,7 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("waffles.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void parseEnumWithOptions() throws Exception {
@@ -524,8 +527,8 @@ public final class ProtoParserTest {
         + "  // Quebec Maple syrup\n"
         + "  SYRUP = 3;\n"
         + "}\n";
-    ProtoFileElement expected = ProtoFileElement.builder("waffles.proto")
-        .addType(EnumElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(EnumElement.builder(location.at(5, 1))
             .name("Topping")
             .qualifiedName("Topping")
             .documentation("What's on my waffles.\nAlso works on pancakes.")
@@ -547,7 +550,7 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("waffles.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void packageDeclaration() throws Exception {
@@ -559,9 +562,9 @@ public final class ProtoParserTest {
         + "// files it parses.\n"
         + "message FileDescriptorSet {\n"
         + "}\n";
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
+    ProtoFileElement expected = ProtoFileElement.builder(location)
         .packageName("google.protobuf")
-        .addType(MessageElement.builder()
+        .addType(MessageElement.builder(location.at(6, 1))
             .name("FileDescriptorSet")
             .qualifiedName("google.protobuf.FileDescriptorSet")
             .documentation(
@@ -569,7 +572,7 @@ public final class ProtoParserTest {
             .build())
         .addOption(OptionElement.create("java_package", Kind.STRING, "com.google.protobuf"))
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void nestingInMessage() throws Exception {
@@ -583,7 +586,7 @@ public final class ProtoParserTest {
         + "  extensions 500;\n"
         + "  extensions 1000 to max;\n"
         + "}\n";
-    TypeElement enumElement = EnumElement.builder()
+    TypeElement enumElement = EnumElement.builder(location.at(3, 3))
         .name("CType")
         .qualifiedName("FieldOptions.CType")
         .addConstant(EnumConstantElement.builder()
@@ -605,7 +608,7 @@ public final class ProtoParserTest {
         OptionElement.create("default", Kind.ENUM, "STRING"), //
         OptionElement.create("deprecated", Kind.BOOLEAN, "true"));
 
-    TypeElement messageElement = MessageElement.builder()
+    TypeElement messageElement = MessageElement.builder(location.at(1, 1))
         .name("FieldOptions")
         .addField(field)
         .addType(enumElement)
@@ -614,8 +617,8 @@ public final class ProtoParserTest {
         .addExtensions(ExtensionsElement.create(1000, ProtoFileElement.MAX_TAG_VALUE))
         .build();
     ProtoFileElement
-        expected = ProtoFileElement.builder("descriptor.proto").addType(messageElement).build();
-    ProtoFileElement actual = ProtoParser.parse("descriptor.proto", proto);
+        expected = ProtoFileElement.builder(location).addType(messageElement).build();
+    ProtoFileElement actual = ProtoParser.parse(location, proto);
     assertThat(actual).isEqualTo(expected);
   }
 
@@ -628,8 +631,8 @@ public final class ProtoParserTest {
         + "  optional bool cha_chee_cha = 4;\n"
         + "}\n";
 
-    ProtoFileElement expected = ProtoFileElement.builder("chickens.proto")
-        .addType(MessageElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(MessageElement.builder(location.at(1, 1))
             .name("Chickens")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
@@ -662,23 +665,23 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("chickens.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void imports() throws Exception {
     String proto = "import \"src/test/resources/unittest_import.proto\";\n";
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
+    ProtoFileElement expected = ProtoFileElement.builder(location)
         .addDependency("src/test/resources/unittest_import.proto")
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void publicImports() throws Exception {
     String proto = "import public \"src/test/resources/unittest_import.proto\";\n";
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
+    ProtoFileElement expected = ProtoFileElement.builder(location)
         .addPublicDependency("src/test/resources/unittest_import.proto")
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void extend() throws Exception {
@@ -687,15 +690,15 @@ public final class ProtoParserTest {
         + "extend Foo {\n"
         + "  optional int32 bar = 126;\n"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
-        .addExtendDeclaration(ExtendElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addExtendDeclaration(ExtendElement.builder(location.at(2, 1))
             .name("Foo")
             .documentation("Extends Foo")
             .addField(
                 FieldElement.builder().label(OPTIONAL).type(INT32).name("bar").tag(126).build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void extendInMessage() throws Exception {
@@ -705,9 +708,9 @@ public final class ProtoParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
-        .addType(MessageElement.builder().name("Bar").build())
-        .addExtendDeclaration(ExtendElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(MessageElement.builder(location.at(1, 1)).name("Bar").build())
+        .addExtendDeclaration(ExtendElement.builder(location.at(2, 3))
             .name("Foo")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
@@ -717,22 +720,25 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void extendInMessageWithPackage() throws Exception {
     String proto = ""
         + "package kit.kat;\n"
-        + ""
+        + "\n"
         + "message Bar {\n"
         + "  extend Foo {\n"
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
+    ProtoFileElement expected = ProtoFileElement.builder(location)
         .packageName("kit.kat")
-        .addType(MessageElement.builder().name("Bar").qualifiedName("kit.kat.Bar").build())
-        .addExtendDeclaration(ExtendElement.builder()
+        .addType(MessageElement.builder(location.at(3, 1))
+            .name("Bar")
+            .qualifiedName("kit.kat.Bar")
+            .build())
+        .addExtendDeclaration(ExtendElement.builder(location.at(4, 3))
             .name("Foo")
             .qualifiedName("kit.kat.Foo")
             .addField(FieldElement.builder()
@@ -743,7 +749,7 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void fqcnExtendInMessage() throws Exception {
@@ -753,9 +759,9 @@ public final class ProtoParserTest {
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
-        .addType(MessageElement.builder().name("Bar").build())
-        .addExtendDeclaration(ExtendElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(MessageElement.builder(location.at(1, 1)).name("Bar").build())
+        .addExtendDeclaration(ExtendElement.builder(location.at(2, 3))
             .name("example.Foo")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
@@ -765,22 +771,25 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void fqcnExtendInMessageWithPackage() throws Exception {
     String proto = ""
         + "package kit.kat;\n"
-        + ""
+        + "\n"
         + "message Bar {\n"
         + "  extend example.Foo {\n"
         + "    optional Bar bar = 126;\n"
         + "  }\n"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
+    ProtoFileElement expected = ProtoFileElement.builder(location)
         .packageName("kit.kat")
-        .addType(MessageElement.builder().name("Bar").qualifiedName("kit.kat.Bar").build())
-        .addExtendDeclaration(ExtendElement.builder()
+        .addType(MessageElement.builder(location.at(3, 1))
+            .name("Bar")
+            .qualifiedName("kit.kat.Bar")
+            .build())
+        .addExtendDeclaration(ExtendElement.builder(location.at(4, 3))
             .name("example.Foo")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
@@ -790,7 +799,7 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void defaultFieldWithParen() throws Exception {
@@ -808,11 +817,14 @@ public final class ProtoParserTest {
     assertThat(field.options()).containsOnly(
         OptionElement.create("squareup.redacted", Kind.BOOLEAN, "true", true));
 
-    TypeElement messageElement = MessageElement.builder().name("Foo").addField(field).build();
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
+    TypeElement messageElement = MessageElement.builder(location.at(1, 1))
+        .name("Foo")
+        .addField(field)
+        .build();
+    ProtoFileElement expected = ProtoFileElement.builder(location)
         .addType(messageElement)
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto))
+    assertThat(ProtoParser.parse(location, proto))
         .isEqualTo(expected);
   }
 
@@ -835,11 +847,14 @@ public final class ProtoParserTest {
     assertThat(field.options()).containsOnly(OptionElement.create("default", Kind.STRING,
         "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"));
 
-    TypeElement messageElement = MessageElement.builder().name("Foo").addField(field).build();
-    ProtoFileElement expected = ProtoFileElement.builder("foo.proto")
+    TypeElement messageElement = MessageElement.builder(location.at(1, 1))
+        .name("Foo")
+        .addField(field)
+        .build();
+    ProtoFileElement expected = ProtoFileElement.builder(location)
         .addType(messageElement)
         .build();
-    assertThat(ProtoParser.parse("foo.proto", proto))
+    assertThat(ProtoParser.parse(location, proto))
         .isEqualTo(expected);
   }
 
@@ -850,7 +865,7 @@ public final class ProtoParserTest {
         + "[default = \"\\xW\"];\n"
         + "}";
     try {
-      ProtoParser.parse("foo.proto", proto);
+      ProtoParser.parse(location, proto);
       fail();
     } catch (IllegalStateException e) {
       assertThat(e.getMessage().contains("expected a digit after \\x or \\X"));
@@ -873,8 +888,8 @@ public final class ProtoParserTest {
         + "    };\n"
         + "  }\n"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("descriptor.proto")
-        .addService(ServiceElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addService(ServiceElement.builder(location.at(1, 1))
             .name("SearchService")
             .addOption(OptionElement.create("default_timeout", Kind.NUMBER, "30", true))
             .addRpc(RpcElement.builder()
@@ -892,7 +907,7 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("descriptor.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void serviceTypesMustBeNamed() {
@@ -901,20 +916,20 @@ public final class ProtoParserTest {
           + "service SearchService {\n"
           + "  rpc Search (string) returns (SearchResponse);"
           + "}";
-      ProtoParser.parse("test.proto", proto);
+      ProtoParser.parse(location, proto);
       fail();
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Syntax error in test.proto at 2:21: expected message but was string");
+      assertThat(e).hasMessage("Syntax error in file.proto at 2:21: expected message but was string");
     }
     try {
       String proto = ""
           + "service SearchService {\n"
           + "  rpc Search (SearchRequest) returns (string);"
           + "}";
-      ProtoParser.parse("test.proto", proto);
+      ProtoParser.parse(location, proto);
       fail();
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Syntax error in test.proto at 2:45: expected message but was string");
+      assertThat(e).hasMessage("Syntax error in file.proto at 2:45: expected message but was string");
     }
   }
 
@@ -924,8 +939,8 @@ public final class ProtoParserTest {
         + "  required string hex = 0x10;\n"
         + "  required string uppercase_x_hex = 0X11;\n"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("hex.proto")
-        .addType(MessageElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(MessageElement.builder(location.at(1, 1))
             .name("HexTag")
             .addField(FieldElement.builder()
                 .label(REQUIRED)
@@ -941,7 +956,7 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("hex.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void structuredOption() throws Exception {
@@ -954,7 +969,8 @@ public final class ProtoParserTest {
         + "  option (squareup.four) = {x: {y: {z: 1}, y: {z: 2}}};\n"
         + "}";
 
-    MessageElement.Builder expectedBuilder = MessageElement.builder().name("ExoticOptions");
+    MessageElement.Builder expectedBuilder = MessageElement.builder(location.at(1, 1))
+        .name("ExoticOptions");
 
     Map<String, String> option_one_map = new LinkedHashMap<>();
     option_one_map.put("name", "Name");
@@ -982,10 +998,10 @@ public final class ProtoParserTest {
     option_four_map.put("x", option_four_map_1);
     expectedBuilder.addOption(OptionElement.create("squareup.four", Kind.MAP, option_four_map, true));
 
-    ProtoFileElement expected = ProtoFileElement.builder("exotic.proto")
+    ProtoFileElement expected = ProtoFileElement.builder(location)
         .addType(expectedBuilder.build())
         .build();
-    assertThat(ProtoParser.parse("exotic.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void optionsWithNestedMapsAndTrailingCommas() throws Exception {
@@ -1016,12 +1032,14 @@ public final class ProtoParserTest {
         OptionElement.create("option_string", Kind.LIST,
             ImmutableList.of("string1", "string2"), true));
 
-    TypeElement expected =
-        MessageElement.builder().name("StructuredOption").addField(field).build();
-    ProtoFileElement protoFile = ProtoFileElement.builder("nestedmaps.proto")
+    TypeElement expected = MessageElement.builder(location.at(1, 1))
+        .name("StructuredOption")
+        .addField(field)
+        .build();
+    ProtoFileElement protoFile = ProtoFileElement.builder(location)
         .addType(expected)
         .build();
-    assertThat(ProtoParser.parse("nestedmaps.proto", proto))
+    assertThat(ProtoParser.parse(location, proto))
         .isEqualTo(protoFile);
   }
 
@@ -1045,8 +1063,8 @@ public final class ProtoParserTest {
         + "  optional bytes default_bytes = 415 [default = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
         + "  optional NestedEnum default_nested_enum = 416 [default = A ];"
         + "}";
-    ProtoFileElement expected = ProtoFileElement.builder("test.proto")
-        .addType(MessageElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(MessageElement.builder(location.at(1, 1))
             .name("Test")
             .addField(FieldElement.builder()
                 .label(OPTIONAL)
@@ -1164,7 +1182,7 @@ public final class ProtoParserTest {
                 .build())
             .build())
         .build();
-    assertThat(ProtoParser.parse("test.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void extensionWithNestedMessage() throws Exception {
@@ -1194,15 +1212,18 @@ public final class ProtoParserTest {
             OptionElement.create("max", Kind.NUMBER, "100"), true), //
         OptionElement.create("default", Kind.NUMBER, "20"));
 
-    TypeElement expected = MessageElement.builder().name("Foo").addField(field).build();
-    ProtoFileElement protoFile = ProtoFileElement.builder("foo.proto").addType(expected).build();
-    assertThat(ProtoParser.parse("foo.proto", proto)).isEqualTo(protoFile);
+    TypeElement expected = MessageElement.builder(location.at(1, 1))
+        .name("Foo")
+        .addField(field)
+        .build();
+    ProtoFileElement protoFile = ProtoFileElement.builder(location).addType(expected).build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(protoFile);
   }
 
   @Test public void noWhitespace() {
     String proto = "message C {optional A.B ab = 1;}";
-    ProtoFileElement expected = ProtoFileElement.builder("test.proto")
-        .addType(MessageElement.builder()
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .addType(MessageElement.builder(location.at(1, 1))
                 .name("C")
                 .addField(FieldElement.builder()
                     .label(OPTIONAL)
@@ -1212,6 +1233,6 @@ public final class ProtoParserTest {
                     .build())
                 .build())
         .build();
-    assertThat(ProtoParser.parse("test.proto", proto)).isEqualTo(expected);
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 }

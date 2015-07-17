@@ -15,28 +15,31 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.protoparser.DataType;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /** Links local field types and option types to the corresponding declarations. */
-public final class Linker {
+final class Linker {
+  private final ImmutableList<ProtoFile> protoFiles;
   private final Map<String, Type> protoTypeNames;
   private final Map<Type.Name, Map<String, Field>> extensionsMap;
 
   // Context when linking.
   private final List<Type> enclosingTypes;
 
-  public Linker() {
+  public Linker(Iterable<ProtoFile> protoFiles) {
+    this.protoFiles = ImmutableList.copyOf(protoFiles);
     this.protoTypeNames = new LinkedHashMap<>();
     this.extensionsMap = new LinkedHashMap<>();
     this.enclosingTypes = Collections.emptyList();
   }
 
   private Linker(Linker enclosing, Type type) {
+    this.protoFiles = enclosing.protoFiles;
     this.protoTypeNames = enclosing.protoTypeNames;
     this.extensionsMap = enclosing.extensionsMap;
     this.enclosingTypes = type != null
@@ -44,7 +47,7 @@ public final class Linker {
         : enclosing.enclosingTypes;
   }
 
-  public void link(Collection<ProtoFile> protoFiles) {
+  public Schema link() {
     // Register the types.
     for (ProtoFile protoFile : protoFiles) {
       for (Type type : protoFile.types()) {
@@ -93,6 +96,8 @@ public final class Linker {
         service.linkOptions(this);
       }
     }
+
+    return new Schema(protoFiles);
   }
 
   private void register(Type type) {

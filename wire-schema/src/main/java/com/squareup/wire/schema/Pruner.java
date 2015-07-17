@@ -16,18 +16,14 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** Removes unused types and services. */
-public final class Pruner {
+final class Pruner {
   /** Homogeneous identifiers including type names, service names, and RPC names. */
   final Set<String> marks = new LinkedHashSet<>();
 
@@ -41,13 +37,9 @@ public final class Pruner {
    * @param roots a set of identifiers to retain, which may be fully qualified type names, fully
    *     qualified service names, or service RPCs like {@code package.ServiceName#MethodName}.
    */
-  public ImmutableList<ProtoFile> retainRoots(
-      List<ProtoFile> protoFiles, Collection<String> roots) {
+  public Schema retainRoots(Schema schema, Collection<String> roots) {
     if (roots.isEmpty()) throw new IllegalArgumentException();
     if (!marks.isEmpty()) throw new IllegalStateException();
-
-    Map<String, Type> typesIndex = buildTypesIndex(protoFiles);
-    Map<String, Service> servicesIndex = buildServicesIndex(protoFiles);
 
     // Mark and enqueue the roots.
     for (String s : roots) {
@@ -55,7 +47,7 @@ public final class Pruner {
     }
 
     // Extensions and options are also roots.
-    for (ProtoFile protoFile : protoFiles) {
+    for (ProtoFile protoFile : schema.protoFiles()) {
       for (Extend extend : protoFile.extendList()) {
         markExtend(extend);
       }
@@ -68,13 +60,13 @@ public final class Pruner {
         continue; // Skip scalar types.
       }
 
-      Type type = typesIndex.get(name);
+      Type type = schema.getType(name);
       if (type != null) {
         markType(type);
         continue;
       }
 
-      Service service = servicesIndex.get(name);
+      Service service = schema.getService(name);
       if (service != null) {
         markService(service);
         continue;
@@ -85,7 +77,7 @@ public final class Pruner {
       if (hash != -1) {
         String serviceName = name.substring(0, hash);
         String rpcName = name.substring(hash + 1);
-        Service partialService = servicesIndex.get(serviceName);
+        Service partialService = schema.getService(serviceName);
         if (partialService != null) {
           Rpc rpc = partialService.rpc(rpcName);
           if (rpc != null) {
@@ -100,39 +92,11 @@ public final class Pruner {
     }
 
     ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
-    for (ProtoFile protoFile : protoFiles) {
+    for (ProtoFile protoFile : schema.protoFiles()) {
       retained.add(protoFile.retainAll(marks));
     }
 
-    return retained.build();
-  }
-
-  private static Map<String, Type> buildTypesIndex(Collection<ProtoFile> protoFiles) {
-    Map<String, Type> result = new LinkedHashMap<>();
-    for (ProtoFile protoFile : protoFiles) {
-      for (Type type : protoFile.types()) {
-        index(result, type);
-      }
-    }
-    return ImmutableMap.copyOf(result);
-  }
-
-  private static void index(Map<String, Type> typesByName, Type type) {
-    typesByName.put(type.name().toString(), type);
-    for (Type nested : type.nestedTypes()) {
-      index(typesByName, nested);
-    }
-  }
-
-  private static ImmutableMap<String, Service> buildServicesIndex(
-      Collection<ProtoFile> protoFiles) {
-    ImmutableMap.Builder<String, Service> result = ImmutableMap.builder();
-    for (ProtoFile protoFile : protoFiles) {
-      for (Service service : protoFile.services()) {
-        result.put(service.name().toString(), service);
-      }
-    }
-    return result.build();
+    return new Schema(retained.build());
   }
 
   private void mark(Type.Name typeName) {

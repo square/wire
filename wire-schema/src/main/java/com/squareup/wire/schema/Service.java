@@ -46,6 +46,10 @@ public final class Service {
     return new Service(name, element, rpcs.build(), options);
   }
 
+  public Location location() {
+    return element.location();
+  }
+
   public Type.Name name() {
     return name;
   }

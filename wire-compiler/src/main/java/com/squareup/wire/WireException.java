@@ -20,6 +20,10 @@ final class WireException extends Exception {
     super(message);
   }
 
+  public WireException(Throwable cause) {
+    super(cause);
+  }
+
   public WireException(String message, Throwable throwable) {
     super(message, throwable);
   }

@@ -17,6 +17,7 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -57,13 +58,14 @@ public abstract class MessageElement implements TypeElement {
     }
   }
 
-  public static Builder builder() {
-    return new Builder();
+  public static Builder builder(Location location) {
+    return new Builder(location);
   }
 
   MessageElement() {
   }
 
+  @Override public abstract Location location();
   @Override public abstract String name();
   @Override public abstract String qualifiedName();
   @Override public abstract String documentation();
@@ -113,6 +115,7 @@ public abstract class MessageElement implements TypeElement {
   }
 
   public static final class Builder {
+    private Location location;
     private String name;
     private String qualifiedName;
     private String documentation = "";
@@ -122,7 +125,8 @@ public abstract class MessageElement implements TypeElement {
     private final List<ExtensionsElement> extensions = new ArrayList<>();
     private final List<OptionElement> options = new ArrayList<>();
 
-    private Builder() {
+    private Builder(Location location) {
+      this.location = checkNotNull(location, "location");
     }
 
     public Builder name(String name) {
@@ -211,7 +215,7 @@ public abstract class MessageElement implements TypeElement {
       validateFieldLabel(qualifiedName, fields);
       EnumElement.validateValueUniquenessInScope(qualifiedName, nestedElements);
 
-      return new AutoValue_MessageElement(name, qualifiedName, documentation,
+      return new AutoValue_MessageElement(location, name, qualifiedName, documentation,
           ImmutableList.copyOf(fields), ImmutableList.copyOf(oneOfs),
           ImmutableList.copyOf(nestedElements),
           ImmutableList.copyOf(extensions), ImmutableList.copyOf(options));

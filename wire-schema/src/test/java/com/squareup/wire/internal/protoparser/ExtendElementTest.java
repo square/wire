@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.squareup.wire.schema.Location;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -25,9 +26,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class ExtendElementTest {
+  Location location = Location.get("file.proto");
+
+  @Test public void locationRequired() {
+    try {
+      ExtendElement.builder(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("location");
+    }
+  }
+
   @Test public void nameRequired() {
     try {
-      ExtendElement.builder().qualifiedName("Test").build();
+      ExtendElement.builder(location).qualifiedName("Test").build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
@@ -35,44 +47,44 @@ public class ExtendElementTest {
   }
 
   @Test public void nameSetsQualifiedName() {
-    ExtendElement test = ExtendElement.builder().name("Test").build();
+    ExtendElement test = ExtendElement.builder(location).name("Test").build();
     assertThat(test.name()).isEqualTo("Test");
     assertThat(test.qualifiedName()).isEqualTo("Test");
   }
 
   @Test public void nullBuilderValuesThrow() {
     try {
-      ExtendElement.builder().name(null);
+      ExtendElement.builder(location).name(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
     }
     try {
-      ExtendElement.builder().qualifiedName(null);
+      ExtendElement.builder(location).qualifiedName(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("qualifiedName");
     }
     try {
-      ExtendElement.builder().documentation(null);
+      ExtendElement.builder(location).documentation(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("documentation");
     }
     try {
-      ExtendElement.builder().addField(null);
+      ExtendElement.builder(location).addField(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("field");
     }
     try {
-      ExtendElement.builder().addFields(null);
+      ExtendElement.builder(location).addFields(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("fields");
     }
     try {
-      ExtendElement.builder().addFields(Collections.<FieldElement>singleton(null));
+      ExtendElement.builder(location).addFields(Collections.<FieldElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("field");
@@ -80,13 +92,13 @@ public class ExtendElementTest {
   }
 
   @Test public void emptyToSchema() {
-    ExtendElement extend = ExtendElement.builder().name("Name").build();
+    ExtendElement extend = ExtendElement.builder(location).name("Name").build();
     String expected = "extend Name {}\n";
     assertThat(extend.toSchema()).isEqualTo(expected);
   }
 
   @Test public void simpleToSchema() {
-    ExtendElement extend = ExtendElement.builder()
+    ExtendElement extend = ExtendElement.builder(location)
         .name("Name")
         .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
         .build();
@@ -102,7 +114,7 @@ public class ExtendElementTest {
         FieldElement.builder().label(REQUIRED).type(STRING).name("first_name").tag(1).build();
     FieldElement lastName =
         FieldElement.builder().label(REQUIRED).type(STRING).name("last_name").tag(2).build();
-    ExtendElement extend = ExtendElement.builder()
+    ExtendElement extend = ExtendElement.builder(location)
         .name("Name")
         .addFields(Arrays.asList(firstName, lastName))
         .build();
@@ -110,7 +122,7 @@ public class ExtendElementTest {
   }
 
   @Test public void simpleWithDocumentationToSchema() {
-    ExtendElement extend = ExtendElement.builder()
+    ExtendElement extend = ExtendElement.builder(location)
         .name("Name")
         .documentation("Hello")
         .addField(FieldElement.builder()
@@ -142,7 +154,7 @@ public class ExtendElementTest {
         .tag(1)
         .build();
     try {
-      ExtendElement.builder()
+      ExtendElement.builder(location)
           .name("Extend")
           .qualifiedName("example.Extend")
           .addField(field1)

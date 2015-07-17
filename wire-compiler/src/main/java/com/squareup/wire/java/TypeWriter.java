@@ -40,8 +40,9 @@ import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
 import com.squareup.wire.schema.Options;
-import com.squareup.wire.schema.Type;
 import com.squareup.wire.schema.ProtoFile;
+import com.squareup.wire.schema.Schema;
+import com.squareup.wire.schema.Type;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,7 +107,7 @@ public final class TypeWriter {
     constructorBuilder.addParameter(TypeName.INT, "value");
 
     // Enum constant options, each of which requires a constructor parameter and a field.
-    Set<Field> allOptionFieldsBuilder = new LinkedHashSet<Field>();
+    Set<Field> allOptionFieldsBuilder = new LinkedHashSet<>();
     for (EnumConstant constant : type.constants()) {
       for (Field optionField : constant.options().map().keySet()) {
         String fullyQualifiedName = optionField.packageName() + "." + optionField.name();
@@ -865,12 +866,12 @@ public final class TypeWriter {
     }
   }
 
-  public TypeSpec registryType(ClassName javaTypeName, List<ProtoFile> protoFiles) {
+  public TypeSpec registryType(ClassName javaTypeName, Schema schema) {
     TypeSpec.Builder builder = TypeSpec.classBuilder(javaTypeName.simpleName())
         .addModifiers(PUBLIC, FINAL);
 
     ImmutableSet.Builder<TypeName> extensionClassesBuilder = ImmutableSet.builder();
-    for (ProtoFile protoFile : protoFiles) {
+    for (ProtoFile protoFile : schema.protoFiles()) {
       if (!protoFile.extendList().isEmpty()) {
         extensionClassesBuilder.add(javaGenerator.extensionsClass(protoFile));
       }

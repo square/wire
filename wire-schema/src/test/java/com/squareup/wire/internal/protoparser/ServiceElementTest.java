@@ -17,6 +17,7 @@ package com.squareup.wire.internal.protoparser;
 
 import com.squareup.wire.internal.protoparser.DataType.NamedType;
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
+import com.squareup.wire.schema.Location;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -25,9 +26,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class ServiceElementTest {
+  Location location = Location.get("file.proto");
+
+  @Test public void locationRequired() {
+    try {
+      ServiceElement.builder(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("location");
+    }
+  }
+
   @Test public void nameRequired() {
     try {
-      ServiceElement.builder().qualifiedName("Test").build();
+      ServiceElement.builder(location).qualifiedName("Test").build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
@@ -35,62 +47,62 @@ public class ServiceElementTest {
   }
 
   @Test public void nameSetsQualifiedName() {
-    ServiceElement test = ServiceElement.builder().name("Test").build();
+    ServiceElement test = ServiceElement.builder(location).name("Test").build();
     assertThat(test.name()).isEqualTo("Test");
     assertThat(test.qualifiedName()).isEqualTo("Test");
   }
 
   @Test public void nullBuilderValuesThrow() {
     try {
-      ServiceElement.builder().name(null);
+      ServiceElement.builder(location).name(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
     }
     try {
-      ServiceElement.builder().qualifiedName(null);
+      ServiceElement.builder(location).qualifiedName(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("qualifiedName");
     }
     try {
-      ServiceElement.builder().documentation(null);
+      ServiceElement.builder(location).documentation(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("documentation");
     }
     try {
-      ServiceElement.builder().addRpc(null);
+      ServiceElement.builder(location).addRpc(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("rpc");
     }
     try {
-      ServiceElement.builder().addRpcs(null);
+      ServiceElement.builder(location).addRpcs(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("rpcs");
     }
     try {
-      ServiceElement.builder().addRpcs(Collections.<RpcElement>singleton(null));
+      ServiceElement.builder(location).addRpcs(Collections.<RpcElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("rpc");
     }
     try {
-      ServiceElement.builder().addOption(null);
+      ServiceElement.builder(location).addOption(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
     }
     try {
-      ServiceElement.builder().addOptions(null);
+      ServiceElement.builder(location).addOptions(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("options");
     }
     try {
-      ServiceElement.builder().addOptions(Collections.<OptionElement>singleton(null));
+      ServiceElement.builder(location).addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
@@ -98,13 +110,13 @@ public class ServiceElementTest {
   }
 
   @Test public void emptyToSchema() {
-    ServiceElement service = ServiceElement.builder().name("Service").build();
+    ServiceElement service = ServiceElement.builder(location).name("Service").build();
     String expected = "service Service {}\n";
     assertThat(service.toSchema()).isEqualTo(expected);
   }
 
   @Test public void singleToSchema() {
-    ServiceElement service = ServiceElement.builder()
+    ServiceElement service = ServiceElement.builder(location)
         .name("Service")
         .addRpc(RpcElement.builder()
             .name("Name")
@@ -130,7 +142,7 @@ public class ServiceElementTest {
         .requestType(NamedType.create("RequestType"))
         .responseType(NamedType.create("ResponseType"))
         .build();
-    ServiceElement service = ServiceElement.builder()
+    ServiceElement service = ServiceElement.builder(location)
         .name("Service")
         .addRpcs(Arrays.asList(firstName, lastName))
         .build();
@@ -138,7 +150,7 @@ public class ServiceElementTest {
   }
 
   @Test public void singleWithOptionsToSchema() {
-    ServiceElement service = ServiceElement.builder()
+    ServiceElement service = ServiceElement.builder(location)
         .name("Service")
         .addOption(OptionElement.create("foo", Kind.STRING, "bar"))
         .addRpc(RpcElement.builder()
@@ -159,7 +171,7 @@ public class ServiceElementTest {
   @Test public void addMultipleOptions() {
     OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
     OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
-    ServiceElement service = ServiceElement.builder()
+    ServiceElement service = ServiceElement.builder(location)
         .name("Service")
         .addOptions(Arrays.asList(kitKat, fooBar))
         .addRpc(RpcElement.builder()
@@ -172,7 +184,7 @@ public class ServiceElementTest {
   }
 
   @Test public void singleWithDocumentationToSchema() {
-    ServiceElement service = ServiceElement.builder()
+    ServiceElement service = ServiceElement.builder(location)
         .name("Service")
         .documentation("Hello")
         .addRpc(RpcElement.builder()
@@ -196,7 +208,7 @@ public class ServiceElementTest {
         .responseType(NamedType.create("ResponseType"))
         .build();
     ServiceElement service =
-        ServiceElement.builder().name("Service").addRpc(rpc).addRpc(rpc).build();
+        ServiceElement.builder(location).name("Service").addRpc(rpc).addRpc(rpc).build();
     String expected = ""
         + "service Service {\n"
         + "  rpc Name (RequestType) returns (ResponseType);\n"

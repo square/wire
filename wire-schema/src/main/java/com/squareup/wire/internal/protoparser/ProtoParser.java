@@ -19,15 +19,7 @@ import com.google.auto.value.AutoValue;
 import com.squareup.wire.internal.protoparser.DataType.MapType;
 import com.squareup.wire.internal.protoparser.DataType.NamedType;
 import com.squareup.wire.internal.protoparser.DataType.ScalarType;
-import java.io.CharArrayWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,46 +28,15 @@ import java.util.Map;
 
 import static com.squareup.wire.internal.protoparser.ProtoFileElement.Syntax.PROTO_2;
 import static com.squareup.wire.internal.protoparser.ProtoFileElement.Syntax.PROTO_3;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /** Basic parser for {@code .proto} schema declarations. */
 public final class ProtoParser {
-  /** Parse a {@code .proto} definition file. */
-  public static ProtoFileElement parseUtf8(File file) throws IOException {
-    try (InputStream is = new FileInputStream(file)) {
-      return parseUtf8(file.getPath(), is);
-    }
-  }
-
-  /** Parse a {@code .proto} definition file. */
-  public static ProtoFileElement parseUtf8(Path path) throws IOException {
-    try (Reader reader = Files.newBufferedReader(path, UTF_8)) {
-      return parse(path.toString(), reader);
-    }
-  }
-
-  /** Parse a named {@code .proto} schema. The {@code InputStream} is not closed. */
-  public static ProtoFileElement parseUtf8(String name, InputStream is) throws IOException {
-    return parse(name, new InputStreamReader(is, UTF_8));
-  }
-
-  /** Parse a named {@code .proto} schema. The {@code Reader} is not closed. */
-  public static ProtoFileElement parse(String name, Reader reader) throws IOException {
-    CharArrayWriter writer = new CharArrayWriter();
-    char[] buffer = new char[1024];
-    int count;
-    while ((count = reader.read(buffer)) != -1) {
-      writer.write(buffer, 0, count);
-    }
-    return new ProtoParser(name, writer.toCharArray()).readProtoFile();
-  }
-
   /** Parse a named {@code .proto} schema. */
-  public static ProtoFileElement parse(String name, String data) {
-    return new ProtoParser(name, data.toCharArray()).readProtoFile();
+  public static ProtoFileElement parse(Location location, String data) {
+    return new ProtoParser(location, data.toCharArray()).readProtoFile();
   }
 
-  private final String filePath;
+  private final Location location;
   private final char[] data;
   private final ProtoFileElement.Builder fileBuilder;
 
@@ -91,10 +52,10 @@ public final class ProtoParser {
   /** The current package name + nested type names, separated by dots. */
   private String prefix = "";
 
-  ProtoParser(String filePath, char[] data) {
-    this.filePath = filePath;
+  ProtoParser(Location location, char[] data) {
+    this.location = location;
     this.data = data;
-    this.fileBuilder = ProtoFileElement.builder(filePath);
+    this.fileBuilder = ProtoFileElement.builder(location);
   }
 
   ProtoFileElement readProtoFile() {
@@ -123,6 +84,7 @@ public final class ProtoParser {
       return null;
     }
 
+    Location location = location();
     String label = readWord();
 
     if (label.equals("package")) {
@@ -164,13 +126,13 @@ public final class ProtoParser {
       if (readChar() != ';') throw unexpected("expected ';'");
       return result;
     } else if (label.equals("message")) {
-      return readMessage(documentation);
+      return readMessage(location, documentation);
     } else if (label.equals("enum")) {
-      return readEnumElement(documentation);
+      return readEnumElement(location, documentation);
     } else if (label.equals("service")) {
-      return readService(documentation);
+      return readService(location, documentation);
     } else if (label.equals("extend")) {
-      return readExtend(documentation);
+      return readExtend(location, documentation);
     } else if (label.equals("rpc")) {
       if (!context.permitsRpc()) throw unexpected("'rpc' in " + context);
       return readRpc(documentation);
@@ -213,9 +175,9 @@ public final class ProtoParser {
   }
 
   /** Reads a message declaration. */
-  private MessageElement readMessage(String documentation) {
+  private MessageElement readMessage(Location location, String documentation) {
     String name = readName();
-    MessageElement.Builder builder = MessageElement.builder()
+    MessageElement.Builder builder = MessageElement.builder(location)
         .name(name)
         .qualifiedName(prefix + name)
         .documentation(documentation);
@@ -252,13 +214,13 @@ public final class ProtoParser {
   }
 
   /** Reads an extend declaration. */
-  private ExtendElement readExtend(String documentation) {
+  private ExtendElement readExtend(Location location, String documentation) {
     String name = readName();
     String qualifiedName = name;
     if (!name.contains(".") && packageName != null) {
       qualifiedName = packageName + "." + name;
     }
-    ExtendElement.Builder builder = ExtendElement.builder()
+    ExtendElement.Builder builder = ExtendElement.builder(location)
         .name(name)
         .qualifiedName(qualifiedName)
         .documentation(documentation);
@@ -279,9 +241,9 @@ public final class ProtoParser {
   }
 
   /** Reads a service declaration and returns it. */
-  private ServiceElement readService(String documentation) {
+  private ServiceElement readService(Location location, String documentation) {
     String name = readName();
-    ServiceElement.Builder builder = ServiceElement.builder()
+    ServiceElement.Builder builder = ServiceElement.builder(location)
         .name(name)
         .qualifiedName(prefix + name)
         .documentation(documentation);
@@ -304,9 +266,9 @@ public final class ProtoParser {
   }
 
   /** Reads an enumerated type declaration and returns it. */
-  private EnumElement readEnumElement(String documentation) {
+  private EnumElement readEnumElement(Location location, String documentation) {
     String name = readName();
-    EnumElement.Builder builder = EnumElement.builder()
+    EnumElement.Builder builder = EnumElement.builder(location)
         .name(name)
         .qualifiedName(prefix + name)
         .documentation(documentation);
@@ -949,17 +911,13 @@ public final class ProtoParser {
     lineStart = pos;
   }
 
-  private int column() {
-    return pos - lineStart + 1;
-  }
-
-  private int line() {
-    return line + 1;
+  private Location location() {
+    return location.at(line + 1, pos - lineStart + 1);
   }
 
   private RuntimeException unexpected(String message) {
     throw new IllegalStateException(
-        String.format("Syntax error in %s at %d:%d: %s", filePath, line(), column(), message));
+        String.format("Syntax error in %s: %s", location(), message));
   }
 
   enum Context {
