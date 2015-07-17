@@ -125,24 +125,28 @@ public abstract class Message implements Serializable {
         : unknownFields.fieldMap.values();
   }
 
-  /**
-   * Utility method to return a mutable copy of a given List. Used by generated code.
-   */
-  protected static <T> List<T> copyOf(List<T> source) {
-    return source == null ? null : new ArrayList<T>(source);
+  /** Utility method to return a mutable copy of a given List. Used by generated code. */
+  protected static <T> List<T> copyOf(List<T> list) {
+    if (list == null) {
+      throw new NullPointerException("list == null");
+    }
+    if (list == Collections.emptyList()) {
+      return list;
+    }
+    return new ArrayList<T>(list);
   }
 
-  /**
-   * Utility method to return an immutable copy of a given List. Used by generated code.
-   * If {@code source} is null, {@link Collections#emptyList()} is returned.
-   */
-  protected static <T> List<T> immutableCopyOf(List<T> source) {
-    if (source == null) {
-      return Collections.emptyList();
-    } else if (source instanceof MessageAdapter.ImmutableList) {
-      return source;
+  /** Utility method to return an immutable copy of a given List. Used by generated code. */
+  protected static <T> List<T> immutableCopyOf(List<T> list) {
+    if (list == null) {
+      throw new NullPointerException("list == null");
     }
-    return Collections.unmodifiableList(new ArrayList<T>(source));
+    if (list == Collections.emptyList()) {
+      return list;
+    } else if (list instanceof MessageAdapter.ImmutableList) {
+      return list;
+    }
+    return Collections.unmodifiableList(new ArrayList<T>(list));
   }
 
   /**
@@ -280,7 +284,7 @@ public abstract class Message implements Serializable {
      */
     protected static <T> List<T> canonicalizeList(List<T> list) {
       if (list == null) {
-        return Collections.emptyList();
+        throw new NullPointerException("list == null");
       }
       for (int i = 0, size = list.size(); i < size; i++) {
         T element = list.get(i);

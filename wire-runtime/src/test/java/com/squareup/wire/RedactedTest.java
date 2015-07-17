@@ -71,9 +71,8 @@ public class RedactedTest {
 
   @Test
   public void testRedactorRepeated() {
-    RedactedRepeated message = new RedactedRepeated.Builder().a(Arrays.asList("a", "b")).build();
-    RedactedRepeated expected =
-        new RedactedRepeated.Builder(message).a(Collections.<String>emptyList()).build();
+    RedactedRepeated message = new RedactedRepeated(Arrays.asList("a", "b"));
+    RedactedRepeated expected = new RedactedRepeated(Collections.<String>emptyList());
     assertThat(Redactor.get(RedactedRepeated.class).redact(message)).isEqualTo(expected);
   }
 
