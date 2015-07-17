@@ -17,6 +17,7 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,20 +31,21 @@ import static com.squareup.wire.internal.protoparser.Utils.appendIndented;
 
 @AutoValue
 public abstract class FieldElement {
-  public static Builder builder() {
-    return new Builder();
+  public static Builder builder(Location location) {
+    return new Builder(location);
   }
 
   FieldElement() {
   }
 
+  public abstract Location location();
   public abstract Label label();
   /**
    * Returns the type of this field. May be a message type name, an enum type
    * name, or a <a href="https://developers.google.com/protocol-buffers/docs/proto#scalar">
    * scalar value type</a> like {@code int64} or {@code bytes}.
    */
-  public abstract DataType type();
+  public abstract String type();
   public abstract String name();
   public abstract int tag();
   public abstract String documentation();
@@ -95,14 +97,16 @@ public abstract class FieldElement {
   }
 
   public static final class Builder {
+    private final Location location;
     private Label label;
-    private DataType type;
+    private String type;
     private String name;
     private Integer tag;
     private String documentation = "";
     private final List<OptionElement> options = new ArrayList<>();
 
-    private Builder() {
+    private Builder(Location location) {
+      this.location = checkNotNull(location, "location");
     }
 
     public Builder label(Label label) {
@@ -110,7 +114,7 @@ public abstract class FieldElement {
       return this;
     }
 
-    public Builder type(DataType type) {
+    public Builder type(String type) {
       this.type = checkNotNull(type, "type");
       return this;
     }
@@ -150,7 +154,7 @@ public abstract class FieldElement {
 
       checkArgument(isValidTag(tag), "Illegal tag value: %s", tag);
 
-      return new AutoValue_FieldElement(label, type, name, tag, documentation,
+      return new AutoValue_FieldElement(location, label, type, name, tag, documentation,
           ImmutableList.copyOf(options));
     }
   }

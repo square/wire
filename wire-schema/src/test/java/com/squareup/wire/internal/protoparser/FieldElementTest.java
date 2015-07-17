@@ -15,23 +15,24 @@
  */
 package com.squareup.wire.internal.protoparser;
 
-import com.squareup.wire.internal.protoparser.DataType.NamedType;
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
+import com.squareup.wire.schema.Location;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.DataType.ScalarType.STRING;
 import static com.squareup.wire.internal.protoparser.FieldElement.Label.OPTIONAL;
 import static com.squareup.wire.internal.protoparser.FieldElement.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class FieldElementTest {
+  Location location = Location.get("file.proto");
+
   @Test public void field() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(OPTIONAL)
-        .type(NamedType.create("CType"))
+        .type("CType")
         .name("ctype")
         .tag(1)
         .addOption(OptionElement.create("default", Kind.ENUM, "TEST"))
@@ -45,17 +46,17 @@ public final class FieldElementTest {
   }
 
   @Test public void deprecatedSupportStringAndBoolean() {
-    FieldElement field1 = FieldElement.builder()
+    FieldElement field1 = FieldElement.builder(location)
         .label(OPTIONAL)
-        .type(NamedType.create("CType"))
+        .type("CType")
         .name("ctype")
         .tag(1)
         .addOption(OptionElement.create("deprecated", Kind.STRING, "true"))
         .build();
     assertThat(field1.isDeprecated()).isTrue();
-    FieldElement field2 = FieldElement.builder()
+    FieldElement field2 = FieldElement.builder(location)
         .label(OPTIONAL)
-        .type(NamedType.create("CType"))
+        .type("CType")
         .name("ctype")
         .tag(1)
         .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "true"))
@@ -64,17 +65,17 @@ public final class FieldElementTest {
   }
 
   @Test public void packedSupportStringAndBoolean() {
-    FieldElement field1 = FieldElement.builder()
+    FieldElement field1 = FieldElement.builder(location)
         .label(OPTIONAL)
-        .type(NamedType.create("CType"))
+        .type("CType")
         .name("ctype")
         .tag(1)
         .addOption(OptionElement.create("packed", Kind.STRING, "true"))
         .build();
     assertThat(field1.isPacked()).isTrue();
-    FieldElement field2 = FieldElement.builder()
+    FieldElement field2 = FieldElement.builder(location)
         .label(OPTIONAL)
-        .type(NamedType.create("CType"))
+        .type("CType")
         .name("ctype")
         .tag(1)
         .addOption(OptionElement.create("packed", Kind.BOOLEAN, "true"))
@@ -85,9 +86,9 @@ public final class FieldElementTest {
   @Test public void addMultipleOptions() {
     OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
     OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name")
         .tag(1)
         .addOptions(Arrays.asList(kitKat, fooBar))
@@ -97,7 +98,7 @@ public final class FieldElementTest {
 
   @Test public void labelRequired() {
     try {
-      FieldElement.builder().type(STRING).name("name").tag(1).build();
+      FieldElement.builder(location).type("string").name("name").tag(1).build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("label");
@@ -106,7 +107,7 @@ public final class FieldElementTest {
 
   @Test public void typeRequired() {
     try {
-      FieldElement.builder().label(REQUIRED).name("name").tag(1).build();
+      FieldElement.builder(location).label(REQUIRED).name("name").tag(1).build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("type");
@@ -115,7 +116,7 @@ public final class FieldElementTest {
 
   @Test public void nameRequired() {
     try {
-      FieldElement.builder().label(REQUIRED).type(STRING).tag(1).build();
+      FieldElement.builder(location).label(REQUIRED).type("string").tag(1).build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
@@ -124,7 +125,7 @@ public final class FieldElementTest {
 
   @Test public void tagRequired() {
     try {
-      FieldElement.builder().label(REQUIRED).type(STRING).name("name").build();
+      FieldElement.builder(location).label(REQUIRED).type("string").name("name").build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("tag");
@@ -133,37 +134,43 @@ public final class FieldElementTest {
 
   @Test public void nullBuilderValuesThrow() {
     try {
-      FieldElement.builder().type(null);
+      FieldElement.builder(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("location");
+    }
+    try {
+      FieldElement.builder(location).type(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("type");
     }
     try {
-      FieldElement.builder().name(null);
+      FieldElement.builder(location).name(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
     }
     try {
-      FieldElement.builder().documentation(null);
+      FieldElement.builder(location).documentation(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("documentation");
     }
     try {
-      FieldElement.builder().addOption(null);
+      FieldElement.builder(location).addOption(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
     }
     try {
-      FieldElement.builder().addOptions(null);
+      FieldElement.builder(location).addOptions(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("options");
     }
     try {
-      FieldElement.builder().addOptions(Collections.<OptionElement>singleton(null));
+      FieldElement.builder(location).addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");

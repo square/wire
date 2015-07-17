@@ -77,12 +77,14 @@ public final class Service {
   }
 
   void link(Linker linker) {
+    linker = linker.withContext(this);
     for (Rpc rpc : rpcs) {
       rpc.link(linker);
     }
   }
 
   void linkOptions(Linker linker) {
+    linker = linker.withContext(this);
     for (Rpc rpc : rpcs) {
       rpc.linkOptions(linker);
     }

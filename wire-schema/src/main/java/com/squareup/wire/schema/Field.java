@@ -29,6 +29,10 @@ public final class Field {
     this.options = new Options(Type.Name.FIELD_OPTIONS, packageName, element.options());
   }
 
+  public Location location() {
+    return element.location();
+  }
+
   public String packageName() {
     return packageName;
   }
@@ -82,10 +86,12 @@ public final class Field {
   }
 
   void link(Linker linker) {
+    linker = linker.withContext(this);
     type = linker.resolveType(packageName, element.type());
   }
 
   void linkOptions(Linker linker) {
+    linker = linker.withContext(this);
     options.link(linker);
   }
 

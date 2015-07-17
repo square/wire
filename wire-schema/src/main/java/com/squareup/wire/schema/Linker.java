@@ -16,7 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.internal.protoparser.DataType;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,24 +27,23 @@ final class Linker {
   private final ImmutableList<ProtoFile> protoFiles;
   private final Map<String, Type> protoTypeNames;
   private final Map<Type.Name, Map<String, Field>> extensionsMap;
-
-  // Context when linking.
-  private final List<Type> enclosingTypes;
+  private final List<String> errors;
+  private final List<Object> contextStack;
 
   public Linker(Iterable<ProtoFile> protoFiles) {
     this.protoFiles = ImmutableList.copyOf(protoFiles);
     this.protoTypeNames = new LinkedHashMap<>();
     this.extensionsMap = new LinkedHashMap<>();
-    this.enclosingTypes = Collections.emptyList();
+    this.contextStack = Collections.emptyList();
+    this.errors = new ArrayList<>();
   }
 
-  private Linker(Linker enclosing, Type type) {
+  private Linker(Linker enclosing, Object additionalContext) {
     this.protoFiles = enclosing.protoFiles;
     this.protoTypeNames = enclosing.protoTypeNames;
     this.extensionsMap = enclosing.extensionsMap;
-    this.enclosingTypes = type != null
-        ? Util.concatenate(enclosing.enclosingTypes, type)
-        : enclosing.enclosingTypes;
+    this.contextStack = Util.concatenate(enclosing.contextStack, additionalContext);
+    this.errors = enclosing.errors;
   }
 
   public Schema link() {
@@ -97,6 +96,10 @@ final class Linker {
       }
     }
 
+    if (!errors.isEmpty()) {
+      throw new SchemaException(errors);
+    }
+
     return new Schema(protoFiles);
   }
 
@@ -108,22 +111,24 @@ final class Linker {
   }
 
   /** Returns the type name for the scalar, relative or fully-qualified name {@code name}. */
-  Type.Name resolveType(String packageName, DataType type) {
-    switch (type.kind()) {
-      case SCALAR:
-        return Type.Name.getScalar(type.toString());
-
-      case NAMED:
-        return resolveNamedType(packageName, type.toString());
-
-      default:
-        // TODO(jwilson): report an error and return a sentinel instead of crashing here.
-        throw new UnsupportedOperationException("unexpected type: " + type);
-    }
+  Type.Name resolveType(String packageName, String name) {
+    return resolveType(packageName, name, false);
   }
 
   /** Returns the type name for the relative or fully-qualified name {@code name}. */
   Type.Name resolveNamedType(String packageName, String name) {
+    return resolveType(packageName, name, true);
+  }
+
+  private Type.Name resolveType(String packageName, String name, boolean namedTypesOnly) {
+    Type.Name scalar = Type.Name.getScalar(name);
+    if (scalar != null) {
+      if (namedTypesOnly) {
+        addError("expected a message but was %s", name);
+      }
+      return scalar;
+    }
+
     Type fullyQualified = protoTypeNames.get(name);
     if (fullyQualified != null) return fullyQualified.name();
 
@@ -133,8 +138,11 @@ final class Linker {
     }
 
     // Look at the enclosing type, and its children, all the way up the nesting hierarchy.
-    for (int i = enclosingTypes.size() - 1; i >= 0; i--) {
-      Type enclosingType = enclosingTypes.get(i);
+    for (int i = contextStack.size() - 1; i >= 0; i--) {
+      Object context = contextStack.get(i);
+      if (!(context instanceof Type)) continue;
+
+      Type enclosingType = (Type) context;
 
       if (name.equals(enclosingType.name().simpleName())) {
         return enclosingType.name();
@@ -147,8 +155,8 @@ final class Linker {
       }
     }
 
-    // TODO(jwilson): report an error and return a sentinel instead of crashing here.
-    throw new IllegalArgumentException("unrecognized type name: " + name);
+    addError("unable to resolve %s", name);
+    return Type.Name.BYTES; // Just return any placeholder.
   }
 
   /** Returns the map of known extensions for {@code extensionType}. */
@@ -184,8 +192,46 @@ final class Linker {
     return null; // Unable to traverse this field path.
   }
 
-  /** Returns a new linker that uses {@code message} to resolve local type names. */
-  Linker withMessage(MessageType message) {
-    return new Linker(this, message);
+  /** Returns a new linker that uses {@code context} to resolve type names and report errors. */
+  Linker withContext(Object context) {
+    return new Linker(this, context);
+  }
+
+  private void addError(String format, Object... args) {
+    StringBuilder error = new StringBuilder();
+    error.append(String.format(format, args));
+
+    for (int i = contextStack.size() - 1; i >= 0; i--) {
+      Object context = contextStack.get(i);
+      String prefix = (i == contextStack.size() - 1) ? "\n  for" : "\n  in";
+
+      if (context instanceof Rpc) {
+        Rpc rpc = (Rpc) context;
+        error.append(String.format("%s rpc %s (%s)", prefix, rpc.name(), rpc.location()));
+
+      } else if (context instanceof Extend) {
+        Extend extend = (Extend) context;
+        Type.Name type = extend.type();
+        error.append(type != null
+            ? String.format("%s extend %s (%s)", prefix, type, extend.location())
+            : String.format("%s extend (%s)", prefix, extend.location()));
+
+      } else if (context instanceof Field) {
+        Field field = (Field) context;
+        error.append(String.format("%s field %s (%s)", prefix, field.name(), field.location()));
+
+      } else if (context instanceof MessageType) {
+        MessageType message = (MessageType) context;
+        error.append(String.format("%s message %s (%s)",
+            prefix, message.name(), message.location()));
+
+      } else if (context instanceof Service) {
+        Service service = (Service) context;
+        error.append(String.format("%s service %s (%s)",
+            prefix, service.name(), service.location()));
+      }
+    }
+
+    errors.add(error.toString());
   }
 }

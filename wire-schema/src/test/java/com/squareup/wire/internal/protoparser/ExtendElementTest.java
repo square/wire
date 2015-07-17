@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.DataType.ScalarType.STRING;
 import static com.squareup.wire.internal.protoparser.FieldElement.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -100,7 +99,12 @@ public class ExtendElementTest {
   @Test public void simpleToSchema() {
     ExtendElement extend = ExtendElement.builder(location)
         .name("Name")
-        .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
+        .addField(FieldElement.builder(location)
+            .label(REQUIRED)
+            .type("string")
+            .name("name")
+            .tag(1)
+            .build())
         .build();
     String expected = ""
         + "extend Name {\n"
@@ -110,10 +114,18 @@ public class ExtendElementTest {
   }
 
   @Test public void addMultipleFields() {
-    FieldElement firstName =
-        FieldElement.builder().label(REQUIRED).type(STRING).name("first_name").tag(1).build();
-    FieldElement lastName =
-        FieldElement.builder().label(REQUIRED).type(STRING).name("last_name").tag(2).build();
+    FieldElement firstName = FieldElement.builder(location)
+        .label(REQUIRED)
+        .type("string")
+        .name("first_name")
+        .tag(1)
+        .build();
+    FieldElement lastName = FieldElement.builder(location)
+        .label(REQUIRED)
+        .type("string")
+        .name("last_name")
+        .tag(2)
+        .build();
     ExtendElement extend = ExtendElement.builder(location)
         .name("Name")
         .addFields(Arrays.asList(firstName, lastName))
@@ -125,9 +137,9 @@ public class ExtendElementTest {
     ExtendElement extend = ExtendElement.builder(location)
         .name("Name")
         .documentation("Hello")
-        .addField(FieldElement.builder()
+        .addField(FieldElement.builder(location)
             .label(REQUIRED)
-            .type(STRING)
+            .type("string")
             .name("name")
             .tag(1)
             .build())
@@ -141,15 +153,15 @@ public class ExtendElementTest {
   }
 
   @Test public void duplicateTagValueThrows() {
-    FieldElement field1 = FieldElement.builder()
+    FieldElement field1 = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .build();
-    FieldElement field2 = FieldElement.builder()
+    FieldElement field2 = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name2")
         .tag(1)
         .build();

@@ -57,9 +57,10 @@ public final class Extend {
   }
 
   void link(Linker linker) {
+    linker = linker.withContext(this);
+    name = linker.resolveNamedType(packageName, element.name());
     for (Field field : fields) {
       field.link(linker);
     }
-    name = linker.resolveNamedType(packageName, element.name());
   }
 }
