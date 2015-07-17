@@ -263,7 +263,7 @@ public final class MessageAdapter<M extends Message> {
     return size;
   }
 
-  private <T extends ExtendableMessage<?>> int getExtensionsSerializedSize(ExtensionMap<T> map) {
+  private <T extends ExtendableMessage<T>> int getExtensionsSerializedSize(ExtensionMap<T> map) {
     int size = 0;
     for (int i = 0, count = map.size(); i < count; i++) {
       Extension<T, ?> extension = map.getExtension(i);
@@ -362,7 +362,7 @@ public final class MessageAdapter<M extends Message> {
     message.writeUnknownFieldMap(output);
   }
 
-  private <T extends ExtendableMessage<?>> void writeExtensions(WireOutput output,
+  private <T extends ExtendableMessage<T>> void writeExtensions(WireOutput output,
       ExtensionMap<T> extensionMap) throws IOException {
     for (int i = 0, count = extensionMap.size(); i < count; i++) {
       Extension<T, ?> extension = extensionMap.getExtension(i);
@@ -737,7 +737,7 @@ public final class MessageAdapter<M extends Message> {
     Class<Message> messageClass = fieldInfo == null
         ? null : (Class<Message>) fieldInfo.messageType;
     if (messageClass == null) {
-      Extension<ExtendableMessage<?>, ?> extension = getExtension(tag);
+      Extension<?, ?> extension = getExtension(tag);
       if (extension != null) {
         messageClass = (Class<Message>) extension.getMessageType();
       }
@@ -797,17 +797,17 @@ public final class MessageAdapter<M extends Message> {
   }
 
   @SuppressWarnings("unchecked")
-  private Extension<ExtendableMessage<?>, ?> getExtension(int tag) {
+  private Extension<?, ?> getExtension(int tag) {
     ExtensionRegistry registry = wire.registry;
     return registry == null
-        ? null : registry.getExtension((Class<ExtendableMessage<?>>) messageType, tag);
+        ? null : registry.getExtension((Class<ExtendableMessage>) messageType, tag);
   }
 
   @SuppressWarnings("unchecked")
-  Extension<ExtendableMessage<?>, ?> getExtension(String name) {
+  Extension<?, ?> getExtension(String name) {
     ExtensionRegistry registry = wire.registry;
     return registry == null
-        ? null : registry.getExtension((Class<ExtendableMessage<?>>) messageType, name);
+        ? null : registry.getExtension((Class<ExtendableMessage>) messageType, name);
   }
 
   @SuppressWarnings("unchecked")
@@ -820,7 +820,7 @@ public final class MessageAdapter<M extends Message> {
     FieldInfo fieldInfo = fieldInfoMap.get(tag);
     Class<? extends ProtoEnum> enumType = fieldInfo == null ? null : fieldInfo.enumType;
     if (enumType == null) {
-      Extension<ExtendableMessage<?>, ?> extension = getExtension(tag);
+      Extension<?, ?> extension = getExtension(tag);
       if (extension != null) {
         enumType = extension.getEnumType();
       }
