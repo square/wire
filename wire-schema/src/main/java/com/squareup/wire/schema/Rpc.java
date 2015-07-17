@@ -30,6 +30,10 @@ public final class Rpc {
     this.options = new Options(Type.Name.METHOD_OPTIONS, packageName, element.options());
   }
 
+  public Location location() {
+    return element.location();
+  }
+
   public String packageName() {
     return packageName;
   }
@@ -55,11 +59,13 @@ public final class Rpc {
   }
 
   void link(Linker linker) {
-    requestType = linker.resolveNamedType(packageName, element.requestType().name());
-    responseType = linker.resolveNamedType(packageName, element.responseType().name());
+    linker = linker.withContext(this);
+    requestType = linker.resolveNamedType(packageName, element.requestType());
+    responseType = linker.resolveNamedType(packageName, element.responseType());
   }
 
   void linkOptions(Linker linker) {
+    linker = linker.withContext(this);
     options.link(linker);
   }
 }

@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.internal.protoparser;
 
-import com.squareup.wire.internal.protoparser.DataType.NamedType;
+import com.squareup.wire.schema.Location;
 import java.util.Collections;
 import org.junit.Test;
 
@@ -23,11 +23,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class RpcElementTest {
+  Location location = Location.get("file.proto");
+
+  @Test public void locationRequired() {
+    try {
+      RpcElement.builder(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("location");
+    }
+  }
+
   @Test public void nameRequired() {
     try {
-      RpcElement.builder()
-          .requestType(NamedType.create("Foo"))
-          .responseType(NamedType.create("Bar"))
+      RpcElement.builder(location)
+          .requestType("Foo")
+          .responseType("Bar")
           .build();
       fail();
     } catch (NullPointerException e) {
@@ -37,7 +48,7 @@ public final class RpcElementTest {
 
   @Test public void requestTypeRequired() {
     try {
-      RpcElement.builder().name("Test").responseType(NamedType.create("Bar")).build();
+      RpcElement.builder(location).name("Test").responseType("Bar").build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("requestType");
@@ -46,7 +57,7 @@ public final class RpcElementTest {
 
   @Test public void responseTypeRequired() {
     try {
-      RpcElement.builder().name("Test").requestType(NamedType.create("Foo")).build();
+      RpcElement.builder(location).name("Test").requestType("Foo").build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("responseType");
@@ -55,43 +66,43 @@ public final class RpcElementTest {
 
   @Test public void nullBuilderValuesThrow() {
     try {
-      RpcElement.builder().name(null);
+      RpcElement.builder(location).name(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
     }
     try {
-      RpcElement.builder().requestType(null);
+      RpcElement.builder(location).requestType(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("requestType");
     }
     try {
-      RpcElement.builder().responseType(null);
+      RpcElement.builder(location).responseType(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("responseType");
     }
     try {
-      RpcElement.builder().documentation(null);
+      RpcElement.builder(location).documentation(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("documentation");
     }
     try {
-      RpcElement.builder().addOption(null);
+      RpcElement.builder(location).addOption(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
     }
     try {
-      RpcElement.builder().addOptions(null);
+      RpcElement.builder(location).addOptions(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("options");
     }
     try {
-      RpcElement.builder().addOptions(Collections.<OptionElement>singleton(null));
+      RpcElement.builder(location).addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");

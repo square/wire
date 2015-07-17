@@ -103,7 +103,7 @@ public final class MessageType extends Type {
   }
 
   void link(Linker linker) {
-    linker = linker.withMessage(this);
+    linker = linker.withContext(this);
     for (Field field : fields) {
       field.link(linker);
     }
@@ -116,7 +116,7 @@ public final class MessageType extends Type {
   }
 
   void linkOptions(Linker linker) {
-    linker = linker.withMessage(this);
+    linker = linker.withContext(this);
     for (Type type : nestedTypes) {
       type.linkOptions(linker);
     }

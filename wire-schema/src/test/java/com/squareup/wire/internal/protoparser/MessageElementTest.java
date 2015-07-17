@@ -22,8 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.DataType.ScalarType.BOOL;
-import static com.squareup.wire.internal.protoparser.DataType.ScalarType.STRING;
 import static com.squareup.wire.internal.protoparser.FieldElement.Label.ONE_OF;
 import static com.squareup.wire.internal.protoparser.FieldElement.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -176,7 +174,12 @@ public class MessageElementTest {
   @Test public void simpleToSchema() {
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
+        .addField(FieldElement.builder(location)
+            .label(REQUIRED)
+            .type("string")
+            .name("name")
+            .tag(1)
+            .build())
         .build();
     String expected = ""
         + "message Message {\n"
@@ -186,10 +189,18 @@ public class MessageElementTest {
   }
 
   @Test public void addMultipleFields() {
-    FieldElement firstName =
-        FieldElement.builder().label(REQUIRED).type(STRING).name("first_name").tag(1).build();
-    FieldElement lastName =
-        FieldElement.builder().label(REQUIRED).type(STRING).name("last_name").tag(2).build();
+    FieldElement firstName = FieldElement.builder(location)
+        .label(REQUIRED)
+        .type("string")
+        .name("first_name")
+        .tag(1)
+        .build();
+    FieldElement lastName = FieldElement.builder(location)
+        .label(REQUIRED)
+        .type("string")
+        .name("last_name")
+        .tag(2)
+        .build();
     MessageElement element = MessageElement.builder(location)
         .name("Message")
         .addFields(Arrays.asList(firstName, lastName))
@@ -201,7 +212,12 @@ public class MessageElementTest {
     TypeElement element = MessageElement.builder(location)
         .name("Message")
         .documentation("Hello")
-        .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
+        .addField(FieldElement.builder(location)
+            .label(REQUIRED)
+            .type("string")
+            .name("name")
+            .tag(1)
+            .build())
         .build();
     String expected = ""
         + "// Hello\n"
@@ -212,9 +228,9 @@ public class MessageElementTest {
   }
 
   @Test public void simpleWithOptionsToSchema() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name")
         .tag(1)
         .build();
@@ -233,9 +249,9 @@ public class MessageElementTest {
   }
 
   @Test public void addMultipleOptions() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name")
         .tag(1)
         .build();
@@ -252,11 +268,20 @@ public class MessageElementTest {
   @Test public void simpleWithNestedElementsToSchema() {
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
+        .addField(FieldElement.builder(location)
+            .label(REQUIRED)
+            .type("string")
+            .name("name")
+            .tag(1)
+            .build())
         .addType(MessageElement.builder(location)
             .name("Nested")
-            .addField(
-                FieldElement.builder().label(REQUIRED).type(STRING).name("name").tag(1).build())
+            .addField(FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build())
             .build())
         .build();
     String expected = ""
@@ -275,9 +300,9 @@ public class MessageElementTest {
     TypeElement nested2 = MessageElement.builder(location).name("Nested2").build();
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder()
+        .addField(FieldElement.builder(location)
             .label(REQUIRED)
-            .type(STRING)
+            .type("string")
             .name("name")
             .tag(1)
             .build())
@@ -289,9 +314,9 @@ public class MessageElementTest {
   @Test public void simpleWithExtensionsToSchema() {
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder()
+        .addField(FieldElement.builder(location)
             .label(REQUIRED)
-            .type(STRING)
+            .type("string")
             .name("name")
             .tag(1)
             .build())
@@ -311,9 +336,9 @@ public class MessageElementTest {
     ExtensionsElement sixes = ExtensionsElement.create(600, 601);
     MessageElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder()
+        .addField(FieldElement.builder(location)
             .label(REQUIRED)
-            .type(STRING)
+            .type("string")
             .name("name")
             .tag(1)
             .build())
@@ -327,7 +352,12 @@ public class MessageElementTest {
         .name("Message")
         .addOneOf(OneOfElement.builder()
             .name("hi")
-            .addField(FieldElement.builder().label(ONE_OF).type(STRING).name("name").tag(1).build())
+            .addField(FieldElement.builder(location)
+                .label(ONE_OF)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build())
             .build())
         .build();
     String expected = ""
@@ -342,11 +372,21 @@ public class MessageElementTest {
   @Test public void addMultipleOneOfs() {
     OneOfElement hi = OneOfElement.builder()
         .name("hi")
-        .addField(FieldElement.builder().label(ONE_OF).type(STRING).name("name").tag(1).build())
+        .addField(FieldElement.builder(location)
+            .label(ONE_OF)
+            .type("string")
+            .name("name")
+            .tag(1)
+            .build())
         .build();
     OneOfElement hey = OneOfElement.builder()
         .name("hey")
-        .addField(FieldElement.builder().label(ONE_OF).type(STRING).name("city").tag(2).build())
+        .addField(FieldElement.builder(location)
+            .label(ONE_OF)
+            .type("string")
+            .name("city")
+            .tag(2)
+            .build())
         .build();
     MessageElement element = MessageElement.builder(location)
         .name("Message")
@@ -356,21 +396,21 @@ public class MessageElementTest {
   }
 
   @Test public void multipleEverythingToSchema() {
-    FieldElement field1 = FieldElement.builder()
+    FieldElement field1 = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name")
         .tag(1)
         .build();
-    FieldElement field2 = FieldElement.builder()
+    FieldElement field2 = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(BOOL)
+        .type("bool")
         .name("other_name")
         .tag(2)
         .build();
-    FieldElement oneOf1Field = FieldElement.builder()
+    FieldElement oneOf1Field = FieldElement.builder(location)
         .label(ONE_OF)
-        .type(STRING)
+        .type("string")
         .name("namey")
         .tag(3)
         .build();
@@ -378,9 +418,9 @@ public class MessageElementTest {
         .name("thingy")
         .addField(oneOf1Field)
         .build();
-    FieldElement oneOf2Field = FieldElement.builder()
+    FieldElement oneOf2Field = FieldElement.builder(location)
         .label(ONE_OF)
-        .type(STRING)
+        .type("string")
         .name("namer")
         .tag(4)
         .build();
@@ -428,9 +468,9 @@ public class MessageElementTest {
   }
 
   @Test public void fieldToSchema() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name")
         .tag(1)
         .build();
@@ -439,9 +479,9 @@ public class MessageElementTest {
   }
 
   @Test public void oneOfFieldToSchema() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(ONE_OF)
-        .type(STRING)
+        .type("string")
         .name("name")
         .tag(1)
         .build();
@@ -450,9 +490,9 @@ public class MessageElementTest {
   }
 
   @Test public void fieldWithDocumentationToSchema() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name")
         .tag(1)
         .documentation("Hello")
@@ -464,9 +504,9 @@ public class MessageElementTest {
   }
 
   @Test public void fieldWithOptionsToSchema() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name")
         .tag(1)
         .addOption(OptionElement.create("kit", Kind.STRING, "kat"))
@@ -478,15 +518,15 @@ public class MessageElementTest {
   }
 
   @Test public void duplicateTagValueThrows() {
-    FieldElement field1 = FieldElement.builder()
+    FieldElement field1 = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .build();
-    FieldElement field2 = FieldElement.builder()
+    FieldElement field2 = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name2")
         .tag(1)
         .build();
@@ -504,15 +544,15 @@ public class MessageElementTest {
   }
 
   @Test public void duplicateTagValueOneOfThrows() {
-    FieldElement field1 = FieldElement.builder()
+    FieldElement field1 = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .build();
-    FieldElement field2 = FieldElement.builder()
+    FieldElement field2 = FieldElement.builder(location)
         .label(ONE_OF)
-        .type(STRING)
+        .type("string")
         .name("name2")
         .tag(1)
         .build();
@@ -532,9 +572,9 @@ public class MessageElementTest {
   }
 
   @Test public void oneOfFieldDisallowed() {
-    FieldElement field1 = FieldElement.builder()
+    FieldElement field1 = FieldElement.builder(location)
         .label(ONE_OF)
-        .type(STRING)
+        .type("string")
         .name("name")
         .tag(1)
         .build();
@@ -576,9 +616,9 @@ public class MessageElementTest {
   }
 
   @Test public void deprecatedTrue() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "true"))
@@ -587,9 +627,9 @@ public class MessageElementTest {
   }
 
   @Test public void deprecatedFalse() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "false"))
@@ -598,9 +638,9 @@ public class MessageElementTest {
   }
 
   @Test public void deprecatedMissing() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .build();
@@ -608,9 +648,9 @@ public class MessageElementTest {
   }
 
   @Test public void packedTrue() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("packed", Kind.BOOLEAN, "true"))
@@ -619,9 +659,9 @@ public class MessageElementTest {
   }
 
   @Test public void packedFalse() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("packed", Kind.BOOLEAN, "false"))
@@ -630,9 +670,9 @@ public class MessageElementTest {
   }
 
   @Test public void packedMissing() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .build();
@@ -640,9 +680,9 @@ public class MessageElementTest {
   }
 
   @Test public void defaultValue() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .addOption(OptionElement.create("default", Kind.STRING, "foo"))
@@ -651,9 +691,9 @@ public class MessageElementTest {
   }
 
   @Test public void defaultMissing() {
-    FieldElement field = FieldElement.builder()
+    FieldElement field = FieldElement.builder(location)
         .label(REQUIRED)
-        .type(STRING)
+        .type("string")
         .name("name1")
         .tag(1)
         .build();

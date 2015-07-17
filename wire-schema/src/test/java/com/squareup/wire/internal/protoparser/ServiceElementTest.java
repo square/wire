@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.internal.protoparser;
 
-import com.squareup.wire.internal.protoparser.DataType.NamedType;
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
 import java.util.Arrays;
@@ -118,10 +117,10 @@ public class ServiceElementTest {
   @Test public void singleToSchema() {
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
-        .addRpc(RpcElement.builder()
+        .addRpc(RpcElement.builder(location)
             .name("Name")
-            .requestType(NamedType.create("RequestType"))
-            .responseType(NamedType.create("ResponseType"))
+            .requestType("RequestType")
+            .responseType("ResponseType")
             .build())
         .build();
     String expected = ""
@@ -132,15 +131,15 @@ public class ServiceElementTest {
   }
 
   @Test public void addMultipleRpcs() {
-    RpcElement firstName = RpcElement.builder()
+    RpcElement firstName = RpcElement.builder(location)
         .name("FirstName")
-        .requestType(NamedType.create("RequestType"))
-        .responseType(NamedType.create("ResponseType"))
+        .requestType("RequestType")
+        .responseType("ResponseType")
         .build();
-    RpcElement lastName = RpcElement.builder()
+    RpcElement lastName = RpcElement.builder(location)
         .name("LastName")
-        .requestType(NamedType.create("RequestType"))
-        .responseType(NamedType.create("ResponseType"))
+        .requestType("RequestType")
+        .responseType("ResponseType")
         .build();
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
@@ -153,10 +152,10 @@ public class ServiceElementTest {
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
         .addOption(OptionElement.create("foo", Kind.STRING, "bar"))
-        .addRpc(RpcElement.builder()
+        .addRpc(RpcElement.builder(location)
             .name("Name")
-            .requestType(NamedType.create("RequestType"))
-            .responseType(NamedType.create("ResponseType"))
+            .requestType("RequestType")
+            .responseType("ResponseType")
             .build())
         .build();
     String expected = ""
@@ -174,10 +173,10 @@ public class ServiceElementTest {
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
         .addOptions(Arrays.asList(kitKat, fooBar))
-        .addRpc(RpcElement.builder()
+        .addRpc(RpcElement.builder(location)
             .name("Name")
-            .requestType(NamedType.create("RequestType"))
-            .responseType(NamedType.create("ResponseType"))
+            .requestType("RequestType")
+            .responseType("ResponseType")
             .build())
         .build();
     assertThat(service.options()).hasSize(2);
@@ -187,10 +186,10 @@ public class ServiceElementTest {
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
         .documentation("Hello")
-        .addRpc(RpcElement.builder()
+        .addRpc(RpcElement.builder(location)
             .name("Name")
-            .requestType(NamedType.create("RequestType"))
-            .responseType(NamedType.create("ResponseType"))
+            .requestType("RequestType")
+            .responseType("ResponseType")
             .build())
         .build();
     String expected = ""
@@ -202,10 +201,10 @@ public class ServiceElementTest {
   }
 
   @Test public void multipleToSchema() {
-    RpcElement rpc = RpcElement.builder()
+    RpcElement rpc = RpcElement.builder(location)
         .name("Name")
-        .requestType(NamedType.create("RequestType"))
-        .responseType(NamedType.create("ResponseType"))
+        .requestType("RequestType")
+        .responseType("ResponseType")
         .build();
     ServiceElement service =
         ServiceElement.builder(location).name("Service").addRpc(rpc).addRpc(rpc).build();
@@ -218,21 +217,21 @@ public class ServiceElementTest {
   }
 
   @Test public void rpcToSchema() {
-    RpcElement rpc = RpcElement.builder()
+    RpcElement rpc = RpcElement.builder(location)
         .name("Name")
-        .requestType(NamedType.create("RequestType"))
-        .responseType(NamedType.create("ResponseType"))
+        .requestType("RequestType")
+        .responseType("ResponseType")
         .build();
     String expected = "rpc Name (RequestType) returns (ResponseType);\n";
     assertThat(rpc.toSchema()).isEqualTo(expected);
   }
 
   @Test public void rpcWithDocumentationToSchema() {
-    RpcElement rpc = RpcElement.builder()
+    RpcElement rpc = RpcElement.builder(location)
         .name("Name")
         .documentation("Hello")
-        .requestType(NamedType.create("RequestType"))
-        .responseType(NamedType.create("ResponseType"))
+        .requestType("RequestType")
+        .responseType("ResponseType")
         .build();
     String expected = ""
         + "// Hello\n"
@@ -241,10 +240,10 @@ public class ServiceElementTest {
   }
 
   @Test public void rpcWithOptionsToSchema() {
-    RpcElement rpc = RpcElement.builder()
+    RpcElement rpc = RpcElement.builder(location)
         .name("Name")
-        .requestType(NamedType.create("RequestType"))
-        .responseType(NamedType.create("ResponseType"))
+        .requestType("RequestType")
+        .responseType("ResponseType")
         .addOption(OptionElement.create("foo", Kind.STRING, "bar"))
         .build();
     String expected = ""

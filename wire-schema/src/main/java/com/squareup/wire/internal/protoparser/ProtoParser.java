@@ -16,9 +16,6 @@
 package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
-import com.squareup.wire.internal.protoparser.DataType.MapType;
-import com.squareup.wire.internal.protoparser.DataType.NamedType;
-import com.squareup.wire.internal.protoparser.DataType.ScalarType;
 import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -135,11 +132,11 @@ public final class ProtoParser {
       return readExtend(location, documentation);
     } else if (label.equals("rpc")) {
       if (!context.permitsRpc()) throw unexpected("'rpc' in " + context);
-      return readRpc(documentation);
+      return readRpc(location, documentation);
     } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
       if (!context.permitsField()) throw unexpected("fields must be nested");
       FieldElement.Label labelEnum = FieldElement.Label.valueOf(label.toUpperCase(Locale.US));
-      return readField(documentation, labelEnum);
+      return readField(location, documentation, labelEnum);
     } else if (label.equals("oneof")) {
       if (!context.permitsOneOf()) throw unexpected("'oneof' must be nested in message");
       return readOneOf(documentation);
@@ -291,13 +288,14 @@ public final class ProtoParser {
   }
 
   /** Reads an field declaration and returns it. */
-  private FieldElement readField(String documentation, FieldElement.Label label) {
-    DataType type = readDataType();
+  private FieldElement readField(
+      Location location, String documentation, FieldElement.Label label) {
+    String type = readDataType();
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
 
-    FieldElement.Builder builder = FieldElement.builder()
+    FieldElement.Builder builder = FieldElement.builder(location)
         .label(label)
         .type(type)
         .name(name)
@@ -337,7 +335,8 @@ public final class ProtoParser {
         pos++;
         break;
       }
-      builder.addField(readField(nestedDocumentation, FieldElement.Label.ONE_OF));
+      Location location = location();
+      builder.addField(readField(location, nestedDocumentation, FieldElement.Label.ONE_OF));
     }
     return builder.build();
   }
@@ -511,27 +510,21 @@ public final class ProtoParser {
   }
 
   /** Reads an rpc and returns it. */
-  private RpcElement readRpc(String documentation) {
-    RpcElement.Builder builder = RpcElement.builder()
+  private RpcElement readRpc(Location location, String documentation) {
+    RpcElement.Builder builder = RpcElement.builder(location)
         .name(readName())
         .documentation(documentation);
 
     if (readChar() != '(') throw unexpected("expected '('");
-    DataType requestType = readDataType();
-    if (!(requestType instanceof NamedType)) {
-      throw unexpected("expected message but was " + requestType);
-    }
-    builder.requestType((NamedType) requestType);
+    String requestType = readDataType();
+    builder.requestType(requestType);
     if (readChar() != ')') throw unexpected("expected ')'");
 
     if (!readWord().equals("returns")) throw unexpected("expected 'returns'");
 
     if (readChar() != '(') throw unexpected("expected '('");
-    DataType responseType = readDataType();
-    if (!(responseType instanceof NamedType)) {
-      throw unexpected("expected message but was " + responseType);
-    }
-    builder.responseType((NamedType) responseType);
+    String responseType = readDataType();
+    builder.responseType(responseType);
     if (readChar() != ')') throw unexpected("expected ')'");
 
     if (peekChar() == '{') {
@@ -653,50 +646,17 @@ public final class ProtoParser {
   }
 
   /** Reads a scalar, map, or type name. */
-  private DataType readDataType() {
+  private String readDataType() {
     String name = readWord();
-    switch (name) {
-      case "map":
-        if (readChar() != '<') throw unexpected("expected '<'");
-        DataType keyType = readDataType();
-        if (readChar() != ',') throw unexpected("expected ','");
-        DataType valueType = readDataType();
-        if (readChar() != '>') throw unexpected("expected '>'");
-        return MapType.create(keyType, valueType);
-      case "any":
-        return ScalarType.ANY;
-      case "bool":
-        return ScalarType.BOOL;
-      case "bytes":
-        return ScalarType.BYTES;
-      case "double":
-        return ScalarType.DOUBLE;
-      case "float":
-        return ScalarType.FLOAT;
-      case "fixed32":
-        return ScalarType.FIXED32;
-      case "fixed64":
-        return ScalarType.FIXED64;
-      case "int32":
-        return ScalarType.INT32;
-      case "int64":
-        return ScalarType.INT64;
-      case "sfixed32":
-        return ScalarType.SFIXED32;
-      case "sfixed64":
-        return ScalarType.SFIXED64;
-      case "sint32":
-        return ScalarType.SINT32;
-      case "sint64":
-        return ScalarType.SINT64;
-      case "string":
-        return ScalarType.STRING;
-      case "uint32":
-        return ScalarType.UINT32;
-      case "uint64":
-        return ScalarType.UINT64;
-      default:
-        return NamedType.create(name);
+    if (name.equals("map")) {
+      if (readChar() != '<') throw unexpected("expected '<'");
+      String keyType = readDataType();
+      if (readChar() != ',') throw unexpected("expected ','");
+      String valueType = readDataType();
+      if (readChar() != '>') throw unexpected("expected '>'");
+      return String.format("map<%s, %s>", keyType, valueType);
+    } else {
+      return name;
     }
   }
 
