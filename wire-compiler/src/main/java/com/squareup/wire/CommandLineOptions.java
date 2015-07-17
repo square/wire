@@ -117,14 +117,14 @@ final class CommandLineOptions {
   CommandLineOptions(String... args) throws WireException {
     int index = 0;
 
-    List<String> sourceFileNames = new ArrayList<String>();
-    List<String> serviceFactoryOptions = new ArrayList<String>();
-    List<String> roots = new ArrayList<String>();
+    List<String> sourceFileNames = new ArrayList<>();
+    List<String> serviceFactoryOptions = new ArrayList<>();
+    List<String> roots = new ArrayList<>();
     boolean emitOptions = true;
     String protoPath = null;
     File javaOut = null;
     String registryClass = null;
-    List<String> enumOptionsList = new ArrayList<String>();
+    List<String> enumOptionsList = new ArrayList<>();
     ServiceFactory serviceFactory = null;
     boolean quiet = false;
     boolean dryRun = false;
@@ -172,7 +172,7 @@ final class CommandLineOptions {
     this.roots = roots;
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
-    this.enumOptions = new LinkedHashSet<String>(enumOptionsList);
+    this.enumOptions = new LinkedHashSet<>(enumOptionsList);
     this.serviceFactory = serviceFactory;
     this.serviceFactoryOptions = serviceFactoryOptions;
     this.quiet = quiet;
@@ -200,5 +200,15 @@ final class CommandLineOptions {
 
   private static List<String> splitArg(String arg, int flagLength) {
     return Arrays.asList(arg.substring(flagLength).split(","));
+  }
+
+  public String protoPath() {
+    String result = protoPath;
+    if (result == null) {
+      result = System.getProperty("user.dir");
+      System.err.println(CommandLineOptions.PROTO_PATH_FLAG + " flag not specified, "
+          + "using current dir " + result);
+    }
+    return result;
   }
 }

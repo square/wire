@@ -15,10 +15,13 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.squareup.wire.schema.Location;
 import java.io.File;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
+import okio.BufferedSource;
+import okio.Okio;
 
 /** Recursively traverse a directory and attempt to parse all of its proto files. */
 public class ParsingTester {
@@ -39,8 +42,9 @@ public class ParsingTester {
         System.out.println("Parsing " + file.getPath());
         total += 1;
 
-        try {
-          ProtoParser.parseUtf8(file);
+        try (BufferedSource in = Okio.buffer(Okio.source(file))) {
+          String data = in.readUtf8();
+          ProtoParser.parse(Location.get(file.getPath()), data);
         } catch (Exception e) {
           e.printStackTrace();
           failed += 1;

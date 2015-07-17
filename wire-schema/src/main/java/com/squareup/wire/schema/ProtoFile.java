@@ -23,16 +23,14 @@ import com.squareup.wire.internal.protoparser.TypeElement;
 import java.util.Set;
 
 public final class ProtoFile {
-  private final String sourcePath;
   private final ProtoFileElement element;
   private final ImmutableList<Type> types;
   private final ImmutableList<Service> services;
   private final ImmutableList<Extend> extendList;
   private final Options options;
 
-  private ProtoFile(String sourcePath, ProtoFileElement element, ImmutableList<Type> types,
+  private ProtoFile(ProtoFileElement element, ImmutableList<Type> types,
       ImmutableList<Service> services, ImmutableList<Extend> extendList, Options options) {
-    this.sourcePath = sourcePath;
     this.element = element;
     this.types = types;
     this.services = services;
@@ -40,7 +38,7 @@ public final class ProtoFile {
     this.options = options;
   }
 
-  public static ProtoFile get(String sourcePath, ProtoFileElement protoFileElement) {
+  public static ProtoFile get(ProtoFileElement protoFileElement) {
     String packageName = protoFileElement.packageName();
 
     ImmutableList.Builder<Type> types = ImmutableList.builder();
@@ -63,12 +61,12 @@ public final class ProtoFile {
     Options options = new Options(
         Type.Name.FILE_OPTIONS, packageName, protoFileElement.options());
 
-    return new ProtoFile(sourcePath, protoFileElement, types.build(), services.build(),
+    return new ProtoFile(protoFileElement, types.build(), services.build(),
         wireExtends.build(), options);
   }
 
-  public String sourcePath() {
-    return sourcePath;
+  public Location location() {
+    return element.location();
   }
 
   /**
@@ -76,7 +74,7 @@ public final class ProtoFile {
    * squareup/protos/person/simple_message.proto}.
    */
   public String name() {
-    String result = sourcePath;
+    String result = location().path();
 
     int slashIndex = result.lastIndexOf('/');
     if (slashIndex != -1) {
@@ -128,7 +126,7 @@ public final class ProtoFile {
       }
     }
 
-    return new ProtoFile(sourcePath, element, retainedTypes.build(), retainedServices.build(),
-        extendList, options);
+    return new ProtoFile(
+        element, retainedTypes.build(), retainedServices.build(), extendList, options);
   }
 }

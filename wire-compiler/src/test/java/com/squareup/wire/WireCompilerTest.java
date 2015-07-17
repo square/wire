@@ -21,11 +21,12 @@ import com.squareup.wire.java.SimpleServiceFactory;
 import com.squareup.wire.schema.Loader;
 import com.squareup.wire.schema.Service;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
+import okio.Okio;
+import okio.Source;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -708,17 +709,17 @@ public class WireCompilerTest {
   private void invokeCompiler(String[] args) throws WireException {
     CommandLineOptions options = new CommandLineOptions(args);
     logger = new StringWireLogger(options.quiet);
-    new WireCompiler(options, Loader.IO.DEFAULT, JavaGenerator.IO.DEFAULT, logger).compile();
+    Loader loader = Loader.forBaseDirectory(options.protoPath());
+    new WireCompiler(options, loader, JavaGenerator.IO.DEFAULT, logger).compile();
   }
 
-  private void assertFilesMatch(File outputDir, String path) throws FileNotFoundException {
+  private void assertFilesMatch(File outputDir, String path) throws IOException {
     File expectedFile = new File("../wire-runtime/src/test/java/" + path);
     File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
   }
 
-  private void assertFilesMatchNoOptions(File outputDir, String path)
-      throws FileNotFoundException {
+  private void assertFilesMatchNoOptions(File outputDir, String path) throws IOException {
     // Compare against file with .noOptions suffix if present
     File expectedFile = new File("../wire-runtime/src/test/java/" + path + ".noOptions");
     if (expectedFile.exists()) {
@@ -731,7 +732,7 @@ public class WireCompilerTest {
   }
 
   private void assertJavaFilesMatchWithSuffix(File outputDir, String path, String suffix)
-      throws FileNotFoundException {
+      throws IOException {
     path = path.substring(0, path.indexOf(".java"));
     // Compare against file with .noOptions suffix if present
     File expectedFile = new File("../wire-runtime/src/test/java/" + path + suffix + ".java");
@@ -747,9 +748,16 @@ public class WireCompilerTest {
     assertFilesMatch(expectedFile, actualFile);
   }
 
-  private void assertFilesMatch(File expectedFile, File actualFile) throws FileNotFoundException {
-    String expected = new Scanner(expectedFile).useDelimiter("\\A").next();
-    String actual = new Scanner(actualFile).useDelimiter("\\A").next();
+  private void assertFilesMatch(File expectedFile, File actualFile) throws IOException {
+    String expected;
+    try (Source source = Okio.source(expectedFile)) {
+      expected = Okio.buffer(source).readUtf8();
+    }
+
+    String actual;
+    try (Source source = Okio.source(actualFile)) {
+      actual = Okio.buffer(source).readUtf8();
+    }
 
     // Normalize CRLF -> LF
     expected = expected.replace("\r\n", "\n");

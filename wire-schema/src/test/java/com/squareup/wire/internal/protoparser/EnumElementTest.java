@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.squareup.wire.schema.Location;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -25,9 +26,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class EnumElementTest {
+  Location location = Location.get("file.proto");
+
+  @Test public void locationRequired() {
+    try {
+      EnumElement.builder(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("location");
+    }
+  }
+
   @Test public void nameRequired() {
     try {
-      EnumElement.builder().qualifiedName("Test").build();
+      EnumElement.builder(location).qualifiedName("Test").build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
@@ -35,62 +47,62 @@ public class EnumElementTest {
   }
 
   @Test public void nameSetsQualifiedName() {
-    EnumElement test = EnumElement.builder().name("Test").build();
+    EnumElement test = EnumElement.builder(location).name("Test").build();
     assertThat(test.name()).isEqualTo("Test");
     assertThat(test.qualifiedName()).isEqualTo("Test");
   }
 
   @Test public void nullBuilderValuesThrow() {
     try {
-      EnumElement.builder().name(null);
+      EnumElement.builder(location).name(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
     }
     try {
-      EnumElement.builder().qualifiedName(null);
+      EnumElement.builder(location).qualifiedName(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("qualifiedName");
     }
     try {
-      EnumElement.builder().documentation(null);
+      EnumElement.builder(location).documentation(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("documentation");
     }
     try {
-      EnumElement.builder().addConstant(null);
+      EnumElement.builder(location).addConstant(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("constant");
     }
     try {
-      EnumElement.builder().addConstants(null);
+      EnumElement.builder(location).addConstants(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("constants");
     }
     try {
-      EnumElement.builder().addConstants(Collections.<EnumConstantElement>singleton(null));
+      EnumElement.builder(location).addConstants(Collections.<EnumConstantElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("constant");
     }
     try {
-      EnumElement.builder().addOption(null);
+      EnumElement.builder(location).addOption(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
     }
     try {
-      EnumElement.builder().addOptions(null);
+      EnumElement.builder(location).addOptions(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("options");
     }
     try {
-      EnumElement.builder().addOptions(Collections.<OptionElement>singleton(null));
+      EnumElement.builder(location).addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
@@ -98,13 +110,13 @@ public class EnumElementTest {
   }
 
   @Test public void emptyToSchema() {
-    EnumElement element = EnumElement.builder().name("Enum").build();
+    EnumElement element = EnumElement.builder(location).name("Enum").build();
     String expected = "enum Enum {}\n";
     assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void simpleToSchema() {
-    EnumElement element = EnumElement.builder()
+    EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
         .addConstant(EnumConstantElement.builder().name("TWO").tag(2).build())
@@ -123,7 +135,7 @@ public class EnumElementTest {
     EnumConstantElement one = EnumConstantElement.builder().name("ONE").tag(1).build();
     EnumConstantElement two = EnumConstantElement.builder().name("TWO").tag(2).build();
     EnumConstantElement six = EnumConstantElement.builder().name("SIX").tag(6).build();
-    EnumElement element = EnumElement.builder()
+    EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .addConstants(Arrays.asList(one, two, six))
         .build();
@@ -131,7 +143,7 @@ public class EnumElementTest {
   }
 
   @Test public void simpleWithOptionsToSchema() {
-    EnumElement element = EnumElement.builder()
+    EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .addOption(OptionElement.create("kit", STRING, "kat"))
         .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
@@ -152,7 +164,7 @@ public class EnumElementTest {
   @Test public void addMultipleOptions() {
     OptionElement kitKat = OptionElement.create("kit", STRING, "kat");
     OptionElement fooBar = OptionElement.create("foo", STRING, "bar");
-    EnumElement element = EnumElement.builder()
+    EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .addOptions(Arrays.asList(kitKat, fooBar))
         .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
@@ -161,7 +173,7 @@ public class EnumElementTest {
   }
 
   @Test public void simpleWithDocumentationToSchema() {
-    EnumElement element = EnumElement.builder()
+    EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .documentation("Hello")
         .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
@@ -212,7 +224,7 @@ public class EnumElementTest {
 
   @Test public void duplicateValueTagThrows() {
     try {
-      EnumElement.builder()
+      EnumElement.builder(location)
           .name("Enum1")
           .qualifiedName("example.Enum")
           .addConstant(EnumConstantElement.builder().name("VALUE1").tag(1).build())
@@ -225,7 +237,7 @@ public class EnumElementTest {
   }
 
   @Test public void duplicateValueTagWithAllowAlias() {
-    EnumElement element = EnumElement.builder()
+    EnumElement element = EnumElement.builder(location)
         .name("Enum1")
         .qualifiedName("example.Enum")
         .addOption(OptionElement.create("allow_alias", BOOLEAN, "true"))

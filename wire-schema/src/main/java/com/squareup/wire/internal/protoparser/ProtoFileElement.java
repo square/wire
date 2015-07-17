@@ -18,6 +18,7 @@ package com.squareup.wire.internal.protoparser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.protoparser.Utils.Nullable;
+import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -50,14 +51,18 @@ public abstract class ProtoFileElement {
         || (value > RESERVED_TAG_VALUE_END && value <= MAX_TAG_VALUE);
   }
 
-  public static Builder builder(String filePath) {
-    return new Builder(checkNotNull(filePath, "filePath"));
+  public static Builder builder(String path) {
+    return builder(Location.get(path));
+  }
+
+  public static Builder builder(Location location) {
+    return new Builder(location);
   }
 
   ProtoFileElement() {
   }
 
-  public abstract String filePath();
+  public abstract Location location();
   @Nullable public abstract String packageName();
   @Nullable public abstract Syntax syntax();
   public abstract List<String> dependencies();
@@ -69,9 +74,7 @@ public abstract class ProtoFileElement {
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
-    if (!filePath().isEmpty()) {
-      builder.append("// ").append(filePath()).append('\n');
-    }
+    builder.append("// ").append(location()).append('\n');
     if (packageName() != null) {
       builder.append("package ").append(packageName()).append(";\n");
     }
@@ -115,7 +118,7 @@ public abstract class ProtoFileElement {
   }
 
   public static final class Builder {
-    private final String filePath;
+    private final Location location;
     private String packageName;
     private Syntax syntax;
     private final List<String> dependencies = new ArrayList<>();
@@ -125,8 +128,8 @@ public abstract class ProtoFileElement {
     private final List<ExtendElement> extendDeclarations = new ArrayList<>();
     private final List<OptionElement> options = new ArrayList<>();
 
-    Builder(String filePath) {
-      this.filePath = filePath;
+    Builder(Location location) {
+      this.location = checkNotNull(location, "location");
     }
 
     public Builder packageName(String packageName) {
@@ -213,7 +216,7 @@ public abstract class ProtoFileElement {
     }
 
     public ProtoFileElement build() {
-      return new AutoValue_ProtoFileElement(filePath, packageName, syntax,
+      return new AutoValue_ProtoFileElement(location, packageName, syntax,
           ImmutableList.copyOf(dependencies),
           ImmutableList.copyOf(publicDependencies), ImmutableList.copyOf(types),
           ImmutableList.copyOf(services),

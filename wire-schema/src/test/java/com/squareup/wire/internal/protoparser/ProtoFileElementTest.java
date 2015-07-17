@@ -16,6 +16,7 @@
 package com.squareup.wire.internal.protoparser;
 
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
+import com.squareup.wire.schema.Location;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -28,132 +29,134 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class ProtoFileElementTest {
+  Location location = Location.get("file.proto");
+
   @Test public void nullBuilderValuesThrow() {
     try {
-      ProtoFileElement.builder(null);
+      ProtoFileElement.builder((Location) null);
       fail();
     } catch (NullPointerException e) {
-      assertThat(e).hasMessage("filePath");
+      assertThat(e).hasMessage("location");
     }
     try {
-      ProtoFileElement.builder("test.proto").packageName(null);
+      ProtoFileElement.builder(location).packageName(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("packageName");
     }
     try {
-      ProtoFileElement.builder("test.proto").syntax(null);
+      ProtoFileElement.builder(location).syntax(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("syntax");
     }
     try {
-      ProtoFileElement.builder("test.proto").addDependency(null);
+      ProtoFileElement.builder(location).addDependency(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependency");
     }
     try {
-      ProtoFileElement.builder("test.proto").addDependencies(null);
+      ProtoFileElement.builder(location).addDependencies(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependencies");
     }
     try {
-      ProtoFileElement.builder("test.proto").addDependencies(Collections.<String>singleton(null));
+      ProtoFileElement.builder(location).addDependencies(Collections.<String>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependency");
     }
     try {
-      ProtoFileElement.builder("test.proto").addPublicDependency(null);
+      ProtoFileElement.builder(location).addPublicDependency(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependency");
     }
     try {
-      ProtoFileElement.builder("test.proto").addPublicDependencies(null);
+      ProtoFileElement.builder(location).addPublicDependencies(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependencies");
     }
     try {
-      ProtoFileElement.builder("test.proto")
+      ProtoFileElement.builder(location)
           .addPublicDependencies(Collections.<String>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("dependency");
     }
     try {
-      ProtoFileElement.builder("test.proto").addType(null);
+      ProtoFileElement.builder(location).addType(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("type");
     }
     try {
-      ProtoFileElement.builder("test.proto").addTypes(null);
+      ProtoFileElement.builder(location).addTypes(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("types");
     }
     try {
-      ProtoFileElement.builder("test.proto").addTypes(Collections.<TypeElement>singleton(null));
+      ProtoFileElement.builder(location).addTypes(Collections.<TypeElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("type");
     }
     try {
-      ProtoFileElement.builder("test.proto").addService(null);
+      ProtoFileElement.builder(location).addService(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("service");
     }
     try {
-      ProtoFileElement.builder("test.proto").addServices(null);
+      ProtoFileElement.builder(location).addServices(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("services");
     }
     try {
-      ProtoFileElement.builder("test.proto")
+      ProtoFileElement.builder(location)
           .addServices(Collections.<ServiceElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("service");
     }
     try {
-      ProtoFileElement.builder("test.proto").addExtendDeclaration(null);
+      ProtoFileElement.builder(location).addExtendDeclaration(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extend");
     }
     try {
-      ProtoFileElement.builder("test.proto").addExtendDeclarations(null);
+      ProtoFileElement.builder(location).addExtendDeclarations(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extendDeclarations");
     }
     try {
-      ProtoFileElement.builder("test.proto").addExtendDeclarations(
+      ProtoFileElement.builder(location).addExtendDeclarations(
           Collections.<ExtendElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("extend");
     }
     try {
-      ProtoFileElement.builder("test.proto").addOption(null);
+      ProtoFileElement.builder(location).addOption(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
     }
     try {
-      ProtoFileElement.builder("test.proto").addOptions(null);
+      ProtoFileElement.builder(location).addOptions(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("options");
     }
     try {
-      ProtoFileElement.builder("test.proto")
+      ProtoFileElement.builder(location)
           .addOptions(Collections.<OptionElement>singleton(null));
       fail();
     } catch (NullPointerException e) {
@@ -172,14 +175,15 @@ public class ProtoFileElementTest {
   }
 
   @Test public void emptyToSchema() {
-    ProtoFileElement file = ProtoFileElement.builder("file.proto").build();
+    ProtoFileElement file = ProtoFileElement.builder(location).build();
     String expected = "// file.proto\n";
     assertThat(file.toSchema()).isEqualTo(expected);
   }
 
   @Test public void emptyWithPackageToSchema() {
-    ProtoFileElement
-        file = ProtoFileElement.builder("file.proto").packageName("example.simple").build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
+        .packageName("example.simple")
+        .build();
     String expected = ""
         + "// file.proto\n"
         + "package example.simple;\n";
@@ -187,8 +191,8 @@ public class ProtoFileElementTest {
   }
 
   @Test public void simpleToSchema() {
-    TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder("file.proto").addType(element).build();
+    TypeElement element = MessageElement.builder(location).name("Message").build();
+    ProtoFileElement file = ProtoFileElement.builder(location).addType(element).build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -197,8 +201,8 @@ public class ProtoFileElementTest {
   }
 
   @Test public void simpleWithImportsToSchema() {
-    TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+    TypeElement element = MessageElement.builder(location).name("Message").build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
         .addDependency("example.other")
         .addType(element)
         .build();
@@ -212,8 +216,8 @@ public class ProtoFileElementTest {
   }
 
   @Test public void addMultipleDependencies() {
-    TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+    TypeElement element = MessageElement.builder(location).name("Message").build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
         .addDependencies(Arrays.asList("example.other", "example.another"))
         .addType(element)
         .build();
@@ -221,8 +225,8 @@ public class ProtoFileElementTest {
   }
 
   @Test public void simpleWithPublicImportsToSchema() {
-    TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+    TypeElement element = MessageElement.builder(location).name("Message").build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
         .addPublicDependency("example.other")
         .addType(element)
         .build();
@@ -236,8 +240,8 @@ public class ProtoFileElementTest {
   }
 
   @Test public void addMultiplePublicDependencies() {
-    TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+    TypeElement element = MessageElement.builder(location).name("Message").build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
         .addPublicDependencies(Arrays.asList("example.other", "example.another"))
         .addType(element)
         .build();
@@ -245,8 +249,8 @@ public class ProtoFileElementTest {
   }
 
   @Test public void simpleWithBothImportsToSchema() {
-    TypeElement element = MessageElement.builder().name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+    TypeElement element = MessageElement.builder(location).name("Message").build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
         .addDependency("example.thing")
         .addPublicDependency("example.other")
         .addType(element)
@@ -262,10 +266,10 @@ public class ProtoFileElementTest {
   }
 
   @Test public void simpleWithServicesToSchema() {
-    TypeElement element = MessageElement.builder().name("Message").build();
-    ServiceElement service = ServiceElement.builder().name("Service").build();
+    TypeElement element = MessageElement.builder(location).name("Message").build();
+    ServiceElement service = ServiceElement.builder(location).name("Service").build();
     ProtoFileElement
-        file = ProtoFileElement.builder("file.proto").addType(element).addService(service).build();
+        file = ProtoFileElement.builder(location).addType(element).addService(service).build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -276,19 +280,19 @@ public class ProtoFileElementTest {
   }
 
   @Test public void addMultipleServices() {
-    ServiceElement service1 = ServiceElement.builder().name("Service1").build();
-    ServiceElement service2 = ServiceElement.builder().name("Service2").build();
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+    ServiceElement service1 = ServiceElement.builder(location).name("Service1").build();
+    ServiceElement service2 = ServiceElement.builder(location).name("Service2").build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
         .addServices(Arrays.asList(service1, service2))
         .build();
     assertThat(file.services()).hasSize(2);
   }
 
   @Test public void simpleWithOptionsToSchema() {
-    TypeElement element = MessageElement.builder().name("Message").build();
+    TypeElement element = MessageElement.builder(location).name("Message").build();
     OptionElement option = OptionElement.create("kit", Kind.STRING, "kat");
     ProtoFileElement
-        file = ProtoFileElement.builder("file.proto").addOption(option).addType(element).build();
+        file = ProtoFileElement.builder(location).addOption(option).addType(element).build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -299,10 +303,10 @@ public class ProtoFileElementTest {
   }
 
   @Test public void addMultipleOptions() {
-    TypeElement element = MessageElement.builder().name("Message").build();
+    TypeElement element = MessageElement.builder(location).name("Message").build();
     OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
     OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder(location)
         .addOptions(Arrays.asList(kitKat, fooBar))
         .addType(element)
         .build();
@@ -310,9 +314,9 @@ public class ProtoFileElementTest {
   }
 
   @Test public void simpleWithExtendsToSchema() {
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
-        .addExtendDeclaration(ExtendElement.builder().name("Extend").build())
-        .addType(MessageElement.builder().name("Message").build())
+    ProtoFileElement file = ProtoFileElement.builder(location)
+        .addExtendDeclaration(ExtendElement.builder(location.at(5, 1)).name("Extend").build())
+        .addType(MessageElement.builder(location).name("Message").build())
         .build();
     String expected = ""
         + "// file.proto\n"
@@ -324,42 +328,42 @@ public class ProtoFileElementTest {
   }
 
   @Test public void addMultipleExtends() {
-    ExtendElement extend1 = ExtendElement.builder().name("Extend1").build();
-    ExtendElement extend2 = ExtendElement.builder().name("Extend2").build();
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+    ExtendElement extend1 = ExtendElement.builder(location).name("Extend1").build();
+    ExtendElement extend2 = ExtendElement.builder(location).name("Extend2").build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
         .addExtendDeclarations(Arrays.asList(extend1, extend2))
         .build();
     assertThat(file.extendDeclarations()).hasSize(2);
   }
 
   @Test public void multipleEverythingToSchema() {
-    TypeElement element1 = MessageElement.builder()
+    TypeElement element1 = MessageElement.builder(location.at(10, 1))
         .name("Message1")
         .qualifiedName("example.simple.Message1")
         .build();
-    TypeElement element2 = MessageElement.builder()
+    TypeElement element2 = MessageElement.builder(location.at(11, 1))
         .name("Message2")
         .qualifiedName("example.simple.Message2")
         .build();
-    ExtendElement extend1 = ExtendElement.builder()
+    ExtendElement extend1 = ExtendElement.builder(location.at(13, 1))
         .name("Extend1")
         .qualifiedName("example.simple.Extend1")
         .build();
-    ExtendElement extend2 = ExtendElement.builder()
+    ExtendElement extend2 = ExtendElement.builder(location.at(14, 1))
         .name("Extend2")
         .qualifiedName("example.simple.Extend2")
         .build();
     OptionElement option1 = OptionElement.create("kit", Kind.STRING, "kat");
     OptionElement option2 = OptionElement.create("foo", Kind.STRING, "bar");
-    ServiceElement service1 = ServiceElement.builder()
+    ServiceElement service1 = ServiceElement.builder(location.at(16, 1))
         .name("Service1")
         .qualifiedName("example.simple.Service1")
         .build();
-    ServiceElement service2 = ServiceElement.builder()
+    ServiceElement service2 = ServiceElement.builder(location.at(17, 1))
         .name("Service2")
         .qualifiedName("example.simple.Service2")
         .build();
-    ProtoFileElement file = ProtoFileElement.builder("file.proto")
+    ProtoFileElement file = ProtoFileElement.builder(location)
         .packageName("example.simple")
         .addDependency("example.thing")
         .addPublicDependency("example.other")
@@ -393,14 +397,14 @@ public class ProtoFileElementTest {
     assertThat(file.toSchema()).isEqualTo(expected);
 
     // Re-parse the expected string into a ProtoFile and ensure they're equal.
-    ProtoFileElement parsed = ProtoParser.parse("file.proto", expected);
+    ProtoFileElement parsed = ProtoParser.parse(location, expected);
     assertThat(parsed).isEqualTo(file);
   }
 
   @Test public void syntaxToSchema() {
-    TypeElement element = MessageElement.builder().name("Message").build();
+    TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement
-        file = ProtoFileElement.builder("file.proto").syntax(PROTO_2).addType(element).build();
+        file = ProtoFileElement.builder(location).syntax(PROTO_2).addType(element).build();
     String expected = ""
         + "// file.proto\n"
         + "syntax \"proto2\";\n"

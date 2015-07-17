@@ -33,6 +33,10 @@ public final class EnumType extends Type {
     this.options = options;
   }
 
+  @Override public Location location() {
+    return element.location();
+  }
+
   @Override public Name name() {
     return name;
   }

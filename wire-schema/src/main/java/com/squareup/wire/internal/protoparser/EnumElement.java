@@ -17,6 +17,7 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -70,13 +71,14 @@ public abstract class EnumElement implements TypeElement {
     }
   }
 
-  public static Builder builder() {
-    return new Builder();
+  public static Builder builder(Location location) {
+    return new Builder(location);
   }
 
   EnumElement() {
   }
 
+  @Override public abstract Location location();
   @Override public abstract String name();
   @Override public abstract String qualifiedName();
   @Override public abstract String documentation();
@@ -109,13 +111,15 @@ public abstract class EnumElement implements TypeElement {
   }
 
   public static final class Builder {
+    private final Location location;
     private String name;
     private String qualifiedName;
     private String documentation = "";
     private final List<EnumConstantElement> constants = new ArrayList<>();
     private final List<OptionElement> options = new ArrayList<>();
 
-    private Builder() {
+    private Builder(Location location) {
+      this.location = checkNotNull(location, "location");
     }
 
     public Builder name(String name) {
@@ -167,7 +171,7 @@ public abstract class EnumElement implements TypeElement {
       if (!parseAllowAlias(options)) {
         validateTagUniqueness(qualifiedName, constants);
       }
-      return new AutoValue_EnumElement(name, qualifiedName, documentation,
+      return new AutoValue_EnumElement(location, name, qualifiedName, documentation,
           ImmutableList.copyOf(constants), ImmutableList.copyOf(options));
     }
   }

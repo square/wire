@@ -17,6 +17,7 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,10 +28,11 @@ import static com.squareup.wire.internal.protoparser.Utils.appendIndented;
 
 @AutoValue
 public abstract class ServiceElement {
-  public static Builder builder() {
-    return new Builder();
+  public static Builder builder(Location location) {
+    return new Builder(location);
   }
 
+  public abstract Location location();
   public abstract String name();
   public abstract String qualifiedName();
   public abstract String documentation();
@@ -62,13 +64,15 @@ public abstract class ServiceElement {
   }
 
   public static final class Builder {
+    private final Location location;
     private String name;
     private String qualifiedName;
     private String documentation = "";
     private final List<OptionElement> options = new ArrayList<>();
     private final List<RpcElement> rpcs = new ArrayList<>();
 
-    private Builder() {
+    private Builder(Location location) {
+      this.location = checkNotNull(location, "location");
     }
 
     public Builder name(String name) {
@@ -117,7 +121,7 @@ public abstract class ServiceElement {
       checkNotNull(name, "name");
       checkNotNull(qualifiedName, "qualifiedName");
 
-      return new AutoValue_ServiceElement(name, qualifiedName, documentation,
+      return new AutoValue_ServiceElement(location, name, qualifiedName, documentation,
           ImmutableList.copyOf(rpcs),
           ImmutableList.copyOf(options));
     }

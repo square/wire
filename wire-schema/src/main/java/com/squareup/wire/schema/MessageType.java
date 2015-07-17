@@ -41,6 +41,10 @@ public final class MessageType extends Type {
     this.options = checkNotNull(options);
   }
 
+  @Override public Location location() {
+    return element.location();
+  }
+
   @Override public Name name() {
     return name;
   }

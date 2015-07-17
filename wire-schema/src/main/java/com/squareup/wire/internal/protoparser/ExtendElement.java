@@ -17,6 +17,7 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,13 +30,14 @@ import static com.squareup.wire.internal.protoparser.Utils.appendIndented;
 
 @AutoValue
 public abstract class ExtendElement {
-  public static Builder builder() {
-    return new Builder();
+  public static Builder builder(Location location) {
+    return new Builder(location);
   }
 
   ExtendElement() {
   }
 
+  public abstract Location location();
   public abstract String name();
   public abstract String qualifiedName();
   public abstract String documentation();
@@ -57,12 +59,14 @@ public abstract class ExtendElement {
   }
 
   public static final class Builder {
+    private final Location location;
     private String name;
     private String qualifiedName;
     private String documentation = "";
     private final List<FieldElement> fields = new ArrayList<>();
 
-    private Builder() {
+    private Builder(Location location) {
+      this.location = checkNotNull(location, "location");
     }
 
     public Builder name(String name) {
@@ -100,7 +104,7 @@ public abstract class ExtendElement {
       checkNotNull(qualifiedName, "qualifiedName");
 
       validateFieldTagUniqueness(qualifiedName, fields, Collections.<OneOfElement>emptyList());
-      return new AutoValue_ExtendElement(name, qualifiedName, documentation,
+      return new AutoValue_ExtendElement(location, name, qualifiedName, documentation,
           ImmutableList.copyOf(fields));
     }
   }

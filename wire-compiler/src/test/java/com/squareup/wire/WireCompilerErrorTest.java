@@ -16,20 +16,20 @@
 package com.squareup.wire;
 
 import com.squareup.javapoet.JavaFile;
-import com.squareup.wire.internal.protoparser.ProtoFileElement;
-import com.squareup.wire.internal.protoparser.ProtoParser;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.Loader;
+import com.squareup.wire.schema.Location;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import okio.Buffer;
+import okio.Source;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,17 +43,20 @@ public class WireCompilerErrorTest {
     private final Map<String, StringWriter> writers = new LinkedHashMap<String, StringWriter>();
 
     public StringIO(String protoFileName, String source) {
-      this.protoFileName = "./" + protoFileName;
+      this.protoFileName = protoFileName;
       this.source = source;
     }
 
-    @Override
-    public ProtoFileElement parse(String filename) throws IOException {
-      if (filename.equals(protoFileName)) {
-        return ProtoParser.parse(filename, new StringReader(source));
+    @Override public Location locate(String path) throws IOException {
+      if (path.equals(protoFileName)) {
+        return Location.get(path);
       } else {
         throw new FileNotFoundException();
       }
+    }
+
+    @Override public Source open(Location location) throws IOException {
+      return new Buffer().writeUtf8(source);
     }
 
     public Map<String, String> getOutput() {
@@ -84,9 +87,9 @@ public class WireCompilerErrorTest {
         Collections.<String>emptySet(), null, Collections.<String>emptyList(), false, false);
 
     try {
-      new WireCompiler(options, io, io, new StringWireLogger(true)).compile();
+      new WireCompiler(options, new Loader(io), io, new StringWireLogger(true)).compile();
     } catch (WireException e) {
-      fail();
+      throw new AssertionError(e);
     }
     return io.getOutput();
   }

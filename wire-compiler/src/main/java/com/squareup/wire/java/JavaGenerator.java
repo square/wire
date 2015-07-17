@@ -27,9 +27,10 @@ import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
+import com.squareup.wire.schema.ProtoFile;
+import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
-import com.squareup.wire.schema.ProtoFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -81,28 +82,27 @@ public final class JavaGenerator {
 
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
 
+  private final Schema schema;
   private final ImmutableMap<Type.Name, TypeName> nameToJavaName;
-  private final ImmutableMap<Type.Name, Type> nameToType;
   private final ImmutableMap<Field, ProtoFile> extensionFieldToFile;
 
   private JavaGenerator(
+      Schema schema,
       ImmutableMap<Type.Name, TypeName> nameToJavaName,
-      ImmutableMap<Type.Name, Type> nameToType,
       ImmutableMap<Field, ProtoFile> extensionFieldToFile) {
+    this.schema = schema;
     this.nameToJavaName = nameToJavaName;
-    this.nameToType = nameToType;
     this.extensionFieldToFile = extensionFieldToFile;
   }
 
-  public static JavaGenerator get(List<ProtoFile> protoFiles) {
+  public static JavaGenerator get(Schema schema) {
     ImmutableMap.Builder<Type.Name, TypeName> nameToJavaName = ImmutableMap.builder();
-    ImmutableMap.Builder<Type.Name, Type> nameToType = ImmutableMap.builder();
     ImmutableMap.Builder<Field, ProtoFile> extensionFieldToFile = ImmutableMap.builder();
     nameToJavaName.putAll(SCALAR_TYPES_MAP);
 
-    for (ProtoFile protoFile : protoFiles) {
+    for (ProtoFile protoFile : schema.protoFiles()) {
       String javaPackage = javaPackage(protoFile);
-      putAll(nameToJavaName, nameToType, javaPackage, null, protoFile.types());
+      putAll(nameToJavaName, javaPackage, null, protoFile.types());
 
       for (Extend extend : protoFile.extendList()) {
         for (Field field : extend.fields()) {
@@ -115,20 +115,17 @@ public final class JavaGenerator {
       }
     }
 
-    return new JavaGenerator(nameToJavaName.build(), nameToType.build(),
-        extensionFieldToFile.build());
+    return new JavaGenerator(schema, nameToJavaName.build(), extensionFieldToFile.build());
   }
 
   private static void putAll(ImmutableMap.Builder<Type.Name, TypeName> wireToJava,
-      ImmutableMap.Builder<Type.Name, Type> wireToType, String javaPackage,
-      ClassName enclosingClassName, List<Type> types) {
+      String javaPackage, ClassName enclosingClassName, List<Type> types) {
     for (Type type : types) {
       ClassName className = enclosingClassName != null
           ? enclosingClassName.nestedClass(type.name().simpleName())
           : ClassName.get(javaPackage, type.name().simpleName());
       wireToJava.put(type.name(), className);
-      wireToType.put(type.name(), type);
-      putAll(wireToJava, wireToType, javaPackage, className, type.nestedTypes());
+      putAll(wireToJava, javaPackage, className, type.nestedTypes());
     }
   }
 
@@ -163,12 +160,12 @@ public final class JavaGenerator {
   }
 
   public boolean isEnum(Type.Name type) {
-    Type wireType = nameToType.get(type);
+    Type wireType = schema.getType(type);
     return wireType instanceof EnumType;
   }
 
   public EnumConstant enumDefault(Type.Name type) {
-    EnumType wireEnum = (EnumType) nameToType.get(type);
+    EnumType wireEnum = (EnumType) schema.getType(type);
     return wireEnum.constants().get(0);
   }
 

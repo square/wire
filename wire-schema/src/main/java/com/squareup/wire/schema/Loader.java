@@ -15,62 +15,90 @@
  */
 package com.squareup.wire.schema;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.protoparser.ProtoFileElement;
 import com.squareup.wire.internal.protoparser.ProtoParser;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import okio.Okio;
+import okio.Source;
 
-/**
- * Load proto files and their transitive dependencies, parse them, and prepare for linking. The
- * returned values are not linked and should not be used prior to linking.
- */
+/** Load proto files and their transitive dependencies, parse them, and link them together. */
 public final class Loader {
-  private final String repoPath;
   private final IO io;
-  private final Set<String> protoFileNames = new LinkedHashSet<>();
-  private final ImmutableList.Builder<ProtoFile> loaded = ImmutableList.builder();
+  private final Map<String, ProtoFile> loaded = new LinkedHashMap<>();
 
-  public Loader(String repoPath, IO io) {
-    this.repoPath = repoPath;
+  public Loader(IO io) {
     this.io = io;
   }
 
-  /** Recursively add {@code protoFile} and its dependencies. */
-  public void add(String protoFileName) throws IOException {
-    if (!protoFileNames.add(protoFileName)) {
+  /** Returns a loader that loads all files from {@code base}. */
+  public static Loader forBaseDirectory(final String base) {
+    IO io = new IO() {
+      @Override public Location locate(String path) throws IOException {
+        return Location.get(base, path);
+      }
+
+      @Override public Source open(Location location) throws IOException {
+        String sourcePath = location.base() + File.separator + location.path();
+        return Okio.source(new File(sourcePath));
+      }
+
+      @Override public String toString() {
+        return String.format("Loader(%s)", base);
+      }
+    };
+    return new Loader(io);
+  }
+
+  public Schema load(Iterable<String> sourceFiles) throws IOException {
+    for (String path : sourceFiles) {
+      load(path);
+    }
+    return new Linker(loaded.values()).link();
+  }
+
+  private void load(String path) throws IOException {
+    if (loaded.containsKey(path)) {
       return;
     }
 
-    String sourcePath = repoPath + File.separator + protoFileName;
-    ProtoFileElement element = io.parse(sourcePath);
-    ProtoFile protoFile = ProtoFile.get(sourcePath, element);
-    loaded.add(protoFile);
+    Location location;
+    try {
+      location = io.locate(path);
+    } catch (IOException e) {
+      throw new IOException("Failed to locate " + path + " with " + io, e);
+    }
 
-    // Recursively add dependencies.
+    ProtoFileElement element;
+    try (Source source = io.open(location)) {
+      String data = Okio.buffer(source).readUtf8();
+      element = ProtoParser.parse(location, data);
+    } catch (IOException e) {
+      throw new IOException("Failed to load " + location + " with " + io, e);
+    }
+
+    ProtoFile protoFile = ProtoFile.get(element);
+    loaded.put(path, protoFile);
+
+    // Recursively load dependencies.
     for (String dependency : element.dependencies()) {
-      add(dependency);
+      load(dependency);
     }
   }
 
-  public List<ProtoFile> loaded() {
-    return loaded.build();
-  }
-
   public interface IO {
-    IO DEFAULT = new IO() {
-      @Override public ProtoFileElement parse(String filename) throws IOException {
-        return ProtoParser.parse(filename,
-            new InputStreamReader(new FileInputStream(filename), Charsets.UTF_8));
-      }
-    };
+    /**
+     * Search for the location that holds the {@code .proto} file with path {@code path}. This may
+     * resolve using a single directory, a .jar file, or potentially a search path with both.
+     */
+    Location locate(String path) throws IOException;
 
-    ProtoFileElement parse(String filename) throws IOException;
+    /**
+     * Returns a source to read the {@code .proto} file at {@code location}. The location argument
+     * is always a return value from a previous call to {@code #locate}.
+     */
+    Source open(Location location) throws IOException;
   }
 }

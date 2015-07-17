@@ -36,6 +36,10 @@ public final class Extend {
     this.fields = fields.build();
   }
 
+  public Location location() {
+    return element.location();
+  }
+
   public String packageName() {
     return packageName;
   }

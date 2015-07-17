@@ -31,6 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 public abstract class Type {
+  public abstract Location location();
   public abstract Name name();
   public abstract String documentation();
   public abstract Options options();
