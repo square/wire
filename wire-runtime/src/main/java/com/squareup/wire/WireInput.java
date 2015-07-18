@@ -35,7 +35,6 @@ package com.squareup.wire;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import okio.BufferedSource;
 import okio.ByteString;
 
@@ -43,8 +42,6 @@ import okio.ByteString;
  * Reads and decodes protocol message fields.
  */
 final class WireInput {
-
-  private static final Charset UTF_8 = Charset.forName("UTF-8");
 
   private static final String ENCOUNTERED_A_NEGATIVE_SIZE =
       "Encountered a negative size";
@@ -93,7 +90,7 @@ final class WireInput {
   public String readString() throws IOException {
     int count = readVarint32();
     pos += count;
-    return source.readString(count, UTF_8);
+    return source.readUtf8(count);
   }
 
   /**
