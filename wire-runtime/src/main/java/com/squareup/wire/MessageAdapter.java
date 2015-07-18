@@ -758,8 +758,7 @@ public final class MessageAdapter<M extends Message> {
         builder.ensureUnknownFieldMap().addFixed64(tag, input.readFixed64());
         break;
       case LENGTH_DELIMITED:
-        int length = input.readVarint32();
-        builder.ensureUnknownFieldMap().addLengthDelimited(tag, input.readBytes(length));
+        builder.ensureUnknownFieldMap().addLengthDelimited(tag, input.readBytes());
         break;
       /* Skip any groups found in the input */
       case START_GROUP:
