@@ -27,7 +27,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
@@ -511,9 +510,10 @@ public final class TypeWriter {
     TypeSpec.Builder result = TypeSpec.classBuilder("Builder")
         .addModifiers(PUBLIC, STATIC, FINAL);
 
-    result.superclass(type.extensions().isEmpty()
-        ? JavaGenerator.builderOf(javaType)
-        : JavaGenerator.extendableBuilderOf(javaType));
+    boolean hasExtensions = !type.extensions().isEmpty();
+    result.superclass(hasExtensions
+        ? JavaGenerator.extendableBuilderOf(javaType, builderType)
+        : JavaGenerator.builderOf(javaType));
 
     List<Field> fields = type.fieldsAndOneOfFields();
     for (Field field : fields) {
@@ -526,8 +526,8 @@ public final class TypeWriter {
       result.addField(fieldSpec.build());
     }
 
-    result.addMethod(builderNoArgsConstructor());
-    result.addMethod(builderCopyConstructor(type));
+    result.addMethod(builderNoArgsConstructor(hasExtensions, builderType));
+    result.addMethod(builderCopyConstructor(hasExtensions, builderType, type));
 
     for (Field field : type.fields()) {
       result.addMethod(setter(builderType, null, field));
@@ -539,10 +539,6 @@ public final class TypeWriter {
       }
     }
 
-    if (!type.extensions().isEmpty()) {
-      result.addMethod(builderSetExtension(javaType, builderType));
-    }
-
     result.addMethod(builderBuild(type, javaType));
     return result.build();
   }
@@ -552,10 +548,12 @@ public final class TypeWriter {
   // public Builder() {
   // }
   //
-  private MethodSpec builderNoArgsConstructor() {
-    return MethodSpec.constructorBuilder()
-        .addModifiers(PUBLIC)
-        .build();
+  private MethodSpec builderNoArgsConstructor(boolean hasExtensions, ClassName builderType) {
+    MethodSpec.Builder builder = MethodSpec.constructorBuilder().addModifiers(PUBLIC);
+    if (hasExtensions) {
+      builder.addStatement("super($T.class)", builderType);
+    }
+    return builder.build();
   }
 
   // Example:
@@ -567,13 +565,18 @@ public final class TypeWriter {
   //   ...
   // }
   //
-  private MethodSpec builderCopyConstructor(MessageType message) {
+  private MethodSpec builderCopyConstructor(boolean hasExtensions, ClassName builderType,
+      MessageType message) {
     TypeName javaType = javaGenerator.typeName(message.name());
 
     MethodSpec.Builder result = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameter(javaType, "message");
-    result.addStatement("super(message)");
+    if (hasExtensions) {
+      result.addStatement("super($T.class, message)", builderType);
+    } else {
+      result.addStatement("super(message)");
+    }
 
     List<Field> fields = message.fieldsAndOneOfFields();
     if (!fields.isEmpty()) {
@@ -625,28 +628,6 @@ public final class TypeWriter {
 
     result.addStatement("return this");
     return result.build();
-  }
-
-  // Example:
-  //
-  // @Override
-  // public <E> Builder setExtension(Extension<ExternalMessage, E> extension, E value) {
-  //   super.setExtension(extension, value);
-  //   return this;
-  // }
-  //
-  private MethodSpec builderSetExtension(ClassName javaType, ClassName builderType) {
-    TypeVariableName e = TypeVariableName.get("E");
-    return MethodSpec.methodBuilder("setExtension")
-        .addAnnotation(Override.class)
-        .addModifiers(PUBLIC)
-        .addTypeVariable(e)
-        .returns(builderType)
-        .addParameter(JavaGenerator.extensionOf(javaType, e), "extension")
-        .addParameter(e, "value")
-        .addStatement("super.setExtension(extension, value)")
-        .addStatement("return this")
-        .build();
   }
 
   // Example:

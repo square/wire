@@ -3,7 +3,6 @@
 package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
-import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -132,7 +131,7 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FieldOptions> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FieldOptions, Builder> {
     public CType ctype;
 
     public Boolean packed;
@@ -144,10 +143,11 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
+      super(Builder.class);
     }
 
     public Builder(FieldOptions message) {
-      super(message);
+      super(Builder.class, message);
       if (message == null) return;
       this.ctype = message.ctype;
       this.packed = message.packed;
@@ -213,12 +213,6 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
       this.uninterpreted_option = canonicalizeList(uninterpreted_option);
-      return this;
-    }
-
-    @Override
-    public <E> Builder setExtension(Extension<FieldOptions, E> extension, E value) {
-      super.setExtension(extension, value);
       return this;
     }
 

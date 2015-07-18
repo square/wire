@@ -5,7 +5,6 @@ package com.squareup.wire.protos.custom_options;
 import com.google.protobuf.EnumOptions;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.ExtendableMessage;
-import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -168,7 +167,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FooBar> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FooBar, Builder> {
     public Integer foo;
 
     public String bar;
@@ -184,10 +183,11 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     public List<FooBar> nested = Collections.emptyList();
 
     public Builder() {
+      super(Builder.class);
     }
 
     public Builder(FooBar message) {
-      super(message);
+      super(Builder.class, message);
       if (message == null) return;
       this.foo = message.foo;
       this.bar = message.bar;
@@ -230,12 +230,6 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
     public Builder nested(List<FooBar> nested) {
       this.nested = canonicalizeList(nested);
-      return this;
-    }
-
-    @Override
-    public <E> Builder setExtension(Extension<FooBar, E> extension, E value) {
-      super.setExtension(extension, value);
       return this;
     }
 

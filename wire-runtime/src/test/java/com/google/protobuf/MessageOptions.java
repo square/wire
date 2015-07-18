@@ -3,7 +3,6 @@
 package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
-import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Boolean;
@@ -101,7 +100,7 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<MessageOptions> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<MessageOptions, Builder> {
     public Boolean message_set_wire_format;
 
     public Boolean no_standard_descriptor_accessor;
@@ -109,10 +108,11 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
+      super(Builder.class);
     }
 
     public Builder(MessageOptions message) {
-      super(message);
+      super(Builder.class, message);
       if (message == null) return;
       this.message_set_wire_format = message.message_set_wire_format;
       this.no_standard_descriptor_accessor = message.no_standard_descriptor_accessor;
@@ -159,12 +159,6 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
       this.uninterpreted_option = canonicalizeList(uninterpreted_option);
-      return this;
-    }
-
-    @Override
-    public <E> Builder setExtension(Extension<MessageOptions, E> extension, E value) {
-      super.setExtension(extension, value);
       return this;
     }
 

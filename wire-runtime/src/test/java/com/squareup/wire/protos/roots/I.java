@@ -3,7 +3,6 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.ExtendableMessage;
-import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Integer;
@@ -50,26 +49,21 @@ public final class I extends ExtendableMessage<I> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<I> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<I, Builder> {
     public Integer i;
 
     public Builder() {
+      super(Builder.class);
     }
 
     public Builder(I message) {
-      super(message);
+      super(Builder.class, message);
       if (message == null) return;
       this.i = message.i;
     }
 
     public Builder i(Integer i) {
       this.i = i;
-      return this;
-    }
-
-    @Override
-    public <E> Builder setExtension(Extension<I, E> extension, E value) {
-      super.setExtension(extension, value);
       return this;
     }
 
