@@ -19,6 +19,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.Loader;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.SchemaException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -123,8 +124,11 @@ public class WireCompilerErrorTest {
           + "  optional int32 g = 1;\n"
           + "}\n");
       fail();
-    } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Duplicate tag 1 in com.squareup.protos.test.Simple");
+    } catch (SchemaException e) {
+      assertThat(e).hasMessage("multiple fields share tag 1:\n"
+          + "  1. f (test.proto at 3:3)\n"
+          + "  2. g (test.proto at 4:3)\n"
+          + "  for message com.squareup.protos.test.Simple (test.proto at 2:1)");
     }
   }
 
@@ -143,9 +147,11 @@ public class WireCompilerErrorTest {
           + "    }\n"
           + "}\n");
       fail();
-    } catch (IllegalStateException e) {
-      assertThat(e)
-          .hasMessage("Duplicate enum constant QUIX in scope com.squareup.protos.test.Foo");
+    } catch (SchemaException e) {
+      assertThat(e).hasMessage("multiple enums share constant QUIX:\n"
+          + "  1. com.squareup.protos.test.Foo.Bar.QUIX (test.proto at 4:7)\n"
+          + "  2. com.squareup.protos.test.Foo.Bar2.QUIX (test.proto at 10:7)\n"
+          + "  for message com.squareup.protos.test.Foo (test.proto at 2:3)");
     }
   }
 

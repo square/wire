@@ -237,6 +237,151 @@ public final class SchemaTest {
     }
   }
 
+  @Test public void duplicateMessageTagDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "  required string name1 = 1;\n"
+              + "  required string name2 = 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("multiple fields share tag 1:\n"
+          + "  1. name1 (message.proto at 2:3)\n"
+          + "  2. name2 (message.proto at 3:3)\n"
+          + "  for message Message (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void duplicateTagValueDisallowedInOneOf() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "  required string name1 = 1;\n"
+              + "  oneof selection {\n"
+              + "    string name2 = 1;\n"
+              + "  }\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("multiple fields share tag 1:\n"
+          + "  1. name1 (message.proto at 2:3)\n"
+          + "  2. name2 (message.proto at 4:5)\n"
+          + "  for message Message (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void duplicateExtendTagDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "}\n"
+              + "extend Message {\n"
+              + "  required string name1 = 1;\n"
+              + "  required string name2 = 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("multiple fields share tag 1:\n"
+          + "  1. name1 (message.proto at 4:3)\n"
+          + "  2. name2 (message.proto at 5:3)\n"
+          + "  for extend Message (message.proto at 3:1)");
+    }
+  }
+
+  @Test public void oneofLabelDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "  oneof string s = 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in message.proto at 2:17: expected '{'");
+    }
+  }
+
+  @Test public void duplicateEnumValueTagInScopeDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "  enum Enum1 {\n"
+              + "    VALUE = 1;\n"
+              + "  }\n"
+              + "  enum Enum2 {\n"
+              + "    VALUE = 2;\n"
+              + "  }\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("multiple enums share constant VALUE:\n"
+          + "  1. Message.Enum1.VALUE (message.proto at 3:5)\n"
+          + "  2. Message.Enum2.VALUE (message.proto at 6:5)\n"
+          + "  for message Message (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void duplicateEnumConstantTagWithoutAllowAliasDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "enum Enum {\n"
+              + "  A = 1;\n"
+              + "  B = 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("multiple enum constants share tag 1:\n"
+          + "  1. A (message.proto at 2:3)\n"
+          + "  2. B (message.proto at 3:3)\n"
+          + "  for enum Enum (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void duplicateEnumConstantTagWithAllowAliasFalseDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "enum Enum {\n"
+              + "  option (allow_alias) = false;\n"
+              + "  A = 1;\n"
+              + "  B = 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("multiple enum constants share tag 1:\n"
+          + "  1. A (message.proto at 3:3)\n"
+          + "  2. B (message.proto at 4:3)\n"
+          + "  for enum Enum (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void duplicateEnumConstantTagWithAllowAliasTrueAllowed() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "enum Enum {\n"
+            + "  option (allow_alias) = true;\n"
+            + "  A = 1;\n"
+            + "  B = 1;\n"
+            + "}\n")
+        .build();
+    EnumType enumType = (EnumType) schema.getType("Enum");
+    assertThat(enumType.constant("A").tag()).isEqualTo(1);
+    assertThat(enumType.constant("B").tag()).isEqualTo(1);
+  }
+
   static class SchemaBuilder {
     final Map<String, String> paths = new LinkedHashMap<>();
 

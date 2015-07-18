@@ -29,6 +29,10 @@ public final class EnumConstant {
         Type.Name.ENUM_VALUE_OPTIONS, packageName, element.options());
   }
 
+  public Location location() {
+    return element.location();
+  }
+
   public String packageName() {
     return packageName;
   }

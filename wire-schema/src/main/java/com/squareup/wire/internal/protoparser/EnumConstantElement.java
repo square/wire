@@ -17,6 +17,7 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +28,14 @@ import static com.squareup.wire.internal.protoparser.Utils.appendDocumentation;
 /** An enum constant. */
 @AutoValue
 public abstract class EnumConstantElement {
-  public static Builder builder() {
-    return new Builder();
+  public static Builder builder(Location location) {
+    return new Builder(location);
   }
 
   EnumConstantElement() {
   }
 
+  public abstract Location location();
   public abstract String name();
   public abstract int tag();
   public abstract String documentation();
@@ -54,12 +56,14 @@ public abstract class EnumConstantElement {
   }
 
   public static final class Builder {
+    private final Location location;
     private String name;
     private Integer tag;
     private String documentation = "";
     private final List<OptionElement> options = new ArrayList<>();
 
-    private Builder() {
+    private Builder(Location location) {
+      this.location = checkNotNull(location, "location");
     }
 
     public Builder name(String name) {
@@ -86,7 +90,7 @@ public abstract class EnumConstantElement {
       checkNotNull(name, "name");
       checkNotNull(tag, "tag");
 
-      return new AutoValue_EnumConstantElement(name, tag, documentation,
+      return new AutoValue_EnumConstantElement(location, name, tag, documentation,
           ImmutableList.copyOf(options));
     }
   }

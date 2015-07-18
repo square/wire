@@ -16,7 +16,10 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -85,7 +88,7 @@ final class Linker {
       }
     }
 
-    // Finally link options. We can't link any options until we've linked all fields!
+    // Link options. We can't link any options until we've linked all fields!
     for (ProtoFile protoFile : protoFiles) {
       protoFile.options().link(this);
       for (Type type : protoFile.types()) {
@@ -93,6 +96,16 @@ final class Linker {
       }
       for (Service service : protoFile.services()) {
         service.linkOptions(this);
+      }
+    }
+
+    // Validate the linked schema.
+    for (ProtoFile protoFile : protoFiles) {
+      for (Type type : protoFile.types()) {
+        type.validate(this);
+      }
+      for (Extend extend : protoFile.extendList()) {
+        extend.validate(this);
       }
     }
 
@@ -192,12 +205,58 @@ final class Linker {
     return null; // Unable to traverse this field path.
   }
 
+  void validateTagUniqueness(Iterable<Field> fields) {
+    Multimap<Integer, Field> tagToField = LinkedHashMultimap.create();
+    for (Field field : fields) {
+      tagToField.put(field.tag(), field);
+    }
+
+    for (Map.Entry<Integer, Collection<Field>> entry : tagToField.asMap().entrySet()) {
+      if (entry.getValue().size() > 1) {
+        StringBuilder error = new StringBuilder();
+        error.append(String.format("multiple fields share tag %s:", entry.getKey()));
+        int index = 1;
+        for (Field field : entry.getValue()) {
+          error.append(String.format("\n  %s. %s (%s)",
+              index++, field.name(), field.location()));
+        }
+        addError("%s", error);
+      }
+    }
+  }
+
+  void validateEnumConstantNameUniqueness(Iterable<Type> nestedTypes) {
+    Multimap<String, EnumType> nameToType = LinkedHashMultimap.create();
+    for (Type type : nestedTypes) {
+      if (type instanceof EnumType) {
+        EnumType enumType = (EnumType) type;
+        for (EnumConstant enumConstant : enumType.constants()) {
+          nameToType.put(enumConstant.name(), enumType);
+        }
+      }
+    }
+
+    for (Map.Entry<String, Collection<EnumType>> entry : nameToType.asMap().entrySet()) {
+      if (entry.getValue().size() > 1) {
+        StringBuilder error = new StringBuilder();
+        String constant = entry.getKey();
+        int index = 1;
+        error.append(String.format("multiple enums share constant %s:", constant));
+        for (EnumType enumType : entry.getValue()) {
+          error.append(String.format("\n  %s. %s.%s (%s)",
+              index++, enumType.name(), constant, enumType.constant(constant).location()));
+        }
+        addError("%s", error);
+      }
+    }
+  }
+
   /** Returns a new linker that uses {@code context} to resolve type names and report errors. */
   Linker withContext(Object context) {
     return new Linker(this, context);
   }
 
-  private void addError(String format, Object... args) {
+  void addError(String format, Object... args) {
     StringBuilder error = new StringBuilder();
     error.append(String.format(format, args));
 
@@ -224,6 +283,11 @@ final class Linker {
         MessageType message = (MessageType) context;
         error.append(String.format("%s message %s (%s)",
             prefix, message.name(), message.location()));
+
+      } else if (context instanceof EnumType) {
+        EnumType enumType = (EnumType) context;
+        error.append(String.format("%s enum %s (%s)",
+            prefix, enumType.name(), enumType.location()));
 
       } else if (context instanceof Service) {
         Service service = (Service) context;

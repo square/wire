@@ -151,30 +151,4 @@ public class ExtendElementTest {
         + "}\n";
     assertThat(extend.toSchema()).isEqualTo(expected);
   }
-
-  @Test public void duplicateTagValueThrows() {
-    FieldElement field1 = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name1")
-        .tag(1)
-        .build();
-    FieldElement field2 = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name2")
-        .tag(1)
-        .build();
-    try {
-      ExtendElement.builder(location)
-          .name("Extend")
-          .qualifiedName("example.Extend")
-          .addField(field1)
-          .addField(field2)
-          .build();
-      fail();
-    } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Duplicate tag 1 in example.Extend");
-    }
-  }
 }
