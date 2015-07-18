@@ -56,6 +56,11 @@ public final class Extend {
     return fields;
   }
 
+  void validate(Linker linker) {
+    linker = linker.withContext(this);
+    linker.validateTagUniqueness(fields);
+  }
+
   void link(Linker linker) {
     linker = linker.withContext(this);
     name = linker.resolveNamedType(packageName, element.name());

@@ -20,11 +20,9 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.squareup.wire.internal.protoparser.MessageElement.validateFieldTagUniqueness;
 import static com.squareup.wire.internal.protoparser.Utils.appendDocumentation;
 import static com.squareup.wire.internal.protoparser.Utils.appendIndented;
 
@@ -103,7 +101,6 @@ public abstract class ExtendElement {
       checkNotNull(name, "name");
       checkNotNull(qualifiedName, "qualifiedName");
 
-      validateFieldTagUniqueness(qualifiedName, fields, Collections.<OneOfElement>emptyList());
       return new AutoValue_ExtendElement(location, name, qualifiedName, documentation,
           ImmutableList.copyOf(fields));
     }

@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.OptionElement.Kind.BOOLEAN;
 import static com.squareup.wire.internal.protoparser.OptionElement.Kind.STRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -118,9 +117,9 @@ public class EnumElementTest {
   @Test public void simpleToSchema() {
     EnumElement element = EnumElement.builder(location)
         .name("Enum")
-        .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
-        .addConstant(EnumConstantElement.builder().name("TWO").tag(2).build())
-        .addConstant(EnumConstantElement.builder().name("SIX").tag(6).build())
+        .addConstant(EnumConstantElement.builder(location).name("ONE").tag(1).build())
+        .addConstant(EnumConstantElement.builder(location).name("TWO").tag(2).build())
+        .addConstant(EnumConstantElement.builder(location).name("SIX").tag(6).build())
         .build();
     String expected = ""
         + "enum Enum {\n"
@@ -132,9 +131,9 @@ public class EnumElementTest {
   }
 
   @Test public void addMultipleConstants() {
-    EnumConstantElement one = EnumConstantElement.builder().name("ONE").tag(1).build();
-    EnumConstantElement two = EnumConstantElement.builder().name("TWO").tag(2).build();
-    EnumConstantElement six = EnumConstantElement.builder().name("SIX").tag(6).build();
+    EnumConstantElement one = EnumConstantElement.builder(location).name("ONE").tag(1).build();
+    EnumConstantElement two = EnumConstantElement.builder(location).name("TWO").tag(2).build();
+    EnumConstantElement six = EnumConstantElement.builder(location).name("SIX").tag(6).build();
     EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .addConstants(Arrays.asList(one, two, six))
@@ -146,9 +145,9 @@ public class EnumElementTest {
     EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .addOption(OptionElement.create("kit", STRING, "kat"))
-        .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
-        .addConstant(EnumConstantElement.builder().name("TWO").tag(2).build())
-        .addConstant(EnumConstantElement.builder().name("SIX").tag(6).build())
+        .addConstant(EnumConstantElement.builder(location).name("ONE").tag(1).build())
+        .addConstant(EnumConstantElement.builder(location).name("TWO").tag(2).build())
+        .addConstant(EnumConstantElement.builder(location).name("SIX").tag(6).build())
         .build();
     String expected = ""
         + "enum Enum {\n"
@@ -167,7 +166,7 @@ public class EnumElementTest {
     EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .addOptions(Arrays.asList(kitKat, fooBar))
-        .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
+        .addConstant(EnumConstantElement.builder(location).name("ONE").tag(1).build())
         .build();
     assertThat(element.options()).hasSize(2);
   }
@@ -176,9 +175,9 @@ public class EnumElementTest {
     EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .documentation("Hello")
-        .addConstant(EnumConstantElement.builder().name("ONE").tag(1).build())
-        .addConstant(EnumConstantElement.builder().name("TWO").tag(2).build())
-        .addConstant(EnumConstantElement.builder().name("SIX").tag(6).build())
+        .addConstant(EnumConstantElement.builder(location).name("ONE").tag(1).build())
+        .addConstant(EnumConstantElement.builder(location).name("TWO").tag(2).build())
+        .addConstant(EnumConstantElement.builder(location).name("SIX").tag(6).build())
         .build();
     String expected = ""
         + "// Hello\n"
@@ -191,13 +190,13 @@ public class EnumElementTest {
   }
 
   @Test public void fieldToSchema() {
-    EnumConstantElement value = EnumConstantElement.builder().name("NAME").tag(1).build();
+    EnumConstantElement value = EnumConstantElement.builder(location).name("NAME").tag(1).build();
     String expected = "NAME = 1;\n";
     assertThat(value.toSchema()).isEqualTo(expected);
   }
 
   @Test public void fieldWithDocumentationToSchema() {
-    EnumConstantElement value = EnumConstantElement.builder()
+    EnumConstantElement value = EnumConstantElement.builder(location)
         .name("NAME")
         .tag(1)
         .documentation("Hello")
@@ -209,7 +208,7 @@ public class EnumElementTest {
   }
 
   @Test public void fieldWithOptionsToSchema() {
-    EnumConstantElement value = EnumConstantElement.builder()
+    EnumConstantElement value = EnumConstantElement.builder(location)
         .name("NAME")
         .tag(1)
         .addOption(OptionElement.create("kit", STRING, "kat", true))
@@ -220,30 +219,5 @@ public class EnumElementTest {
         + "  tit = \"tat\"\n"
         + "];\n";
     assertThat(value.toSchema()).isEqualTo(expected);
-  }
-
-  @Test public void duplicateValueTagThrows() {
-    try {
-      EnumElement.builder(location)
-          .name("Enum1")
-          .qualifiedName("example.Enum")
-          .addConstant(EnumConstantElement.builder().name("VALUE1").tag(1).build())
-          .addConstant(EnumConstantElement.builder().name("VALUE2").tag(1).build())
-          .build();
-      fail();
-    } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Duplicate tag 1 in example.Enum");
-    }
-  }
-
-  @Test public void duplicateValueTagWithAllowAlias() {
-    EnumElement element = EnumElement.builder(location)
-        .name("Enum1")
-        .qualifiedName("example.Enum")
-        .addOption(OptionElement.create("allow_alias", BOOLEAN, "true"))
-        .addConstant(EnumConstantElement.builder().name("VALUE1").tag(1).build())
-        .addConstant(EnumConstantElement.builder().name("VALUE2").tag(1).build())
-        .build();
-    assertThat(element.constants()).hasSize(2);
   }
 }

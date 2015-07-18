@@ -16,7 +16,11 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import com.squareup.wire.internal.protoparser.EnumElement;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public final class EnumType extends Type {
@@ -53,8 +57,46 @@ public final class EnumType extends Type {
     return ImmutableList.of(); // Enums do not allow nested type declarations.
   }
 
+  /** Returns the constant named {@code name}, or null if this enum has no such constant. */
+  public EnumConstant constant(String name) {
+    for (EnumConstant constant : constants()) {
+      if (constant.name().equals(name)) {
+        return constant;
+      }
+    }
+    return null;
+  }
+
   public ImmutableList<EnumConstant> constants() {
     return constants;
+  }
+
+  @Override void validate(Linker linker) {
+    linker = linker.withContext(this);
+
+    if (!"true".equals(options.get("allow_alias"))) {
+      validateTagUniqueness(linker);
+    }
+  }
+
+  private void validateTagUniqueness(Linker linker) {
+    Multimap<Integer, EnumConstant> tagToConstant = LinkedHashMultimap.create();
+    for (EnumConstant constant : constants) {
+      tagToConstant.put(constant.tag(), constant);
+    }
+
+    for (Map.Entry<Integer, Collection<EnumConstant>> entry : tagToConstant.asMap().entrySet()) {
+      if (entry.getValue().size() > 1) {
+        StringBuilder error = new StringBuilder();
+        error.append(String.format("multiple enum constants share tag %s:", entry.getKey()));
+        int index = 1;
+        for (EnumConstant constant : entry.getValue()) {
+          error.append(String.format("\n  %s. %s (%s)",
+              index++, constant.name(), constant.location()));
+        }
+        linker.addError("%s", error);
+      }
+    }
   }
 
   @Override void link(Linker linker) {

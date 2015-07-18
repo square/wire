@@ -15,15 +15,27 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.squareup.wire.schema.Location;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class EnumConstantElementTest {
+  Location location = Location.get("file.proto");
+
+  @Test public void locationRequired() {
+    try {
+      EnumConstantElement.builder(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("location");
+    }
+  }
+
   @Test public void nameRequired() {
     try {
-      EnumConstantElement.builder().tag(1).build();
+      EnumConstantElement.builder(location).tag(1).build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
@@ -32,7 +44,7 @@ public final class EnumConstantElementTest {
 
   @Test public void tagRequired() {
     try {
-      EnumConstantElement.builder().name("Test").build();
+      EnumConstantElement.builder(location).name("Test").build();
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("tag");
@@ -41,19 +53,19 @@ public final class EnumConstantElementTest {
 
   @Test public void nullBuilderValuesThrow() {
     try {
-      EnumConstantElement.builder().name(null);
+      EnumConstantElement.builder(location).name(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("name");
     }
     try {
-      EnumConstantElement.builder().documentation(null);
+      EnumConstantElement.builder(location).documentation(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("documentation");
     }
     try {
-      EnumConstantElement.builder().addOption(null);
+      EnumConstantElement.builder(location).addOption(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");

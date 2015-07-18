@@ -146,7 +146,7 @@ public final class ProtoParser {
     } else if (context == Context.ENUM) {
       if (readChar() != '=') throw unexpected("expected '='");
 
-      EnumConstantElement.Builder builder = EnumConstantElement.builder()
+      EnumConstantElement.Builder builder = EnumConstantElement.builder(location)
           .name(label)
           .tag(readInt());
 

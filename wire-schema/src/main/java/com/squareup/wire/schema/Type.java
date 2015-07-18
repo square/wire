@@ -36,6 +36,7 @@ public abstract class Type {
   public abstract String documentation();
   public abstract Options options();
   public abstract ImmutableList<Type> nestedTypes();
+  abstract void validate(Linker linker);
   abstract void link(Linker linker);
   abstract void linkOptions(Linker linker);
   abstract Type retainAll(Set<String> identifiers);

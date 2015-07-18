@@ -102,6 +102,15 @@ public final class MessageType extends Type {
     return ImmutableList.copyOf(element.extensions());
   }
 
+  void validate(Linker linker) {
+    linker = linker.withContext(this);
+    linker.validateTagUniqueness(fieldsAndOneOfFields());
+    linker.validateEnumConstantNameUniqueness(nestedTypes);
+    for (Type type : nestedTypes) {
+      type.validate(linker);
+    }
+  }
+
   void link(Linker linker) {
     linker = linker.withContext(this);
     for (Field field : fields) {

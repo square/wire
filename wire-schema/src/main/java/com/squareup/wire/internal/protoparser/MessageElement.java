@@ -20,9 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.protoparser.Utils.appendDocumentation;
@@ -30,34 +28,6 @@ import static com.squareup.wire.internal.protoparser.Utils.appendIndented;
 
 @AutoValue
 public abstract class MessageElement implements TypeElement {
-  static void validateFieldTagUniqueness(String qualifiedName, List<FieldElement> fields,
-      List<OneOfElement> oneOfs) {
-    List<FieldElement> allFields = new ArrayList<>(fields);
-    for (OneOfElement oneOf : oneOfs) {
-      allFields.addAll(oneOf.fields());
-    }
-
-    Set<Integer> tags = new LinkedHashSet<>();
-    for (FieldElement field : allFields) {
-      int tag = field.tag();
-      if (!tags.add(tag)) {
-        throw new IllegalStateException("Duplicate tag " + tag + " in " + qualifiedName);
-      }
-    }
-  }
-
-  static void validateFieldLabel(String qualifiedName, List<FieldElement> fields) {
-    for (FieldElement field : fields) {
-      if (field.label() == FieldElement.Label.ONE_OF) {
-        throw new IllegalStateException("Field '"
-            + field.name()
-            + "' in "
-            + qualifiedName
-            + " improperly declares itself a member of a 'oneof' group but is not.");
-      }
-    }
-  }
-
   public static Builder builder(Location location) {
     return new Builder(location);
   }
@@ -210,10 +180,6 @@ public abstract class MessageElement implements TypeElement {
     public MessageElement build() {
       checkNotNull(name, "name");
       checkNotNull(qualifiedName, "qualifiedName");
-
-      validateFieldTagUniqueness(qualifiedName, fields, oneOfs);
-      validateFieldLabel(qualifiedName, fields);
-      EnumElement.validateValueUniquenessInScope(qualifiedName, nestedElements);
 
       return new AutoValue_MessageElement(location, name, qualifiedName, documentation,
           ImmutableList.copyOf(fields), ImmutableList.copyOf(oneOfs),
