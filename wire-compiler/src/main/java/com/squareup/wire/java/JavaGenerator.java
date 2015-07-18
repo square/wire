@@ -181,8 +181,8 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(BUILDER, messageType);
   }
 
-  public static TypeName extendableBuilderOf(TypeName messageType) {
-    return ParameterizedTypeName.get(EXTENDABLE_BUILDER, messageType);
+  public static TypeName extendableBuilderOf(TypeName messageType, ClassName builderType) {
+    return ParameterizedTypeName.get(EXTENDABLE_BUILDER, messageType, builderType);
   }
 
   public static TypeName extensionOf(TypeName messageType, TypeName fieldType) {

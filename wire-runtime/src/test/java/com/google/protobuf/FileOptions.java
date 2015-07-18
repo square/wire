@@ -3,7 +3,6 @@
 package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
-import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -210,7 +209,7 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FileOptions> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FileOptions, Builder> {
     public String java_package;
 
     public String java_outer_classname;
@@ -230,10 +229,11 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
+      super(Builder.class);
     }
 
     public Builder(FileOptions message) {
-      super(message);
+      super(Builder.class, message);
       if (message == null) return;
       this.java_package = message.java_package;
       this.java_outer_classname = message.java_outer_classname;
@@ -330,12 +330,6 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
       this.uninterpreted_option = canonicalizeList(uninterpreted_option);
-      return this;
-    }
-
-    @Override
-    public <E> Builder setExtension(Extension<FileOptions, E> extension, E value) {
-      super.setExtension(extension, value);
       return this;
     }
 

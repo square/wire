@@ -3,7 +3,6 @@
 package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
-import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Object;
@@ -53,14 +52,15 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<EnumValueOptions> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<EnumValueOptions, Builder> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
+      super(Builder.class);
     }
 
     public Builder(EnumValueOptions message) {
-      super(message);
+      super(Builder.class, message);
       if (message == null) return;
       this.uninterpreted_option = copyOf(message.uninterpreted_option);
     }
@@ -70,12 +70,6 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
       this.uninterpreted_option = canonicalizeList(uninterpreted_option);
-      return this;
-    }
-
-    @Override
-    public <E> Builder setExtension(Extension<EnumValueOptions, E> extension, E value) {
-      super.setExtension(extension, value);
       return this;
     }
 

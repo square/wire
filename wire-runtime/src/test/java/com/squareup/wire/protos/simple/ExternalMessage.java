@@ -3,7 +3,6 @@
 package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.ExtendableMessage;
-import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Float;
@@ -50,26 +49,21 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<ExternalMessage> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<ExternalMessage, Builder> {
     public Float f;
 
     public Builder() {
+      super(Builder.class);
     }
 
     public Builder(ExternalMessage message) {
-      super(message);
+      super(Builder.class, message);
       if (message == null) return;
       this.f = message.f;
     }
 
     public Builder f(Float f) {
       this.f = f;
-      return this;
-    }
-
-    @Override
-    public <E> Builder setExtension(Extension<ExternalMessage, E> extension, E value) {
-      super.setExtension(extension, value);
       return this;
     }
 

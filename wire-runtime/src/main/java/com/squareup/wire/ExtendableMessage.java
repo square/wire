@@ -35,7 +35,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
   /**
    * Initializes any extension and unknown field data to that stored in the given {@code Builder}.
    */
-  protected void setBuilder(ExtendableBuilder<T> builder) {
+  protected void setBuilder(ExtendableBuilder<T, ?> builder) {
     super.setBuilder(builder);
     if (builder.extensionMap != null) {
       this.extensionMap = new ExtensionMap<T>(builder.extensionMap);
@@ -86,17 +86,20 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
   /**
    * Builds a message that declares an extension range.
    */
-  public abstract static class ExtendableBuilder<T extends ExtendableMessage<T>>
-      extends Builder<T> {
+  public abstract static class ExtendableBuilder<T extends ExtendableMessage<T>,
+      B extends ExtendableBuilder<T, B>> extends Builder<T> {
 
     @SuppressWarnings("unchecked")
     ExtensionMap<T> extensionMap; // Null if empty.
+    private final B self;
 
-    protected ExtendableBuilder() {
+    protected ExtendableBuilder(Class<B> selfType) {
+      this(selfType, null);
     }
 
-    protected ExtendableBuilder(ExtendableMessage<T> message) {
+    protected ExtendableBuilder(Class<B> selfType, ExtendableMessage<T> message) {
       super(message);
+      self = selfType.cast(this);
       if (message != null && message.extensionMap != null) {
         this.extensionMap = new ExtensionMap<T>(message.extensionMap);
       }
@@ -113,13 +116,13 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
     /**
      * Sets the value of {@code extension} on this builder to {@code value}.
      */
-    public <E> ExtendableBuilder<T> setExtension(Extension<T, E> extension, E value) {
+    public <E> B setExtension(Extension<T, E> extension, E value) {
       if (extensionMap == null) {
         extensionMap = new ExtensionMap<T>(extension, value);
       } else {
         extensionMap.put(extension, value);
       }
-      return this;
+      return self;
     }
   }
 }

@@ -3,7 +3,6 @@
 package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.ExtendableMessage;
-import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -922,7 +921,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<AllTypes> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<AllTypes, Builder> {
     public Integer opt_int32;
 
     public Integer opt_uint32;
@@ -1086,10 +1085,11 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     public NestedEnum default_nested_enum;
 
     public Builder() {
+      super(Builder.class);
     }
 
     public Builder(AllTypes message) {
-      super(message);
+      super(Builder.class, message);
       if (message == null) return;
       this.opt_int32 = message.opt_int32;
       this.opt_uint32 = message.opt_uint32;
@@ -1576,12 +1576,6 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
 
     public Builder default_nested_enum(NestedEnum default_nested_enum) {
       this.default_nested_enum = default_nested_enum;
-      return this;
-    }
-
-    @Override
-    public <E> Builder setExtension(Extension<AllTypes, E> extension, E value) {
-      super.setExtension(extension, value);
       return this;
     }
 

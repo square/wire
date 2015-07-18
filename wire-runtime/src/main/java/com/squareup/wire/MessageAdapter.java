@@ -596,7 +596,7 @@ public final class MessageAdapter<M extends Message> {
             if (fieldInfo != null) {
               setBuilderField(builder, fieldInfo, value);
             } else {
-              setExtension((ExtendableBuilder<?>) builder, getExtension(storedTag), value);
+              setExtension((ExtendableBuilder<?, ?>) builder, getExtension(storedTag), value);
             }
           }
           return builder.build();
@@ -647,7 +647,7 @@ public final class MessageAdapter<M extends Message> {
             if (label.isRepeated()) {
               storage.add(tag, value != null ? value : Collections.emptyList());
             } else if (extension != null) {
-              setExtension((ExtendableBuilder<?>) builder, extension, value);
+              setExtension((ExtendableBuilder<?, ?>) builder, extension, value);
             } else if (label.isOneOf()) {
               // In order to maintain the 'oneof' invariant, call the builder setter method rather
               // than setting the builder field directly.
