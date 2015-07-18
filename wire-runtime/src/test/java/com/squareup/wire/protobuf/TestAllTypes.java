@@ -575,15 +575,24 @@ public class TestAllTypes {
   }
 
   @Test
-  public void testNullEnum() {
+  public void testNullInRepeated() {
     try {
       // A null value for a repeated field is not allowed.
       getBuilder().rep_nested_enum(Arrays.asList(A, null, A));
       fail();
     } catch (NullPointerException e) {
+      assertThat(e).hasMessage("Element at index 1 is null");
     }
+  }
 
-    // Should not fail - a null list means the field is cleared.
-    getBuilder().rep_nested_enum(null);
+  @Test
+  public void testNullRepeated() {
+    try {
+      // A null value for a repeated field is not allowed.
+      getBuilder().rep_nested_enum(null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("list == null");
+    }
   }
 }
