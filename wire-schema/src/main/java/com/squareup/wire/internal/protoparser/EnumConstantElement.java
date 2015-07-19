@@ -23,7 +23,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.protoparser.OptionElement.formatOptionList;
-import static com.squareup.wire.internal.protoparser.Utils.appendDocumentation;
+import static com.squareup.wire.internal.Util.appendDocumentation;
 
 /** An enum constant. */
 @AutoValue

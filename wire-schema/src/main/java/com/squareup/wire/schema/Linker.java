@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.squareup.wire.internal.Util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -205,10 +206,16 @@ final class Linker {
     return null; // Unable to traverse this field path.
   }
 
-  void validateTagUniqueness(Iterable<Field> fields) {
+  /** Validate that the tags of {@code fields} are unique and in range. */
+  void validateTags(Iterable<Field> fields) {
     Multimap<Integer, Field> tagToField = LinkedHashMultimap.create();
     for (Field field : fields) {
-      tagToField.put(field.tag(), field);
+      int tag = field.tag();
+      if (!Util.isValidTag(tag)) {
+        withContext(field).addError("tag is out of range: %s", tag);
+      } else {
+        tagToField.put(tag, field);
+      }
     }
 
     for (Map.Entry<Integer, Collection<Field>> entry : tagToField.asMap().entrySet()) {
@@ -293,6 +300,11 @@ final class Linker {
         Service service = (Service) context;
         error.append(String.format("%s service %s (%s)",
             prefix, service.name(), service.location()));
+
+      } else if (context instanceof Extensions) {
+        Extensions extensions = (Extensions) context;
+        error.append(String.format("%s extensions (%s)",
+            prefix, extensions.location()));
       }
     }
 

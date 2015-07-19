@@ -15,47 +15,45 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.squareup.wire.internal.Util;
+import com.squareup.wire.schema.Location;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class ExtensionsElementTest {
-  @Test public void invalidTagRangeThrows() {
+  Location location = Location.get("file.proto");
+
+  @Test public void locationsIsRequired() {
     try {
-      ExtensionsElement.create(Integer.MIN_VALUE, 500);
+      ExtensionsElement.create(null, 10, 20);
       fail();
-    } catch (IllegalArgumentException e) {
-      assertThat(e).hasMessage("Invalid start value: -2147483648");
-    }
-    try {
-      ExtensionsElement.create(500, Integer.MAX_VALUE);
-      fail();
-    } catch (IllegalArgumentException e) {
-      assertThat(e).hasMessage("Invalid end value: 2147483647");
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("location");
     }
   }
 
   @Test public void singleValueToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(500, 500);
+    ExtensionsElement actual = ExtensionsElement.create(location, 500, 500);
     String expected = "extensions 500;\n";
     assertThat(actual.toSchema()).isEqualTo(expected);
   }
 
   @Test public void rangeToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(500, 505);
+    ExtensionsElement actual = ExtensionsElement.create(location, 500, 505);
     String expected = "extensions 500 to 505;\n";
     assertThat(actual.toSchema()).isEqualTo(expected);
   }
 
   @Test public void maxRangeToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(500, ProtoFileElement.MAX_TAG_VALUE);
+    ExtensionsElement actual = ExtensionsElement.create(location, 500, Util.MAX_TAG_VALUE);
     String expected = "extensions 500 to max;\n";
     assertThat(actual.toSchema()).isEqualTo(expected);
   }
 
   @Test public void withDocumentationToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(500, 500, "Hello");
+    ExtensionsElement actual = ExtensionsElement.create(location, 500, 500, "Hello");
     String expected = ""
         + "// Hello\n"
         + "extensions 500;\n";

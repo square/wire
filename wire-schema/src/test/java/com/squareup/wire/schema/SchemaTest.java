@@ -15,10 +15,13 @@
  */
 package com.squareup.wire.schema;
 
+import com.squareup.wire.internal.Util;
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import okio.Buffer;
+import okio.Okio;
 import okio.Source;
 import org.junit.Test;
 
@@ -64,6 +67,188 @@ public final class SchemaTest {
     MessageType message = (MessageType) schema.getType("Message");
     Field field = message.field("field");
     assertThat(field.type()).isEqualTo(schema.getType("foo_package.Foo").name());
+  }
+
+  @Test public void isValidTag() {
+    assertThat(Util.isValidTag(0)).isFalse(); // Less than minimum.
+    assertThat(Util.isValidTag(1)).isTrue();
+    assertThat(Util.isValidTag(1234)).isTrue();
+    assertThat(Util.isValidTag(19222)).isFalse(); // Reserved range.
+    assertThat(Util.isValidTag(2319573)).isTrue();
+    assertThat(Util.isValidTag(536870911)).isTrue();
+    assertThat(Util.isValidTag(536870912)).isFalse(); // Greater than maximum.
+  }
+
+  @Test public void fieldInvalidTag() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "  optional int32 a = 0;\n"
+              + "  optional int32 b = 1;\n"
+              + "  optional int32 c = 18999;\n"
+              + "  optional int32 d = 19000;\n"
+              + "  optional int32 e = 19999;\n"
+              + "  optional int32 f = 20000;\n"
+              + "  optional int32 g = 536870911;\n"
+              + "  optional int32 h = 536870912;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected.getMessage()).isEqualTo(""
+          + "tag is out of range: 0\n"
+          + "  for field a (message.proto at 2:3)\n"
+          + "  in message Message (message.proto at 1:1)\n"
+          + "tag is out of range: 19000\n"
+          + "  for field d (message.proto at 5:3)\n"
+          + "  in message Message (message.proto at 1:1)\n"
+          + "tag is out of range: 19999\n"
+          + "  for field e (message.proto at 6:3)\n"
+          + "  in message Message (message.proto at 1:1)\n"
+          + "tag is out of range: 536870912\n"
+          + "  for field h (message.proto at 9:3)\n"
+          + "  in message Message (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void extensionsInvalidTag() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "  extensions 0;\n"
+              + "  extensions 1;\n"
+              + "  extensions 18999;\n"
+              + "  extensions 19000;\n"
+              + "  extensions 19999;\n"
+              + "  extensions 20000;\n"
+              + "  extensions 536870911;\n"
+              + "  extensions 536870912;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage(""
+          + "tags are out of range: 0 to 0\n"
+          + "  for extensions (message.proto at 2:3)\n"
+          + "  in message Message (message.proto at 1:1)\n"
+          + "tags are out of range: 19000 to 19000\n"
+          + "  for extensions (message.proto at 5:3)\n"
+          + "  in message Message (message.proto at 1:1)\n"
+          + "tags are out of range: 19999 to 19999\n"
+          + "  for extensions (message.proto at 6:3)\n"
+          + "  in message Message (message.proto at 1:1)\n"
+          + "tags are out of range: 536870912 to 536870912\n"
+          + "  for extensions (message.proto at 9:3)\n"
+          + "  in message Message (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void fieldIsPacked() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  repeated int32 a = 1;\n"
+            + "  repeated int32 b = 2 [packed=false];\n"
+            + "  repeated int32 c = 3 [packed=true];\n"
+            + "}\n")
+        .build();
+
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.field("a").isPacked()).isFalse();
+    assertThat(message.field("b").isPacked()).isFalse();
+    assertThat(message.field("c").isPacked()).isTrue();
+  }
+
+  @Test public void fieldIsDeprecated() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  optional int32 a = 1;\n"
+            + "  optional int32 b = 2 [deprecated=false];\n"
+            + "  optional int32 c = 3 [deprecated=true];\n"
+            + "}\n")
+        .build();
+
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.field("a").isDeprecated()).isFalse();
+    assertThat(message.field("b").isDeprecated()).isFalse();
+    assertThat(message.field("c").isDeprecated()).isTrue();
+  }
+
+  @Test public void fieldDefault() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  optional int32 a = 1;\n"
+            + "  optional int32 b = 2 [default = 5];\n"
+            + "  optional bool c = 3 [default = true];\n"
+            + "  optional string d = 4 [default = \"foo\"];\n"
+            + "  optional Roshambo e = 5 [default = PAPER];\n"
+            + "  enum Roshambo {\n"
+            + "    ROCK = 0;\n"
+            + "    SCISSORS = 1;\n"
+            + "    PAPER = 2;\n"
+            + "  }\n"
+            + "}\n")
+        .build();
+
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.field("a").getDefault()).isNull();
+    assertThat(message.field("b").getDefault()).isEqualTo("5");
+    assertThat(message.field("c").getDefault()).isEqualTo("true");
+    assertThat(message.field("d").getDefault()).isEqualTo("foo");
+    assertThat(message.field("e").getDefault()).isEqualTo("PAPER");
+  }
+
+  @Test public void fieldOptions() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "message Message {\n"
+            + "  optional int32 a = 1;\n"
+            + "  optional int32 b = 2 [color=red, deprecated=true, packed=true];\n"
+            + "}\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional string color = 60001;\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    MessageType message = (MessageType) schema.getType("Message");
+
+    Options aOptions = message.field("a").options();
+    assertThat(aOptions.get("color")).isNull();
+    assertThat(aOptions.get("deprecated")).isNull();
+    assertThat(aOptions.get("packed")).isNull();
+
+    Options bOptions = message.field("b").options();
+    assertThat(bOptions.get("color")).isEqualTo("red");
+    assertThat(bOptions.get("deprecated")).isEqualTo("true");
+    assertThat(bOptions.get("packed")).isEqualTo("true");
+  }
+
+  @Test public void duplicateOption() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "message Message {\n"
+            + "  optional int32 a = 1 [color=red, color=blue];\n"
+            + "}\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional string color = 60001;\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    MessageType message = (MessageType) schema.getType("Message");
+
+    Options options = message.field("a").options();
+    try {
+      options.get("color");
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Multiple options match name: color");
+    }
   }
 
   @Test public void messageFieldTypeUnknown() throws Exception {
@@ -354,7 +539,7 @@ public final class SchemaTest {
       new SchemaBuilder()
           .add("message.proto", ""
               + "enum Enum {\n"
-              + "  option (allow_alias) = false;\n"
+              + "  option allow_alias = false;\n"
               + "  A = 1;\n"
               + "  B = 1;\n"
               + "}\n")
@@ -372,7 +557,7 @@ public final class SchemaTest {
     Schema schema = new SchemaBuilder()
         .add("message.proto", ""
             + "enum Enum {\n"
-            + "  option (allow_alias) = true;\n"
+            + "  option allow_alias = true;\n"
             + "  A = 1;\n"
             + "  B = 1;\n"
             + "}\n")
@@ -388,6 +573,14 @@ public final class SchemaTest {
     public SchemaBuilder add(String name, String protoFile) {
       paths.put(name, protoFile);
       return this;
+    }
+
+    public SchemaBuilder add(String path) throws IOException {
+      File file = new File("../wire-runtime/src/test/proto/" + path);
+      try (Source source = Okio.source(file)) {
+        String protoFile = Okio.buffer(source).readUtf8();
+        return add(path, protoFile);
+      }
     }
 
     public Schema build() throws IOException {

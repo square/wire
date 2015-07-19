@@ -16,6 +16,8 @@
 package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
+import com.squareup.wire.internal.Util;
+import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -23,8 +25,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.squareup.wire.internal.protoparser.ProtoFileElement.Syntax.PROTO_2;
-import static com.squareup.wire.internal.protoparser.ProtoFileElement.Syntax.PROTO_3;
+import static com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2;
+import static com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3;
 
 /** Basic parser for {@code .proto} schema declarations. */
 public final class ProtoParser {
@@ -135,14 +137,14 @@ public final class ProtoParser {
       return readRpc(location, documentation);
     } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
       if (!context.permitsField()) throw unexpected("fields must be nested");
-      FieldElement.Label labelEnum = FieldElement.Label.valueOf(label.toUpperCase(Locale.US));
+      Field.Label labelEnum = Field.Label.valueOf(label.toUpperCase(Locale.US));
       return readField(location, documentation, labelEnum);
     } else if (label.equals("oneof")) {
       if (!context.permitsOneOf()) throw unexpected("'oneof' must be nested in message");
       return readOneOf(documentation);
     } else if (label.equals("extensions")) {
       if (!context.permitsExtensions()) throw unexpected("'extensions' must be nested");
-      return readExtensions(documentation);
+      return readExtensions(location, documentation);
     } else if (context == Context.ENUM) {
       if (readChar() != '=') throw unexpected("expected '='");
 
@@ -289,7 +291,7 @@ public final class ProtoParser {
 
   /** Reads an field declaration and returns it. */
   private FieldElement readField(
-      Location location, String documentation, FieldElement.Label label) {
+      Location location, String documentation, Field.Label label) {
     String type = readDataType();
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
@@ -336,26 +338,26 @@ public final class ProtoParser {
         break;
       }
       Location location = location();
-      builder.addField(readField(location, nestedDocumentation, FieldElement.Label.ONE_OF));
+      builder.addField(readField(location, nestedDocumentation, Field.Label.ONE_OF));
     }
     return builder.build();
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
-  private ExtensionsElement readExtensions(String documentation) {
+  private ExtensionsElement readExtensions(Location location, String documentation) {
     int start = readInt(); // Range start.
     int end = start;
     if (peekChar() != ';') {
       if (!"to".equals(readWord())) throw unexpected("expected ';' or 'to'");
       String s = readWord(); // Range end.
       if (s.equals("max")) {
-        end = ProtoFileElement.MAX_TAG_VALUE;
+        end = Util.MAX_TAG_VALUE;
       } else {
         end = Integer.parseInt(s);
       }
     }
     if (readChar() != ';') throw unexpected("expected ';'");
-    return ExtensionsElement.create(start, end, documentation);
+    return ExtensionsElement.create(location, start, end, documentation);
   }
 
   /** Reads a option containing a name, an '=' or ':', and a value. */

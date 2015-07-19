@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.squareup.wire.internal.protoparser.Utils.appendDocumentation;
-import static com.squareup.wire.internal.protoparser.Utils.appendIndented;
+import static com.squareup.wire.internal.Util.appendDocumentation;
+import static com.squareup.wire.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class ServiceElement {

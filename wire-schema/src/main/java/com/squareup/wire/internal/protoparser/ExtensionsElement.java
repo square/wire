@@ -16,27 +16,28 @@
 package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
+import com.squareup.wire.internal.Util;
+import com.squareup.wire.schema.Location;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.squareup.wire.internal.protoparser.ProtoFileElement.isValidTag;
-import static com.squareup.wire.internal.protoparser.Utils.appendDocumentation;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.squareup.wire.internal.Util.appendDocumentation;
 
 @AutoValue
 public abstract class ExtensionsElement {
-  public static ExtensionsElement create(int start, int end) {
-    return create(start, end, "");
+  public static ExtensionsElement create(Location location, int start, int end) {
+    return create(location, start, end, "");
   }
 
-  public static ExtensionsElement create(int start, int end, String documentation) {
-    checkArgument(isValidTag(start), "Invalid start value: %s", start);
-    checkArgument(isValidTag(end), "Invalid end value: %s", end);
-
-    return new AutoValue_ExtensionsElement(documentation, start, end);
+  public static ExtensionsElement create(
+      Location location, int start, int end, String documentation) {
+    checkNotNull(location, "location");
+    return new AutoValue_ExtensionsElement(location, documentation, start, end);
   }
 
   ExtensionsElement() {
   }
 
+  public abstract Location location();
   public abstract String documentation();
   public abstract int start();
   public abstract int end();
@@ -48,7 +49,7 @@ public abstract class ExtensionsElement {
         .append(start());
     if (start() != end()) {
       builder.append(" to ");
-      if (end() < ProtoFileElement.MAX_TAG_VALUE) {
+      if (end() < Util.MAX_TAG_VALUE) {
         builder.append(end());
       } else {
         builder.append("max");

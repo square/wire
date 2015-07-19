@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.internal;
 
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.Utils.appendDocumentation;
-import static com.squareup.wire.internal.protoparser.Utils.appendIndented;
+import static com.squareup.wire.internal.Util.appendDocumentation;
+import static com.squareup.wire.internal.Util.appendIndented;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UtilsTest {
+public class UtilTest {
   @Test public void indentationTest() {
     String input = "Foo\nBar\nBaz";
     String expected = "  Foo\n  Bar\n  Baz\n";

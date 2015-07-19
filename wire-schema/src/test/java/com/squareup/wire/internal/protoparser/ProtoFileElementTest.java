@@ -21,10 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.ProtoFileElement.MAX_TAG_VALUE;
-import static com.squareup.wire.internal.protoparser.ProtoFileElement.MIN_TAG_VALUE;
-import static com.squareup.wire.internal.protoparser.ProtoFileElement.Syntax.PROTO_2;
-import static com.squareup.wire.internal.protoparser.ProtoFileElement.isValidTag;
+import static com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -162,16 +159,6 @@ public class ProtoFileElementTest {
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("option");
     }
-  }
-
-  @Test public void tagValueValidation() {
-    assertThat(isValidTag(MIN_TAG_VALUE - 1)).isFalse(); // Less than minimum.
-    assertThat(isValidTag(MIN_TAG_VALUE)).isTrue();
-    assertThat(isValidTag(1234)).isTrue();
-    assertThat(isValidTag(19222)).isFalse(); // Reserved range.
-    assertThat(isValidTag(2319573)).isTrue();
-    assertThat(isValidTag(MAX_TAG_VALUE)).isTrue();
-    assertThat(isValidTag(MAX_TAG_VALUE + 1)).isFalse(); // Greater than maximum.
   }
 
   @Test public void emptyToSchema() {

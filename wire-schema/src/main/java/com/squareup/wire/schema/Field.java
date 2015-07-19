@@ -37,20 +37,20 @@ public final class Field {
     return packageName;
   }
 
-  public FieldElement.Label label() {
+  public Label label() {
     return element.label();
   }
 
   public boolean isRepeated() {
-    return label() == FieldElement.Label.REPEATED;
+    return label() == Label.REPEATED;
   }
 
   public boolean isOptional() {
-    return label() == FieldElement.Label.OPTIONAL;
+    return label() == Label.OPTIONAL;
   }
 
   public boolean isRequired() {
-    return label() == FieldElement.Label.REQUIRED;
+    return label() == Label.REQUIRED;
   }
 
   public Type.Name type() {
@@ -74,11 +74,11 @@ public final class Field {
   }
 
   public boolean isDeprecated() {
-    return element.isDeprecated();
+    return "true".equals(options().get("deprecated"));
   }
 
   public boolean isPacked() {
-    return element.isPacked();
+    return "true".equals(options().get("packed"));
   }
 
   public Object getDefault() {
@@ -97,5 +97,11 @@ public final class Field {
 
   @Override public String toString() {
     return name();
+  }
+
+  public enum Label {
+    OPTIONAL, REQUIRED, REPEATED,
+    /** Indicates the field is a member of a {@code oneof} block. */
+    ONE_OF
   }
 }

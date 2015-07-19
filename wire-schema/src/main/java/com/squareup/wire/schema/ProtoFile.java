@@ -129,4 +129,20 @@ public final class ProtoFile {
     return new ProtoFile(
         element, retainedTypes.build(), retainedServices.build(), extendList, options);
   }
+
+  /** Syntax version. */
+  public enum Syntax {
+    PROTO_2("proto2"),
+    PROTO_3("proto3");
+
+    private final String string;
+
+    Syntax(String string) {
+      this.string = string;
+    }
+
+    @Override public String toString() {
+      return string;
+    }
+  }
 }

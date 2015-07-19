@@ -17,17 +17,19 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.squareup.wire.internal.Util;
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.ProtoFile;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.FieldElement.Label.ONE_OF;
-import static com.squareup.wire.internal.protoparser.FieldElement.Label.OPTIONAL;
-import static com.squareup.wire.internal.protoparser.FieldElement.Label.REQUIRED;
+import static com.squareup.wire.schema.Field.Label.ONE_OF;
+import static com.squareup.wire.schema.Field.Label.OPTIONAL;
+import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -427,7 +429,7 @@ public final class ProtoParserTest {
         + "syntax = \"proto3\";\n"
         + "message Foo {}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .syntax(ProtoFileElement.Syntax.PROTO_3)
+        .syntax(ProtoFile.Syntax.PROTO_3)
         .addType(MessageElement.builder(location.at(2, 1)).name("Foo").build())
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
@@ -666,9 +668,9 @@ public final class ProtoParserTest {
         .name("FieldOptions")
         .addField(field)
         .addType(enumElement)
-        .addExtensions(ExtensionsElement.create(500, 500,
+        .addExtensions(ExtensionsElement.create(location.at(7, 3), 500, 500,
             "Clients can define custom options in extensions of this message. See above."))
-        .addExtensions(ExtensionsElement.create(1000, ProtoFileElement.MAX_TAG_VALUE))
+        .addExtensions(ExtensionsElement.create(location.at(8, 3), 1000, Util.MAX_TAG_VALUE))
         .build();
     ProtoFileElement
         expected = ProtoFileElement.builder(location).addType(messageElement).build();
