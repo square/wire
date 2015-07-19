@@ -16,7 +16,6 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.internal.protoparser.ExtensionsElement;
 import com.squareup.wire.internal.protoparser.MessageElement;
 import java.util.Set;
 
@@ -28,16 +27,18 @@ public final class MessageType extends Type {
   private final ImmutableList<Field> fields;
   private final ImmutableList<OneOf> oneOfs;
   private final ImmutableList<Type> nestedTypes;
+  private final ImmutableList<Extensions> extensionsList;
   private final Options options;
 
   MessageType(Name name, MessageElement element,
       ImmutableList<Field> fields, ImmutableList<OneOf> oneOfs,
-      ImmutableList<Type> nestedTypes, Options options) {
+      ImmutableList<Type> nestedTypes, ImmutableList<Extensions> extensionsList, Options options) {
     this.name = name;
     this.element = element;
     this.fields = fields;
     this.oneOfs = oneOfs;
     this.nestedTypes = nestedTypes;
+    this.extensionsList = extensionsList;
     this.options = checkNotNull(options);
   }
 
@@ -98,16 +99,19 @@ public final class MessageType extends Type {
     return oneOfs;
   }
 
-  public ImmutableList<ExtensionsElement> extensions() {
-    return ImmutableList.copyOf(element.extensions());
+  public ImmutableList<Extensions> extensions() {
+    return extensionsList;
   }
 
   void validate(Linker linker) {
     linker = linker.withContext(this);
-    linker.validateTagUniqueness(fieldsAndOneOfFields());
+    linker.validateTags(fieldsAndOneOfFields());
     linker.validateEnumConstantNameUniqueness(nestedTypes);
     for (Type type : nestedTypes) {
       type.validate(linker);
+    }
+    for (Extensions extensions : extensionsList) {
+      extensions.validate(linker);
     }
   }
 
@@ -150,7 +154,8 @@ public final class MessageType extends Type {
     // If this type is retained, or any of its nested types are retained, keep it.
     ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
     if (identifiers.contains(name.toString()) || !retainedNestedTypes.isEmpty()) {
-      return new MessageType(name, element, fields, oneOfs, retainedNestedTypes, options);
+      return new MessageType(name, element, fields, oneOfs, retainedNestedTypes, extensionsList,
+          options);
     }
 
     // This type isn't needed.

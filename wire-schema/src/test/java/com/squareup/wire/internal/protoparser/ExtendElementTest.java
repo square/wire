@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.FieldElement.Label.REQUIRED;
+import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 

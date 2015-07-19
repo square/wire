@@ -58,7 +58,7 @@ public final class Extend {
 
   void validate(Linker linker) {
     linker = linker.withContext(this);
-    linker.validateTagUniqueness(fields);
+    linker.validateTags(fields);
   }
 
   void link(Linker linker) {

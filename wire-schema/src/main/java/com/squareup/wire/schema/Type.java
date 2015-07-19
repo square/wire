@@ -18,8 +18,10 @@ package com.squareup.wire.schema;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.squareup.wire.internal.Util;
 import com.squareup.wire.internal.protoparser.EnumConstantElement;
 import com.squareup.wire.internal.protoparser.EnumElement;
+import com.squareup.wire.internal.protoparser.ExtensionsElement;
 import com.squareup.wire.internal.protoparser.FieldElement;
 import com.squareup.wire.internal.protoparser.MessageElement;
 import com.squareup.wire.internal.protoparser.OneOfElement;
@@ -74,11 +76,16 @@ public abstract class Type {
         nestedTypes.add(Type.get(name.nestedType(nestedType.name()), nestedType));
       }
 
+      ImmutableList.Builder<Extensions> extensionsList = ImmutableList.builder();
+      for (ExtensionsElement element : messageElement.extensions()) {
+        extensionsList.add(new Extensions(element));
+      }
+
       Options options = new Options(
           Name.MESSAGE_OPTIONS, name.packageName(), messageElement.options());
 
       return new MessageType(name, messageElement, fields.build(), oneOfs.build(),
-          nestedTypes.build(), options);
+          nestedTypes.build(), extensionsList.build(), options);
 
     } else {
       throw new IllegalArgumentException("unexpected type: " + type.getClass());

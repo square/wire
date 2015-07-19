@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.FieldElement.Label.OPTIONAL;
-import static com.squareup.wire.internal.protoparser.FieldElement.Label.REQUIRED;
+import static com.squareup.wire.schema.Field.Label.OPTIONAL;
+import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -38,49 +38,9 @@ public final class FieldElementTest {
         .addOption(OptionElement.create("default", Kind.ENUM, "TEST"))
         .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "true"))
         .build();
-    assertThat(field.isDeprecated()).isTrue();
-    assertThat(field.getDefault().value()).isEqualTo("TEST");
     assertThat(field.options()).containsOnly( //
         OptionElement.create("default", Kind.ENUM, "TEST"), //
         OptionElement.create("deprecated", Kind.BOOLEAN, "true"));
-  }
-
-  @Test public void deprecatedSupportStringAndBoolean() {
-    FieldElement field1 = FieldElement.builder(location)
-        .label(OPTIONAL)
-        .type("CType")
-        .name("ctype")
-        .tag(1)
-        .addOption(OptionElement.create("deprecated", Kind.STRING, "true"))
-        .build();
-    assertThat(field1.isDeprecated()).isTrue();
-    FieldElement field2 = FieldElement.builder(location)
-        .label(OPTIONAL)
-        .type("CType")
-        .name("ctype")
-        .tag(1)
-        .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "true"))
-        .build();
-    assertThat(field2.isDeprecated()).isTrue();
-  }
-
-  @Test public void packedSupportStringAndBoolean() {
-    FieldElement field1 = FieldElement.builder(location)
-        .label(OPTIONAL)
-        .type("CType")
-        .name("ctype")
-        .tag(1)
-        .addOption(OptionElement.create("packed", Kind.STRING, "true"))
-        .build();
-    assertThat(field1.isPacked()).isTrue();
-    FieldElement field2 = FieldElement.builder(location)
-        .label(OPTIONAL)
-        .type("CType")
-        .name("ctype")
-        .tag(1)
-        .addOption(OptionElement.create("packed", Kind.BOOLEAN, "true"))
-        .build();
-    assertThat(field2.isPacked()).isTrue();
   }
 
   @Test public void addMultipleOptions() {

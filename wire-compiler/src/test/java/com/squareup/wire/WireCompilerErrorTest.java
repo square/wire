@@ -111,8 +111,10 @@ public class WireCompilerErrorTest {
           + "  optional int32 f = 0;\n"
           + "}\n");
       fail();
-    } catch (IllegalArgumentException e) {
-      assertThat(e).hasMessage("Illegal tag value: 0");
+    } catch (SchemaException e) {
+      assertThat(e).hasMessage("tag is out of range: 0\n"
+          + "  for field f (test.proto at 3:3)\n"
+          + "  in message com.squareup.protos.test.Simple (test.proto at 2:1)");
     }
   }
 

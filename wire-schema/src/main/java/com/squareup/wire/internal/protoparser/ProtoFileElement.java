@@ -17,8 +17,8 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.internal.protoparser.Utils.Nullable;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.ProtoFile;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,28 +28,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /** A single {@code .proto} file. */
 @AutoValue
 public abstract class ProtoFileElement {
-  static final int MIN_TAG_VALUE = 1;
-  static final int MAX_TAG_VALUE = (1 << 29) - 1; // 536,870,911
-  private static final int RESERVED_TAG_VALUE_START = 19000;
-  private static final int RESERVED_TAG_VALUE_END = 19999;
-
-  /** Syntax version. */
-  public enum Syntax {
-    PROTO_2("proto2"),
-    PROTO_3("proto3");
-
-    private final String name;
-
-    Syntax(String name) {
-      this.name = name;
-    }
-  }
-
-  /** True if the supplied value is in the valid tag range and not reserved. */
-  static boolean isValidTag(int value) {
-    return (value >= MIN_TAG_VALUE && value < RESERVED_TAG_VALUE_START)
-        || (value > RESERVED_TAG_VALUE_END && value <= MAX_TAG_VALUE);
-  }
 
   public static Builder builder(String path) {
     return builder(Location.get(path));
@@ -64,7 +42,7 @@ public abstract class ProtoFileElement {
 
   public abstract Location location();
   @Nullable public abstract String packageName();
-  @Nullable public abstract Syntax syntax();
+  @Nullable public abstract ProtoFile.Syntax syntax();
   public abstract List<String> dependencies();
   public abstract List<String> publicDependencies();
   public abstract List<TypeElement> typeElements();
@@ -79,7 +57,7 @@ public abstract class ProtoFileElement {
       builder.append("package ").append(packageName()).append(";\n");
     }
     if (syntax() != null) {
-      builder.append("syntax \"").append(syntax().name).append("\";\n");
+      builder.append("syntax \"").append(syntax()).append("\";\n");
     }
     if (!dependencies().isEmpty() || !publicDependencies().isEmpty()) {
       builder.append('\n');
@@ -120,7 +98,7 @@ public abstract class ProtoFileElement {
   public static final class Builder {
     private final Location location;
     private String packageName;
-    private Syntax syntax;
+    private ProtoFile.Syntax syntax;
     private final List<String> dependencies = new ArrayList<>();
     private final List<String> publicDependencies = new ArrayList<>();
     private final List<TypeElement> types = new ArrayList<>();
@@ -137,7 +115,7 @@ public abstract class ProtoFileElement {
       return this;
     }
 
-    public Builder syntax(Syntax syntax) {
+    public Builder syntax(ProtoFile.Syntax syntax) {
       this.syntax = checkNotNull(syntax, "syntax");
       return this;
     }

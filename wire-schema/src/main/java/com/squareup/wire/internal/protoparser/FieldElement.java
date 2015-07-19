@@ -17,17 +17,16 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Location;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.squareup.wire.internal.protoparser.ProtoFileElement.isValidTag;
-import static com.squareup.wire.internal.protoparser.Utils.appendDocumentation;
-import static com.squareup.wire.internal.protoparser.Utils.appendIndented;
+import static com.squareup.wire.internal.Util.appendDocumentation;
+import static com.squareup.wire.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class FieldElement {
@@ -39,7 +38,7 @@ public abstract class FieldElement {
   }
 
   public abstract Location location();
-  public abstract Label label();
+  public abstract Field.Label label();
   /**
    * Returns the type of this field. May be a message type name, an enum type
    * name, or a <a href="https://developers.google.com/protocol-buffers/docs/proto#scalar">
@@ -51,28 +50,10 @@ public abstract class FieldElement {
   public abstract String documentation();
   public abstract List<OptionElement> options();
 
-  /** Returns true when the {@code deprecated} option is present and set to true. */
-  public final boolean isDeprecated() {
-    OptionElement deprecatedOption = OptionElement.findByName(options(), "deprecated");
-    return deprecatedOption != null && "true".equals(deprecatedOption.value());
-  }
-
-  /** Returns true when the {@code packed} option is present and set to true. */
-  public final boolean isPacked() {
-    OptionElement packedOption = OptionElement.findByName(options(), "packed");
-    return packedOption != null && "true".equals(packedOption.value());
-  }
-
-  /** Returns the {@code default} option value or {@code null}. */
-  public final OptionElement getDefault() {
-    OptionElement defaultOption = OptionElement.findByName(options(), "default");
-    return defaultOption != null ? defaultOption : null;
-  }
-
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    if (label() != Label.ONE_OF) {
+    if (label() != Field.Label.ONE_OF) {
       builder.append(label().name().toLowerCase(Locale.US)).append(' ');
     }
     builder.append(type())
@@ -90,15 +71,9 @@ public abstract class FieldElement {
     return builder.append(";\n").toString();
   }
 
-  public enum Label {
-    OPTIONAL, REQUIRED, REPEATED,
-    /** Indicates the field is a member of a {@code oneof} block. */
-    ONE_OF
-  }
-
   public static final class Builder {
     private final Location location;
-    private Label label;
+    private Field.Label label;
     private String type;
     private String name;
     private Integer tag;
@@ -109,7 +84,7 @@ public abstract class FieldElement {
       this.location = checkNotNull(location, "location");
     }
 
-    public Builder label(Label label) {
+    public Builder label(Field.Label label) {
       this.label = checkNotNull(label, "label");
       return this;
     }
@@ -151,8 +126,6 @@ public abstract class FieldElement {
       checkNotNull(type, "type");
       checkNotNull(name, "name");
       checkNotNull(tag, "tag");
-
-      checkArgument(isValidTag(tag), "Illegal tag value: %s", tag);
 
       return new AutoValue_FieldElement(location, label, type, name, tag, documentation,
           ImmutableList.copyOf(options));

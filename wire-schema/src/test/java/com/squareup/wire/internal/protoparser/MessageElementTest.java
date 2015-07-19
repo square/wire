@@ -22,8 +22,8 @@ import java.util.Collection;
 import java.util.Collections;
 import org.junit.Test;
 
-import static com.squareup.wire.internal.protoparser.FieldElement.Label.ONE_OF;
-import static com.squareup.wire.internal.protoparser.FieldElement.Label.REQUIRED;
+import static com.squareup.wire.schema.Field.Label.ONE_OF;
+import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -320,7 +320,7 @@ public class MessageElementTest {
             .name("name")
             .tag(1)
             .build())
-        .addExtensions(ExtensionsElement.create(500, 501))
+        .addExtensions(ExtensionsElement.create(location, 500, 501))
         .build();
     String expected = ""
         + "message Message {\n"
@@ -332,8 +332,8 @@ public class MessageElementTest {
   }
 
   @Test public void addMultipleExtensions() {
-    ExtensionsElement fives = ExtensionsElement.create(500, 501);
-    ExtensionsElement sixes = ExtensionsElement.create(600, 601);
+    ExtensionsElement fives = ExtensionsElement.create(location, 500, 501);
+    ExtensionsElement sixes = ExtensionsElement.create(location, 600, 601);
     MessageElement element = MessageElement.builder(location)
         .name("Message")
         .addField(FieldElement.builder(location)
@@ -428,8 +428,8 @@ public class MessageElementTest {
         .name("thinger")
         .addField(oneOf2Field)
         .build();
-    ExtensionsElement extensions1 = ExtensionsElement.create(500, 501);
-    ExtensionsElement extensions2 = ExtensionsElement.create(503, 503);
+    ExtensionsElement extensions1 = ExtensionsElement.create(location, 500, 501);
+    ExtensionsElement extensions2 = ExtensionsElement.create(location, 503, 503);
     TypeElement nested = MessageElement.builder(location).name("Nested").addField(field1).build();
     OptionElement option = OptionElement.create("kit", Kind.STRING, "kat");
     TypeElement element = MessageElement.builder(location)
@@ -515,90 +515,5 @@ public class MessageElementTest {
         + "  kit = \"kat\"\n"
         + "];\n";
     assertThat(field.toSchema()).isEqualTo(expected);
-  }
-
-  @Test public void deprecatedTrue() {
-    FieldElement field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name1")
-        .tag(1)
-        .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "true"))
-        .build();
-    assertThat(field.isDeprecated()).isTrue();
-  }
-
-  @Test public void deprecatedFalse() {
-    FieldElement field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name1")
-        .tag(1)
-        .addOption(OptionElement.create("deprecated", Kind.BOOLEAN, "false"))
-        .build();
-    assertThat(field.isDeprecated()).isFalse();
-  }
-
-  @Test public void deprecatedMissing() {
-    FieldElement field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name1")
-        .tag(1)
-        .build();
-    assertThat(field.isDeprecated()).isFalse();
-  }
-
-  @Test public void packedTrue() {
-    FieldElement field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name1")
-        .tag(1)
-        .addOption(OptionElement.create("packed", Kind.BOOLEAN, "true"))
-        .build();
-    assertThat(field.isPacked()).isTrue();
-  }
-
-  @Test public void packedFalse() {
-    FieldElement field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name1")
-        .tag(1)
-        .addOption(OptionElement.create("packed", Kind.BOOLEAN, "false"))
-        .build();
-    assertThat(field.isPacked()).isFalse();
-  }
-
-  @Test public void packedMissing() {
-    FieldElement field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name1")
-        .tag(1)
-        .build();
-    assertThat(field.isPacked()).isFalse();
-  }
-
-  @Test public void defaultValue() {
-    FieldElement field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name1")
-        .tag(1)
-        .addOption(OptionElement.create("default", Kind.STRING, "foo"))
-        .build();
-    assertThat(field.getDefault().value()).isEqualTo("foo");
-  }
-
-  @Test public void defaultMissing() {
-    FieldElement field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name1")
-        .tag(1)
-        .build();
-    assertThat(field.getDefault()).isNull();
   }
 }
