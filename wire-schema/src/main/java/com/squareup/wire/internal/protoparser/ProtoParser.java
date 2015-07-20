@@ -16,6 +16,7 @@
 package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.Util;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Location;
@@ -152,10 +153,11 @@ public final class ProtoParser {
           .name(label)
           .tag(readInt());
 
+      ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
       if (peekChar() == '[') {
         readChar();
         while (true) {
-          builder.addOption(readOption('='));
+          options.add(readOption('='));
           char c = readChar();
           if (c == ']') {
             break;
@@ -167,7 +169,9 @@ public final class ProtoParser {
       }
       if (readChar() != ';') throw unexpected("expected ';'");
       documentation = tryAppendTrailingDocumentation(documentation);
-      return builder.documentation(documentation).build();
+      return builder.documentation(documentation)
+          .options(options.build())
+          .build();
     } else {
       throw unexpected("unexpected label: " + label);
     }
@@ -178,11 +182,16 @@ public final class ProtoParser {
     String name = readName();
     MessageElement.Builder builder = MessageElement.builder(location)
         .name(name)
-        .qualifiedName(prefix + name)
         .documentation(documentation);
 
     String previousPrefix = prefix;
     prefix = prefix + name + ".";
+
+    ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
+    ImmutableList.Builder<OneOfElement> oneOfs = ImmutableList.builder();
+    ImmutableList.Builder<TypeElement> nestedTypes = ImmutableList.builder();
+    ImmutableList.Builder<ExtensionsElement> extensions = ImmutableList.builder();
+    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
 
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
@@ -193,15 +202,15 @@ public final class ProtoParser {
       }
       Object declared = readDeclaration(nestedDocumentation, Context.MESSAGE);
       if (declared instanceof FieldElement) {
-        builder.addField((FieldElement) declared);
+        fields.add((FieldElement) declared);
       } else if (declared instanceof OneOfElement) {
-        builder.addOneOf((OneOfElement) declared);
+        oneOfs.add((OneOfElement) declared);
       } else if (declared instanceof TypeElement) {
-        builder.addType((TypeElement) declared);
+        nestedTypes.add((TypeElement) declared);
       } else if (declared instanceof ExtensionsElement) {
-        builder.addExtensions((ExtensionsElement) declared);
+        extensions.add((ExtensionsElement) declared);
       } else if (declared instanceof OptionElement) {
-        builder.addOption((OptionElement) declared);
+        options.add((OptionElement) declared);
       } else if (declared instanceof ExtendElement) {
         // Extend declarations always add in a global scope regardless of nesting.
         fileBuilder.addExtendDeclaration((ExtendElement) declared);
@@ -209,22 +218,23 @@ public final class ProtoParser {
     }
     prefix = previousPrefix;
 
-    return builder.build();
+    return builder.fields(fields.build())
+        .oneOfs(oneOfs.build())
+        .nestedTypes(nestedTypes.build())
+        .extensions(extensions.build())
+        .options(options.build())
+        .build();
   }
 
   /** Reads an extend declaration. */
   private ExtendElement readExtend(Location location, String documentation) {
     String name = readName();
-    String qualifiedName = name;
-    if (!name.contains(".") && packageName != null) {
-      qualifiedName = packageName + "." + name;
-    }
     ExtendElement.Builder builder = ExtendElement.builder(location)
         .name(name)
-        .qualifiedName(qualifiedName)
         .documentation(documentation);
 
     if (readChar() != '{') throw unexpected("expected '{'");
+    ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
     while (true) {
       String nestedDocumentation = readDocumentation();
       if (peekChar() == '}') {
@@ -233,10 +243,11 @@ public final class ProtoParser {
       }
       Object declared = readDeclaration(nestedDocumentation, Context.EXTEND);
       if (declared instanceof FieldElement) {
-        builder.addField((FieldElement) declared);
+        fields.add((FieldElement) declared);
       }
     }
-    return builder.build();
+    return builder.fields(fields.build())
+        .build();
   }
 
   /** Reads a service declaration and returns it. */
@@ -244,10 +255,11 @@ public final class ProtoParser {
     String name = readName();
     ServiceElement.Builder builder = ServiceElement.builder(location)
         .name(name)
-        .qualifiedName(prefix + name)
         .documentation(documentation);
 
     if (readChar() != '{') throw unexpected("expected '{'");
+    ImmutableList.Builder<RpcElement> rpcs = ImmutableList.builder();
+    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
     while (true) {
       String rpcDocumentation = readDocumentation();
       if (peekChar() == '}') {
@@ -256,12 +268,14 @@ public final class ProtoParser {
       }
       Object declared = readDeclaration(rpcDocumentation, Context.SERVICE);
       if (declared instanceof RpcElement) {
-        builder.addRpc((RpcElement) declared);
+        rpcs.add((RpcElement) declared);
       } else if (declared instanceof OptionElement) {
-        builder.addOption((OptionElement) declared);
+        options.add((OptionElement) declared);
       }
     }
-    return builder.build();
+    return builder.options(options.build())
+        .rpcs(rpcs.build())
+        .build();
   }
 
   /** Reads an enumerated type declaration and returns it. */
@@ -269,10 +283,11 @@ public final class ProtoParser {
     String name = readName();
     EnumElement.Builder builder = EnumElement.builder(location)
         .name(name)
-        .qualifiedName(prefix + name)
         .documentation(documentation);
 
     if (readChar() != '{') throw unexpected("expected '{'");
+    ImmutableList.Builder<EnumConstantElement> constants = ImmutableList.builder();
+    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
     while (true) {
       String valueDocumentation = readDocumentation();
       if (peekChar() == '}') {
@@ -281,12 +296,14 @@ public final class ProtoParser {
       }
       Object declared = readDeclaration(valueDocumentation, Context.ENUM);
       if (declared instanceof EnumConstantElement) {
-        builder.addConstant((EnumConstantElement) declared);
+        constants.add((EnumConstantElement) declared);
       } else if (declared instanceof OptionElement) {
-        builder.addOption((OptionElement) declared);
+        options.add((OptionElement) declared);
       }
     }
-    return builder.build();
+    return builder.options(options.build())
+        .constants(constants.build())
+        .build();
   }
 
   /** Reads an field declaration and returns it. */
@@ -303,10 +320,11 @@ public final class ProtoParser {
         .name(name)
         .tag(tag);
 
+    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
     if (peekChar() == '[') {
       pos++;
       while (true) {
-        builder.addOption(readOption('='));
+        options.add(readOption('='));
 
         // Check for optional ',' or closing ']'
         char c = peekChar();
@@ -322,13 +340,16 @@ public final class ProtoParser {
       throw unexpected("expected ';'");
     }
     documentation = tryAppendTrailingDocumentation(documentation);
-    return builder.documentation(documentation).build();
+    return builder.documentation(documentation)
+        .options(options.build())
+        .build();
   }
 
   private OneOfElement readOneOf(String documentation) {
     OneOfElement.Builder builder = OneOfElement.builder()
         .name(readName())
         .documentation(documentation);
+    ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
 
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
@@ -338,9 +359,10 @@ public final class ProtoParser {
         break;
       }
       Location location = location();
-      builder.addField(readField(location, nestedDocumentation, Field.Label.ONE_OF));
+      fields.add(readField(location, nestedDocumentation, Field.Label.ONE_OF));
     }
-    return builder.build();
+    return builder.fields(fields.build())
+        .build();
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
@@ -530,6 +552,7 @@ public final class ProtoParser {
     if (readChar() != ')') throw unexpected("expected ')'");
 
     if (peekChar() == '{') {
+      ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
       pos++;
       while (true) {
         String rpcDocumentation = readDocumentation();
@@ -539,9 +562,10 @@ public final class ProtoParser {
         }
         Object declared = readDeclaration(rpcDocumentation, Context.RPC);
         if (declared instanceof OptionElement) {
-          builder.addOption((OptionElement) declared);
+          options.add((OptionElement) declared);
         }
       }
+      builder.options(options.build());
     } else if (readChar() != ';') throw unexpected("expected ';'");
 
     return builder.build();

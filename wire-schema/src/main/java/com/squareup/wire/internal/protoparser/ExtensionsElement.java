@@ -19,22 +19,13 @@ import com.google.auto.value.AutoValue;
 import com.squareup.wire.internal.Util;
 import com.squareup.wire.schema.Location;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 
 @AutoValue
 public abstract class ExtensionsElement {
-  public static ExtensionsElement create(Location location, int start, int end) {
-    return create(location, start, end, "");
-  }
-
   public static ExtensionsElement create(
       Location location, int start, int end, String documentation) {
-    checkNotNull(location, "location");
     return new AutoValue_ExtensionsElement(location, documentation, start, end);
-  }
-
-  ExtensionsElement() {
   }
 
   public abstract Location location();

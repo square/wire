@@ -18,28 +18,25 @@ package com.squareup.wire.internal.protoparser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.squareup.wire.internal.protoparser.OptionElement.formatOptionList;
 import static com.squareup.wire.internal.Util.appendDocumentation;
+import static com.squareup.wire.internal.protoparser.OptionElement.formatOptionList;
 
 /** An enum constant. */
 @AutoValue
 public abstract class EnumConstantElement {
   public static Builder builder(Location location) {
-    return new Builder(location);
-  }
-
-  EnumConstantElement() {
+    return new AutoValue_EnumConstantElement.Builder()
+        .location(location)
+        .documentation("")
+        .options(ImmutableList.<OptionElement>of());
   }
 
   public abstract Location location();
   public abstract String name();
   public abstract int tag();
   public abstract String documentation();
-  public abstract List<OptionElement> options();
+  public abstract ImmutableList<OptionElement> options();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -55,43 +52,13 @@ public abstract class EnumConstantElement {
     return builder.append(";\n").toString();
   }
 
-  public static final class Builder {
-    private final Location location;
-    private String name;
-    private Integer tag;
-    private String documentation = "";
-    private final List<OptionElement> options = new ArrayList<>();
-
-    private Builder(Location location) {
-      this.location = checkNotNull(location, "location");
-    }
-
-    public Builder name(String name) {
-      this.name = checkNotNull(name, "name");
-      return this;
-    }
-
-    public Builder tag(int tag) {
-      this.tag = tag;
-      return this;
-    }
-
-    public Builder documentation(String documentation) {
-      this.documentation = checkNotNull(documentation, "documentation");
-      return this;
-    }
-
-    public Builder addOption(OptionElement option) {
-      options.add(checkNotNull(option, "option"));
-      return this;
-    }
-
-    public EnumConstantElement build() {
-      checkNotNull(name, "name");
-      checkNotNull(tag, "tag");
-
-      return new AutoValue_EnumConstantElement(location, name, tag, documentation,
-          ImmutableList.copyOf(options));
-    }
+  @AutoValue.Builder
+  public abstract static class Builder {
+    public abstract Builder location(Location location);
+    public abstract Builder name(String name);
+    public abstract Builder tag(int tag);
+    public abstract Builder documentation(String documentation);
+    public abstract Builder options(ImmutableList<OptionElement> options);
+    public abstract EnumConstantElement build();
   }
 }

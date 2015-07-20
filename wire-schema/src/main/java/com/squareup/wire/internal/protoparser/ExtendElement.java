@@ -18,18 +18,17 @@ package com.squareup.wire.internal.protoparser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class ExtendElement {
   public static Builder builder(Location location) {
-    return new Builder(location);
+    return new AutoValue_ExtendElement.Builder()
+        .documentation("")
+        .fields(ImmutableList.<FieldElement>of())
+        .location(location);
   }
 
   ExtendElement() {
@@ -37,9 +36,8 @@ public abstract class ExtendElement {
 
   public abstract Location location();
   public abstract String name();
-  public abstract String qualifiedName();
   public abstract String documentation();
-  public abstract List<FieldElement> fields();
+  public abstract ImmutableList<FieldElement> fields();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -56,53 +54,12 @@ public abstract class ExtendElement {
     return builder.append("}\n").toString();
   }
 
-  public static final class Builder {
-    private final Location location;
-    private String name;
-    private String qualifiedName;
-    private String documentation = "";
-    private final List<FieldElement> fields = new ArrayList<>();
-
-    private Builder(Location location) {
-      this.location = checkNotNull(location, "location");
-    }
-
-    public Builder name(String name) {
-      this.name = checkNotNull(name, "name");
-      if (qualifiedName == null) {
-        qualifiedName = name;
-      }
-      return this;
-    }
-
-    public Builder qualifiedName(String qualifiedName) {
-      this.qualifiedName = checkNotNull(qualifiedName, "qualifiedName");
-      return this;
-    }
-
-    public Builder documentation(String documentation) {
-      this.documentation = checkNotNull(documentation, "documentation");
-      return this;
-    }
-
-    public Builder addField(FieldElement field) {
-      fields.add(checkNotNull(field, "field"));
-      return this;
-    }
-
-    public Builder addFields(Collection<FieldElement> fields) {
-      for (FieldElement field : checkNotNull(fields, "fields")) {
-        addField(field);
-      }
-      return this;
-    }
-
-    public ExtendElement build() {
-      checkNotNull(name, "name");
-      checkNotNull(qualifiedName, "qualifiedName");
-
-      return new AutoValue_ExtendElement(location, name, qualifiedName, documentation,
-          ImmutableList.copyOf(fields));
-    }
+  @AutoValue.Builder
+  public abstract static class Builder {
+    public abstract Builder location(Location location);
+    public abstract Builder name(String name);
+    public abstract Builder documentation(String documentation);
+    public abstract Builder fields(ImmutableList<FieldElement> fields);
+    public abstract ExtendElement build();
   }
 }

@@ -15,155 +15,17 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import org.junit.Test;
 
 import static com.squareup.wire.schema.Field.Label.ONE_OF;
 import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class MessageElementTest {
   Location location = Location.get("file.proto");
-
-  @Test public void locationRequired() {
-    try {
-      MessageElement.builder(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("location");
-    }
-  }
-
-  @Test public void nameRequired() {
-    try {
-      MessageElement.builder(location).qualifiedName("Test").build();
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("name");
-    }
-  }
-
-  @Test public void nameSetsQualifiedName() {
-    MessageElement test = MessageElement.builder(location).name("Test").build();
-    assertThat(test.name()).isEqualTo("Test");
-    assertThat(test.qualifiedName()).isEqualTo("Test");
-  }
-
-  @Test public void nullBuilderValuesThrow() {
-    try {
-      MessageElement.builder(location).name(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("name");
-    }
-    try {
-      MessageElement.builder(location).qualifiedName(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("qualifiedName");
-    }
-    try {
-      MessageElement.builder(location).documentation(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("documentation");
-    }
-    try {
-      MessageElement.builder(location).addField(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("field");
-    }
-    try {
-      MessageElement.builder(location).addFields(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("fields");
-    }
-    try {
-      MessageElement.builder(location).addFields(Collections.<FieldElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("field");
-    }
-    try {
-      MessageElement.builder(location).addType(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("type");
-    }
-    try {
-      MessageElement.builder(location).addTypes(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("types");
-    }
-    try {
-      MessageElement.builder(location).addTypes(Collections.<TypeElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("type");
-    }
-    try {
-      MessageElement.builder(location).addOneOf(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("oneOf");
-    }
-    try {
-      MessageElement.builder(location).addOneOfs(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("oneOfs");
-    }
-    try {
-      MessageElement.builder(location).addOneOfs(Collections.<OneOfElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("oneOf");
-    }
-    try {
-      MessageElement.builder(location).addExtensions((ExtensionsElement) null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("extensions");
-    }
-    try {
-      MessageElement.builder(location).addExtensions((Collection<ExtensionsElement>) null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("extensions");
-    }
-    try {
-      MessageElement.builder(location).addExtensions(Collections.<ExtensionsElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("extensions");
-    }
-    try {
-      MessageElement.builder(location).addOption(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("option");
-    }
-    try {
-      MessageElement.builder(location).addOptions(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("options");
-    }
-    try {
-      MessageElement.builder(location).addOptions(Collections.<OptionElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("option");
-    }
-  }
 
   @Test public void emptyToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
@@ -174,12 +36,13 @@ public class MessageElementTest {
   @Test public void simpleToSchema() {
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder(location)
-            .label(REQUIRED)
-            .type("string")
-            .name("name")
-            .tag(1)
-            .build())
+        .fields(ImmutableList.of(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()))
         .build();
     String expected = ""
         + "message Message {\n"
@@ -203,7 +66,7 @@ public class MessageElementTest {
         .build();
     MessageElement element = MessageElement.builder(location)
         .name("Message")
-        .addFields(Arrays.asList(firstName, lastName))
+        .fields(ImmutableList.of(firstName, lastName))
         .build();
     assertThat(element.fields()).hasSize(2);
   }
@@ -212,12 +75,13 @@ public class MessageElementTest {
     TypeElement element = MessageElement.builder(location)
         .name("Message")
         .documentation("Hello")
-        .addField(FieldElement.builder(location)
-            .label(REQUIRED)
-            .type("string")
-            .name("name")
-            .tag(1)
-            .build())
+        .fields(ImmutableList.of(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()))
         .build();
     String expected = ""
         + "// Hello\n"
@@ -236,8 +100,9 @@ public class MessageElementTest {
         .build();
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(field)
-        .addOption(OptionElement.create("kit", Kind.STRING, "kat"))
+        .fields(ImmutableList.of(field))
+        .options(ImmutableList.of(
+            OptionElement.create("kit", Kind.STRING, "kat")))
         .build();
     String expected = ""
         + "message Message {\n"
@@ -259,8 +124,8 @@ public class MessageElementTest {
     OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
     MessageElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(field)
-        .addOptions(Arrays.asList(kitKat, fooBar))
+        .fields(ImmutableList.of(field))
+        .options(ImmutableList.of(kitKat, fooBar))
         .build();
     assertThat(element.options()).hasSize(2);
   }
@@ -268,21 +133,23 @@ public class MessageElementTest {
   @Test public void simpleWithNestedElementsToSchema() {
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder(location)
+        .fields(ImmutableList.of(FieldElement.builder(location)
             .label(REQUIRED)
             .type("string")
             .name("name")
             .tag(1)
-            .build())
-        .addType(MessageElement.builder(location)
-            .name("Nested")
-            .addField(FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build())
-            .build())
+            .build()))
+        .nestedTypes(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location)
+                .name("Nested")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location)
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("name")
+                        .tag(1)
+                        .build()))
+                .build()))
         .build();
     String expected = ""
         + "message Message {\n"
@@ -300,27 +167,28 @@ public class MessageElementTest {
     TypeElement nested2 = MessageElement.builder(location).name("Nested2").build();
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder(location)
+        .fields(ImmutableList.of(FieldElement.builder(location)
             .label(REQUIRED)
             .type("string")
             .name("name")
             .tag(1)
-            .build())
-        .addTypes(Arrays.asList(nested1, nested2))
+            .build()))
+        .nestedTypes(ImmutableList.of(nested1, nested2))
         .build();
-    assertThat(element.nestedElements()).hasSize(2);
+    assertThat(element.nestedTypes()).hasSize(2);
   }
 
   @Test public void simpleWithExtensionsToSchema() {
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder(location)
+        .fields(ImmutableList.of(FieldElement.builder(location)
             .label(REQUIRED)
             .type("string")
             .name("name")
             .tag(1)
-            .build())
-        .addExtensions(ExtensionsElement.create(location, 500, 501))
+            .build()))
+        .extensions(ImmutableList.of(
+            ExtensionsElement.create(location, 500, 501, "")))
         .build();
     String expected = ""
         + "message Message {\n"
@@ -332,17 +200,18 @@ public class MessageElementTest {
   }
 
   @Test public void addMultipleExtensions() {
-    ExtensionsElement fives = ExtensionsElement.create(location, 500, 501);
-    ExtensionsElement sixes = ExtensionsElement.create(location, 600, 601);
+    ExtensionsElement fives = ExtensionsElement.create(location, 500, 501, "");
+    ExtensionsElement sixes = ExtensionsElement.create(location, 600, 601, "");
     MessageElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(FieldElement.builder(location)
-            .label(REQUIRED)
-            .type("string")
-            .name("name")
-            .tag(1)
-            .build())
-        .addExtensions(Arrays.asList(fives, sixes))
+        .fields(ImmutableList.of(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()))
+        .extensions(ImmutableList.of(fives, sixes))
         .build();
     assertThat(element.extensions()).hasSize(2);
   }
@@ -350,15 +219,17 @@ public class MessageElementTest {
   @Test public void oneOfToSchema() {
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addOneOf(OneOfElement.builder()
-            .name("hi")
-            .addField(FieldElement.builder(location)
-                .label(ONE_OF)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build())
-            .build())
+        .oneOfs(ImmutableList.of(
+            OneOfElement.builder()
+                .name("hi")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location)
+                        .label(ONE_OF)
+                        .type("string")
+                        .name("name")
+                        .tag(1)
+                        .build()))
+                .build()))
         .build();
     String expected = ""
         + "message Message {\n"
@@ -372,25 +243,27 @@ public class MessageElementTest {
   @Test public void addMultipleOneOfs() {
     OneOfElement hi = OneOfElement.builder()
         .name("hi")
-        .addField(FieldElement.builder(location)
-            .label(ONE_OF)
-            .type("string")
-            .name("name")
-            .tag(1)
-            .build())
+        .fields(ImmutableList.of(
+            FieldElement.builder(location)
+                .label(ONE_OF)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()))
         .build();
     OneOfElement hey = OneOfElement.builder()
         .name("hey")
-        .addField(FieldElement.builder(location)
-            .label(ONE_OF)
-            .type("string")
-            .name("city")
-            .tag(2)
-            .build())
+        .fields(ImmutableList.of(
+            FieldElement.builder(location)
+                .label(ONE_OF)
+                .type("string")
+                .name("city")
+                .tag(2)
+                .build()))
         .build();
     MessageElement element = MessageElement.builder(location)
         .name("Message")
-        .addOneOfs(Arrays.asList(hi, hey))
+        .oneOfs(ImmutableList.of(hi, hey))
         .build();
     assertThat(element.oneOfs()).hasSize(2);
   }
@@ -416,7 +289,7 @@ public class MessageElementTest {
         .build();
     OneOfElement oneOf1 = OneOfElement.builder()
         .name("thingy")
-        .addField(oneOf1Field)
+        .fields(ImmutableList.of(oneOf1Field))
         .build();
     FieldElement oneOf2Field = FieldElement.builder(location)
         .label(ONE_OF)
@@ -426,22 +299,22 @@ public class MessageElementTest {
         .build();
     OneOfElement oneOf2 = OneOfElement.builder()
         .name("thinger")
-        .addField(oneOf2Field)
+        .fields(ImmutableList.of(oneOf2Field))
         .build();
-    ExtensionsElement extensions1 = ExtensionsElement.create(location, 500, 501);
-    ExtensionsElement extensions2 = ExtensionsElement.create(location, 503, 503);
-    TypeElement nested = MessageElement.builder(location).name("Nested").addField(field1).build();
+    ExtensionsElement extensions1 = ExtensionsElement.create(location, 500, 501, "");
+    ExtensionsElement extensions2 = ExtensionsElement.create(location, 503, 503, "");
+    TypeElement nested = MessageElement.builder(location)
+        .name("Nested")
+        .fields(ImmutableList.of(field1))
+        .build();
     OptionElement option = OptionElement.create("kit", Kind.STRING, "kat");
     TypeElement element = MessageElement.builder(location)
         .name("Message")
-        .addField(field1)
-        .addField(field2)
-        .addOneOf(oneOf1)
-        .addOneOf(oneOf2)
-        .addType(nested)
-        .addExtensions(extensions1)
-        .addExtensions(extensions2)
-        .addOption(option)
+        .fields(ImmutableList.of(field1, field2))
+        .oneOfs(ImmutableList.of(oneOf1, oneOf2))
+        .nestedTypes(ImmutableList.of(nested))
+        .extensions(ImmutableList.of(extensions1, extensions2))
+        .options(ImmutableList.of(option))
         .build();
     String expected = ""
         + "message Message {\n"
@@ -509,7 +382,7 @@ public class MessageElementTest {
         .type("string")
         .name("name")
         .tag(1)
-        .addOption(OptionElement.create("kit", Kind.STRING, "kat"))
+        .options(ImmutableList.of(OptionElement.create("kit", Kind.STRING, "kat")))
         .build();
     String expected = "required string name = 1 [\n"
         + "  kit = \"kat\"\n"

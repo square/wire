@@ -72,7 +72,7 @@ public abstract class Type {
       }
 
       ImmutableList.Builder<Type> nestedTypes = ImmutableList.builder();
-      for (TypeElement nestedType : messageElement.nestedElements()) {
+      for (TypeElement nestedType : messageElement.nestedTypes()) {
         nestedTypes.add(Type.get(name.nestedType(nestedType.name()), nestedType));
       }
 

@@ -20,34 +20,24 @@ import com.squareup.wire.schema.Location;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class ExtensionsElementTest {
   Location location = Location.get("file.proto");
 
-  @Test public void locationsIsRequired() {
-    try {
-      ExtensionsElement.create(null, 10, 20);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("location");
-    }
-  }
-
   @Test public void singleValueToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(location, 500, 500);
+    ExtensionsElement actual = ExtensionsElement.create(location, 500, 500, "");
     String expected = "extensions 500;\n";
     assertThat(actual.toSchema()).isEqualTo(expected);
   }
 
   @Test public void rangeToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(location, 500, 505);
+    ExtensionsElement actual = ExtensionsElement.create(location, 500, 505, "");
     String expected = "extensions 500 to 505;\n";
     assertThat(actual.toSchema()).isEqualTo(expected);
   }
 
   @Test public void maxRangeToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(location, 500, Util.MAX_TAG_VALUE);
+    ExtensionsElement actual = ExtensionsElement.create(location, 500, Util.MAX_TAG_VALUE, "");
     String expected = "extensions 500 to max;\n";
     assertThat(actual.toSchema()).isEqualTo(expected);
   }
