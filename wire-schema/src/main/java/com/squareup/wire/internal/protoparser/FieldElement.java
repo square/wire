@@ -19,22 +19,18 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Location;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class FieldElement {
   public static Builder builder(Location location) {
-    return new Builder(location);
-  }
-
-  FieldElement() {
+    return new AutoValue_FieldElement.Builder()
+        .documentation("")
+        .options(ImmutableList.<OptionElement>of())
+        .location(location);
   }
 
   public abstract Location location();
@@ -48,7 +44,7 @@ public abstract class FieldElement {
   public abstract String name();
   public abstract int tag();
   public abstract String documentation();
-  public abstract List<OptionElement> options();
+  public abstract ImmutableList<OptionElement> options();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -71,64 +67,15 @@ public abstract class FieldElement {
     return builder.append(";\n").toString();
   }
 
-  public static final class Builder {
-    private final Location location;
-    private Field.Label label;
-    private String type;
-    private String name;
-    private Integer tag;
-    private String documentation = "";
-    private final List<OptionElement> options = new ArrayList<>();
-
-    private Builder(Location location) {
-      this.location = checkNotNull(location, "location");
-    }
-
-    public Builder label(Field.Label label) {
-      this.label = checkNotNull(label, "label");
-      return this;
-    }
-
-    public Builder type(String type) {
-      this.type = checkNotNull(type, "type");
-      return this;
-    }
-
-    public Builder name(String name) {
-      this.name = checkNotNull(name, "name");
-      return this;
-    }
-
-    public Builder tag(int tag) {
-      this.tag = tag;
-      return this;
-    }
-
-    public Builder documentation(String documentation) {
-      this.documentation = checkNotNull(documentation, "documentation");
-      return this;
-    }
-
-    public Builder addOption(OptionElement option) {
-      options.add(checkNotNull(option, "option"));
-      return this;
-    }
-
-    public Builder addOptions(Collection<OptionElement> options) {
-      for (OptionElement option : checkNotNull(options, "options")) {
-        addOption(option);
-      }
-      return this;
-    }
-
-    public FieldElement build() {
-      checkNotNull(label, "label");
-      checkNotNull(type, "type");
-      checkNotNull(name, "name");
-      checkNotNull(tag, "tag");
-
-      return new AutoValue_FieldElement(location, label, type, name, tag, documentation,
-          ImmutableList.copyOf(options));
-    }
+  @AutoValue.Builder
+  public abstract static class Builder {
+    abstract Builder location(Location location);
+    abstract Builder label(Field.Label label);
+    abstract Builder type(String type);
+    abstract Builder name(String name);
+    abstract Builder tag(int tag);
+    abstract Builder documentation(String documentation);
+    abstract Builder options(ImmutableList<OptionElement> options);
+    abstract FieldElement build();
   }
 }

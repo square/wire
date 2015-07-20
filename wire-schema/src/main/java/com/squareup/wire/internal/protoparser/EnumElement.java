@@ -18,12 +18,7 @@ package com.squareup.wire.internal.protoparser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.Util.appendIndented;
 
@@ -31,7 +26,11 @@ import static com.squareup.wire.internal.Util.appendIndented;
 @AutoValue
 public abstract class EnumElement implements TypeElement {
   public static Builder builder(Location location) {
-    return new Builder(location);
+    return new AutoValue_EnumElement.Builder()
+        .location(location)
+        .documentation("")
+        .constants(ImmutableList.<EnumConstantElement>of())
+        .options(ImmutableList.<OptionElement>of());
   }
 
   EnumElement() {
@@ -39,13 +38,12 @@ public abstract class EnumElement implements TypeElement {
 
   @Override public abstract Location location();
   @Override public abstract String name();
-  @Override public abstract String qualifiedName();
   @Override public abstract String documentation();
-  public abstract List<EnumConstantElement> constants();
-  @Override public abstract List<OptionElement> options();
+  public abstract ImmutableList<EnumConstantElement> constants();
+  @Override public abstract ImmutableList<OptionElement> options();
 
-  @Override public final List<TypeElement> nestedElements() {
-    return Collections.emptyList(); // Enums do not allow nested type declarations.
+  @Override public final ImmutableList<TypeElement> nestedTypes() {
+    return ImmutableList.of(); // Enums do not allow nested type declarations.
   }
 
   @Override public final String toSchema() {
@@ -69,66 +67,13 @@ public abstract class EnumElement implements TypeElement {
     return builder.append("}\n").toString();
   }
 
-  public static final class Builder {
-    private final Location location;
-    private String name;
-    private String qualifiedName;
-    private String documentation = "";
-    private final List<EnumConstantElement> constants = new ArrayList<>();
-    private final List<OptionElement> options = new ArrayList<>();
-
-    private Builder(Location location) {
-      this.location = checkNotNull(location, "location");
-    }
-
-    public Builder name(String name) {
-      this.name = checkNotNull(name, "name");
-      if (qualifiedName == null) {
-        qualifiedName = name;
-      }
-      return this;
-    }
-
-    public Builder qualifiedName(String qualifiedName) {
-      this.qualifiedName = checkNotNull(qualifiedName, "qualifiedName");
-      return this;
-    }
-
-    public Builder documentation(String documentation) {
-      this.documentation = checkNotNull(documentation, "documentation");
-      return this;
-    }
-
-    public Builder addConstant(EnumConstantElement constant) {
-      constants.add(checkNotNull(constant, "constant"));
-      return this;
-    }
-
-    public Builder addConstants(Collection<EnumConstantElement> constants) {
-      for (EnumConstantElement constant : checkNotNull(constants, "constants")) {
-        addConstant(constant);
-      }
-      return this;
-    }
-
-    public Builder addOption(OptionElement option) {
-      options.add(checkNotNull(option, "option"));
-      return this;
-    }
-
-    public Builder addOptions(Collection<OptionElement> options) {
-      for (OptionElement option : checkNotNull(options, "options")) {
-        addOption(option);
-      }
-      return this;
-    }
-
-    public EnumElement build() {
-      checkNotNull(name, "name");
-      checkNotNull(qualifiedName, "qualifiedName");
-
-      return new AutoValue_EnumElement(location, name, qualifiedName, documentation,
-          ImmutableList.copyOf(constants), ImmutableList.copyOf(options));
-    }
+  @AutoValue.Builder
+  public abstract static class Builder {
+    public abstract Builder location(Location location);
+    public abstract Builder name(String name);
+    public abstract Builder documentation(String documentation);
+    public abstract Builder constants(ImmutableList<EnumConstantElement> constants);
+    public abstract Builder options(ImmutableList<OptionElement> options);
+    public abstract EnumElement build();
   }
 }

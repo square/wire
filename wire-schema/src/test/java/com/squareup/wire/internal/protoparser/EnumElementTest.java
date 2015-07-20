@@ -15,98 +15,15 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
-import java.util.Arrays;
-import java.util.Collections;
 import org.junit.Test;
 
 import static com.squareup.wire.internal.protoparser.OptionElement.Kind.STRING;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class EnumElementTest {
   Location location = Location.get("file.proto");
-
-  @Test public void locationRequired() {
-    try {
-      EnumElement.builder(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("location");
-    }
-  }
-
-  @Test public void nameRequired() {
-    try {
-      EnumElement.builder(location).qualifiedName("Test").build();
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("name");
-    }
-  }
-
-  @Test public void nameSetsQualifiedName() {
-    EnumElement test = EnumElement.builder(location).name("Test").build();
-    assertThat(test.name()).isEqualTo("Test");
-    assertThat(test.qualifiedName()).isEqualTo("Test");
-  }
-
-  @Test public void nullBuilderValuesThrow() {
-    try {
-      EnumElement.builder(location).name(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("name");
-    }
-    try {
-      EnumElement.builder(location).qualifiedName(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("qualifiedName");
-    }
-    try {
-      EnumElement.builder(location).documentation(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("documentation");
-    }
-    try {
-      EnumElement.builder(location).addConstant(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("constant");
-    }
-    try {
-      EnumElement.builder(location).addConstants(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("constants");
-    }
-    try {
-      EnumElement.builder(location).addConstants(Collections.<EnumConstantElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("constant");
-    }
-    try {
-      EnumElement.builder(location).addOption(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("option");
-    }
-    try {
-      EnumElement.builder(location).addOptions(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("options");
-    }
-    try {
-      EnumElement.builder(location).addOptions(Collections.<OptionElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("option");
-    }
-  }
 
   @Test public void emptyToSchema() {
     EnumElement element = EnumElement.builder(location).name("Enum").build();
@@ -117,9 +34,10 @@ public class EnumElementTest {
   @Test public void simpleToSchema() {
     EnumElement element = EnumElement.builder(location)
         .name("Enum")
-        .addConstant(EnumConstantElement.builder(location).name("ONE").tag(1).build())
-        .addConstant(EnumConstantElement.builder(location).name("TWO").tag(2).build())
-        .addConstant(EnumConstantElement.builder(location).name("SIX").tag(6).build())
+        .constants(ImmutableList.of(
+            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
+            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
+            EnumConstantElement.builder(location).name("SIX").tag(6).build()))
         .build();
     String expected = ""
         + "enum Enum {\n"
@@ -136,18 +54,18 @@ public class EnumElementTest {
     EnumConstantElement six = EnumConstantElement.builder(location).name("SIX").tag(6).build();
     EnumElement element = EnumElement.builder(location)
         .name("Enum")
-        .addConstants(Arrays.asList(one, two, six))
+        .constants(ImmutableList.of(one, two, six))
         .build();
     assertThat(element.constants()).hasSize(3);
   }
 
   @Test public void simpleWithOptionsToSchema() {
     EnumElement element = EnumElement.builder(location)
-        .name("Enum")
-        .addOption(OptionElement.create("kit", STRING, "kat"))
-        .addConstant(EnumConstantElement.builder(location).name("ONE").tag(1).build())
-        .addConstant(EnumConstantElement.builder(location).name("TWO").tag(2).build())
-        .addConstant(EnumConstantElement.builder(location).name("SIX").tag(6).build())
+        .name("Enum").options(ImmutableList.of(OptionElement.create("kit", STRING, "kat")))
+        .constants(ImmutableList.of(
+            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
+            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
+            EnumConstantElement.builder(location).name("SIX").tag(6).build()))
         .build();
     String expected = ""
         + "enum Enum {\n"
@@ -165,8 +83,9 @@ public class EnumElementTest {
     OptionElement fooBar = OptionElement.create("foo", STRING, "bar");
     EnumElement element = EnumElement.builder(location)
         .name("Enum")
-        .addOptions(Arrays.asList(kitKat, fooBar))
-        .addConstant(EnumConstantElement.builder(location).name("ONE").tag(1).build())
+        .options(ImmutableList.of(kitKat, fooBar))
+        .constants(ImmutableList.of(
+            EnumConstantElement.builder(location).name("ONE").tag(1).build()))
         .build();
     assertThat(element.options()).hasSize(2);
   }
@@ -175,9 +94,10 @@ public class EnumElementTest {
     EnumElement element = EnumElement.builder(location)
         .name("Enum")
         .documentation("Hello")
-        .addConstant(EnumConstantElement.builder(location).name("ONE").tag(1).build())
-        .addConstant(EnumConstantElement.builder(location).name("TWO").tag(2).build())
-        .addConstant(EnumConstantElement.builder(location).name("SIX").tag(6).build())
+        .constants(ImmutableList.of(
+            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
+            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
+            EnumConstantElement.builder(location).name("SIX").tag(6).build()))
         .build();
     String expected = ""
         + "// Hello\n"
@@ -211,9 +131,10 @@ public class EnumElementTest {
     EnumConstantElement value = EnumConstantElement.builder(location)
         .name("NAME")
         .tag(1)
-        .addOption(OptionElement.create("kit", STRING, "kat", true))
-        .addOption(OptionElement.create("tit", STRING, "tat"))
-        .build();
+        .options(ImmutableList.of(
+            OptionElement.create("kit", STRING, "kat", true),
+            OptionElement.create("tit", STRING, "tat")))
+    .build();
     String expected = "NAME = 1 [\n"
         + "  (kit) = \"kat\",\n"
         + "  tit = \"tat\"\n"

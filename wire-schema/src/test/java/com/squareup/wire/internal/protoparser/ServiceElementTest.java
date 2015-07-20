@@ -15,98 +15,15 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
-import java.util.Arrays;
-import java.util.Collections;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class ServiceElementTest {
   Location location = Location.get("file.proto");
-
-  @Test public void locationRequired() {
-    try {
-      ServiceElement.builder(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("location");
-    }
-  }
-
-  @Test public void nameRequired() {
-    try {
-      ServiceElement.builder(location).qualifiedName("Test").build();
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("name");
-    }
-  }
-
-  @Test public void nameSetsQualifiedName() {
-    ServiceElement test = ServiceElement.builder(location).name("Test").build();
-    assertThat(test.name()).isEqualTo("Test");
-    assertThat(test.qualifiedName()).isEqualTo("Test");
-  }
-
-  @Test public void nullBuilderValuesThrow() {
-    try {
-      ServiceElement.builder(location).name(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("name");
-    }
-    try {
-      ServiceElement.builder(location).qualifiedName(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("qualifiedName");
-    }
-    try {
-      ServiceElement.builder(location).documentation(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("documentation");
-    }
-    try {
-      ServiceElement.builder(location).addRpc(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("rpc");
-    }
-    try {
-      ServiceElement.builder(location).addRpcs(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("rpcs");
-    }
-    try {
-      ServiceElement.builder(location).addRpcs(Collections.<RpcElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("rpc");
-    }
-    try {
-      ServiceElement.builder(location).addOption(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("option");
-    }
-    try {
-      ServiceElement.builder(location).addOptions(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("options");
-    }
-    try {
-      ServiceElement.builder(location).addOptions(Collections.<OptionElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("option");
-    }
-  }
 
   @Test public void emptyToSchema() {
     ServiceElement service = ServiceElement.builder(location).name("Service").build();
@@ -117,11 +34,12 @@ public class ServiceElementTest {
   @Test public void singleToSchema() {
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
-        .addRpc(RpcElement.builder(location)
-            .name("Name")
-            .requestType("RequestType")
-            .responseType("ResponseType")
-            .build())
+        .rpcs(ImmutableList.of(
+            RpcElement.builder(location)
+                .name("Name")
+                .requestType("RequestType")
+                .responseType("ResponseType")
+                .build()))
         .build();
     String expected = ""
         + "service Service {\n"
@@ -143,7 +61,7 @@ public class ServiceElementTest {
         .build();
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
-        .addRpcs(Arrays.asList(firstName, lastName))
+        .rpcs(ImmutableList.of(firstName, lastName))
         .build();
     assertThat(service.rpcs()).hasSize(2);
   }
@@ -151,12 +69,14 @@ public class ServiceElementTest {
   @Test public void singleWithOptionsToSchema() {
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
-        .addOption(OptionElement.create("foo", Kind.STRING, "bar"))
-        .addRpc(RpcElement.builder(location)
-            .name("Name")
-            .requestType("RequestType")
-            .responseType("ResponseType")
-            .build())
+        .options(ImmutableList.of(
+            OptionElement.create("foo", Kind.STRING, "bar")))
+        .rpcs(ImmutableList.of(
+            RpcElement.builder(location)
+                .name("Name")
+                .requestType("RequestType")
+                .responseType("ResponseType")
+                .build()))
         .build();
     String expected = ""
         + "service Service {\n"
@@ -172,12 +92,13 @@ public class ServiceElementTest {
     OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
-        .addOptions(Arrays.asList(kitKat, fooBar))
-        .addRpc(RpcElement.builder(location)
-            .name("Name")
-            .requestType("RequestType")
-            .responseType("ResponseType")
-            .build())
+        .options(ImmutableList.of(kitKat, fooBar))
+        .rpcs(ImmutableList.of(
+            RpcElement.builder(location)
+                .name("Name")
+                .requestType("RequestType")
+                .responseType("ResponseType")
+                .build()))
         .build();
     assertThat(service.options()).hasSize(2);
   }
@@ -186,11 +107,12 @@ public class ServiceElementTest {
     ServiceElement service = ServiceElement.builder(location)
         .name("Service")
         .documentation("Hello")
-        .addRpc(RpcElement.builder(location)
-            .name("Name")
-            .requestType("RequestType")
-            .responseType("ResponseType")
-            .build())
+        .rpcs(ImmutableList.of(
+            RpcElement.builder(location)
+                .name("Name")
+                .requestType("RequestType")
+                .responseType("ResponseType")
+                .build()))
         .build();
     String expected = ""
         + "// Hello\n"
@@ -206,8 +128,10 @@ public class ServiceElementTest {
         .requestType("RequestType")
         .responseType("ResponseType")
         .build();
-    ServiceElement service =
-        ServiceElement.builder(location).name("Service").addRpc(rpc).addRpc(rpc).build();
+    ServiceElement service = ServiceElement.builder(location)
+        .name("Service")
+        .rpcs(ImmutableList.of(rpc, rpc))
+        .build();
     String expected = ""
         + "service Service {\n"
         + "  rpc Name (RequestType) returns (ResponseType);\n"
@@ -244,7 +168,8 @@ public class ServiceElementTest {
         .name("Name")
         .requestType("RequestType")
         .responseType("ResponseType")
-        .addOption(OptionElement.create("foo", Kind.STRING, "bar"))
+        .options(ImmutableList.of(
+            OptionElement.create("foo", Kind.STRING, "bar")))
         .build();
     String expected = ""
         + "rpc Name (RequestType) returns (ResponseType) {\n"

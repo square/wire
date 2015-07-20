@@ -18,21 +18,17 @@ package com.squareup.wire.internal.protoparser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class RpcElement {
   public static Builder builder(Location location) {
-    return new Builder(location);
-  }
-
-  RpcElement() {
+    return new AutoValue_RpcElement.Builder()
+        .documentation("")
+        .location(location)
+        .options(ImmutableList.<OptionElement>of());
   }
 
   public abstract Location location();
@@ -40,7 +36,7 @@ public abstract class RpcElement {
   public abstract String documentation();
   public abstract String requestType();
   public abstract String responseType();
-  public abstract List<OptionElement> options();
+  public abstract ImmutableList<OptionElement> options();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -62,57 +58,14 @@ public abstract class RpcElement {
     return builder.append(";\n").toString();
   }
 
-  public static final class Builder {
-    private final Location location;
-    private String name;
-    private String documentation = "";
-    private String requestType;
-    private String responseType;
-    private final List<OptionElement> options = new ArrayList<>();
-
-    private Builder(Location location) {
-      this.location = checkNotNull(location, "location");
-    }
-
-    public Builder name(String name) {
-      this.name = checkNotNull(name, "name");
-      return this;
-    }
-
-    public Builder documentation(String documentation) {
-      this.documentation = checkNotNull(documentation, "documentation");
-      return this;
-    }
-
-    public Builder requestType(String requestType) {
-      this.requestType = checkNotNull(requestType, "requestType");
-      return this;
-    }
-
-    public Builder responseType(String responseType) {
-      this.responseType = checkNotNull(responseType, "responseType");
-      return this;
-    }
-
-    public Builder addOption(OptionElement option) {
-      options.add(checkNotNull(option, "option"));
-      return this;
-    }
-
-    public Builder addOptions(Collection<OptionElement> options) {
-      for (OptionElement option : checkNotNull(options, "options")) {
-        addOption(option);
-      }
-      return this;
-    }
-
-    public RpcElement build() {
-      checkNotNull(name, "name");
-      checkNotNull(requestType, "requestType");
-      checkNotNull(responseType, "responseType");
-
-      return new AutoValue_RpcElement(location, name, documentation, requestType, responseType,
-          ImmutableList.copyOf(options));
-    }
+  @AutoValue.Builder
+  public abstract static class Builder {
+    public abstract Builder location(Location location);
+    public abstract Builder name(String name);
+    public abstract Builder documentation(String documentation);
+    public abstract Builder requestType(String requestType);
+    public abstract Builder responseType(String responseType);
+    public abstract Builder options(ImmutableList<OptionElement> options);
+    public abstract RpcElement build();
   }
 }

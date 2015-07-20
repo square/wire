@@ -18,32 +18,31 @@ package com.squareup.wire.internal.protoparser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class MessageElement implements TypeElement {
   public static Builder builder(Location location) {
-    return new Builder(location);
-  }
-
-  MessageElement() {
+    return new AutoValue_MessageElement.Builder()
+        .location(location)
+        .documentation("")
+        .fields(ImmutableList.<FieldElement>of())
+        .oneOfs(ImmutableList.<OneOfElement>of())
+        .nestedTypes(ImmutableList.<TypeElement>of())
+        .extensions(ImmutableList.<ExtensionsElement>of())
+        .options(ImmutableList.<OptionElement>of());
   }
 
   @Override public abstract Location location();
   @Override public abstract String name();
-  @Override public abstract String qualifiedName();
   @Override public abstract String documentation();
-  public abstract List<FieldElement> fields();
-  public abstract List<OneOfElement> oneOfs();
-  @Override public abstract List<TypeElement> nestedElements();
-  public abstract List<ExtensionsElement> extensions();
-  @Override public abstract List<OptionElement> options();
+  public abstract ImmutableList<FieldElement> fields();
+  public abstract ImmutableList<OneOfElement> oneOfs();
+  @Override public abstract ImmutableList<TypeElement> nestedTypes();
+  public abstract ImmutableList<ExtensionsElement> extensions();
+  @Override public abstract ImmutableList<OptionElement> options();
 
   @Override public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -75,116 +74,25 @@ public abstract class MessageElement implements TypeElement {
         appendIndented(builder, extension.toSchema());
       }
     }
-    if (!nestedElements().isEmpty()) {
+    if (!nestedTypes().isEmpty()) {
       builder.append('\n');
-      for (TypeElement type : nestedElements()) {
+      for (TypeElement type : nestedTypes()) {
         appendIndented(builder, type.toSchema());
       }
     }
     return builder.append("}\n").toString();
   }
 
-  public static final class Builder {
-    private Location location;
-    private String name;
-    private String qualifiedName;
-    private String documentation = "";
-    private final List<FieldElement> fields = new ArrayList<>();
-    private final List<OneOfElement> oneOfs = new ArrayList<>();
-    private final List<TypeElement> nestedElements = new ArrayList<>();
-    private final List<ExtensionsElement> extensions = new ArrayList<>();
-    private final List<OptionElement> options = new ArrayList<>();
-
-    private Builder(Location location) {
-      this.location = checkNotNull(location, "location");
-    }
-
-    public Builder name(String name) {
-      this.name = checkNotNull(name, "name");
-      if (qualifiedName == null) {
-        qualifiedName = name;
-      }
-      return this;
-    }
-
-    public Builder qualifiedName(String qualifiedName) {
-      this.qualifiedName = checkNotNull(qualifiedName, "qualifiedName");
-      return this;
-    }
-
-    public Builder documentation(String documentation) {
-      this.documentation = checkNotNull(documentation, "documentation");
-      return this;
-    }
-
-    public Builder addField(FieldElement field) {
-      fields.add(checkNotNull(field, "field"));
-      return this;
-    }
-
-    public Builder addFields(Collection<FieldElement> fields) {
-      for (FieldElement field : checkNotNull(fields, "fields")) {
-        addField(field);
-      }
-      return this;
-    }
-
-    public Builder addOneOf(OneOfElement oneOf) {
-      oneOfs.add(checkNotNull(oneOf, "oneOf"));
-      return this;
-    }
-
-    public Builder addOneOfs(Collection<OneOfElement> oneOfs) {
-      for (OneOfElement oneOf : checkNotNull(oneOfs, "oneOfs")) {
-        addOneOf(oneOf);
-      }
-      return this;
-    }
-
-    public Builder addType(TypeElement type) {
-      nestedElements.add(checkNotNull(type, "type"));
-      return this;
-    }
-
-    public Builder addTypes(Collection<TypeElement> types) {
-      for (TypeElement type : checkNotNull(types, "types")) {
-        addType(type);
-      }
-      return this;
-    }
-
-    public Builder addExtensions(ExtensionsElement extensions) {
-      this.extensions.add(checkNotNull(extensions, "extensions"));
-      return this;
-    }
-
-    public Builder addExtensions(Collection<ExtensionsElement> extensions) {
-      for (ExtensionsElement extension : checkNotNull(extensions, "extensions")) {
-        addExtensions(extension);
-      }
-      return this;
-    }
-
-    public Builder addOption(OptionElement option) {
-      options.add(checkNotNull(option, "option"));
-      return this;
-    }
-
-    public Builder addOptions(Collection<OptionElement> options) {
-      for (OptionElement option : checkNotNull(options, "options")) {
-        addOption(option);
-      }
-      return this;
-    }
-
-    public MessageElement build() {
-      checkNotNull(name, "name");
-      checkNotNull(qualifiedName, "qualifiedName");
-
-      return new AutoValue_MessageElement(location, name, qualifiedName, documentation,
-          ImmutableList.copyOf(fields), ImmutableList.copyOf(oneOfs),
-          ImmutableList.copyOf(nestedElements),
-          ImmutableList.copyOf(extensions), ImmutableList.copyOf(options));
-    }
+  @AutoValue.Builder
+  public abstract static class Builder {
+    public abstract Builder location(Location location);
+    public abstract Builder name(String name);
+    public abstract Builder documentation(String documentation);
+    public abstract Builder fields(ImmutableList<FieldElement> fields);
+    public abstract Builder oneOfs(ImmutableList<OneOfElement> oneOfs);
+    public abstract Builder nestedTypes(ImmutableList<TypeElement> types);
+    public abstract Builder extensions(ImmutableList<ExtensionsElement> extensions);
+    public abstract Builder options(ImmutableList<OptionElement> options);
+    public abstract MessageElement build();
   }
 }

@@ -18,26 +18,25 @@ package com.squareup.wire.internal.protoparser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class ServiceElement {
   public static Builder builder(Location location) {
-    return new Builder(location);
+    return new AutoValue_ServiceElement.Builder()
+        .location(location)
+        .documentation("")
+        .rpcs(ImmutableList.<RpcElement>of())
+        .options(ImmutableList.<OptionElement>of());
   }
 
   public abstract Location location();
   public abstract String name();
-  public abstract String qualifiedName();
   public abstract String documentation();
-  public abstract List<RpcElement> rpcs();
-  public abstract List<OptionElement> options();
+  public abstract ImmutableList<RpcElement> rpcs();
+  public abstract ImmutableList<OptionElement> options();
 
   ServiceElement() {
   }
@@ -63,67 +62,13 @@ public abstract class ServiceElement {
     return builder.append("}\n").toString();
   }
 
-  public static final class Builder {
-    private final Location location;
-    private String name;
-    private String qualifiedName;
-    private String documentation = "";
-    private final List<OptionElement> options = new ArrayList<>();
-    private final List<RpcElement> rpcs = new ArrayList<>();
-
-    private Builder(Location location) {
-      this.location = checkNotNull(location, "location");
-    }
-
-    public Builder name(String name) {
-      this.name = checkNotNull(name, "name");
-      if (qualifiedName == null) {
-        qualifiedName = name;
-      }
-      return this;
-    }
-
-    public Builder qualifiedName(String qualifiedName) {
-      this.qualifiedName = checkNotNull(qualifiedName, "qualifiedName");
-      return this;
-    }
-
-    public Builder documentation(String documentation) {
-      this.documentation = checkNotNull(documentation, "documentation");
-      return this;
-    }
-
-    public Builder addRpc(RpcElement rpc) {
-      rpcs.add(checkNotNull(rpc, "rpc"));
-      return this;
-    }
-
-    public Builder addRpcs(Collection<RpcElement> rpcs) {
-      for (RpcElement rpc : checkNotNull(rpcs, "rpcs")) {
-        addRpc(rpc);
-      }
-      return this;
-    }
-
-    public Builder addOption(OptionElement option) {
-      options.add(checkNotNull(option, "option"));
-      return this;
-    }
-
-    public Builder addOptions(Collection<OptionElement> options) {
-      for (OptionElement option : checkNotNull(options, "options")) {
-        addOption(option);
-      }
-      return this;
-    }
-
-    public ServiceElement build() {
-      checkNotNull(name, "name");
-      checkNotNull(qualifiedName, "qualifiedName");
-
-      return new AutoValue_ServiceElement(location, name, qualifiedName, documentation,
-          ImmutableList.copyOf(rpcs),
-          ImmutableList.copyOf(options));
-    }
+  @AutoValue.Builder
+  public abstract static class Builder {
+    public abstract Builder location(Location location);
+    public abstract Builder name(String name);
+    public abstract Builder documentation(String documentation);
+    public abstract Builder rpcs(ImmutableList<RpcElement> rpcs);
+    public abstract Builder options(ImmutableList<OptionElement> options);
+    public abstract ServiceElement build();
   }
 }

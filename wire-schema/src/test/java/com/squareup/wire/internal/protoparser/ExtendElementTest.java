@@ -15,80 +15,15 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
-import java.util.Arrays;
-import java.util.Collections;
 import org.junit.Test;
 
 import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 public class ExtendElementTest {
   Location location = Location.get("file.proto");
-
-  @Test public void locationRequired() {
-    try {
-      ExtendElement.builder(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("location");
-    }
-  }
-
-  @Test public void nameRequired() {
-    try {
-      ExtendElement.builder(location).qualifiedName("Test").build();
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("name");
-    }
-  }
-
-  @Test public void nameSetsQualifiedName() {
-    ExtendElement test = ExtendElement.builder(location).name("Test").build();
-    assertThat(test.name()).isEqualTo("Test");
-    assertThat(test.qualifiedName()).isEqualTo("Test");
-  }
-
-  @Test public void nullBuilderValuesThrow() {
-    try {
-      ExtendElement.builder(location).name(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("name");
-    }
-    try {
-      ExtendElement.builder(location).qualifiedName(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("qualifiedName");
-    }
-    try {
-      ExtendElement.builder(location).documentation(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("documentation");
-    }
-    try {
-      ExtendElement.builder(location).addField(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("field");
-    }
-    try {
-      ExtendElement.builder(location).addFields(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("fields");
-    }
-    try {
-      ExtendElement.builder(location).addFields(Collections.<FieldElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("field");
-    }
-  }
 
   @Test public void emptyToSchema() {
     ExtendElement extend = ExtendElement.builder(location).name("Name").build();
@@ -99,12 +34,13 @@ public class ExtendElementTest {
   @Test public void simpleToSchema() {
     ExtendElement extend = ExtendElement.builder(location)
         .name("Name")
-        .addField(FieldElement.builder(location)
-            .label(REQUIRED)
-            .type("string")
-            .name("name")
-            .tag(1)
-            .build())
+        .fields(ImmutableList.of(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()))
         .build();
     String expected = ""
         + "extend Name {\n"
@@ -128,7 +64,7 @@ public class ExtendElementTest {
         .build();
     ExtendElement extend = ExtendElement.builder(location)
         .name("Name")
-        .addFields(Arrays.asList(firstName, lastName))
+        .fields(ImmutableList.of(firstName, lastName))
         .build();
     assertThat(extend.fields()).hasSize(2);
   }
@@ -137,12 +73,13 @@ public class ExtendElementTest {
     ExtendElement extend = ExtendElement.builder(location)
         .name("Name")
         .documentation("Hello")
-        .addField(FieldElement.builder(location)
-            .label(REQUIRED)
-            .type("string")
-            .name("name")
-            .tag(1)
-            .build())
+        .fields(ImmutableList.of(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()))
         .build();
     String expected = ""
         + "// Hello\n"

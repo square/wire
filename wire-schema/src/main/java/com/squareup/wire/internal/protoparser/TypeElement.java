@@ -15,16 +15,15 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
-import java.util.List;
 
 /** A message type or enum type declaration. */
 public interface TypeElement {
   Location location();
   String name();
-  String qualifiedName();
   String documentation();
-  List<OptionElement> options();
-  List<TypeElement> nestedElements();
+  ImmutableList<OptionElement> options();
+  ImmutableList<TypeElement> nestedTypes();
   String toSchema();
 }

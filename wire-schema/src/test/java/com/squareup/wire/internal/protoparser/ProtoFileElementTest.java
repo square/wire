@@ -326,29 +326,23 @@ public class ProtoFileElementTest {
   @Test public void multipleEverythingToSchema() {
     TypeElement element1 = MessageElement.builder(location.at(10, 1))
         .name("Message1")
-        .qualifiedName("example.simple.Message1")
         .build();
     TypeElement element2 = MessageElement.builder(location.at(11, 1))
         .name("Message2")
-        .qualifiedName("example.simple.Message2")
         .build();
     ExtendElement extend1 = ExtendElement.builder(location.at(13, 1))
         .name("Extend1")
-        .qualifiedName("example.simple.Extend1")
         .build();
     ExtendElement extend2 = ExtendElement.builder(location.at(14, 1))
         .name("Extend2")
-        .qualifiedName("example.simple.Extend2")
         .build();
     OptionElement option1 = OptionElement.create("kit", Kind.STRING, "kat");
     OptionElement option2 = OptionElement.create("foo", Kind.STRING, "bar");
     ServiceElement service1 = ServiceElement.builder(location.at(16, 1))
         .name("Service1")
-        .qualifiedName("example.simple.Service1")
         .build();
     ServiceElement service2 = ServiceElement.builder(location.at(17, 1))
         .name("Service2")
-        .qualifiedName("example.simple.Service2")
         .build();
     ProtoFileElement file = ProtoFileElement.builder(location)
         .packageName("example.simple")

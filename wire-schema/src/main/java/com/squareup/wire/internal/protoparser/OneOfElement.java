@@ -17,26 +17,21 @@ package com.squareup.wire.internal.protoparser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class OneOfElement {
   public static Builder builder() {
-    return new Builder();
-  }
-
-  OneOfElement() {
+    return new AutoValue_OneOfElement.Builder()
+        .documentation("")
+        .fields(ImmutableList.<FieldElement>of());
   }
 
   public abstract String name();
   public abstract String documentation();
-  public abstract List<FieldElement> fields();
+  public abstract ImmutableList<FieldElement> fields();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -51,41 +46,11 @@ public abstract class OneOfElement {
     return builder.append("}\n").toString();
   }
 
-  public static final class Builder {
-    private String name;
-    private String documentation = "";
-    private final List<FieldElement> fields = new ArrayList<>();
-
-    private Builder() {
-    }
-
-    public Builder name(String name) {
-      this.name = checkNotNull(name, "name");
-      return this;
-    }
-
-    public Builder documentation(String documentation) {
-      this.documentation = checkNotNull(documentation, "documentation");
-      return this;
-    }
-
-    public Builder addField(FieldElement field) {
-      fields.add(checkNotNull(field, "field"));
-      return this;
-    }
-
-    public Builder addFields(Collection<FieldElement> fields) {
-      for (FieldElement field : checkNotNull(fields, "fields")) {
-        addField(field);
-      }
-      return this;
-    }
-
-    public OneOfElement build() {
-      checkNotNull(name, "name");
-      // TODO check non-empty?
-
-      return new AutoValue_OneOfElement(name, documentation, ImmutableList.copyOf(fields));
-    }
+  @AutoValue.Builder
+  public abstract static class Builder {
+    public abstract Builder name(String name);
+    public abstract Builder documentation(String documentation);
+    public abstract Builder fields(ImmutableList<FieldElement> fields);
+    public abstract OneOfElement build();
   }
 }
