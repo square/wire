@@ -47,10 +47,10 @@ public abstract class OneOfElement {
   }
 
   @AutoValue.Builder
-  public abstract static class Builder {
-    public abstract Builder name(String name);
-    public abstract Builder documentation(String documentation);
-    public abstract Builder fields(ImmutableList<FieldElement> fields);
-    public abstract OneOfElement build();
+  public interface Builder {
+    Builder name(String name);
+    Builder documentation(String documentation);
+    Builder fields(ImmutableList<FieldElement> fields);
+    OneOfElement build();
   }
 }

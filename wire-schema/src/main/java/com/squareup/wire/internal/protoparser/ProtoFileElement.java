@@ -19,36 +19,31 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /** A single {@code .proto} file. */
 @AutoValue
 public abstract class ProtoFileElement {
-
-  public static Builder builder(String path) {
-    return builder(Location.get(path));
-  }
-
   public static Builder builder(Location location) {
-    return new Builder(location);
-  }
-
-  ProtoFileElement() {
+    return new AutoValue_ProtoFileElement.Builder()
+        .location(location)
+        .dependencies(ImmutableList.<String>of())
+        .publicDependencies(ImmutableList.<String>of())
+        .types(ImmutableList.<TypeElement>of())
+        .services(ImmutableList.<ServiceElement>of())
+        .extendDeclarations(ImmutableList.<ExtendElement>of())
+        .options(ImmutableList.<OptionElement>of());
   }
 
   public abstract Location location();
   @Nullable public abstract String packageName();
   @Nullable public abstract ProtoFile.Syntax syntax();
-  public abstract List<String> dependencies();
-  public abstract List<String> publicDependencies();
-  public abstract List<TypeElement> typeElements();
-  public abstract List<ServiceElement> services();
-  public abstract List<ExtendElement> extendDeclarations();
-  public abstract List<OptionElement> options();
+  public abstract ImmutableList<String> dependencies();
+  public abstract ImmutableList<String> publicDependencies();
+  public abstract ImmutableList<TypeElement> types();
+  public abstract ImmutableList<ServiceElement> services();
+  public abstract ImmutableList<ExtendElement> extendDeclarations();
+  public abstract ImmutableList<OptionElement> options();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -74,9 +69,9 @@ public abstract class ProtoFileElement {
         builder.append(option.toSchemaDeclaration());
       }
     }
-    if (!typeElements().isEmpty()) {
+    if (!types().isEmpty()) {
       builder.append('\n');
-      for (TypeElement typeElement : typeElements()) {
+      for (TypeElement typeElement : types()) {
         builder.append(typeElement.toSchema());
       }
     }
@@ -95,110 +90,17 @@ public abstract class ProtoFileElement {
     return builder.toString();
   }
 
-  public static final class Builder {
-    private final Location location;
-    private String packageName;
-    private ProtoFile.Syntax syntax;
-    private final List<String> dependencies = new ArrayList<>();
-    private final List<String> publicDependencies = new ArrayList<>();
-    private final List<TypeElement> types = new ArrayList<>();
-    private final List<ServiceElement> services = new ArrayList<>();
-    private final List<ExtendElement> extendDeclarations = new ArrayList<>();
-    private final List<OptionElement> options = new ArrayList<>();
-
-    Builder(Location location) {
-      this.location = checkNotNull(location, "location");
-    }
-
-    public Builder packageName(String packageName) {
-      this.packageName = checkNotNull(packageName, "packageName");
-      return this;
-    }
-
-    public Builder syntax(ProtoFile.Syntax syntax) {
-      this.syntax = checkNotNull(syntax, "syntax");
-      return this;
-    }
-
-    public Builder addDependency(String dependency) {
-      dependencies.add(checkNotNull(dependency, "dependency"));
-      return this;
-    }
-
-    public Builder addDependencies(Collection<String> dependencies) {
-      for (String dependency : checkNotNull(dependencies, "dependencies")) {
-        addDependency(dependency);
-      }
-      return this;
-    }
-
-    public Builder addPublicDependency(String dependency) {
-      publicDependencies.add(checkNotNull(dependency, "dependency"));
-      return this;
-    }
-
-    public Builder addPublicDependencies(Collection<String> dependencies) {
-      for (String dependency : checkNotNull(dependencies, "dependencies")) {
-        addPublicDependency(dependency);
-      }
-      return this;
-    }
-
-    public Builder addType(TypeElement type) {
-      types.add(checkNotNull(type, "type"));
-      return this;
-    }
-
-    public Builder addTypes(Collection<TypeElement> types) {
-      for (TypeElement type : checkNotNull(types, "types")) {
-        addType(type);
-      }
-      return this;
-    }
-
-    public Builder addService(ServiceElement service) {
-      services.add(checkNotNull(service, "service"));
-      return this;
-    }
-
-    public Builder addServices(Collection<ServiceElement> services) {
-      for (ServiceElement service : checkNotNull(services, "services")) {
-        addService(service);
-      }
-      return this;
-    }
-
-    public Builder addExtendDeclaration(ExtendElement extend) {
-      extendDeclarations.add(checkNotNull(extend, "extend"));
-      return this;
-    }
-
-    public Builder addExtendDeclarations(Collection<ExtendElement> extendDeclarations) {
-      for (ExtendElement extendDeclaration : checkNotNull(extendDeclarations,
-          "extendDeclarations")) {
-        addExtendDeclaration(extendDeclaration);
-      }
-      return this;
-    }
-
-    public Builder addOption(OptionElement option) {
-      options.add(checkNotNull(option, "option"));
-      return this;
-    }
-
-    public Builder addOptions(Collection<OptionElement> options) {
-      for (OptionElement option : checkNotNull(options, "options")) {
-        addOption(option);
-      }
-      return this;
-    }
-
-    public ProtoFileElement build() {
-      return new AutoValue_ProtoFileElement(location, packageName, syntax,
-          ImmutableList.copyOf(dependencies),
-          ImmutableList.copyOf(publicDependencies), ImmutableList.copyOf(types),
-          ImmutableList.copyOf(services),
-          ImmutableList.copyOf(extendDeclarations), ImmutableList.copyOf(options));
-    }
+  @AutoValue.Builder
+  public interface Builder {
+    Builder location(Location location);
+    Builder packageName(@Nullable String packageName);
+    Builder syntax(@Nullable ProtoFile.Syntax syntax);
+    Builder dependencies(ImmutableList<String> dependencies);
+    Builder publicDependencies(ImmutableList<String> dependencies);
+    Builder types(ImmutableList<TypeElement> types);
+    Builder services(ImmutableList<ServiceElement> services);
+    Builder extendDeclarations(ImmutableList<ExtendElement> extendDeclarations);
+    Builder options(Collection<OptionElement> options);
+    ProtoFileElement build();
   }
 }

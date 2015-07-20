@@ -61,131 +61,132 @@ public final class ProtoParserTest {
         + "  required nested.nested f20 = 20;\n"
         + "}\n";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1))
-            .name("Types")
-            .fields(ImmutableList.of(
-                FieldElement.builder(location.at(2, 3))
-                    .label(REQUIRED)
-                    .type("any")
-                    .name("f1")
-                    .tag(1)
-                    .build(),
-                FieldElement.builder(location.at(3, 3))
-                    .label(REQUIRED)
-                    .type("bool")
-                    .name("f2")
-                    .tag(2)
-                    .build(),
-                FieldElement.builder(location.at(4, 3))
-                    .label(REQUIRED)
-                    .type("bytes")
-                    .name("f3")
-                    .tag(3)
-                    .build(),
-                FieldElement.builder(location.at(5, 3))
-                    .label(REQUIRED)
-                    .type("double")
-                    .name("f4")
-                    .tag(4)
-                    .build(),
-                FieldElement.builder(location.at(6, 3))
-                    .label(REQUIRED)
-                    .type("float")
-                    .name("f5")
-                    .tag(5)
-                    .build(),
-                FieldElement.builder(location.at(7, 3))
-                    .label(REQUIRED)
-                    .type("fixed32")
-                    .name("f6")
-                    .tag(6)
-                    .build(),
-                FieldElement.builder(location.at(8, 3))
-                    .label(REQUIRED)
-                    .type("fixed64")
-                    .name("f7")
-                    .tag(7)
-                    .build(),
-                FieldElement.builder(location.at(9, 3))
-                    .label(REQUIRED)
-                    .type("int32")
-                    .name("f8")
-                    .tag(8)
-                    .build(),
-                FieldElement.builder(location.at(10, 3))
-                    .label(REQUIRED)
-                    .type("int64")
-                    .name("f9")
-                    .tag(9)
-                    .build(),
-                FieldElement.builder(location.at(11, 3))
-                    .label(REQUIRED)
-                    .type("sfixed32")
-                    .name("f10")
-                    .tag(10)
-                    .build(),
-                FieldElement.builder(location.at(12, 3))
-                    .label(REQUIRED)
-                    .type("sfixed64")
-                    .name("f11")
-                    .tag(11)
-                    .build(),
-                FieldElement.builder(location.at(13, 3))
-                    .label(REQUIRED)
-                    .type("sint32")
-                    .name("f12")
-                    .tag(12)
-                    .build(),
-                FieldElement.builder(location.at(14, 3))
-                    .label(REQUIRED)
-                    .type("sint64")
-                    .name("f13")
-                    .tag(13)
-                    .build(),
-                FieldElement.builder(location.at(15, 3))
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("f14")
-                    .tag(14)
-                    .build(),
-                FieldElement.builder(location.at(16, 3))
-                    .label(REQUIRED)
-                    .type("uint32")
-                    .name("f15")
-                    .tag(15)
-                    .build(),
-                FieldElement.builder(location.at(17, 3))
-                    .label(REQUIRED)
-                    .type("uint64")
-                    .name("f16")
-                    .tag(16)
-                    .build(),
-                FieldElement.builder(location.at(18, 3))
-                    .label(REQUIRED)
-                    .type("map<string, bool>")
-                    .name("f17")
-                    .tag(17)
-                    .build(),
-                FieldElement.builder(location.at(19, 3))
-                    .label(REQUIRED)
-                    .type("map<arbitrary, nested.nested>")
-                    .name("f18")
-                    .tag(18)
-                    .build(),
-                FieldElement.builder(location.at(20, 3))
-                    .label(REQUIRED)
-                    .type("arbitrary")
-                    .name("f19")
-                    .tag(19)
-                    .build(),
-                FieldElement.builder(location.at(21, 3))
-                    .label(REQUIRED)
-                    .type("nested.nested")
-                    .name("f20")
-                    .tag(20)
-                    .build()))
-            .build())
-            .build();
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("Types")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("any")
+                        .name("f1")
+                        .tag(1)
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(REQUIRED)
+                        .type("bool")
+                        .name("f2")
+                        .tag(2)
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .label(REQUIRED)
+                        .type("bytes")
+                        .name("f3")
+                        .tag(3)
+                        .build(),
+                    FieldElement.builder(location.at(5, 3))
+                        .label(REQUIRED)
+                        .type("double")
+                        .name("f4")
+                        .tag(4)
+                        .build(),
+                    FieldElement.builder(location.at(6, 3))
+                        .label(REQUIRED)
+                        .type("float")
+                        .name("f5")
+                        .tag(5)
+                        .build(),
+                    FieldElement.builder(location.at(7, 3))
+                        .label(REQUIRED)
+                        .type("fixed32")
+                        .name("f6")
+                        .tag(6)
+                        .build(),
+                    FieldElement.builder(location.at(8, 3))
+                        .label(REQUIRED)
+                        .type("fixed64")
+                        .name("f7")
+                        .tag(7)
+                        .build(),
+                    FieldElement.builder(location.at(9, 3))
+                        .label(REQUIRED)
+                        .type("int32")
+                        .name("f8")
+                        .tag(8)
+                        .build(),
+                    FieldElement.builder(location.at(10, 3))
+                        .label(REQUIRED)
+                        .type("int64")
+                        .name("f9")
+                        .tag(9)
+                        .build(),
+                    FieldElement.builder(location.at(11, 3))
+                        .label(REQUIRED)
+                        .type("sfixed32")
+                        .name("f10")
+                        .tag(10)
+                        .build(),
+                    FieldElement.builder(location.at(12, 3))
+                        .label(REQUIRED)
+                        .type("sfixed64")
+                        .name("f11")
+                        .tag(11)
+                        .build(),
+                    FieldElement.builder(location.at(13, 3))
+                        .label(REQUIRED)
+                        .type("sint32")
+                        .name("f12")
+                        .tag(12)
+                        .build(),
+                    FieldElement.builder(location.at(14, 3))
+                        .label(REQUIRED)
+                        .type("sint64")
+                        .name("f13")
+                        .tag(13)
+                        .build(),
+                    FieldElement.builder(location.at(15, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("f14")
+                        .tag(14)
+                        .build(),
+                    FieldElement.builder(location.at(16, 3))
+                        .label(REQUIRED)
+                        .type("uint32")
+                        .name("f15")
+                        .tag(15)
+                        .build(),
+                    FieldElement.builder(location.at(17, 3))
+                        .label(REQUIRED)
+                        .type("uint64")
+                        .name("f16")
+                        .tag(16)
+                        .build(),
+                    FieldElement.builder(location.at(18, 3))
+                        .label(REQUIRED)
+                        .type("map<string, bool>")
+                        .name("f17")
+                        .tag(17)
+                        .build(),
+                    FieldElement.builder(location.at(19, 3))
+                        .label(REQUIRED)
+                        .type("map<arbitrary, nested.nested>")
+                        .name("f18")
+                        .tag(18)
+                        .build(),
+                    FieldElement.builder(location.at(20, 3))
+                        .label(REQUIRED)
+                        .type("arbitrary")
+                        .name("f19")
+                        .tag(19)
+                        .build(),
+                    FieldElement.builder(location.at(21, 3))
+                        .label(REQUIRED)
+                        .type("nested.nested")
+                        .name("f20")
+                        .tag(20)
+                        .build()))
+                .build()))
+        .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
@@ -194,7 +195,7 @@ public final class ProtoParserTest {
         + "// Test all the things!\n"
         + "message Test {}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    TypeElement type = parsed.typeElements().get(0);
+    TypeElement type = parsed.types().get(0);
     assertThat(type.documentation()).isEqualTo("Test all the things!");
   }
 
@@ -207,7 +208,7 @@ public final class ProtoParserTest {
         + "Test all\n"
         + "the things!";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    TypeElement type = parsed.typeElements().get(0);
+    TypeElement type = parsed.types().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
@@ -216,7 +217,7 @@ public final class ProtoParserTest {
         + "/** Test */\n"
         + "message Test {}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    TypeElement type = parsed.typeElements().get(0);
+    TypeElement type = parsed.types().get(0);
     assertThat(type.documentation()).isEqualTo("Test");
   }
 
@@ -233,7 +234,7 @@ public final class ProtoParserTest {
         + "\n"
         + "Foo";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    TypeElement type = parsed.typeElements().get(0);
+    TypeElement type = parsed.types().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
@@ -250,7 +251,7 @@ public final class ProtoParserTest {
         + "    The\n"
         + "      Things!";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    TypeElement type = parsed.typeElements().get(0);
+    TypeElement type = parsed.types().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
@@ -269,7 +270,7 @@ public final class ProtoParserTest {
         + "    The\n"
         + "      Things!";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    TypeElement type = parsed.typeElements().get(0);
+    TypeElement type = parsed.types().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
@@ -289,7 +290,7 @@ public final class ProtoParserTest {
         + "The\n"
         + "Things!";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    TypeElement type = parsed.typeElements().get(0);
+    TypeElement type = parsed.types().get(0);
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
@@ -300,7 +301,7 @@ public final class ProtoParserTest {
         + "  optional string name = 1; // Test all the things!\n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    MessageElement message = (MessageElement) parsed.typeElements().get(0);
+    MessageElement message = (MessageElement) parsed.types().get(0);
     FieldElement field = message.fields().get(0);
     assertThat(field.documentation()).isEqualTo("Test all the things!");
   }
@@ -312,7 +313,7 @@ public final class ProtoParserTest {
         + "  optional string name = 1; // ...the things!\n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    MessageElement message = (MessageElement) parsed.typeElements().get(0);
+    MessageElement message = (MessageElement) parsed.types().get(0);
     FieldElement field = message.fields().get(0);
     assertThat(field.documentation()).isEqualTo("Test all...\n...the things!");
   }
@@ -324,7 +325,7 @@ public final class ProtoParserTest {
         + "  optional string last_name = 2;\n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    MessageElement message = (MessageElement) parsed.typeElements().get(0);
+    MessageElement message = (MessageElement) parsed.types().get(0);
     FieldElement field1 = message.fields().get(0);
     assertThat(field1.documentation()).isEqualTo("Testing!");
     FieldElement field2 = message.fields().get(1);
@@ -337,7 +338,7 @@ public final class ProtoParserTest {
         + "  FOO = 1; // Test all the things!   \n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
+    EnumElement enumElement = (EnumElement) parsed.types().get(0);
     EnumConstantElement value = enumElement.constants().get(0);
     assertThat(value.documentation()).isEqualTo("Test all the things!");
   }
@@ -349,7 +350,7 @@ public final class ProtoParserTest {
         + "  BAR = 2;/*Test all the things!*/\n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
+    EnumElement enumElement = (EnumElement) parsed.types().get(0);
     EnumConstantElement foo = enumElement.constants().get(0);
     assertThat(foo.documentation()).isEqualTo("Test all the things!");
     EnumConstantElement bar = enumElement.constants().get(1);
@@ -402,7 +403,7 @@ public final class ProtoParserTest {
         + "  FOO = 1; // ...the things!\n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
+    EnumElement enumElement = (EnumElement) parsed.types().get(0);
     EnumConstantElement value = enumElement.constants().get(0);
     assertThat(value.documentation()).isEqualTo("Test all...\n...the things!");
   }
@@ -414,7 +415,7 @@ public final class ProtoParserTest {
         + "  FOO = 1; //      \n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
-    EnumElement enumElement = (EnumElement) parsed.typeElements().get(0);
+    EnumElement enumElement = (EnumElement) parsed.types().get(0);
     EnumConstantElement value = enumElement.constants().get(0);
     assertThat(value.documentation()).isEqualTo("Test all...");
   }
@@ -431,7 +432,10 @@ public final class ProtoParserTest {
         + "message Foo {}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
         .syntax(ProtoFile.Syntax.PROTO_3)
-        .addType(MessageElement.builder(location.at(2, 1)).name("Foo").build())
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(2, 1))
+                .name("Foo")
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -468,28 +472,29 @@ public final class ProtoParserTest {
         + "  optional int32 result_per_page = 3;\n"
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1))
-            .name("SearchRequest")
-            .fields(ImmutableList.of(
-                FieldElement.builder(location.at(2, 3))
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("query")
-                    .tag(1)
-                    .build(),
-                FieldElement.builder(location.at(3, 3))
-                    .label(OPTIONAL)
-                    .type("int32")
-                    .name("page_number")
-                    .tag(2)
-                    .build(),
-                FieldElement.builder(location.at(4, 3))
-                    .label(OPTIONAL)
-                    .type("int32")
-                    .name("result_per_page")
-                    .tag(3)
-                    .build()))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("SearchRequest")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("query")
+                        .tag(1)
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("page_number")
+                        .tag(2)
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("result_per_page")
+                        .tag(3)
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -504,32 +509,33 @@ public final class ProtoParserTest {
         + "  }\n"
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1))
-            .name("SearchRequest")
-            .fields(ImmutableList.of(
-                FieldElement.builder(location.at(2, 3))
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("query")
-                    .tag(1)
-                    .build()))
-            .oneOfs(ImmutableList.of(
-                OneOfElement.builder()
-                    .name("page_info")
-                    .fields(ImmutableList.of(FieldElement.builder(location.at(4, 5))
-                            .label(ONE_OF)
-                            .type("int32")
-                            .name("page_number")
-                            .tag(2)
-                            .build(),
-                        FieldElement.builder(location.at(5, 5))
-                            .label(ONE_OF)
-                            .type("int32")
-                            .name("result_per_page")
-                            .tag(3)
-                            .build()))
-                    .build()))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("SearchRequest")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("query")
+                        .tag(1)
+                        .build()))
+                .oneOfs(ImmutableList.of(
+                    OneOfElement.builder()
+                        .name("page_info")
+                        .fields(ImmutableList.of(FieldElement.builder(location.at(4, 5))
+                                .label(ONE_OF)
+                                .type("int32")
+                                .name("page_number")
+                                .tag(2)
+                                .build(),
+                            FieldElement.builder(location.at(5, 5))
+                                .label(ONE_OF)
+                                .type("int32")
+                                .name("result_per_page")
+                                .tag(3)
+                                .build()))
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -549,25 +555,26 @@ public final class ProtoParserTest {
         + "  SYRUP = 3;\n"
         + "}\n";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(EnumElement.builder(location.at(5, 1))
-            .name("Topping")
-            .documentation("What's on my waffles.\nAlso works on pancakes.")
-            .constants(ImmutableList.of(
-                EnumConstantElement.builder(location.at(6, 3))
-                    .name("FRUIT")
-                    .tag(1)
-                    .build(),
-                EnumConstantElement.builder(location.at(8, 3))
-                    .name("CREAM")
-                    .tag(2)
-                    .documentation("Yummy, yummy cream.")
-                    .build(),
-                EnumConstantElement.builder(location.at(11, 3))
-                    .name("SYRUP")
-                    .tag(3)
-                    .documentation("Quebec Maple syrup")
-                    .build()))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            EnumElement.builder(location.at(5, 1))
+                .name("Topping")
+                .documentation("What's on my waffles.\nAlso works on pancakes.")
+                .constants(ImmutableList.of(
+                    EnumConstantElement.builder(location.at(6, 3))
+                        .name("FRUIT")
+                        .tag(1)
+                        .build(),
+                    EnumConstantElement.builder(location.at(8, 3))
+                        .name("CREAM")
+                        .tag(2)
+                        .documentation("Yummy, yummy cream.")
+                        .build(),
+                    EnumConstantElement.builder(location.at(11, 3))
+                        .name("SYRUP")
+                        .tag(3)
+                        .documentation("Quebec Maple syrup")
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -589,29 +596,30 @@ public final class ProtoParserTest {
         + "  SYRUP = 3;\n"
         + "}\n";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(EnumElement.builder(location.at(5, 1))
-            .name("Topping")
-            .documentation("What's on my waffles.\nAlso works on pancakes.")
-            .options(
-                ImmutableList.of(OptionElement.create("max_choices", Kind.NUMBER, "2", true)))
-            .constants(ImmutableList.of(
-                EnumConstantElement.builder(location.at(8, 3))
-                    .name("FRUIT")
-                    .tag(1)
-                    .options(ImmutableList.of(
-                        OptionElement.create("healthy", Kind.BOOLEAN, "true", true)))
-                    .build(),
-                EnumConstantElement.builder(location.at(10, 3))
-                    .name("CREAM")
-                    .tag(2)
-                    .documentation("Yummy, yummy cream.")
-                    .build(),
-                EnumConstantElement.builder(location.at(13, 3))
-                    .name("SYRUP")
-                    .tag(3)
-                    .documentation("Quebec Maple syrup")
-                    .build()))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            EnumElement.builder(location.at(5, 1))
+                .name("Topping")
+                .documentation("What's on my waffles.\nAlso works on pancakes.")
+                .options(
+                    ImmutableList.of(OptionElement.create("max_choices", Kind.NUMBER, "2", true)))
+                .constants(ImmutableList.of(
+                    EnumConstantElement.builder(location.at(8, 3))
+                        .name("FRUIT")
+                        .tag(1)
+                        .options(ImmutableList.of(
+                            OptionElement.create("healthy", Kind.BOOLEAN, "true", true)))
+                        .build(),
+                    EnumConstantElement.builder(location.at(10, 3))
+                        .name("CREAM")
+                        .tag(2)
+                        .documentation("Yummy, yummy cream.")
+                        .build(),
+                    EnumConstantElement.builder(location.at(13, 3))
+                        .name("SYRUP")
+                        .tag(3)
+                        .documentation("Quebec Maple syrup")
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -627,12 +635,14 @@ public final class ProtoParserTest {
         + "}\n";
     ProtoFileElement expected = ProtoFileElement.builder(location)
         .packageName("google.protobuf")
-        .addType(MessageElement.builder(location.at(6, 1))
-            .name("FileDescriptorSet")
-            .documentation(
-                "The protocol compiler can output a FileDescriptorSet containing the .proto\nfiles it parses.")
-            .build())
-        .addOption(OptionElement.create("java_package", Kind.STRING, "com.google.protobuf"))
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(6, 1))
+                .name("FileDescriptorSet")
+                .documentation("The protocol compiler can output a FileDescriptorSet containing "
+                    + "the .proto\nfiles it parses.")
+                .build()))
+        .options(ImmutableList.of(
+            OptionElement.create("java_package", Kind.STRING, "com.google.protobuf")))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -680,8 +690,9 @@ public final class ProtoParserTest {
                 "Clients can define custom options in extensions of this message. See above."),
             ExtensionsElement.create(location.at(8, 3), 1000, Util.MAX_TAG_VALUE, "")))
         .build();
-    ProtoFileElement
-        expected = ProtoFileElement.builder(location).addType(messageElement).build();
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .types(ImmutableList.of(messageElement))
+        .build();
     ProtoFileElement actual = ProtoParser.parse(location, proto);
     assertThat(actual).isEqualTo(expected);
   }
@@ -696,42 +707,43 @@ public final class ProtoParserTest {
         + "}\n";
 
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1))
-            .name("Chickens")
-            .fields(ImmutableList.of(
-                FieldElement.builder(location.at(2, 3))
-                    .label(OPTIONAL)
-                    .type("bool")
-                    .name("koka_ko_koka_ko")
-                    .tag(1)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.BOOLEAN, "true")))
-                    .build(),
-                FieldElement.builder(location.at(3, 3))
-                    .label(OPTIONAL)
-                    .type("bool")
-                    .name("coodle_doodle_do")
-                    .tag(2)
-                    .options(ImmutableList.of(
-                        OptionElement.create("delay", Kind.NUMBER, "100", true),
-                        OptionElement.create("default", Kind.BOOLEAN, "false")))
-                    .build(),
-                FieldElement.builder(location.at(4, 3))
-                    .label(OPTIONAL)
-                    .type("bool")
-                    .name("coo_coo_ca_cha")
-                    .tag(3)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.BOOLEAN, "true"),
-                        OptionElement.create("delay", Kind.NUMBER, "200", true)))
-                    .build(),
-                FieldElement.builder(location.at(5, 3))
-                    .label(OPTIONAL)
-                    .type("bool")
-                    .name("cha_chee_cha")
-                    .tag(4)
-                    .build()))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("Chickens")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("koka_ko_koka_ko")
+                        .tag(1)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.BOOLEAN, "true")))
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("coodle_doodle_do")
+                        .tag(2)
+                        .options(ImmutableList.of(
+                            OptionElement.create("delay", Kind.NUMBER, "100", true),
+                            OptionElement.create("default", Kind.BOOLEAN, "false")))
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("coo_coo_ca_cha")
+                        .tag(3)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.BOOLEAN, "true"),
+                            OptionElement.create("delay", Kind.NUMBER, "200", true)))
+                        .build(),
+                    FieldElement.builder(location.at(5, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("cha_chee_cha")
+                        .tag(4)
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -739,7 +751,8 @@ public final class ProtoParserTest {
   @Test public void imports() throws Exception {
     String proto = "import \"src/test/resources/unittest_import.proto\";\n";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addDependency("src/test/resources/unittest_import.proto")
+        .dependencies(ImmutableList.of(
+            "src/test/resources/unittest_import.proto"))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -747,7 +760,7 @@ public final class ProtoParserTest {
   @Test public void publicImports() throws Exception {
     String proto = "import public \"src/test/resources/unittest_import.proto\";\n";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addPublicDependency("src/test/resources/unittest_import.proto")
+        .publicDependencies(ImmutableList.of("src/test/resources/unittest_import.proto"))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -759,17 +772,18 @@ public final class ProtoParserTest {
         + "  optional int32 bar = 126;\n"
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addExtendDeclaration(ExtendElement.builder(location.at(2, 1))
-            .name("Foo")
-            .documentation("Extends Foo")
-            .fields(ImmutableList.of(
-                FieldElement.builder(location.at(3, 3))
-                    .label(OPTIONAL)
-                    .type("int32")
-                    .name("bar")
-                    .tag(126)
-                    .build()))
-            .build())
+        .extendDeclarations(ImmutableList.of(
+            ExtendElement.builder(location.at(2, 1))
+                .name("Foo")
+                .documentation("Extends Foo")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(3, 3))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("bar")
+                        .tag(126)
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -782,16 +796,19 @@ public final class ProtoParserTest {
         + "  }\n"
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1)).name("Bar").build())
-        .addExtendDeclaration(ExtendElement.builder(location.at(2, 3))
-            .name("Foo")
-            .fields(ImmutableList.of(FieldElement.builder(location.at(3, 5))
-                .label(OPTIONAL)
-                .type("Bar")
-                .name("bar")
-                .tag(126)
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1)).name("Bar").build()))
+        .extendDeclarations(ImmutableList.of(
+            ExtendElement.builder(location.at(2, 3))
+                .name("Foo")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(3, 5))
+                        .label(OPTIONAL)
+                        .type("Bar")
+                        .name("bar")
+                        .tag(126)
+                        .build()))
                 .build()))
-            .build())
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -807,19 +824,21 @@ public final class ProtoParserTest {
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
         .packageName("kit.kat")
-        .addType(MessageElement.builder(location.at(3, 1))
-            .name("Bar")
-            .build())
-        .addExtendDeclaration(ExtendElement.builder(location.at(4, 3))
-            .name("Foo")
-            .fields(ImmutableList.of(
-                FieldElement.builder(location.at(5, 5))
-                    .label(OPTIONAL)
-                    .type("Bar")
-                    .name("bar")
-                    .tag(126)
-                    .build()))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(3, 1))
+                .name("Bar")
+                .build()))
+        .extendDeclarations(ImmutableList.of(
+            ExtendElement.builder(location.at(4, 3))
+                .name("Foo")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(5, 5))
+                        .label(OPTIONAL)
+                        .type("Bar")
+                        .name("bar")
+                        .tag(126)
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -832,17 +851,19 @@ public final class ProtoParserTest {
         + "  }\n"
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1)).name("Bar").build())
-        .addExtendDeclaration(ExtendElement.builder(location.at(2, 3))
-            .name("example.Foo")
-            .fields(ImmutableList.of(
-                FieldElement.builder(location.at(3, 5))
-                    .label(OPTIONAL)
-                    .type("Bar")
-                    .name("bar")
-                    .tag(126)
-                    .build()))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1)).name("Bar").build()))
+        .extendDeclarations(ImmutableList.of(
+            ExtendElement.builder(location.at(2, 3))
+                .name("example.Foo")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(3, 5))
+                        .label(OPTIONAL)
+                        .type("Bar")
+                        .name("bar")
+                        .tag(126)
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -858,19 +879,20 @@ public final class ProtoParserTest {
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
         .packageName("kit.kat")
-        .addType(MessageElement.builder(location.at(3, 1))
+        .types(ImmutableList.<TypeElement>of(MessageElement.builder(location.at(3, 1))
             .name("Bar")
-            .build())
-        .addExtendDeclaration(ExtendElement.builder(location.at(4, 3))
-            .name("example.Foo")
-            .fields(ImmutableList.of(
-                FieldElement.builder(location.at(5, 5))
-                    .label(OPTIONAL)
-                    .type("Bar")
-                    .name("bar")
-                    .tag(126)
-                    .build()))
-            .build())
+            .build()))
+        .extendDeclarations(ImmutableList.of(
+            ExtendElement.builder(location.at(4, 3))
+                .name("example.Foo")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(5, 5))
+                        .label(OPTIONAL)
+                        .type("Bar")
+                        .name("bar")
+                        .tag(126)
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -896,7 +918,7 @@ public final class ProtoParserTest {
         .fields(ImmutableList.of(field))
         .build();
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(messageElement)
+        .types(ImmutableList.of(messageElement))
         .build();
     assertThat(ProtoParser.parse(location, proto))
         .isEqualTo(expected);
@@ -925,7 +947,7 @@ public final class ProtoParserTest {
         .fields(ImmutableList.of(field))
         .build();
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(messageElement)
+        .types(ImmutableList.of(messageElement))
         .build();
     assertThat(ProtoParser.parse(location, proto))
         .isEqualTo(expected);
@@ -962,26 +984,27 @@ public final class ProtoParserTest {
         + "  }\n"
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addService(ServiceElement.builder(location.at(1, 1))
-            .name("SearchService")
-            .options(ImmutableList.of(
-                OptionElement.create("default_timeout", Kind.NUMBER, "30", true)))
-            .rpcs(ImmutableList.of(
-                RpcElement.builder(location.at(4, 3))
-                    .name("Search")
-                    .requestType("SearchRequest")
-                    .responseType("SearchResponse")
-                    .build(),
-                RpcElement.builder(location.at(5, 3))
-                    .name("Purchase")
-                    .requestType("PurchaseRequest")
-                    .responseType("PurchaseResponse")
-                    .options(ImmutableList.of(
-                        OptionElement.create("squareup.sake.timeout", Kind.NUMBER, "15", true),
-                        OptionElement.create("squareup.a.b", Kind.MAP, ImmutableMap.of("value",
-                            ImmutableList.of("FOO", "BAR")), true)))
-                    .build()))
-            .build())
+        .services(ImmutableList.of(
+            ServiceElement.builder(location.at(1, 1))
+                .name("SearchService")
+                .options(ImmutableList.of(
+                    OptionElement.create("default_timeout", Kind.NUMBER, "30", true)))
+                .rpcs(ImmutableList.of(
+                    RpcElement.builder(location.at(4, 3))
+                        .name("Search")
+                        .requestType("SearchRequest")
+                        .responseType("SearchResponse")
+                        .build(),
+                    RpcElement.builder(location.at(5, 3))
+                        .name("Purchase")
+                        .requestType("PurchaseRequest")
+                        .responseType("PurchaseResponse")
+                        .options(ImmutableList.of(
+                            OptionElement.create("squareup.sake.timeout", Kind.NUMBER, "15", true),
+                            OptionElement.create("squareup.a.b", Kind.MAP, ImmutableMap.of("value",
+                                ImmutableList.of("FOO", "BAR")), true)))
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -993,22 +1016,23 @@ public final class ProtoParserTest {
         + "  required string uppercase_x_hex = 0X11;\n"
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1))
-            .name("HexTag")
-            .fields(ImmutableList.of(
-                FieldElement.builder(location.at(2, 3))
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("hex")
-                    .tag(16)
-                    .build(),
-                FieldElement.builder(location.at(3, 3))
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("uppercase_x_hex")
-                    .tag(17)
-                    .build()))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("HexTag")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("hex")
+                        .tag(16)
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("uppercase_x_hex")
+                        .tag(17)
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -1045,15 +1069,16 @@ public final class ProtoParserTest {
     option_four_map.put("x", option_four_map_1);
 
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1))
-            .name("ExoticOptions")
-            .options(ImmutableList.of(
-                OptionElement.create("squareup.one", Kind.MAP, option_one_map, true),
-                OptionElement.create("squareup.two.a", Kind.MAP, option_two_a_map, true),
-                OptionElement.create("squareup.two.b", Kind.MAP, option_two_b_map, true),
-                OptionElement.create("squareup.three", Kind.MAP, option_three_map, true),
-                OptionElement.create("squareup.four", Kind.MAP, option_four_map, true)))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("ExoticOptions")
+                .options(ImmutableList.of(
+                    OptionElement.create("squareup.one", Kind.MAP, option_one_map, true),
+                    OptionElement.create("squareup.two.a", Kind.MAP, option_two_a_map, true),
+                    OptionElement.create("squareup.two.b", Kind.MAP, option_two_b_map, true),
+                    OptionElement.create("squareup.three", Kind.MAP, option_three_map, true),
+                    OptionElement.create("squareup.four", Kind.MAP, option_four_map, true)))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -1091,7 +1116,7 @@ public final class ProtoParserTest {
         .fields(ImmutableList.of(field))
         .build();
     ProtoFileElement protoFile = ProtoFileElement.builder(location)
-        .addType(expected)
+        .types(ImmutableList.of(expected))
         .build();
     assertThat(ProtoParser.parse(location, proto))
         .isEqualTo(protoFile);
@@ -1118,140 +1143,141 @@ public final class ProtoParserTest {
         + "  optional NestedEnum default_nested_enum = 416 [default = A ];"
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1))
-            .name("Test")
-            .fields(ImmutableList.of(FieldElement.builder(location.at(2, 3))
-                    .label(OPTIONAL)
-                    .type("int32")
-                    .name("default_int32")
-                    .tag(401)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "2147483647")))
-                    .build(),
-                FieldElement.builder(location.at(3, 3))
-                    .label(OPTIONAL)
-                    .type("uint32")
-                    .name("default_uint32")
-                    .tag(402)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "4294967295")))
-                    .build(),
-                FieldElement.builder(location.at(4, 3))
-                    .label(OPTIONAL)
-                    .type("sint32")
-                    .name("default_sint32")
-                    .tag(403)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "-2147483648")))
-                    .build(),
-                FieldElement.builder(location.at(5, 3))
-                    .label(OPTIONAL)
-                    .type("fixed32")
-                    .name("default_fixed32")
-                    .tag(404)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "4294967295")))
-                    .build(),
-                FieldElement.builder(location.at(6, 3))
-                    .label(OPTIONAL)
-                    .type("sfixed32")
-                    .name("default_sfixed32")
-                    .tag(405)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "-2147483648")))
-                    .build(),
-                FieldElement.builder(location.at(7, 3))
-                    .label(OPTIONAL)
-                    .type("int64")
-                    .name("default_int64")
-                    .tag(406)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "9223372036854775807")))
-                    .build(),
-                FieldElement.builder(location.at(8, 3))
-                    .label(OPTIONAL)
-                    .type("uint64")
-                    .name("default_uint64")
-                    .tag(407)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "18446744073709551615")))
-                    .build(),
-                FieldElement.builder(location.at(9, 3))
-                    .label(OPTIONAL)
-                    .type("sint64")
-                    .name("default_sint64")
-                    .tag(408)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "-9223372036854775808")))
-                    .build(),
-                FieldElement.builder(location.at(10, 3))
-                    .label(OPTIONAL)
-                    .type("fixed64")
-                    .name("default_fixed64")
-                    .tag(409)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "18446744073709551615")))
-                    .build(),
-                FieldElement.builder(location.at(11, 3))
-                    .label(OPTIONAL)
-                    .type("sfixed64")
-                    .name("default_sfixed64")
-                    .tag(410)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "-9223372036854775808")))
-                    .build(),
-                FieldElement.builder(location.at(12, 3))
-                    .label(OPTIONAL)
-                    .type("bool")
-                    .name("default_bool")
-                    .tag(411)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.BOOLEAN, "true")))
-                    .build(),
-                FieldElement.builder(location.at(13, 3))
-                    .label(OPTIONAL)
-                    .type("float")
-                    .name("default_float")
-                    .tag(412)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "123.456e7")))
-                    .build(),
-                FieldElement.builder(location.at(14, 3))
-                    .label(OPTIONAL)
-                    .type("double")
-                    .name("default_double")
-                    .tag(413)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.NUMBER, "123.456e78")))
-                    .build(),
-                FieldElement.builder(location.at(15, 3))
-                    .label(OPTIONAL)
-                    .type("string")
-                    .name("default_string")
-                    .tag(414)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.STRING, "çok\u0007\b\f\n\r\t\u000b"
-                            + "\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
-                            + "\u0011güzel")))
-                    .build(),
-                FieldElement.builder(location.at(17, 3))
-                    .label(OPTIONAL)
-                    .type("bytes")
-                    .name("default_bytes")
-                    .tag(415)
-                    .options(ImmutableList.of(
-                        OptionElement.create("default", Kind.STRING, "çok\u0007\b\f\n\r\t\u000b"
-                            + "\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
-                            + "\u0011güzel")))
-                    .build(),
-                FieldElement.builder(location.at(19, 3))
-                    .label(OPTIONAL)
-                    .type("NestedEnum")
-                    .name("default_nested_enum")
-                    .tag(416)
-                    .options(ImmutableList.of(OptionElement.create("default", Kind.ENUM, "A")))
-                    .build()))
-            .build())
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("Test")
+                .fields(ImmutableList.of(FieldElement.builder(location.at(2, 3))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("default_int32")
+                        .tag(401)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "2147483647")))
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(OPTIONAL)
+                        .type("uint32")
+                        .name("default_uint32")
+                        .tag(402)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "4294967295")))
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .label(OPTIONAL)
+                        .type("sint32")
+                        .name("default_sint32")
+                        .tag(403)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "-2147483648")))
+                        .build(),
+                    FieldElement.builder(location.at(5, 3))
+                        .label(OPTIONAL)
+                        .type("fixed32")
+                        .name("default_fixed32")
+                        .tag(404)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "4294967295")))
+                        .build(),
+                    FieldElement.builder(location.at(6, 3))
+                        .label(OPTIONAL)
+                        .type("sfixed32")
+                        .name("default_sfixed32")
+                        .tag(405)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "-2147483648")))
+                        .build(),
+                    FieldElement.builder(location.at(7, 3))
+                        .label(OPTIONAL)
+                        .type("int64")
+                        .name("default_int64")
+                        .tag(406)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "9223372036854775807")))
+                        .build(),
+                    FieldElement.builder(location.at(8, 3))
+                        .label(OPTIONAL)
+                        .type("uint64")
+                        .name("default_uint64")
+                        .tag(407)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "18446744073709551615")))
+                        .build(),
+                    FieldElement.builder(location.at(9, 3))
+                        .label(OPTIONAL)
+                        .type("sint64")
+                        .name("default_sint64")
+                        .tag(408)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "-9223372036854775808")))
+                        .build(),
+                    FieldElement.builder(location.at(10, 3))
+                        .label(OPTIONAL)
+                        .type("fixed64")
+                        .name("default_fixed64")
+                        .tag(409)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "18446744073709551615")))
+                        .build(),
+                    FieldElement.builder(location.at(11, 3))
+                        .label(OPTIONAL)
+                        .type("sfixed64")
+                        .name("default_sfixed64")
+                        .tag(410)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "-9223372036854775808")))
+                        .build(),
+                    FieldElement.builder(location.at(12, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("default_bool")
+                        .tag(411)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.BOOLEAN, "true")))
+                        .build(),
+                    FieldElement.builder(location.at(13, 3))
+                        .label(OPTIONAL)
+                        .type("float")
+                        .name("default_float")
+                        .tag(412)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "123.456e7")))
+                        .build(),
+                    FieldElement.builder(location.at(14, 3))
+                        .label(OPTIONAL)
+                        .type("double")
+                        .name("default_double")
+                        .tag(413)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.NUMBER, "123.456e78")))
+                        .build(),
+                    FieldElement.builder(location.at(15, 3))
+                        .label(OPTIONAL)
+                        .type("string")
+                        .name("default_string")
+                        .tag(414)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.STRING, "çok\u0007\b\f\n\r\t\u000b"
+                                + "\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
+                                + "\u0011güzel")))
+                        .build(),
+                    FieldElement.builder(location.at(17, 3))
+                        .label(OPTIONAL)
+                        .type("bytes")
+                        .name("default_bytes")
+                        .tag(415)
+                        .options(ImmutableList.of(
+                            OptionElement.create("default", Kind.STRING, "çok\u0007\b\f\n\r\t\u000b"
+                                + "\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
+                                + "\u0011güzel")))
+                        .build(),
+                    FieldElement.builder(location.at(19, 3))
+                        .label(OPTIONAL)
+                        .type("NestedEnum")
+                        .name("default_nested_enum")
+                        .tag(416)
+                        .options(ImmutableList.of(OptionElement.create("default", Kind.ENUM, "A")))
+                        .build()))
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
@@ -1287,21 +1313,24 @@ public final class ProtoParserTest {
     TypeElement expected = MessageElement.builder(location.at(1, 1))
         .name("Foo").fields(ImmutableList.of(field))
         .build();
-    ProtoFileElement protoFile = ProtoFileElement.builder(location).addType(expected).build();
+    ProtoFileElement protoFile = ProtoFileElement.builder(location)
+        .types(ImmutableList.of(expected))
+        .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(protoFile);
   }
 
   @Test public void noWhitespace() {
     String proto = "message C {optional A.B ab = 1;}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .addType(MessageElement.builder(location.at(1, 1))
-            .name("C").fields(ImmutableList.of(FieldElement.builder(location.at(1, 12))
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("C").fields(ImmutableList.of(FieldElement.builder(location.at(1, 12))
                 .label(OPTIONAL)
                 .type("A.B")
                 .name("ab")
                 .tag(1)
                 .build()))
-                .build())
+                .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }

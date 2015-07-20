@@ -22,7 +22,6 @@ import com.squareup.wire.schema.Location;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.protoparser.OptionElement.formatOptionList;
 
-/** An enum constant. */
 @AutoValue
 public abstract class EnumConstantElement {
   public static Builder builder(Location location) {
@@ -53,12 +52,12 @@ public abstract class EnumConstantElement {
   }
 
   @AutoValue.Builder
-  public abstract static class Builder {
-    public abstract Builder location(Location location);
-    public abstract Builder name(String name);
-    public abstract Builder tag(int tag);
-    public abstract Builder documentation(String documentation);
-    public abstract Builder options(ImmutableList<OptionElement> options);
-    public abstract EnumConstantElement build();
+  public interface Builder {
+    Builder location(Location location);
+    Builder name(String name);
+    Builder tag(int tag);
+    Builder documentation(String documentation);
+    Builder options(ImmutableList<OptionElement> options);
+    EnumConstantElement build();
   }
 }

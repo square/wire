@@ -24,7 +24,7 @@ import static com.squareup.wire.schema.Field.Label.ONE_OF;
 import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MessageElementTest {
+public final class MessageElementTest {
   Location location = Location.get("file.proto");
 
   @Test public void emptyToSchema() {

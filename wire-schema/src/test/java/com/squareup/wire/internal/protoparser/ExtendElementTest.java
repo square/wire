@@ -22,7 +22,7 @@ import org.junit.Test;
 import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExtendElementTest {
+public final class ExtendElementTest {
   Location location = Location.get("file.proto");
 
   @Test public void emptyToSchema() {

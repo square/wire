@@ -22,7 +22,7 @@ import org.junit.Test;
 import static com.squareup.wire.internal.protoparser.OptionElement.Kind.STRING;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EnumElementTest {
+public final class EnumElementTest {
   Location location = Location.get("file.proto");
 
   @Test public void emptyToSchema() {

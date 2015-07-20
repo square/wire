@@ -22,7 +22,6 @@ import com.squareup.wire.schema.Location;
 import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.Util.appendIndented;
 
-/** An enumerated type declaration. */
 @AutoValue
 public abstract class EnumElement implements TypeElement {
   public static Builder builder(Location location) {
@@ -33,18 +32,15 @@ public abstract class EnumElement implements TypeElement {
         .options(ImmutableList.<OptionElement>of());
   }
 
-  EnumElement() {
-  }
-
   @Override public abstract Location location();
   @Override public abstract String name();
   @Override public abstract String documentation();
-  public abstract ImmutableList<EnumConstantElement> constants();
   @Override public abstract ImmutableList<OptionElement> options();
-
   @Override public final ImmutableList<TypeElement> nestedTypes() {
     return ImmutableList.of(); // Enums do not allow nested type declarations.
   }
+
+  public abstract ImmutableList<EnumConstantElement> constants();
 
   @Override public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -68,12 +64,12 @@ public abstract class EnumElement implements TypeElement {
   }
 
   @AutoValue.Builder
-  public abstract static class Builder {
-    public abstract Builder location(Location location);
-    public abstract Builder name(String name);
-    public abstract Builder documentation(String documentation);
-    public abstract Builder constants(ImmutableList<EnumConstantElement> constants);
-    public abstract Builder options(ImmutableList<OptionElement> options);
-    public abstract EnumElement build();
+  public interface  Builder {
+    Builder location(Location location);
+    Builder name(String name);
+    Builder documentation(String documentation);
+    Builder constants(ImmutableList<EnumConstantElement> constants);
+    Builder options(ImmutableList<OptionElement> options);
+    EnumElement build();
   }
 }

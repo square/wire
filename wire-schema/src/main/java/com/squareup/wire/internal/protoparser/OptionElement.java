@@ -41,13 +41,7 @@ public abstract class OptionElement {
 
   public static OptionElement create(String name, Kind kind, Object value,
       boolean isParenthesized) {
-    checkNotNull(name, "name");
-    checkNotNull(value, "value");
-
     return new AutoValue_OptionElement(name, kind, value, isParenthesized);
-  }
-
-  OptionElement() {
   }
 
   public abstract String name();
@@ -142,10 +136,6 @@ public abstract class OptionElement {
   }
 
   private String formatName() {
-    if (isParenthesized()) {
-      return '(' + name() + ')';
-    } else {
-      return name();
-    }
+    return isParenthesized() ? '(' + name() + ')' : name();
   }
 }

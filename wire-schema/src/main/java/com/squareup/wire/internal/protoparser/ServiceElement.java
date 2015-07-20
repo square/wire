@@ -38,9 +38,6 @@ public abstract class ServiceElement {
   public abstract ImmutableList<RpcElement> rpcs();
   public abstract ImmutableList<OptionElement> options();
 
-  ServiceElement() {
-  }
-
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
@@ -63,12 +60,12 @@ public abstract class ServiceElement {
   }
 
   @AutoValue.Builder
-  public abstract static class Builder {
-    public abstract Builder location(Location location);
-    public abstract Builder name(String name);
-    public abstract Builder documentation(String documentation);
-    public abstract Builder rpcs(ImmutableList<RpcElement> rpcs);
-    public abstract Builder options(ImmutableList<OptionElement> options);
-    public abstract ServiceElement build();
+  public interface Builder {
+    Builder location(Location location);
+    Builder name(String name);
+    Builder documentation(String documentation);
+    Builder rpcs(ImmutableList<RpcElement> rpcs);
+    Builder options(ImmutableList<OptionElement> options);
+    ServiceElement build();
   }
 }

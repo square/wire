@@ -38,11 +38,11 @@ public abstract class MessageElement implements TypeElement {
   @Override public abstract Location location();
   @Override public abstract String name();
   @Override public abstract String documentation();
+  @Override public abstract ImmutableList<TypeElement> nestedTypes();
+  @Override public abstract ImmutableList<OptionElement> options();
   public abstract ImmutableList<FieldElement> fields();
   public abstract ImmutableList<OneOfElement> oneOfs();
-  @Override public abstract ImmutableList<TypeElement> nestedTypes();
   public abstract ImmutableList<ExtensionsElement> extensions();
-  @Override public abstract ImmutableList<OptionElement> options();
 
   @Override public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -84,15 +84,15 @@ public abstract class MessageElement implements TypeElement {
   }
 
   @AutoValue.Builder
-  public abstract static class Builder {
-    public abstract Builder location(Location location);
-    public abstract Builder name(String name);
-    public abstract Builder documentation(String documentation);
-    public abstract Builder fields(ImmutableList<FieldElement> fields);
-    public abstract Builder oneOfs(ImmutableList<OneOfElement> oneOfs);
-    public abstract Builder nestedTypes(ImmutableList<TypeElement> types);
-    public abstract Builder extensions(ImmutableList<ExtensionsElement> extensions);
-    public abstract Builder options(ImmutableList<OptionElement> options);
-    public abstract MessageElement build();
+  public interface Builder {
+    Builder location(Location location);
+    Builder name(String name);
+    Builder documentation(String documentation);
+    Builder fields(ImmutableList<FieldElement> fields);
+    Builder oneOfs(ImmutableList<OneOfElement> oneOfs);
+    Builder nestedTypes(ImmutableList<TypeElement> types);
+    Builder extensions(ImmutableList<ExtensionsElement> extensions);
+    Builder options(ImmutableList<OptionElement> options);
+    MessageElement build();
   }
 }

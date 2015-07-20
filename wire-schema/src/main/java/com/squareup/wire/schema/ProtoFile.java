@@ -42,7 +42,7 @@ public final class ProtoFile {
     String packageName = protoFileElement.packageName();
 
     ImmutableList.Builder<Type> types = ImmutableList.builder();
-    for (TypeElement type : protoFileElement.typeElements()) {
+    for (TypeElement type : protoFileElement.types()) {
       Type.Name name = Type.Name.get(packageName, type.name());
       types.add(Type.get(name, type));
     }
