@@ -59,13 +59,13 @@ public abstract class RpcElement {
   }
 
   @AutoValue.Builder
-  public abstract static class Builder {
-    public abstract Builder location(Location location);
-    public abstract Builder name(String name);
-    public abstract Builder documentation(String documentation);
-    public abstract Builder requestType(String requestType);
-    public abstract Builder responseType(String responseType);
-    public abstract Builder options(ImmutableList<OptionElement> options);
-    public abstract RpcElement build();
+  public interface Builder {
+    Builder location(Location location);
+    Builder name(String name);
+    Builder documentation(String documentation);
+    Builder requestType(String requestType);
+    Builder responseType(String responseType);
+    Builder options(ImmutableList<OptionElement> options);
+    RpcElement build();
   }
 }

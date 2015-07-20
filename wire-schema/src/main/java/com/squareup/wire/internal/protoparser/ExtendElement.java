@@ -31,9 +31,6 @@ public abstract class ExtendElement {
         .location(location);
   }
 
-  ExtendElement() {
-  }
-
   public abstract Location location();
   public abstract String name();
   public abstract String documentation();
@@ -55,11 +52,11 @@ public abstract class ExtendElement {
   }
 
   @AutoValue.Builder
-  public abstract static class Builder {
-    public abstract Builder location(Location location);
-    public abstract Builder name(String name);
-    public abstract Builder documentation(String documentation);
-    public abstract Builder fields(ImmutableList<FieldElement> fields);
-    public abstract ExtendElement build();
+  public interface Builder {
+    Builder location(Location location);
+    Builder name(String name);
+    Builder documentation(String documentation);
+    Builder fields(ImmutableList<FieldElement> fields);
+    ExtendElement build();
   }
 }

@@ -21,7 +21,7 @@ import static com.squareup.wire.internal.Util.appendDocumentation;
 import static com.squareup.wire.internal.Util.appendIndented;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UtilTest {
+public final class UtilTest {
   @Test public void indentationTest() {
     String input = "Foo\nBar\nBaz";
     String expected = "  Foo\n  Bar\n  Baz\n";

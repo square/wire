@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ServiceElementTest {
+public final class ServiceElementTest {
   Location location = Location.get("file.proto");
 
   @Test public void emptyToSchema() {

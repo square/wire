@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExtensionsElementTest {
+public final class ExtensionsElementTest {
   Location location = Location.get("file.proto");
 
   @Test public void singleValueToSchema() {

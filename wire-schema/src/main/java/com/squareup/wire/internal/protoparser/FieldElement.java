@@ -35,11 +35,6 @@ public abstract class FieldElement {
 
   public abstract Location location();
   public abstract Field.Label label();
-  /**
-   * Returns the type of this field. May be a message type name, an enum type
-   * name, or a <a href="https://developers.google.com/protocol-buffers/docs/proto#scalar">
-   * scalar value type</a> like {@code int64} or {@code bytes}.
-   */
   public abstract String type();
   public abstract String name();
   public abstract int tag();
@@ -68,14 +63,14 @@ public abstract class FieldElement {
   }
 
   @AutoValue.Builder
-  public abstract static class Builder {
-    abstract Builder location(Location location);
-    abstract Builder label(Field.Label label);
-    abstract Builder type(String type);
-    abstract Builder name(String name);
-    abstract Builder tag(int tag);
-    abstract Builder documentation(String documentation);
-    abstract Builder options(ImmutableList<OptionElement> options);
-    abstract FieldElement build();
+  public interface Builder {
+    Builder location(Location location);
+    Builder label(Field.Label label);
+    Builder type(String type);
+    Builder name(String name);
+    Builder tag(int tag);
+    Builder documentation(String documentation);
+    Builder options(ImmutableList<OptionElement> options);
+    FieldElement build();
   }
 }

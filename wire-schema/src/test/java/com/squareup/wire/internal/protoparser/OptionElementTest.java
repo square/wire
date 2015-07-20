@@ -25,27 +25,8 @@ import static com.squareup.wire.internal.protoparser.OptionElement.Kind.MAP;
 import static com.squareup.wire.internal.protoparser.OptionElement.Kind.OPTION;
 import static com.squareup.wire.internal.protoparser.OptionElement.Kind.STRING;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
-public class OptionElementTest {
-  @Test public void nullNameThrows() {
-    try {
-      OptionElement.create(null, STRING, "Test");
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("name");
-    }
-  }
-
-  @Test public void nullValueThrows() {
-    try {
-      OptionElement.create("test", STRING, null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("value");
-    }
-  }
-
+public final class OptionElementTest {
   @Test public void simpleToSchema() {
     OptionElement option = OptionElement.create("foo", STRING, "bar");
     String expected = "foo = \"bar\"";

@@ -15,151 +15,16 @@
  */
 package com.squareup.wire.internal.protoparser;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.protoparser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
-import java.util.Arrays;
-import java.util.Collections;
 import org.junit.Test;
 
 import static com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
-public class ProtoFileElementTest {
+public final class ProtoFileElementTest {
   Location location = Location.get("file.proto");
-
-  @Test public void nullBuilderValuesThrow() {
-    try {
-      ProtoFileElement.builder((Location) null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("location");
-    }
-    try {
-      ProtoFileElement.builder(location).packageName(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("packageName");
-    }
-    try {
-      ProtoFileElement.builder(location).syntax(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("syntax");
-    }
-    try {
-      ProtoFileElement.builder(location).addDependency(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("dependency");
-    }
-    try {
-      ProtoFileElement.builder(location).addDependencies(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("dependencies");
-    }
-    try {
-      ProtoFileElement.builder(location).addDependencies(Collections.<String>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("dependency");
-    }
-    try {
-      ProtoFileElement.builder(location).addPublicDependency(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("dependency");
-    }
-    try {
-      ProtoFileElement.builder(location).addPublicDependencies(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("dependencies");
-    }
-    try {
-      ProtoFileElement.builder(location)
-          .addPublicDependencies(Collections.<String>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("dependency");
-    }
-    try {
-      ProtoFileElement.builder(location).addType(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("type");
-    }
-    try {
-      ProtoFileElement.builder(location).addTypes(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("types");
-    }
-    try {
-      ProtoFileElement.builder(location).addTypes(Collections.<TypeElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("type");
-    }
-    try {
-      ProtoFileElement.builder(location).addService(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("service");
-    }
-    try {
-      ProtoFileElement.builder(location).addServices(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("services");
-    }
-    try {
-      ProtoFileElement.builder(location)
-          .addServices(Collections.<ServiceElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("service");
-    }
-    try {
-      ProtoFileElement.builder(location).addExtendDeclaration(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("extend");
-    }
-    try {
-      ProtoFileElement.builder(location).addExtendDeclarations(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("extendDeclarations");
-    }
-    try {
-      ProtoFileElement.builder(location).addExtendDeclarations(
-          Collections.<ExtendElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("extend");
-    }
-    try {
-      ProtoFileElement.builder(location).addOption(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("option");
-    }
-    try {
-      ProtoFileElement.builder(location).addOptions(null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("options");
-    }
-    try {
-      ProtoFileElement.builder(location)
-          .addOptions(Collections.<OptionElement>singleton(null));
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("option");
-    }
-  }
 
   @Test public void emptyToSchema() {
     ProtoFileElement file = ProtoFileElement.builder(location).build();
@@ -179,7 +44,9 @@ public class ProtoFileElementTest {
 
   @Test public void simpleToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder(location).addType(element).build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
+        .types(ImmutableList.of(element))
+        .build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -190,8 +57,8 @@ public class ProtoFileElementTest {
   @Test public void simpleWithImportsToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .addDependency("example.other")
-        .addType(element)
+        .dependencies(ImmutableList.of("example.other"))
+        .types(ImmutableList.of(element))
         .build();
     String expected = ""
         + "// file.proto\n"
@@ -205,8 +72,8 @@ public class ProtoFileElementTest {
   @Test public void addMultipleDependencies() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .addDependencies(Arrays.asList("example.other", "example.another"))
-        .addType(element)
+        .dependencies(ImmutableList.of("example.other", "example.another"))
+        .types(ImmutableList.of(element))
         .build();
     assertThat(file.dependencies()).hasSize(2);
   }
@@ -214,8 +81,8 @@ public class ProtoFileElementTest {
   @Test public void simpleWithPublicImportsToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .addPublicDependency("example.other")
-        .addType(element)
+        .publicDependencies(ImmutableList.of("example.other"))
+        .types(ImmutableList.of(element))
         .build();
     String expected = ""
         + "// file.proto\n"
@@ -229,8 +96,8 @@ public class ProtoFileElementTest {
   @Test public void addMultiplePublicDependencies() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .addPublicDependencies(Arrays.asList("example.other", "example.another"))
-        .addType(element)
+        .publicDependencies(ImmutableList.of("example.other", "example.another"))
+        .types(ImmutableList.of(element))
         .build();
     assertThat(file.publicDependencies()).hasSize(2);
   }
@@ -238,9 +105,9 @@ public class ProtoFileElementTest {
   @Test public void simpleWithBothImportsToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .addDependency("example.thing")
-        .addPublicDependency("example.other")
-        .addType(element)
+        .dependencies(ImmutableList.of("example.thing"))
+        .publicDependencies(ImmutableList.of("example.other"))
+        .types(ImmutableList.of(element))
         .build();
     String expected = ""
         + "// file.proto\n"
@@ -255,8 +122,10 @@ public class ProtoFileElementTest {
   @Test public void simpleWithServicesToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ServiceElement service = ServiceElement.builder(location).name("Service").build();
-    ProtoFileElement
-        file = ProtoFileElement.builder(location).addType(element).addService(service).build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
+        .types(ImmutableList.of(element))
+        .services(ImmutableList.of(service))
+        .build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -270,7 +139,7 @@ public class ProtoFileElementTest {
     ServiceElement service1 = ServiceElement.builder(location).name("Service1").build();
     ServiceElement service2 = ServiceElement.builder(location).name("Service2").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .addServices(Arrays.asList(service1, service2))
+        .services(ImmutableList.of(service1, service2))
         .build();
     assertThat(file.services()).hasSize(2);
   }
@@ -278,8 +147,10 @@ public class ProtoFileElementTest {
   @Test public void simpleWithOptionsToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     OptionElement option = OptionElement.create("kit", Kind.STRING, "kat");
-    ProtoFileElement
-        file = ProtoFileElement.builder(location).addOption(option).addType(element).build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
+        .options(ImmutableList.of(option))
+        .types(ImmutableList.of(element))
+        .build();
     String expected = ""
         + "// file.proto\n"
         + "\n"
@@ -294,16 +165,20 @@ public class ProtoFileElementTest {
     OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
     OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .addOptions(Arrays.asList(kitKat, fooBar))
-        .addType(element)
+        .options(ImmutableList.of(kitKat, fooBar))
+        .types(ImmutableList.of(element))
         .build();
     assertThat(file.options()).hasSize(2);
   }
 
   @Test public void simpleWithExtendsToSchema() {
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .addExtendDeclaration(ExtendElement.builder(location.at(5, 1)).name("Extend").build())
-        .addType(MessageElement.builder(location).name("Message").build())
+        .extendDeclarations(ImmutableList.of(
+            ExtendElement.builder(location.at(5, 1)).name("Extend").build()))
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location)
+                .name("Message")
+                .build()))
         .build();
     String expected = ""
         + "// file.proto\n"
@@ -318,7 +193,7 @@ public class ProtoFileElementTest {
     ExtendElement extend1 = ExtendElement.builder(location).name("Extend1").build();
     ExtendElement extend2 = ExtendElement.builder(location).name("Extend2").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .addExtendDeclarations(Arrays.asList(extend1, extend2))
+        .extendDeclarations(ImmutableList.of(extend1, extend2))
         .build();
     assertThat(file.extendDeclarations()).hasSize(2);
   }
@@ -346,16 +221,12 @@ public class ProtoFileElementTest {
         .build();
     ProtoFileElement file = ProtoFileElement.builder(location)
         .packageName("example.simple")
-        .addDependency("example.thing")
-        .addPublicDependency("example.other")
-        .addType(element1)
-        .addType(element2)
-        .addService(service1)
-        .addService(service2)
-        .addExtendDeclaration(extend1)
-        .addExtendDeclaration(extend2)
-        .addOption(option1)
-        .addOption(option2)
+        .dependencies(ImmutableList.of("example.thing"))
+        .publicDependencies(ImmutableList.of("example.other"))
+        .types(ImmutableList.of(element1, element2))
+        .services(ImmutableList.of(service1, service2))
+        .extendDeclarations(ImmutableList.of(extend1, extend2))
+        .options(ImmutableList.of(option1, option2))
         .build();
     String expected = ""
         + "// file.proto\n"
@@ -384,8 +255,10 @@ public class ProtoFileElementTest {
 
   @Test public void syntaxToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
-    ProtoFileElement
-        file = ProtoFileElement.builder(location).syntax(PROTO_2).addType(element).build();
+    ProtoFileElement file = ProtoFileElement.builder(location)
+        .syntax(PROTO_2)
+        .types(ImmutableList.of(element))
+        .build();
     String expected = ""
         + "// file.proto\n"
         + "syntax \"proto2\";\n"

@@ -39,6 +39,12 @@ public final class ProtoParser {
   private final Location location;
   private final char[] data;
   private final ProtoFileElement.Builder fileBuilder;
+  private final ImmutableList.Builder<String> publicDependencies = ImmutableList.builder();
+  private final ImmutableList.Builder<String> dependencies = ImmutableList.builder();
+  private final ImmutableList.Builder<TypeElement> nestedTypes = ImmutableList.builder();
+  private final ImmutableList.Builder<ServiceElement> services = ImmutableList.builder();
+  private final ImmutableList.Builder<ExtendElement> extendsList = ImmutableList.builder();
+  private final ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
 
   /** Our cursor within the document. {@code data[pos]} is the next character to be read. */
   private int pos;
@@ -62,17 +68,23 @@ public final class ProtoParser {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return fileBuilder.build();
+        return fileBuilder.publicDependencies(publicDependencies.build())
+            .dependencies(dependencies.build())
+            .types(nestedTypes.build())
+            .services(services.build())
+            .extendDeclarations(extendsList.build())
+            .options(options.build())
+            .build();
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
       if (declaration instanceof TypeElement) {
-        fileBuilder.addType((TypeElement) declaration);
+        nestedTypes.add((TypeElement) declaration);
       } else if (declaration instanceof ServiceElement) {
-        fileBuilder.addService((ServiceElement) declaration);
+        services.add((ServiceElement) declaration);
       } else if (declaration instanceof OptionElement) {
-        fileBuilder.addOption((OptionElement) declaration);
+        options.add((OptionElement) declaration);
       } else if (declaration instanceof ExtendElement) {
-        fileBuilder.addExtendDeclaration((ExtendElement) declaration);
+        extendsList.add((ExtendElement) declaration);
       }
     }
   }
@@ -99,9 +111,9 @@ public final class ProtoParser {
       if (!context.permitsImport()) throw unexpected("'import' in " + context);
       String importString = readString();
       if ("public".equals(importString)) {
-        fileBuilder.addPublicDependency(readString());
+        publicDependencies.add(readString());
       } else {
-        fileBuilder.addDependency(importString);
+        dependencies.add(importString);
       }
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
@@ -213,7 +225,7 @@ public final class ProtoParser {
         options.add((OptionElement) declared);
       } else if (declared instanceof ExtendElement) {
         // Extend declarations always add in a global scope regardless of nesting.
-        fileBuilder.addExtendDeclaration((ExtendElement) declared);
+        extendsList.add((ExtendElement) declared);
       }
     }
     prefix = previousPrefix;
