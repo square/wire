@@ -20,14 +20,11 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.Util;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.ProtoFile;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-
-import static com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2;
-import static com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3;
 
 /** Basic parser for {@code .proto} schema declarations. */
 public final class ProtoParser {
@@ -46,6 +43,10 @@ public final class ProtoParser {
   private final ImmutableList.Builder<ExtendElement> extendsList = ImmutableList.builder();
   private final ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
 
+  /** The number of declarations defined in the current file. */
+  private int declarationCount = 0;
+  /** The syntax of the file, or null if none is defined. */
+  private ProtoFile.Syntax syntax;
   /** Our cursor within the document. {@code data[pos]} is the next character to be read. */
   private int pos;
   /** The number of newline characters encountered thus far. */
@@ -68,7 +69,8 @@ public final class ProtoParser {
     while (true) {
       String documentation = readDocumentation();
       if (pos == data.length) {
-        return fileBuilder.publicDependencies(publicDependencies.build())
+        return fileBuilder.syntax(syntax)
+            .publicDependencies(publicDependencies.build())
             .dependencies(dependencies.build())
             .types(nestedTypes.build())
             .services(services.build())
@@ -90,6 +92,8 @@ public final class ProtoParser {
   }
 
   private Object readDeclaration(String documentation, Context context) {
+    int index = declarationCount++;
+
     // Skip unnecessary semicolons, occasionally used after a nested message declaration.
     if (peekChar() == ';') {
       pos++;
@@ -100,15 +104,15 @@ public final class ProtoParser {
     String label = readWord();
 
     if (label.equals("package")) {
-      if (!context.permitsPackage()) throw unexpected("'package' in " + context);
-      if (packageName != null) throw unexpected("too many package names");
+      if (!context.permitsPackage()) throw unexpected(location, "'package' in " + context);
+      if (packageName != null) throw unexpected(location, "too many package names");
       packageName = readName();
       fileBuilder.packageName(packageName);
       prefix = packageName + ".";
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
     } else if (label.equals("import")) {
-      if (!context.permitsImport()) throw unexpected("'import' in " + context);
+      if (!context.permitsImport()) throw unexpected(location, "'import' in " + context);
       String importString = readString();
       if ("public".equals(importString)) {
         publicDependencies.add(readString());
@@ -118,18 +122,16 @@ public final class ProtoParser {
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
     } else if (label.equals("syntax")) {
-      if (!context.permitsSyntax()) throw unexpected("'syntax' in " + context);
+      if (!context.permitsSyntax()) throw unexpected(location, "'syntax' in " + context);
       if (readChar() != '=') throw unexpected("expected '='");
-      String syntax = readQuotedString();
-      switch (syntax) {
-        case "proto2":
-          fileBuilder.syntax(PROTO_2);
-          break;
-        case "proto3":
-          fileBuilder.syntax(PROTO_3);
-          break;
-        default:
-          throw unexpected("'syntax' must be 'proto2' or 'proto3'. Found: " + syntax);
+      if (index != 0) {
+        throw unexpected(location, "'syntax' element must be the first declaration in a file");
+      }
+      String syntaxString = readQuotedString();
+      try {
+        syntax = ProtoFile.Syntax.get(syntaxString);
+      } catch (IllegalArgumentException e) {
+        throw unexpected(location, e.getMessage());
       }
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;
@@ -146,18 +148,16 @@ public final class ProtoParser {
     } else if (label.equals("extend")) {
       return readExtend(location, documentation);
     } else if (label.equals("rpc")) {
-      if (!context.permitsRpc()) throw unexpected("'rpc' in " + context);
+      if (!context.permitsRpc()) throw unexpected(location, "'rpc' in " + context);
       return readRpc(location, documentation);
-    } else if (label.equals("required") || label.equals("optional") || label.equals("repeated")) {
-      if (!context.permitsField()) throw unexpected("fields must be nested");
-      Field.Label labelEnum = Field.Label.valueOf(label.toUpperCase(Locale.US));
-      return readField(location, documentation, labelEnum);
     } else if (label.equals("oneof")) {
-      if (!context.permitsOneOf()) throw unexpected("'oneof' must be nested in message");
+      if (!context.permitsOneOf()) throw unexpected(location, "'oneof' must be nested in message");
       return readOneOf(documentation);
     } else if (label.equals("extensions")) {
-      if (!context.permitsExtensions()) throw unexpected("'extensions' must be nested");
+      if (!context.permitsExtensions()) throw unexpected(location, "'extensions' must be nested");
       return readExtensions(location, documentation);
+    } else if (context == Context.MESSAGE || context == Context.EXTEND) {
+      return readField(documentation, location, label);
     } else if (context == Context.ENUM) {
       if (readChar() != '=') throw unexpected("expected '='");
 
@@ -185,7 +185,7 @@ public final class ProtoParser {
           .options(options.build())
           .build();
     } else {
-      throw unexpected("unexpected label: " + label);
+      throw unexpected(location, "unexpected label: " + label);
     }
   }
 
@@ -318,10 +318,46 @@ public final class ProtoParser {
         .build();
   }
 
+  private Object readField(String documentation, Location location, String word) {
+    Field.Label label;
+    String type;
+    switch (word) {
+      case "required":
+        if (syntax == ProtoFile.Syntax.PROTO_3) {
+          throw unexpected(location, "'required' label forbidden in proto3 field declarations");
+        }
+        label = Field.Label.REQUIRED;
+        type = readDataType();
+        break;
+
+      case "optional":
+        if (syntax == ProtoFile.Syntax.PROTO_3) {
+          throw unexpected(location, "'optional' label forbidden in proto3 field declarations");
+        }
+        label = Field.Label.OPTIONAL;
+        type = readDataType();
+        break;
+
+      case "repeated":
+        label = Field.Label.REPEATED;
+        type = readDataType();
+        break;
+
+      default:
+        if (syntax == ProtoFile.Syntax.PROTO_2) {
+          throw unexpected(location, "unexpected label: " + word);
+        }
+        label = null;
+        type = readDataType(word);
+        break;
+    }
+
+    return readField(location, documentation, label, type);
+  }
+
   /** Reads an field declaration and returns it. */
   private FieldElement readField(
-      Location location, String documentation, Field.Label label) {
-    String type = readDataType();
+      Location location, String documentation, @Nullable Field.Label label, String type) {
     String name = readName();
     if (readChar() != '=') throw unexpected("expected '='");
     int tag = readInt();
@@ -371,7 +407,8 @@ public final class ProtoParser {
         break;
       }
       Location location = location();
-      fields.add(readField(location, nestedDocumentation, Field.Label.ONE_OF));
+      String type = readDataType();
+      fields.add(readField(location, nestedDocumentation, null, type));
     }
     return builder.fields(fields.build())
         .build();
@@ -686,6 +723,11 @@ public final class ProtoParser {
   /** Reads a scalar, map, or type name. */
   private String readDataType() {
     String name = readWord();
+    return readDataType(name);
+  }
+
+  /** Reads a scalar, map, or type name with {@code name} as a prefix word. */
+  private String readDataType(String name) {
     if (name.equals("map")) {
       if (readChar() != '<') throw unexpected("expected '<'");
       String keyType = readDataType();
@@ -914,8 +956,11 @@ public final class ProtoParser {
   }
 
   private RuntimeException unexpected(String message) {
-    throw new IllegalStateException(
-        String.format("Syntax error in %s: %s", location(), message));
+    return unexpected(location(), message);
+  }
+
+  private RuntimeException unexpected(Location location, String message) {
+    throw new IllegalStateException(String.format("Syntax error in %s: %s", location, message));
   }
 
   enum Context {
@@ -936,10 +981,6 @@ public final class ProtoParser {
 
     public boolean permitsImport() {
       return this == FILE;
-    }
-
-    public boolean permitsField() {
-      return this == MESSAGE || this == EXTEND;
     }
 
     public boolean permitsExtensions() {

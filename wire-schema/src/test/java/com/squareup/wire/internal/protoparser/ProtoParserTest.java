@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-import static com.squareup.wire.schema.Field.Label.ONE_OF;
 import static com.squareup.wire.schema.Field.Label.OPTIONAL;
+import static com.squareup.wire.schema.Field.Label.REPEATED;
 import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -447,8 +447,7 @@ public final class ProtoParserTest {
     try {
       ProtoParser.parse(location, proto);
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage(
-          "Syntax error in file.proto at 1:18: 'syntax' must be 'proto2' or 'proto3'. Found: proto4");
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:1: unexpected syntax: proto4");
     }
   }
 
@@ -460,8 +459,216 @@ public final class ProtoParserTest {
     try {
       ProtoParser.parse(location, proto);
     } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Syntax error in file.proto at 2:9: 'syntax' in MESSAGE");
+      assertThat(e).hasMessage("Syntax error in file.proto at 2:3: 'syntax' in MESSAGE");
     }
+  }
+
+  @Test public void syntaxNotFirstDeclarationThrows() throws Exception {
+    String proto = ""
+        + "message Foo {}\n"
+        + "syntax = \"proto3\";\n";
+    try {
+      ProtoParser.parse(location, proto);
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in file.proto at 2:1: "
+          + "'syntax' element must be the first declaration in a file");
+    }
+  }
+
+  @Test public void syntaxMayFollowCommentsAndEmptyLines() throws Exception {
+    String proto = ""
+        + "/* comment 1 */\n"
+        + "// comment 2\n"
+        + "\n"
+        + "syntax = \"proto3\";\n"
+        + "message Foo {}";
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .syntax(ProtoFile.Syntax.PROTO_3)
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(5, 1))
+                .name("Foo")
+                .build()))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
+  @Test public void proto3MessageFieldsDoNotRequireLabels() throws Exception {
+    String proto = ""
+        + "syntax = \"proto3\";\n"
+        + "message Message {\n"
+        + "  string a = 1;\n"
+        + "  int32 b = 2;\n"
+        + "}";
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .syntax(ProtoFile.Syntax.PROTO_3)
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(2, 1))
+                .name("Message")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(3, 3))
+                        .type("string")
+                        .name("a")
+                        .tag(1)
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .type("int32")
+                        .name("b")
+                        .tag(2)
+                        .build()))
+                .build()))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
+  @Test public void proto3ExtensionFieldsDoNotRequireLabels() throws Exception {
+    String proto = ""
+        + "syntax = \"proto3\";\n"
+        + "message Message {\n"
+        + "}\n"
+        + "extend Message {\n"
+        + "  string a = 1;\n"
+        + "  int32 b = 2;\n"
+        + "}";
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .syntax(ProtoFile.Syntax.PROTO_3)
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(2, 1))
+                .name("Message")
+                .build()))
+        .extendDeclarations(ImmutableList.of(
+            ExtendElement.builder(location.at(4, 1))
+                .name("Message")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(5, 3))
+                        .type("string")
+                        .name("a")
+                        .tag(1)
+                        .build(),
+                    FieldElement.builder(location.at(6, 3))
+                        .type("int32")
+                        .name("b")
+                        .tag(2)
+                        .build()))
+                .build()))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
+  @Test public void proto3MessageFieldsForbidOptional() throws Exception {
+    String proto = ""
+        + "syntax = \"proto3\";\n"
+        + "message Message {\n"
+        + "  optional string a = 1;\n"
+        + "}";
+    try {
+      ProtoParser.parse(location, proto);
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in file.proto at 3:3: "
+          + "'optional' label forbidden in proto3 field declarations");
+    }
+  }
+
+  @Test public void proto3MessageFieldsForbidRequired() throws Exception {
+    String proto = ""
+        + "syntax = \"proto3\";\n"
+        + "message Message {\n"
+        + "  required string a = 1;\n"
+        + "}";
+    try {
+      ProtoParser.parse(location, proto);
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in file.proto at 3:3: "
+          + "'required' label forbidden in proto3 field declarations");
+    }
+  }
+
+  @Test public void proto3ExtensionFieldsForbidsOptional() throws Exception {
+    String proto = ""
+        + "syntax = \"proto3\";\n"
+        + "message Message {\n"
+        + "}\n"
+        + "extend Message {\n"
+        + "  optional string a = 1;\n"
+        + "}";
+    try {
+      ProtoParser.parse(location, proto);
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in file.proto at 5:3: "
+          + "'optional' label forbidden in proto3 field declarations");
+    }
+  }
+
+  @Test public void proto3ExtensionFieldsForbidsRequired() throws Exception {
+    String proto = ""
+        + "syntax = \"proto3\";\n"
+        + "message Message {\n"
+        + "}\n"
+        + "extend Message {\n"
+        + "  required string a = 1;\n"
+        + "}";
+    try {
+      ProtoParser.parse(location, proto);
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in file.proto at 5:3: "
+          + "'required' label forbidden in proto3 field declarations");
+    }
+  }
+
+  @Test public void proto3MessageFieldsPermitRepeated() throws Exception {
+    String proto = ""
+        + "syntax = \"proto3\";\n"
+        + "message Message {\n"
+        + "  repeated string a = 1;\n"
+        + "}";
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .syntax(ProtoFile.Syntax.PROTO_3)
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(2, 1))
+                .name("Message")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(3, 3))
+                        .label(REPEATED)
+                        .type("string")
+                        .name("a")
+                        .tag(1)
+                        .build()))
+                .build()))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
+  @Test public void proto3ExtensionFieldsPermitRepeated() throws Exception {
+    String proto = ""
+        + "syntax = \"proto3\";\n"
+        + "message Message {\n"
+        + "}\n"
+        + "extend Message {\n"
+        + "  repeated string a = 1;\n"
+        + "}";
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .syntax(ProtoFile.Syntax.PROTO_3)
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(2, 1))
+                .name("Message")
+                .build()))
+        .extendDeclarations(ImmutableList.of(
+            ExtendElement.builder(location.at(4, 1))
+                .name("Message")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(5, 3))
+                        .label(REPEATED)
+                        .type("string")
+                        .name("a")
+                        .tag(1)
+                        .build()))
+                .build()))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void parseMessageAndFields() throws Exception {
@@ -523,13 +730,11 @@ public final class ProtoParserTest {
                     OneOfElement.builder()
                         .name("page_info")
                         .fields(ImmutableList.of(FieldElement.builder(location.at(4, 5))
-                                .label(ONE_OF)
                                 .type("int32")
                                 .name("page_number")
                                 .tag(2)
                                 .build(),
                             FieldElement.builder(location.at(5, 5))
-                                .label(ONE_OF)
                                 .type("int32")
                                 .name("result_per_page")
                                 .tag(3)

@@ -319,13 +319,11 @@ public final class TypeWriter {
     }
 
     if (!field.isOptional()) {
-      String label;
       if (field.isPacked() && (isEnum || field.type().isPackableScalar())) {
-        label = "PACKED";
-      } else {
-        label = field.label().toString();
+        result.addMember("label", "$T.PACKED", Message.Label.class);
+      } else if (field.label() != null) {
+        result.addMember("label", "$T.$L", Message.Label.class, field.label());
       }
-      result.addMember("label", "$T.$L", Message.Label.class, label);
     }
 
     if (field.isRepeated() && !isScalar) {

@@ -224,7 +224,6 @@ public final class MessageElementTest {
                 .name("hi")
                 .fields(ImmutableList.of(
                     FieldElement.builder(location)
-                        .label(ONE_OF)
                         .type("string")
                         .name("name")
                         .tag(1)
@@ -245,7 +244,6 @@ public final class MessageElementTest {
         .name("hi")
         .fields(ImmutableList.of(
             FieldElement.builder(location)
-                .label(ONE_OF)
                 .type("string")
                 .name("name")
                 .tag(1)
@@ -255,7 +253,6 @@ public final class MessageElementTest {
         .name("hey")
         .fields(ImmutableList.of(
             FieldElement.builder(location)
-                .label(ONE_OF)
                 .type("string")
                 .name("city")
                 .tag(2)
@@ -282,7 +279,6 @@ public final class MessageElementTest {
         .tag(2)
         .build();
     FieldElement oneOf1Field = FieldElement.builder(location)
-        .label(ONE_OF)
         .type("string")
         .name("namey")
         .tag(3)
@@ -292,7 +288,6 @@ public final class MessageElementTest {
         .fields(ImmutableList.of(oneOf1Field))
         .build();
     FieldElement oneOf2Field = FieldElement.builder(location)
-        .label(ONE_OF)
         .type("string")
         .name("namer")
         .tag(4)
@@ -353,7 +348,6 @@ public final class MessageElementTest {
 
   @Test public void oneOfFieldToSchema() {
     FieldElement field = FieldElement.builder(location)
-        .label(ONE_OF)
         .type("string")
         .name("name")
         .tag(1)
