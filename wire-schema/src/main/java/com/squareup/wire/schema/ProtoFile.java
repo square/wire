@@ -141,6 +141,13 @@ public final class ProtoFile {
       this.string = string;
     }
 
+    public static Syntax get(String string) {
+      for (Syntax syntax : values()) {
+        if (syntax.string.equals(string)) return syntax;
+      }
+      throw new IllegalArgumentException("unexpected syntax: " + string);
+    }
+
     @Override public String toString() {
       return string;
     }

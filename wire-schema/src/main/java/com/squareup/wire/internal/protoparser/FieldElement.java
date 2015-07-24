@@ -34,7 +34,7 @@ public abstract class FieldElement {
   }
 
   public abstract Location location();
-  public abstract Field.Label label();
+  @Nullable public abstract Field.Label label();
   public abstract String type();
   public abstract String name();
   public abstract int tag();
@@ -44,7 +44,7 @@ public abstract class FieldElement {
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    if (label() != Field.Label.ONE_OF) {
+    if (label() != null) {
       builder.append(label().name().toLowerCase(Locale.US)).append(' ');
     }
     builder.append(type())
@@ -65,7 +65,7 @@ public abstract class FieldElement {
   @AutoValue.Builder
   public interface Builder {
     Builder location(Location location);
-    Builder label(Field.Label label);
+    Builder label(@Nullable Field.Label label);
     Builder type(String type);
     Builder name(String name);
     Builder tag(int tag);
