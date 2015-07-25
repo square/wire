@@ -24,90 +24,30 @@ import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
 
+import static com.squareup.wire.ProtoWriter.tagSize;
+import static com.squareup.wire.TypeAdapter.TYPE_LEN_DELIMITED;
+import static com.squareup.wire.TypeAdapter.varint32Size;
+
 /**
  * Superclass for protocol buffer messages.
  */
-public abstract class Message implements Serializable {
+public abstract class Message<M extends Message<M>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
-  // Hidden Wire instance that can perform work that does not require knowledge of extensions.
-  static final Wire WIRE = new Wire();
-
-  /**
-   * A protocol buffer data type.
-   */
-  public enum Datatype {
-    INT32(1), INT64(2), UINT32(3), UINT64(4), SINT32(5),
-    SINT64(6), BOOL(7), ENUM(8), STRING(9), BYTES(10),
-    MESSAGE(11), FIXED32(12), SFIXED32(13), FIXED64(14),
-    SFIXED64(15), FLOAT(16), DOUBLE(17);
-
-    private final int value;
-
-    Datatype(int value) {
-      this.value = value;
-    }
-
-    public int value() {
-      return value;
-    }
-
-    WireType wireType() {
-      switch (this) {
-        case INT32: case INT64: case UINT32: case UINT64:
-        case SINT32: case SINT64: case BOOL: case ENUM:
-          return WireType.VARINT;
-        case FIXED32: case SFIXED32: case FLOAT:
-          return WireType.FIXED32;
-        case FIXED64: case SFIXED64: case DOUBLE:
-          return WireType.FIXED64;
-        case STRING: case BYTES: case MESSAGE:
-          return WireType.LENGTH_DELIMITED;
-        default:
-          throw new AssertionError("No wiretype for datatype " + this);
-      }
-    }
-  }
-
-  /**
-   * A protocol buffer label. We treat "packed" as a label of its own that implies "repeated."
-   */
-  public enum Label {
-    REQUIRED(32), OPTIONAL(64), REPEATED(128), PACKED(256), ONE_OF(512);
-
-    private final int value;
-
-    Label(int value) {
-      this.value = value;
-    }
-
-    public int value() {
-      return value;
-    }
-
-    boolean isRepeated() {
-      return this == REPEATED || this == PACKED;
-    }
-
-    boolean isPacked() {
-      return this == PACKED;
-    }
-
-    boolean isOneOf() {
-      return this == ONE_OF;
-    }
-  }
-
   /** Set to null until a field is added. */
-  private transient UnknownFieldMap unknownFields;
+  protected transient UnknownFieldMap unknownFields;
 
   /** If not {@code -1} then the serialized size of this message. */
-  transient int cachedSerializedSize = -1;
+  protected transient int serializedSize = -1;
 
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected transient int hashCode = 0;
 
-  protected Message() {
+  private transient final String name;
+
+  protected Message(String name) {
+    if (name == null) throw new NullPointerException("name == null");
+    this.name = name;
   }
 
   /**
@@ -120,8 +60,8 @@ public abstract class Message implements Serializable {
   }
 
   // Increase visibility for testing
-  protected Collection<List<UnknownFieldMap.Value>> unknownFields() {
-    return unknownFields == null ? Collections.<List<UnknownFieldMap.Value>>emptySet()
+  protected Collection<List<UnknownFieldMap.Value<?>>> unknownFields() {
+    return unknownFields == null ? Collections.<List<UnknownFieldMap.Value<?>>>emptySet()
         : unknownFields.fieldMap.values();
   }
 
@@ -143,41 +83,57 @@ public abstract class Message implements Serializable {
     }
     if (list == Collections.emptyList()) {
       return list;
-    } else if (list instanceof MessageAdapter.ImmutableList) {
-      return list;
     }
     return Collections.unmodifiableList(new ArrayList<T>(list));
   }
 
-  /**
-   * Returns the enumerated value tagged with the given integer value for the
-   * given enum class. If no enum value in the given class is initialized
-   * with the given integer tag value, an exception will be thrown.
-   *
-   * @param <E> the enum class type
-   */
-  public static <E extends Enum & ProtoEnum> E enumFromInt(Class<E> enumClass, int value) {
-    EnumAdapter<E> adapter = WIRE.enumAdapter(enumClass);
-    return adapter.fromInt(value);
+  protected abstract void visitFields(Visitor visitor);
+
+  final int serializedSize() {
+    int serializedSize = this.serializedSize;
+    if (serializedSize == -1) {
+      SerializedSizeVisitor visitor = new SerializedSizeVisitor();
+      visitFields(visitor);
+      serializedSize = this.serializedSize = visitor.size;
+    }
+    return serializedSize;
   }
 
-  void writeUnknownFieldMap(WireOutput output) throws IOException {
-    if (unknownFields != null) {
-      unknownFields.write(output);
+  final void write(ProtoWriter writer) throws IOException {
+    try {
+      visitFields(writer.visitor);
+    } catch (WriteIOException e) {
+      throw e.cause;
     }
   }
 
-  int getUnknownFieldsSerializedSize() {
-    return unknownFields == null ? 0 : unknownFields.getSerializedSize();
+  @Override public final String toString() {
+    ToStringVisitor visitor = new ToStringVisitor();
+    visitFields(visitor);
+    return visitor.finish(this);
   }
 
-  protected static boolean equals(Object a, Object b) {
-    return a == b || (a != null && a.equals(b));
+  @Override public final int hashCode() {
+    int hashCode = this.hashCode;
+    if (hashCode == 0) {
+      HashCodeVisitor visitor = new HashCodeVisitor();
+      visitFields(visitor);
+      hashCode = this.hashCode = visitor.result;
+    }
+    return hashCode;
   }
 
-  @SuppressWarnings("unchecked")
-  @Override public String toString() {
-    return WIRE.messageAdapter((Class<Message>) getClass()).toString(this);
+  @Override public final boolean equals(Object o) {
+    if (o == this) return true;
+    if (o == null || o.getClass() != getClass()) return false;
+
+    EqualsVisitor thisVisitor = new EqualsVisitor();
+    visitFields(thisVisitor);
+
+    EqualsVisitor otherVisitor = new EqualsVisitor();
+    ((Message<?>) o).visitFields(otherVisitor);
+
+    return thisVisitor.isEqualTo(otherVisitor);
   }
 
   private Object writeReplace() throws ObjectStreamException {
@@ -207,10 +163,14 @@ public abstract class Message implements Serializable {
       }
     }
 
+    public final void readUnknown(int tag, ProtoReader reader) throws IOException {
+      ensureUnknownFieldMap().read(tag, reader);
+    }
+
     /**
      * Adds a {@code varint} value to the unknown field set with the given tag number.
      */
-    public void addVarint(int tag, long value) {
+    public final void addVarint(int tag, long value) {
       try {
         ensureUnknownFieldMap().addVarint(tag, value);
       } catch (IOException e) {
@@ -221,7 +181,7 @@ public abstract class Message implements Serializable {
     /**
      * Adds a {@code fixed32} value to the unknown field set with the given tag number.
      */
-    public void addFixed32(int tag, int value) {
+    public final void addFixed32(int tag, int value) {
       try {
         ensureUnknownFieldMap().addFixed32(tag, value);
       } catch (IOException e) {
@@ -232,7 +192,7 @@ public abstract class Message implements Serializable {
     /**
      * Adds a {@code fixed64} value to the unknown field set with the given tag number.
      */
-    public void addFixed64(int tag, long value) {
+    public final void addFixed64(int tag, long value) {
       try {
         ensureUnknownFieldMap().addFixed64(tag, value);
       } catch (IOException e) {
@@ -243,7 +203,7 @@ public abstract class Message implements Serializable {
     /**
      * Adds a length delimited value to the unknown field set with the given tag number.
      */
-    public void addLengthDelimited(int tag, ByteString value) {
+    public final void addLengthDelimited(int tag, ByteString value) {
       try {
         ensureUnknownFieldMap().addLengthDelimited(tag, value);
       } catch (IOException e) {
@@ -263,7 +223,7 @@ public abstract class Message implements Serializable {
      *
      * @param args Alternating field value and field name pairs.
      */
-    protected IllegalStateException missingRequiredFields(Object... args) {
+    protected final IllegalStateException missingRequiredFields(Object... args) {
       StringBuilder sb = new StringBuilder();
       String plural = "";
       for (int i = 0, size = args.length; i < size; i += 2) {
@@ -300,5 +260,245 @@ public abstract class Message implements Serializable {
      * in this builder.
      */
     public abstract T build();
+  }
+
+  protected static <M extends Message<M>> M message(ProtoReader reader, TypeAdapter<M> adapter)
+      throws IOException {
+    long cursor = reader.beginLengthDelimited();
+    M message = adapter.read(reader);
+    reader.endLengthDelimited(cursor);
+    return message;
+  }
+
+  protected static <M extends Message<M>> List<M> repeatedMessage(List<M> existing,
+      ProtoReader reader, TypeAdapter<M> adapter) throws IOException {
+    long cursor = reader.beginLengthDelimited();
+    existing = repeated(existing, adapter.read(reader));
+    reader.endLengthDelimited(cursor);
+    return existing;
+  }
+
+  protected static <M extends Enum<M> & WireEnum> M enumOrUnknown(int tag, ProtoReader reader,
+      TypeAdapter.EnumAdapter<M> adapter, Builder builder) throws IOException {
+    int value = reader.value(TypeAdapter.UINT32);
+    M constant = adapter.fromValue(value);
+    if (constant != null) {
+      return constant;
+    }
+    builder.addVarint(tag, value);
+    return null;
+  }
+
+  protected static <M extends Enum<M> & WireEnum> List<M> repeatedEnumOrUnknown(int tag,
+      List<M> existing, ProtoReader reader, TypeAdapter.EnumAdapter<M> adapter, Builder builder)
+      throws IOException {
+    int value = TypeAdapter.UINT32.read(reader);
+    M constant = adapter.fromValue(value);
+    if (constant != null) {
+      return repeated(existing, constant);
+    }
+    builder.addVarint(tag, value);
+    return existing;
+  }
+
+  protected static <M extends Enum<M> & WireEnum> List<M> packedEnumOrUnknown(int tag,
+      List<M> existing, ProtoReader reader, TypeAdapter.EnumAdapter<M> adapter, Builder builder)
+      throws IOException {
+    long cursor = reader.beginLengthDelimited();
+    while (reader.hasNext()) {
+      int value = TypeAdapter.UINT32.read(reader);
+      M constant = adapter.fromValue(value);
+      if (constant != null) {
+        existing = repeated(existing, constant);
+      } else {
+        builder.addVarint(tag, value);
+      }
+    }
+    reader.endLengthDelimited(cursor);
+    return existing;
+  }
+
+  protected static <E> List<E> repeated(List<E> existing, E item) {
+    List<E> value = existing == null || existing == Collections.emptyList()
+        ? new ArrayList<E>()
+        : existing;
+    value.add(item);
+    return value;
+  }
+
+  protected static <E> int sizeOf(int tag, E value, TypeAdapter<E> adapter) {
+    if (value == null) {
+      return 0;
+    }
+    int size = adapter.serializedSize(value);
+    if (adapter.type == TYPE_LEN_DELIMITED) {
+      size += varint32Size(size);
+    }
+    return ProtoWriter.tagSize(tag) + size;
+  }
+
+  protected static <E> int sizeOfRepeated(int tag, List<E> value, TypeAdapter<E> adapter) {
+    if (value == null) {
+      throw new NullPointerException("value == null)");
+    }
+    if (value.isEmpty()) {
+      return 0;
+    }
+    int size = ProtoWriter.tagSize(tag);
+    int valueCount = value.size();
+    size += varint32Size(adapter.makeTag(tag)) * valueCount;
+    for (int i = 0; i < valueCount; i++) {
+      size += adapter.serializedSize(value.get(i));
+    }
+    return size;
+  }
+
+  protected static <E> int sizeOfPacked(int tag, List<E> value, TypeAdapter<E> adapter) {
+    if (value == null) {
+      throw new NullPointerException("value == null)");
+    }
+    if (value.isEmpty()) {
+      return 0;
+    }
+    int size = 0;
+    for (int i = 0, count = value.size(); i < count; i++) {
+      size += adapter.serializedSize(value.get(i));
+    }
+    return tagSize(tag) + varint32Size(size) + size;
+  }
+
+  protected interface Visitor {
+    <T> void value(int tag, String name, T value, TypeAdapter<T> adapter, boolean redacted);
+    <T> void repeated(int tag, String name, List<T> list, TypeAdapter<T> adapter, boolean redacted);
+    <T> void packed(int tag, String name, List<T> list, TypeAdapter<T> adapter, boolean redacted);
+    void unknowns(Message<?> message);
+    void extensions(ExtendableMessage<?> message);
+  }
+
+  private static final class SerializedSizeVisitor implements Visitor {
+    int size;
+
+    @Override
+    public <T> void value(int tag, String name, T value, TypeAdapter<T> adapter, boolean redacted) {
+      size += sizeOf(tag, value, adapter);
+    }
+
+    @Override public <T> void repeated(int tag, String name, List<T> value, TypeAdapter<T> adapter,
+        boolean redacted) {
+      size += sizeOfRepeated(tag, value, adapter);
+    }
+
+    @Override public <T> void packed(int tag, String name, List<T> value, TypeAdapter<T> adapter,
+        boolean redacted) {
+      size += sizeOfPacked(tag, value, adapter);
+    }
+
+    @Override public void unknowns(Message<?> message) {
+      UnknownFieldMap unknownFields = message.unknownFields;
+      if (unknownFields != null) {
+        size += unknownFields.serializedSize();
+      }
+    }
+
+    @Override public void extensions(ExtendableMessage<?> message) {
+      ExtensionMap<?> extensionMap = message.extensionMap;
+      if (extensionMap != null) {
+        size += extensionMap.serializedSize();
+      }
+    }
+  }
+
+  private static final class ToStringVisitor implements Visitor {
+    private final StringBuilder builder = new StringBuilder();
+
+    @Override
+    public <T> void value(int tag, String name, T value, TypeAdapter<T> adapter, boolean redacted) {
+      if (value == null) return;
+      if (builder.length() > 0) builder.append(", ");
+      builder.append(name).append("=").append(redacted ? "██" : value);
+    }
+
+    @Override public <T> void repeated(int tag, String name, List<T> list, TypeAdapter<T> adapter,
+        boolean redacted) {
+      value(tag, name, list, null, redacted);
+    }
+
+    @Override public <T> void packed(int tag, String name, List<T> list, TypeAdapter<T> adapter,
+        boolean redacted) {
+      value(tag, name, list, null, redacted);
+    }
+
+    @Override public void unknowns(Message<?> message) {
+    }
+
+    @Override public void extensions(ExtendableMessage<?> message) {
+      if (builder.length() > 0) builder.append(", ");
+      ExtensionMap<?> extensionMap = message.extensionMap;
+      builder.append("{extensions=")
+          .append(extensionMap == null ? "{}" : extensionMap.toString())
+          .append('}');
+    }
+
+    String finish(Message message) {
+      builder.insert(0, message.name + '{');
+      return builder.append('}').toString();
+    }
+  }
+
+  private static final class HashCodeVisitor implements Visitor {
+    int result = 0;
+
+    @Override
+    public <T> void value(int tag, String name, T value, TypeAdapter<T> adapter, boolean redacted) {
+      result = result * 37 + (value != null ? value.hashCode() : 0);
+    }
+
+    @Override public <T> void repeated(int tag, String name, List<T> list, TypeAdapter<T> adapter,
+        boolean redacted) {
+      result = result * 37 + list.hashCode();
+    }
+
+    @Override public <T> void packed(int tag, String name, List<T> list, TypeAdapter<T> adapter,
+        boolean redacted) {
+      result = result * 37 + list.hashCode();
+    }
+
+    @Override public void unknowns(Message<?> message) {
+    }
+
+    @Override public void extensions(ExtendableMessage<?> message) {
+      ExtensionMap<?> extensionMap = message.extensionMap;
+      result = result * 37 + (extensionMap != null ? extensionMap.hashCode() : 0);
+    }
+  }
+
+  private static final class EqualsVisitor implements Visitor {
+    private final List<Object> instances = new ArrayList<Object>();
+
+    @Override
+    public <T> void value(int tag, String name, T value, TypeAdapter<T> adapter, boolean redacted) {
+      instances.add(value);
+    }
+
+    @Override public <T> void repeated(int tag, String name, List<T> list, TypeAdapter<T> adapter,
+        boolean redacted) {
+      instances.add(list);
+    }
+
+    @Override public <T> void packed(int tag, String name, List<T> list, TypeAdapter<T> adapter,
+        boolean redacted) {
+      instances.add(list);
+    }
+
+    @Override public void unknowns(Message<?> message) {
+    }
+
+    @Override public void extensions(ExtendableMessage<?> message) {
+      instances.add(message.extensionMap);
+    }
+
+    boolean isEqualTo(EqualsVisitor other) {
+      return instances.equals(other.instances);
+    }
   }
 }

@@ -28,8 +28,6 @@ public final class Wire {
 
   private final Map<Class<? extends Message>, MessageAdapter<? extends Message>> messageAdapters =
       new LinkedHashMap<Class<? extends Message>, MessageAdapter<? extends Message>>();
-  private final Map<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>> enumAdapters =
-      new LinkedHashMap<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>>();
 
   // Visible to MessageAdapter
   final ExtensionRegistry registry;
@@ -54,7 +52,7 @@ public final class Wire {
       for (Field field : extensionClass.getDeclaredFields()) {
         if (field.getType().equals(Extension.class)) {
           try {
-            Extension extension = (Extension) field.get(null);
+            Extension<?, ?, ?> extension = (Extension<?, ?, ?>) field.get(null);
             registry.add(extension);
           } catch (IllegalAccessException e) {
             throw new AssertionError(e);
@@ -66,33 +64,15 @@ public final class Wire {
 
   /** Returns an adapter for reading and writing {@code type}, creating it if necessary. */
   public <M extends Message> MessageAdapter<M> adapter(Class<M> type) {
-    return messageAdapter(type);
-  }
-
-  /**
-   * Returns a message adapter for {@code messageType}.
-   */
-  @SuppressWarnings("unchecked")
-  synchronized <M extends Message> MessageAdapter<M> messageAdapter(Class<M> messageType) {
-    MessageAdapter<M> adapter = (MessageAdapter<M>) messageAdapters.get(messageType);
-    if (adapter == null) {
-      adapter = new MessageAdapter<M>(this, messageType);
-      messageAdapters.put(messageType, adapter);
+    synchronized (this) {
+      //noinspection unchecked
+      MessageAdapter<M> adapter = (MessageAdapter<M>) messageAdapters.get(type);
+      if (adapter == null) {
+        adapter = new MessageAdapter<M>(registry, type);
+        messageAdapters.put(type, adapter);
+      }
+      return adapter;
     }
-    return adapter;
-  }
-
-  /**
-   * Returns an enum adapter for {@code enumClass}.
-   */
-  @SuppressWarnings("unchecked")
-  synchronized <E extends ProtoEnum> EnumAdapter<E> enumAdapter(Class<E> enumClass) {
-    EnumAdapter<E> adapter = (EnumAdapter<E>) enumAdapters.get(enumClass);
-    if (adapter == null) {
-      adapter = new EnumAdapter<E>(enumClass);
-      enumAdapters.put(enumClass, adapter);
-    }
-    return adapter;
   }
 
   /**

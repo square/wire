@@ -22,10 +22,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import com.squareup.wire.UnknownFieldMap.Fixed32Value;
-import com.squareup.wire.UnknownFieldMap.Fixed64Value;
-import com.squareup.wire.UnknownFieldMap.LengthDelimitedValue;
-import com.squareup.wire.UnknownFieldMap.VarintValue;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -72,7 +68,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       return;
     }
 
-    MessageAdapter<M> messageAdapter = wire.messageAdapter((Class<M>) message.getClass());
+    MessageAdapter<M> messageAdapter = wire.adapter((Class<M>) message.getClass());
     out.beginObject();
     for (MessageAdapter.FieldInfo fieldInfo : messageAdapter.getFields()) {
       Object value = messageAdapter.getFieldValue(message, fieldInfo);
@@ -87,26 +83,23 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       emitExtensions((ExtendableMessage<?>) message, out);
     }
 
-    Collection<List<UnknownFieldMap.Value>> unknownFields = message.unknownFields();
+    Collection<List<UnknownFieldMap.Value<?>>> unknownFields = message.unknownFields();
     if (unknownFields != null) {
-      for (List<UnknownFieldMap.Value> fieldList : unknownFields) {
+      for (List<UnknownFieldMap.Value<?>> fieldList : unknownFields) {
         int tag = fieldList.get(0).tag;
         out.name("" + tag);
         out.beginArray();
         for (int i = 0, count = fieldList.size(); i < count; i++) {
-          UnknownFieldMap.Value unknownField = fieldList.get(i);
-          if (unknownField instanceof VarintValue) {
-            if (i == 0) out.value("varint");
-            out.value(((VarintValue) unknownField).value);
-          } else if (unknownField instanceof Fixed32Value) {
-            if (i == 0) out.value("fixed32");
-            out.value(((Fixed32Value) unknownField).value);
-          } else if (unknownField instanceof Fixed64Value) {
-            if (i == 0) out.value("fixed64");
-            out.value(((Fixed64Value) unknownField).value);
-          } else if (unknownField instanceof LengthDelimitedValue) {
-            if (i == 0) out.value("length-delimited");
-            out.value(((LengthDelimitedValue) unknownField).value.base64());
+          UnknownFieldMap.Value<?> unknownField = fieldList.get(i);
+          if (i == 0) out.value(unknownField.name);
+          if (unknownField.tagWriter == ProtoType.INT64) {
+            out.value((Long) unknownField.value);
+          } else if (unknownField.tagWriter == ProtoType.FIXED32) {
+            out.value((Integer) unknownField.value);
+          } else if (unknownField.tagWriter == ProtoType.FIXED64) {
+            out.value((Long) unknownField.value);
+          } else if (unknownField.tagWriter == ProtoType.BYTES) {
+            out.value(((ByteString) unknownField.value).base64());
           } else {
             throw new AssertionError("Unknown wire type " + unknownField.getClass());
           }
@@ -131,8 +124,8 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
 
   private <M extends ExtendableMessage<M>, E> void emitExtension(Extension<M, E> extension,
       E value, JsonWriter out) throws IOException {
-    out.name(extension.getName());
-    emitJson(out, value, extension.getDatatype(), extension.getLabel());
+    out.name(extension.name);
+    emitJson(out, value, extension.datatype, extension.label);
   }
 
   @SuppressWarnings("unchecked")
@@ -170,7 +163,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       return null;
     }
 
-    MessageAdapter<M> messageAdapter = wire.messageAdapter(type);
+    MessageAdapter<M> messageAdapter = wire.adapter(type);
     Message.Builder<M> builder = messageAdapter.newBuilder();
     in.beginObject();
 
@@ -183,7 +176,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
           parseUnknownField(in, builder, Integer.parseInt(name));
         } else {
           Type valueType = getType(extension);
-          Object value = parseValue(extension.getLabel(), valueType, parse(in));
+          Object value = parseValue(extension.label, valueType, parse(in));
           ((ExtendableMessage.ExtendableBuilder) builder).setExtension(extension, value);
         }
       } else {
@@ -227,11 +220,11 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
   }
 
   private Type getType(Extension<?, ?> extension) {
-    Datatype datatype = extension.getDatatype();
+    Datatype datatype = extension.datatype;
     if (datatype == Datatype.ENUM) {
-      return extension.getEnumType();
+      return extension.enumType;
     } else if (datatype == Datatype.MESSAGE) {
-      return extension.getMessageType();
+      return extension.messageType;
     } else {
       return javaType(datatype);
     }

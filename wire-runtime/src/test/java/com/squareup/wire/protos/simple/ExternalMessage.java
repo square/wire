@@ -4,23 +4,28 @@ package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Float;
-import java.lang.Object;
 import java.lang.Override;
 
 public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
   private static final long serialVersionUID = 0L;
 
+  public static final TypeAdapter<ExternalMessage> ADAPTER = new TypeAdapter.MessageAdapter<ExternalMessage>() {
+    @Override
+    public ExternalMessage read(ProtoReader reader) throws IOException {
+      return ExternalMessage.read(reader);
+    }
+  };
+
   public static final Float DEFAULT_F = 20f;
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.FLOAT
-  )
   public final Float f;
 
   public ExternalMessage(Float f) {
+    super("ExternalMessage");
     this.f = f;
   }
 
@@ -30,34 +35,33 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof ExternalMessage)) return false;
-    ExternalMessage o = (ExternalMessage) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(f, o.f);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "f", f, TypeAdapter.FLOAT, false);
+    visitor.extensions(this);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = extensionsHashCode();
-      result = result * 37 + (f != null ? f.hashCode() : 0);
-      hashCode = result;
+  public static ExternalMessage read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.f = reader.value(TypeAdapter.FLOAT); break;
+        default: builder.readExtensionOrUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<ExternalMessage, Builder> {
     public Float f;
 
     public Builder() {
-      super(Builder.class);
+      super(ExternalMessage.class, Builder.class);
     }
 
     public Builder(ExternalMessage message) {
-      super(Builder.class, message);
+      super(ExternalMessage.class, Builder.class, message);
       if (message == null) return;
       this.f = message.f;
     }

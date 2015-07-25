@@ -3,6 +3,8 @@
 package com.squareup.wire.protos.custom_options;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
 
@@ -24,6 +26,21 @@ public final class MessageWithOptions extends Message {
   @Override
   public int hashCode() {
     return 0;
+  }
+
+  @Override
+  protected int serializedSize() {
+    int serializedSize = this.serializedSize;
+    if (serializedSize == -1) {
+      serializedSize = unknownFieldsSerializedSize();
+    }
+    this.serializedSize = serializedSize;
+    return serializedSize;
+  }
+
+  @Override
+  protected void write(ProtoWriter writer) throws IOException {
+    writeUnknownFields(writer);
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions> {

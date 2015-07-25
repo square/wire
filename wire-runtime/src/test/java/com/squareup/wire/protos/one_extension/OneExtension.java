@@ -4,23 +4,28 @@ package com.squareup.wire.protos.one_extension;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 
 public final class OneExtension extends ExtendableMessage<OneExtension> {
   private static final long serialVersionUID = 0L;
 
+  public static final TypeAdapter<OneExtension> ADAPTER = new TypeAdapter.MessageAdapter<OneExtension>() {
+    @Override
+    public OneExtension read(ProtoReader reader) throws IOException {
+      return OneExtension.read(reader);
+    }
+  };
+
   public static final String DEFAULT_ID = "";
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String id;
 
   public OneExtension(String id) {
+    super("OneExtension");
     this.id = id;
   }
 
@@ -30,34 +35,33 @@ public final class OneExtension extends ExtendableMessage<OneExtension> {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof OneExtension)) return false;
-    OneExtension o = (OneExtension) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(id, o.id);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "id", id, TypeAdapter.STRING, false);
+    visitor.extensions(this);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = extensionsHashCode();
-      result = result * 37 + (id != null ? id.hashCode() : 0);
-      hashCode = result;
+  public static OneExtension read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.id = reader.value(TypeAdapter.STRING); break;
+        default: builder.readExtensionOrUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<OneExtension, Builder> {
     public String id;
 
     public Builder() {
-      super(Builder.class);
+      super(OneExtension.class, Builder.class);
     }
 
     public Builder(OneExtension message) {
-      super(Builder.class, message);
+      super(OneExtension.class, Builder.class, message);
       if (message == null) return;
       this.id = message.id;
     }

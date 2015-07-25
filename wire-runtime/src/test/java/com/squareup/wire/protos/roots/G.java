@@ -2,13 +2,21 @@
 // Source file: ../wire-runtime/src/test/proto/roots.proto at 60:1
 package com.squareup.wire.protos.roots;
 
-import com.squareup.wire.ProtoEnum;
+import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
-public enum G implements ProtoEnum {
+public enum G implements WireEnum {
   FOO(1),
 
   BAR(2);
+
+  public static final TypeAdapter.EnumAdapter<G> ADAPTER = new TypeAdapter.EnumAdapter<G>() {
+    @Override
+    public G fromValue(int value) {
+      return G.fromValue(value);
+    }
+  };
 
   private final int value;
 
@@ -17,7 +25,15 @@ public enum G implements ProtoEnum {
   }
 
   @Override
-  public int getValue() {
+  public int value() {
     return value;
+  }
+
+  public static G fromValue(int value) {
+    switch (value) {
+      case 1: return FOO;
+      case 2: return BAR;
+      default: return null;
+    }
   }
 }

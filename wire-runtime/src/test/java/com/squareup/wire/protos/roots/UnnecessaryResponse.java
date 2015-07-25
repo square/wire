@@ -3,27 +3,44 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 
-public final class UnnecessaryResponse extends Message {
+public final class UnnecessaryResponse extends Message<UnnecessaryResponse> {
   private static final long serialVersionUID = 0L;
 
+  public static final TypeAdapter<UnnecessaryResponse> ADAPTER = new TypeAdapter.MessageAdapter<UnnecessaryResponse>() {
+    @Override
+    public UnnecessaryResponse read(ProtoReader reader) throws IOException {
+      return UnnecessaryResponse.read(reader);
+    }
+  };
+
   public UnnecessaryResponse() {
+    super("UnnecessaryResponse");
   }
 
   private UnnecessaryResponse(Builder builder) {
+    this();
     setBuilder(builder);
   }
 
   @Override
-  public boolean equals(Object other) {
-    return other instanceof UnnecessaryResponse;
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    return 0;
+  public static UnnecessaryResponse read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<UnnecessaryResponse> {

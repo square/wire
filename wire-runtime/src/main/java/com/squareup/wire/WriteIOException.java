@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright 2015 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,12 @@
  */
 package com.squareup.wire;
 
-/**
- * Interface for generated {@link Enum} values to help serialization and
- * deserialization.
- */
-public interface ProtoEnum {
-  /**
-   * The tag value of an enum constant.
-   */
-  int getValue();
+import java.io.IOException;
+
+final class WriteIOException extends RuntimeException {
+  public IOException cause;
+
+  WriteIOException(IOException cause) {
+    this.cause = cause;
+  }
 }

@@ -3,16 +3,24 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 
 /**
  * Describes a method of a service.
  */
-public final class MethodDescriptorProto extends Message {
+public final class MethodDescriptorProto extends Message<MethodDescriptorProto> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<MethodDescriptorProto> ADAPTER = new TypeAdapter.MessageAdapter<MethodDescriptorProto>() {
+    @Override
+    public MethodDescriptorProto read(ProtoReader reader) throws IOException {
+      return MethodDescriptorProto.read(reader);
+    }
+  };
 
   public static final String DEFAULT_NAME = "";
 
@@ -22,43 +30,25 @@ public final class MethodDescriptorProto extends Message {
 
   public static final String DEFAULT_OUTPUT_TYPE = "";
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String name;
 
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
-      tag = 5,
-      type = Message.Datatype.STRING
-  )
   public final String doc;
 
   /**
    * Input and output type names.  These are resolved in the same way as
    * FieldDescriptorProto.type_name, but must refer to a message type.
    */
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.STRING
-  )
   public final String input_type;
 
-  @ProtoField(
-      tag = 3,
-      type = Message.Datatype.STRING
-  )
   public final String output_type;
 
-  @ProtoField(
-      tag = 4
-  )
   public final MethodOptions options;
 
   public MethodDescriptorProto(String name, String doc, String input_type, String output_type, MethodOptions options) {
+    super("MethodDescriptorProto");
     this.name = name;
     this.doc = doc;
     this.input_type = input_type;
@@ -72,29 +62,29 @@ public final class MethodDescriptorProto extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof MethodDescriptorProto)) return false;
-    MethodDescriptorProto o = (MethodDescriptorProto) other;
-    return equals(name, o.name)
-        && equals(doc, o.doc)
-        && equals(input_type, o.input_type)
-        && equals(output_type, o.output_type)
-        && equals(options, o.options);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "name", name, TypeAdapter.STRING, false);
+    visitor.value(5, "doc", doc, TypeAdapter.STRING, false);
+    visitor.value(2, "input_type", input_type, TypeAdapter.STRING, false);
+    visitor.value(3, "output_type", output_type, TypeAdapter.STRING, false);
+    visitor.value(4, "options", options, MethodOptions.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
-      result = result * 37 + (doc != null ? doc.hashCode() : 0);
-      result = result * 37 + (input_type != null ? input_type.hashCode() : 0);
-      result = result * 37 + (output_type != null ? output_type.hashCode() : 0);
-      result = result * 37 + (options != null ? options.hashCode() : 0);
-      hashCode = result;
+  public static MethodDescriptorProto read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.name = reader.value(TypeAdapter.STRING); break;
+        case 5: builder.doc = reader.value(TypeAdapter.STRING); break;
+        case 2: builder.input_type = reader.value(TypeAdapter.STRING); break;
+        case 3: builder.output_type = reader.value(TypeAdapter.STRING); break;
+        case 4: builder.options = message(reader, MethodOptions.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<MethodDescriptorProto> {

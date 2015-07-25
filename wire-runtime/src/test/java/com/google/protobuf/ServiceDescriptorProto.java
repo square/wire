@@ -3,8 +3,9 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
@@ -13,41 +14,33 @@ import java.util.List;
 /**
  * Describes a service.
  */
-public final class ServiceDescriptorProto extends Message {
+public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<ServiceDescriptorProto> ADAPTER = new TypeAdapter.MessageAdapter<ServiceDescriptorProto>() {
+    @Override
+    public ServiceDescriptorProto read(ProtoReader reader) throws IOException {
+      return ServiceDescriptorProto.read(reader);
+    }
+  };
 
   public static final String DEFAULT_NAME = "";
 
   public static final String DEFAULT_DOC = "";
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String name;
 
-  @ProtoField(
-      tag = 2,
-      label = Message.Label.REPEATED,
-      messageType = MethodDescriptorProto.class
-  )
   public final List<MethodDescriptorProto> method;
 
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
-      tag = 4,
-      type = Message.Datatype.STRING
-  )
   public final String doc;
 
-  @ProtoField(
-      tag = 3
-  )
   public final ServiceOptions options;
 
   public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, String doc, ServiceOptions options) {
+    super("ServiceDescriptorProto");
     this.name = name;
     this.method = immutableCopyOf(method);
     this.doc = doc;
@@ -60,27 +53,27 @@ public final class ServiceDescriptorProto extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof ServiceDescriptorProto)) return false;
-    ServiceDescriptorProto o = (ServiceDescriptorProto) other;
-    return equals(name, o.name)
-        && equals(method, o.method)
-        && equals(doc, o.doc)
-        && equals(options, o.options);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "name", name, TypeAdapter.STRING, false);
+    visitor.repeated(2, "method", method, MethodDescriptorProto.ADAPTER, false);
+    visitor.value(4, "doc", doc, TypeAdapter.STRING, false);
+    visitor.value(3, "options", options, ServiceOptions.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
-      result = result * 37 + (method != null ? method.hashCode() : 1);
-      result = result * 37 + (doc != null ? doc.hashCode() : 0);
-      result = result * 37 + (options != null ? options.hashCode() : 0);
-      hashCode = result;
+  public static ServiceDescriptorProto read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.name = reader.value(TypeAdapter.STRING); break;
+        case 2: builder.method = repeatedMessage(builder.method, reader, MethodDescriptorProto.ADAPTER); break;
+        case 4: builder.doc = reader.value(TypeAdapter.STRING); break;
+        case 3: builder.options = message(reader, ServiceOptions.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<ServiceDescriptorProto> {

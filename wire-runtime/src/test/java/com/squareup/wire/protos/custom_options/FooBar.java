@@ -6,14 +6,15 @@ import com.google.protobuf.EnumOptions;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireEnum;
+import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Float;
 import java.lang.Integer;
 import java.lang.Long;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Arrays;
@@ -22,6 +23,13 @@ import java.util.List;
 
 public final class FooBar extends ExtendableMessage<FooBar> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<FooBar> ADAPTER = new TypeAdapter.MessageAdapter<FooBar>() {
+    @Override
+    public FooBar read(ProtoReader reader) throws IOException {
+      return FooBar.read(reader);
+    }
+  };
 
   public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
       .setExtension(Ext_custom_options.my_field_option_one, 17)
@@ -77,50 +85,22 @@ public final class FooBar extends ExtendableMessage<FooBar> {
 
   public static final Double DEFAULT_DAISY = 0.0d;
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.INT32
-  )
   public final Integer foo;
 
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.STRING
-  )
   public final String bar;
 
-  @ProtoField(
-      tag = 3
-  )
   public final Nested baz;
 
-  @ProtoField(
-      tag = 4,
-      type = Message.Datatype.UINT64
-  )
   public final Long qux;
 
-  @ProtoField(
-      tag = 5,
-      type = Message.Datatype.FLOAT,
-      label = Message.Label.REPEATED
-  )
   public final List<Float> fred;
 
-  @ProtoField(
-      tag = 6,
-      type = Message.Datatype.DOUBLE
-  )
   public final Double daisy;
 
-  @ProtoField(
-      tag = 7,
-      label = Message.Label.REPEATED,
-      messageType = FooBar.class
-  )
   public final List<FooBar> nested;
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested) {
+    super("FooBar");
     this.foo = foo;
     this.bar = bar;
     this.baz = baz;
@@ -136,35 +116,34 @@ public final class FooBar extends ExtendableMessage<FooBar> {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof FooBar)) return false;
-    FooBar o = (FooBar) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(foo, o.foo)
-        && equals(bar, o.bar)
-        && equals(baz, o.baz)
-        && equals(qux, o.qux)
-        && equals(fred, o.fred)
-        && equals(daisy, o.daisy)
-        && equals(nested, o.nested);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "foo", foo, TypeAdapter.INT32, false);
+    visitor.value(2, "bar", bar, TypeAdapter.STRING, false);
+    visitor.value(3, "baz", baz, Nested.ADAPTER, false);
+    visitor.value(4, "qux", qux, TypeAdapter.UINT64, false);
+    visitor.repeated(5, "fred", fred, TypeAdapter.FLOAT, false);
+    visitor.value(6, "daisy", daisy, TypeAdapter.DOUBLE, false);
+    visitor.repeated(7, "nested", nested, FooBar.ADAPTER, false);
+    visitor.extensions(this);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = extensionsHashCode();
-      result = result * 37 + (foo != null ? foo.hashCode() : 0);
-      result = result * 37 + (bar != null ? bar.hashCode() : 0);
-      result = result * 37 + (baz != null ? baz.hashCode() : 0);
-      result = result * 37 + (qux != null ? qux.hashCode() : 0);
-      result = result * 37 + (fred != null ? fred.hashCode() : 1);
-      result = result * 37 + (daisy != null ? daisy.hashCode() : 0);
-      result = result * 37 + (nested != null ? nested.hashCode() : 1);
-      hashCode = result;
+  public static FooBar read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.foo = reader.value(TypeAdapter.INT32); break;
+        case 2: builder.bar = reader.value(TypeAdapter.STRING); break;
+        case 3: builder.baz = message(reader, Nested.ADAPTER); break;
+        case 4: builder.qux = reader.value(TypeAdapter.UINT64); break;
+        case 5: builder.fred = repeated(builder.fred, reader.value(TypeAdapter.FLOAT)); break;
+        case 6: builder.daisy = reader.value(TypeAdapter.DOUBLE); break;
+        case 7: builder.nested = repeatedMessage(builder.nested, reader, FooBar.ADAPTER); break;
+        default: builder.readExtensionOrUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<FooBar, Builder> {
@@ -183,11 +162,11 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     public List<FooBar> nested = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
+      super(FooBar.class, Builder.class);
     }
 
     public Builder(FooBar message) {
-      super(Builder.class, message);
+      super(FooBar.class, Builder.class, message);
       if (message == null) return;
       this.foo = message.foo;
       this.bar = message.bar;
@@ -239,18 +218,22 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
-  public static final class Nested extends Message {
+  public static final class Nested extends Message<Nested> {
     private static final long serialVersionUID = 0L;
+
+    public static final TypeAdapter<Nested> ADAPTER = new TypeAdapter.MessageAdapter<Nested>() {
+      @Override
+      public Nested read(ProtoReader reader) throws IOException {
+        return Nested.read(reader);
+      }
+    };
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
 
-    @ProtoField(
-        tag = 1,
-        type = Message.Datatype.ENUM
-    )
     public final FooBarBazEnum value;
 
     public Nested(FooBarBazEnum value) {
+      super("Nested");
       this.value = value;
     }
 
@@ -260,16 +243,21 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     @Override
-    public boolean equals(Object other) {
-      if (other == this) return true;
-      if (!(other instanceof Nested)) return false;
-      return equals(value, ((Nested) other).value);
+    protected void visitFields(Message.Visitor visitor) {
+      visitor.value(1, "value", value, FooBarBazEnum.ADAPTER, false);
+      visitor.unknowns(this);
     }
 
-    @Override
-    public int hashCode() {
-      int result = hashCode;
-      return result != 0 ? result : (hashCode = value != null ? value.hashCode() : 0);
+    public static Nested read(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      while (reader.hasNext()) {
+        int tag = reader.nextTag();
+        switch (tag) {
+          case 1: builder.value = enumOrUnknown(1, reader, FooBarBazEnum.ADAPTER, builder); break;
+          default: builder.readUnknown(tag, reader); break;
+        }
+      }
+      return builder.build();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Nested> {
@@ -296,17 +284,20 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
-  public static final class More extends Message {
+  public static final class More extends Message<More> {
     private static final long serialVersionUID = 0L;
 
-    @ProtoField(
-        tag = 1,
-        type = Message.Datatype.INT32,
-        label = Message.Label.REPEATED
-    )
+    public static final TypeAdapter<More> ADAPTER = new TypeAdapter.MessageAdapter<More>() {
+      @Override
+      public More read(ProtoReader reader) throws IOException {
+        return More.read(reader);
+      }
+    };
+
     public final List<Integer> serial;
 
     public More(List<Integer> serial) {
+      super("More");
       this.serial = immutableCopyOf(serial);
     }
 
@@ -316,16 +307,21 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     @Override
-    public boolean equals(Object other) {
-      if (other == this) return true;
-      if (!(other instanceof More)) return false;
-      return equals(serial, ((More) other).serial);
+    protected void visitFields(Message.Visitor visitor) {
+      visitor.repeated(1, "serial", serial, TypeAdapter.INT32, false);
+      visitor.unknowns(this);
     }
 
-    @Override
-    public int hashCode() {
-      int result = hashCode;
-      return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 1);
+    public static More read(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      while (reader.hasNext()) {
+        int tag = reader.nextTag();
+        switch (tag) {
+          case 1: builder.serial = repeated(builder.serial, reader.value(TypeAdapter.INT32)); break;
+          default: builder.readUnknown(tag, reader); break;
+        }
+      }
+      return builder.build();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<More> {
@@ -352,7 +348,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
-  public enum FooBarBazEnum implements ProtoEnum {
+  public enum FooBarBazEnum implements WireEnum {
     FOO(1, 17, new More.Builder()
         .serial(Arrays.asList(
             99,
@@ -362,6 +358,13 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     BAR(2, null, null, true),
 
     BAZ(3, 18, null, false);
+
+    public static final TypeAdapter.EnumAdapter<FooBarBazEnum> ADAPTER = new TypeAdapter.EnumAdapter<FooBarBazEnum>() {
+      @Override
+      public FooBarBazEnum fromValue(int value) {
+        return FooBarBazEnum.fromValue(value);
+      }
+    };
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .setExtension(Ext_custom_options.enum_option, true)
@@ -383,8 +386,17 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
 
     @Override
-    public int getValue() {
+    public int value() {
       return value;
+    }
+
+    public static FooBarBazEnum fromValue(int value) {
+      switch (value) {
+        case 1: return FOO;
+        case 2: return BAR;
+        case 3: return BAZ;
+        default: return null;
+      }
     }
   }
 }

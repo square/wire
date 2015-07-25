@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
+import okio.Buffer;
 
 final class MessageSerializedForm implements Serializable {
   private static final long serialVersionUID = 0L;
@@ -27,17 +28,36 @@ final class MessageSerializedForm implements Serializable {
   private final Class<? extends Message> messageClass;
 
   public MessageSerializedForm(Message message, Class<? extends Message> messageClass) {
-    //noinspection unchecked
-    this.bytes = Message.WIRE.adapter((Class<Message>) messageClass).writeBytes(message);
+    TypeAdapter<Message> adapter;
+    try {
+      adapter = (TypeAdapter<Message>) messageClass.getField("ADAPTER").get(null);
+    } catch (IllegalAccessException e) {
+      throw new AssertionError("ADAPTER field not found");
+    } catch (NoSuchFieldException e) {
+      throw new AssertionError("ADAPTER field not found");
+    }
+    Buffer buffer = new Buffer();
+    try {
+      adapter.write(message, new ProtoWriter(buffer));
+    } catch (IOException e) {
+      throw new AssertionError(e); // No I/O writing to a Buffer.
+    }
+    this.bytes = buffer.readByteArray();
     this.messageClass = messageClass;
   }
 
   Object readResolve() throws ObjectStreamException {
-    MessageAdapter<? extends Message> adapter = Message.WIRE.adapter(messageClass);
+    TypeAdapter<?> adapter;
     try {
-      // Extensions are not supported at this time. Extension fields will be added to the
-      // unknownFields map.
-      return adapter.readBytes(bytes);
+      adapter = (TypeAdapter<?>) messageClass.getField("ADAPTER").get(null);
+    } catch (IllegalAccessException e) {
+      throw new AssertionError("ADAPTER field not found");
+    } catch (NoSuchFieldException e) {
+      throw new AssertionError("ADAPTER field not found");
+    }
+    Buffer buffer = new Buffer().write(bytes);
+    try {
+      return adapter.read(new ProtoReader(buffer));
     } catch (IOException e) {
       throw new StreamCorruptedException(e.getMessage());
     }

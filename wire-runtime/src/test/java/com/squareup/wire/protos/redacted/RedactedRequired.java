@@ -4,13 +4,21 @@ package com.squareup.wire.protos.redacted;
 
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 
-public final class RedactedRequired extends Message {
+public final class RedactedRequired extends Message<RedactedRequired> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<RedactedRequired> ADAPTER = new TypeAdapter.MessageAdapter<RedactedRequired>() {
+    @Override
+    public RedactedRequired read(ProtoReader reader) throws IOException {
+      return RedactedRequired.read(reader);
+    }
+  };
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
       .setExtension(Ext_redacted_test.redacted, true)
@@ -18,15 +26,10 @@ public final class RedactedRequired extends Message {
 
   public static final String DEFAULT_A = "";
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING,
-      label = Message.Label.REQUIRED,
-      redacted = true
-  )
   public final String a;
 
   public RedactedRequired(String a) {
+    super("RedactedRequired");
     this.a = a;
   }
 
@@ -36,16 +39,21 @@ public final class RedactedRequired extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof RedactedRequired)) return false;
-    return equals(a, ((RedactedRequired) other).a);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "a", a, TypeAdapter.STRING, true);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
+  public static RedactedRequired read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.a = reader.value(TypeAdapter.STRING); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRequired> {

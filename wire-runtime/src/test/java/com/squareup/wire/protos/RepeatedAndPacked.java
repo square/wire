@@ -3,31 +3,30 @@
 package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Integer;
-import java.lang.Object;
 import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
 
-public final class RepeatedAndPacked extends Message {
+public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
-      tag = 201,
-      type = Message.Datatype.INT32,
-      label = Message.Label.REPEATED
-  )
+  public static final TypeAdapter<RepeatedAndPacked> ADAPTER = new TypeAdapter.MessageAdapter<RepeatedAndPacked>() {
+    @Override
+    public RepeatedAndPacked read(ProtoReader reader) throws IOException {
+      return RepeatedAndPacked.read(reader);
+    }
+  };
+
   public final List<Integer> rep_int32;
 
-  @ProtoField(
-      tag = 301,
-      type = Message.Datatype.INT32,
-      label = Message.Label.PACKED
-  )
   public final List<Integer> pack_int32;
 
   public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32) {
+    super("RepeatedAndPacked");
     this.rep_int32 = immutableCopyOf(rep_int32);
     this.pack_int32 = immutableCopyOf(pack_int32);
   }
@@ -38,23 +37,23 @@ public final class RepeatedAndPacked extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof RepeatedAndPacked)) return false;
-    RepeatedAndPacked o = (RepeatedAndPacked) other;
-    return equals(rep_int32, o.rep_int32)
-        && equals(pack_int32, o.pack_int32);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.repeated(201, "rep_int32", rep_int32, TypeAdapter.INT32, false);
+    visitor.packed(301, "pack_int32", pack_int32, TypeAdapter.INT32, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = rep_int32 != null ? rep_int32.hashCode() : 1;
-      result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
-      hashCode = result;
+  public static RepeatedAndPacked read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 201: builder.rep_int32 = repeated(builder.rep_int32, reader.value(TypeAdapter.INT32)); break;
+        case 301: builder.pack_int32 = reader.packed(builder.pack_int32, TypeAdapter.INT32); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RepeatedAndPacked> {

@@ -3,8 +3,9 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
@@ -13,17 +14,20 @@ import java.util.List;
  * The protocol compiler can output a FileDescriptorSet containing the .proto
  * files it parses.
  */
-public final class FileDescriptorSet extends Message {
+public final class FileDescriptorSet extends Message<FileDescriptorSet> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
-      tag = 1,
-      label = Message.Label.REPEATED,
-      messageType = FileDescriptorProto.class
-  )
+  public static final TypeAdapter<FileDescriptorSet> ADAPTER = new TypeAdapter.MessageAdapter<FileDescriptorSet>() {
+    @Override
+    public FileDescriptorSet read(ProtoReader reader) throws IOException {
+      return FileDescriptorSet.read(reader);
+    }
+  };
+
   public final List<FileDescriptorProto> file;
 
   public FileDescriptorSet(List<FileDescriptorProto> file) {
+    super("FileDescriptorSet");
     this.file = immutableCopyOf(file);
   }
 
@@ -33,16 +37,21 @@ public final class FileDescriptorSet extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof FileDescriptorSet)) return false;
-    return equals(file, ((FileDescriptorSet) other).file);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.repeated(1, "file", file, FileDescriptorProto.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = file != null ? file.hashCode() : 1);
+  public static FileDescriptorSet read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.file = repeatedMessage(builder.file, reader, FileDescriptorProto.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorSet> {

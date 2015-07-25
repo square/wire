@@ -3,14 +3,22 @@
 package com.squareup.wire.protos.oneof;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Integer;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-public final class OneOfMessage extends Message {
+public final class OneOfMessage extends Message<OneOfMessage> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<OneOfMessage> ADAPTER = new TypeAdapter.MessageAdapter<OneOfMessage>() {
+    @Override
+    public OneOfMessage read(ProtoReader reader) throws IOException {
+      return OneOfMessage.read(reader);
+    }
+  };
 
   public static final Integer DEFAULT_FOO = 0;
 
@@ -19,22 +27,15 @@ public final class OneOfMessage extends Message {
   /**
    * What foo.
    */
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.INT32
-  )
   public final Integer foo;
 
   /**
    * Such bar.
    */
-  @ProtoField(
-      tag = 3,
-      type = Message.Datatype.STRING
-  )
   public final String bar;
 
   public OneOfMessage(Integer foo, String bar) {
+    super("OneOfMessage");
     this.foo = foo;
     this.bar = bar;
   }
@@ -45,23 +46,23 @@ public final class OneOfMessage extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof OneOfMessage)) return false;
-    OneOfMessage o = (OneOfMessage) other;
-    return equals(foo, o.foo)
-        && equals(bar, o.bar);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "foo", foo, TypeAdapter.INT32, false);
+    visitor.value(3, "bar", bar, TypeAdapter.STRING, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = foo != null ? foo.hashCode() : 0;
-      result = result * 37 + (bar != null ? bar.hashCode() : 0);
-      hashCode = result;
+  public static OneOfMessage read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.foo = reader.value(TypeAdapter.INT32); break;
+        case 3: builder.bar = reader.value(TypeAdapter.STRING); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<OneOfMessage> {

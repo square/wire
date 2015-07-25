@@ -3,33 +3,32 @@
 package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 
-public final class RedactedChild extends Message {
+public final class RedactedChild extends Message<RedactedChild> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<RedactedChild> ADAPTER = new TypeAdapter.MessageAdapter<RedactedChild>() {
+    @Override
+    public RedactedChild read(ProtoReader reader) throws IOException {
+      return RedactedChild.read(reader);
+    }
+  };
 
   public static final String DEFAULT_A = "";
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String a;
 
-  @ProtoField(
-      tag = 2
-  )
   public final Redacted b;
 
-  @ProtoField(
-      tag = 3
-  )
   public final NotRedacted c;
 
   public RedactedChild(String a, Redacted b, NotRedacted c) {
+    super("RedactedChild");
     this.a = a;
     this.b = b;
     this.c = c;
@@ -41,25 +40,25 @@ public final class RedactedChild extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof RedactedChild)) return false;
-    RedactedChild o = (RedactedChild) other;
-    return equals(a, o.a)
-        && equals(b, o.b)
-        && equals(c, o.c);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "a", a, TypeAdapter.STRING, false);
+    visitor.value(2, "b", b, Redacted.ADAPTER, false);
+    visitor.value(3, "c", c, NotRedacted.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = a != null ? a.hashCode() : 0;
-      result = result * 37 + (b != null ? b.hashCode() : 0);
-      result = result * 37 + (c != null ? c.hashCode() : 0);
-      hashCode = result;
+  public static RedactedChild read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.a = reader.value(TypeAdapter.STRING); break;
+        case 2: builder.b = message(reader, Redacted.ADAPTER); break;
+        case 3: builder.c = message(reader, NotRedacted.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedChild> {

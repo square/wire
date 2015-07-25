@@ -3,23 +3,28 @@
 package com.squareup.services.anotherpackage;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import okio.ByteString;
 
-public final class SendDataRequest extends Message {
+public final class SendDataRequest extends Message<SendDataRequest> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<SendDataRequest> ADAPTER = new TypeAdapter.MessageAdapter<SendDataRequest>() {
+    @Override
+    public SendDataRequest read(ProtoReader reader) throws IOException {
+      return SendDataRequest.read(reader);
+    }
+  };
 
   public static final ByteString DEFAULT_DATA = ByteString.EMPTY;
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.BYTES
-  )
   public final ByteString data;
 
   public SendDataRequest(ByteString data) {
+    super("SendDataRequest");
     this.data = data;
   }
 
@@ -29,16 +34,21 @@ public final class SendDataRequest extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof SendDataRequest)) return false;
-    return equals(data, ((SendDataRequest) other).data);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "data", data, TypeAdapter.BYTES, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = data != null ? data.hashCode() : 0);
+  public static SendDataRequest read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.data = reader.value(TypeAdapter.BYTES); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<SendDataRequest> {

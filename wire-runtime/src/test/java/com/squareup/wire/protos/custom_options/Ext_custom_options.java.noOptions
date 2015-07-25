@@ -5,39 +5,54 @@ package com.squareup.wire.protos.custom_options;
 import com.google.protobuf.EnumOptions;
 import com.google.protobuf.EnumValueOptions;
 import com.squareup.wire.Extension;
+import com.squareup.wire.Message;
+import com.squareup.wire.TypeAdapter;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.util.List;
 
 public final class Ext_custom_options {
-  public static final Extension<EnumValueOptions, Integer> enum_value_option = Extension
-      .int32Extending(EnumValueOptions.class)
-      .setName("squareup.protos.custom_options.enum_value_option")
-      .setTag(70000)
+  public static final Extension<EnumValueOptions, Integer> enum_value_option = new Extension.Builder<EnumValueOptions, Integer>()
+      .extending(EnumValueOptions.class)
+      .name("squareup.protos.custom_options.enum_value_option")
+      .tag(70000)
+      .tagWriter(ProtoType.INT32)
+      .datatype(Message.Datatype.INT32)
       .buildOptional();
 
-  public static final Extension<EnumValueOptions, FooBar.More> complex_enum_value_option = Extension
-      .messageExtending(FooBar.More.class, EnumValueOptions.class)
-      .setName("squareup.protos.custom_options.complex_enum_value_option")
-      .setTag(70001)
+  public static final Extension<EnumValueOptions, FooBar.More> complex_enum_value_option = new Extension.Builder<EnumValueOptions, FooBar.More>()
+      .extending(EnumValueOptions.class)
+      .name("squareup.protos.custom_options.complex_enum_value_option")
+      .tag(70001)
+      .messageType(FooBar.More.class)
+      .tagWriter(ProtoType.MESSAGE)
+      .datatype(Message.Datatype.MESSAGE)
       .buildOptional();
 
-  public static final Extension<EnumOptions, Boolean> enum_option = Extension
-      .boolExtending(EnumOptions.class)
-      .setName("squareup.protos.custom_options.enum_option")
-      .setTag(71000)
+  public static final Extension<EnumOptions, Boolean> enum_option = new Extension.Builder<EnumOptions, Boolean>()
+      .extending(EnumOptions.class)
+      .name("squareup.protos.custom_options.enum_option")
+      .tag(71000)
+      .tagWriter(ProtoType.BOOL)
+      .datatype(Message.Datatype.BOOL)
       .buildOptional();
 
-  public static final Extension<FooBar, FooBar.FooBarBazEnum> ext = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)
-      .setName("squareup.protos.custom_options.ext")
-      .setTag(101)
+  public static final Extension<FooBar, FooBar.FooBarBazEnum> ext = new Extension.Builder<FooBar, FooBar.FooBarBazEnum>()
+      .extending(FooBar.class)
+      .name("squareup.protos.custom_options.ext")
+      .tag(101)
+      .enumType(FooBar.FooBarBazEnum.class)
+      .tagWriter(ProtoType.ENUM)
+      .datatype(Message.Datatype.ENUM)
       .buildOptional();
 
-  public static final Extension<FooBar, List<FooBar.FooBarBazEnum>> rep = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)
-      .setName("squareup.protos.custom_options.rep")
-      .setTag(102)
+  public static final Extension<FooBar, List<FooBar.FooBarBazEnum>> rep = new Extension.Builder<FooBar, FooBar.FooBarBazEnum>()
+      .extending(FooBar.class)
+      .name("squareup.protos.custom_options.rep")
+      .tag(102)
+      .enumType(FooBar.FooBarBazEnum.class)
+      .tagWriter(ProtoType.ENUM)
+      .datatype(Message.Datatype.ENUM)
       .buildRepeated();
 
   private Ext_custom_options() {

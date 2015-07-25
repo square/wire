@@ -4,14 +4,22 @@ package com.google.protobuf;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
 
 public final class MethodOptions extends ExtendableMessage<MethodOptions> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<MethodOptions> ADAPTER = new TypeAdapter.MessageAdapter<MethodOptions>() {
+    @Override
+    public MethodOptions read(ProtoReader reader) throws IOException {
+      return MethodOptions.read(reader);
+    }
+  };
 
   /**
    * Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
@@ -20,14 +28,10 @@ public final class MethodOptions extends ExtendableMessage<MethodOptions> {
    *   Buffers.
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(
-      tag = 999,
-      label = Message.Label.REPEATED,
-      messageType = UninterpretedOption.class
-  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public MethodOptions(List<UninterpretedOption> uninterpreted_option) {
+    super("MethodOptions");
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
   }
 
@@ -37,34 +41,33 @@ public final class MethodOptions extends ExtendableMessage<MethodOptions> {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof MethodOptions)) return false;
-    MethodOptions o = (MethodOptions) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(uninterpreted_option, o.uninterpreted_option);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.repeated(999, "uninterpreted_option", uninterpreted_option, UninterpretedOption.ADAPTER, false);
+    visitor.extensions(this);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = extensionsHashCode();
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
-      hashCode = result;
+  public static MethodOptions read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 999: builder.uninterpreted_option = repeatedMessage(builder.uninterpreted_option, reader, UninterpretedOption.ADAPTER); break;
+        default: builder.readExtensionOrUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<MethodOptions, Builder> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
+      super(MethodOptions.class, Builder.class);
     }
 
     public Builder(MethodOptions message) {
-      super(Builder.class, message);
+      super(MethodOptions.class, Builder.class, message);
       if (message == null) return;
       this.uninterpreted_option = copyOf(message.uninterpreted_option);
     }

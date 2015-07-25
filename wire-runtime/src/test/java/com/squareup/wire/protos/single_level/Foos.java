@@ -3,23 +3,27 @@
 package com.squareup.wire.protos.single_level;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
 
-public final class Foos extends Message {
+public final class Foos extends Message<Foos> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
-      tag = 1,
-      label = Message.Label.REPEATED,
-      messageType = Foo.class
-  )
+  public static final TypeAdapter<Foos> ADAPTER = new TypeAdapter.MessageAdapter<Foos>() {
+    @Override
+    public Foos read(ProtoReader reader) throws IOException {
+      return Foos.read(reader);
+    }
+  };
+
   public final List<Foo> foos;
 
   public Foos(List<Foo> foos) {
+    super("Foos");
     this.foos = immutableCopyOf(foos);
   }
 
@@ -29,16 +33,21 @@ public final class Foos extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof Foos)) return false;
-    return equals(foos, ((Foos) other).foos);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.repeated(1, "foos", foos, Foo.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = foos != null ? foos.hashCode() : 1);
+  public static Foos read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.foos = repeatedMessage(builder.foos, reader, Foo.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Foos> {

@@ -3,19 +3,25 @@
 package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 
-public final class RedactedCycleB extends Message {
+public final class RedactedCycleB extends Message<RedactedCycleB> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
-      tag = 1
-  )
+  public static final TypeAdapter<RedactedCycleB> ADAPTER = new TypeAdapter.MessageAdapter<RedactedCycleB>() {
+    @Override
+    public RedactedCycleB read(ProtoReader reader) throws IOException {
+      return RedactedCycleB.read(reader);
+    }
+  };
+
   public final RedactedCycleA a;
 
   public RedactedCycleB(RedactedCycleA a) {
+    super("RedactedCycleB");
     this.a = a;
   }
 
@@ -25,16 +31,21 @@ public final class RedactedCycleB extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof RedactedCycleB)) return false;
-    return equals(a, ((RedactedCycleB) other).a);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "a", a, RedactedCycleA.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
+  public static RedactedCycleB read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.a = message(reader, RedactedCycleA.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedCycleB> {

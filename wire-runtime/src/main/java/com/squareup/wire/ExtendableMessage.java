@@ -15,26 +15,24 @@
  */
 package com.squareup.wire;
 
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
 
 /**
  * A message that declares an extension range.
  *
  * @param <T> the message type being extended.
  */
-public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends Message {
+public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends Message<T> {
   private static final long serialVersionUID = 0L;
 
   @SuppressWarnings("unchecked")
   transient ExtensionMap<T> extensionMap; // Null if empty.
 
-  protected ExtendableMessage() {
+  protected ExtendableMessage(String name) {
+    super(name);
   }
 
-  /**
-   * Initializes any extension and unknown field data to that stored in the given {@code Builder}.
-   */
+  /** Initializes extension field data to that stored in the given {@code builder}. */
   protected void setBuilder(ExtendableBuilder<T, ?> builder) {
     super.setBuilder(builder);
     if (builder.extensionMap != null) {
@@ -42,87 +40,61 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
     }
   }
 
-  /**
-   * Returns an immutable list of the extensions on this message in tag order.
-   */
-  public List<Extension<T, ?>> getExtensions() {
-    return extensionMap == null ? Collections.<Extension<T, ?>>emptyList()
-        : extensionMap.getExtensions();
-  }
-
-  /**
-   * Returns the value for {@code extension} on this message, or null if no
-   * value is set.
-   */
-  public <E> E getExtension(Extension<T, E> extension) {
+  /** Returns the value for {@code extension} on this message, or null if no value is set. */
+  public <E> E getExtension(Extension<T, ?, E> extension) {
     return extensionMap == null ? null : extensionMap.get(extension);
   }
 
-  /**
-   * Returns true if the extensions on this message equals the extensions of
-   * {@code other}.
-   */
-  protected boolean extensionsEqual(ExtendableMessage<T> other) {
-    if (extensionMap == null) {
-      return other.extensionMap == null;
-    }
-    return extensionMap.equals(other.extensionMap);
-  }
-
-  /**
-   * Returns a hash code for the extensions on this message.
-   */
-  protected int extensionsHashCode() {
-    return extensionMap == null ? 0 : extensionMap.hashCode();
-  }
-
-  /**
-   * Returns a string describing the extensions on this message.
-   */
-  String extensionsToString() {
-    return extensionMap == null ? "{}" : extensionMap.toString();
-  }
-
-  /**
-   * Builds a message that declares an extension range.
-   */
+  /** Builds a message that declares an extension range. */
   public abstract static class ExtendableBuilder<T extends ExtendableMessage<T>,
       B extends ExtendableBuilder<T, B>> extends Builder<T> {
 
-    @SuppressWarnings("unchecked")
     ExtensionMap<T> extensionMap; // Null if empty.
-    private final B self;
+    private final Class<T> messageType;
+    private final Class<B> selfType;
 
-    protected ExtendableBuilder(Class<B> selfType) {
-      this(selfType, null);
+    protected ExtendableBuilder(Class<T> messageType, Class<B> selfType) {
+      this(messageType, selfType, null);
     }
 
-    protected ExtendableBuilder(Class<B> selfType, ExtendableMessage<T> message) {
+    protected ExtendableBuilder(Class<T> messageType, Class<B> selfType, ExtendableMessage<T> message) {
       super(message);
-      self = selfType.cast(this);
+      this.messageType = messageType;
+      this.selfType = selfType;
+
       if (message != null && message.extensionMap != null) {
-        this.extensionMap = new ExtensionMap<T>(message.extensionMap);
+        extensionMap = new ExtensionMap<T>(message.extensionMap);
       }
     }
 
-    /**
-     * Returns the value for {@code extension} on this message, or null if no
-     * value is set.
-     */
-    public <E> E getExtension(Extension<T, E> extension) {
+    public final void readExtensionOrUnknown(int tag, ProtoReader reader) throws IOException {
+      Extension<T, ?, Object> extension =
+          (Extension<T, ?, Object>) reader.getExtension(messageType, tag);
+      if (extension != null) {
+        Object existing = null;
+        if (extensionMap != null) {
+          existing = extensionMap.get(extension);
+        }
+        setExtension(extension, extension.read(existing, reader));
+      } else {
+        readUnknown(tag, reader);
+      }
+    }
+
+    /** Returns the value for {@code extension} on this message, or null if no value is set. */
+    public final <E, R> R getExtension(Extension<T, E, R> extension) {
       return extensionMap == null ? null : extensionMap.get(extension);
     }
 
-    /**
-     * Sets the value of {@code extension} on this builder to {@code value}.
-     */
-    public <E> B setExtension(Extension<T, E> extension, E value) {
+    /** Sets the value of {@code extension} on this builder to {@code value}. */
+    public final <E> B setExtension(Extension<T, ?, E> extension, E value) {
+      ExtensionMap<T> extensionMap = this.extensionMap;
       if (extensionMap == null) {
-        extensionMap = new ExtensionMap<T>(extension, value);
+        this.extensionMap = new ExtensionMap<T>(extension, value);
       } else {
         extensionMap.put(extension, value);
       }
-      return self;
+      return selfType.cast(this);
     }
   }
 }

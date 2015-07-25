@@ -3,8 +3,9 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
@@ -13,41 +14,33 @@ import java.util.List;
 /**
  * Describes an enum type.
  */
-public final class EnumDescriptorProto extends Message {
+public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<EnumDescriptorProto> ADAPTER = new TypeAdapter.MessageAdapter<EnumDescriptorProto>() {
+    @Override
+    public EnumDescriptorProto read(ProtoReader reader) throws IOException {
+      return EnumDescriptorProto.read(reader);
+    }
+  };
 
   public static final String DEFAULT_NAME = "";
 
   public static final String DEFAULT_DOC = "";
 
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String name;
 
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
-      tag = 4,
-      type = Message.Datatype.STRING
-  )
   public final String doc;
 
-  @ProtoField(
-      tag = 2,
-      label = Message.Label.REPEATED,
-      messageType = EnumValueDescriptorProto.class
-  )
   public final List<EnumValueDescriptorProto> value;
 
-  @ProtoField(
-      tag = 3
-  )
   public final EnumOptions options;
 
   public EnumDescriptorProto(String name, String doc, List<EnumValueDescriptorProto> value, EnumOptions options) {
+    super("EnumDescriptorProto");
     this.name = name;
     this.doc = doc;
     this.value = immutableCopyOf(value);
@@ -60,27 +53,27 @@ public final class EnumDescriptorProto extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof EnumDescriptorProto)) return false;
-    EnumDescriptorProto o = (EnumDescriptorProto) other;
-    return equals(name, o.name)
-        && equals(doc, o.doc)
-        && equals(value, o.value)
-        && equals(options, o.options);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "name", name, TypeAdapter.STRING, false);
+    visitor.value(4, "doc", doc, TypeAdapter.STRING, false);
+    visitor.repeated(2, "value", value, EnumValueDescriptorProto.ADAPTER, false);
+    visitor.value(3, "options", options, EnumOptions.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
-      result = result * 37 + (doc != null ? doc.hashCode() : 0);
-      result = result * 37 + (value != null ? value.hashCode() : 1);
-      result = result * 37 + (options != null ? options.hashCode() : 0);
-      hashCode = result;
+  public static EnumDescriptorProto read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.name = reader.value(TypeAdapter.STRING); break;
+        case 4: builder.doc = reader.value(TypeAdapter.STRING); break;
+        case 2: builder.value = repeatedMessage(builder.value, reader, EnumValueDescriptorProto.ADAPTER); break;
+        case 3: builder.options = message(reader, EnumOptions.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<EnumDescriptorProto> {

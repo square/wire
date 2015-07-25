@@ -3,27 +3,44 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 
-public final class TheResponse extends Message {
+public final class TheResponse extends Message<TheResponse> {
   private static final long serialVersionUID = 0L;
 
+  public static final TypeAdapter<TheResponse> ADAPTER = new TypeAdapter.MessageAdapter<TheResponse>() {
+    @Override
+    public TheResponse read(ProtoReader reader) throws IOException {
+      return TheResponse.read(reader);
+    }
+  };
+
   public TheResponse() {
+    super("TheResponse");
   }
 
   private TheResponse(Builder builder) {
+    this();
     setBuilder(builder);
   }
 
   @Override
-  public boolean equals(Object other) {
-    return other instanceof TheResponse;
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    return 0;
+  public static TheResponse read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        default: builder.readUnknown(tag, reader); break;
+      }
+    }
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<TheResponse> {

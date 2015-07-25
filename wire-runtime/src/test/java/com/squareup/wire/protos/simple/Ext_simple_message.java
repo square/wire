@@ -3,46 +3,23 @@
 package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Extension;
+import com.squareup.wire.TypeAdapter;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.lang.Integer;
 import java.util.List;
 
 public final class Ext_simple_message {
-  public static final Extension<ExternalMessage, List<Integer>> fooext = Extension
-      .int32Extending(ExternalMessage.class)
-      .setName("squareup.protos.simple.fooext")
-      .setTag(125)
-      .buildRepeated();
+  public static final Extension<ExternalMessage, Integer, List<Integer>> fooext = Extension.repeated(ExternalMessage.class, 125, TypeAdapter.INT32);
 
-  public static final Extension<ExternalMessage, Integer> barext = Extension
-      .int32Extending(ExternalMessage.class)
-      .setName("squareup.protos.simple.barext")
-      .setTag(126)
-      .buildOptional();
+  public static final Extension<ExternalMessage, Integer, Integer> barext = Extension.optional(ExternalMessage.class, 126, TypeAdapter.INT32);
 
-  public static final Extension<ExternalMessage, Integer> bazext = Extension
-      .int32Extending(ExternalMessage.class)
-      .setName("squareup.protos.simple.bazext")
-      .setTag(127)
-      .buildRequired();
+  public static final Extension<ExternalMessage, Integer, Integer> bazext = Extension.required(ExternalMessage.class, 127, TypeAdapter.INT32);
 
-  public static final Extension<ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension
-      .messageExtending(SimpleMessage.NestedMessage.class, ExternalMessage.class)
-      .setName("squareup.protos.simple.nested_message_ext")
-      .setTag(128)
-      .buildOptional();
+  public static final Extension<ExternalMessage, SimpleMessage.NestedMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension.optional(ExternalMessage.class, 128, SimpleMessage.NestedMessage.ADAPTER);
 
-  public static final Extension<ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext = Extension
-      .enumExtending(SimpleMessage.NestedEnum.class, ExternalMessage.class)
-      .setName("squareup.protos.simple.nested_enum_ext")
-      .setTag(129)
-      .buildOptional();
+  public static final Extension<ExternalMessage, SimpleMessage.NestedEnum, SimpleMessage.NestedEnum> nested_enum_ext = Extension.optional(ExternalMessage.class, 129, SimpleMessage.NestedEnum.ADAPTER);
 
-  public static final Extension<ForeignMessage, Integer> j = Extension
-      .int32Extending(ForeignMessage.class)
-      .setName("squareup.protos.simple.j")
-      .setTag(100)
-      .buildOptional();
+  public static final Extension<ForeignMessage, Integer, Integer> j = Extension.optional(ForeignMessage.class, 100, TypeAdapter.INT32);
 
   private Ext_simple_message() {
   }

@@ -3,8 +3,9 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
-import java.lang.Object;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import java.io.IOException;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
@@ -13,8 +14,15 @@ import java.util.List;
 /**
  * Describes a complete .proto file.
  */
-public final class FileDescriptorProto extends Message {
+public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<FileDescriptorProto> ADAPTER = new TypeAdapter.MessageAdapter<FileDescriptorProto>() {
+    @Override
+    public FileDescriptorProto read(ProtoReader reader) throws IOException {
+      return FileDescriptorProto.read(reader);
+    }
+  };
 
   public static final String DEFAULT_NAME = "";
 
@@ -23,65 +31,29 @@ public final class FileDescriptorProto extends Message {
   /**
    * file name, relative to root of source tree
    */
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING
-  )
   public final String name;
 
   /**
    * e.g. "foo", "foo.bar", etc.
    */
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.STRING
-  )
   public final String _package;
 
   /**
    * Names of files imported by this file.
    */
-  @ProtoField(
-      tag = 3,
-      type = Message.Datatype.STRING,
-      label = Message.Label.REPEATED
-  )
   public final List<String> dependency;
 
   /**
    * All top-level definitions in this file.
    */
-  @ProtoField(
-      tag = 4,
-      label = Message.Label.REPEATED,
-      messageType = DescriptorProto.class
-  )
   public final List<DescriptorProto> message_type;
 
-  @ProtoField(
-      tag = 5,
-      label = Message.Label.REPEATED,
-      messageType = EnumDescriptorProto.class
-  )
   public final List<EnumDescriptorProto> enum_type;
 
-  @ProtoField(
-      tag = 6,
-      label = Message.Label.REPEATED,
-      messageType = ServiceDescriptorProto.class
-  )
   public final List<ServiceDescriptorProto> service;
 
-  @ProtoField(
-      tag = 7,
-      label = Message.Label.REPEATED,
-      messageType = FieldDescriptorProto.class
-  )
   public final List<FieldDescriptorProto> extension;
 
-  @ProtoField(
-      tag = 8
-  )
   public final FileOptions options;
 
   /**
@@ -90,12 +62,10 @@ public final class FileDescriptorProto extends Message {
    * functionality of the descriptors -- the information is needed only by
    * development tools.
    */
-  @ProtoField(
-      tag = 9
-  )
   public final SourceCodeInfo source_code_info;
 
   public FileDescriptorProto(String name, String _package, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info) {
+    super("FileDescriptorProto");
     this.name = name;
     this._package = _package;
     this.dependency = immutableCopyOf(dependency);
@@ -113,37 +83,37 @@ public final class FileDescriptorProto extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof FileDescriptorProto)) return false;
-    FileDescriptorProto o = (FileDescriptorProto) other;
-    return equals(name, o.name)
-        && equals(_package, o._package)
-        && equals(dependency, o.dependency)
-        && equals(message_type, o.message_type)
-        && equals(enum_type, o.enum_type)
-        && equals(service, o.service)
-        && equals(extension, o.extension)
-        && equals(options, o.options)
-        && equals(source_code_info, o.source_code_info);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "name", name, TypeAdapter.STRING, false);
+    visitor.value(2, "package", _package, TypeAdapter.STRING, false);
+    visitor.repeated(3, "dependency", dependency, TypeAdapter.STRING, false);
+    visitor.repeated(4, "message_type", message_type, DescriptorProto.ADAPTER, false);
+    visitor.repeated(5, "enum_type", enum_type, EnumDescriptorProto.ADAPTER, false);
+    visitor.repeated(6, "service", service, ServiceDescriptorProto.ADAPTER, false);
+    visitor.repeated(7, "extension", extension, FieldDescriptorProto.ADAPTER, false);
+    visitor.value(8, "options", options, FileOptions.ADAPTER, false);
+    visitor.value(9, "source_code_info", source_code_info, SourceCodeInfo.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
-      result = result * 37 + (_package != null ? _package.hashCode() : 0);
-      result = result * 37 + (dependency != null ? dependency.hashCode() : 1);
-      result = result * 37 + (message_type != null ? message_type.hashCode() : 1);
-      result = result * 37 + (enum_type != null ? enum_type.hashCode() : 1);
-      result = result * 37 + (service != null ? service.hashCode() : 1);
-      result = result * 37 + (extension != null ? extension.hashCode() : 1);
-      result = result * 37 + (options != null ? options.hashCode() : 0);
-      result = result * 37 + (source_code_info != null ? source_code_info.hashCode() : 0);
-      hashCode = result;
+  public static FileDescriptorProto read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.name = reader.value(TypeAdapter.STRING); break;
+        case 2: builder._package = reader.value(TypeAdapter.STRING); break;
+        case 3: builder.dependency = repeated(builder.dependency, reader.value(TypeAdapter.STRING)); break;
+        case 4: builder.message_type = repeatedMessage(builder.message_type, reader, DescriptorProto.ADAPTER); break;
+        case 5: builder.enum_type = repeatedMessage(builder.enum_type, reader, EnumDescriptorProto.ADAPTER); break;
+        case 6: builder.service = repeatedMessage(builder.service, reader, ServiceDescriptorProto.ADAPTER); break;
+        case 7: builder.extension = repeatedMessage(builder.extension, reader, FieldDescriptorProto.ADAPTER); break;
+        case 8: builder.options = message(reader, FileOptions.ADAPTER); break;
+        case 9: builder.source_code_info = message(reader, SourceCodeInfo.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorProto> {

@@ -3,17 +3,25 @@
 package com.squareup.wire.protos.person;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireEnum;
+import java.io.IOException;
 import java.lang.Integer;
-import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Collections;
 import java.util.List;
 
-public final class Person extends Message {
+public final class Person extends Message<Person> {
   private static final long serialVersionUID = 0L;
+
+  public static final TypeAdapter<Person> ADAPTER = new TypeAdapter.MessageAdapter<Person>() {
+    @Override
+    public Person read(ProtoReader reader) throws IOException {
+      return Person.read(reader);
+    }
+  };
 
   public static final String DEFAULT_NAME = "";
 
@@ -24,43 +32,25 @@ public final class Person extends Message {
   /**
    * The customer's full name.
    */
-  @ProtoField(
-      tag = 1,
-      type = Message.Datatype.STRING,
-      label = Message.Label.REQUIRED
-  )
   public final String name;
 
   /**
    * The customer's ID number.
    */
-  @ProtoField(
-      tag = 2,
-      type = Message.Datatype.INT32,
-      label = Message.Label.REQUIRED
-  )
   public final Integer id;
 
   /**
    * Email address for the customer.
    */
-  @ProtoField(
-      tag = 3,
-      type = Message.Datatype.STRING
-  )
   public final String email;
 
   /**
    * A list of the customer's phone numbers.
    */
-  @ProtoField(
-      tag = 4,
-      label = Message.Label.REPEATED,
-      messageType = PhoneNumber.class
-  )
   public final List<PhoneNumber> phone;
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
+    super("Person");
     this.name = name;
     this.id = id;
     this.email = email;
@@ -73,27 +63,27 @@ public final class Person extends Message {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof Person)) return false;
-    Person o = (Person) other;
-    return equals(name, o.name)
-        && equals(id, o.id)
-        && equals(email, o.email)
-        && equals(phone, o.phone);
+  protected void visitFields(Message.Visitor visitor) {
+    visitor.value(1, "name", name, TypeAdapter.STRING, false);
+    visitor.value(2, "id", id, TypeAdapter.INT32, false);
+    visitor.value(3, "email", email, TypeAdapter.STRING, false);
+    visitor.repeated(4, "phone", phone, PhoneNumber.ADAPTER, false);
+    visitor.unknowns(this);
   }
 
-  @Override
-  public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
-      result = result * 37 + (id != null ? id.hashCode() : 0);
-      result = result * 37 + (email != null ? email.hashCode() : 0);
-      result = result * 37 + (phone != null ? phone.hashCode() : 1);
-      hashCode = result;
+  public static Person read(ProtoReader reader) throws IOException {
+    Builder builder = new Builder();
+    while (reader.hasNext()) {
+      int tag = reader.nextTag();
+      switch (tag) {
+        case 1: builder.name = reader.value(TypeAdapter.STRING); break;
+        case 2: builder.id = reader.value(TypeAdapter.INT32); break;
+        case 3: builder.email = reader.value(TypeAdapter.STRING); break;
+        case 4: builder.phone = repeatedMessage(builder.phone, reader, PhoneNumber.ADAPTER); break;
+        default: builder.readUnknown(tag, reader); break;
+      }
     }
-    return result;
+    return builder.build();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Person> {
@@ -160,7 +150,7 @@ public final class Person extends Message {
     }
   }
 
-  public enum PhoneType implements ProtoEnum {
+  public enum PhoneType implements WireEnum {
     MOBILE(0),
 
     HOME(1),
@@ -170,6 +160,13 @@ public final class Person extends Message {
      */
     WORK(2);
 
+    public static final TypeAdapter.EnumAdapter<PhoneType> ADAPTER = new TypeAdapter.EnumAdapter<PhoneType>() {
+      @Override
+      public PhoneType fromValue(int value) {
+        return PhoneType.fromValue(value);
+      }
+    };
+
     private final int value;
 
     PhoneType(int value) {
@@ -177,13 +174,29 @@ public final class Person extends Message {
     }
 
     @Override
-    public int getValue() {
+    public int value() {
       return value;
+    }
+
+    public static PhoneType fromValue(int value) {
+      switch (value) {
+        case 0: return MOBILE;
+        case 1: return HOME;
+        case 2: return WORK;
+        default: return null;
+      }
     }
   }
 
-  public static final class PhoneNumber extends Message {
+  public static final class PhoneNumber extends Message<PhoneNumber> {
     private static final long serialVersionUID = 0L;
+
+    public static final TypeAdapter<PhoneNumber> ADAPTER = new TypeAdapter.MessageAdapter<PhoneNumber>() {
+      @Override
+      public PhoneNumber read(ProtoReader reader) throws IOException {
+        return PhoneNumber.read(reader);
+      }
+    };
 
     public static final String DEFAULT_NUMBER = "";
 
@@ -192,23 +205,15 @@ public final class Person extends Message {
     /**
      * The customer's phone number.
      */
-    @ProtoField(
-        tag = 1,
-        type = Message.Datatype.STRING,
-        label = Message.Label.REQUIRED
-    )
     public final String number;
 
     /**
      * The type of phone stored here.
      */
-    @ProtoField(
-        tag = 2,
-        type = Message.Datatype.ENUM
-    )
     public final PhoneType type;
 
     public PhoneNumber(String number, PhoneType type) {
+      super("PhoneNumber");
       this.number = number;
       this.type = type;
     }
@@ -219,23 +224,23 @@ public final class Person extends Message {
     }
 
     @Override
-    public boolean equals(Object other) {
-      if (other == this) return true;
-      if (!(other instanceof PhoneNumber)) return false;
-      PhoneNumber o = (PhoneNumber) other;
-      return equals(number, o.number)
-          && equals(type, o.type);
+    protected void visitFields(Message.Visitor visitor) {
+      visitor.value(1, "number", number, TypeAdapter.STRING, false);
+      visitor.value(2, "type", type, PhoneType.ADAPTER, false);
+      visitor.unknowns(this);
     }
 
-    @Override
-    public int hashCode() {
-      int result = hashCode;
-      if (result == 0) {
-        result = number != null ? number.hashCode() : 0;
-        result = result * 37 + (type != null ? type.hashCode() : 0);
-        hashCode = result;
+    public static PhoneNumber read(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      while (reader.hasNext()) {
+        int tag = reader.nextTag();
+        switch (tag) {
+          case 1: builder.number = reader.value(TypeAdapter.STRING); break;
+          case 2: builder.type = enumOrUnknown(2, reader, PhoneType.ADAPTER, builder); break;
+          default: builder.readUnknown(tag, reader); break;
+        }
       }
-      return result;
+      return builder.build();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<PhoneNumber> {

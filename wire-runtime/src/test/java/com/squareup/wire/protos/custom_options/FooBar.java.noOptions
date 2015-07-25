@@ -4,8 +4,11 @@ package com.squareup.wire.protos.custom_options;
 
 import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
+import com.squareup.wire.WireEnum;
 import com.squareup.wire.ProtoField;
+import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Double;
 import java.lang.Float;
 import java.lang.Integer;
@@ -117,7 +120,42 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     return result;
   }
 
+<<<<<<< HEAD
   public static final class Builder extends ExtendableMessage.ExtendableBuilder<FooBar, Builder> {
+=======
+  @Override
+  protected int serializedSize() {
+    int serializedSize = this.serializedSize;
+    if (serializedSize == -1) {
+      serializedSize = unknownFieldsSerializedSize()
+          +  extensionsSerializedSize()
+          + (foo != null ? sizeOf(1, foo, ProtoType.INT32) : 0)
+          + (bar != null ? sizeOf(2, bar, ProtoType.STRING) : 0)
+          + (baz != null ? sizeOf(3, baz, ProtoType.MESSAGE) : 0)
+          + (qux != null ? sizeOf(4, qux, ProtoType.UINT64) : 0)
+          + sizeOfRepeated(5, fred, ProtoType.FLOAT)
+          + (daisy != null ? sizeOf(6, daisy, ProtoType.DOUBLE) : 0)
+          + sizeOfRepeated(7, nested, ProtoType.MESSAGE);
+    }
+    this.serializedSize = serializedSize;
+    return serializedSize;
+  }
+
+  @Override
+  protected void write(ProtoWriter writer) throws IOException {
+    if (foo != null) writer.value(1, foo, ProtoType.INT32);
+    if (bar != null) writer.value(2, bar, ProtoType.STRING);
+    if (baz != null) writer.value(3, baz, ProtoType.MESSAGE);
+    if (qux != null) writer.value(4, qux, ProtoType.UINT64);
+    writer.repeated(5, fred, ProtoType.FLOAT);
+    if (daisy != null) writer.value(6, daisy, ProtoType.DOUBLE);
+    writer.repeated(7, nested, ProtoType.MESSAGE);
+    writeExtensions(writer);
+    writeUnknownFields(writer);
+  }
+
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FooBar> {
+>>>>>>> WIP
     public Integer foo;
 
     public String bar;
@@ -222,6 +260,23 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       return result != 0 ? result : (hashCode = value != null ? value.hashCode() : 0);
     }
 
+    @Override
+    protected int serializedSize() {
+      int serializedSize = this.serializedSize;
+      if (serializedSize == -1) {
+        serializedSize = unknownFieldsSerializedSize()
+            + (value != null ? sizeOf(1, value, ProtoType.ENUM) : 0);
+      }
+      this.serializedSize = serializedSize;
+      return serializedSize;
+    }
+
+    @Override
+    protected void write(ProtoWriter writer) throws IOException {
+      if (value != null) writer.value(1, value, ProtoType.ENUM);
+      writeUnknownFields(writer);
+    }
+
     public static final class Builder extends com.squareup.wire.Message.Builder<Nested> {
       public FooBarBazEnum value;
 
@@ -276,6 +331,23 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     public int hashCode() {
       int result = hashCode;
       return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 1);
+    }
+
+    @Override
+    protected int serializedSize() {
+      int serializedSize = this.serializedSize;
+      if (serializedSize == -1) {
+        serializedSize = unknownFieldsSerializedSize()
+            + sizeOfRepeated(1, serial, ProtoType.INT32);
+      }
+      this.serializedSize = serializedSize;
+      return serializedSize;
+    }
+
+    @Override
+    protected void write(ProtoWriter writer) throws IOException {
+      writer.repeated(1, serial, ProtoType.INT32);
+      writeUnknownFields(writer);
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<More> {
