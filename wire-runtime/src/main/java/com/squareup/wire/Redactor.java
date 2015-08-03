@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Creates redacted copies of objects. */
-public class Redactor<T extends Message> {
+class Redactor<T extends Message> {
   private static final Redactor<?> NOOP_REDACTOR = new Redactor<Message>(null, null, null, null) {
     @Override
     public Message redact(Message message) {
@@ -37,7 +37,7 @@ public class Redactor<T extends Message> {
 
   /** Returns a Redactor for {@code messageClass}. */
   @SuppressWarnings("unchecked") // Field and member redactors always agree.
-  public static synchronized <T extends Message> Redactor<T> get(Class<T> messageClass) {
+  static synchronized <T extends Message> Redactor<T> get(Class<T> messageClass) {
     Redactor<T> existingRedactor = redactors.get(messageClass);
     if (existingRedactor != null) {
       return existingRedactor;
