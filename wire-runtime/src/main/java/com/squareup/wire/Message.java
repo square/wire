@@ -161,7 +161,7 @@ public abstract class Message implements Serializable {
     return adapter.fromInt(value);
   }
 
-  void writeUnknownFieldMap(WireOutput output) throws IOException {
+  void writeUnknownFieldMap(ProtoWriter output) throws IOException {
     if (unknownFields != null) {
       unknownFields.write(output);
     }

@@ -63,15 +63,15 @@ public abstract class MessageAdapter<M extends Message> {
   public final void write(M value, BufferedSink sink) throws IOException {
     checkNotNull(value, "value == null");
     checkNotNull(sink, "sink == null");
-    write(value, new WireOutput(sink));
+    write(value, new ProtoWriter(sink));
   }
 
-  abstract void write(M message, WireOutput output) throws IOException;
+  abstract void write(M message, ProtoWriter output) throws IOException;
 
   /** Read an encoded message from {@code source}. */
   public final M read(BufferedSource source) throws IOException {
     checkNotNull(source, "source == null");
-    return read(new WireInput(source));
+    return read(new ProtoReader(source));
   }
 
   /** Read an encoded message from {@code bytes}. */
@@ -87,5 +87,5 @@ public abstract class MessageAdapter<M extends Message> {
   }
 
   /** Uses reflection to read an instance from {@code input}. */
-  abstract M read(WireInput input) throws IOException;
+  abstract M read(ProtoReader input) throws IOException;
 }

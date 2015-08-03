@@ -288,13 +288,13 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       packedLength += getSerializedSizeNoTag(value.get(i), datatype);
     }
     // tag + length + value + value + ...
-    int size = WireOutput.varint32Size(WireOutput.makeTag(tag, WireType.LENGTH_DELIMITED));
-    size += WireOutput.varint32Size(packedLength);
+    int size = ProtoWriter.varint32Size(ProtoWriter.makeTag(tag, WireType.LENGTH_DELIMITED));
+    size += ProtoWriter.varint32Size(packedLength);
     size += packedLength;
     return size;
   }
 
-  @Override void write(M message, WireOutput output) throws IOException {
+  @Override void write(M message, ProtoWriter output) throws IOException {
     for (FieldInfo fieldInfo : getFields()) {
       Object value = getFieldValue(message, fieldInfo);
       if (value == null) {
@@ -324,7 +324,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     message.writeUnknownFieldMap(output);
   }
 
-  private <T extends ExtendableMessage<T>> void writeExtensions(WireOutput output,
+  private <T extends ExtendableMessage<T>> void writeExtensions(ProtoWriter output,
       ExtensionMap<T> extensionMap) throws IOException {
     for (int i = 0, count = extensionMap.size(); i < count; i++) {
       Extension<T, ?> extension = extensionMap.getExtension(i);
@@ -344,14 +344,14 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
   }
 
-  private void writeRepeated(WireOutput output, List<?> value, int tag, Datatype datatype)
+  private void writeRepeated(ProtoWriter output, List<?> value, int tag, Datatype datatype)
       throws IOException {
     for (int i = 0, count = value.size(); i < count; i++) {
       writeValue(output, tag, value.get(i), datatype);
     }
   }
 
-  private void writePacked(WireOutput output, List<?> value, int tag, Datatype datatype)
+  private void writePacked(ProtoWriter output, List<?> value, int tag, Datatype datatype)
       throws IOException {
     int packedLength = 0;
     for (int i = 0, count = value.size(); i < count; i++) {
@@ -403,7 +403,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
    * Returns the serialized size in bytes of the given tag and value.
    */
   private int getSerializedSize(int tag, Object value, Datatype datatype) {
-    return WireOutput.varintTagSize(tag) + getSerializedSizeNoTag(value, datatype);
+    return ProtoWriter.varintTagSize(tag) + getSerializedSizeNoTag(value, datatype);
   }
 
   /**
@@ -412,19 +412,19 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
    */
   private int getSerializedSizeNoTag(Object value, Datatype datatype) {
     switch (datatype) {
-      case INT32: return WireOutput.int32Size((Integer) value);
-      case INT64: case UINT64: return WireOutput.varint64Size((Long) value);
-      case UINT32: return WireOutput.varint32Size((Integer) value);
-      case SINT32: return WireOutput.varint32Size(WireOutput.zigZag32((Integer) value));
-      case SINT64: return WireOutput.varint64Size(WireOutput.zigZag64((Long) value));
+      case INT32: return ProtoWriter.int32Size((Integer) value);
+      case INT64: case UINT64: return ProtoWriter.varint64Size((Long) value);
+      case UINT32: return ProtoWriter.varint32Size((Integer) value);
+      case SINT32: return ProtoWriter.varint32Size(ProtoWriter.zigZag32((Integer) value));
+      case SINT64: return ProtoWriter.varint64Size(ProtoWriter.zigZag64((Long) value));
       case BOOL: return 1;
       case ENUM: return getEnumSize((ProtoEnum) value);
       case STRING:
         int utf8Length = utf8Length((String) value);
-        return WireOutput.varint32Size(utf8Length) + utf8Length;
+        return ProtoWriter.varint32Size(utf8Length) + utf8Length;
       case BYTES:
         int length = ((ByteString) value).size();
-        return WireOutput.varint32Size(length) + length;
+        return ProtoWriter.varint32Size(length) + length;
       case MESSAGE: return getMessageSize((Message) value);
       case FIXED32: case SFIXED32: case FLOAT:
         return WireType.FIXED_32_SIZE;
@@ -454,7 +454,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
 
   @SuppressWarnings("unchecked")
   private <E extends ProtoEnum> int getEnumSize(E value) {
-    return WireOutput.varint32Size(value.getValue());
+    return ProtoWriter.varint32Size(value.getValue());
   }
 
   @SuppressWarnings("unchecked")
@@ -464,10 +464,10 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
       size = message.cachedSerializedSize = adapter.getSerializedSize(message);
     }
-    return WireOutput.varint32Size(size) + size;
+    return ProtoWriter.varint32Size(size) + size;
   }
 
-  private void writeValue(WireOutput output, int tag, Object value, Datatype datatype)
+  private void writeValue(ProtoWriter output, int tag, Object value, Datatype datatype)
       throws IOException {
     output.writeTag(tag, datatype.wireType());
     writeValueNoTag(output, value, datatype);
@@ -476,14 +476,14 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   /**
    * Writes a value with no tag.
    */
-  private void writeValueNoTag(WireOutput output, Object value, Datatype datatype)
+  private void writeValueNoTag(ProtoWriter output, Object value, Datatype datatype)
       throws IOException {
     switch (datatype) {
       case INT32: output.writeSignedVarint32((Integer) value); break;
       case INT64: case UINT64: output.writeVarint64((Long) value); break;
       case UINT32: output.writeVarint32((Integer) value); break;
-      case SINT32: output.writeVarint32(WireOutput.zigZag32((Integer) value)); break;
-      case SINT64: output.writeVarint64(WireOutput.zigZag64((Long) value)); break;
+      case SINT32: output.writeVarint32(ProtoWriter.zigZag32((Integer) value)); break;
+      case SINT64: output.writeVarint64(ProtoWriter.zigZag64((Long) value)); break;
       case BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
       case ENUM: writeEnum((ProtoEnum) value, output); break;
       case STRING:
@@ -506,7 +506,8 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   }
 
   @SuppressWarnings("unchecked")
-  private <MM extends Message> void writeMessage(MM message, WireOutput output) throws IOException {
+  private <MM extends Message> void writeMessage(MM message, ProtoWriter output)
+      throws IOException {
     MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
     int size = message.cachedSerializedSize;
     if (size == -1) {
@@ -517,14 +518,14 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   }
 
   @SuppressWarnings("unchecked")
-  private <E extends ProtoEnum> void writeEnum(E value, WireOutput output)
+  private <E extends ProtoEnum> void writeEnum(E value, ProtoWriter output)
       throws IOException {
     output.writeVarint32(value.getValue());
   }
 
   // Reading
 
-  @Override M read(WireInput input) throws IOException {
+  @Override M read(ProtoReader input) throws IOException {
     try {
       Builder<M> builder = builderType.newInstance();
       Storage storage = new Storage();
@@ -612,12 +613,12 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
   }
 
-  private Object readValue(WireInput input, int tag, Datatype datatype) throws IOException {
+  private Object readValue(ProtoReader input, int tag, Datatype datatype) throws IOException {
     switch (datatype) {
       case INT32: case UINT32: return input.readVarint32();
       case INT64: case UINT64: return input.readVarint64();
-      case SINT32: return WireInput.decodeZigZag32(input.readVarint32());
-      case SINT64: return WireInput.decodeZigZag64(input.readVarint64());
+      case SINT32: return ProtoReader.decodeZigZag32(input.readVarint32());
+      case SINT64: return ProtoReader.decodeZigZag64(input.readVarint64());
       case BOOL: return input.readVarint32() != 0;
       case ENUM:
         EnumAdapter<? extends ProtoEnum> adapter = getEnumAdapter(tag);
@@ -639,9 +640,9 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
   }
 
-  private Message readMessage(WireInput input, int tag) throws IOException {
+  private Message readMessage(ProtoReader input, int tag) throws IOException {
     final int length = input.readVarint32();
-    if (input.recursionDepth >= WireInput.RECURSION_LIMIT) {
+    if (input.recursionDepth >= ProtoReader.RECURSION_LIMIT) {
       throw new IOException("Wire recursion limit exceeded");
     }
     final int oldLimit = input.pushLimit(length);
@@ -692,7 +693,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     return messageClass;
   }
 
-  private void readUnknownField(Builder builder, WireInput input, int tag, WireType type)
+  private void readUnknownField(Builder builder, ProtoReader input, int tag, WireType type)
       throws IOException {
     switch (type) {
       case VARINT:
