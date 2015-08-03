@@ -22,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -95,15 +94,6 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
   }
 
-  Collection<FieldInfo> getFields() {
-    return fieldInfoMap.values();
-  }
-
-  FieldInfo getField(String name) {
-    Integer key = tagMap.get(name);
-    return key == null ? null : fieldInfoMap.get(key);
-  }
-
   Object getFieldValue(M message, FieldInfo fieldInfo) {
     if (fieldInfo.messageField == null) {
       throw new AssertionError("Field is not of type \"Message\"");
@@ -136,7 +126,6 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   private final Wire wire;
   private final Class<M> messageType;
   private final Class<Builder<M>> builderType;
-  private final Map<String, Integer> tagMap = new LinkedHashMap<String, Integer>();
   private final TagMap<FieldInfo> fieldInfoMap;
 
   /** Cache information about the Message class and its mapping to proto wire format. */
@@ -151,9 +140,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       ProtoField annotation = messageField.getAnnotation(ProtoField.class);
       if (annotation != null) {
         int tag = annotation.tag();
-
         String name = messageField.getName();
-        tagMap.put(name, tag);
         Class<?> enumOrMessageType = null;
         Datatype datatype = annotation.type();
         if (datatype == Datatype.ENUM) {
@@ -168,6 +155,10 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
 
     fieldInfoMap = TagMap.of(map);
+  }
+
+  TagMap<FieldInfo> getFieldInfoMap() {
+    return fieldInfoMap;
   }
 
   @SuppressWarnings("unchecked")
@@ -223,7 +214,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
 
   @Override public int getSerializedSize(M message) {
     int size = 0;
-    for (FieldInfo fieldInfo : getFields()) {
+    for (FieldInfo fieldInfo : fieldInfoMap.values) {
       Object value = getFieldValue(message, fieldInfo);
       if (value == null) {
         continue;
@@ -295,7 +286,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   }
 
   @Override void write(M message, ProtoWriter output) throws IOException {
-    for (FieldInfo fieldInfo : getFields()) {
+    for (FieldInfo fieldInfo : fieldInfoMap.values) {
       Object value = getFieldValue(message, fieldInfo);
       if (value == null) {
         continue;
@@ -377,7 +368,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     sb.append("{");
 
     String sep = "";
-    for (FieldInfo fieldInfo : getFields()) {
+    for (FieldInfo fieldInfo : fieldInfoMap.values) {
       Object value = getFieldValue(message, fieldInfo);
       if (value == null) {
         continue;

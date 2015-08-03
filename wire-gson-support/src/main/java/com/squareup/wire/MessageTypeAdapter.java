@@ -22,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.squareup.wire.ReflectiveMessageAdapter.FieldInfo;
 import com.squareup.wire.UnknownFieldMap.Fixed32Value;
 import com.squareup.wire.UnknownFieldMap.Fixed64Value;
 import com.squareup.wire.UnknownFieldMap.LengthDelimitedValue;
@@ -31,11 +32,14 @@ import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import okio.ByteString;
 
 import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
+import static java.util.Collections.unmodifiableMap;
 
 class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
 
@@ -54,15 +58,22 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
   // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
   private static final BigInteger POWER_64 = new BigInteger("18446744073709551616");
 
-  private final Wire wire;
   private final Gson gson;
-  private final Class<M> type;
+  private final ReflectiveMessageAdapter<M> messageAdapter;
+  private final TagMap<FieldInfo> fieldInfoMap;
+  private final Map<String, Integer> tagMap;
 
   @SuppressWarnings("unchecked")
   public MessageTypeAdapter(Wire wire, Gson gson, TypeToken<M> type) {
-    this.wire = wire;
     this.gson = gson;
-    this.type = (Class<M>) type.getRawType();
+    this.messageAdapter = wire.messageAdapter((Class<M>) type.getRawType());
+    this.fieldInfoMap = messageAdapter.getFieldInfoMap();
+
+    LinkedHashMap<String, Integer> tagMap = new LinkedHashMap<String, Integer>();
+    for (FieldInfo fieldInfo : fieldInfoMap.values) {
+      tagMap.put(fieldInfo.name, fieldInfo.tag);
+    }
+    this.tagMap = unmodifiableMap(tagMap);
   }
 
   @SuppressWarnings("unchecked")
@@ -72,9 +83,8 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       return;
     }
 
-    ReflectiveMessageAdapter<M> messageAdapter = wire.messageAdapter((Class<M>) message.getClass());
     out.beginObject();
-    for (ReflectiveMessageAdapter.FieldInfo fieldInfo : messageAdapter.getFields()) {
+    for (FieldInfo fieldInfo : fieldInfoMap.values) {
       Object value = messageAdapter.getFieldValue(message, fieldInfo);
       if (value == null) {
         continue;
@@ -170,14 +180,13 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       return null;
     }
 
-    ReflectiveMessageAdapter<M> messageAdapter = wire.messageAdapter(type);
     Message.Builder<M> builder = messageAdapter.newBuilder();
     in.beginObject();
 
     while (in.peek() == JsonToken.NAME) {
       String name = in.nextName();
-      ReflectiveMessageAdapter.FieldInfo fieldInfo = messageAdapter.getField(name);
-      if (fieldInfo == null) {
+      Integer tag = tagMap.get(name);
+      if (tag == null) {
         Extension<?, ?> extension = messageAdapter.getExtension(name);
         if (extension == null) {
           parseUnknownField(in, builder, Integer.parseInt(name));
@@ -187,6 +196,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
           ((ExtendableMessage.ExtendableBuilder) builder).setExtension(extension, value);
         }
       } else {
+        FieldInfo fieldInfo = fieldInfoMap.get(tag);
         Type valueType = getType(fieldInfo);
         Object value = parseValue(fieldInfo.label, valueType, parse(in));
         // Use the builder setter method to ensure proper 'oneof' behavior.
@@ -202,7 +212,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     return gson.fromJson(in, JsonElement.class);
   }
 
-  private Type getType(ReflectiveMessageAdapter.FieldInfo fieldInfo) {
+  private Type getType(FieldInfo fieldInfo) {
     Type valueType;
     if (fieldInfo.datatype == Datatype.ENUM) {
       valueType = fieldInfo.enumType;

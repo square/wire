@@ -1,7 +1,6 @@
 package com.squareup.wire;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,7 @@ abstract class TagMap<T> {
         }
       };
 
-  List<T> values;
+  final List<T> values;
 
   /**
    * Creates a TagMap based on the entries of an incoming map.
@@ -69,10 +68,6 @@ abstract class TagMap<T> {
 
   protected TagMap(Map<Integer, T> map) {
     this.values = sortedValues(map);
-  }
-
-  public Collection<T> values() {
-    return values;
   }
 
   public abstract T get(int tag);
