@@ -101,7 +101,7 @@ public class TagMapTest {
 
   private String joinValues(TagMap<String> tagMap) {
     StringBuilder sb = new StringBuilder();
-    for (String s : tagMap.values()) {
+    for (String s : tagMap.values) {
       if (sb.length() > 0) {
         sb.append(" ");
       }
