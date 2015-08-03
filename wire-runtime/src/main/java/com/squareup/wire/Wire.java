@@ -26,8 +26,9 @@ import java.util.Map;
  */
 public final class Wire {
 
-  private final Map<Class<? extends Message>, MessageAdapter<? extends Message>> messageAdapters =
-      new LinkedHashMap<Class<? extends Message>, MessageAdapter<? extends Message>>();
+  private final Map<Class<? extends Message>, ReflectiveMessageAdapter<? extends Message>>
+      messageAdapters =
+      new LinkedHashMap<Class<? extends Message>, ReflectiveMessageAdapter<? extends Message>>();
   private final Map<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>> enumAdapters =
       new LinkedHashMap<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>>();
 
@@ -73,10 +74,12 @@ public final class Wire {
    * Returns a message adapter for {@code messageType}.
    */
   @SuppressWarnings("unchecked")
-  synchronized <M extends Message> MessageAdapter<M> messageAdapter(Class<M> messageType) {
-    MessageAdapter<M> adapter = (MessageAdapter<M>) messageAdapters.get(messageType);
+  synchronized <M extends Message> ReflectiveMessageAdapter<M> messageAdapter(
+      Class<M> messageType) {
+    ReflectiveMessageAdapter<M> adapter =
+        (ReflectiveMessageAdapter<M>) messageAdapters.get(messageType);
     if (adapter == null) {
-      adapter = new MessageAdapter<M>(this, messageType);
+      adapter = new ReflectiveMessageAdapter<M>(this, messageType);
       messageAdapters.put(messageType, adapter);
     }
     return adapter;

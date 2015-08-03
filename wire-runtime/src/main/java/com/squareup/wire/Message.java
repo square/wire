@@ -143,7 +143,7 @@ public abstract class Message implements Serializable {
     }
     if (list == Collections.emptyList()) {
       return list;
-    } else if (list instanceof MessageAdapter.ImmutableList) {
+    } else if (list instanceof ReflectiveMessageAdapter.ImmutableList) {
       return list;
     }
     return Collections.unmodifiableList(new ArrayList<T>(list));

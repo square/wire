@@ -72,9 +72,9 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       return;
     }
 
-    MessageAdapter<M> messageAdapter = wire.messageAdapter((Class<M>) message.getClass());
+    ReflectiveMessageAdapter<M> messageAdapter = wire.messageAdapter((Class<M>) message.getClass());
     out.beginObject();
-    for (MessageAdapter.FieldInfo fieldInfo : messageAdapter.getFields()) {
+    for (ReflectiveMessageAdapter.FieldInfo fieldInfo : messageAdapter.getFields()) {
       Object value = messageAdapter.getFieldValue(message, fieldInfo);
       if (value == null) {
         continue;
@@ -170,13 +170,13 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       return null;
     }
 
-    MessageAdapter<M> messageAdapter = wire.messageAdapter(type);
+    ReflectiveMessageAdapter<M> messageAdapter = wire.messageAdapter(type);
     Message.Builder<M> builder = messageAdapter.newBuilder();
     in.beginObject();
 
     while (in.peek() == JsonToken.NAME) {
       String name = in.nextName();
-      MessageAdapter.FieldInfo fieldInfo = messageAdapter.getField(name);
+      ReflectiveMessageAdapter.FieldInfo fieldInfo = messageAdapter.getField(name);
       if (fieldInfo == null) {
         Extension<?, ?> extension = messageAdapter.getExtension(name);
         if (extension == null) {
@@ -202,7 +202,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     return gson.fromJson(in, JsonElement.class);
   }
 
-  private Type getType(MessageAdapter.FieldInfo fieldInfo) {
+  private Type getType(ReflectiveMessageAdapter.FieldInfo fieldInfo) {
     Type valueType;
     if (fieldInfo.datatype == Datatype.ENUM) {
       valueType = fieldInfo.enumType;
