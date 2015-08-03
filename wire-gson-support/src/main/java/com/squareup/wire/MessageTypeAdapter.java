@@ -22,7 +22,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import com.squareup.wire.ReflectiveMessageAdapter.FieldInfo;
 import com.squareup.wire.UnknownFieldMap.Fixed32Value;
 import com.squareup.wire.UnknownFieldMap.Fixed64Value;
 import com.squareup.wire.UnknownFieldMap.LengthDelimitedValue;
@@ -60,18 +59,18 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
 
   private final Gson gson;
   private final ReflectiveMessageAdapter<M> messageAdapter;
-  private final TagMap<FieldInfo> fieldInfoMap;
+  private final TagMap<ReflectiveFieldBinding> fieldBindingMap;
   private final Map<String, Integer> tagMap;
 
   @SuppressWarnings("unchecked")
   public MessageTypeAdapter(Wire wire, Gson gson, TypeToken<M> type) {
     this.gson = gson;
     this.messageAdapter = wire.messageAdapter((Class<M>) type.getRawType());
-    this.fieldInfoMap = messageAdapter.getFieldInfoMap();
+    this.fieldBindingMap = messageAdapter.getFieldBindingMap();
 
     LinkedHashMap<String, Integer> tagMap = new LinkedHashMap<String, Integer>();
-    for (FieldInfo fieldInfo : fieldInfoMap.values) {
-      tagMap.put(fieldInfo.name, fieldInfo.tag);
+    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+      tagMap.put(fieldBinding.name, fieldBinding.tag);
     }
     this.tagMap = unmodifiableMap(tagMap);
   }
@@ -84,13 +83,13 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     }
 
     out.beginObject();
-    for (FieldInfo fieldInfo : fieldInfoMap.values) {
-      Object value = messageAdapter.getFieldValue(message, fieldInfo);
+    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+      Object value = fieldBinding.getValue(message);
       if (value == null) {
         continue;
       }
-      out.name(fieldInfo.name);
-      emitJson(out, value, fieldInfo.datatype, fieldInfo.label);
+      out.name(fieldBinding.name);
+      emitJson(out, value, fieldBinding.datatype, fieldBinding.label);
     }
 
     if (message instanceof ExtendableMessage<?>) {
@@ -196,11 +195,11 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
           ((ExtendableMessage.ExtendableBuilder) builder).setExtension(extension, value);
         }
       } else {
-        FieldInfo fieldInfo = fieldInfoMap.get(tag);
-        Type valueType = getType(fieldInfo);
-        Object value = parseValue(fieldInfo.label, valueType, parse(in));
+        ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
+        Type valueType = getType(fieldBinding);
+        Object value = parseValue(fieldBinding.label, valueType, parse(in));
         // Use the builder setter method to ensure proper 'oneof' behavior.
-        messageAdapter.setBuilderMethod(builder, fieldInfo, value);
+        fieldBinding.setBuilderMethod(builder, value);
       }
     }
 
@@ -212,14 +211,14 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     return gson.fromJson(in, JsonElement.class);
   }
 
-  private Type getType(FieldInfo fieldInfo) {
+  private Type getType(ReflectiveFieldBinding fieldBinding) {
     Type valueType;
-    if (fieldInfo.datatype == Datatype.ENUM) {
-      valueType = fieldInfo.enumType;
-    } else if (fieldInfo.datatype == Datatype.MESSAGE) {
-      valueType = fieldInfo.messageType;
+    if (fieldBinding.datatype == Datatype.ENUM) {
+      valueType = fieldBinding.enumType;
+    } else if (fieldBinding.datatype == Datatype.MESSAGE) {
+      valueType = fieldBinding.messageType;
     } else {
-      valueType = javaType(fieldInfo.datatype);
+      valueType = javaType(fieldBinding.datatype);
     }
     return valueType;
   }

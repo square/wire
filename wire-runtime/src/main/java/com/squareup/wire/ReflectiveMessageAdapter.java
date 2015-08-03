@@ -18,8 +18,6 @@ package com.squareup.wire;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,47 +39,31 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   // The string to use when redacting fields from toString.
   private static final String REDACTED = FULL_BLOCK + FULL_BLOCK;
 
-  static final class FieldInfo {
-    final int tag;
-    final String name;
-    final Datatype datatype;
-    final Label label;
-    final Class<? extends ProtoEnum> enumType;
-    final Class<? extends Message> messageType;
-    final boolean redacted;
+  private final Wire wire;
+  private final Class<M> messageType;
+  private final Class<Builder<M>> builderType;
+  private final TagMap<ReflectiveFieldBinding> fieldBindingMap;
 
-    // Cached values
-    MessageAdapter<? extends Message> messageAdapter;
-    EnumAdapter<? extends ProtoEnum> enumAdapter;
+  /** Cache information about the Message class and its mapping to proto wire format. */
+  ReflectiveMessageAdapter(Wire wire, Class<M> messageType) {
+    this.wire = wire;
+    this.messageType = messageType;
+    this.builderType = getBuilderType(messageType);
 
-    private final Field messageField;
-    private final Field builderField;
-    private final Method builderMethod;
-
-    @SuppressWarnings("unchecked")
-    private FieldInfo(int tag, String name, Datatype datatype, Label label, boolean redacted,
-        Class<?> enumOrMessageType, Field messageField, Field builderField, Method builderMethod) {
-      this.tag = tag;
-      this.name = name;
-      this.datatype = datatype;
-      this.label = label;
-      this.redacted = redacted;
-      if (datatype == Datatype.ENUM) {
-        this.enumType = (Class<? extends ProtoEnum>) enumOrMessageType;
-        this.messageType = null;
-      } else if (datatype == Datatype.MESSAGE) {
-        this.messageType = (Class<? extends Message>) enumOrMessageType;
-        this.enumType = null;
-      } else {
-        this.enumType = null;
-        this.messageType = null;
+    Map<Integer, ReflectiveFieldBinding> map = new LinkedHashMap<Integer, ReflectiveFieldBinding>();
+    for (Field messageField : messageType.getDeclaredFields()) {
+      // Process fields annotated with '@ProtoField'
+      ProtoField protoField = messageField.getAnnotation(ProtoField.class);
+      if (protoField != null) {
+        int tag = protoField.tag();
+        map.put(tag, ReflectiveFieldBinding.create(protoField, messageField, builderType));
       }
-
-      // private fields
-      this.messageField = messageField;
-      this.builderField = builderField;
-      this.builderMethod = builderMethod;
     }
+    fieldBindingMap = TagMap.of(map);
+  }
+
+  TagMap<ReflectiveFieldBinding> getFieldBindingMap() {
+    return fieldBindingMap;
   }
 
   Builder<M> newBuilder() {
@@ -94,73 +76,6 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
   }
 
-  Object getFieldValue(M message, FieldInfo fieldInfo) {
-    if (fieldInfo.messageField == null) {
-      throw new AssertionError("Field is not of type \"Message\"");
-    }
-    try {
-      return fieldInfo.messageField.get(message);
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    }
-  }
-
-  void setBuilderField(Builder<M> builder, FieldInfo fieldInfo, Object value) {
-    try {
-      fieldInfo.builderField.set(builder, value);
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    }
-  }
-
-  void setBuilderMethod(Builder<M> builder, FieldInfo fieldInfo, Object value) {
-    try {
-      fieldInfo.builderMethod.invoke(builder, value);
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    } catch (InvocationTargetException e) {
-      throw new AssertionError(e);
-    }
-  }
-
-  private final Wire wire;
-  private final Class<M> messageType;
-  private final Class<Builder<M>> builderType;
-  private final TagMap<FieldInfo> fieldInfoMap;
-
-  /** Cache information about the Message class and its mapping to proto wire format. */
-  ReflectiveMessageAdapter(Wire wire, Class<M> messageType) {
-    this.wire = wire;
-    this.messageType = messageType;
-    this.builderType = getBuilderType(messageType);
-
-    Map<Integer, FieldInfo> map = new LinkedHashMap<Integer, FieldInfo>();
-    for (Field messageField : messageType.getDeclaredFields()) {
-      // Process fields annotated with '@ProtoField'
-      ProtoField annotation = messageField.getAnnotation(ProtoField.class);
-      if (annotation != null) {
-        int tag = annotation.tag();
-        String name = messageField.getName();
-        Class<?> enumOrMessageType = null;
-        Datatype datatype = annotation.type();
-        if (datatype == Datatype.ENUM) {
-          enumOrMessageType = getEnumType(messageField);
-        } else if (datatype == Datatype.MESSAGE) {
-          enumOrMessageType = getMessageType(messageField);
-        }
-        map.put(tag, new FieldInfo(tag, name, datatype, annotation.label(), annotation.redacted(),
-            enumOrMessageType, messageField, getBuilderField(name),
-            getBuilderMethod(name, messageField.getType())));
-      }
-    }
-
-    fieldInfoMap = TagMap.of(map);
-  }
-
-  TagMap<FieldInfo> getFieldInfoMap() {
-    return fieldInfoMap;
-  }
-
   @SuppressWarnings("unchecked")
   private Class<Builder<M>> getBuilderType(Class<M> messageType) {
     try {
@@ -171,57 +86,18 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
   }
 
-  private Field getBuilderField(String name) {
-    try {
-      return builderType.getField(name);
-    } catch (NoSuchFieldException e) {
-      throw new AssertionError("No builder field " + builderType.getName() + "." + name);
-    }
-  }
-
-  private Method getBuilderMethod(String name, Class<?> type) {
-    try {
-      return builderType.getMethod(name, type);
-    } catch (NoSuchMethodException e) {
-      throw new AssertionError("No builder method " + builderType.getName() + "." + name
-          + "(" + type.getName() + ")");
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private Class<? extends Message> getMessageType(Field field) {
-    Class<?> fieldType = field.getType();
-    if (Message.class.isAssignableFrom(fieldType)) {
-      return (Class<Message>) fieldType;
-    } else if (List.class.isAssignableFrom(fieldType)) {
-      return field.getAnnotation(ProtoField.class).messageType();
-    }
-    return null;
-  }
-
-  @SuppressWarnings("unchecked")
-  private Class<? extends Enum> getEnumType(Field field) {
-    Class<?> fieldType = field.getType();
-    if (Enum.class.isAssignableFrom(fieldType)) {
-      return (Class<Enum>) fieldType;
-    } else if (List.class.isAssignableFrom(fieldType)) {
-      return field.getAnnotation(ProtoField.class).enumType();
-    }
-    return null;
-  }
-
   // Writing
 
   @Override public int getSerializedSize(M message) {
     int size = 0;
-    for (FieldInfo fieldInfo : fieldInfoMap.values) {
-      Object value = getFieldValue(message, fieldInfo);
+    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+      Object value = fieldBinding.getValue(message);
       if (value == null) {
         continue;
       }
-      int tag = fieldInfo.tag;
-      Datatype datatype = fieldInfo.datatype;
-      Label label = fieldInfo.label;
+      int tag = fieldBinding.tag;
+      Datatype datatype = fieldBinding.datatype;
+      Label label = fieldBinding.label;
 
       if (label.isRepeated()) {
         if (label.isPacked()) {
@@ -286,14 +162,14 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   }
 
   @Override void write(M message, ProtoWriter output) throws IOException {
-    for (FieldInfo fieldInfo : fieldInfoMap.values) {
-      Object value = getFieldValue(message, fieldInfo);
+    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+      Object value = fieldBinding.getValue(message);
       if (value == null) {
         continue;
       }
-      int tag = fieldInfo.tag;
-      Datatype datatype = fieldInfo.datatype;
-      Label label = fieldInfo.label;
+      int tag = fieldBinding.tag;
+      Datatype datatype = fieldBinding.datatype;
+      Label label = fieldBinding.label;
 
       if (label.isRepeated()) {
         if (label.isPacked()) {
@@ -368,16 +244,16 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     sb.append("{");
 
     String sep = "";
-    for (FieldInfo fieldInfo : fieldInfoMap.values) {
-      Object value = getFieldValue(message, fieldInfo);
+    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+      Object value = fieldBinding.getValue(message);
       if (value == null) {
         continue;
       }
       sb.append(sep);
       sep = ", ";
-      sb.append(fieldInfo.name);
+      sb.append(fieldBinding.name);
       sb.append("=");
-      sb.append(fieldInfo.redacted ? REDACTED : value);
+      sb.append(fieldBinding.redacted ? REDACTED : value);
     }
     if (message instanceof ExtendableMessage<?>) {
       ExtendableMessage<?> extendableMessage = (ExtendableMessage<?>) message;
@@ -529,11 +405,11 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
         if (tag == 0) {
           // Set repeated fields
           for (int storedTag : storage.getTags()) {
-            FieldInfo fieldInfo = fieldInfoMap.get(storedTag);
+            ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(storedTag);
             List<Object> value = storage.get(storedTag);
 
-            if (fieldInfo != null) {
-              setBuilderField(builder, fieldInfo, value);
+            if (fieldBinding != null) {
+              fieldBinding.setBuilderField(builder, value);
             } else {
               setExtension((ExtendableBuilder<?, ?>) builder, getExtension(storedTag), value);
             }
@@ -543,10 +419,10 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
 
         Datatype datatype;
         Label label;
-        FieldInfo fieldInfo = fieldInfoMap.get(tag);
-        if (fieldInfo != null) {
-          datatype = fieldInfo.datatype;
-          label = fieldInfo.label;
+        ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
+        if (fieldBinding != null) {
+          datatype = fieldBinding.datatype;
+          label = fieldBinding.label;
         } else {
           extension = getExtension(tag);
           if (extension == null) {
@@ -590,9 +466,9 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
             } else if (label.isOneOf()) {
               // In order to maintain the 'oneof' invariant, call the builder setter method rather
               // than setting the builder field directly.
-              setBuilderMethod(builder, fieldInfo, value);
+              fieldBinding.setBuilderMethod(builder, value);
             } else {
-              setBuilderField(builder, fieldInfo, value);
+              fieldBinding.setBuilderField(builder, value);
             }
           }
         }
@@ -647,34 +523,34 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   }
 
   private MessageAdapter<? extends Message> getMessageAdapter(int tag) {
-    FieldInfo fieldInfo = fieldInfoMap.get(tag);
-    if (fieldInfo != null && fieldInfo.messageAdapter != null) {
-      return fieldInfo.messageAdapter;
+    ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
+    if (fieldBinding != null && fieldBinding.messageAdapter != null) {
+      return fieldBinding.messageAdapter;
     }
     MessageAdapter<? extends Message> result = wire.messageAdapter(getMessageClass(tag));
-    if (fieldInfo != null) {
-      fieldInfo.messageAdapter = result;
+    if (fieldBinding != null) {
+      fieldBinding.messageAdapter = result;
     }
     return result;
   }
 
   private EnumAdapter<? extends ProtoEnum> getEnumAdapter(int tag) {
-    FieldInfo fieldInfo = fieldInfoMap.get(tag);
-    if (fieldInfo != null && fieldInfo.enumAdapter != null) {
-      return fieldInfo.enumAdapter;
+    ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
+    if (fieldBinding != null && fieldBinding.enumAdapter != null) {
+      return fieldBinding.enumAdapter;
     }
     EnumAdapter<? extends ProtoEnum> result = wire.enumAdapter(getEnumClass(tag));
-    if (fieldInfo != null) {
-      fieldInfo.enumAdapter = result;
+    if (fieldBinding != null) {
+      fieldBinding.enumAdapter = result;
     }
     return result;
   }
 
   @SuppressWarnings("unchecked")
   private Class<Message> getMessageClass(int tag) {
-    FieldInfo fieldInfo = fieldInfoMap.get(tag);
-    Class<Message> messageClass = fieldInfo == null
-        ? null : (Class<Message>) fieldInfo.messageType;
+    ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
+    Class<Message> messageClass = fieldBinding == null
+        ? null : (Class<Message>) fieldBinding.messageType;
     if (messageClass == null) {
       Extension<?, ?> extension = getExtension(tag);
       if (extension != null) {
@@ -755,8 +631,8 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   }
 
   private Class<? extends ProtoEnum> getEnumClass(int tag) {
-    FieldInfo fieldInfo = fieldInfoMap.get(tag);
-    Class<? extends ProtoEnum> enumType = fieldInfo == null ? null : fieldInfo.enumType;
+    ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
+    Class<? extends ProtoEnum> enumType = fieldBinding == null ? null : fieldBinding.enumType;
     if (enumType == null) {
       Extension<?, ?> extension = getExtension(tag);
       if (extension != null) {

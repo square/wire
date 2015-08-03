@@ -55,8 +55,8 @@ public @interface ProtoField {
   /**
    * For repeated Enum fields, the underlying Enum type.
    */
-  // The exact supertype 'Enum.class' is used as a sentinel for 'no value'.
-  Class<? extends Enum> enumType() default Enum.class;
+  // The exact supertype 'ProtoEnum.class' is used as a sentinel for 'no value'.
+  Class<? extends ProtoEnum> enumType() default ProtoEnum.class;
 
   /**
    * True if the field is marked as deprecated.
