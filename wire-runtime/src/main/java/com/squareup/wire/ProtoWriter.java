@@ -56,7 +56,7 @@ import okio.ByteString;
 /**
  * Utilities for encoding and writing protocol message fields.
  */
-final class WireOutput {
+final class ProtoWriter {
 
   /**
    * Computes the number of bytes that would be needed to encode a signed variable-length integer
@@ -137,7 +137,7 @@ final class WireOutput {
 
   private final BufferedSink sink;
 
-  WireOutput(BufferedSink sink) {
+  ProtoWriter(BufferedSink sink) {
     this.sink = sink;
   }
 

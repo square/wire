@@ -41,7 +41,7 @@ import okio.ByteString;
 /**
  * Reads and decodes protocol message fields.
  */
-final class WireInput {
+final class ProtoReader {
 
   private static final String ENCOUNTERED_A_NEGATIVE_SIZE =
       "Encountered a negative size";
@@ -226,7 +226,7 @@ final class WireInput {
   /** The last tag that was read. */
   private int lastTag;
 
-  WireInput(BufferedSource source) {
+  ProtoReader(BufferedSource source) {
     this.source = source;
   }
 

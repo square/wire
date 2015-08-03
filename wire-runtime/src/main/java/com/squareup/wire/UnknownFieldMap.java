@@ -33,7 +33,7 @@ final class UnknownFieldMap {
 
     /** The size of the tag and value when serialized. */
     abstract int getSerializedSize();
-    abstract void write(int tag, WireOutput output) throws IOException;
+    abstract void write(int tag, ProtoWriter output) throws IOException;
   }
 
   static final class VarintValue extends Value {
@@ -45,10 +45,10 @@ final class UnknownFieldMap {
     }
 
     @Override int getSerializedSize() {
-      return WireOutput.varintTagSize(tag) + WireOutput.varint64Size(value);
+      return ProtoWriter.varintTagSize(tag) + ProtoWriter.varint64Size(value);
     }
 
-    @Override void write(int tag, WireOutput output) throws IOException {
+    @Override void write(int tag, ProtoWriter output) throws IOException {
       output.writeTag(tag, WireType.VARINT);
       output.writeVarint64(value);
     }
@@ -63,10 +63,10 @@ final class UnknownFieldMap {
     }
 
     @Override int getSerializedSize() {
-      return WireOutput.varintTagSize(tag) + WireType.FIXED_32_SIZE;
+      return ProtoWriter.varintTagSize(tag) + WireType.FIXED_32_SIZE;
     }
 
-    @Override void write(int tag, WireOutput output) throws IOException {
+    @Override void write(int tag, ProtoWriter output) throws IOException {
       output.writeTag(tag, WireType.FIXED32);
       output.writeFixed32(value);
     }
@@ -81,10 +81,10 @@ final class UnknownFieldMap {
     }
 
     @Override int getSerializedSize() {
-      return WireOutput.varintTagSize(tag) + WireType.FIXED_64_SIZE;
+      return ProtoWriter.varintTagSize(tag) + WireType.FIXED_64_SIZE;
     }
 
-    @Override void write(int tag, WireOutput output) throws IOException {
+    @Override void write(int tag, ProtoWriter output) throws IOException {
       output.writeTag(tag, WireType.FIXED64);
       output.writeFixed64(value);
     }
@@ -99,10 +99,10 @@ final class UnknownFieldMap {
     }
 
     @Override int getSerializedSize() {
-      return WireOutput.varintTagSize(tag) + WireOutput.varint32Size(value.size()) + value.size();
+      return ProtoWriter.varintTagSize(tag) + ProtoWriter.varint32Size(value.size()) + value.size();
     }
 
-    @Override void write(int tag, WireOutput output) throws IOException {
+    @Override void write(int tag, ProtoWriter output) throws IOException {
       output.writeTag(tag, WireType.LENGTH_DELIMITED);
       output.writeVarint32(value.size());
       output.writeRawBytes(value);
@@ -165,7 +165,7 @@ final class UnknownFieldMap {
     return size;
   }
 
-  void write(WireOutput output) throws IOException {
+  void write(ProtoWriter output) throws IOException {
     for (Map.Entry<Integer, List<Value>> entry : fieldMap.entrySet()) {
       int tag = entry.getKey();
       for (Value value : entry.getValue()) {
