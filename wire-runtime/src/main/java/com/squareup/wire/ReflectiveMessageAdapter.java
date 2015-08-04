@@ -393,91 +393,85 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   // Reading
 
   @Override M read(ProtoReader input) throws IOException {
-    try {
-      Builder<M> builder = builderType.newInstance();
-      Storage storage = new Storage();
+    Builder<M> builder = newBuilder();
+    Storage storage = new Storage();
 
-      while (true) {
-        Extension<?, ?> extension = null;
-        int tagAndType = input.readTag();
-        int tag = tagAndType >> WireType.TAG_TYPE_BITS;
-        WireType wireType = WireType.valueOf(tagAndType);
-        if (tag == 0) {
-          // Set repeated fields
-          for (int storedTag : storage.getTags()) {
-            ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(storedTag);
-            List<Object> value = storage.get(storedTag);
+    while (true) {
+      int tagAndType = input.readTag();
+      int tag = tagAndType >> WireType.TAG_TYPE_BITS;
+      if (tag == 0) break;
+      WireType wireType = WireType.valueOf(tagAndType);
 
-            if (fieldBinding != null) {
-              fieldBinding.setBuilderField(builder, value);
-            } else {
-              setExtension((ExtendableBuilder<?, ?>) builder, getExtension(storedTag), value);
-            }
-          }
-          return builder.build();
+      Extension<?, ?> extension = null;
+      Datatype datatype;
+      Label label;
+      ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
+      if (fieldBinding != null) {
+        datatype = fieldBinding.datatype;
+        label = fieldBinding.label;
+      } else {
+        extension = getExtension(tag);
+        if (extension == null) {
+          readUnknownField(builder, input, tag, wireType);
+          continue;
         }
+        datatype = extension.getDatatype();
+        label = extension.getLabel();
+      }
 
-        Datatype datatype;
-        Label label;
-        ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
-        if (fieldBinding != null) {
-          datatype = fieldBinding.datatype;
-          label = fieldBinding.label;
-        } else {
-          extension = getExtension(tag);
-          if (extension == null) {
-            readUnknownField(builder, input, tag, wireType);
-            continue;
-          }
-          datatype = extension.getDatatype();
-          label = extension.getLabel();
-        }
-        Object value;
-
-        if (label.isPacked() && wireType == WireType.LENGTH_DELIMITED) {
-          // Decode packed format
-          int length = input.readVarint32();
-          long start = input.getPosition();
-          int oldLimit = input.pushLimit(length);
-          while (input.getPosition() < start + length) {
-            value = readValue(input, tag, datatype);
-            if (datatype == Datatype.ENUM && value instanceof Integer) {
-              // An unknown Enum value was encountered, store it as an unknown field
-              builder.addVarint(tag, (Integer) value);
-            } else {
-              storage.add(tag, value);
-            }
-          }
-          input.popLimit(oldLimit);
-          if (input.getPosition() != start + length) {
-            throw new IOException("Packed data had wrong length!");
-          }
-        } else {
-          // Read a single value
+      Object value;
+      if (label.isPacked() && wireType == WireType.LENGTH_DELIMITED) {
+        // Decode packed format
+        int length = input.readVarint32();
+        long start = input.getPosition();
+        int oldLimit = input.pushLimit(length);
+        while (input.getPosition() < start + length) {
           value = readValue(input, tag, datatype);
           if (datatype == Datatype.ENUM && value instanceof Integer) {
             // An unknown Enum value was encountered, store it as an unknown field
             builder.addVarint(tag, (Integer) value);
           } else {
-            if (label.isRepeated()) {
-              storage.add(tag, value != null ? value : Collections.emptyList());
-            } else if (extension != null) {
-              setExtension((ExtendableBuilder<?, ?>) builder, extension, value);
-            } else if (label.isOneOf()) {
-              // In order to maintain the 'oneof' invariant, call the builder setter method rather
-              // than setting the builder field directly.
-              fieldBinding.setBuilderMethod(builder, value);
-            } else {
-              fieldBinding.setBuilderField(builder, value);
-            }
+            storage.add(tag, value);
+          }
+        }
+        input.popLimit(oldLimit);
+        if (input.getPosition() != start + length) {
+          throw new IOException("Packed data had wrong length!");
+        }
+      } else {
+        // Read a single value
+        value = readValue(input, tag, datatype);
+        if (datatype == Datatype.ENUM && value instanceof Integer) {
+          // An unknown Enum value was encountered, store it as an unknown field
+          builder.addVarint(tag, (Integer) value);
+        } else {
+          if (label.isRepeated()) {
+            storage.add(tag, value != null ? value : Collections.emptyList());
+          } else if (extension != null) {
+            setExtension((ExtendableBuilder<?, ?>) builder, extension, value);
+          } else if (label.isOneOf()) {
+            // In order to maintain the 'oneof' invariant, call the builder setter method rather
+            // than setting the builder field directly.
+            fieldBinding.setBuilderMethod(builder, value);
+          } else {
+            fieldBinding.setBuilderField(builder, value);
           }
         }
       }
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
-    } catch (InstantiationException e) {
-      throw new RuntimeException(e);
     }
+
+    // Set repeated fields
+    for (int storedTag : storage.getTags()) {
+      ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(storedTag);
+      List<Object> value = storage.get(storedTag);
+
+      if (fieldBinding != null) {
+        fieldBinding.setBuilderField(builder, value);
+      } else {
+        setExtension((ExtendableBuilder<?, ?>) builder, getExtension(storedTag), value);
+      }
+    }
+    return builder.build();
   }
 
   private Object readValue(ProtoReader input, int tag, Datatype datatype) throws IOException {
