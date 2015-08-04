@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 
 enum WireType {
   VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), START_GROUP(3), END_GROUP(4), FIXED32(5);
@@ -35,7 +36,7 @@ enum WireType {
       case 4: return END_GROUP;
       case 5: return FIXED32;
       default:
-        throw new IOException("No WireType for type " + (tagAndType & TAG_TYPE_MASK));
+        throw new ProtocolException("No WireType for type " + (tagAndType & TAG_TYPE_MASK));
     }
   }
 

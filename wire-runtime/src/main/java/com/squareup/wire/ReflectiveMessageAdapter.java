@@ -18,6 +18,7 @@ package com.squareup.wire;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.net.ProtocolException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -436,7 +437,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
         }
         input.popLimit(oldLimit);
         if (input.getPosition() != start + length) {
-          throw new IOException("Packed data had wrong length!");
+          throw new ProtocolException("Packed data had wrong length!");
         }
       } else {
         // Read a single value

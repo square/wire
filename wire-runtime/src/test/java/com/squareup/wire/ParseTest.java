@@ -20,6 +20,7 @@ import com.squareup.wire.protos.edgecases.OneField;
 import com.squareup.wire.protos.edgecases.Recursive;
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.ProtocolException;
 import okio.ByteString;
 import org.junit.Test;
 
@@ -44,7 +45,7 @@ public final class ParseTest {
     try {
       wire.adapter(OneField.class).readBytes(data.toByteArray());
       fail();
-    } catch (IOException expected) {
+    } catch (ProtocolException expected) {
       assertThat(expected).hasMessage("No WireType for type 7");
     }
   }
@@ -74,7 +75,7 @@ public final class ParseTest {
     try {
       wire.adapter(OneField.class).readBytes(data.toByteArray());
       fail();
-    } catch (IOException expected) {
+    } catch (ProtocolException expected) {
       assertThat(expected).hasMessage(
           "Wire type VarintValue differs from previous type LengthDelimitedValue for tag 2");
     }
