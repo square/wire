@@ -46,7 +46,7 @@ final class UnknownFieldMap {
     }
 
     @Override int getSerializedSize() {
-      return ProtoWriter.varintTagSize(tag) + ProtoWriter.varint64Size(value);
+      return ProtoWriter.tagSize(tag) + ProtoWriter.varint64Size(value);
     }
 
     @Override void write(int tag, ProtoWriter output) throws IOException {
@@ -64,7 +64,7 @@ final class UnknownFieldMap {
     }
 
     @Override int getSerializedSize() {
-      return ProtoWriter.varintTagSize(tag) + WireType.FIXED_32_SIZE;
+      return ProtoWriter.tagSize(tag) + WireType.FIXED_32_SIZE;
     }
 
     @Override void write(int tag, ProtoWriter output) throws IOException {
@@ -82,7 +82,7 @@ final class UnknownFieldMap {
     }
 
     @Override int getSerializedSize() {
-      return ProtoWriter.varintTagSize(tag) + WireType.FIXED_64_SIZE;
+      return ProtoWriter.tagSize(tag) + WireType.FIXED_64_SIZE;
     }
 
     @Override void write(int tag, ProtoWriter output) throws IOException {
@@ -100,7 +100,7 @@ final class UnknownFieldMap {
     }
 
     @Override int getSerializedSize() {
-      return ProtoWriter.varintTagSize(tag) + ProtoWriter.varint32Size(value.size()) + value.size();
+      return ProtoWriter.tagSize(tag) + ProtoWriter.varint32Size(value.size()) + value.size();
     }
 
     @Override void write(int tag, ProtoWriter output) throws IOException {
