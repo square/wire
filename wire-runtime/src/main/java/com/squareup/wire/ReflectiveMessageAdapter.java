@@ -89,7 +89,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
 
   // Writing
 
-  @Override public int getSerializedSize(M message) {
+  @Override public int serializedSize(M message) {
     int size = 0;
     for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
       Object value = fieldBinding.getValue(message);
@@ -162,7 +162,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     return size;
   }
 
-  @Override void write(M message, ProtoWriter output) throws IOException {
+  @Override public void write(M message, ProtoWriter output) throws IOException {
     for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
       Object value = fieldBinding.getValue(message);
       if (value == null) {
@@ -280,44 +280,29 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
    */
   private int getSerializedSizeNoTag(Object value, Datatype datatype) {
     switch (datatype) {
-      case INT32: return ProtoWriter.int32Size((Integer) value);
-      case INT64: case UINT64: return ProtoWriter.varint64Size((Long) value);
-      case UINT32: return ProtoWriter.varint32Size((Integer) value);
-      case SINT32: return ProtoWriter.varint32Size(ProtoWriter.zigZag32((Integer) value));
-      case SINT64: return ProtoWriter.varint64Size(ProtoWriter.zigZag64((Long) value));
-      case BOOL: return 1;
-      case ENUM: return getEnumSize((ProtoEnum) value);
+      case INT32: return TypeAdapter.INT32.serializedSize((Integer) value);
+      case INT64: return TypeAdapter.INT64.serializedSize((Long) value);
+      case UINT32: return TypeAdapter.UINT32.serializedSize((Integer) value);
+      case UINT64: return TypeAdapter.UINT64.serializedSize((Long) value);
+      case SINT32: return TypeAdapter.SINT32.serializedSize((Integer) value);
+      case SINT64: return TypeAdapter.SINT64.serializedSize((Long) value);
+      case BOOL: return TypeAdapter.BOOL.serializedSize((Boolean) value);
       case STRING:
-        int utf8Length = utf8Length((String) value);
-        return ProtoWriter.varint32Size(utf8Length) + utf8Length;
+        int stringSize = TypeAdapter.STRING.serializedSize((String) value);
+        return varint32Size(stringSize) + stringSize;
       case BYTES:
-        int length = ((ByteString) value).size();
-        return ProtoWriter.varint32Size(length) + length;
+        int bytesSize = TypeAdapter.BYTES.serializedSize((ByteString) value);
+        return varint32Size(bytesSize) + bytesSize;
+      case FIXED32: return TypeAdapter.FIXED32.serializedSize((Integer) value);
+      case FIXED64: return TypeAdapter.FIXED64.serializedSize((Long) value);
+      case SFIXED32: return TypeAdapter.SFIXED32.serializedSize((Integer) value);
+      case SFIXED64: return TypeAdapter.SFIXED64.serializedSize((Long) value);
+      case FLOAT: return TypeAdapter.FLOAT.serializedSize((Float) value);
+      case DOUBLE: return TypeAdapter.DOUBLE.serializedSize((Double) value);
       case MESSAGE: return getMessageSize((Message) value);
-      case FIXED32: case SFIXED32: case FLOAT:
-        return WireType.FIXED_32_SIZE;
-      case FIXED64: case SFIXED64: case DOUBLE:
-        return WireType.FIXED_64_SIZE;
-      default: throw new RuntimeException();
+      case ENUM: return getEnumSize((ProtoEnum) value);
+      default: throw new AssertionError("Unknown data type " + datatype);
     }
-  }
-
-  private int utf8Length(String s) {
-    int count = 0;
-    for (int i = 0, length = s.length(); i < length; i++) {
-      char ch = s.charAt(i);
-      if (ch <= 0x7F) {
-        count++;
-      } else if (ch <= 0x7FF) {
-        count += 2;
-      } else if (Character.isHighSurrogate(ch)) {
-        count += 4;
-        ++i;
-      } else {
-        count += 3;
-      }
-    }
-    return count;
   }
 
   @SuppressWarnings("unchecked")
@@ -330,7 +315,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     int size = message.cachedSerializedSize;
     if (size == -1) {
       MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
-      size = message.cachedSerializedSize = adapter.getSerializedSize(message);
+      size = message.cachedSerializedSize = adapter.serializedSize(message);
     }
     return ProtoWriter.varint32Size(size) + size;
   }
@@ -347,29 +332,24 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   private void writeValueNoTag(ProtoWriter output, Object value, Datatype datatype)
       throws IOException {
     switch (datatype) {
-      case INT32: output.writeSignedVarint32((Integer) value); break;
-      case INT64: case UINT64: output.writeVarint64((Long) value); break;
-      case UINT32: output.writeVarint32((Integer) value); break;
-      case SINT32: output.writeVarint32(ProtoWriter.zigZag32((Integer) value)); break;
-      case SINT64: output.writeVarint64(ProtoWriter.zigZag64((Long) value)); break;
-      case BOOL: output.writeRawByte((Boolean) value ? 1 : 0); break;
-      case ENUM: writeEnum((ProtoEnum) value, output); break;
-      case STRING:
-        ByteString bytes = ByteString.encodeUtf8((String) value);
-        output.writeVarint32(bytes.size());
-        output.writeRawBytes(bytes);
-        break;
-      case BYTES:
-        ByteString byteString = (ByteString) value;
-        output.writeVarint32(byteString.size());
-        output.writeRawBytes(byteString);
-        break;
+      case INT32: output.write(TypeAdapter.INT32, (Integer) value); break;
+      case INT64: output.write(TypeAdapter.INT64, (Long) value); break;
+      case UINT32: output.write(TypeAdapter.UINT32, (Integer) value); break;
+      case UINT64: output.write(TypeAdapter.UINT64, (Long) value); break;
+      case SINT32: output.write(TypeAdapter.SINT32, (Integer) value); break;
+      case SINT64: output.write(TypeAdapter.SINT64, (Long) value); break;
+      case BOOL: output.write(TypeAdapter.BOOL, (Boolean) value); break;
+      case STRING: output.write(TypeAdapter.STRING, (String) value); break;
+      case BYTES: output.write(TypeAdapter.BYTES, (ByteString) value); break;
+      case FIXED32: output.write(TypeAdapter.FIXED32, (Integer) value); break;
+      case FIXED64: output.write(TypeAdapter.FIXED64, (Long) value); break;
+      case SFIXED32: output.write(TypeAdapter.SFIXED32, (Integer) value); break;
+      case SFIXED64: output.write(TypeAdapter.SFIXED64, (Long) value); break;
+      case FLOAT: output.write(TypeAdapter.FLOAT, (Float) value); break;
+      case DOUBLE: output.write(TypeAdapter.DOUBLE, (Double) value); break;
       case MESSAGE: writeMessage((Message) value, output); break;
-      case FIXED32: case SFIXED32: output.writeFixed32((Integer) value); break;
-      case FIXED64: case SFIXED64: output.writeFixed64((Long) value); break;
-      case FLOAT: output.writeFixed32(Float.floatToIntBits((Float) value)); break;
-      case DOUBLE: output.writeFixed64(Double.doubleToLongBits((Double) value)); break;
-      default: throw new RuntimeException();
+      case ENUM: writeEnum((ProtoEnum) value, output); break;
+      default: throw new AssertionError("Unknown data type " + datatype);
     }
   }
 
@@ -379,7 +359,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
     int size = message.cachedSerializedSize;
     if (size == -1) {
-      size = message.cachedSerializedSize = adapter.getSerializedSize(message);
+      size = message.cachedSerializedSize = adapter.serializedSize(message);
     }
     output.writeVarint32(size);
     adapter.write(message, output);
@@ -393,7 +373,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
 
   // Reading
 
-  @Override M read(ProtoReader input) throws IOException {
+  @Override public M read(ProtoReader input) throws IOException {
     Builder<M> builder = newBuilder();
     Storage storage = new Storage();
 
@@ -469,35 +449,37 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
 
   private Object readValue(ProtoReader input, int tag, Datatype datatype) throws IOException {
     switch (datatype) {
-      case INT32: case UINT32: return input.readVarint32();
-      case INT64: case UINT64: return input.readVarint64();
-      case SINT32: return ProtoReader.decodeZigZag32(input.readVarint32());
-      case SINT64: return ProtoReader.decodeZigZag64(input.readVarint64());
-      case BOOL: return input.readVarint32() != 0;
+      case INT32: return TypeAdapter.INT32.read(input);
+      case INT64: return TypeAdapter.INT64.read(input);
+      case UINT32: return TypeAdapter.UINT32.read(input);
+      case UINT64: return TypeAdapter.UINT64.read(input);
+      case SINT32: return TypeAdapter.SINT32.read(input);
+      case SINT64: return TypeAdapter.SINT64.read(input);
+      case BOOL: return TypeAdapter.BOOL.read(input);
+      case STRING: return TypeAdapter.STRING.read(input);
+      case BYTES: return TypeAdapter.BYTES.read(input);
+      case FIXED32: return TypeAdapter.FIXED32.read(input);
+      case FIXED64: return TypeAdapter.FIXED64.read(input);
+      case SFIXED32: return TypeAdapter.SFIXED32.read(input);
+      case SFIXED64: return TypeAdapter.SFIXED64.read(input);
+      case FLOAT: return TypeAdapter.FLOAT.read(input);
+      case DOUBLE: return TypeAdapter.DOUBLE.read(input);
+      case MESSAGE: return readMessage(input, tag);
       case ENUM:
         EnumAdapter<? extends ProtoEnum> adapter = getEnumAdapter(tag);
         int value = input.readVarint32();
         try {
           return adapter.fromInt(value);
         } catch (IllegalArgumentException e) {
-          // Return the raw value as an Integer
-          return value;
+          return value; // Return the raw value as an Integer
         }
-      case STRING: return input.readString();
-      case BYTES: return input.readBytes();
-      case MESSAGE: return readMessage(input, tag);
-      case FIXED32: case SFIXED32: return input.readFixed32();
-      case FIXED64: case SFIXED64: return input.readFixed64();
-      case FLOAT: return Float.intBitsToFloat(input.readFixed32());
-      case DOUBLE: return Double.longBitsToDouble(input.readFixed64());
-      default: throw new RuntimeException();
+      default: throw new AssertionError("Unknown data type " + datatype);
     }
   }
 
   private Message readMessage(ProtoReader input, int tag) throws IOException {
     long token = input.beginLengthDelimited();
-    MessageAdapter<? extends Message> adapter = getMessageAdapter(tag);
-    Message message = adapter.read(input);
+    Message message = getMessageAdapter(tag).read(input);
     input.endLengthDelimited(token);
     return message;
   }

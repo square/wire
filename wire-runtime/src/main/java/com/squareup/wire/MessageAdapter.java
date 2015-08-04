@@ -25,7 +25,11 @@ import okio.Okio;
 
 import static com.squareup.wire.Preconditions.checkNotNull;
 
-public abstract class MessageAdapter<M extends Message> {
+public abstract class MessageAdapter<M extends Message> extends TypeAdapter<M> {
+  protected MessageAdapter() {
+    super(WireType.LENGTH_DELIMITED);
+  }
+
   /**
    * Returns a copy of {@code value} with all redacted fields set to null or an empty list.
    * This operation is recursive: nested messages are themselves redacted in the returned object.
@@ -34,9 +38,6 @@ public abstract class MessageAdapter<M extends Message> {
 
   /** Returns a human-readable version of the given {@code value}. */
   abstract String toString(M value);
-
-  /** Returns the serialized size of {@code value} in bytes. */
-  public abstract int getSerializedSize(M value);
 
   /** Encode {@code value} as a {@code byte[]}. */
   public final byte[] writeBytes(M value) {
@@ -66,8 +67,6 @@ public abstract class MessageAdapter<M extends Message> {
     write(value, new ProtoWriter(sink));
   }
 
-  abstract void write(M message, ProtoWriter output) throws IOException;
-
   /** Read an encoded message from {@code source}. */
   public final M read(BufferedSource source) throws IOException {
     checkNotNull(source, "source == null");
@@ -85,7 +84,4 @@ public abstract class MessageAdapter<M extends Message> {
     checkNotNull(stream, "stream == null");
     return read(Okio.buffer(Okio.source(stream)));
   }
-
-  /** Uses reflection to read an instance from {@code input}. */
-  abstract M read(ProtoReader input) throws IOException;
 }

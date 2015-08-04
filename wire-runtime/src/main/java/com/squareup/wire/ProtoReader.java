@@ -42,7 +42,7 @@ import okio.ByteString;
 /**
  * Reads and decodes protocol message fields.
  */
-final class ProtoReader {
+public final class ProtoReader {
 
   private static final String ENCOUNTERED_A_NEGATIVE_SIZE =
       "Encountered a negative size";
@@ -94,7 +94,7 @@ final class ProtoReader {
     if (length < 0) {
       throw new ProtocolException(ENCOUNTERED_A_NEGATIVE_SIZE);
     }
-    long newLimit = length + pos;
+    long newLimit = pos + length;
     long oldLimit = limit;
     if (newLimit > oldLimit) {
       throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
@@ -132,6 +132,10 @@ final class ProtoReader {
     }
     nextType = WireType.valueOf(tagAndType);
     return tagAndType >> WireType.TAG_TYPE_BITS;
+  }
+
+  public <T> T value(TypeAdapter<T> adapter) throws IOException {
+    return adapter.read(this);
   }
 
   /** The type of the field value. {@link #readTag()} must be called before this method. */
@@ -174,11 +178,10 @@ final class ProtoReader {
     source.skip(count);
   }
 
-  /** Reads a {@code string} field value from the stream. */
-  String readString() throws IOException {
-    int count = readVarint32();
-    pos += count;
-    return source.readUtf8(count);
+  int readByte() throws IOException {
+    source.require(1); // Throws EOFException if insufficient bytes are available.
+    pos++;
+    return source.readByte() & 0xff;
   }
 
   /**
@@ -187,9 +190,17 @@ final class ProtoReader {
    */
   ByteString readBytes() throws IOException {
     int count = readVarint32();
-    pos += count;
     source.require(count); // Throws EOFException if insufficient bytes are available.
+    pos += count;
     return source.readByteString(count);
+  }
+
+  /** Reads a {@code string} field value from the stream. */
+  String readString() throws IOException {
+    int count = readVarint32();
+    source.require(count); // Throws EOFException if insufficient bytes are available.
+    pos += count;
+    return source.readUtf8(count);
   }
 
   /**
@@ -254,41 +265,15 @@ final class ProtoReader {
 
   /** Reads a 32-bit little-endian integer from the stream. */
   int readFixed32() throws IOException {
+    source.require(4); // Throws EOFException if insufficient bytes are available.
     pos += 4;
     return source.readIntLe();
   }
 
   /** Reads a 64-bit little-endian integer from the stream. */
   long readFixed64() throws IOException {
+    source.require(8); // Throws EOFException if insufficient bytes are available.
     pos += 8;
     return source.readLongLe();
-  }
-
-  /**
-   * Decodes a ZigZag-encoded 32-bit value.  ZigZag encodes signed integers
-   * into values that can be efficiently encoded with varint.  (Otherwise,
-   * negative values must be sign-extended to 64 bits to be varint encoded,
-   * thus always taking 10 bytes on the wire.)
-   *
-   * @param n An unsigned 32-bit integer, stored in a signed int because
-   *          Java has no explicit unsigned support.
-   * @return A signed 32-bit integer.
-   */
-  static int decodeZigZag32(int n) {
-    return (n >>> 1) ^ -(n & 1);
-  }
-
-  /**
-   * Decodes a ZigZag-encoded 64-bit value.  ZigZag encodes signed integers
-   * into values that can be efficiently encoded with varint.  (Otherwise,
-   * negative values must be sign-extended to 64 bits to be varint encoded,
-   * thus always taking 10 bytes on the wire.)
-   *
-   * @param n An unsigned 64-bit integer, stored in a signed int because
-   *          Java has no explicit unsigned support.
-   * @return A signed 64-bit integer.
-   */
-  static long decodeZigZag64(long n) {
-    return (n >>> 1) ^ -(n & 1);
   }
 }

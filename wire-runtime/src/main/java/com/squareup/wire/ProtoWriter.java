@@ -56,20 +56,7 @@ import okio.ByteString;
 /**
  * Utilities for encoding and writing protocol message fields.
  */
-final class ProtoWriter {
-
-  /**
-   * Computes the number of bytes that would be needed to encode a signed variable-length integer
-   * of up to 32 bits.
-   */
-  static int int32Size(int value) {
-    if (value >= 0) {
-      return varint32Size(value);
-    } else {
-      // Must sign-extend.
-      return 10;
-    }
-  }
+public final class ProtoWriter {
 
   /** Makes a tag value given a field number and wire type. */
   static int makeTag(int fieldNumber, WireType wireType) {
@@ -107,45 +94,24 @@ final class ProtoWriter {
     return 10;
   }
 
-  /**
-   * Encode a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n A signed 32-bit integer.
-   * @return An unsigned 32-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   */
-  static int zigZag32(int n) {
-    // Note:  the right-shift must be arithmetic
-    return (n << 1) ^ (n >> 31);
-  }
-
-  /**
-   * Encode a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n A signed 64-bit integer.
-   * @return An unsigned 64-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   */
-  static long zigZag64(long n) {
-    // Note:  the right-shift must be arithmetic
-    return (n << 1) ^ (n >> 63);
-  }
-
   private final BufferedSink sink;
 
   ProtoWriter(BufferedSink sink) {
     this.sink = sink;
   }
 
-  void writeRawByte(int value) throws IOException {
+  public <T> void write(TypeAdapter<T> adapter, T value) throws IOException {
+    if (adapter.type == WireType.LENGTH_DELIMITED) {
+      writeVarint32(adapter.serializedSize(value));
+    }
+    adapter.write(value, this);
+  }
+
+  void writeByte(int value) throws IOException {
     sink.writeByte(value);
   }
 
-  void writeRawBytes(ByteString value) throws IOException {
+  void writeBytes(ByteString value) throws IOException {
     sink.write(value);
   }
 
