@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -149,8 +150,9 @@ final class UnknownFieldMap {
       values = new ArrayList<Value>();
       fieldMap.put(tag, values);
     } else if (values.get(0).getClass() != value.getClass()) {
-      throw new IOException(String.format("Wire type %s differs from previous type %s for tag %s",
-          value.getClass().getSimpleName(), values.get(0).getClass().getSimpleName(), tag));
+      throw new ProtocolException(
+          String.format("Wire type %s differs from previous type %s for tag %s",
+              value.getClass().getSimpleName(), values.get(0).getClass().getSimpleName(), tag));
     }
     values.add(value);
   }

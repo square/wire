@@ -35,6 +35,7 @@ package com.squareup.wire;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.ProtocolException;
 import okio.BufferedSource;
 import okio.ByteString;
 
@@ -68,7 +69,7 @@ final class ProtoReader {
     lastTag = readVarint32();
     if (lastTag == 0) {
       // If we actually read zero, that's not a valid tag.
-      throw new IOException(PROTOCOL_MESSAGE_CONTAINED_AN_INVALID_TAG_ZERO);
+      throw new ProtocolException(PROTOCOL_MESSAGE_CONTAINED_AN_INVALID_TAG_ZERO);
     }
     return lastTag;
   }
@@ -82,7 +83,7 @@ final class ProtoReader {
    */
   public void checkLastTagWas(int value) throws IOException {
     if (lastTag != value) {
-      throw new IOException(PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG);
+      throw new ProtocolException(PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG);
     }
   }
 
@@ -140,7 +141,7 @@ final class ProtoReader {
                 return result;
               }
             }
-            throw new IOException(ENCOUNTERED_A_MALFORMED_VARINT);
+            throw new ProtocolException(ENCOUNTERED_A_MALFORMED_VARINT);
           }
         }
       }
@@ -161,7 +162,7 @@ final class ProtoReader {
       }
       shift += 7;
     }
-    throw new IOException(ENCOUNTERED_A_MALFORMED_VARINT);
+    throw new ProtocolException(ENCOUNTERED_A_MALFORMED_VARINT);
   }
 
   /** Reads a 32-bit little-endian integer from the stream. */
@@ -238,7 +239,7 @@ final class ProtoReader {
    */
   public int pushLimit(int byteLimit) throws IOException {
     if (byteLimit < 0) {
-      throw new IOException(ENCOUNTERED_A_NEGATIVE_SIZE);
+      throw new ProtocolException(ENCOUNTERED_A_NEGATIVE_SIZE);
     }
     byteLimit += pos;
     int oldLimit = currentLimit;
