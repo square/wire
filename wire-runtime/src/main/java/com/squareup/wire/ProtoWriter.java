@@ -77,7 +77,7 @@ final class ProtoWriter {
   }
 
   /** Compute the number of bytes that would be needed to encode a tag. */
-  static int varintTagSize(int tag) {
+  static int tagSize(int tag) {
     return varint32Size(makeTag(tag, WireType.VARINT));
   }
 

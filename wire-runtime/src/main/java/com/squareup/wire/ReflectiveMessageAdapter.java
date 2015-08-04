@@ -271,7 +271,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
    * Returns the serialized size in bytes of the given tag and value.
    */
   private int getSerializedSize(int tag, Object value, Datatype datatype) {
-    return ProtoWriter.varintTagSize(tag) + getSerializedSizeNoTag(value, datatype);
+    return ProtoWriter.tagSize(tag) + getSerializedSizeNoTag(value, datatype);
   }
 
   /**
