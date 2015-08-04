@@ -397,11 +397,8 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     Builder<M> builder = newBuilder();
     Storage storage = new Storage();
 
-    while (true) {
-      int tagAndType = input.readTag();
-      int tag = tagAndType >> WireType.TAG_TYPE_BITS;
-      if (tag == 0) break;
-      WireType wireType = WireType.valueOf(tagAndType);
+    while (input.hasNext()) {
+      int tag = input.readTag();
 
       Extension<?, ?> extension = null;
       Datatype datatype;
@@ -413,7 +410,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       } else {
         extension = getExtension(tag);
         if (extension == null) {
-          readUnknownField(builder, input, tag, wireType);
+          readUnknownField(builder, input, tag);
           continue;
         }
         datatype = extension.getDatatype();
@@ -421,12 +418,10 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       }
 
       Object value;
-      if (label.isPacked() && wireType == WireType.LENGTH_DELIMITED) {
+      if (label.isPacked() && input.peekType() == WireType.LENGTH_DELIMITED) {
         // Decode packed format
-        int length = input.readVarint32();
-        long start = input.getPosition();
-        int oldLimit = input.pushLimit(length);
-        while (input.getPosition() < start + length) {
+        long token = input.beginLengthDelimited();
+        while (input.hasNext()) {
           value = readValue(input, tag, datatype);
           if (datatype == Datatype.ENUM && value instanceof Integer) {
             // An unknown Enum value was encountered, store it as an unknown field
@@ -435,10 +430,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
             storage.add(tag, value);
           }
         }
-        input.popLimit(oldLimit);
-        if (input.getPosition() != start + length) {
-          throw new ProtocolException("Packed data had wrong length!");
-        }
+        input.endLengthDelimited(token);
       } else {
         // Read a single value
         value = readValue(input, tag, datatype);
@@ -503,17 +495,10 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   }
 
   private Message readMessage(ProtoReader input, int tag) throws IOException {
-    final int length = input.readVarint32();
-    if (input.recursionDepth >= ProtoReader.RECURSION_LIMIT) {
-      throw new IOException("Wire recursion limit exceeded");
-    }
-    final int oldLimit = input.pushLimit(length);
-    ++input.recursionDepth;
+    long token = input.beginLengthDelimited();
     MessageAdapter<? extends Message> adapter = getMessageAdapter(tag);
     Message message = adapter.read(input);
-    input.checkLastTagWas(0);
-    --input.recursionDepth;
-    input.popLimit(oldLimit);
+    input.endLengthDelimited(token);
     return message;
   }
 
@@ -555,8 +540,9 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     return messageClass;
   }
 
-  private void readUnknownField(Builder builder, ProtoReader input, int tag, WireType type)
+  private void readUnknownField(Builder builder, ProtoReader input, int tag)
       throws IOException {
+    WireType type = input.peekType();
     switch (type) {
       case VARINT:
         builder.ensureUnknownFieldMap().addVarint(tag, input.readVarint64());
@@ -576,7 +562,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
         break;
       case END_GROUP:
         break;
-      default: throw new RuntimeException("Unsupported wire type: " + type);
+      default: throw new ProtocolException("Unknown wire type: " + type);
     }
   }
 

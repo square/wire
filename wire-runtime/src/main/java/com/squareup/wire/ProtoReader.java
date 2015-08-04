@@ -54,41 +54,128 @@ final class ProtoReader {
       "Protocol message end-group tag did not match expected tag.";
   private static final String ENCOUNTERED_A_MALFORMED_VARINT =
       "WireInput encountered a malformed varint.";
+  /** The standard number of levels of message nesting to allow. */
+  private static final int RECURSION_LIMIT = 64;
 
-  /**
-   * Attempt to read a field tag, returning zero if we have reached EOF.
-   * Protocol message parsers use this to read tags, since a protocol message
-   * may legally end wherever a tag occurs, and zero is not a valid tag number.
-   */
-  public int readTag() throws IOException {
-    if (isAtEnd()) {
-      lastTag = 0;
-      return 0;
-    }
+  private final BufferedSource source;
 
-    lastTag = readVarint32();
-    if (lastTag == 0) {
-      // If we actually read zero, that's not a valid tag.
-      throw new ProtocolException(PROTOCOL_MESSAGE_CONTAINED_AN_INVALID_TAG_ZERO);
-    }
-    return lastTag;
+  /** The current position in the input source, starting at 0 and increasing monotonically. */
+  private long pos = 0;
+  /** The absolute position of the end of the current message. */
+  private long limit = Long.MAX_VALUE;
+  /** The current number of levels of message nesting. */
+  private int recursionDepth;
+  /** The type of the next value to be read. */
+  private WireType nextType;
+
+  ProtoReader(BufferedSource source) {
+    this.source = source;
   }
 
   /**
-   * Verifies that the last call to readTag() returned the given tag value.
-   * This is used to verify that a nested group ended with the correct
-   * end tag.
-   *
-   * @throws IOException if {@code value} does not match the last tag.
+   * True if there is more data to process in the current scope. This method's return value is
+   * influenced by calls to {@link #beginLengthDelimited()}.
    */
-  public void checkLastTagWas(int value) throws IOException {
-    if (lastTag != value) {
-      throw new ProtocolException(PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG);
+  public boolean hasNext() throws IOException {
+    return pos < limit && !source.exhausted();
+  }
+
+  /**
+   * Begin a length-delimited section of the current message by reading the length prefix. A call
+   * to this method will restrict the reader so that {@link #hasNext()} returns false when the
+   * section is complete. An accompanying call to {@link #endLengthDelimited(long)} must then occur
+   * with the opaque token returned from this method.
+   */
+  public long beginLengthDelimited() throws IOException {
+    if (++recursionDepth > RECURSION_LIMIT) {
+      throw new IOException("Wire recursion limit exceeded");
     }
+    int length = readVarint32();
+    if (length < 0) {
+      throw new ProtocolException(ENCOUNTERED_A_NEGATIVE_SIZE);
+    }
+    long newLimit = length + pos;
+    long oldLimit = limit;
+    if (newLimit > oldLimit) {
+      throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
+    }
+    limit = newLimit;
+    // Give the old limit to the caller to hold. The value is returned in endLengthDelimited where
+    // we resume using it as our limit.
+    return oldLimit;
+  }
+
+  /**
+   * End a length-delimited section of the current message. Calls to this method must be symmetric
+   * with calls to {@link #beginLengthDelimited()}.
+   *
+   * @param token value returned from the corresponding call to {@link #beginLengthDelimited()}.
+   */
+  public void endLengthDelimited(long token) throws IOException {
+    if (pos != limit) {
+      throw new IOException("Expected to end at " + limit + " but was " + pos);
+    }
+    if (--recursionDepth < 0) {
+      throw new IllegalStateException("No corresponding call to beginLengthDelimited()");
+    }
+    limit = token;
+  }
+
+  /**
+   * Read the tag of the next field. Use {@link #peekType()} after calling this method to query its
+   * type.
+   */
+  public int readTag() throws IOException {
+    int tagAndType = readVarint32();
+    if (tagAndType == 0) {
+      throw new ProtocolException(PROTOCOL_MESSAGE_CONTAINED_AN_INVALID_TAG_ZERO);
+    }
+    nextType = WireType.valueOf(tagAndType);
+    return tagAndType >> WireType.TAG_TYPE_BITS;
+  }
+
+  /** The type of the field value. {@link #readTag()} must be called before this method. */
+  public WireType peekType() throws IOException {
+    return nextType;
+  }
+
+  /** Skips a section of the input delimited by START_GROUP/END_GROUP type markers. */
+  int skipGroup() throws IOException {
+    while (hasNext()) {
+      int tag = readTag();
+      if (skipField(tag)) {
+        return tag;
+      }
+    }
+    return 0;
+  }
+
+  /** Skip a single field. Return true when END_GROUP tag found. */
+  private boolean skipField(int tag) throws IOException {
+    switch (peekType()) {
+      case VARINT: readVarint64(); return false;
+      case FIXED32: readFixed32(); return false;
+      case FIXED64: readFixed64(); return false;
+      case LENGTH_DELIMITED: skip(readVarint32()); return false;
+      case START_GROUP:
+        if (skipGroup() != tag) {
+          throw new ProtocolException(PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG);
+        }
+        return false;
+      case END_GROUP:
+        return true;
+      default:
+        throw new AssertionError();
+    }
+  }
+
+  private void skip(long count) throws IOException {
+    pos += count;
+    source.skip(count);
   }
 
   /** Reads a {@code string} field value from the stream. */
-  public String readString() throws IOException {
+  String readString() throws IOException {
     int count = readVarint32();
     pos += count;
     return source.readUtf8(count);
@@ -98,7 +185,7 @@ final class ProtoReader {
    * Reads a {@code bytes} field value from the stream. The length is read from the
    * stream prior to the actual data.
    */
-  public ByteString readBytes() throws IOException {
+  ByteString readBytes() throws IOException {
     int count = readVarint32();
     pos += count;
     source.require(count); // Throws EOFException if insufficient bytes are available.
@@ -109,7 +196,7 @@ final class ProtoReader {
    * Reads a raw varint from the stream.  If larger than 32 bits, discard the
    * upper bits.
    */
-  public int readVarint32() throws IOException {
+  int readVarint32() throws IOException {
     pos++;
     byte tmp = source.readByte();
     if (tmp >= 0) {
@@ -150,7 +237,7 @@ final class ProtoReader {
   }
 
   /** Reads a raw varint up to 64 bits in length from the stream. */
-  public long readVarint64() throws IOException {
+  long readVarint64() throws IOException {
     int shift = 0;
     long result = 0;
     while (shift < 64) {
@@ -166,13 +253,13 @@ final class ProtoReader {
   }
 
   /** Reads a 32-bit little-endian integer from the stream. */
-  public int readFixed32() throws IOException {
+  int readFixed32() throws IOException {
     pos += 4;
     return source.readIntLe();
   }
 
   /** Reads a 64-bit little-endian integer from the stream. */
-  public long readFixed64() throws IOException {
+  long readFixed64() throws IOException {
     pos += 8;
     return source.readLongLe();
   }
@@ -187,7 +274,7 @@ final class ProtoReader {
    *          Java has no explicit unsigned support.
    * @return A signed 32-bit integer.
    */
-  public static int decodeZigZag32(int n) {
+  static int decodeZigZag32(int n) {
     return (n >>> 1) ^ -(n & 1);
   }
 
@@ -201,116 +288,7 @@ final class ProtoReader {
    *          Java has no explicit unsigned support.
    * @return A signed 64-bit integer.
    */
-  public static long decodeZigZag64(long n) {
+  static long decodeZigZag64(long n) {
     return (n >>> 1) ^ -(n & 1);
-  }
-
-  // -----------------------------------------------------------------
-
-  /** The Okio input source. */
-  private final BufferedSource source;
-
-  /**
-   * The current position in the input source, starting at 0 and increasing monotonically.
-   */
-  private int pos = 0;
-
-  /** The absolute position of the end of the current message. */
-  private int currentLimit = Integer.MAX_VALUE;
-
-  /** The standard number of levels of message nesting to allow. */
-  public static final int RECURSION_LIMIT = 64;
-
-  /** The current number of levels of message nesting. */
-  public int recursionDepth;
-
-  /** The last tag that was read. */
-  private int lastTag;
-
-  ProtoReader(BufferedSource source) {
-    this.source = source;
-  }
-
-  /**
-   * Sets {@code currentLimit} to (current position) + {@code byteLimit}.  This
-   * is called when descending into a length-delimited embedded message.
-   *
-   * @return the old limit.
-   */
-  public int pushLimit(int byteLimit) throws IOException {
-    if (byteLimit < 0) {
-      throw new ProtocolException(ENCOUNTERED_A_NEGATIVE_SIZE);
-    }
-    byteLimit += pos;
-    int oldLimit = currentLimit;
-    if (byteLimit > oldLimit) {
-      throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
-    }
-    currentLimit = byteLimit;
-    return oldLimit;
-  }
-
-  /**
-   * Discards the current limit, returning to the previous limit.
-   *
-   * @param oldLimit The old limit, as returned by {@code pushLimit}.
-   */
-  public void popLimit(int oldLimit) {
-    currentLimit = oldLimit;
-  }
-
-  /**
-   * Returns true if the stream has reached the end of the input.  This is the
-   * case if either the end of the underlying input source has been reached or
-   * if the stream has reached a limit created using {@link #pushLimit(int)}.
-   */
-  private boolean isAtEnd() throws IOException {
-    // Treat the end of the current message (as specified by the message length field in the
-    // protocol buffer wire encoding) as though it were end-of-stream.
-    if (getPosition() == currentLimit) {
-      return true;
-    }
-    return source.exhausted();
-  }
-
-  /**
-   * Returns the current source position in bytes.
-   */
-  public long getPosition() {
-    return pos;
-  }
-
-  /** Skips a section of the input delimited by START_GROUP/END_GROUP type markers. */
-  public void skipGroup() throws IOException {
-    while (true) {
-      int tag = readTag();
-      if (tag == 0 || skipField(tag)) {
-        return;
-      }
-    }
-  }
-
-  // Returns true when END_GROUP tag found
-  private boolean skipField(int tag) throws IOException {
-    switch (WireType.valueOf(tag)) {
-      case VARINT: readVarint64(); return false;
-      case FIXED32: readFixed32(); return false;
-      case FIXED64: readFixed64(); return false;
-      case LENGTH_DELIMITED: skip(readVarint32()); return false;
-      case START_GROUP:
-        skipGroup();
-        checkLastTagWas((tag & ~0x7) | WireType.END_GROUP.value());
-        return false;
-      case END_GROUP:
-        return true;
-      default:
-        throw new AssertionError();
-    }
-  }
-
-  // Skips count bytes of input.
-  private void skip(long count) throws IOException {
-    pos += count;
-    source.skip(count);
   }
 }
