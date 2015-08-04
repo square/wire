@@ -169,28 +169,20 @@ final class ProtoWriter {
    * if negative.
    */
   void writeVarint32(int value) throws IOException {
-    while (true) {
-      if ((value & ~0x7F) == 0) {
-        sink.writeByte(value);
-        return;
-      } else {
-        sink.writeByte((value & 0x7F) | 0x80);
-        value >>>= 7;
-      }
+    while ((value & ~0x7f) != 0) {
+      sink.writeByte((value & 0x7f) | 0x80);
+      value >>>= 7;
     }
+    sink.writeByte(value);
   }
 
   /** Encode and write a varint. */
   void writeVarint64(long value) throws IOException {
-    while (true) {
-      if ((value & ~0x7FL) == 0) {
-        sink.writeByte((int) value);
-        return;
-      } else {
-        sink.writeByte(((int) value & 0x7F) | 0x80);
-        value >>>= 7;
-      }
+    while ((value & ~0x7fL) != 0) {
+      sink.writeByte(((int) value & 0x7f) | 0x80);
+      value >>>= 7;
     }
+    sink.writeByte((int) value);
   }
 
   /** Write a little-endian 32-bit integer. */
