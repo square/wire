@@ -77,7 +77,7 @@ public final class ParseTest {
       fail();
     } catch (ProtocolException expected) {
       assertThat(expected).hasMessage(
-          "Wire type VarintValue differs from previous type LengthDelimitedValue for tag 2");
+          "Wire type VARINT differs from previous type LENGTH_DELIMITED for tag 2");
     }
   }
 

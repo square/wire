@@ -22,10 +22,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import com.squareup.wire.UnknownFieldMap.Fixed32Value;
-import com.squareup.wire.UnknownFieldMap.Fixed64Value;
-import com.squareup.wire.UnknownFieldMap.LengthDelimitedValue;
-import com.squareup.wire.UnknownFieldMap.VarintValue;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -104,20 +100,25 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
         out.beginArray();
         for (int i = 0, count = fieldList.size(); i < count; i++) {
           UnknownFieldMap.Value unknownField = fieldList.get(i);
-          if (unknownField instanceof VarintValue) {
-            if (i == 0) out.value("varint");
-            out.value(((VarintValue) unknownField).value);
-          } else if (unknownField instanceof Fixed32Value) {
-            if (i == 0) out.value("fixed32");
-            out.value(((Fixed32Value) unknownField).value);
-          } else if (unknownField instanceof Fixed64Value) {
-            if (i == 0) out.value("fixed64");
-            out.value(((Fixed64Value) unknownField).value);
-          } else if (unknownField instanceof LengthDelimitedValue) {
-            if (i == 0) out.value("length-delimited");
-            out.value(((LengthDelimitedValue) unknownField).value.base64());
-          } else {
-            throw new AssertionError("Unknown wire type " + unknownField.getClass());
+          switch (unknownField.adapter.type) {
+            case VARINT:
+              if (i == 0) out.value("varint");
+              out.value((Long) unknownField.value);
+              break;
+            case FIXED32:
+              if (i == 0) out.value("fixed32");
+              out.value((Integer) unknownField.value);
+              break;
+            case FIXED64:
+              if (i == 0) out.value("fixed64");
+              out.value((Long) unknownField.value);
+              break;
+            case LENGTH_DELIMITED:
+              if (i == 0) out.value("length-delimited");
+              out.value(((ByteString) unknownField.value).base64());
+              break;
+            default:
+              throw new AssertionError("Unknown wire type " + unknownField.adapter.type);
           }
         }
         out.endArray();
