@@ -15,13 +15,14 @@
  */
 package com.squareup.wire;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
 /**
  * Converts values of an enum to and from integers.
  */
-final class EnumAdapter<E extends ProtoEnum> {
+final class EnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
   private static final Comparator<ProtoEnum> COMPARATOR = new Comparator<ProtoEnum>() {
     @Override public int compare(ProtoEnum o1, ProtoEnum o2) {
       return o1.getValue() - o2.getValue();
@@ -35,6 +36,7 @@ final class EnumAdapter<E extends ProtoEnum> {
   private final boolean isDense;
 
   EnumAdapter(Class<E> type) {
+    super(WireType.VARINT);
     this.type = type;
 
     constants = type.getEnumConstants();
@@ -62,5 +64,17 @@ final class EnumAdapter<E extends ProtoEnum> {
       throw new IllegalArgumentException(
           "Unknown enum tag " + value + " for " + type.getCanonicalName());
     }
+  }
+
+  @Override public int serializedSize(E value) {
+    return ProtoWriter.varint32Size(value.getValue());
+  }
+
+  @Override public void write(E value, ProtoWriter writer) throws IOException {
+    writer.writeVarint32(value.getValue());
+  }
+
+  @Override public E read(ProtoReader reader) throws IOException {
+    return fromInt(reader.readVarint32());
   }
 }

@@ -106,7 +106,7 @@ final class UnknownFieldMap {
     @Override void write(int tag, ProtoWriter output) throws IOException {
       output.writeTag(tag, WireType.LENGTH_DELIMITED);
       output.writeVarint32(value.size());
-      output.writeRawBytes(value);
+      output.writeBytes(value);
     }
   }
 
