@@ -21,92 +21,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import okio.ByteString;
+
+import static com.squareup.wire.ProtoWriter.makeTag;
 
 final class UnknownFieldMap {
 
-  abstract static class Value {
+  static final class Value<T> {
     final int tag;
+    final T value;
+    final TypeAdapter<T> adapter;
 
-    public Value(int tag) {
+    public Value(int tag, T value, TypeAdapter<T> adapter) {
       this.tag = tag;
-    }
-
-    /** The size of the tag and value when serialized. */
-    abstract int getSerializedSize();
-    abstract void write(int tag, ProtoWriter output) throws IOException;
-  }
-
-  static final class VarintValue extends Value {
-    final Long value;
-
-    public VarintValue(int tag, Long value) {
-      super(tag);
       this.value = value;
+      this.adapter = adapter;
     }
 
-    @Override int getSerializedSize() {
-      return ProtoWriter.tagSize(tag) + ProtoWriter.varint64Size(value);
+    int getSerializedSize() {
+      return adapter.serializedSize(value);
     }
 
-    @Override void write(int tag, ProtoWriter output) throws IOException {
-      output.writeTag(tag, WireType.VARINT);
-      output.writeVarint64(value);
-    }
-  }
-
-  static final class Fixed32Value extends Value {
-    final Integer value;
-
-    Fixed32Value(int tag, Integer value) {
-      super(tag);
-      this.value = value;
-    }
-
-    @Override int getSerializedSize() {
-      return ProtoWriter.tagSize(tag) + WireType.FIXED_32_SIZE;
-    }
-
-    @Override void write(int tag, ProtoWriter output) throws IOException {
-      output.writeTag(tag, WireType.FIXED32);
-      output.writeFixed32(value);
-    }
-  }
-
-  static final class Fixed64Value extends Value {
-    final Long value;
-
-    Fixed64Value(int tag, Long value) {
-      super(tag);
-      this.value = value;
-    }
-
-    @Override int getSerializedSize() {
-      return ProtoWriter.tagSize(tag) + WireType.FIXED_64_SIZE;
-    }
-
-    @Override void write(int tag, ProtoWriter output) throws IOException {
-      output.writeTag(tag, WireType.FIXED64);
-      output.writeFixed64(value);
-    }
-  }
-
-  static final class LengthDelimitedValue extends Value {
-    final ByteString value;
-
-    LengthDelimitedValue(int tag, ByteString value) {
-      super(tag);
-      this.value = value;
-    }
-
-    @Override int getSerializedSize() {
-      return ProtoWriter.tagSize(tag) + ProtoWriter.varint32Size(value.size()) + value.size();
-    }
-
-    @Override void write(int tag, ProtoWriter output) throws IOException {
-      output.writeTag(tag, WireType.LENGTH_DELIMITED);
-      output.writeVarint32(value.size());
-      output.writeBytes(value);
+    void write(int tag, ProtoWriter output) throws IOException {
+      output.writeVarint32(makeTag(tag, adapter.type));
+      output.write(adapter, value);
     }
   }
 
@@ -124,20 +61,8 @@ final class UnknownFieldMap {
     }
   }
 
-  void addVarint(int tag, Long value) throws IOException {
-    addElement(tag, new VarintValue(tag, value));
-  }
-
-  void addFixed32(int tag, Integer value) throws IOException {
-    addElement(tag, new Fixed32Value(tag, value));
-  }
-
-  void addFixed64(int tag, Long value) throws IOException {
-    addElement(tag, new Fixed64Value(tag, value));
-  }
-
-  void addLengthDelimited(int tag, ByteString value) throws IOException {
-    addElement(tag, new LengthDelimitedValue(tag, value));
+  <T> void add(int tag, T value, TypeAdapter<T> adapter) throws IOException {
+    addElement(tag, new Value<T>(tag, value, adapter));
   }
 
   /**
@@ -149,10 +74,10 @@ final class UnknownFieldMap {
     if (values == null) {
       values = new ArrayList<Value>();
       fieldMap.put(tag, values);
-    } else if (values.get(0).getClass() != value.getClass()) {
+    } else if (values.get(0).adapter.type != value.adapter.type) {
       throw new ProtocolException(
           String.format("Wire type %s differs from previous type %s for tag %s",
-              value.getClass().getSimpleName(), values.get(0).getClass().getSimpleName(), tag));
+              value.adapter.type, values.get(0).adapter.type, tag));
     }
     values.add(value);
   }
@@ -160,8 +85,9 @@ final class UnknownFieldMap {
   int getSerializedSize() {
     int size = 0;
     for (Map.Entry<Integer, List<Value>> entry : fieldMap.entrySet()) {
+      int tagSize = ProtoWriter.tagSize(entry.getKey());
       for (Value value : entry.getValue()) {
-        size += value.getSerializedSize();
+        size += tagSize + value.getSerializedSize();
       }
     }
     return size;

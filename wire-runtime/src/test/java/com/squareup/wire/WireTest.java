@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.UnknownFieldMap.VarintValue;
 import com.squareup.wire.protos.RepeatedAndPacked;
 import com.squareup.wire.protos.person.Person;
 import com.squareup.wire.protos.person.Person.PhoneNumber;
@@ -325,7 +324,7 @@ public class WireTest {
     assertThat(unknownFields).hasSize(1);
     List<UnknownFieldMap.Value> values = unknownFields.iterator().next();
     assertThat(values).hasSize(1);
-    VarintValue value = (VarintValue) values.get(0);
+    UnknownFieldMap.Value value = values.get(0);
     assertThat(value.tag).isEqualTo(2);
     assertThat(value.value).isEqualTo(Long.valueOf(17L));
 

@@ -97,7 +97,7 @@ public abstract class TypeAdapter<E> {
       return decodeZigZag32(reader.readVarint32());
     }
   };
-  public static final TypeAdapter<Integer> FIXED32 = new TypeAdapter<Integer>(WireType.VARINT) {
+  public static final TypeAdapter<Integer> FIXED32 = new TypeAdapter<Integer>(WireType.FIXED32) {
     @Override public int serializedSize(Integer value) {
       return FIXED_32_SIZE;
     }
@@ -138,7 +138,7 @@ public abstract class TypeAdapter<E> {
       return decodeZigZag64(reader.readVarint64());
     }
   };
-  public static final TypeAdapter<Long> FIXED64 = new TypeAdapter<Long>(WireType.VARINT) {
+  public static final TypeAdapter<Long> FIXED64 = new TypeAdapter<Long>(WireType.FIXED64) {
     @Override public int serializedSize(Long value) {
       return FIXED_64_SIZE;
     }

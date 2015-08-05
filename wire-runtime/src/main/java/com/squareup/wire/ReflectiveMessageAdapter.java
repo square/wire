@@ -527,16 +527,16 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     WireType type = input.peekType();
     switch (type) {
       case VARINT:
-        builder.ensureUnknownFieldMap().addVarint(tag, input.readVarint64());
+        builder.ensureUnknownFieldMap().add(tag, input.readVarint64(), UINT64);
         break;
       case FIXED32:
-        builder.ensureUnknownFieldMap().addFixed32(tag, input.readFixed32());
+        builder.ensureUnknownFieldMap().add(tag, input.readFixed32(), FIXED32);
         break;
       case FIXED64:
-        builder.ensureUnknownFieldMap().addFixed64(tag, input.readFixed64());
+        builder.ensureUnknownFieldMap().add(tag, input.readFixed64(), FIXED64);
         break;
       case LENGTH_DELIMITED:
-        builder.ensureUnknownFieldMap().addLengthDelimited(tag, input.readBytes());
+        builder.ensureUnknownFieldMap().add(tag, input.readBytes(), BYTES);
         break;
       /* Skip any groups found in the input */
       case START_GROUP:
