@@ -19,6 +19,7 @@ class WireSourceSetExtension {
   // Properties passed to the Wire compiler.
   private boolean noOptions
   private List<String> enumOptions = Lists.newArrayList()
+  private List<String> protoPaths = Lists.newArrayList()
   private List<String> roots = Lists.newArrayList()
   private String serviceWriter
   private List<String> serviceWriterOpts = Lists.newArrayList()
@@ -41,6 +42,14 @@ class WireSourceSetExtension {
 
   void setSrcDirs(Iterable<String> dirs) {
     folders = Lists.newArrayList(dirs)
+  }
+
+  void setProtoPaths(Iterable<String> paths) {
+    protoPaths = Lists.newArrayList(paths)
+  }
+
+  Iterable<String> getProtoPaths() {
+    return protoPaths
   }
 
   /** Return a map of .proto files found, keyed by the containing source folder. */

@@ -19,8 +19,7 @@ class WireGeneratorTask extends DefaultTask {
   @InputFiles Collection<File> getInputFiles() {
     Set<File> inputFiles = Sets.newHashSet()
     for (WireSourceSetExtension configuration : getConfigurations()) {
-      for (Map.Entry<String, Collection<String>> entry :
-          configuration.getFiles().asMap().entrySet()) {
+      for (Map.Entry<String, Collection<String>> entry : configuration.getFiles().asMap().entrySet()) {
         for (String file : entry.value) {
           inputFiles.add(new File(entry.key, file))
         }
@@ -47,8 +46,11 @@ class WireGeneratorTask extends DefaultTask {
       for (Map.Entry<String, Collection<String>> entry : files.asMap().entrySet()) {
         String protoDir = entry.key
         List<String> args = Lists.newArrayList()
-        args.add("--proto_path=" +
-            new File(project.projectDir, protoDir).getAbsolutePath())
+        args.add("--proto_path=" + project.file(protoDir).getAbsolutePath())
+
+        for (String path : configuration.protoPaths) {
+          args.add("--proto_path=" + project.file(path).getAbsolutePath())
+        }
 
         if (noOptions) {
           args.add("--no_options")
