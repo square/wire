@@ -50,7 +50,7 @@ For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`,
 
 Instead of supplying individual filename arguments on the command line, the `--files` flag may be
 used to specify a single file containing a list of `.proto` files. The file names are interpreted
-relative to the value given for the `--proto_path` flag.
+relative to the paths provided by `--proto_path` flags.
 
     % cat protos.include
     google/protobuf/descriptor.proto
@@ -71,6 +71,9 @@ relative to the value given for the `--proto_path` flag.
 The compiler will (recursively) import any needed `.proto` files from the `protos-repo/` directory,
 but will only generate output for the `.proto` files listed on the command line or in the file
 specified by the `--files` flag.
+
+The `--proto_path` flag may be specified multiple times to provide multiple paths in which to search
+for `.proto` files.
 
 Generating service interfaces
 -----------------------------

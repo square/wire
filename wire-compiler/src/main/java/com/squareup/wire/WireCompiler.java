@@ -52,7 +52,7 @@ public final class WireCompiler {
   }
 
   WireCompiler(CommandLineOptions options) throws WireException {
-    this(options, Loader.forBaseDirectory(options.protoPath()), JavaGenerator.IO.DEFAULT,
+    this(options, Loader.forSearchPaths(options.protoPaths()), JavaGenerator.IO.DEFAULT,
         new ConsoleWireLogger(options.quiet));
   }
 

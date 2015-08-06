@@ -709,7 +709,7 @@ public class WireCompilerTest {
   private void invokeCompiler(String[] args) throws WireException {
     CommandLineOptions options = new CommandLineOptions(args);
     logger = new StringWireLogger(options.quiet);
-    Loader loader = Loader.forBaseDirectory(options.protoPath());
+    Loader loader = Loader.forSearchPaths(options.protoPaths());
     new WireCompiler(options, loader, JavaGenerator.IO.DEFAULT, logger).compile();
   }
 
