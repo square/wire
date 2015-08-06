@@ -38,7 +38,8 @@ final class CommandLineOptions {
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
 
-  final String protoPath;
+  final List<String> protoPaths;
+
   final File javaOut;
   final List<String> sourceFileNames;
   final List<String> roots;
@@ -58,7 +59,7 @@ final class CommandLineOptions {
       List<String> serviceFactoryOptions,
       boolean quiet,
       boolean dryRun) {
-    this.protoPath = protoPath;
+    this.protoPaths = Arrays.asList(protoPath);
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
     this.roots = roots;
@@ -121,7 +122,7 @@ final class CommandLineOptions {
     List<String> serviceFactoryOptions = new ArrayList<>();
     List<String> roots = new ArrayList<>();
     boolean emitOptions = true;
-    String protoPath = null;
+    List<String> protoPaths = new ArrayList<>();
     File javaOut = null;
     String registryClass = null;
     List<String> enumOptionsList = new ArrayList<>();
@@ -131,7 +132,7 @@ final class CommandLineOptions {
 
     while (index < args.length) {
       if (args[index].startsWith(PROTO_PATH_FLAG)) {
-        protoPath = args[index].substring(PROTO_PATH_FLAG.length());
+        protoPaths.add(args[index].substring(PROTO_PATH_FLAG.length()));
       } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
         javaOut = new File(args[index].substring(JAVA_OUT_FLAG.length()));
       } else if (args[index].startsWith(FILES_FLAG)) {
@@ -166,7 +167,7 @@ final class CommandLineOptions {
       index++;
     }
 
-    this.protoPath = protoPath;
+    this.protoPaths = protoPaths;
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
     this.roots = roots;
@@ -202,10 +203,10 @@ final class CommandLineOptions {
     return Arrays.asList(arg.substring(flagLength).split(","));
   }
 
-  public String protoPath() {
-    String result = protoPath;
-    if (result == null) {
-      result = System.getProperty("user.dir");
+  public List<String> protoPaths() {
+    List<String> result = protoPaths;
+    if (result == null || result.isEmpty()) {
+      result = Arrays.asList(System.getProperty("user.dir"));
       System.err.println(CommandLineOptions.PROTO_PATH_FLAG + " flag not specified, "
           + "using current dir " + result);
     }
