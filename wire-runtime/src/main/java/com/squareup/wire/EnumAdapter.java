@@ -61,8 +61,7 @@ final class EnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
     try {
       return constants[index];
     } catch (IndexOutOfBoundsException e) {
-      throw new IllegalArgumentException(
-          "Unknown enum tag " + value + " for " + type.getCanonicalName());
+      throw new EnumConstantNotFoundException(value, type);
     }
   }
 
@@ -76,5 +75,14 @@ final class EnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
 
   @Override public E read(ProtoReader reader) throws IOException {
     return fromInt(reader.readVarint32());
+  }
+
+  static final class EnumConstantNotFoundException extends IllegalArgumentException {
+    final int value;
+
+    EnumConstantNotFoundException(int value, Class<?> type) {
+      super("Unknown enum tag " + value + " for " + type.getCanonicalName());
+      this.value = value;
+    }
   }
 }

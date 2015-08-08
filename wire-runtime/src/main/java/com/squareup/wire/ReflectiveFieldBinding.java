@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 final class ReflectiveFieldBinding {
-  static ReflectiveFieldBinding create(ProtoField protoField, Field messageField,
+  static ReflectiveFieldBinding create(Wire wire, ProtoField protoField, Field messageField,
       Class<?> builderType) {
     int tag = protoField.tag();
     Message.Datatype datatype = protoField.type();
@@ -19,11 +19,14 @@ final class ReflectiveFieldBinding {
     } else if (datatype == Message.Datatype.MESSAGE) {
       messageType = getMessageType(messageField);
     }
+    TypeAdapter<Object> adapter =
+        (TypeAdapter<Object>) ReflectiveMessageAdapter.typeAdapter(wire, datatype, messageType,
+            enumType);
     String name = messageField.getName();
     Field builderField = getBuilderField(builderType, name);
     Method builderMethod = getBuilderMethod(builderType, name, messageField.getType());
     return new ReflectiveFieldBinding(tag, name, datatype, label, redacted, enumType, messageType,
-        messageField, builderField, builderMethod);
+        adapter, messageField, builderField, builderMethod);
   }
 
   @SuppressWarnings("unchecked")
@@ -68,10 +71,7 @@ final class ReflectiveFieldBinding {
   final Class<? extends ProtoEnum> enumType;
   final Class<? extends Message> messageType;
   final boolean redacted;
-
-  // Cached values
-  MessageAdapter<? extends Message> messageAdapter;
-  EnumAdapter<? extends ProtoEnum> enumAdapter;
+  final TypeAdapter<Object> adapter;
 
   private final Field messageField;
   private final Field builderField;
@@ -79,8 +79,8 @@ final class ReflectiveFieldBinding {
 
   private ReflectiveFieldBinding(int tag, String name, Message.Datatype datatype,
       Message.Label label, boolean redacted, Class<? extends ProtoEnum> enumType,
-      Class<? extends Message> messageType, Field messageField, Field builderField,
-      Method builderMethod) {
+      Class<? extends Message> messageType, TypeAdapter<Object> adapter, Field messageField,
+      Field builderField, Method builderMethod) {
     this.tag = tag;
     this.name = name;
     this.datatype = datatype;
@@ -88,11 +88,11 @@ final class ReflectiveFieldBinding {
     this.redacted = redacted;
     this.enumType = enumType;
     this.messageType = messageType;
+    this.adapter = adapter;
     this.messageField = messageField;
     this.builderField = builderField;
     this.builderMethod = builderMethod;
   }
-
 
   Object getValue(Object message) {
     try {
