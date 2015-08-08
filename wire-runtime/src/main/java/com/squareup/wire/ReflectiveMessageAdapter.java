@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.RandomAccess;
 import java.util.Set;
-import okio.ByteString;
 
 import static com.squareup.wire.ExtendableMessage.ExtendableBuilder;
 import static com.squareup.wire.Message.Builder;
@@ -57,7 +56,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       ProtoField protoField = messageField.getAnnotation(ProtoField.class);
       if (protoField != null) {
         int tag = protoField.tag();
-        map.put(tag, ReflectiveFieldBinding.create(protoField, messageField, builderType));
+        map.put(tag, ReflectiveFieldBinding.create(wire, protoField, messageField, builderType));
       }
     }
     fieldBindingMap = TagMap.of(map);
@@ -87,6 +86,30 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
   }
 
+  static TypeAdapter<?> typeAdapter(Wire wire, Datatype datatype,
+      Class<? extends Message> messageType, Class<? extends ProtoEnum> enumType) {
+    switch (datatype) {
+      case BOOL: return TypeAdapter.BOOL;
+      case BYTES: return TypeAdapter.BYTES;
+      case DOUBLE: return TypeAdapter.DOUBLE;
+      case ENUM: return wire.enumAdapter(enumType);
+      case FIXED32: return TypeAdapter.FIXED32;
+      case FIXED64: return TypeAdapter.FIXED64;
+      case FLOAT: return TypeAdapter.FLOAT;
+      case INT32: return TypeAdapter.INT32;
+      case INT64: return TypeAdapter.INT64;
+      case MESSAGE: return wire.adapter(messageType);
+      case SFIXED32: return TypeAdapter.SFIXED32;
+      case SFIXED64: return TypeAdapter.SFIXED64;
+      case SINT32: return TypeAdapter.SINT32;
+      case SINT64: return TypeAdapter.SINT64;
+      case STRING: return TypeAdapter.STRING;
+      case UINT32: return TypeAdapter.UINT32;
+      case UINT64: return TypeAdapter.UINT64;
+      default: throw new AssertionError("Unknown data type " + datatype);
+    }
+  }
+
   // Writing
 
   @Override public int serializedSize(M message) {
@@ -97,17 +120,17 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
         continue;
       }
       int tag = fieldBinding.tag;
-      Datatype datatype = fieldBinding.datatype;
-      Label label = fieldBinding.label;
+      TypeAdapter<Object> adapter = fieldBinding.adapter;
 
+      Label label = fieldBinding.label;
       if (label.isRepeated()) {
         if (label.isPacked()) {
-          size += getPackedSize((List<?>) value, tag, datatype);
+          size += getPackedSize((List<?>) value, tag, adapter);
         } else {
-          size += getRepeatedSize((List<?>) value, tag, datatype);
+          size += getRepeatedSize((List<?>) value, tag, adapter);
         }
       } else {
-        size += getSerializedSize(tag, value, datatype);
+        size += getSerializedSize(tag, value, adapter);
       }
     }
 
@@ -125,35 +148,36 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     int size = 0;
     for (int i = 0, count = map.size(); i < count; i++) {
       Extension<T, ?> extension = map.getExtension(i);
+      TypeAdapter<Object> adapter = (TypeAdapter<Object>) typeAdapter(wire, extension.getDatatype(),
+          extension.getMessageType(), extension.getEnumType());
       Object value = map.getExtensionValue(i);
       int tag = extension.getTag();
-      Datatype datatype = extension.getDatatype();
       Label label = extension.getLabel();
       if (label.isRepeated()) {
         if (label.isPacked()) {
-          size += getPackedSize((List<?>) value, tag, datatype);
+          size += getPackedSize((List<?>) value, tag, adapter);
         } else {
-          size += getRepeatedSize((List<?>) value, tag, datatype);
+          size += getRepeatedSize((List<?>) value, tag, adapter);
         }
       } else {
-        size += getSerializedSize(tag, value, datatype);
+        size += getSerializedSize(tag, value, adapter);
       }
     }
     return size;
   }
 
-  private int getRepeatedSize(List<?> value, int tag, Datatype datatype) {
+  private int getRepeatedSize(List<?> value, int tag, TypeAdapter<Object> adapter) {
     int size = 0;
     for (int i = 0, count = value.size(); i < count; i++) {
-      size += getSerializedSize(tag, value.get(i), datatype);
+      size += getSerializedSize(tag, value.get(i), adapter);
     }
     return size;
   }
 
-  private int getPackedSize(List<?> value, int tag, Datatype datatype) {
+  private int getPackedSize(List<?> value, int tag, TypeAdapter<Object> adapter) {
     int packedLength = 0;
     for (int i = 0, count = value.size(); i < count; i++) {
-      packedLength += getSerializedSizeNoTag(value.get(i), datatype);
+      packedLength += adapter.serializedSize(value.get(i));
     }
     // tag + length + value + value + ...
     int size = ProtoWriter.varint32Size(ProtoWriter.makeTag(tag, WireType.LENGTH_DELIMITED));
@@ -170,16 +194,17 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       }
       int tag = fieldBinding.tag;
       Datatype datatype = fieldBinding.datatype;
-      Label label = fieldBinding.label;
+      TypeAdapter<Object> adapter = fieldBinding.adapter;
 
+      Label label = fieldBinding.label;
       if (label.isRepeated()) {
         if (label.isPacked()) {
-          writePacked(output, (List<?>) value, tag, datatype);
+          writePacked(output, (List<?>) value, tag, adapter);
         } else {
-          writeRepeated(output, (List<?>) value, tag, datatype);
+          writeRepeated(output, (List<?>) value, tag, datatype, adapter);
         }
       } else {
-        writeValue(output, tag, value, datatype);
+        writeValue(output, tag, value, datatype, adapter);
       }
     }
 
@@ -196,39 +221,42 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       ExtensionMap<T> extensionMap) throws IOException {
     for (int i = 0, count = extensionMap.size(); i < count; i++) {
       Extension<T, ?> extension = extensionMap.getExtension(i);
+      TypeAdapter<Object> adapter = (TypeAdapter<Object>) typeAdapter(wire, extension.getDatatype(),
+          extension.getMessageType(), extension.getEnumType());
       Object value = extensionMap.getExtensionValue(i);
       int tag = extension.getTag();
       Datatype datatype = extension.getDatatype();
       Label label = extension.getLabel();
       if (label.isRepeated()) {
         if (label.isPacked()) {
-          writePacked(output, (List<?>) value, tag, datatype);
+          writePacked(output, (List<?>) value, tag, adapter);
         } else {
-          writeRepeated(output, (List<?>) value, tag, datatype);
+          writeRepeated(output, (List<?>) value, tag, datatype, adapter);
         }
       } else {
-        writeValue(output, tag, value, datatype);
+        writeValue(output, tag, value, datatype, adapter);
       }
     }
   }
 
-  private void writeRepeated(ProtoWriter output, List<?> value, int tag, Datatype datatype)
+  private void writeRepeated(ProtoWriter output, List<?> value, int tag, Datatype datatype,
+      TypeAdapter<Object> adapter)
       throws IOException {
     for (int i = 0, count = value.size(); i < count; i++) {
-      writeValue(output, tag, value.get(i), datatype);
+      writeValue(output, tag, value.get(i), datatype, adapter);
     }
   }
 
-  private void writePacked(ProtoWriter output, List<?> value, int tag, Datatype datatype)
+  private void writePacked(ProtoWriter output, List<?> value, int tag, TypeAdapter<Object> adapter)
       throws IOException {
     int packedLength = 0;
     for (int i = 0, count = value.size(); i < count; i++) {
-      packedLength += getSerializedSizeNoTag(value.get(i), datatype);
+      packedLength += adapter.serializedSize(value.get(i));
     }
     output.writeTag(tag, WireType.LENGTH_DELIMITED);
     output.writeVarint32(packedLength);
     for (int i = 0, count = value.size(); i < count; i++) {
-      writeValueNoTag(output, value.get(i), datatype);
+      adapter.write(value.get(i), output);
     }
   }
 
@@ -270,105 +298,18 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   /**
    * Returns the serialized size in bytes of the given tag and value.
    */
-  private int getSerializedSize(int tag, Object value, Datatype datatype) {
-    return ProtoWriter.tagSize(tag) + getSerializedSizeNoTag(value, datatype);
-  }
-
-  /**
-   * Returns the serialized size in bytes of the given value without any prepended tag or length,
-   * e.g., as it would be written as part of a 'packed' repeated field.
-   */
-  private int getSerializedSizeNoTag(Object value, Datatype datatype) {
-    switch (datatype) {
-      case INT32: return TypeAdapter.INT32.serializedSize((Integer) value);
-      case INT64: return TypeAdapter.INT64.serializedSize((Long) value);
-      case UINT32: return TypeAdapter.UINT32.serializedSize((Integer) value);
-      case UINT64: return TypeAdapter.UINT64.serializedSize((Long) value);
-      case SINT32: return TypeAdapter.SINT32.serializedSize((Integer) value);
-      case SINT64: return TypeAdapter.SINT64.serializedSize((Long) value);
-      case BOOL: return TypeAdapter.BOOL.serializedSize((Boolean) value);
-      case STRING:
-        int stringSize = TypeAdapter.STRING.serializedSize((String) value);
-        return varint32Size(stringSize) + stringSize;
-      case BYTES:
-        int bytesSize = TypeAdapter.BYTES.serializedSize((ByteString) value);
-        return varint32Size(bytesSize) + bytesSize;
-      case FIXED32: return TypeAdapter.FIXED32.serializedSize((Integer) value);
-      case FIXED64: return TypeAdapter.FIXED64.serializedSize((Long) value);
-      case SFIXED32: return TypeAdapter.SFIXED32.serializedSize((Integer) value);
-      case SFIXED64: return TypeAdapter.SFIXED64.serializedSize((Long) value);
-      case FLOAT: return TypeAdapter.FLOAT.serializedSize((Float) value);
-      case DOUBLE: return TypeAdapter.DOUBLE.serializedSize((Double) value);
-      case MESSAGE: return getMessageSize((Message) value);
-      case ENUM: return getEnumSize((ProtoEnum) value);
-      default: throw new AssertionError("Unknown data type " + datatype);
+  private int getSerializedSize(int tag, Object value, TypeAdapter<Object> adapter) {
+    int size = adapter.serializedSize(value);
+    if (adapter.type == WireType.LENGTH_DELIMITED) {
+      size += varint32Size(size);
     }
+    return ProtoWriter.tagSize(tag) + size;
   }
 
-  @SuppressWarnings("unchecked")
-  private <E extends ProtoEnum> int getEnumSize(E value) {
-    return ProtoWriter.varint32Size(value.getValue());
-  }
-
-  @SuppressWarnings("unchecked")
-  private <MM extends Message> int getMessageSize(MM message) {
-    int size = message.cachedSerializedSize;
-    if (size == -1) {
-      MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
-      size = message.cachedSerializedSize = adapter.serializedSize(message);
-    }
-    return ProtoWriter.varint32Size(size) + size;
-  }
-
-  private void writeValue(ProtoWriter output, int tag, Object value, Datatype datatype)
-      throws IOException {
+  private void writeValue(ProtoWriter output, int tag, Object value, Datatype datatype,
+      TypeAdapter<Object> adapter) throws IOException {
     output.writeTag(tag, datatype.wireType());
-    writeValueNoTag(output, value, datatype);
-  }
-
-  /**
-   * Writes a value with no tag.
-   */
-  private void writeValueNoTag(ProtoWriter output, Object value, Datatype datatype)
-      throws IOException {
-    switch (datatype) {
-      case INT32: output.write(TypeAdapter.INT32, (Integer) value); break;
-      case INT64: output.write(TypeAdapter.INT64, (Long) value); break;
-      case UINT32: output.write(TypeAdapter.UINT32, (Integer) value); break;
-      case UINT64: output.write(TypeAdapter.UINT64, (Long) value); break;
-      case SINT32: output.write(TypeAdapter.SINT32, (Integer) value); break;
-      case SINT64: output.write(TypeAdapter.SINT64, (Long) value); break;
-      case BOOL: output.write(TypeAdapter.BOOL, (Boolean) value); break;
-      case STRING: output.write(TypeAdapter.STRING, (String) value); break;
-      case BYTES: output.write(TypeAdapter.BYTES, (ByteString) value); break;
-      case FIXED32: output.write(TypeAdapter.FIXED32, (Integer) value); break;
-      case FIXED64: output.write(TypeAdapter.FIXED64, (Long) value); break;
-      case SFIXED32: output.write(TypeAdapter.SFIXED32, (Integer) value); break;
-      case SFIXED64: output.write(TypeAdapter.SFIXED64, (Long) value); break;
-      case FLOAT: output.write(TypeAdapter.FLOAT, (Float) value); break;
-      case DOUBLE: output.write(TypeAdapter.DOUBLE, (Double) value); break;
-      case MESSAGE: writeMessage((Message) value, output); break;
-      case ENUM: writeEnum((ProtoEnum) value, output); break;
-      default: throw new AssertionError("Unknown data type " + datatype);
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private <MM extends Message> void writeMessage(MM message, ProtoWriter output)
-      throws IOException {
-    MessageAdapter<MM> adapter = wire.messageAdapter((Class<MM>) message.getClass());
-    int size = message.cachedSerializedSize;
-    if (size == -1) {
-      size = message.cachedSerializedSize = adapter.serializedSize(message);
-    }
-    output.writeVarint32(size);
-    adapter.write(message, output);
-  }
-
-  @SuppressWarnings("unchecked")
-  private <E extends ProtoEnum> void writeEnum(E value, ProtoWriter output)
-      throws IOException {
-    output.writeVarint32(value.getValue());
+    output.write(adapter, value);
   }
 
   // Reading
@@ -381,54 +322,61 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       int tag = input.readTag();
 
       Extension<?, ?> extension = null;
-      Datatype datatype;
       Label label;
+      TypeAdapter<Object> adapter;
       ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
       if (fieldBinding != null) {
-        datatype = fieldBinding.datatype;
         label = fieldBinding.label;
+        adapter = fieldBinding.adapter;
       } else {
         extension = getExtension(tag);
         if (extension == null) {
           readUnknownField(builder, input, tag);
           continue;
         }
-        datatype = extension.getDatatype();
         label = extension.getLabel();
+        adapter = (TypeAdapter<Object>) typeAdapter(wire, extension.getDatatype(),
+            extension.getMessageType(), extension.getEnumType());
       }
 
-      Object value;
       if (label.isPacked() && input.peekType() == WireType.LENGTH_DELIMITED) {
         // Decode packed format
         long token = input.beginLengthDelimited();
         while (input.hasNext()) {
-          value = readValue(input, tag, datatype);
-          if (datatype == Datatype.ENUM && value instanceof Integer) {
-            // An unknown Enum value was encountered, store it as an unknown field
-            builder.addVarint(tag, (Integer) value);
-          } else {
+          try {
+            Object value = input.value(adapter);
             storage.add(tag, value);
+          } catch (EnumAdapter.EnumConstantNotFoundException e) {
+            // An unknown Enum value was encountered, store it as an unknown field
+            builder.addVarint(tag, e.value);
           }
         }
         input.endLengthDelimited(token);
       } else {
         // Read a single value
-        value = readValue(input, tag, datatype);
-        if (datatype == Datatype.ENUM && value instanceof Integer) {
+        Object value;
+        // Message adapters do not read their length prefix. TODO this is a temporary hack.
+        long token = adapter instanceof MessageAdapter<?> ? input.beginLengthDelimited() : -1;
+        try {
+          value = input.value(adapter);
+        } catch (EnumAdapter.EnumConstantNotFoundException e) {
           // An unknown Enum value was encountered, store it as an unknown field
-          builder.addVarint(tag, (Integer) value);
+          builder.addVarint(tag, e.value);
+          continue;
+        }
+        if (token != -1) {
+          input.endLengthDelimited(token);
+        }
+        if (label.isRepeated()) {
+          storage.add(tag, value != null ? value : Collections.emptyList());
+        } else if (extension != null) {
+          setExtension((ExtendableBuilder<?, ?>) builder, extension, value);
+        } else if (label.isOneOf()) {
+          // In order to maintain the 'oneof' invariant, call the builder setter method rather
+          // than setting the builder field directly.
+          fieldBinding.setBuilderMethod(builder, value);
         } else {
-          if (label.isRepeated()) {
-            storage.add(tag, value != null ? value : Collections.emptyList());
-          } else if (extension != null) {
-            setExtension((ExtendableBuilder<?, ?>) builder, extension, value);
-          } else if (label.isOneOf()) {
-            // In order to maintain the 'oneof' invariant, call the builder setter method rather
-            // than setting the builder field directly.
-            fieldBinding.setBuilderMethod(builder, value);
-          } else {
-            fieldBinding.setBuilderField(builder, value);
-          }
+          fieldBinding.setBuilderField(builder, value);
         }
       }
     }
@@ -445,81 +393,6 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       }
     }
     return builder.build();
-  }
-
-  private Object readValue(ProtoReader input, int tag, Datatype datatype) throws IOException {
-    switch (datatype) {
-      case INT32: return TypeAdapter.INT32.read(input);
-      case INT64: return TypeAdapter.INT64.read(input);
-      case UINT32: return TypeAdapter.UINT32.read(input);
-      case UINT64: return TypeAdapter.UINT64.read(input);
-      case SINT32: return TypeAdapter.SINT32.read(input);
-      case SINT64: return TypeAdapter.SINT64.read(input);
-      case BOOL: return TypeAdapter.BOOL.read(input);
-      case STRING: return TypeAdapter.STRING.read(input);
-      case BYTES: return TypeAdapter.BYTES.read(input);
-      case FIXED32: return TypeAdapter.FIXED32.read(input);
-      case FIXED64: return TypeAdapter.FIXED64.read(input);
-      case SFIXED32: return TypeAdapter.SFIXED32.read(input);
-      case SFIXED64: return TypeAdapter.SFIXED64.read(input);
-      case FLOAT: return TypeAdapter.FLOAT.read(input);
-      case DOUBLE: return TypeAdapter.DOUBLE.read(input);
-      case MESSAGE: return readMessage(input, tag);
-      case ENUM:
-        EnumAdapter<? extends ProtoEnum> adapter = getEnumAdapter(tag);
-        int value = input.readVarint32();
-        try {
-          return adapter.fromInt(value);
-        } catch (IllegalArgumentException e) {
-          return value; // Return the raw value as an Integer
-        }
-      default: throw new AssertionError("Unknown data type " + datatype);
-    }
-  }
-
-  private Message readMessage(ProtoReader input, int tag) throws IOException {
-    long token = input.beginLengthDelimited();
-    Message message = getMessageAdapter(tag).read(input);
-    input.endLengthDelimited(token);
-    return message;
-  }
-
-  private MessageAdapter<? extends Message> getMessageAdapter(int tag) {
-    ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
-    if (fieldBinding != null && fieldBinding.messageAdapter != null) {
-      return fieldBinding.messageAdapter;
-    }
-    MessageAdapter<? extends Message> result = wire.messageAdapter(getMessageClass(tag));
-    if (fieldBinding != null) {
-      fieldBinding.messageAdapter = result;
-    }
-    return result;
-  }
-
-  private EnumAdapter<? extends ProtoEnum> getEnumAdapter(int tag) {
-    ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
-    if (fieldBinding != null && fieldBinding.enumAdapter != null) {
-      return fieldBinding.enumAdapter;
-    }
-    EnumAdapter<? extends ProtoEnum> result = wire.enumAdapter(getEnumClass(tag));
-    if (fieldBinding != null) {
-      fieldBinding.enumAdapter = result;
-    }
-    return result;
-  }
-
-  @SuppressWarnings("unchecked")
-  private Class<Message> getMessageClass(int tag) {
-    ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
-    Class<Message> messageClass = fieldBinding == null
-        ? null : (Class<Message>) fieldBinding.messageType;
-    if (messageClass == null) {
-      Extension<?, ?> extension = getExtension(tag);
-      if (extension != null) {
-        messageClass = (Class<Message>) extension.getMessageType();
-      }
-    }
-    return messageClass;
   }
 
   private void readUnknownField(Builder builder, ProtoReader input, int tag)
@@ -591,18 +464,6 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   private void setExtension(ExtendableMessage.ExtendableBuilder builder, Extension<?, ?> extension,
       Object value) {
     builder.setExtension(extension, value);
-  }
-
-  private Class<? extends ProtoEnum> getEnumClass(int tag) {
-    ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
-    Class<? extends ProtoEnum> enumType = fieldBinding == null ? null : fieldBinding.enumType;
-    if (enumType == null) {
-      Extension<?, ?> extension = getExtension(tag);
-      if (extension != null) {
-        enumType = extension.getEnumType();
-      }
-    }
-    return enumType;
   }
 
   /**

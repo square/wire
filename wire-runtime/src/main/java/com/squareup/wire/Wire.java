@@ -15,7 +15,9 @@
  */
 package com.squareup.wire;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,7 +27,8 @@ import java.util.Map;
  * Encode and decode Wire protocol buffers.
  */
 public final class Wire {
-
+  private final ThreadLocal<List<DeferredAdapter<?>>> reentrantCalls =
+      new ThreadLocal<List<DeferredAdapter<?>>>();
   private final Map<Class<? extends Message>, ReflectiveMessageAdapter<? extends Message>>
       messageAdapters =
       new LinkedHashMap<Class<? extends Message>, ReflectiveMessageAdapter<? extends Message>>();
@@ -67,6 +70,29 @@ public final class Wire {
 
   /** Returns an adapter for reading and writing {@code type}, creating it if necessary. */
   public <M extends Message> MessageAdapter<M> adapter(Class<M> type) {
+    List<DeferredAdapter<?>> deferredAdapters = reentrantCalls.get();
+    if (deferredAdapters == null) {
+      deferredAdapters = new ArrayList<DeferredAdapter<?>>();
+      reentrantCalls.set(deferredAdapters);
+    } else {
+      // Check that this isn't a reentrant call.
+      for (DeferredAdapter<?> deferredAdapter : deferredAdapters) {
+        if (deferredAdapter.type.equals(type)) {
+          //noinspection unchecked
+          return (MessageAdapter<M>) deferredAdapter;
+        }
+      }
+    }
+
+    DeferredAdapter<M> deferredAdapter = new DeferredAdapter<M>(type);
+    deferredAdapters.add(deferredAdapter);
+    try {
+      MessageAdapter<M> adapter = messageAdapter(type);
+      deferredAdapter.ready(adapter);
+    } finally {
+      deferredAdapters.remove(deferredAdapters.size() - 1);
+    }
+
     return messageAdapter(type);
   }
 
@@ -115,5 +141,52 @@ public final class Wire {
    */
   public static <T> T get(T value, T defaultValue) {
     return value != null ? value : defaultValue;
+  }
+
+  /**
+   * Sometimes a type adapter factory depends on its own product; either directly or indirectly.
+   * To make this work, we offer this type adapter stub while the final adapter is being computed.
+   * When it is ready, we wire this to delegate to that finished adapter.
+   *
+   * <p>Typically this is necessary in self-referential object models, such as an {@code Employee}
+   * class that has a {@code List<Employee>} field for an organization's management hierarchy.
+   */
+  private static class DeferredAdapter<M extends Message> extends MessageAdapter<M> {
+    private Class<M> type;
+    private MessageAdapter<M> delegate;
+
+    DeferredAdapter(Class<M> type) {
+      this.type = type;
+    }
+
+    public void ready(MessageAdapter<M> delegate) {
+      this.delegate = delegate;
+      this.type = null; // Allow to be garbage collected.
+    }
+
+    @Override public M redact(M value) {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      return delegate.redact(value);
+    }
+
+    @Override String toString(M value) {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      return delegate.toString(value);
+    }
+
+    @Override public int serializedSize(M value) {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      return delegate.serializedSize(value);
+    }
+
+    @Override public void write(M value, ProtoWriter writer) throws IOException {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      delegate.write(value, writer);
+    }
+
+    @Override public M read(ProtoReader reader) throws IOException {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      return delegate.read(reader);
+    }
   }
 }
