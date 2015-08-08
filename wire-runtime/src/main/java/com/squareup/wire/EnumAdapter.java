@@ -65,11 +65,11 @@ final class EnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
     }
   }
 
-  @Override public int serializedSize(E value) {
+  @Override int dataSize(E value) {
     return ProtoWriter.varint32Size(value.getValue());
   }
 
-  @Override public void write(E value, ProtoWriter writer) throws IOException {
+  @Override void writeData(E value, ProtoWriter writer) throws IOException {
     writer.writeVarint32(value.getValue());
   }
 

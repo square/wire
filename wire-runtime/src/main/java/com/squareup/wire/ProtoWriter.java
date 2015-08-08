@@ -59,7 +59,7 @@ import okio.ByteString;
 public final class ProtoWriter {
 
   /** Makes a tag value given a field number and wire type. */
-  static int makeTag(int fieldNumber, WireType wireType) {
+  private static int makeTag(int fieldNumber, WireType wireType) {
     return (fieldNumber << WireType.TAG_TYPE_BITS) | wireType.value();
   }
 
@@ -100,11 +100,8 @@ public final class ProtoWriter {
     this.sink = sink;
   }
 
-  public <T> void write(TypeAdapter<T> adapter, T value) throws IOException {
-    if (adapter.type == WireType.LENGTH_DELIMITED) {
-      writeVarint32(adapter.serializedSize(value));
-    }
-    adapter.write(value, this);
+  public <T> void write(int tag, T value, TypeAdapter<T> adapter) throws IOException {
+    adapter.write(tag, value, this);
   }
 
   void writeByte(int value) throws IOException {
