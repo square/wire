@@ -46,7 +46,7 @@ For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`,
     import java.util.List;
 
     public final class DescriptorProto
-        implements Message {
+        extends Message {
 
 Instead of supplying individual filename arguments on the command line, the `--files` flag may be
 used to specify a single file containing a list of `.proto` files. The file names are interpreted
