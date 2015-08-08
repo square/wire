@@ -110,6 +110,12 @@ public abstract class Message implements Serializable {
   protected Message() {
   }
 
+  // This contructor is no longer used. Available for backward compatibility.
+  protected Message(Builder builder) {
+    this();
+    setBuilder(builder);
+  }
+
   /**
    * Initializes any unknown field data to that stored in the given {@code Builder}.
    */
