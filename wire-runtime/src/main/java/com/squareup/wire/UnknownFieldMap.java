@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static com.squareup.wire.ProtoWriter.makeTag;
-
 final class UnknownFieldMap {
 
   static final class Value<T> {
@@ -37,13 +35,12 @@ final class UnknownFieldMap {
       this.adapter = adapter;
     }
 
-    int getSerializedSize() {
-      return adapter.serializedSize(value);
+    int dataSize() {
+      return adapter.dataSize(value);
     }
 
     void write(int tag, ProtoWriter output) throws IOException {
-      output.writeVarint32(makeTag(tag, adapter.type));
-      output.write(adapter, value);
+      output.write(tag, value, adapter);
     }
   }
 
@@ -87,7 +84,7 @@ final class UnknownFieldMap {
     for (Map.Entry<Integer, List<Value>> entry : fieldMap.entrySet()) {
       int tagSize = ProtoWriter.tagSize(entry.getKey());
       for (Value value : entry.getValue()) {
-        size += tagSize + value.getSerializedSize();
+        size += tagSize + value.dataSize();
       }
     }
     return size;

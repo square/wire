@@ -25,11 +25,7 @@ import okio.Okio;
 
 import static com.squareup.wire.Preconditions.checkNotNull;
 
-public abstract class MessageAdapter<M extends Message> extends TypeAdapter<M> {
-  protected MessageAdapter() {
-    super(WireType.LENGTH_DELIMITED);
-  }
-
+public abstract class MessageAdapter<M extends Message> {
   /**
    * Returns a copy of {@code value} with all redacted fields set to null or an empty list.
    * This operation is recursive: nested messages are themselves redacted in the returned object.
@@ -38,6 +34,9 @@ public abstract class MessageAdapter<M extends Message> extends TypeAdapter<M> {
 
   /** Returns a human-readable version of the given {@code value}. */
   abstract String toString(M value);
+
+  /** The serialized size of non-null {@code value}. */
+  public abstract int serializedSize(M value);
 
   /** Encode {@code value} as a {@code byte[]}. */
   public final byte[] writeBytes(M value) {
@@ -67,11 +66,8 @@ public abstract class MessageAdapter<M extends Message> extends TypeAdapter<M> {
     write(value, new ProtoWriter(sink));
   }
 
-  /** Read an encoded message from {@code source}. */
-  public final M read(BufferedSource source) throws IOException {
-    checkNotNull(source, "source == null");
-    return read(new ProtoReader(source));
-  }
+  /** Encode {@code value} and write it to {@code writer}. */
+  public abstract void write(M value, ProtoWriter writer) throws IOException;
 
   /** Read an encoded message from {@code bytes}. */
   public final M readBytes(byte[] bytes) throws IOException {
@@ -84,4 +80,13 @@ public abstract class MessageAdapter<M extends Message> extends TypeAdapter<M> {
     checkNotNull(stream, "stream == null");
     return read(Okio.buffer(Okio.source(stream)));
   }
+
+  /** Read an encoded message from {@code source}. */
+  public final M read(BufferedSource source) throws IOException {
+    checkNotNull(source, "source == null");
+    return read(new ProtoReader(source));
+  }
+
+  /** Read an encoded message from {@code reader}. */
+  public abstract M read(ProtoReader reader) throws IOException;
 }

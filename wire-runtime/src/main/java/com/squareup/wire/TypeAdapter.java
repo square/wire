@@ -28,26 +28,50 @@ public abstract class TypeAdapter<E> {
 
   final WireType type;
 
-  protected TypeAdapter(WireType type) {
+  TypeAdapter(WireType type) {
     this.type = type;
   }
 
-  /** The serialized size of non-null {@code value}. */
-  public abstract int serializedSize(E value);
+  /**
+   * The size of the non-null data {@code value}. This does not include the size required for
+   * a length-delimited prefix (should the type require one).
+   */
+  abstract int dataSize(E value);
+
+  /**
+   * The size of {@code tag} and non-null {@code value} in the wire format. This size includes the
+   * tag, type, length-delimited prefix (should the type require one), and value.
+   */
+  public final int serializedSize(int tag, E value) {
+    int size = dataSize(value);
+    if (type == WireType.LENGTH_DELIMITED) {
+      size += varint32Size(size);
+    }
+    return size + ProtoWriter.tagSize(tag);
+  }
 
   /** Write non-null {@code value} to {@code writer}. */
-  public abstract void write(E value, ProtoWriter writer) throws IOException;
+  abstract void writeData(E value, ProtoWriter writer) throws IOException;
+
+  /** Write {@code tag} and non-null {@code value} to {@code writer}. */
+  public final void write(int tag, E value, ProtoWriter writer) throws IOException {
+    writer.writeTag(tag, type);
+    if (type == WireType.LENGTH_DELIMITED) {
+      writer.writeVarint32(dataSize(value));
+    }
+    writeData(value, writer);
+  }
 
   /** Read a non-null value from {@code reader}. */
   public abstract E read(ProtoReader reader) throws IOException;
 
 
   public static final TypeAdapter<Boolean> BOOL = new TypeAdapter<Boolean>(WireType.VARINT) {
-    @Override public int serializedSize(Boolean value) {
+    @Override int dataSize(Boolean value) {
       return FIXED_BOOL_SIZE;
     }
 
-    @Override public void write(Boolean value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Boolean value, ProtoWriter writer) throws IOException {
       writer.writeByte(value ? 1 : 0);
     }
 
@@ -59,11 +83,11 @@ public abstract class TypeAdapter<E> {
     }
   };
   public static final TypeAdapter<Integer> INT32 = new TypeAdapter<Integer>(WireType.VARINT) {
-    @Override public int serializedSize(Integer value) {
+    @Override int dataSize(Integer value) {
       return int32Size(value);
     }
 
-    @Override public void write(Integer value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Integer value, ProtoWriter writer) throws IOException {
       writer.writeSignedVarint32(value);
     }
 
@@ -72,11 +96,11 @@ public abstract class TypeAdapter<E> {
     }
   };
   public static final TypeAdapter<Integer> UINT32 = new TypeAdapter<Integer>(WireType.VARINT) {
-    @Override public int serializedSize(Integer value) {
+    @Override int dataSize(Integer value) {
       return varint32Size(value);
     }
 
-    @Override public void write(Integer value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Integer value, ProtoWriter writer) throws IOException {
       writer.writeVarint32(value);
     }
 
@@ -85,11 +109,11 @@ public abstract class TypeAdapter<E> {
     }
   };
   public static final TypeAdapter<Integer> SINT32 = new TypeAdapter<Integer>(WireType.VARINT) {
-    @Override public int serializedSize(Integer value) {
+    @Override int dataSize(Integer value) {
       return varint32Size(encodeZigZag32(value));
     }
 
-    @Override public void write(Integer value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Integer value, ProtoWriter writer) throws IOException {
       writer.writeVarint32(encodeZigZag32(value));
     }
 
@@ -98,11 +122,11 @@ public abstract class TypeAdapter<E> {
     }
   };
   public static final TypeAdapter<Integer> FIXED32 = new TypeAdapter<Integer>(WireType.FIXED32) {
-    @Override public int serializedSize(Integer value) {
+    @Override int dataSize(Integer value) {
       return FIXED_32_SIZE;
     }
 
-    @Override public void write(Integer value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Integer value, ProtoWriter writer) throws IOException {
       writer.writeFixed32(value);
     }
 
@@ -112,11 +136,11 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<Integer> SFIXED32 = FIXED32;
   public static final TypeAdapter<Long> INT64 = new TypeAdapter<Long>(WireType.VARINT) {
-    @Override public int serializedSize(Long value) {
+    @Override int dataSize(Long value) {
       return varint64Size(value);
     }
 
-    @Override public void write(Long value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Long value, ProtoWriter writer) throws IOException {
       writer.writeVarint64(value);
     }
 
@@ -126,11 +150,11 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<Long> UINT64 = INT64;
   public static final TypeAdapter<Long> SINT64 = new TypeAdapter<Long>(WireType.VARINT) {
-    @Override public int serializedSize(Long value) {
+    @Override int dataSize(Long value) {
       return varint64Size(encodeZigZag64(value));
     }
 
-    @Override public void write(Long value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Long value, ProtoWriter writer) throws IOException {
       writer.writeVarint64(encodeZigZag64(value));
     }
 
@@ -139,11 +163,11 @@ public abstract class TypeAdapter<E> {
     }
   };
   public static final TypeAdapter<Long> FIXED64 = new TypeAdapter<Long>(WireType.FIXED64) {
-    @Override public int serializedSize(Long value) {
+    @Override int dataSize(Long value) {
       return FIXED_64_SIZE;
     }
 
-    @Override public void write(Long value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Long value, ProtoWriter writer) throws IOException {
       writer.writeFixed64(value);
     }
 
@@ -153,11 +177,11 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<Long> SFIXED64 = FIXED64;
   public static final TypeAdapter<Float> FLOAT = new TypeAdapter<Float>(WireType.FIXED32) {
-    @Override public int serializedSize(Float value) {
+    @Override int dataSize(Float value) {
       return FIXED_32_SIZE;
     }
 
-    @Override public void write(Float value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Float value, ProtoWriter writer) throws IOException {
       writer.writeFixed32(floatToIntBits(value));
     }
 
@@ -166,11 +190,11 @@ public abstract class TypeAdapter<E> {
     }
   };
   public static final TypeAdapter<Double> DOUBLE = new TypeAdapter<Double>(WireType.FIXED64) {
-    @Override public int serializedSize(Double value) {
+    @Override int dataSize(Double value) {
       return FIXED_64_SIZE;
     }
 
-    @Override public void write(Double value, ProtoWriter writer) throws IOException {
+    @Override void writeData(Double value, ProtoWriter writer) throws IOException {
       writer.writeFixed64(doubleToLongBits(value));
     }
 
@@ -180,11 +204,11 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<String> STRING =
       new TypeAdapter<String>(WireType.LENGTH_DELIMITED) {
-        @Override public int serializedSize(String value) {
+        @Override int dataSize(String value) {
           return utf8Length(value);
         }
 
-        @Override public void write(String value, ProtoWriter writer) throws IOException {
+        @Override void writeData(String value, ProtoWriter writer) throws IOException {
           ByteString bytes = ByteString.encodeUtf8(value);
           writer.writeBytes(bytes);
         }
@@ -195,11 +219,11 @@ public abstract class TypeAdapter<E> {
       };
   public static final TypeAdapter<ByteString> BYTES =
       new TypeAdapter<ByteString>(WireType.LENGTH_DELIMITED) {
-        @Override public int serializedSize(ByteString value) {
+        @Override int dataSize(ByteString value) {
           return value.size();
         }
 
-        @Override public void write(ByteString value, ProtoWriter writer) throws IOException {
+        @Override void writeData(ByteString value, ProtoWriter writer) throws IOException {
           writer.writeBytes(value);
         }
 
@@ -207,6 +231,25 @@ public abstract class TypeAdapter<E> {
           return reader.readBytes();
         }
       };
+
+  public static <M extends Message> TypeAdapter<M> forMessage(final MessageAdapter<M> adapter) {
+    return new TypeAdapter<M>(WireType.LENGTH_DELIMITED) {
+      @Override int dataSize(M value) {
+        return adapter.serializedSize(value);
+      }
+
+      @Override void writeData(M value, ProtoWriter writer) throws IOException {
+        adapter.write(value, writer);
+      }
+
+      @Override public M read(ProtoReader reader) throws IOException {
+        long token = reader.beginLengthDelimited();
+        M value = adapter.read(reader);
+        reader.endLengthDelimited(token);
+        return value;
+      }
+    };
+  }
 
   static int utf8Length(String s) {
     int count = 0;
