@@ -35,8 +35,8 @@ final class UnknownFieldMap {
       this.adapter = adapter;
     }
 
-    int dataSize() {
-      return adapter.dataSize(value);
+    int serializedSize(int tag) {
+      return adapter.serializedSize(tag, value);
     }
 
     void write(int tag, ProtoWriter output) throws IOException {
@@ -82,9 +82,9 @@ final class UnknownFieldMap {
   int getSerializedSize() {
     int size = 0;
     for (Map.Entry<Integer, List<Value>> entry : fieldMap.entrySet()) {
-      int tagSize = ProtoWriter.tagSize(entry.getKey());
+      int tag = entry.getKey();
       for (Value value : entry.getValue()) {
-        size += tagSize + value.dataSize();
+        size += value.serializedSize(tag);
       }
     }
     return size;

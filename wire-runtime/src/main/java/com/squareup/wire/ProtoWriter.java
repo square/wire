@@ -96,7 +96,7 @@ public final class ProtoWriter {
 
   private final BufferedSink sink;
 
-  ProtoWriter(BufferedSink sink) {
+  public ProtoWriter(BufferedSink sink) {
     this.sink = sink;
   }
 

@@ -16,6 +16,9 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import okio.ByteString;
 
 import static java.lang.Double.doubleToLongBits;
@@ -42,7 +45,7 @@ public abstract class TypeAdapter<E> {
    * The size of {@code tag} and non-null {@code value} in the wire format. This size includes the
    * tag, type, length-delimited prefix (should the type require one), and value.
    */
-  public final int serializedSize(int tag, E value) {
+  int serializedSize(int tag, E value) {
     int size = dataSize(value);
     if (type == WireType.LENGTH_DELIMITED) {
       size += varint32Size(size);
@@ -54,7 +57,7 @@ public abstract class TypeAdapter<E> {
   abstract void writeData(E value, ProtoWriter writer) throws IOException;
 
   /** Write {@code tag} and non-null {@code value} to {@code writer}. */
-  public final void write(int tag, E value, ProtoWriter writer) throws IOException {
+  void write(int tag, E value, ProtoWriter writer) throws IOException {
     writer.writeTag(tag, type);
     if (type == WireType.LENGTH_DELIMITED) {
       writer.writeVarint32(dataSize(value));
@@ -63,7 +66,7 @@ public abstract class TypeAdapter<E> {
   }
 
   /** Read a non-null value from {@code reader}. */
-  public abstract E read(ProtoReader reader) throws IOException;
+  abstract E read(ProtoReader reader) throws IOException;
 
 
   public static final TypeAdapter<Boolean> BOOL = new TypeAdapter<Boolean>(WireType.VARINT) {
@@ -75,7 +78,7 @@ public abstract class TypeAdapter<E> {
       writer.writeByte(value ? 1 : 0);
     }
 
-    @Override public Boolean read(ProtoReader reader) throws IOException {
+    @Override Boolean read(ProtoReader reader) throws IOException {
       int value = reader.readByte();
       if (value == 0) return Boolean.FALSE;
       if (value == 1) return Boolean.TRUE;
@@ -91,7 +94,7 @@ public abstract class TypeAdapter<E> {
       writer.writeSignedVarint32(value);
     }
 
-    @Override public Integer read(ProtoReader reader) throws IOException {
+    @Override Integer read(ProtoReader reader) throws IOException {
       return reader.readVarint32();
     }
   };
@@ -104,7 +107,7 @@ public abstract class TypeAdapter<E> {
       writer.writeVarint32(value);
     }
 
-    @Override public Integer read(ProtoReader reader) throws IOException {
+    @Override Integer read(ProtoReader reader) throws IOException {
       return reader.readVarint32();
     }
   };
@@ -117,7 +120,7 @@ public abstract class TypeAdapter<E> {
       writer.writeVarint32(encodeZigZag32(value));
     }
 
-    @Override public Integer read(ProtoReader reader) throws IOException {
+    @Override Integer read(ProtoReader reader) throws IOException {
       return decodeZigZag32(reader.readVarint32());
     }
   };
@@ -130,7 +133,7 @@ public abstract class TypeAdapter<E> {
       writer.writeFixed32(value);
     }
 
-    @Override public Integer read(ProtoReader reader) throws IOException {
+    @Override Integer read(ProtoReader reader) throws IOException {
       return reader.readFixed32();
     }
   };
@@ -144,7 +147,7 @@ public abstract class TypeAdapter<E> {
       writer.writeVarint64(value);
     }
 
-    @Override public Long read(ProtoReader reader) throws IOException {
+    @Override Long read(ProtoReader reader) throws IOException {
       return reader.readVarint64();
     }
   };
@@ -158,7 +161,7 @@ public abstract class TypeAdapter<E> {
       writer.writeVarint64(encodeZigZag64(value));
     }
 
-    @Override public Long read(ProtoReader reader) throws IOException {
+    @Override Long read(ProtoReader reader) throws IOException {
       return decodeZigZag64(reader.readVarint64());
     }
   };
@@ -171,7 +174,7 @@ public abstract class TypeAdapter<E> {
       writer.writeFixed64(value);
     }
 
-    @Override public Long read(ProtoReader reader) throws IOException {
+    @Override Long read(ProtoReader reader) throws IOException {
       return reader.readFixed64();
     }
   };
@@ -185,7 +188,7 @@ public abstract class TypeAdapter<E> {
       writer.writeFixed32(floatToIntBits(value));
     }
 
-    @Override public Float read(ProtoReader reader) throws IOException {
+    @Override Float read(ProtoReader reader) throws IOException {
       return Float.intBitsToFloat(reader.readFixed32());
     }
   };
@@ -198,7 +201,7 @@ public abstract class TypeAdapter<E> {
       writer.writeFixed64(doubleToLongBits(value));
     }
 
-    @Override public Double read(ProtoReader reader) throws IOException {
+    @Override Double read(ProtoReader reader) throws IOException {
       return Double.longBitsToDouble(reader.readFixed64());
     }
   };
@@ -213,7 +216,7 @@ public abstract class TypeAdapter<E> {
           writer.writeBytes(bytes);
         }
 
-        @Override public String read(ProtoReader reader) throws IOException {
+        @Override String read(ProtoReader reader) throws IOException {
           return reader.readString();
         }
       };
@@ -227,7 +230,7 @@ public abstract class TypeAdapter<E> {
           writer.writeBytes(value);
         }
 
-        @Override public ByteString read(ProtoReader reader) throws IOException {
+        @Override ByteString read(ProtoReader reader) throws IOException {
           return reader.readBytes();
         }
       };
@@ -242,11 +245,78 @@ public abstract class TypeAdapter<E> {
         adapter.write(value, writer);
       }
 
-      @Override public M read(ProtoReader reader) throws IOException {
+      @Override M read(ProtoReader reader) throws IOException {
         long token = reader.beginLengthDelimited();
         M value = adapter.read(reader);
         reader.endLengthDelimited(token);
         return value;
+      }
+    };
+  }
+
+  public static <T> TypeAdapter<List<T>> createPacked(final TypeAdapter<T> adapter) {
+    if (adapter.type == WireType.LENGTH_DELIMITED) {
+      throw new IllegalArgumentException("Unable to pack a length-delimited type.");
+    }
+    return new TypeAdapter<List<T>>(WireType.LENGTH_DELIMITED) {
+      @Override int dataSize(List<T> value) {
+        int size = 0;
+        for (int i = 0, count = value.size(); i < count; i++) {
+          size += adapter.dataSize(value.get(i));
+        }
+        return size;
+      }
+
+      @Override void writeData(List<T> value, ProtoWriter writer) throws IOException {
+        for (int i = 0, count = value.size(); i < count; i++) {
+          adapter.writeData(value.get(i), writer);
+        }
+      }
+
+      @Override List<T> read(ProtoReader reader) throws IOException {
+        // Check to ensure the bytes are actually packed on the wire which is optional.
+        if (reader.peekType() != WireType.LENGTH_DELIMITED) {
+          // TODO delegate to repeated if we get peekTag() on ProtoReader
+          return Collections.singletonList(adapter.read(reader));
+        }
+
+        List<T> items = new ArrayList<T>();
+        long token = reader.beginLengthDelimited();
+        while (reader.hasNext()) {
+          items.add(adapter.read(reader));
+        }
+        reader.endLengthDelimited(token);
+        return items;
+      }
+    };
+  }
+
+  public static <T> TypeAdapter<List<T>> createRepeated(final TypeAdapter<T> adapter) {
+    return new TypeAdapter<List<T>>(adapter.type) {
+      @Override int dataSize(List<T> value) {
+        throw new UnsupportedOperationException();
+      }
+
+      @Override int serializedSize(int tag, List<T> value) {
+        int size = 0;
+        for (int i = 0, count = value.size(); i < count; i++) {
+          size += adapter.serializedSize(tag, value.get(i));
+        }
+        return size;
+      }
+
+      @Override void writeData(List<T> value, ProtoWriter writer) throws IOException {
+        throw new UnsupportedOperationException();
+      }
+
+      @Override void write(int tag, List<T> value, ProtoWriter writer) throws IOException {
+        for (int i = 0, count = value.size(); i < count; i++) {
+          adapter.write(tag, value.get(i), writer);
+        }
+      }
+
+      @Override List<T> read(ProtoReader reader) throws IOException {
+        throw new UnsupportedOperationException(); // TODO
       }
     };
   }

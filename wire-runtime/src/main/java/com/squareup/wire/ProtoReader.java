@@ -68,7 +68,7 @@ public final class ProtoReader {
   /** The type of the next value to be read. */
   private WireType nextType;
 
-  ProtoReader(BufferedSource source) {
+  public ProtoReader(BufferedSource source) {
     this.source = source;
   }
 

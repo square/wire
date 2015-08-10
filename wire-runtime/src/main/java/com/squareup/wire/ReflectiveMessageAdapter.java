@@ -38,11 +38,6 @@ import static com.squareup.wire.TypeAdapter.FIXED64;
 import static com.squareup.wire.TypeAdapter.UINT64;
 
 final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M> {
-  // Unicode character "Full Block" (U+2588)
-  private static final String FULL_BLOCK = "█";
-  // The string to use when redacting fields from toString.
-  private static final String REDACTED = FULL_BLOCK + FULL_BLOCK;
-
   private final Wire wire;
   private final Class<M> messageType;
   private final Class<Builder<M>> builderType;
@@ -90,6 +85,18 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
   }
 
+  static TypeAdapter<?> fieldTypeAdapter(Wire wire, Datatype datatype, Label label,
+      Class<? extends Message> messageType, Class<? extends ProtoEnum> enumType) {
+    TypeAdapter<?> adapter = typeAdapter(wire, datatype, messageType, enumType);
+    if (!label.isRepeated()) {
+      return adapter;
+    }
+    if (label.isPacked()) {
+      return TypeAdapter.createPacked(adapter);
+    }
+    return TypeAdapter.createRepeated(adapter);
+  }
+
   static TypeAdapter<?> typeAdapter(Wire wire, Datatype datatype,
       Class<? extends Message> messageType, Class<? extends ProtoEnum> enumType) {
     switch (datatype) {
@@ -117,25 +124,14 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   // Writing
 
   @Override public int serializedSize(M message) {
+    int cachedSerializedSize = message.cachedSerializedSize;
+    if (cachedSerializedSize != -1) {
+      return cachedSerializedSize;
+    }
+
     int size = 0;
     for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
-      Object value = fieldBinding.getValue(message);
-      if (value == null) {
-        continue;
-      }
-      int tag = fieldBinding.tag;
-      TypeAdapter<Object> adapter = fieldBinding.adapter;
-
-      Label label = fieldBinding.label;
-      if (label.isRepeated()) {
-        if (label.isPacked()) {
-          size += getPackedSize((List<?>) value, tag, adapter);
-        } else {
-          size += getRepeatedSize((List<?>) value, tag, adapter);
-        }
-      } else {
-        size += adapter.serializedSize(tag, value);
-      }
+      size += fieldBinding.serializedSize(message);
     }
 
     if (message instanceof ExtendableMessage) {
@@ -145,6 +141,8 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       }
     }
     size += message.getUnknownFieldsSerializedSize();
+
+    message.cachedSerializedSize = size;
     return size;
   }
 
@@ -152,60 +150,19 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     int size = 0;
     for (int i = 0, count = map.size(); i < count; i++) {
       Extension<T, ?> extension = map.getExtension(i);
-      TypeAdapter<Object> adapter = (TypeAdapter<Object>) typeAdapter(wire, extension.getDatatype(),
-          extension.getMessageType(), extension.getEnumType());
+      TypeAdapter<Object> adapter =
+          (TypeAdapter<Object>) fieldTypeAdapter(wire, extension.getDatatype(),
+              extension.getLabel(), extension.getMessageType(), extension.getEnumType());
       Object value = map.getExtensionValue(i);
       int tag = extension.getTag();
-      Label label = extension.getLabel();
-      if (label.isRepeated()) {
-        if (label.isPacked()) {
-          size += getPackedSize((List<?>) value, tag, adapter);
-        } else {
-          size += getRepeatedSize((List<?>) value, tag, adapter);
-        }
-      } else {
-        size += adapter.serializedSize(tag, value);
-      }
+      size += adapter.serializedSize(tag, value);
     }
     return size;
-  }
-
-  private int getRepeatedSize(List<?> value, int tag, TypeAdapter<Object> adapter) {
-    int size = 0;
-    for (int i = 0, count = value.size(); i < count; i++) {
-      size += adapter.serializedSize(tag, value.get(i));
-    }
-    return size;
-  }
-
-  private int getPackedSize(List<?> value, int tag, TypeAdapter<Object> adapter) {
-    int size = 0;
-    for (int i = 0, count = value.size(); i < count; i++) {
-      size += adapter.dataSize(value.get(i));
-    }
-    // tag + length + value + value + ...
-    return ProtoWriter.tagSize(tag) + ProtoWriter.varint32Size(size) + size;
   }
 
   @Override public void write(M message, ProtoWriter output) throws IOException {
     for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
-      Object value = fieldBinding.getValue(message);
-      if (value == null) {
-        continue;
-      }
-      int tag = fieldBinding.tag;
-      TypeAdapter<Object> adapter = fieldBinding.adapter;
-
-      Label label = fieldBinding.label;
-      if (label.isRepeated()) {
-        if (label.isPacked()) {
-          writePacked(output, (List<?>) value, tag, adapter);
-        } else {
-          writeRepeated(output, (List<?>) value, tag, adapter);
-        }
-      } else {
-        output.write(tag, value, adapter);
-      }
+      fieldBinding.write(message, output);
     }
 
     if (message instanceof ExtendableMessage) {
@@ -221,40 +178,12 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       ExtensionMap<T> extensionMap) throws IOException {
     for (int i = 0, count = extensionMap.size(); i < count; i++) {
       Extension<T, ?> extension = extensionMap.getExtension(i);
-      TypeAdapter<Object> adapter = (TypeAdapter<Object>) typeAdapter(wire, extension.getDatatype(),
-          extension.getMessageType(), extension.getEnumType());
+      TypeAdapter<Object> adapter =
+          (TypeAdapter<Object>) fieldTypeAdapter(wire, extension.getDatatype(),
+              extension.getLabel(), extension.getMessageType(), extension.getEnumType());
       Object value = extensionMap.getExtensionValue(i);
       int tag = extension.getTag();
-      Label label = extension.getLabel();
-      if (label.isRepeated()) {
-        if (label.isPacked()) {
-          writePacked(output, (List<?>) value, tag, adapter);
-        } else {
-          writeRepeated(output, (List<?>) value, tag, adapter);
-        }
-      } else {
-        output.write(tag, value, adapter);
-      }
-    }
-  }
-
-  private void writeRepeated(ProtoWriter output, List<?> value, int tag,
-      TypeAdapter<Object> adapter) throws IOException {
-    for (int i = 0, count = value.size(); i < count; i++) {
-      output.write(tag, value.get(i), adapter);
-    }
-  }
-
-  private void writePacked(ProtoWriter output, List<?> value, int tag, TypeAdapter<Object> adapter)
-      throws IOException {
-    int packedLength = 0;
-    for (int i = 0, count = value.size(); i < count; i++) {
-      packedLength += adapter.dataSize(value.get(i));
-    }
-    output.writeTag(tag, WireType.LENGTH_DELIMITED);
-    output.writeVarint32(packedLength);
-    for (int i = 0, count = value.size(); i < count; i++) {
-      adapter.writeData(value.get(i), output);
+      output.write(tag, value, adapter);
     }
   }
 
@@ -270,21 +199,15 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     sb.append(messageType.getSimpleName());
     sb.append("{");
 
-    String sep = "";
+    boolean seenValue = false;
     for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
-      Object value = fieldBinding.getValue(message);
-      if (value == null) {
-        continue;
-      }
-      sb.append(sep);
-      sep = ", ";
-      sb.append(fieldBinding.name);
-      sb.append("=");
-      sb.append(fieldBinding.redacted ? REDACTED : value);
+      seenValue |= fieldBinding.addToString(message, sb, seenValue);
     }
     if (message instanceof ExtendableMessage<?>) {
+      if (seenValue) {
+        sb.append(", ");
+      }
       ExtendableMessage<?> extendableMessage = (ExtendableMessage<?>) message;
-      sb.append(sep);
       sb.append("{extensions=");
       sb.append(extendableMessage.extensionsToString());
       sb.append("}");
@@ -308,7 +231,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
       if (fieldBinding != null) {
         label = fieldBinding.label;
-        adapter = fieldBinding.adapter;
+        adapter = fieldBinding.singleAdapter;
       } else {
         extension = getExtension(tag);
         if (extension == null) {
