@@ -1,5 +1,6 @@
 package com.squareup.wire;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,10 +9,9 @@ import java.util.List;
 final class ReflectiveFieldBinding {
   static ReflectiveFieldBinding create(Wire wire, ProtoField protoField, Field messageField,
       Class<?> builderType) {
-    int tag = protoField.tag();
     Message.Datatype datatype = protoField.type();
     Message.Label label = protoField.label();
-    boolean redacted = protoField.redacted();
+
     Class<? extends ProtoEnum> enumType = null;
     Class<? extends Message> messageType = null;
     if (datatype == Message.Datatype.ENUM) {
@@ -19,14 +19,25 @@ final class ReflectiveFieldBinding {
     } else if (datatype == Message.Datatype.MESSAGE) {
       messageType = getMessageType(messageField);
     }
-    TypeAdapter<Object> adapter =
-        (TypeAdapter<Object>) ReflectiveMessageAdapter.typeAdapter(wire, datatype, messageType,
-            enumType);
+    TypeAdapter<?> singleAdapter =
+        ReflectiveMessageAdapter.typeAdapter(wire, datatype, messageType, enumType);
+    TypeAdapter<?> adapter;
+    if (!label.isRepeated()) {
+      adapter = singleAdapter;
+    } else if (label.isPacked()) {
+      adapter = TypeAdapter.createPacked(singleAdapter);
+    } else {
+      adapter = TypeAdapter.createRepeated(singleAdapter);
+    }
+
+    int tag = protoField.tag();
+    boolean redacted = protoField.redacted();
     String name = messageField.getName();
     Field builderField = getBuilderField(builderType, name);
     Method builderMethod = getBuilderMethod(builderType, name, messageField.getType());
     return new ReflectiveFieldBinding(tag, name, datatype, label, redacted, enumType, messageType,
-        adapter, messageField, builderField, builderMethod);
+        (TypeAdapter<Object>) singleAdapter, (TypeAdapter<Object>) adapter, messageField,
+        builderField, builderMethod);
   }
 
   @SuppressWarnings("unchecked")
@@ -71,6 +82,7 @@ final class ReflectiveFieldBinding {
   final Class<? extends ProtoEnum> enumType;
   final Class<? extends Message> messageType;
   final boolean redacted;
+  final TypeAdapter<Object> singleAdapter;
   final TypeAdapter<Object> adapter;
 
   private final Field messageField;
@@ -79,8 +91,8 @@ final class ReflectiveFieldBinding {
 
   private ReflectiveFieldBinding(int tag, String name, Message.Datatype datatype,
       Message.Label label, boolean redacted, Class<? extends ProtoEnum> enumType,
-      Class<? extends Message> messageType, TypeAdapter<Object> adapter, Field messageField,
-      Field builderField, Method builderMethod) {
+      Class<? extends Message> messageType, TypeAdapter<Object> singleAdapter,
+      TypeAdapter<Object> adapter, Field messageField, Field builderField, Method builderMethod) {
     this.tag = tag;
     this.name = name;
     this.datatype = datatype;
@@ -88,10 +100,40 @@ final class ReflectiveFieldBinding {
     this.redacted = redacted;
     this.enumType = enumType;
     this.messageType = messageType;
+    this.singleAdapter = singleAdapter;
     this.adapter = adapter;
     this.messageField = messageField;
     this.builderField = builderField;
     this.builderMethod = builderMethod;
+  }
+
+  int serializedSize(Object message) {
+    Object value = getValue(message);
+    if (value == null) {
+      return 0;
+    }
+    return adapter.serializedSize(tag, value);
+  }
+
+  void write(Object message, ProtoWriter writer) throws IOException {
+    Object value = getValue(message);
+    if (value != null) {
+      writer.write(tag, value, adapter);
+    }
+  }
+
+  boolean addToString(Object message, StringBuilder builder, boolean seenValue) {
+    Object value = getValue(message);
+    if (value == null) {
+      return false;
+    }
+    if (seenValue) {
+      builder.append(", ");
+    }
+    builder.append(name);
+    builder.append("=");
+    builder.append(redacted ? "██" : value);
+    return true;
   }
 
   Object getValue(Object message) {
