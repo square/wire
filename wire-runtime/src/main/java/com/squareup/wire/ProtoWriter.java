@@ -68,6 +68,37 @@ public final class ProtoWriter {
     return varint32Size(makeTag(tag, WireType.VARINT));
   }
 
+  static int utf8Length(String s) {
+    int count = 0;
+    for (int i = 0, length = s.length(); i < length; i++) {
+      char ch = s.charAt(i);
+      if (ch <= 0x7F) {
+        count++;
+      } else if (ch <= 0x7FF) {
+        count += 2;
+      } else if (Character.isHighSurrogate(ch)) {
+        count += 4;
+        ++i;
+      } else {
+        count += 3;
+      }
+    }
+    return count;
+  }
+
+  /**
+   * Computes the number of bytes that would be needed to encode a signed variable-length integer
+   * of up to 32 bits.
+   */
+  static int int32Size(int value) {
+    if (value >= 0) {
+      return varint32Size(value);
+    } else {
+      // Must sign-extend.
+      return 10;
+    }
+  }
+
   /**
    * Compute the number of bytes that would be needed to encode a varint. {@code value} is treated
    * as unsigned, so it won't be sign-extended if negative.
@@ -92,6 +123,60 @@ public final class ProtoWriter {
     if ((value & (0xffffffffffffffffL << 56)) == 0) return 8;
     if ((value & (0xffffffffffffffffL << 63)) == 0) return 9;
     return 10;
+  }
+
+  /**
+   * Encode a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
+   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+   * to be varint encoded, thus always taking 10 bytes on the wire.)
+   *
+   * @param n A signed 32-bit integer.
+   * @return An unsigned 32-bit integer, stored in a signed int because Java has no explicit
+   * unsigned support.
+   */
+  static int encodeZigZag32(int n) {
+    // Note:  the right-shift must be arithmetic
+    return (n << 1) ^ (n >> 31);
+  }
+
+  /**
+   * Decodes a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
+   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+   * to be varint encoded, thus always taking 10 bytes on the wire.)
+   *
+   * @param n An unsigned 32-bit integer, stored in a signed int because Java has no explicit
+   * unsigned support.
+   * @return A signed 32-bit integer.
+   */
+  static int decodeZigZag32(int n) {
+    return (n >>> 1) ^ -(n & 1);
+  }
+
+  /**
+   * Encode a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
+   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+   * to be varint encoded, thus always taking 10 bytes on the wire.)
+   *
+   * @param n A signed 64-bit integer.
+   * @return An unsigned 64-bit integer, stored in a signed int because Java has no explicit
+   * unsigned support.
+   */
+  static long encodeZigZag64(long n) {
+    // Note:  the right-shift must be arithmetic
+    return (n << 1) ^ (n >> 63);
+  }
+
+  /**
+   * Decodes a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
+   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+   * to be varint encoded, thus always taking 10 bytes on the wire.)
+   *
+   * @param n An unsigned 64-bit integer, stored in a signed int because Java has no explicit
+   * unsigned support.
+   * @return A signed 64-bit integer.
+   */
+  static long decodeZigZag64(long n) {
+    return (n >>> 1) ^ -(n & 1);
   }
 
   private final BufferedSink sink;

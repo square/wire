@@ -21,6 +21,14 @@ import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
 
+import static com.squareup.wire.ProtoWriter.decodeZigZag32;
+import static com.squareup.wire.ProtoWriter.decodeZigZag64;
+import static com.squareup.wire.ProtoWriter.encodeZigZag32;
+import static com.squareup.wire.ProtoWriter.encodeZigZag64;
+import static com.squareup.wire.ProtoWriter.int32Size;
+import static com.squareup.wire.ProtoWriter.utf8Length;
+import static com.squareup.wire.ProtoWriter.varint32Size;
+import static com.squareup.wire.ProtoWriter.varint64Size;
 import static java.lang.Double.doubleToLongBits;
 import static java.lang.Float.floatToIntBits;
 
@@ -319,116 +327,5 @@ public abstract class TypeAdapter<E> {
         throw new UnsupportedOperationException(); // TODO
       }
     };
-  }
-
-  static int utf8Length(String s) {
-    int count = 0;
-    for (int i = 0, length = s.length(); i < length; i++) {
-      char ch = s.charAt(i);
-      if (ch <= 0x7F) {
-        count++;
-      } else if (ch <= 0x7FF) {
-        count += 2;
-      } else if (Character.isHighSurrogate(ch)) {
-        count += 4;
-        ++i;
-      } else {
-        count += 3;
-      }
-    }
-    return count;
-  }
-
-  /**
-   * Encode a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n A signed 32-bit integer.
-   * @return An unsigned 32-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   */
-  static int encodeZigZag32(int n) {
-    // Note:  the right-shift must be arithmetic
-    return (n << 1) ^ (n >> 31);
-  }
-
-  /**
-   * Decodes a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n An unsigned 32-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   * @return A signed 32-bit integer.
-   */
-  static int decodeZigZag32(int n) {
-    return (n >>> 1) ^ -(n & 1);
-  }
-
-  /**
-   * Encode a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n A signed 64-bit integer.
-   * @return An unsigned 64-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   */
-  static long encodeZigZag64(long n) {
-    // Note:  the right-shift must be arithmetic
-    return (n << 1) ^ (n >> 63);
-  }
-
-  /**
-   * Decodes a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n An unsigned 64-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   * @return A signed 64-bit integer.
-   */
-  static long decodeZigZag64(long n) {
-    return (n >>> 1) ^ -(n & 1);
-  }
-
-  /** Compute the number of bytes that would be needed to encode a varint. */
-  static int varint64Size(long value) {
-    if ((value & (0xffffffffffffffffL <<  7)) == 0) return 1;
-    if ((value & (0xffffffffffffffffL << 14)) == 0) return 2;
-    if ((value & (0xffffffffffffffffL << 21)) == 0) return 3;
-    if ((value & (0xffffffffffffffffL << 28)) == 0) return 4;
-    if ((value & (0xffffffffffffffffL << 35)) == 0) return 5;
-    if ((value & (0xffffffffffffffffL << 42)) == 0) return 6;
-    if ((value & (0xffffffffffffffffL << 49)) == 0) return 7;
-    if ((value & (0xffffffffffffffffL << 56)) == 0) return 8;
-    if ((value & (0xffffffffffffffffL << 63)) == 0) return 9;
-    return 10;
-  }
-
-  /**
-   * Computes the number of bytes that would be needed to encode a signed variable-length integer
-   * of up to 32 bits.
-   */
-  static int int32Size(int value) {
-    if (value >= 0) {
-      return varint32Size(value);
-    } else {
-      // Must sign-extend.
-      return 10;
-    }
-  }
-
-  /**
-   * Compute the number of bytes that would be needed to encode a varint. {@code value} is treated
-   * as unsigned, so it won't be sign-extended if negative.
-   */
-  static int varint32Size(int value) {
-    if ((value & (0xffffffff <<  7)) == 0) return 1;
-    if ((value & (0xffffffff << 14)) == 0) return 2;
-    if ((value & (0xffffffff << 21)) == 0) return 3;
-    if ((value & (0xffffffff << 28)) == 0) return 4;
-    return 5;
   }
 }
