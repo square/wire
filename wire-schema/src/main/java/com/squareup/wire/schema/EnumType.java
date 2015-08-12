@@ -67,6 +67,16 @@ public final class EnumType extends Type {
     return null;
   }
 
+  /** Returns the constant tagged {@code tag}, or null if this enum has no such constant. */
+  public EnumConstant constant(int tag) {
+    for (EnumConstant constant : constants()) {
+      if (constant.tag() == tag) {
+        return constant;
+      }
+    }
+    return null;
+  }
+
   public ImmutableList<EnumConstant> constants() {
     return constants;
   }
