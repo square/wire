@@ -16,6 +16,8 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.squareup.wire.internal.Util;
@@ -105,9 +107,6 @@ final class Linker {
       for (Type type : protoFile.types()) {
         type.validate(this);
       }
-      for (Extend extend : protoFile.extendList()) {
-        extend.validate(this);
-      }
     }
 
     if (!errors.isEmpty()) {
@@ -175,7 +174,8 @@ final class Linker {
 
   /** Returns the map of known extensions for {@code extensionType}. */
   public Map<String, Field> extensions(Type.Name extensionType) {
-    return extensionsMap.get(extensionType);
+    Map<String, Field> result = extensionsMap.get(extensionType);
+    return result != null ? result : ImmutableMap.<String, Field>of();
   }
 
   /** Returns the field named {@code field} on the message type of {@code self}. */
@@ -207,9 +207,9 @@ final class Linker {
   }
 
   /** Validate that the tags of {@code fields} are unique and in range. */
-  void validateTags(Iterable<Field> fields) {
+  void validateTags(Iterable<Field> fields, Map<String, Field> extensionFields) {
     Multimap<Integer, Field> tagToField = LinkedHashMultimap.create();
-    for (Field field : fields) {
+    for (Field field : Iterables.concat(fields, extensionFields.values())) {
       int tag = field.tag();
       if (!Util.isValidTag(tag)) {
         withContext(field).addError("tag is out of range: %s", tag);

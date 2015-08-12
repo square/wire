@@ -256,28 +256,7 @@ public final class Extension<T extends ExtendableMessage<T>, E>
    * Orders Extensions in ascending tag order.
    */
   @Override public int compareTo(Extension<?, ?> o) {
-    if (o == this) {
-      return 0;
-    }
-    if (tag != o.tag) {
-      return tag - o.tag;
-    }
-    if (datatype != o.datatype) {
-      return datatype.value() - o.datatype.value();
-    }
-    if (label != o.label) {
-      return label.value() - o.label.value();
-    }
-    if (extendedType != null && !extendedType.equals(o.extendedType)) {
-      return extendedType.getName().compareTo(o.extendedType.getName());
-    }
-    if (messageType != null && !messageType.equals(o.messageType)) {
-      return messageType.getName().compareTo(o.messageType.getName());
-    }
-    if (enumType != null && !enumType.equals(o.enumType)) {
-      return enumType.getName().compareTo(o.enumType.getName());
-    }
-    return 0;
+    return tag - o.tag;
   }
 
   @Override public boolean equals(Object other) {

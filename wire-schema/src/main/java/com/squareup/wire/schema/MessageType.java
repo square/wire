@@ -105,7 +105,7 @@ public final class MessageType extends Type {
 
   void validate(Linker linker) {
     linker = linker.withContext(this);
-    linker.validateTags(fieldsAndOneOfFields());
+    linker.validateTags(fieldsAndOneOfFields(), linker.extensions(name()));
     linker.validateEnumConstantNameUniqueness(nestedTypes);
     for (Type type : nestedTypes) {
       type.validate(linker);
