@@ -11,7 +11,7 @@ public final class Ext_foreign {
   public static final Extension<MessageOptions, ForeignMessage> foreign_message_option = Extension
       .messageExtending(ForeignMessage.class, MessageOptions.class)
       .setName("squareup.protos.foreign.foreign_message_option")
-      .setTag(50005)
+      .setTag(50007)
       .buildOptional();
 
   public static final Extension<EnumValueOptions, Boolean> foreign_enum_value_option = Extension

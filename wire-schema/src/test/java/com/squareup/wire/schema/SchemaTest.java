@@ -476,7 +476,7 @@ public final class SchemaTest {
       assertThat(expected).hasMessage("multiple fields share tag 1:\n"
           + "  1. name1 (message.proto at 4:3)\n"
           + "  2. name2 (message.proto at 5:3)\n"
-          + "  for extend Message (message.proto at 3:1)");
+          + "  for message Message (message.proto at 1:1)");
     }
   }
 
