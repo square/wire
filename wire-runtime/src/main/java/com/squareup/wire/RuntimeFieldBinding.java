@@ -6,8 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-final class ReflectiveFieldBinding {
-  static ReflectiveFieldBinding create(Wire wire, ProtoField protoField, Field messageField,
+final class RuntimeFieldBinding {
+  static RuntimeFieldBinding create(Wire wire, ProtoField protoField, Field messageField,
       Class<?> builderType) {
     Message.Datatype datatype = protoField.type();
     Message.Label label = protoField.label();
@@ -20,7 +20,7 @@ final class ReflectiveFieldBinding {
       messageType = getMessageType(messageField);
     }
     TypeAdapter<?> singleAdapter =
-        ReflectiveMessageAdapter.typeAdapter(wire, datatype, messageType, enumType);
+        RuntimeMessageAdapter.typeAdapter(wire, datatype, messageType, enumType);
     TypeAdapter<?> adapter;
     if (!label.isRepeated()) {
       adapter = singleAdapter;
@@ -35,7 +35,7 @@ final class ReflectiveFieldBinding {
     String name = messageField.getName();
     Field builderField = getBuilderField(builderType, name);
     Method builderMethod = getBuilderMethod(builderType, name, messageField.getType());
-    return new ReflectiveFieldBinding(tag, name, datatype, label, redacted, enumType, messageType,
+    return new RuntimeFieldBinding(tag, name, datatype, label, redacted, enumType, messageType,
         (TypeAdapter<Object>) singleAdapter, (TypeAdapter<Object>) adapter, messageField,
         builderField, builderMethod);
   }
@@ -89,7 +89,7 @@ final class ReflectiveFieldBinding {
   private final Field builderField;
   private final Method builderMethod;
 
-  private ReflectiveFieldBinding(int tag, String name, Message.Datatype datatype,
+  private RuntimeFieldBinding(int tag, String name, Message.Datatype datatype,
       Message.Label label, boolean redacted, Class<? extends ProtoEnum> enumType,
       Class<? extends Message> messageType, TypeAdapter<Object> singleAdapter,
       TypeAdapter<Object> adapter, Field messageField, Field builderField, Method builderMethod) {

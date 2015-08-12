@@ -22,7 +22,7 @@ import java.util.Comparator;
 /**
  * Converts values of an enum to and from integers.
  */
-final class EnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
+final class RuntimeEnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
   private static final Comparator<ProtoEnum> COMPARATOR = new Comparator<ProtoEnum>() {
     @Override public int compare(ProtoEnum o1, ProtoEnum o2) {
       return o1.getValue() - o2.getValue();
@@ -35,7 +35,7 @@ final class EnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
   private final E[] constants;
   private final boolean isDense;
 
-  EnumAdapter(Class<E> type) {
+  RuntimeEnumAdapter(Class<E> type) {
     super(WireType.VARINT);
     this.type = type;
 

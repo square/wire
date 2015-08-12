@@ -29,7 +29,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public class RedactedTest {
+public class RuntimeRedactorTest {
 
   @Test
   public void testRedacted() throws IOException {
@@ -41,13 +41,13 @@ public class RedactedTest {
   public void testRedactor() {
     Redacted message = new Redacted.Builder().a("a").b("b").c("c").build();
     Redacted expected = new Redacted.Builder(message).a(null).build();
-    assertThat(Redactor.get(Redacted.class).redact(message)).isEqualTo(expected);
+    assertThat(RuntimeRedactor.get(Redacted.class).redact(message)).isEqualTo(expected);
   }
 
   @Test
   public void testRedactorNoRedactions() {
     NotRedacted message = new NotRedacted.Builder().a("a").b("b").build();
-    assertThat(Redactor.get(NotRedacted.class).redact(message)).isEqualTo(message);
+    assertThat(RuntimeRedactor.get(NotRedacted.class).redact(message)).isEqualTo(message);
   }
 
   @Test
@@ -60,26 +60,26 @@ public class RedactedTest {
     RedactedChild expected = new RedactedChild.Builder(message)
         .b(new Redacted.Builder(message.b).a(null).build())
         .build();
-    assertThat(Redactor.get(RedactedChild.class).redact(message)).isEqualTo(expected);
+    assertThat(RuntimeRedactor.get(RedactedChild.class).redact(message)).isEqualTo(expected);
   }
 
   @Test
   public void testRedactorCycle() {
     RedactedCycleA message = new RedactedCycleA.Builder().build();
-    assertThat(Redactor.get(RedactedCycleA.class).redact(message)).isEqualTo(message);
+    assertThat(RuntimeRedactor.get(RedactedCycleA.class).redact(message)).isEqualTo(message);
   }
 
   @Test
   public void testRedactorRepeated() {
     RedactedRepeated message = new RedactedRepeated(Arrays.asList("a", "b"));
     RedactedRepeated expected = new RedactedRepeated(Collections.<String>emptyList());
-    assertThat(Redactor.get(RedactedRepeated.class).redact(message)).isEqualTo(expected);
+    assertThat(RuntimeRedactor.get(RedactedRepeated.class).redact(message)).isEqualTo(expected);
   }
 
   @Test
   public void testRedactorRequired() {
     try {
-      Redactor.get(RedactedRequired.class);
+      RuntimeRedactor.get(RedactedRequired.class);
       fail("Expected an exception to be thrown.");
     } catch (IllegalArgumentException expected) {
     }
