@@ -194,7 +194,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   /**
    * Returns a human-readable version of the given {@link Message}.
    */
-  String toString(M message) {
+  public String toString(M message) {
     StringBuilder sb = new StringBuilder();
     sb.append(messageType.getSimpleName());
     sb.append("{");

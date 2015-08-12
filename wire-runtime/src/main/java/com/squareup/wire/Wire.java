@@ -169,7 +169,7 @@ public final class Wire {
       return delegate.redact(value);
     }
 
-    @Override String toString(M value) {
+    @Override public String toString(M value) {
       if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
       return delegate.toString(value);
     }

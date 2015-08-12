@@ -95,6 +95,16 @@ public final class MessageType extends Type {
     return null;
   }
 
+  /** Returns the field tagged {@code tag}, or null if this type has no such field. */
+  public Field field(int tag) {
+    for (Field field : fields) {
+      if (field.tag() == tag) {
+        return field;
+      }
+    }
+    return null;
+  }
+
   public ImmutableList<OneOf> oneOfs() {
     return oneOfs;
   }

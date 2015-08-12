@@ -16,13 +16,6 @@
 package com.squareup.wire.schema;
 
 import com.squareup.wire.internal.Util;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import okio.Buffer;
-import okio.Okio;
-import okio.Source;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -565,37 +558,5 @@ public final class SchemaTest {
     EnumType enumType = (EnumType) schema.getType("Enum");
     assertThat(enumType.constant("A").tag()).isEqualTo(1);
     assertThat(enumType.constant("B").tag()).isEqualTo(1);
-  }
-
-  static class SchemaBuilder {
-    final Map<String, String> paths = new LinkedHashMap<>();
-
-    public SchemaBuilder add(String name, String protoFile) {
-      paths.put(name, protoFile);
-      return this;
-    }
-
-    public SchemaBuilder add(String path) throws IOException {
-      File file = new File("../wire-runtime/src/test/proto/" + path);
-      try (Source source = Okio.source(file)) {
-        String protoFile = Okio.buffer(source).readUtf8();
-        return add(path, protoFile);
-      }
-    }
-
-    public Schema build() throws IOException {
-      Loader.IO io = new Loader.IO() {
-        @Override public Location locate(String path) throws IOException {
-          return Location.get(path);
-        }
-
-        @Override public Source open(Location location) throws IOException {
-          String protoFile = paths.get(location.path());
-          return new Buffer().writeUtf8(protoFile);
-        }
-      };
-
-      return new Loader(io).load(paths.keySet());
-    }
   }
 }
