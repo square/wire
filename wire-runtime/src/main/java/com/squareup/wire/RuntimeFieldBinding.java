@@ -152,6 +152,31 @@ final class RuntimeFieldBinding {
     }
   }
 
+  public void redactBuilderField(Message.Builder<?> builder) {
+    if (!redacted && datatype != Message.Datatype.MESSAGE) {
+      return;
+    }
+    if (redacted && label == Message.Label.REQUIRED) {
+      throw new IllegalArgumentException(
+          String.format("Field %s.%s is REQUIRED and cannot be redacted.",
+              messageField.getDeclaringClass().getName(), messageField.getName()));
+    }
+
+    Object builderValue = getBuilderValue(builder);
+    if (builderValue != null) {
+      Object redactedValue = adapter.redact(builderValue);
+      setBuilderField(builder, redactedValue);
+    }
+  }
+
+  private Object getBuilderValue(Object builder) {
+    try {
+      return builderField.get(builder);
+    } catch (IllegalAccessException e) {
+      throw new AssertionError(e);
+    }
+  }
+
   void setBuilderMethod(Object builder, Object value) {
     try {
       builderMethod.invoke(builder, value);
