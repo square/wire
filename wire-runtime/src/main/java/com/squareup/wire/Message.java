@@ -143,7 +143,7 @@ public abstract class Message implements Serializable {
     }
     if (list == Collections.emptyList()) {
       return list;
-    } else if (list instanceof ReflectiveMessageAdapter.ImmutableList) {
+    } else if (list instanceof RuntimeMessageAdapter.ImmutableList) {
       return list;
     }
     return Collections.unmodifiableList(new ArrayList<T>(list));
@@ -157,7 +157,7 @@ public abstract class Message implements Serializable {
    * @param <E> the enum class type
    */
   public static <E extends Enum & ProtoEnum> E enumFromInt(Class<E> enumClass, int value) {
-    EnumAdapter<E> adapter = WIRE.enumAdapter(enumClass);
+    RuntimeEnumAdapter<E> adapter = WIRE.enumAdapter(enumClass);
     return adapter.fromInt(value);
   }
 

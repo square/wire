@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 /** Creates redacted copies of objects. */
-class Redactor<T extends Message> {
-  private static final Redactor<?> NOOP_REDACTOR = new Redactor<Message>(null, null, null, null) {
+class RuntimeRedactor<T extends Message> {
+  private static final RuntimeRedactor<?>
+      NOOP_REDACTOR = new RuntimeRedactor<Message>(null, null, null, null) {
     @Override
     public Message redact(Message message) {
       return message;
@@ -19,16 +20,16 @@ class Redactor<T extends Message> {
   };
 
   /** Lazily-populated redactors. Guarded by Redactor.class. */
-  private static final Map<Class<? extends Message>, Redactor> redactors =
-      new LinkedHashMap<Class<? extends Message>, Redactor>();
+  private static final Map<Class<? extends Message>, RuntimeRedactor> redactors =
+      new LinkedHashMap<Class<? extends Message>, RuntimeRedactor>();
 
   private final Constructor<?> builderConstructor;
   private final List<Field> redactedFields;
   private final List<Field> messageFields;
-  private final List<Redactor<?>> messageRedactors;
+  private final List<RuntimeRedactor<?>> messageRedactors;
 
-  Redactor(Constructor<?> builderConstructor, List<Field> redactedFields,
-      List<Field> messageFields, List<Redactor<?>> messageRedactors) {
+  RuntimeRedactor(Constructor<?> builderConstructor, List<Field> redactedFields,
+      List<Field> messageFields, List<RuntimeRedactor<?>> messageRedactors) {
     this.builderConstructor = builderConstructor;
     this.redactedFields = redactedFields;
     this.messageFields = messageFields;
@@ -37,8 +38,8 @@ class Redactor<T extends Message> {
 
   /** Returns a Redactor for {@code messageClass}. */
   @SuppressWarnings("unchecked") // Field and member redactors always agree.
-  static synchronized <T extends Message> Redactor<T> get(Class<T> messageClass) {
-    Redactor<T> existingRedactor = redactors.get(messageClass);
+  static synchronized <T extends Message> RuntimeRedactor<T> get(Class<T> messageClass) {
+    RuntimeRedactor<T> existingRedactor = redactors.get(messageClass);
     if (existingRedactor != null) {
       return existingRedactor;
     }
@@ -53,7 +54,7 @@ class Redactor<T extends Message> {
       Class<?> builderClass = Class.forName(messageClass.getName() + "$Builder");
       List<Field> redactedFields = new ArrayList<Field>();
       List<Field> messageFields = new ArrayList<Field>();
-      List<Redactor<?>> messageRedactors = new ArrayList<Redactor<?>>();
+      List<RuntimeRedactor<?>> messageRedactors = new ArrayList<RuntimeRedactor<?>>();
 
       for (Field messageField : messageClass.getDeclaredFields()) {
         if (Modifier.isStatic(messageField.getModifiers())) continue;
@@ -70,7 +71,7 @@ class Redactor<T extends Message> {
         } else if (Message.class.isAssignableFrom(messageField.getType())) {
           // If the field is a Message, it needs its own Redactor.
           Field field = builderClass.getDeclaredField(messageField.getName());
-          Redactor<?> fieldRedactor = get((Class) field.getType());
+          RuntimeRedactor<?> fieldRedactor = get((Class) field.getType());
 
           // This message doesn't redact any fields, so we don't recursively call it.
           if (fieldRedactor == NOOP_REDACTOR) continue;
@@ -80,12 +81,12 @@ class Redactor<T extends Message> {
         }
       }
 
-      Redactor<T> redactor;
+      RuntimeRedactor<T> redactor;
       if (redactedFields.isEmpty() && messageFields.isEmpty()) {
-        redactor = (Redactor<T>) NOOP_REDACTOR;
+        redactor = (RuntimeRedactor<T>) NOOP_REDACTOR;
       } else {
         Constructor<?> builderConstructor = (Constructor) builderClass.getConstructor(messageClass);
-        redactor = new Redactor<T>(builderConstructor, redactedFields, messageFields,
+        redactor = new RuntimeRedactor<T>(builderConstructor, redactedFields, messageFields,
             messageRedactors);
       }
 
@@ -123,7 +124,7 @@ class Redactor<T extends Message> {
 
       for (int i = 0, count = messageFields.size(); i < count; i++) {
         Field field = messageFields.get(i);
-        Redactor<Message> r = (Redactor<Message>) messageRedactors.get(i);
+        RuntimeRedactor<Message> r = (RuntimeRedactor<Message>) messageRedactors.get(i);
         field.set(builder, r.redact((Message) field.get(builder)));
       }
 
@@ -133,14 +134,14 @@ class Redactor<T extends Message> {
     }
   }
 
-  private static class FutureRedactor<T extends Message> extends Redactor<T> {
-    private Redactor<T> delegate;
+  private static class FutureRedactor<T extends Message> extends RuntimeRedactor<T> {
+    private RuntimeRedactor<T> delegate;
 
     public FutureRedactor() {
       super(null, null, null, null);
     }
 
-    public void setDelegate(Redactor<T> delegate) {
+    public void setDelegate(RuntimeRedactor<T> delegate) {
       this.delegate = delegate;
     }
 

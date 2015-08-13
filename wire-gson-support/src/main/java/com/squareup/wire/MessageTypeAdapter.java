@@ -54,8 +54,8 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
   private static final BigInteger POWER_64 = new BigInteger("18446744073709551616");
 
   private final Gson gson;
-  private final ReflectiveMessageAdapter<M> messageAdapter;
-  private final TagMap<ReflectiveFieldBinding> fieldBindingMap;
+  private final RuntimeMessageAdapter<M> messageAdapter;
+  private final TagMap<RuntimeFieldBinding> fieldBindingMap;
   private final Map<String, Integer> tagMap;
 
   @SuppressWarnings("unchecked")
@@ -65,7 +65,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     this.fieldBindingMap = messageAdapter.getFieldBindingMap();
 
     LinkedHashMap<String, Integer> tagMap = new LinkedHashMap<String, Integer>();
-    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+    for (RuntimeFieldBinding fieldBinding : fieldBindingMap.values) {
       tagMap.put(fieldBinding.name, fieldBinding.tag);
     }
     this.tagMap = unmodifiableMap(tagMap);
@@ -79,7 +79,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     }
 
     out.beginObject();
-    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+    for (RuntimeFieldBinding fieldBinding : fieldBindingMap.values) {
       Object value = fieldBinding.getValue(message);
       if (value == null) {
         continue;
@@ -196,7 +196,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
           ((ExtendableMessage.ExtendableBuilder) builder).setExtension(extension, value);
         }
       } else {
-        ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
+        RuntimeFieldBinding fieldBinding = fieldBindingMap.get(tag);
         Type valueType = getType(fieldBinding);
         Object value = parseValue(fieldBinding.label, valueType, parse(in));
         // Use the builder setter method to ensure proper 'oneof' behavior.
@@ -212,7 +212,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     return gson.fromJson(in, JsonElement.class);
   }
 
-  private Type getType(ReflectiveFieldBinding fieldBinding) {
+  private Type getType(RuntimeFieldBinding fieldBinding) {
     Type valueType;
     if (fieldBinding.datatype == Datatype.ENUM) {
       valueType = fieldBinding.enumType;

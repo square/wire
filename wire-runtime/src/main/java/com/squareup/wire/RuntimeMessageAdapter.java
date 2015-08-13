@@ -37,31 +37,31 @@ import static com.squareup.wire.TypeAdapter.FIXED32;
 import static com.squareup.wire.TypeAdapter.FIXED64;
 import static com.squareup.wire.TypeAdapter.UINT64;
 
-final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M> {
+final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
   private final Wire wire;
   private final Class<M> messageType;
   private final Class<Builder<M>> builderType;
-  private final TagMap<ReflectiveFieldBinding> fieldBindingMap;
+  private final TagMap<RuntimeFieldBinding> fieldBindingMap;
 
   /** Cache information about the Message class and its mapping to proto wire format. */
-  ReflectiveMessageAdapter(Wire wire, Class<M> messageType) {
+  RuntimeMessageAdapter(Wire wire, Class<M> messageType) {
     this.wire = wire;
     this.messageType = messageType;
     this.builderType = getBuilderType(messageType);
 
-    Map<Integer, ReflectiveFieldBinding> map = new LinkedHashMap<Integer, ReflectiveFieldBinding>();
+    Map<Integer, RuntimeFieldBinding> map = new LinkedHashMap<Integer, RuntimeFieldBinding>();
     for (Field messageField : messageType.getDeclaredFields()) {
       // Process fields annotated with '@ProtoField'
       ProtoField protoField = messageField.getAnnotation(ProtoField.class);
       if (protoField != null) {
         int tag = protoField.tag();
-        map.put(tag, ReflectiveFieldBinding.create(wire, protoField, messageField, builderType));
+        map.put(tag, RuntimeFieldBinding.create(wire, protoField, messageField, builderType));
       }
     }
     fieldBindingMap = TagMap.of(map);
   }
 
-  TagMap<ReflectiveFieldBinding> getFieldBindingMap() {
+  TagMap<RuntimeFieldBinding> getFieldBindingMap() {
     return fieldBindingMap;
   }
 
@@ -130,7 +130,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     }
 
     int size = 0;
-    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+    for (RuntimeFieldBinding fieldBinding : fieldBindingMap.values) {
       size += fieldBinding.serializedSize(message);
     }
 
@@ -161,7 +161,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   }
 
   @Override public void write(M message, ProtoWriter output) throws IOException {
-    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+    for (RuntimeFieldBinding fieldBinding : fieldBindingMap.values) {
       fieldBinding.write(message, output);
     }
 
@@ -188,7 +188,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
   }
 
   @Override public M redact(M value) {
-    return Redactor.get(messageType).redact(value);
+    return RuntimeRedactor.get(messageType).redact(value);
   }
 
   /**
@@ -200,7 +200,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
     sb.append("{");
 
     boolean seenValue = false;
-    for (ReflectiveFieldBinding fieldBinding : fieldBindingMap.values) {
+    for (RuntimeFieldBinding fieldBinding : fieldBindingMap.values) {
       seenValue |= fieldBinding.addToString(message, sb, seenValue);
     }
     if (message instanceof ExtendableMessage<?>) {
@@ -228,7 +228,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
       Extension<?, ?> extension = null;
       Label label;
       TypeAdapter<Object> adapter;
-      ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(tag);
+      RuntimeFieldBinding fieldBinding = fieldBindingMap.get(tag);
       if (fieldBinding != null) {
         label = fieldBinding.label;
         adapter = fieldBinding.singleAdapter;
@@ -250,7 +250,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
           try {
             Object value = input.value(adapter);
             storage.add(tag, value);
-          } catch (EnumAdapter.EnumConstantNotFoundException e) {
+          } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
             // An unknown Enum value was encountered, store it as an unknown field
             builder.addVarint(tag, e.value);
           }
@@ -261,7 +261,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
         Object value;
         try {
           value = input.value(adapter);
-        } catch (EnumAdapter.EnumConstantNotFoundException e) {
+        } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
           // An unknown Enum value was encountered, store it as an unknown field
           builder.addVarint(tag, e.value);
           continue;
@@ -282,7 +282,7 @@ final class ReflectiveMessageAdapter<M extends Message> extends MessageAdapter<M
 
     // Set repeated fields
     for (int storedTag : storage.getTags()) {
-      ReflectiveFieldBinding fieldBinding = fieldBindingMap.get(storedTag);
+      RuntimeFieldBinding fieldBinding = fieldBindingMap.get(storedTag);
       List<Object> value = storage.get(storedTag);
 
       if (fieldBinding != null) {

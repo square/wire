@@ -29,11 +29,12 @@ import java.util.Map;
 public final class Wire {
   private final ThreadLocal<List<DeferredAdapter<?>>> reentrantCalls =
       new ThreadLocal<List<DeferredAdapter<?>>>();
-  private final Map<Class<? extends Message>, ReflectiveMessageAdapter<? extends Message>>
+  private final Map<Class<? extends Message>, RuntimeMessageAdapter<? extends Message>>
       messageAdapters =
-      new LinkedHashMap<Class<? extends Message>, ReflectiveMessageAdapter<? extends Message>>();
-  private final Map<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>> enumAdapters =
-      new LinkedHashMap<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>>();
+      new LinkedHashMap<Class<? extends Message>, RuntimeMessageAdapter<? extends Message>>();
+  private final Map<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>
+      enumAdapters =
+      new LinkedHashMap<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>();
 
   // Visible to MessageAdapter
   final ExtensionRegistry registry;
@@ -100,12 +101,12 @@ public final class Wire {
    * Returns a message adapter for {@code messageType}.
    */
   @SuppressWarnings("unchecked")
-  synchronized <M extends Message> ReflectiveMessageAdapter<M> messageAdapter(
+  synchronized <M extends Message> RuntimeMessageAdapter<M> messageAdapter(
       Class<M> messageType) {
-    ReflectiveMessageAdapter<M> adapter =
-        (ReflectiveMessageAdapter<M>) messageAdapters.get(messageType);
+    RuntimeMessageAdapter<M> adapter =
+        (RuntimeMessageAdapter<M>) messageAdapters.get(messageType);
     if (adapter == null) {
-      adapter = new ReflectiveMessageAdapter<M>(this, messageType);
+      adapter = new RuntimeMessageAdapter<M>(this, messageType);
       messageAdapters.put(messageType, adapter);
     }
     return adapter;
@@ -115,10 +116,10 @@ public final class Wire {
    * Returns an enum adapter for {@code enumClass}.
    */
   @SuppressWarnings("unchecked")
-  synchronized <E extends ProtoEnum> EnumAdapter<E> enumAdapter(Class<E> enumClass) {
-    EnumAdapter<E> adapter = (EnumAdapter<E>) enumAdapters.get(enumClass);
+  synchronized <E extends ProtoEnum> RuntimeEnumAdapter<E> enumAdapter(Class<E> enumClass) {
+    RuntimeEnumAdapter<E> adapter = (RuntimeEnumAdapter<E>) enumAdapters.get(enumClass);
     if (adapter == null) {
-      adapter = new EnumAdapter<E>(enumClass);
+      adapter = new RuntimeEnumAdapter<E>(enumClass);
       enumAdapters.put(enumClass, adapter);
     }
     return adapter;
