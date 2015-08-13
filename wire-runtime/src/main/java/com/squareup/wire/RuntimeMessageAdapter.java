@@ -17,7 +17,9 @@ package com.squareup.wire;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ProtocolException;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
   private final Wire wire;
   private final Class<M> messageType;
   private final Class<Builder<M>> builderType;
+  private final Constructor<Builder<M>> builderCopyConstructor;
   private final TagMap<RuntimeFieldBinding> fieldBindingMap;
 
   /** Cache information about the Message class and its mapping to proto wire format. */
@@ -48,6 +51,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     this.wire = wire;
     this.messageType = messageType;
     this.builderType = getBuilderType(messageType);
+    this.builderCopyConstructor = getBuilderCopyConstructor(builderType, messageType);
 
     Map<Integer, RuntimeFieldBinding> map = new LinkedHashMap<Integer, RuntimeFieldBinding>();
     for (Field messageField : messageType.getDeclaredFields()) {
@@ -75,13 +79,34 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     }
   }
 
+  Builder<M> newBuilder(M value) {
+    try {
+      return builderCopyConstructor.newInstance(value);
+    } catch (InvocationTargetException e) {
+      throw new AssertionError(e);
+    } catch (InstantiationException e) {
+      throw new AssertionError(e);
+    } catch (IllegalAccessException e) {
+      throw new AssertionError(e);
+    }
+  }
+
   @SuppressWarnings("unchecked")
-  private Class<Builder<M>> getBuilderType(Class<M> messageType) {
+  private static <M extends Message> Class<Builder<M>> getBuilderType(Class<M> messageType) {
     try {
       return (Class<Builder<M>>) Class.forName(messageType.getName() + "$Builder");
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException("No builder class found for message type "
           + messageType.getName());
+    }
+  }
+
+  private static <M extends Message> Constructor<Builder<M>> getBuilderCopyConstructor(
+      Class<Builder<M>> builderType, Class<M> messageType) {
+    try {
+      return builderType.getConstructor(messageType);
+    } catch (NoSuchMethodException e) {
+      throw new AssertionError(e);
     }
   }
 
@@ -188,7 +213,11 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
   }
 
   @Override public M redact(M value) {
-    return RuntimeRedactor.get(messageType).redact(value);
+    Builder<M> builder = newBuilder(value);
+    for (RuntimeFieldBinding fieldBinding : fieldBindingMap.values) {
+      fieldBinding.redactBuilderField(builder);
+    }
+    return builder.build();
   }
 
   /**

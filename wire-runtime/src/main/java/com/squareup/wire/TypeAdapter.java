@@ -43,6 +43,11 @@ public abstract class TypeAdapter<E> {
     this.type = type;
   }
 
+  /** Returns the redacted form of {@code value}. */
+  E redact(E value) {
+    return null;
+  }
+
   /**
    * The size of the non-null data {@code value}. This does not include the size required for
    * a length-delimited prefix (should the type require one).
@@ -258,6 +263,10 @@ public abstract class TypeAdapter<E> {
         reader.endLengthDelimited(token);
         return value;
       }
+
+      @Override M redact(M value) {
+        return adapter.redact(value);
+      }
     };
   }
 
@@ -295,6 +304,10 @@ public abstract class TypeAdapter<E> {
         reader.endLengthDelimited(token);
         return items;
       }
+
+      @Override List<T> redact(List<T> value) {
+        return Collections.emptyList();
+      }
     };
   }
 
@@ -324,6 +337,10 @@ public abstract class TypeAdapter<E> {
 
       @Override public List<T> read(ProtoReader reader) throws IOException {
         throw new UnsupportedOperationException(); // TODO
+      }
+
+      @Override List<T> redact(List<T> value) {
+        return Collections.emptyList();
       }
     };
   }
