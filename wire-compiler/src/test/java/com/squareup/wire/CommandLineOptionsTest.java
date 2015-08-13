@@ -1,25 +1,34 @@
 package com.squareup.wire;
 
+import com.google.common.collect.Lists;
 import com.squareup.wire.java.SimpleServiceFactory;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.junit.Test;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommandLineOptionsTest {
 
-  @Test public void protoPath() throws Exception {
+  @Test public void protoPaths() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.protoPath).isNull();
+    assertThat(options.protoPaths).isEmpty();
 
     options = new CommandLineOptions("--proto_path=foo/bar");
-    assertThat(options.protoPath).isEqualTo("foo/bar");
+    assertThat(options.protoPaths).containsOnly("foo/bar");
+
+    List<String> paths = Arrays.asList("foo/bar", "one/two", "three/four");
+    String[] args = Lists.transform(paths, new com.google.common.base.Function<String, String>() {
+      @Override
+      public String apply(String s) {
+        return "--proto_path=" + s;
+      }
+    }).toArray(new String[0]);
+    options = new CommandLineOptions(args);
+    assertThat(options.protoPaths).containsExactlyElementsOf(paths);
   }
 
   @Test public void javaOut() throws Exception{

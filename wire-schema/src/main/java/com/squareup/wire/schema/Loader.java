@@ -15,11 +15,13 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.base.Joiner;
 import com.squareup.wire.internal.protoparser.ProtoFileElement;
 import com.squareup.wire.internal.protoparser.ProtoParser;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import okio.Okio;
 import okio.Source;
@@ -34,19 +36,26 @@ public final class Loader {
   }
 
   /** Returns a loader that loads all files from {@code base}. */
-  public static Loader forBaseDirectory(final String base) {
+  public static Loader forSearchPaths(final List<String> paths) {
     IO io = new IO() {
-      @Override public Location locate(String path) throws IOException {
-        return Location.get(base, path);
+      @Override public Location locate(String file) throws IOException {
+        for (String path : paths) {
+          File f = new File(path, file);
+          if (f.exists()) {
+            return Location.get(path, file);
+          }
+        }
+
+        throw new IOException("Could not locate " + file + " within any of the following: "
+                + Joiner.on(", ").join(paths) + ".");
       }
 
       @Override public Source open(Location location) throws IOException {
-        String sourcePath = location.base() + File.separator + location.path();
-        return Okio.source(new File(sourcePath));
+        return Okio.source(new File(location.base(), location.path()));
       }
 
       @Override public String toString() {
-        return String.format("Loader(%s)", base);
+        return String.format("Loader(%s)", Joiner.on(":").join(paths));
       }
     };
     return new Loader(io);
