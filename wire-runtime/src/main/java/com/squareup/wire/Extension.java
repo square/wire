@@ -265,8 +265,8 @@ public final class Extension<T extends ExtendableMessage<T>, E>
 
   @Override public int hashCode() {
     int hash = tag;
-    hash = hash * 37 + datatype.value();
-    hash = hash * 37 + label.value();
+    hash = hash * 37 + datatype.hashCode();
+    hash = hash * 37 + label.hashCode();
     hash = hash * 37 + extendedType.hashCode();
     hash = hash * 37 + (messageType != null ? messageType.hashCode() : 0);
     hash = hash * 37 + (enumType != null ? enumType.hashCode() : 0);

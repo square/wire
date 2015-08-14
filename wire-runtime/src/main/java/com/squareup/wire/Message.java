@@ -33,57 +33,17 @@ public abstract class Message implements Serializable {
   // Hidden Wire instance that can perform work that does not require knowledge of extensions.
   static final Wire WIRE = new Wire();
 
-  /**
-   * A protocol buffer data type.
-   */
+  /** A protocol buffer data type. */
   public enum Datatype {
-    INT32(1), INT64(2), UINT32(3), UINT64(4), SINT32(5),
-    SINT64(6), BOOL(7), ENUM(8), STRING(9), BYTES(10),
-    MESSAGE(11), FIXED32(12), SFIXED32(13), FIXED64(14),
-    SFIXED64(15), FLOAT(16), DOUBLE(17);
-
-    private final int value;
-
-    Datatype(int value) {
-      this.value = value;
-    }
-
-    public int value() {
-      return value;
-    }
-
-    WireType wireType() {
-      switch (this) {
-        case INT32: case INT64: case UINT32: case UINT64:
-        case SINT32: case SINT64: case BOOL: case ENUM:
-          return WireType.VARINT;
-        case FIXED32: case SFIXED32: case FLOAT:
-          return WireType.FIXED32;
-        case FIXED64: case SFIXED64: case DOUBLE:
-          return WireType.FIXED64;
-        case STRING: case BYTES: case MESSAGE:
-          return WireType.LENGTH_DELIMITED;
-        default:
-          throw new AssertionError("No wiretype for datatype " + this);
-      }
-    }
+    INT32, INT64, UINT32, UINT64, SINT32, SINT64, BOOL, ENUM, STRING, BYTES, MESSAGE,
+    FIXED32, SFIXED32, FIXED64, SFIXED64, FLOAT, DOUBLE
   }
 
-  /**
-   * A protocol buffer label. We treat "packed" as a label of its own that implies "repeated."
-   */
+  /** A protocol buffer label. */
   public enum Label {
-    REQUIRED(32), OPTIONAL(64), REPEATED(128), PACKED(256), ONE_OF(512);
-
-    private final int value;
-
-    Label(int value) {
-      this.value = value;
-    }
-
-    public int value() {
-      return value;
-    }
+    REQUIRED, OPTIONAL, REPEATED, ONE_OF,
+    /** Implies {@link #REPEATED}. */
+    PACKED;
 
     boolean isRepeated() {
       return this == REPEATED || this == PACKED;
