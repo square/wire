@@ -55,14 +55,14 @@ final class ExtensionMap<T extends ExtendableMessage<T>> {
   @SuppressWarnings("unchecked")
   public Extension<T, ?> getExtension(int index) {
     if (index < 0 || index >= size) {
-      throw new IndexOutOfBoundsException("" + index);
+      throw new IndexOutOfBoundsException(String.valueOf(index));
     }
     return (Extension<T, ?>) data[index];
   }
 
   public Object getExtensionValue(int index) {
     if (index < 0 || index >= size) {
-      throw new IndexOutOfBoundsException("" + index);
+      throw new IndexOutOfBoundsException(String.valueOf(index));
     }
     return data[size + index];
   }
