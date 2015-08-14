@@ -96,7 +96,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     if (unknownFields != null) {
       for (List<UnknownFieldMap.Value> fieldList : unknownFields) {
         int tag = fieldList.get(0).tag;
-        out.name("" + tag);
+        out.name(String.valueOf(tag));
         out.beginArray();
         for (int i = 0, count = fieldList.size(); i < count; i++) {
           UnknownFieldMap.Value unknownField = fieldList.get(i);
