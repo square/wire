@@ -67,7 +67,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     }
 
     // Create tag bindings for registered extensions.
-    for (Extension<?, ?> extension : wire.registry.getExtensions(messageType)) {
+    for (Extension<?, ?> extension : wire.getExtensions(messageType)) {
       TypeAdapter<?> singleAdapter = TypeAdapter.get(wire, extension.getDatatype(),
           extension.getMessageType(), extension.getEnumType());
       tagBindings.put(extension.getTag(), new ExtensionTagBinding<M>(extension, singleAdapter));
