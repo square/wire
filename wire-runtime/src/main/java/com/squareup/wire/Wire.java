@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,8 @@ public final class Wire {
       enumAdapters =
       new LinkedHashMap<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>();
 
-  // Visible to MessageAdapter
-  final ExtensionRegistry registry;
+  private final Map<Class<? extends Message>, List<Extension<?, ?>>> messageToExtensions
+      = new LinkedHashMap<Class<? extends Message>, List<Extension<?, ?>>>();
 
   /**
    * Creates a new Wire that can encode and decode the extensions specified in
@@ -54,19 +55,33 @@ public final class Wire {
    * and start with the "Ext_" prefix.
    */
   public Wire(List<Class<?>> extensionClasses) {
-    this.registry = new ExtensionRegistry();
     for (Class<?> extensionClass : extensionClasses) {
       for (Field field : extensionClass.getDeclaredFields()) {
         if (field.getType().equals(Extension.class)) {
           try {
-            Extension extension = (Extension) field.get(null);
-            registry.add(extension);
+            registerExtension((Extension) field.get(null));
           } catch (IllegalAccessException e) {
             throw new AssertionError(e);
           }
         }
       }
     }
+  }
+
+  private <T extends ExtendableMessage<T>, E> void registerExtension(Extension<T, E> extension) {
+    Class<? extends Message> messageClass = extension.getExtendedType();
+    List<Extension<?, ?>> extensions = messageToExtensions.get(messageClass);
+    if (extensions == null) {
+      extensions = new ArrayList<Extension<?, ?>>();
+      messageToExtensions.put(messageClass, extensions);
+    }
+    extensions.add(extension);
+  }
+
+  @SuppressWarnings("unchecked")
+  List<Extension<?, ?>> getExtensions(Class<? extends Message> messageClass) {
+    List<Extension<?, ?>> map = messageToExtensions.get(messageClass);
+    return map != null ? map : Collections.<Extension<?, ?>>emptyList();
   }
 
   /** Returns an adapter for reading and writing {@code type}, creating it if necessary. */
