@@ -90,11 +90,10 @@ public final class Wire {
     try {
       MessageAdapter<M> adapter = messageAdapter(type);
       deferredAdapter.ready(adapter);
+      return adapter;
     } finally {
       deferredAdapters.remove(deferredAdapters.size() - 1);
     }
-
-    return messageAdapter(type);
   }
 
   /**
@@ -162,12 +161,15 @@ public final class Wire {
 
     public void ready(MessageAdapter<M> delegate) {
       this.delegate = delegate;
-      this.type = null; // Allow to be garbage collected.
     }
 
-    @Override public M redact(M value) {
+    @Override public Class<?> messageType() {
+      return type;
+    }
+
+    @Override public M redact(M message) {
       if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
-      return delegate.redact(value);
+      return delegate.redact(message);
     }
 
     @Override public String toString(M value) {

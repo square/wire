@@ -36,7 +36,9 @@ class TestAllTypesData {
       "pack_uint64=[117, 117], pack_sint64=[118, 118], pack_fixed64=[119, 119], " +
       "pack_sfixed64=[120, 120], pack_bool=[true, true], pack_float=[122.0, 122.0], " +
       "pack_double=[123.0, 123.0], pack_nested_enum=[A, A], " +
-      "{extensions={1011=true, 1111=[true, true], 1211=[true, true]}}}";
+      "squareup.protos.alltypes.ext_opt_bool=true, " +
+      "squareup.protos.alltypes.ext_rep_bool=[true, true], " +
+      "squareup.protos.alltypes.ext_pack_bool=[true, true]}";
 
   public static final byte[] expectedOutput = {
       // optional

@@ -55,18 +55,17 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
 
   private final Gson gson;
   private final RuntimeMessageAdapter<M> messageAdapter;
-  private final TagMap<RuntimeFieldBinding> fieldBindingMap;
-  private final Map<String, Integer> tagMap;
+  private final Map<String, TagBinding<M, Message.Builder<M>>> tagMap;
 
   @SuppressWarnings("unchecked")
   public MessageTypeAdapter(Wire wire, Gson gson, TypeToken<M> type) {
     this.gson = gson;
     this.messageAdapter = wire.messageAdapter((Class<M>) type.getRawType());
-    this.fieldBindingMap = messageAdapter.getFieldBindingMap();
 
-    LinkedHashMap<String, Integer> tagMap = new LinkedHashMap<String, Integer>();
-    for (RuntimeFieldBinding fieldBinding : fieldBindingMap.values) {
-      tagMap.put(fieldBinding.name, fieldBinding.tag);
+    Map<String, TagBinding<M, Message.Builder<M>>> tagMap
+        = new LinkedHashMap<String, TagBinding<M, Message.Builder<M>>>();
+    for (TagBinding<M, Message.Builder<M>> tagBinding : messageAdapter.tagBindings().values()) {
+      tagMap.put(tagBinding.name, tagBinding);
     }
     this.tagMap = unmodifiableMap(tagMap);
   }
@@ -79,17 +78,14 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     }
 
     out.beginObject();
-    for (RuntimeFieldBinding fieldBinding : fieldBindingMap.values) {
-      Object value = fieldBinding.getValue(message);
+    for (TagBinding<M, Message.Builder<M>> tagBinding
+        : messageAdapter.tagBindingsForMessage(message).values()) {
+      Object value = tagBinding.get(message);
       if (value == null) {
         continue;
       }
-      out.name(fieldBinding.name);
-      emitJson(out, value, fieldBinding.datatype, fieldBinding.label);
-    }
-
-    if (message instanceof ExtendableMessage<?>) {
-      emitExtensions((ExtendableMessage<?>) message, out);
+      out.name(tagBinding.name);
+      emitJson(out, value, tagBinding.datatype, tagBinding.label);
     }
 
     Collection<List<UnknownFieldMap.Value>> unknownFields = message.unknownFields();
@@ -126,23 +122,6 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     }
 
     out.endObject();
-  }
-
-  @SuppressWarnings("unchecked")
-  private <M extends ExtendableMessage<M>, E> void emitExtensions(ExtendableMessage<M> message,
-      JsonWriter out) throws IOException {
-    if (message.extensionMap == null) return;
-    for (int i = 0, count = message.extensionMap.size(); i < count; i++) {
-      Extension<M, E> extension = (Extension<M, E>) message.extensionMap.getExtension(i);
-      E value = (E) message.extensionMap.getExtensionValue(i);
-      emitExtension(extension, value, out);
-    }
-  }
-
-  private <M extends ExtendableMessage<M>, E> void emitExtension(Extension<M, E> extension,
-      E value, JsonWriter out) throws IOException {
-    out.name(extension.getName());
-    emitJson(out, value, extension.getDatatype(), extension.getLabel());
   }
 
   @SuppressWarnings("unchecked")
@@ -185,22 +164,13 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
 
     while (in.peek() == JsonToken.NAME) {
       String name = in.nextName();
-      Integer tag = tagMap.get(name);
-      if (tag == null) {
-        Extension<?, ?> extension = messageAdapter.getExtension(name);
-        if (extension == null) {
-          parseUnknownField(in, builder, Integer.parseInt(name));
-        } else {
-          Type valueType = getType(extension);
-          Object value = parseValue(extension.getLabel(), valueType, parse(in));
-          ((ExtendableMessage.ExtendableBuilder) builder).setExtension(extension, value);
-        }
+      TagBinding<M, Message.Builder<M>> tagBinding = tagMap.get(name);
+
+      if (tagBinding != null) {
+        Object value = parseValue(tagBinding.label, singleType(tagBinding), parse(in));
+        tagBinding.set(builder, value);
       } else {
-        RuntimeFieldBinding fieldBinding = fieldBindingMap.get(tag);
-        Type valueType = getType(fieldBinding);
-        Object value = parseValue(fieldBinding.label, valueType, parse(in));
-        // Use the builder setter method to ensure proper 'oneof' behavior.
-        fieldBinding.setBuilderMethod(builder, value);
+        parseUnknownField(in, builder, Integer.parseInt(name));
       }
     }
 
@@ -212,18 +182,6 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     return gson.fromJson(in, JsonElement.class);
   }
 
-  private Type getType(RuntimeFieldBinding fieldBinding) {
-    Type valueType;
-    if (fieldBinding.datatype == Datatype.ENUM) {
-      valueType = fieldBinding.enumType;
-    } else if (fieldBinding.datatype == Datatype.MESSAGE) {
-      valueType = fieldBinding.messageType;
-    } else {
-      valueType = javaType(fieldBinding.datatype);
-    }
-    return valueType;
-  }
-
   private Object parseValue(Label label, Type valueType, JsonElement valueElement) {
     if (label.isRepeated()) {
       List<Object> valueList = new ArrayList<Object>();
@@ -233,17 +191,6 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       return valueList;
     } else {
       return readJson(valueType, valueElement);
-    }
-  }
-
-  private Type getType(Extension<?, ?> extension) {
-    Datatype datatype = extension.getDatatype();
-    if (datatype == Datatype.ENUM) {
-      return extension.getEnumType();
-    } else if (datatype == Datatype.MESSAGE) {
-      return extension.getMessageType();
-    } else {
-      return javaType(datatype);
     }
   }
 
@@ -276,26 +223,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     return gson.fromJson(element, valueType);
   }
 
-  // Returns the Type used to store a given primitive scalar type.
-  @SuppressWarnings("unchecked")
-  private Type javaType(Datatype datatype) {
-    switch (datatype) {
-      case INT32:case UINT32:case SINT32:case FIXED32:case SFIXED32:
-        return int.class;
-      case INT64:case UINT64:case SINT64:case FIXED64:case SFIXED64:
-        return long.class;
-      case BOOL:
-        return boolean.class;
-      case FLOAT:
-        return float.class;
-      case DOUBLE:
-        return double.class;
-      case STRING:
-        return String.class;
-      case BYTES:
-        return ByteString.class;
-      default:
-        throw new AssertionError("Unknown datatype: " + datatype);
-    }
+  private Type singleType(TagBinding<M, Message.Builder<M>> tagBinding) {
+    return tagBinding.singleAdapter.javaType;
   }
 }
