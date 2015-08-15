@@ -38,9 +38,35 @@ public abstract class TypeAdapter<E> {
   static final int FIXED_64_SIZE = 8;
 
   final WireType type;
+  final Class<?> javaType;
 
-  public TypeAdapter(WireType type) {
+  public TypeAdapter(WireType type, Class<?> javaType) {
     this.type = type;
+    this.javaType = javaType;
+  }
+
+  static TypeAdapter<?> get(Wire wire, Message.Datatype datatype,
+      Class<? extends Message> messageType, Class<? extends ProtoEnum> enumType) {
+    switch (datatype) {
+      case BOOL: return BOOL;
+      case BYTES: return TypeAdapter.BYTES;
+      case DOUBLE: return DOUBLE;
+      case ENUM: return wire.enumAdapter(enumType);
+      case FIXED32: return TypeAdapter.FIXED32;
+      case FIXED64: return TypeAdapter.FIXED64;
+      case FLOAT: return FLOAT;
+      case INT32: return INT32;
+      case INT64: return INT64;
+      case MESSAGE: return forMessage(wire.adapter(messageType));
+      case SFIXED32: return SFIXED32;
+      case SFIXED64: return SFIXED64;
+      case SINT32: return SINT32;
+      case SINT64: return SINT64;
+      case STRING: return STRING;
+      case UINT32: return UINT32;
+      case UINT64: return TypeAdapter.UINT64;
+      default: throw new AssertionError("Unknown data type " + datatype);
+    }
   }
 
   /** Returns the redacted form of {@code value}. */
@@ -81,7 +107,8 @@ public abstract class TypeAdapter<E> {
   /** Read a non-null value from {@code reader}. */
   public abstract E read(ProtoReader reader) throws IOException;
 
-  public static final TypeAdapter<Boolean> BOOL = new TypeAdapter<Boolean>(WireType.VARINT) {
+  public static final TypeAdapter<Boolean> BOOL = new TypeAdapter<Boolean>(
+      WireType.VARINT, Boolean.class) {
     @Override public int dataSize(Boolean value) {
       return FIXED_BOOL_SIZE;
     }
@@ -97,7 +124,8 @@ public abstract class TypeAdapter<E> {
       throw new IOException(String.format("Invalid boolean value 0x%02x", value));
     }
   };
-  public static final TypeAdapter<Integer> INT32 = new TypeAdapter<Integer>(WireType.VARINT) {
+  public static final TypeAdapter<Integer> INT32 = new TypeAdapter<Integer>(
+      WireType.VARINT, Integer.class) {
     @Override public int dataSize(Integer value) {
       return int32Size(value);
     }
@@ -110,7 +138,8 @@ public abstract class TypeAdapter<E> {
       return reader.readVarint32();
     }
   };
-  public static final TypeAdapter<Integer> UINT32 = new TypeAdapter<Integer>(WireType.VARINT) {
+  public static final TypeAdapter<Integer> UINT32 = new TypeAdapter<Integer>(
+      WireType.VARINT, Integer.class) {
     @Override public int dataSize(Integer value) {
       return varint32Size(value);
     }
@@ -123,7 +152,8 @@ public abstract class TypeAdapter<E> {
       return reader.readVarint32();
     }
   };
-  public static final TypeAdapter<Integer> SINT32 = new TypeAdapter<Integer>(WireType.VARINT) {
+  public static final TypeAdapter<Integer> SINT32 = new TypeAdapter<Integer>(
+      WireType.VARINT, Integer.class) {
     @Override public int dataSize(Integer value) {
       return varint32Size(encodeZigZag32(value));
     }
@@ -136,7 +166,8 @@ public abstract class TypeAdapter<E> {
       return decodeZigZag32(reader.readVarint32());
     }
   };
-  public static final TypeAdapter<Integer> FIXED32 = new TypeAdapter<Integer>(WireType.FIXED32) {
+  public static final TypeAdapter<Integer> FIXED32 = new TypeAdapter<Integer>(
+      WireType.FIXED32, Integer.class) {
     @Override public int dataSize(Integer value) {
       return FIXED_32_SIZE;
     }
@@ -150,7 +181,8 @@ public abstract class TypeAdapter<E> {
     }
   };
   public static final TypeAdapter<Integer> SFIXED32 = FIXED32;
-  public static final TypeAdapter<Long> INT64 = new TypeAdapter<Long>(WireType.VARINT) {
+  public static final TypeAdapter<Long> INT64 = new TypeAdapter<Long>(
+      WireType.VARINT, Long.class) {
     @Override public int dataSize(Long value) {
       return varint64Size(value);
     }
@@ -164,7 +196,8 @@ public abstract class TypeAdapter<E> {
     }
   };
   public static final TypeAdapter<Long> UINT64 = INT64;
-  public static final TypeAdapter<Long> SINT64 = new TypeAdapter<Long>(WireType.VARINT) {
+  public static final TypeAdapter<Long> SINT64 = new TypeAdapter<Long>(
+      WireType.VARINT, Long.class) {
     @Override public int dataSize(Long value) {
       return varint64Size(encodeZigZag64(value));
     }
@@ -177,7 +210,8 @@ public abstract class TypeAdapter<E> {
       return decodeZigZag64(reader.readVarint64());
     }
   };
-  public static final TypeAdapter<Long> FIXED64 = new TypeAdapter<Long>(WireType.FIXED64) {
+  public static final TypeAdapter<Long> FIXED64 = new TypeAdapter<Long>(
+      WireType.FIXED64, Long.class) {
     @Override public int dataSize(Long value) {
       return FIXED_64_SIZE;
     }
@@ -191,7 +225,8 @@ public abstract class TypeAdapter<E> {
     }
   };
   public static final TypeAdapter<Long> SFIXED64 = FIXED64;
-  public static final TypeAdapter<Float> FLOAT = new TypeAdapter<Float>(WireType.FIXED32) {
+  public static final TypeAdapter<Float> FLOAT = new TypeAdapter<Float>(
+      WireType.FIXED32, Float.class) {
     @Override public int dataSize(Float value) {
       return FIXED_32_SIZE;
     }
@@ -204,7 +239,8 @@ public abstract class TypeAdapter<E> {
       return Float.intBitsToFloat(reader.readFixed32());
     }
   };
-  public static final TypeAdapter<Double> DOUBLE = new TypeAdapter<Double>(WireType.FIXED64) {
+  public static final TypeAdapter<Double> DOUBLE = new TypeAdapter<Double>(
+      WireType.FIXED64, Double.class) {
     @Override public int dataSize(Double value) {
       return FIXED_64_SIZE;
     }
@@ -217,38 +253,38 @@ public abstract class TypeAdapter<E> {
       return Double.longBitsToDouble(reader.readFixed64());
     }
   };
-  public static final TypeAdapter<String> STRING =
-      new TypeAdapter<String>(WireType.LENGTH_DELIMITED) {
-        @Override public int dataSize(String value) {
-          return utf8Length(value);
-        }
+  public static final TypeAdapter<String> STRING = new TypeAdapter<String>(
+      WireType.LENGTH_DELIMITED, String.class) {
+    @Override public int dataSize(String value) {
+      return utf8Length(value);
+    }
 
-        @Override public void writeData(String value, ProtoWriter writer) throws IOException {
-          ByteString bytes = ByteString.encodeUtf8(value);
-          writer.writeBytes(bytes);
-        }
+    @Override public void writeData(String value, ProtoWriter writer) throws IOException {
+      ByteString bytes = ByteString.encodeUtf8(value);
+      writer.writeBytes(bytes);
+    }
 
-        @Override public String read(ProtoReader reader) throws IOException {
-          return reader.readString();
-        }
-      };
-  public static final TypeAdapter<ByteString> BYTES =
-      new TypeAdapter<ByteString>(WireType.LENGTH_DELIMITED) {
-        @Override public int dataSize(ByteString value) {
-          return value.size();
-        }
+    @Override public String read(ProtoReader reader) throws IOException {
+      return reader.readString();
+    }
+  };
+  public static final TypeAdapter<ByteString> BYTES = new TypeAdapter<ByteString>(
+      WireType.LENGTH_DELIMITED, ByteString.class) {
+    @Override public int dataSize(ByteString value) {
+      return value.size();
+    }
 
-        @Override public void writeData(ByteString value, ProtoWriter writer) throws IOException {
-          writer.writeBytes(value);
-        }
+    @Override public void writeData(ByteString value, ProtoWriter writer) throws IOException {
+      writer.writeBytes(value);
+    }
 
-        @Override public ByteString read(ProtoReader reader) throws IOException {
-          return reader.readBytes();
-        }
-      };
+    @Override public ByteString read(ProtoReader reader) throws IOException {
+      return reader.readBytes();
+    }
+  };
 
   public static <M> TypeAdapter<M> forMessage(final MessageAdapter<M> adapter) {
-    return new TypeAdapter<M>(WireType.LENGTH_DELIMITED) {
+    return new TypeAdapter<M>(WireType.LENGTH_DELIMITED, adapter.messageType()) {
       @Override public int dataSize(M value) {
         return adapter.serializedSize(value);
       }
@@ -270,11 +306,20 @@ public abstract class TypeAdapter<E> {
     };
   }
 
-  public static <T> TypeAdapter<List<T>> createPacked(final TypeAdapter<T> adapter) {
+  public TypeAdapter<?> withLabel(Message.Label label) {
+    if (label.isRepeated()) {
+      return label.isPacked()
+          ? createPacked(this)
+          : createRepeated(this);
+    }
+    return this;
+  }
+
+  private static <T> TypeAdapter<List<T>> createPacked(final TypeAdapter<T> adapter) {
     if (adapter.type == WireType.LENGTH_DELIMITED) {
       throw new IllegalArgumentException("Unable to pack a length-delimited type.");
     }
-    return new TypeAdapter<List<T>>(WireType.LENGTH_DELIMITED) {
+    return new TypeAdapter<List<T>>(WireType.LENGTH_DELIMITED, List.class) {
       @Override public int dataSize(List<T> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
@@ -311,8 +356,8 @@ public abstract class TypeAdapter<E> {
     };
   }
 
-  public static <T> TypeAdapter<List<T>> createRepeated(final TypeAdapter<T> adapter) {
-    return new TypeAdapter<List<T>>(adapter.type) {
+  private static <T> TypeAdapter<List<T>> createRepeated(final TypeAdapter<T> adapter) {
+    return new TypeAdapter<List<T>>(adapter.type, List.class) {
       @Override public int dataSize(List<T> value) {
         throw new UnsupportedOperationException();
       }

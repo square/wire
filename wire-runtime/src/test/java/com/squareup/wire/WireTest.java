@@ -197,9 +197,9 @@ public class WireTest {
     SimpleMessage newMsg = adapterExt.readBytes(data);
 
     // Original value shows up as an extension.
-    assertThat(msg.toString()).contains("extensions={129=BAZ}");
+    assertThat(msg.toString()).contains("squareup.protos.simple.nested_enum_ext=BAZ");
     // New value is placed into the unknown field map.
-    assertThat(newMsg.toString()).contains("extensions={}");
+    assertThat(newMsg.toString()).contains("ExternalMessage{}");
 
     // Serialized outputs are the same.
     byte[] newData = adapterExt.writeBytes(newMsg);

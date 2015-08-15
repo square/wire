@@ -109,7 +109,7 @@ final class SchemaTypeAdapterFactory {
     final EnumType enumType;
 
     public SchemaEnumAdapter(EnumType enumType) {
-      super(WireType.VARINT);
+      super(WireType.VARINT, Object.class);
       this.enumType = enumType;
     }
 
@@ -131,7 +131,11 @@ final class SchemaTypeAdapterFactory {
   static final class SchemaMessageAdapter extends MessageAdapter<Map<String, Object>> {
     final Map<Integer, FieldAdapter> fieldAdapters = new LinkedHashMap<>();
 
-    @Override public Map<String, Object> redact(Map<String, Object> value) {
+    @Override public Class<?> messageType() {
+      return Map.class;
+    }
+
+    @Override public Map<String, Object> redact(Map<String, Object> message) {
       throw new UnsupportedOperationException();
     }
 

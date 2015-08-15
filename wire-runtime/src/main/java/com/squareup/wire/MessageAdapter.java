@@ -26,11 +26,14 @@ import okio.Okio;
 import static com.squareup.wire.Preconditions.checkNotNull;
 
 public abstract class MessageAdapter<M> {
+  /** Returns the raw type of the messages this adapter can read and write. */
+  public abstract Class<?> messageType();
+
   /**
-   * Returns a copy of {@code value} with all redacted fields set to null or an empty list.
+   * Returns a copy of {@code message} with all redacted fields set to null or an empty list.
    * This operation is recursive: nested messages are themselves redacted in the returned object.
    */
-  public abstract M redact(M value);
+  public abstract M redact(M message);
 
   /** Returns a human-readable version of the given {@code value}. */
   public abstract String toString(M value);

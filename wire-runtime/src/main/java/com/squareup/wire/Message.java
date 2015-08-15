@@ -137,7 +137,7 @@ public abstract class Message implements Serializable {
 
   @SuppressWarnings("unchecked")
   @Override public String toString() {
-    return WIRE.messageAdapter((Class<Message>) getClass()).toString(this);
+    return WIRE.adapter((Class<Message>) getClass()).toString(this);
   }
 
   private Object writeReplace() throws ObjectStreamException {
