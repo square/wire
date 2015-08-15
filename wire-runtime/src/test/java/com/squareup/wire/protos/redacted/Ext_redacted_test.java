@@ -13,6 +13,12 @@ public final class Ext_redacted_test {
       .setTag(22200)
       .buildOptional();
 
+  public static final Extension<Redacted, RedactedExtension> extension = Extension
+      .messageExtending(RedactedExtension.class, Redacted.class)
+      .setName("squareup.protos.redacted_test.extension")
+      .setTag(10)
+      .buildOptional();
+
   private Ext_redacted_test() {
   }
 }

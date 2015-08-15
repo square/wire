@@ -52,12 +52,18 @@ final class FieldTagBinding<M extends Message> extends TagBinding<M, Builder<M>>
   }
 
   @Override void set(Builder<M> builder, Object value) {
-    if (label.isOneOf()) {
-      // In order to maintain the 'oneof' invariant, call the builder setter method rather
-      // than setting the builder field directly.
-      setBuilderMethod(builder, value);
-    } else {
-      setBuilderField(builder, value);
+    try {
+      if (label.isOneOf()) {
+        // In order to maintain the 'oneof' invariant, call the builder setter method rather
+        // than setting the builder field directly.
+        builderMethod.invoke(builder, value);
+      } else {
+        builderField.set(builder, value);
+      }
+    } catch (IllegalAccessException e) {
+      throw new AssertionError(e);
+    } catch (InvocationTargetException e) {
+      throw new AssertionError(e);
     }
   }
 
@@ -69,45 +75,10 @@ final class FieldTagBinding<M extends Message> extends TagBinding<M, Builder<M>>
     }
   }
 
-  void setBuilderField(Object builder, Object value) {
-    try {
-      builderField.set(builder, value);
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    }
-  }
-
-  @Override void redactBuilderField(Builder<M> builder) {
-    if (!redacted && datatype != Message.Datatype.MESSAGE) {
-      return;
-    }
-    if (redacted && label == Message.Label.REQUIRED) {
-      throw new IllegalArgumentException(
-          String.format("Field %s.%s is REQUIRED and cannot be redacted.",
-              messageField.getDeclaringClass().getName(), messageField.getName()));
-    }
-
-    Object builderValue = getBuilderValue(builder);
-    if (builderValue != null) {
-      Object redactedValue = ((TypeAdapter<Object>) adapter).redact(builderValue);
-      setBuilderField(builder, redactedValue);
-    }
-  }
-
-  private Object getBuilderValue(Object builder) {
+  @Override Object getFromBuilder(Builder<M> builder) {
     try {
       return builderField.get(builder);
     } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    }
-  }
-
-  void setBuilderMethod(Object builder, Object value) {
-    try {
-      builderMethod.invoke(builder, value);
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    } catch (InvocationTargetException e) {
       throw new AssertionError(e);
     }
   }

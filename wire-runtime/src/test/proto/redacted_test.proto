@@ -28,6 +28,7 @@ message Redacted {
   optional string a = 1 [(squareup.protos.redacted_test.redacted) = true];
   optional string b = 2 [(squareup.protos.redacted_test.redacted) = false];
   optional string c = 3;
+  extensions 10 to 20;
 }
 
 message RedactedChild {
@@ -56,4 +57,13 @@ extend google.protobuf.FieldOptions {
 
   /** Fields marked with redacted are not to be logged, generally for PCI or PII. */
   optional bool redacted = 22200;
+}
+
+message RedactedExtension {
+  optional string d = 1 [(squareup.protos.redacted_test.redacted) = true];
+  optional string e = 2;
+}
+
+extend Redacted {
+  optional RedactedExtension extension = 10;
 }

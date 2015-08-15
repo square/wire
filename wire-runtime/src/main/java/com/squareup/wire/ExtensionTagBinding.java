@@ -26,15 +26,15 @@ final class ExtensionTagBinding<M extends Message> extends TagBinding<M, Message
     this.extension = extension;
   }
 
-  @Override void redactBuilderField(Message.Builder<M> builder) {
-    // TODO(jwilson): implement redacting for extensions?
-  }
-
   @Override public Object get(M message) {
     ExtensionMap<?> extensionMap = ((ExtendableMessage<?>) message).extensionMap;
     return extensionMap != null
         ? ((ExtensionMap) extensionMap).get(extension)
         : null;
+  }
+
+  @Override Object getFromBuilder(Message.Builder<M> builder) {
+    return ((ExtendableBuilder) builder).getExtension(extension);
   }
 
   @Override void set(Message.Builder<M> builder, Object value) {
