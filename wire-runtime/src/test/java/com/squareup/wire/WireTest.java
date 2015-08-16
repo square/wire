@@ -213,7 +213,7 @@ public class WireTest {
     assertThat(Ext_simple_message.barext.toString()).isEqualTo(
         "[OPTIONAL INT32 squareup.protos.simple.barext = 126]");
     assertThat(Ext_simple_message.bazext.toString()).isEqualTo(
-        "[REQUIRED INT32 squareup.protos.simple.bazext = 127]");
+        "[OPTIONAL INT32 squareup.protos.simple.bazext = 127]");
     assertThat(Ext_simple_message.nested_message_ext.toString()).isEqualTo(
         "[OPTIONAL MESSAGE squareup.protos.simple.nested_message_ext = 128]");
     assertThat(Ext_simple_message.nested_enum_ext.toString()).isEqualTo(
