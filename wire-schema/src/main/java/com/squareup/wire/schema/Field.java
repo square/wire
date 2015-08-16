@@ -99,10 +99,13 @@ public final class Field {
     return name();
   }
 
-  void validate(Linker linker) {
+  void validate(Linker linker, boolean extension) {
     linker = linker.withContext(this);
     if (isPacked() && !isPackable(linker, type)) {
       linker.addError("packed=true not permitted on %s", type);
+    }
+    if (extension && isRequired()) {
+      linker.addError("extension fields cannot be required", type);
     }
   }
 

@@ -432,7 +432,7 @@ public final class SchemaTest {
               + "message Message {\n"
               + "}\n"
               + "extend Message {\n"
-              + "  required foo_package.Foo unknown = 1;\n"
+              + "  optional foo_package.Foo unknown = 1;\n"
               + "}\n")
           .build();
       fail();
@@ -509,8 +509,8 @@ public final class SchemaTest {
               + "message Message {\n"
               + "}\n"
               + "extend Message {\n"
-              + "  required string name1 = 1;\n"
-              + "  required string name2 = 1;\n"
+              + "  optional string name1 = 1;\n"
+              + "  optional string name2 = 1;\n"
               + "}\n")
           .build();
       fail();
@@ -519,6 +519,24 @@ public final class SchemaTest {
           + "  1. name1 (message.proto at 4:3)\n"
           + "  2. name2 (message.proto at 5:3)\n"
           + "  for message Message (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void requiredExtendFieldDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "}\n"
+              + "extend Message {\n"
+              + "  required string a = 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("extension fields cannot be required\n"
+          + "  for field a (message.proto at 4:3)\n"
+          + "  in extend Message (message.proto at 3:1)");
     }
   }
 

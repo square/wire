@@ -96,12 +96,6 @@ public final class Extension<T extends ExtendableMessage<T>, E>
       return new Extension<T, E>(extendedType, messageType, enumType, name, tag, label, datatype);
     }
 
-    public Extension<T, E> buildRequired() {
-      this.label = Label.REQUIRED;
-      validate();
-      return new Extension<T, E>(extendedType, messageType, enumType, name, tag, label, datatype);
-    }
-
     public Extension<T, List<E>> buildRepeated() {
       this.label = Label.REPEATED;
       validate();

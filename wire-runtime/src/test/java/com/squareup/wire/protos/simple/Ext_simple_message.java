@@ -24,7 +24,7 @@ public final class Ext_simple_message {
       .int32Extending(ExternalMessage.class)
       .setName("squareup.protos.simple.bazext")
       .setTag(127)
-      .buildRequired();
+      .buildOptional();
 
   public static final Extension<ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension
       .messageExtending(SimpleMessage.NestedMessage.class, ExternalMessage.class)
