@@ -63,4 +63,11 @@ public final class Extend {
       field.link(linker);
     }
   }
+
+  void validate(Linker linker) {
+    linker = linker.withContext(this);
+    for (Field field : fields) {
+      field.validate(linker);
+    }
+  }
 }

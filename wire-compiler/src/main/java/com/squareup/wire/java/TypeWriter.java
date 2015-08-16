@@ -319,7 +319,7 @@ public final class TypeWriter {
     }
 
     if (!field.isOptional()) {
-      if (field.isPacked() && (isEnum || field.type().isPackableScalar())) {
+      if (field.isPacked()) {
         result.addMember("label", "$T.PACKED", Message.Label.class);
       } else if (field.label() != null) {
         result.addMember("label", "$T.$L", Message.Label.class, field.label());
@@ -836,9 +836,7 @@ public final class TypeWriter {
         return "Required";
 
       case REPEATED:
-        boolean packed = field.isPacked()
-            && (javaGenerator.isEnum(field.type()) || field.type().isPackableScalar());
-        return packed ? "Packed" : "Repeated";
+        return field.isPacked() ? "Packed" : "Repeated";
 
       default:
         throw new WireCompilerException("Unknown extension label \"" + field.label() + "\"");

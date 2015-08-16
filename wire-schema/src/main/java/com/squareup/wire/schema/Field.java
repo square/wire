@@ -99,6 +99,19 @@ public final class Field {
     return name();
   }
 
+  void validate(Linker linker) {
+    linker = linker.withContext(this);
+    if (isPacked() && !isPackable(linker, type)) {
+      linker.addError("packed=true not permitted on %s", type);
+    }
+  }
+
+  private boolean isPackable(Linker linker, Type.Name type) {
+    return !type.equals(Type.Name.STRING)
+        && !type.equals(Type.Name.BYTES)
+        && !(linker.get(type) instanceof MessageType);
+  }
+
   public enum Label {
     OPTIONAL, REQUIRED, REPEATED,
     /** Indicates the field is a member of a {@code oneof} block. */

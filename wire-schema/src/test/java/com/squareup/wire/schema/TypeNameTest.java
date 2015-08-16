@@ -54,11 +54,4 @@ public final class TypeNameTest {
     assertThat(Type.Name.BYTES.isScalar()).isTrue();
     assertThat(Type.Name.get("squareup.protos.person", "Person").isScalar()).isFalse();
   }
-
-  @Test public void isPackableScalar() throws Exception {
-    assertThat(Type.Name.INT32.isPackableScalar()).isTrue();
-    assertThat(Type.Name.STRING.isPackableScalar()).isFalse();
-    assertThat(Type.Name.BYTES.isPackableScalar()).isFalse();
-    assertThat(Type.Name.get("squareup.protos.person", "Person").isPackableScalar()).isFalse();
-  }
 }

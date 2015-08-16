@@ -107,6 +107,9 @@ final class Linker {
       for (Type type : protoFile.types()) {
         type.validate(this);
       }
+      for (Extend extend : protoFile.extendList()) {
+        extend.validate(this);
+      }
     }
 
     if (!errors.isEmpty()) {
@@ -170,6 +173,11 @@ final class Linker {
 
     addError("unable to resolve %s", name);
     return Type.Name.BYTES; // Just return any placeholder.
+  }
+
+  /** Returns the type or null if it doesn't exist. */
+  public Type get(Type.Name typeName) {
+    return protoTypeNames.get(typeName.toString());
   }
 
   /** Returns the map of known extensions for {@code extensionType}. */
