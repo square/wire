@@ -3,13 +3,14 @@
 package com.squareup.wire.protos.redacted;
 
 import com.google.protobuf.FieldOptions;
+import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-public final class Redacted extends Message {
+public final class Redacted extends ExtendableMessage<Redacted> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
@@ -61,6 +62,7 @@ public final class Redacted extends Message {
     if (other == this) return true;
     if (!(other instanceof Redacted)) return false;
     Redacted o = (Redacted) other;
+    if (!extensionsEqual(o)) return false;
     return equals(a, o.a)
         && equals(b, o.b)
         && equals(c, o.c);
@@ -70,7 +72,8 @@ public final class Redacted extends Message {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = a != null ? a.hashCode() : 0;
+      result = extensionsHashCode();
+      result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);
       hashCode = result;
@@ -78,7 +81,7 @@ public final class Redacted extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Redacted> {
+  public static final class Builder extends ExtendableMessage.ExtendableBuilder<Redacted, Builder> {
     public String a;
 
     public String b;
@@ -86,10 +89,11 @@ public final class Redacted extends Message {
     public String c;
 
     public Builder() {
+      super(Builder.class);
     }
 
     public Builder(Redacted message) {
-      super(message);
+      super(Builder.class, message);
       if (message == null) return;
       this.a = message.a;
       this.b = message.b;

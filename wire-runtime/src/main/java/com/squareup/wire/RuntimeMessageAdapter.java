@@ -165,7 +165,9 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
 
     int size = 0;
     for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
-      size += tagBinding.serializedSize(message);
+      Object value = tagBinding.get(message);
+      if (value == null) continue;
+      size += ((TypeAdapter<Object>) tagBinding.adapter).serializedSize(tagBinding.tag, value);
     }
 
     size += message.getUnknownFieldsSerializedSize();
@@ -202,18 +204,29 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     return result;
   }
 
-  @Override public void write(M message, ProtoWriter output) throws IOException {
+  @Override public void write(M message, ProtoWriter writer) throws IOException {
     for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
-      tagBinding.write(message, output);
+      Object value = tagBinding.get(message);
+      if (value == null) continue;
+      ((TypeAdapter<Object>) tagBinding.adapter).write(tagBinding.tag, value, writer);
     }
-
-    message.writeUnknownFieldMap(output);
+    message.writeUnknownFieldMap(writer);
   }
 
   @Override public M redact(M message) {
     Builder<M> builder = newBuilder(message);
     for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
-      tagBinding.redactBuilderField(builder);
+      if (!tagBinding.redacted && tagBinding.datatype != Message.Datatype.MESSAGE) continue;
+      if (tagBinding.redacted && tagBinding.label == Message.Label.REQUIRED) {
+        throw new IllegalArgumentException(String.format(
+            "Field %s.%s is REQUIRED and cannot be redacted.",
+            messageType().getName(), tagBinding.name));
+      }
+      Object builderValue = tagBinding.getFromBuilder(builder);
+      if (builderValue != null) {
+        Object redactedValue = ((TypeAdapter<Object>) tagBinding.adapter).redact(builderValue);
+        tagBinding.set(builder, redactedValue);
+      }
     }
     return builder.build();
   }
@@ -224,13 +237,18 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
   public String toString(M message) {
     StringBuilder sb = new StringBuilder();
     sb.append(messageType.getSimpleName());
-    sb.append("{");
-
+    sb.append('{');
     boolean seenValue = false;
     for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
-      seenValue |= tagBinding.addToString(message, sb, seenValue);
+      Object value = tagBinding.get(message);
+      if (value == null) continue;
+      if (seenValue) sb.append(", ");
+      sb.append(tagBinding.name);
+      sb.append('=');
+      sb.append(tagBinding.redacted ? "██" : value);
+      seenValue = true;
     }
-    sb.append("}");
+    sb.append('}');
     return sb.toString();
   }
 
@@ -275,7 +293,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
           continue;
         }
         if (label.isRepeated()) {
-          storage.add(tag, value != null ? value : Collections.emptyList());
+          storage.add(tag, value);
         } else {
           tagBinding.set(builder, value);
         }

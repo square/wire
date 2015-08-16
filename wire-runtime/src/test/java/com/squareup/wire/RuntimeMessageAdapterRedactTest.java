@@ -15,10 +15,12 @@
  */
 package com.squareup.wire;
 
+import com.squareup.wire.protos.redacted.Ext_redacted_test;
 import com.squareup.wire.protos.redacted.NotRedacted;
 import com.squareup.wire.protos.redacted.Redacted;
 import com.squareup.wire.protos.redacted.RedactedChild;
 import com.squareup.wire.protos.redacted.RedactedCycleA;
+import com.squareup.wire.protos.redacted.RedactedExtension;
 import com.squareup.wire.protos.redacted.RedactedRepeated;
 import com.squareup.wire.protos.redacted.RedactedRequired;
 import java.io.IOException;
@@ -58,6 +60,21 @@ public class RuntimeMessageAdapterRedactTest {
         .b(new Redacted.Builder(message.b).a(null).build())
         .build();
     assertThat(wire.adapter(RedactedChild.class).redact(message)).isEqualTo(expected);
+  }
+
+  @Test public void redactedExtensions() {
+    Redacted message = new Redacted.Builder()
+        .setExtension(Ext_redacted_test.extension, new RedactedExtension.Builder()
+            .d("d")
+            .e("e")
+            .build())
+        .build();
+    Redacted expected = new Redacted.Builder()
+        .setExtension(Ext_redacted_test.extension, new RedactedExtension.Builder()
+            .e("e")
+            .build())
+        .build();
+    assertThat(wire.adapter(Redacted.class).redact(message)).isEqualTo(expected);
   }
 
   @Test public void messageCycle() {

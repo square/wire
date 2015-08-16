@@ -506,6 +506,7 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/redacted/RedactedChild.java",
         "com/squareup/wire/protos/redacted/RedactedCycleA.java",
         "com/squareup/wire/protos/redacted/RedactedCycleB.java",
+        "com/squareup/wire/protos/redacted/RedactedExtension.java",
         "com/squareup/wire/protos/redacted/RedactedRepeated.java",
         "com/squareup/wire/protos/redacted/RedactedRequired.java",
     };

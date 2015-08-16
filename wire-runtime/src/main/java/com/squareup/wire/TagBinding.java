@@ -15,8 +15,6 @@
  */
 package com.squareup.wire;
 
-import java.io.IOException;
-
 /**
  * Read, write, and describe a tag within a message. This class knows how to assign fields to a
  * builder object, and how to extract values from a message object.
@@ -47,33 +45,5 @@ abstract class TagBinding<M, B> {
 
   abstract Object get(M message);
 
-  final int serializedSize(M message) {
-    Object value = get(message);
-    return value != null
-        ? ((TypeAdapter<Object>) adapter).serializedSize(tag, value)
-        : 0;
-  }
-
-  final void write(M message, ProtoWriter protoWriter) throws IOException {
-    Object value = get(message);
-    if (value != null) {
-      protoWriter.write(tag, value, (TypeAdapter<Object>) adapter);
-    }
-  }
-
-  abstract void redactBuilderField(B builder);
-
-  final boolean addToString(M message, StringBuilder sb, boolean seenValue) {
-    Object value = get(message);
-    if (value == null) {
-      return false;
-    }
-    if (seenValue) {
-      sb.append(", ");
-    }
-    sb.append(name);
-    sb.append("=");
-    sb.append(redacted ? "██" : value);
-    return true;
-  }
+  abstract Object getFromBuilder(B builder);
 }
