@@ -69,7 +69,7 @@ final class RuntimeEnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
     return ProtoWriter.varint32Size(value.getValue());
   }
 
-  @Override public void writeData(E value, ProtoWriter writer) throws IOException {
+  @Override public void write(ProtoWriter writer, E value) throws IOException {
     writer.writeVarint32(value.getValue());
   }
 
