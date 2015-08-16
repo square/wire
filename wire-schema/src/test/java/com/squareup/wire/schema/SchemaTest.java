@@ -138,7 +138,7 @@ public final class SchemaTest {
     }
   }
 
-  @Test public void fieldIsPacked() throws Exception {
+  @Test public void scalarFieldIsPacked() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
@@ -152,6 +152,55 @@ public final class SchemaTest {
     assertThat(message.field("a").isPacked()).isFalse();
     assertThat(message.field("b").isPacked()).isFalse();
     assertThat(message.field("c").isPacked()).isTrue();
+  }
+
+  @Test public void enumFieldIsPacked() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  repeated HabitablePlanet home_planet = 1 [packed=true];\n"
+            + "  enum HabitablePlanet {\n"
+            + "    EARTH = 1;\n"
+            + "  }\n"
+            + "}\n")
+        .build();
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.field("home_planet").isPacked()).isTrue();
+  }
+
+  @Test public void fieldIsPackedButShouldntBe() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "  repeated bytes a = 1 [packed=false];\n"
+              + "  repeated bytes b = 2 [packed=true];\n"
+              + "  repeated string c = 3 [packed=false];\n"
+              + "  repeated string d = 4 [packed=true];\n"
+              + "  repeated Message e = 5 [packed=false];\n"
+              + "  repeated Message f = 6 [packed=true];\n"
+              + "}\n"
+              + "extend Message {\n"
+              + "  repeated bytes g = 7 [packed=false];\n"
+              + "  repeated bytes h = 8 [packed=true];\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage(""
+          + "packed=true not permitted on bytes\n"
+          + "  for field b (message.proto at 3:3)\n"
+          + "  in message Message (message.proto at 1:1)\n"
+          + "packed=true not permitted on string\n"
+          + "  for field d (message.proto at 5:3)\n"
+          + "  in message Message (message.proto at 1:1)\n"
+          + "packed=true not permitted on Message\n"
+          + "  for field f (message.proto at 7:3)\n"
+          + "  in message Message (message.proto at 1:1)\n"
+          + "packed=true not permitted on bytes\n"
+          + "  for field h (message.proto at 11:3)\n"
+          + "  in extend Message (message.proto at 9:1)");
+    }
   }
 
   @Test public void fieldIsDeprecated() throws Exception {
