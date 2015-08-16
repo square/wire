@@ -46,7 +46,7 @@ public final class ParseTest {
       wire.adapter(OneField.class).readBytes(data.toByteArray());
       fail();
     } catch (ProtocolException expected) {
-      assertThat(expected).hasMessage("No WireType for type 7");
+      assertThat(expected).hasMessage("Unexpected FieldEncoding: 7");
     }
   }
 

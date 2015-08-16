@@ -36,7 +36,7 @@ final class RuntimeEnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
   private final boolean isDense;
 
   RuntimeEnumAdapter(Class<E> type) {
-    super(WireType.VARINT, type);
+    super(FieldEncoding.VARINT, type);
     this.type = type;
 
     constants = type.getEnumConstants();

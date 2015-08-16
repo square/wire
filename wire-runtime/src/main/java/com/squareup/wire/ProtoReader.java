@@ -43,19 +43,25 @@ import okio.ByteString;
  * Reads and decodes protocol message fields.
  */
 public final class ProtoReader {
-
   private static final String ENCOUNTERED_A_NEGATIVE_SIZE =
       "Encountered a negative size";
   private static final String INPUT_ENDED_UNEXPECTEDLY =
       "The input ended unexpectedly in the middle of a field";
-  private static final String PROTOCOL_MESSAGE_CONTAINED_AN_INVALID_TAG_ZERO =
+  private static final String PROTOCOL_MESSAGE_TAG_ZERO =
       "Protocol message contained an invalid tag (zero).";
   private static final String PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG =
       "Protocol message end-group tag did not match expected tag.";
+  public static final String PROTOCOL_MESSAGE_GROUP_IS_TRUNCATED =
+      "Protocol message group is truncated.";
   private static final String ENCOUNTERED_A_MALFORMED_VARINT =
       "WireInput encountered a malformed varint.";
   /** The standard number of levels of message nesting to allow. */
   private static final int RECURSION_LIMIT = 64;
+
+  static final int FIELD_ENCODING_MASK = 0x7;
+  static final int TAG_FIELD_ENCODING_BITS = 3;
+  private static final int START_GROUP = 3;
+  private static final int END_GROUP = 4;
 
   private final BufferedSource source;
 
@@ -65,8 +71,8 @@ public final class ProtoReader {
   private long limit = Long.MAX_VALUE;
   /** The current number of levels of message nesting. */
   private int recursionDepth;
-  /** The type of the next value to be read. */
-  private WireType nextType;
+  /** The encoding of the next value to be read. */
+  private FieldEncoding nextFieldEncoding;
 
   public ProtoReader(BufferedSource source) {
     this.source = source;
@@ -123,69 +129,58 @@ public final class ProtoReader {
 
   /**
    * Reads and returns the next tag of the message, or -1 if there are no further tags. Use {@link
-   * #peekType()} after calling this method to query its type. This silently skips tags whose types
-   * are groups.
+   * #peekFieldEncoding()} after calling this method to query its encoding. This silently skips
+   * groups.
    */
   public int nextTag() throws IOException {
     while (hasNext()) {
-      int tag = readTag();
-      WireType type = peekType();
-      if (type == WireType.START_GROUP) {
-        skipGroup();
-      } else if (type != WireType.END_GROUP) {
-        return tag;
+      int tagAndFieldEncoding = readVarint32();
+      if (tagAndFieldEncoding == 0) throw new ProtocolException(PROTOCOL_MESSAGE_TAG_ZERO);
+
+      int tag = tagAndFieldEncoding >> TAG_FIELD_ENCODING_BITS;
+      int groupOrFieldEncoding = tagAndFieldEncoding & FIELD_ENCODING_MASK;
+      switch (groupOrFieldEncoding) {
+        case START_GROUP:
+          skipGroup(tag);
+          continue;
+        case END_GROUP:
+          continue; // TODO(jwilson): crash if we get an end group without a preceding start group.
+        default:
+          nextFieldEncoding = FieldEncoding.get(groupOrFieldEncoding);
+          return tag;
       }
     }
     return -1;
   }
 
-  private int readTag() throws IOException {
-    int tagAndType = readVarint32();
-    if (tagAndType == 0) {
-      throw new ProtocolException(PROTOCOL_MESSAGE_CONTAINED_AN_INVALID_TAG_ZERO);
-    }
-    nextType = WireType.valueOf(tagAndType);
-    return tagAndType >> WireType.TAG_TYPE_BITS;
-  }
-
-  /** The type of the field value. {@link #readTag()} must be called before this method. */
-  public WireType peekType() throws IOException {
-    return nextType;
+  /**
+   * Returns the encoding of the next field value. {@link #nextTag()} must be called before
+   * this method.
+   */
+  public FieldEncoding peekFieldEncoding() throws IOException {
+    return nextFieldEncoding;
   }
 
   /** Skips a section of the input delimited by START_GROUP/END_GROUP type markers. */
-  int skipGroup() throws IOException {
+  void skipGroup(int expectedEndTag) throws IOException {
     while (hasNext()) {
-      int tag = readTag();
-      if (skipField(tag)) {
-        return tag;
+      int tagAndFieldEncoding = readVarint32();
+      if (tagAndFieldEncoding == 0) throw new ProtocolException(PROTOCOL_MESSAGE_TAG_ZERO);
+      int tag = tagAndFieldEncoding >> TAG_FIELD_ENCODING_BITS;
+      int groupOrFieldEncoding = tagAndFieldEncoding & FIELD_ENCODING_MASK;
+      switch (groupOrFieldEncoding) {
+        case START_GROUP:
+          skipGroup(tag); // Nested group.
+          break;
+        case END_GROUP:
+          if (tag == expectedEndTag) return; // Success!
+          throw new ProtocolException(PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG);
+        default:
+          FieldEncoding fieldEncoding = FieldEncoding.get(groupOrFieldEncoding);
+          fieldEncoding.rawTypeAdapter().read(this);
       }
     }
-    return 0;
-  }
-
-  /** Skip a single field. Return true when END_GROUP tag found. */
-  private boolean skipField(int tag) throws IOException {
-    switch (peekType()) {
-      case VARINT: readVarint64(); return false;
-      case FIXED32: readFixed32(); return false;
-      case FIXED64: readFixed64(); return false;
-      case LENGTH_DELIMITED: skip(readVarint32()); return false;
-      case START_GROUP:
-        if (skipGroup() != tag) {
-          throw new ProtocolException(PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG);
-        }
-        return false;
-      case END_GROUP:
-        return true;
-      default:
-        throw new AssertionError();
-    }
-  }
-
-  private void skip(long count) throws IOException {
-    pos += count;
-    source.skip(count);
+    throw new ProtocolException(PROTOCOL_MESSAGE_GROUP_IS_TRUNCATED);
   }
 
   int readByte() throws IOException {

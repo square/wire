@@ -96,7 +96,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
         out.beginArray();
         for (int i = 0, count = fieldList.size(); i < count; i++) {
           UnknownFieldMap.Value unknownField = fieldList.get(i);
-          switch (unknownField.adapter.type) {
+          switch (unknownField.adapter.fieldEncoding) {
             case VARINT:
               if (i == 0) out.value("varint");
               out.value((Long) unknownField.value);
@@ -114,7 +114,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
               out.value(((ByteString) unknownField.value).base64());
               break;
             default:
-              throw new AssertionError("Unknown wire type " + unknownField.adapter.type);
+              throw new AssertionError("Unknown wire type " + unknownField.adapter.fieldEncoding);
           }
         }
         out.endArray();

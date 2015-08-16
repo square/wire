@@ -71,10 +71,10 @@ final class UnknownFieldMap {
     if (values == null) {
       values = new ArrayList<Value>();
       fieldMap.put(tag, values);
-    } else if (values.get(0).adapter.type != value.adapter.type) {
+    } else if (values.get(0).adapter.fieldEncoding != value.adapter.fieldEncoding) {
       throw new ProtocolException(
           String.format("Wire type %s differs from previous type %s for tag %s",
-              value.adapter.type, values.get(0).adapter.type, tag));
+              value.adapter.fieldEncoding, values.get(0).adapter.fieldEncoding, tag));
     }
     values.add(value);
   }
