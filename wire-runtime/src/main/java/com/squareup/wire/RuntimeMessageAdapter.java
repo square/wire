@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -378,6 +379,10 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
 
     @Override public T get(int i) {
       return list.get(i);
+    }
+
+    private Object writeReplace() throws ObjectStreamException {
+      return Collections.unmodifiableList(list);
     }
   }
 }
