@@ -117,7 +117,7 @@ final class SchemaTypeAdapterFactory {
       throw new UnsupportedOperationException();
     }
 
-    @Override public void writeData(Object value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Object value) throws IOException {
       throw new UnsupportedOperationException();
     }
 
@@ -150,9 +150,7 @@ final class SchemaTypeAdapterFactory {
     @Override public Map<String, Object> read(ProtoReader reader) throws IOException {
       Map<String, Object> result = new LinkedHashMap<>();
 
-      while (reader.hasNext()) {
-        int tag = reader.readTag();
-
+      for (int tag; (tag = reader.nextTag()) != -1;) {
         FieldAdapter fieldAdapter = fieldAdapters.get(tag);
         if (fieldAdapter == null) {
           fieldAdapter = new FieldAdapter(

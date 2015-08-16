@@ -185,10 +185,6 @@ public final class ProtoWriter {
     this.sink = sink;
   }
 
-  public <T> void write(int tag, T value, TypeAdapter<T> adapter) throws IOException {
-    adapter.write(tag, value, this);
-  }
-
   void writeByte(int value) throws IOException {
     sink.writeByte(value);
   }

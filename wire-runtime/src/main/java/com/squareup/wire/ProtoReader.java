@@ -122,20 +122,30 @@ public final class ProtoReader {
   }
 
   /**
-   * Read the tag of the next field. Use {@link #peekType()} after calling this method to query its
-   * type.
+   * Reads and returns the next tag of the message, or -1 if there are no further tags. Use {@link
+   * #peekType()} after calling this method to query its type. This silently skips tags whose types
+   * are groups.
    */
-  public int readTag() throws IOException {
+  public int nextTag() throws IOException {
+    while (hasNext()) {
+      int tag = readTag();
+      WireType type = peekType();
+      if (type == WireType.START_GROUP) {
+        skipGroup();
+      } else if (type != WireType.END_GROUP) {
+        return tag;
+      }
+    }
+    return -1;
+  }
+
+  private int readTag() throws IOException {
     int tagAndType = readVarint32();
     if (tagAndType == 0) {
       throw new ProtocolException(PROTOCOL_MESSAGE_CONTAINED_AN_INVALID_TAG_ZERO);
     }
     nextType = WireType.valueOf(tagAndType);
     return tagAndType >> WireType.TAG_TYPE_BITS;
-  }
-
-  public <T> T value(TypeAdapter<T> adapter) throws IOException {
-    return adapter.read(this);
   }
 
   /** The type of the field value. {@link #readTag()} must be called before this method. */

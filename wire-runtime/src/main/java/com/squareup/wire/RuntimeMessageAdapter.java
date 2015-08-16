@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.net.ProtocolException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,10 +32,6 @@ import java.util.Set;
 
 import static com.squareup.wire.Message.Builder;
 import static com.squareup.wire.Message.Label;
-import static com.squareup.wire.TypeAdapter.BYTES;
-import static com.squareup.wire.TypeAdapter.FIXED32;
-import static com.squareup.wire.TypeAdapter.FIXED64;
-import static com.squareup.wire.TypeAdapter.UINT64;
 
 final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
   private final Wire wire;
@@ -209,7 +204,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
       Object value = tagBinding.get(message);
       if (value == null) continue;
-      ((TypeAdapter<Object>) tagBinding.adapter).write(tagBinding.tag, value, writer);
+      ((TypeAdapter<Object>) tagBinding.adapter).writeTagged(writer, tagBinding.tag, value);
     }
     message.writeUnknownFieldMap(writer);
   }
@@ -259,12 +254,11 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     Builder<M> builder = newBuilder();
     Storage storage = new Storage();
 
-    while (input.hasNext()) {
-      int tag = input.readTag();
-
+    for (int tag; (tag = input.nextTag()) != -1;) {
       TagBinding<M, Builder<M>> tagBinding = tagBindings.get(tag);
       if (tagBinding == null) {
-        readUnknownField(builder, input, tag);
+        TypeAdapter<?> typeAdapter = unknownTypeAdapter(input.peekType());
+        readUnknownField(builder, input, tag, typeAdapter);
         continue;
       }
       Label label = tagBinding.label;
@@ -275,7 +269,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
         long token = input.beginLengthDelimited();
         while (input.hasNext()) {
           try {
-            Object value = input.value(adapter);
+            Object value = adapter.read(input);
             storage.add(tag, value);
           } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
             // An unknown Enum value was encountered, store it as an unknown field
@@ -287,7 +281,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
         // Read a single value
         Object value;
         try {
-          value = input.value(adapter);
+          value = adapter.read(input);
         } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
           // An unknown Enum value was encountered, store it as an unknown field
           builder.addVarint(tag, e.value);
@@ -310,30 +304,25 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     return builder.build();
   }
 
-  private void readUnknownField(Builder builder, ProtoReader input, int tag)
-      throws IOException {
-    WireType type = input.peekType();
+  /** Returns a type adapter that reads {@code type} without interpretation. */
+  private TypeAdapter<?> unknownTypeAdapter(WireType type) {
     switch (type) {
       case VARINT:
-        builder.ensureUnknownFieldMap().add(tag, input.readVarint64(), UINT64);
-        break;
+        return TypeAdapter.UINT64;
       case FIXED32:
-        builder.ensureUnknownFieldMap().add(tag, input.readFixed32(), FIXED32);
-        break;
+        return TypeAdapter.FIXED32;
       case FIXED64:
-        builder.ensureUnknownFieldMap().add(tag, input.readFixed64(), FIXED64);
-        break;
+        return TypeAdapter.FIXED64;
       case LENGTH_DELIMITED:
-        builder.ensureUnknownFieldMap().add(tag, input.readBytes(), BYTES);
-        break;
-      /* Skip any groups found in the input */
-      case START_GROUP:
-        input.skipGroup();
-        break;
-      case END_GROUP:
-        break;
-      default: throw new ProtocolException("Unknown wire type: " + type);
+        return TypeAdapter.BYTES;
+      default:
+        throw new AssertionError();
     }
+  }
+
+  private <T> void readUnknownField(
+      Builder builder, ProtoReader input, int tag, TypeAdapter<T> typeAdapter) throws IOException {
+    builder.ensureUnknownFieldMap().add(tag, typeAdapter.read(input), typeAdapter);
   }
 
   private static class Storage {

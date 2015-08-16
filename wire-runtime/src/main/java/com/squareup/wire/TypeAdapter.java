@@ -93,15 +93,15 @@ public abstract class TypeAdapter<E> {
   }
 
   /** Write non-null {@code value} to {@code writer}. */
-  public abstract void writeData(E value, ProtoWriter writer) throws IOException;
+  public abstract void write(ProtoWriter writer, E value) throws IOException;
 
   /** Write {@code tag} and non-null {@code value} to {@code writer}. */
-  void write(int tag, E value, ProtoWriter writer) throws IOException {
+  void writeTagged(ProtoWriter writer, int tag, E value) throws IOException {
     writer.writeTag(tag, type);
     if (type == WireType.LENGTH_DELIMITED) {
       writer.writeVarint32(dataSize(value));
     }
-    writeData(value, writer);
+    write(writer, value);
   }
 
   /** Read a non-null value from {@code reader}. */
@@ -113,7 +113,7 @@ public abstract class TypeAdapter<E> {
       return FIXED_BOOL_SIZE;
     }
 
-    @Override public void writeData(Boolean value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Boolean value) throws IOException {
       writer.writeByte(value ? 1 : 0);
     }
 
@@ -130,7 +130,7 @@ public abstract class TypeAdapter<E> {
       return int32Size(value);
     }
 
-    @Override public void writeData(Integer value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Integer value) throws IOException {
       writer.writeSignedVarint32(value);
     }
 
@@ -144,7 +144,7 @@ public abstract class TypeAdapter<E> {
       return varint32Size(value);
     }
 
-    @Override public void writeData(Integer value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Integer value) throws IOException {
       writer.writeVarint32(value);
     }
 
@@ -158,7 +158,7 @@ public abstract class TypeAdapter<E> {
       return varint32Size(encodeZigZag32(value));
     }
 
-    @Override public void writeData(Integer value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Integer value) throws IOException {
       writer.writeVarint32(encodeZigZag32(value));
     }
 
@@ -172,7 +172,7 @@ public abstract class TypeAdapter<E> {
       return FIXED_32_SIZE;
     }
 
-    @Override public void writeData(Integer value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Integer value) throws IOException {
       writer.writeFixed32(value);
     }
 
@@ -187,7 +187,7 @@ public abstract class TypeAdapter<E> {
       return varint64Size(value);
     }
 
-    @Override public void writeData(Long value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Long value) throws IOException {
       writer.writeVarint64(value);
     }
 
@@ -202,7 +202,7 @@ public abstract class TypeAdapter<E> {
       return varint64Size(encodeZigZag64(value));
     }
 
-    @Override public void writeData(Long value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Long value) throws IOException {
       writer.writeVarint64(encodeZigZag64(value));
     }
 
@@ -216,7 +216,7 @@ public abstract class TypeAdapter<E> {
       return FIXED_64_SIZE;
     }
 
-    @Override public void writeData(Long value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Long value) throws IOException {
       writer.writeFixed64(value);
     }
 
@@ -231,7 +231,7 @@ public abstract class TypeAdapter<E> {
       return FIXED_32_SIZE;
     }
 
-    @Override public void writeData(Float value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Float value) throws IOException {
       writer.writeFixed32(floatToIntBits(value));
     }
 
@@ -245,7 +245,7 @@ public abstract class TypeAdapter<E> {
       return FIXED_64_SIZE;
     }
 
-    @Override public void writeData(Double value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Double value) throws IOException {
       writer.writeFixed64(doubleToLongBits(value));
     }
 
@@ -259,7 +259,7 @@ public abstract class TypeAdapter<E> {
       return utf8Length(value);
     }
 
-    @Override public void writeData(String value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, String value) throws IOException {
       ByteString bytes = ByteString.encodeUtf8(value);
       writer.writeBytes(bytes);
     }
@@ -274,7 +274,7 @@ public abstract class TypeAdapter<E> {
       return value.size();
     }
 
-    @Override public void writeData(ByteString value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, ByteString value) throws IOException {
       writer.writeBytes(value);
     }
 
@@ -289,7 +289,7 @@ public abstract class TypeAdapter<E> {
         return adapter.serializedSize(value);
       }
 
-      @Override public void writeData(M value, ProtoWriter writer) throws IOException {
+      @Override public void write(ProtoWriter writer, M value) throws IOException {
         adapter.write(value, writer);
       }
 
@@ -328,9 +328,9 @@ public abstract class TypeAdapter<E> {
         return size;
       }
 
-      @Override public void writeData(List<T> value, ProtoWriter writer) throws IOException {
+      @Override public void write(ProtoWriter writer, List<T> value) throws IOException {
         for (int i = 0, count = value.size(); i < count; i++) {
-          adapter.writeData(value.get(i), writer);
+          adapter.write(writer, value.get(i));
         }
       }
 
@@ -370,13 +370,13 @@ public abstract class TypeAdapter<E> {
         return size;
       }
 
-      @Override public void writeData(List<T> value, ProtoWriter writer) throws IOException {
+      @Override public void write(ProtoWriter writer, List<T> value) throws IOException {
         throw new UnsupportedOperationException();
       }
 
-      @Override void write(int tag, List<T> value, ProtoWriter writer) throws IOException {
+      @Override void writeTagged(ProtoWriter writer, int tag, List<T> value) throws IOException {
         for (int i = 0, count = value.size(); i < count; i++) {
-          adapter.write(tag, value.get(i), writer);
+          adapter.writeTagged(writer, tag, value.get(i));
         }
       }
 

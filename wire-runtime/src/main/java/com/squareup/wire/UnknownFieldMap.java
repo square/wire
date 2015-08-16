@@ -40,7 +40,7 @@ final class UnknownFieldMap {
     }
 
     void write(int tag, ProtoWriter output) throws IOException {
-      output.write(tag, value, adapter);
+      adapter.writeTagged(output, tag, value);
     }
   }
 
