@@ -19,9 +19,8 @@ import com.squareup.wire.MessageAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.TypeAdapter;
-import com.squareup.wire.WireType;
+import com.squareup.wire.FieldEncoding;
 import java.io.IOException;
-import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -86,30 +85,11 @@ final class SchemaTypeAdapterFactory {
     return result;
   }
 
-  static TypeAdapter<?> get(WireType wireType) throws IOException {
-    switch (wireType) {
-      case VARINT:
-        return TypeAdapter.UINT64;
-
-      case FIXED32:
-        return TypeAdapter.FIXED32;
-
-      case FIXED64:
-        return TypeAdapter.FIXED64;
-
-      case LENGTH_DELIMITED:
-        return TypeAdapter.BYTES;
-
-      default:
-        throw new ProtocolException("unexpected wire type: " + wireType);
-    }
-  }
-
   static final class SchemaEnumAdapter extends TypeAdapter<Object> {
     final EnumType enumType;
 
     public SchemaEnumAdapter(EnumType enumType) {
-      super(WireType.VARINT, Object.class);
+      super(FieldEncoding.VARINT, Object.class);
       this.enumType = enumType;
     }
 
@@ -154,7 +134,7 @@ final class SchemaTypeAdapterFactory {
         FieldAdapter fieldAdapter = fieldAdapters.get(tag);
         if (fieldAdapter == null) {
           fieldAdapter = new FieldAdapter(
-              Integer.toString(tag), true, SchemaTypeAdapterFactory.get(reader.peekType()));
+              Integer.toString(tag), true, reader.peekFieldEncoding().rawTypeAdapter());
         }
 
         // TODO(swankjesse): packed things.

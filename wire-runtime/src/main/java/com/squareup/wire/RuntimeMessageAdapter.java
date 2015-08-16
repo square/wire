@@ -257,14 +257,14 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     for (int tag; (tag = input.nextTag()) != -1;) {
       TagBinding<M, Builder<M>> tagBinding = tagBindings.get(tag);
       if (tagBinding == null) {
-        TypeAdapter<?> typeAdapter = unknownTypeAdapter(input.peekType());
+        TypeAdapter<?> typeAdapter = input.peekFieldEncoding().rawTypeAdapter();
         readUnknownField(builder, input, tag, typeAdapter);
         continue;
       }
       Label label = tagBinding.label;
       TypeAdapter<?> adapter = tagBinding.singleAdapter;
 
-      if (label.isPacked() && input.peekType() == WireType.LENGTH_DELIMITED) {
+      if (label.isPacked() && input.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
         // Decode packed format
         long token = input.beginLengthDelimited();
         while (input.hasNext()) {
@@ -302,22 +302,6 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
       tagBinding.set(builder, value);
     }
     return builder.build();
-  }
-
-  /** Returns a type adapter that reads {@code type} without interpretation. */
-  private TypeAdapter<?> unknownTypeAdapter(WireType type) {
-    switch (type) {
-      case VARINT:
-        return TypeAdapter.UINT64;
-      case FIXED32:
-        return TypeAdapter.FIXED32;
-      case FIXED64:
-        return TypeAdapter.FIXED64;
-      case LENGTH_DELIMITED:
-        return TypeAdapter.BYTES;
-      default:
-        throw new AssertionError();
-    }
   }
 
   private <T> void readUnknownField(
