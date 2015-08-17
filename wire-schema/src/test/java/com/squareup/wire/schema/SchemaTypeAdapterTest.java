@@ -18,12 +18,15 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.squareup.wire.MessageAdapter;
+import java.io.IOException;
+import java.net.ProtocolException;
 import java.util.Map;
 import okio.Buffer;
 import okio.ByteString;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public final class SchemaTypeAdapterTest {
   final Schema coffeeSchema = new SchemaBuilder()
@@ -77,8 +80,78 @@ public final class SchemaTypeAdapterTest {
 
   @Test public void typeAdapterDecode() throws Exception {
     MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
-    MessageAdapter<Map<String, Object>> adapter = typeAdapterFactory.get(cafeDrink);
+    MessageAdapter<Map<String, Object>> adapter = typeAdapterFactory.get(cafeDrink.name());
     assertThat(adapter.read(new Buffer().write(dansCoffeeEncoded))).isEqualTo(dansCoffee);
     assertThat(adapter.read(new Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee);
+  }
+
+  @Test public void groupsIgnored() throws IOException {
+    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  optional string a = 1;\n"
+            + "  // repeated group Group1 = 2 {\n"
+            + "  //   optional SomeMessage a = 11;\n"
+            + "  // }\n"
+            + "  // repeated group Group2 = 3 {\n"
+            + "  //   optional SomeMessage b = 21;\n"
+            + "  // }\n"
+            + "  optional string b = 4;\n"
+            + "}\n")
+        .buildTypeAdapter("Message");
+    ByteString encoded = ByteString.decodeHex("0a0161135a02080114135a02100214135a090803720568656c6c"
+        + "6f141baa010208011c1baa010210021c1baa01090803720568656c6c6f1c220162");
+    ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
+        "a", "a",
+        "b", "b");
+    assertThat(adapter.read(new Buffer().write(encoded))).isEqualTo(expected);
+  }
+
+  @Test public void startGroupWithoutEndGroup() throws IOException {
+    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  optional string a = 1;\n"
+            + "}\n")
+        .buildTypeAdapter("Message");
+    ByteString encoded = ByteString.decodeHex("130a0161");
+    try {
+      adapter.read(new Buffer().write(encoded));
+      fail();
+    } catch (ProtocolException expected) {
+      assertThat(expected).hasMessage("Protocol message group is truncated.");
+    }
+  }
+
+  @Test public void unexpectedEndGroup() throws IOException {
+    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  optional string a = 1;\n"
+            + "}\n")
+        .buildTypeAdapter("Message");
+    ByteString encoded = ByteString.decodeHex("0a01611c");
+    try {
+      adapter.read(new Buffer().write(encoded));
+      fail();
+    } catch (ProtocolException expected) {
+      assertThat(expected).hasMessage("Unexpected end group in protocol message.");
+    }
+  }
+
+  @Test public void endGroupDoesntMatchStartGroup() throws IOException {
+    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  optional string a = 1;\n"
+            + "}\n")
+        .buildTypeAdapter("Message");
+    ByteString encoded = ByteString.decodeHex("130a01611c");
+    try {
+      adapter.read(new Buffer().write(encoded));
+      fail();
+    } catch (ProtocolException expected) {
+      assertThat(expected).hasMessage("Unexpected end group in protocol message.");
+    }
   }
 }
