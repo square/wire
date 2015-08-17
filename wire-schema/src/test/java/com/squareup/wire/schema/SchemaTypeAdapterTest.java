@@ -23,6 +23,7 @@ import java.net.ProtocolException;
 import java.util.Map;
 import okio.Buffer;
 import okio.ByteString;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -153,5 +154,37 @@ public final class SchemaTypeAdapterTest {
     } catch (ProtocolException expected) {
       assertThat(expected).hasMessage("Unexpected end group in protocol message.");
     }
+  }
+
+  @Ignore("packed isn't yet implemented")
+  @Test public void decodeToUnpacked() throws IOException {
+    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  repeated int32 a = 90 [packed = false];\n"
+            + "}\n")
+        .buildTypeAdapter("Message");
+    ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
+        "a", ImmutableList.of(601, 701));
+    ByteString packedEncoded = ByteString.decodeHex("d005d904d005bd05");
+    assertThat(adapter.read(new Buffer().write(packedEncoded))).isEqualTo(expected);
+    ByteString unpackedEncoded = ByteString.decodeHex("d20504d904bd05");
+    assertThat(adapter.read(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
+  }
+
+  @Ignore("packed isn't yet implemented")
+  @Test public void decodeToPacked() throws IOException {
+    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  repeated int32 a = 90 [packed = true];\n"
+            + "}\n")
+        .buildTypeAdapter("Message");
+    ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
+        "a", ImmutableList.of(601, 701));
+    ByteString packedEncoded = ByteString.decodeHex("d005d904d005bd05");
+    assertThat(adapter.read(new Buffer().write(packedEncoded))).isEqualTo(expected);
+    ByteString unpackedEncoded = ByteString.decodeHex("d20504d904bd05");
+    assertThat(adapter.read(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
   }
 }
