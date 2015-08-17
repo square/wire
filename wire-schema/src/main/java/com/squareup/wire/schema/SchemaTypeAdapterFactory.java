@@ -54,7 +54,8 @@ final class SchemaTypeAdapterFactory {
     adapterMap.put(Type.Name.UINT64, TypeAdapter.UINT64);
   }
 
-  public MessageAdapter<Map<String, Object>> get(MessageType type) {
+  public MessageAdapter<Map<String, Object>> get(Type.Name typeName) {
+    MessageType type = (MessageType) schema.getType(typeName);
     SchemaMessageAdapter messageAdapter = new SchemaMessageAdapter();
     for (Field field : type.fields()) {
       messageAdapter.fieldAdapters.put(field.tag(), new FieldAdapter(
@@ -73,7 +74,7 @@ final class SchemaTypeAdapterFactory {
 
       } else if (type instanceof MessageType) {
         // TODO(swankjesse): re-entrant calls.
-        result = TypeAdapter.forMessage(get((MessageType) type));
+        result = TypeAdapter.forMessage(get(typeName));
 
       } else {
         throw new IllegalArgumentException("unexpected type: " + typeName);

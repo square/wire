@@ -49,12 +49,12 @@ public final class ProtoReader {
       "The input ended unexpectedly in the middle of a field";
   private static final String PROTOCOL_MESSAGE_TAG_ZERO =
       "Protocol message contained an invalid tag (zero).";
-  private static final String PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG =
-      "Protocol message end-group tag did not match expected tag.";
   public static final String PROTOCOL_MESSAGE_GROUP_IS_TRUNCATED =
       "Protocol message group is truncated.";
   private static final String ENCOUNTERED_A_MALFORMED_VARINT =
       "WireInput encountered a malformed varint.";
+  public static final String PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP =
+      "Unexpected end group in protocol message.";
   /** The standard number of levels of message nesting to allow. */
   private static final int RECURSION_LIMIT = 64;
 
@@ -144,7 +144,7 @@ public final class ProtoReader {
           skipGroup(tag);
           continue;
         case END_GROUP:
-          continue; // TODO(jwilson): crash if we get an end group without a preceding start group.
+          throw new ProtocolException(PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP);
         default:
           nextFieldEncoding = FieldEncoding.get(groupOrFieldEncoding);
           return tag;
@@ -174,7 +174,7 @@ public final class ProtoReader {
           break;
         case END_GROUP:
           if (tag == expectedEndTag) return; // Success!
-          throw new ProtocolException(PROTOCOL_MESSAGE_END_GROUP_TAG_DID_NOT_MATCH_EXPECTED_TAG);
+          throw new ProtocolException(PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP);
         default:
           FieldEncoding fieldEncoding = FieldEncoding.get(groupOrFieldEncoding);
           fieldEncoding.rawTypeAdapter().read(this);
