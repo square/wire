@@ -162,7 +162,7 @@ public final class ProtoReader {
   }
 
   /** Skips a section of the input delimited by START_GROUP/END_GROUP type markers. */
-  void skipGroup(int expectedEndTag) throws IOException {
+  private void skipGroup(int expectedEndTag) throws IOException {
     while (hasNext()) {
       int tagAndFieldEncoding = readVarint32();
       if (tagAndFieldEncoding == 0) throw new ProtocolException(PROTOCOL_MESSAGE_TAG_ZERO);
