@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.protobuf;
 
+import okio.ByteString;
+
 class TestAllTypesData {
 
   public static final String expectedToString =
@@ -40,536 +42,472 @@ class TestAllTypesData {
       "squareup.protos.alltypes.ext_rep_bool=[true, true], " +
       "squareup.protos.alltypes.ext_pack_bool=[true, true]}";
 
-  public static final byte[] expectedOutput = {
+    public static final ByteString expectedOutput = ByteString.decodeHex(""
       // optional
 
-      0x08, // tag = 1, type = 0
-      0x6f, // value = 111
-      0x10, // tag = 2, type = 0
-      0x70, // value = 112
-      0x18, // tag = 3, type = 0
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-      0x25, // tag = 4, type = 5
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-      0x2d, // tag = 5, type = 5
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-      0x30, // tag = 6, type = 0
-      0x74, // value = 116
-      0x38, // tag = 7, type = 0
-      0x75, // value = 117
-      0x40, // tag = 8, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-      0x49, // tag = 9, type = 1
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-      0x51, // tag = 10, type = 1
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-      0x58, // tag = 11, type = 0
-      0x01, // value = 1 (true)
-      0x65, // tag = 12, type = 5
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-      0x69, // tag = 13, type = 1
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-      0x72, // tag = 14, type = 2
-      0x03, // length = 3
-      0x31, 0x32, 0x34, // value = "124"
-      0x7a, // tag = 15, type = 2
-      0x02, // length = 2
-      0x7d, (byte) 0xe1, // value = { 125, 225 }
-      (byte) 0x80, 0x01, // tag = 16, type = 0
-      0x01, // value = 1
-      (byte) 0x8a, 0x01, // tag = 17, type = 2
-      0x03, // length = 3
-      0x08, // nested tag = 1, type = 0
-      (byte) 0xe7, 0x7, // value = 999
+        + "08" // tag = 1, type = 0
+        + "6f" // value = 111
+        + "10" // tag = 2, type = 0
+        + "70" // value = 112
+        + "18" // tag = 3, type = 0
+        + "e201" // value = 226 (=113 zig-zag)
+        + "25" // tag = 4, type = 5
+        + "72000000" // value = 114 (fixed32)
+        + "2d" // tag = 5, type = 5
+        + "73000000" // value = 115 (sfixed32)
+        + "30" // tag = 6, type = 0
+        + "74" // value = 116
+        + "38" // tag = 7, type = 0
+        + "75" // value = 117
+        + "40" // tag = 8, type = 0
+        + "ec01" // value = 236 (=118 zigzag)
+        + "49" // tag = 9, type = 1
+        + "7700000000000000" // value = 119
+        + "51" // tag = 10, type = 1
+        + "7800000000000000" // value = 120
+        + "58" // tag = 11, type = 0
+        + "01" // value = 1 (true)
+        + "65" // tag = 12, type = 5
+        + "0000f442" // value = 122.0F
+        + "69" // tag = 13, type = 1
+        + "0000000000c05e40" // value = 123.0
+        + "72"  // tag = 14, type = 2
+        + "03"  // length = 3
+        + "313234"
+        + "7a" // tag = 15, type = 2
+        + "02" // length = 2
+        + "7de1" // value = { 125, 225 }
+        + "8001" // tag = 16, type = 0
+        + "01" // value = 1
+        + "8a01" // tag = 17, type = 2
+        + "03" // length = 3
+        + "08" // nested tag = 1, type = 0
+        + "e707" // value = 999
 
       // required
 
-      (byte) 0xa8, 0x06, // tag = 101, type = 0
-      0x6f, // value = 111
-      (byte) 0xb0, 0x06, // tag = 102, type = 0
-      0x70, // value = 112
-      (byte) 0xb8, 0x06, // tag = 103, type = 0
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-      (byte) 0xc5, 0x06, // tag = 104, type = 5
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-      (byte) 0xcd, 0x06, // tag = 105, type = 5
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-      (byte) 0xd0, 0x06, // tag = 106, type = 0
-      0x74, // value = 116
-      (byte) 0xd8, 0x06, // tag = 107, type = 0
-      0x75, // value = 117
-      (byte) 0xe0, 0x06, // tag = 108, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-      (byte) 0xe9, 0x06, // tag = 109, type = 1
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-      (byte) 0xf1, 0x06, // tag = 110, type = 1
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-      (byte) 0xf8, 0x06, // tag = 111, type = 0
-      0x01, // value = 1 (true)
-      (byte) 0x85, 0x07, // tag = 112, type = 5
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-      (byte) 0x89, 0x07, // tag = 113, type = 1
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-      (byte) 0x92, 0x07, // tag = 114, type = 2
-      0x03, // length = 3
-      0x31, 0x32, 0x34, // value = "124"
-      (byte) 0x9a, 0x07, // tag = 115, type = 2
-      0x02, // length = 2
-      0x7d, (byte) 0xe1, // value = { 125, 225 }
-      (byte) 0xa0, 0x07, // tag = 116, type = 0
-      0x01, // value = 1
-      (byte) 0xaa, 0x07, // tag = 117, type = 2
-      0x03, // length = 3
-      0x08, // nested tag = 1, type = 0
-      (byte) 0xe7, 0x07, // value = 999
+        + "a806" // tag = 101, type = 0
+        + "6f" // value = 111
+        + "b006" // tag = 102, type = 0
+        + "70" // value = 112
+        + "b806" // tag = 103, type = 0
+        + "e201" // value = 226 (=113 zig-zag)
+        + "c506" // tag = 104, type = 5
+        + "72000000" // value = 114 (fixed32)
+        + "cd06" // tag = 105, type = 5
+        + "73000000" // value = 115 (sfixed32)
+        + "d006" // tag = 106, type = 0
+        + "74" // value = 116
+        + "d806" // tag = 107, type = 0
+        + "75" // value = 117
+        + "e006" // tag = 108, type = 0
+        + "ec01" // value = 236 (=118 zigzag)
+        + "e906" // tag = 109, type = 1
+        + "7700000000000000" // value = 119
+        + "f106" // tag = 110, type = 1
+        + "7800000000000000" // value = 120
+        + "f806" // tag = 111, type = 0
+        + "01" // value = 1 (true)
+        + "8507" // tag = 112, type = 5
+        + "0000f442" // value = 122.0F
+        + "8907" // tag = 113, type = 1
+        + "0000000000c05e40" // value = 123.0
+        + "9207" // tag = 114, type = 2
+        + "03" // length = 3
+        + "313234" // value = "124"
+        + "9a07" // tag = 115, type = 2
+        + "02" // length = 2
+        + "7de1" // value = { 125, 225 }
+        + "a007" // tag = 116, type = 0
+        + "01" // value = 1
+        + "aa07" // tag = 117, type = 2
+        + "03" // length = 3
+        + "08" // nested tag = 1, type = 0
+        + "e707" // value = 999
 
       // repeated
 
-      (byte) 0xc8, 0x0c, // tag = 201, type = 0
-      0x6f, // value = 111
-      (byte) 0xc8, 0x0c, // tag = 201, type = 0
-      0x6f, // value = 111
-
-      (byte) 0xd0, 0x0c, // tag = 202, type = 0
-      0x70, // value = 112
-      (byte) 0xd0, 0x0c, // tag = 202, type = 0
-      0x70, // value = 112
-
-      (byte) 0xd8, 0x0c, // tag = 203, type = 0
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-      (byte) 0xd8, 0x0c, // tag = 203, type = 0
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-
-      (byte) 0xe5, 0x0c, // tag = 204, type = 5
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-      (byte) 0xe5, 0x0c, // tag = 204, type = 5
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-
-      (byte) 0xed, 0x0c, // tag = 205, type = 5
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-      (byte) 0xed, 0x0c, // tag = 205, type = 5
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-
-      (byte) 0xf0, 0x0c, // tag = 206, type = 0
-      0x74, // value = 116
-      (byte) 0xf0, 0x0c, // tag = 206, type = 0
-      0x74, // value = 116
-
-      (byte) 0xf8, 0x0c, // tag = 207, type = 0
-      0x75, // value = 117
-      (byte) 0xf8, 0x0c, // tag = 207, type = 0
-      0x75, // value = 117
-
-      (byte) 0x80, 0x0d, // tag = 208, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-      (byte) 0x80, 0x0d, // tag = 208, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-
-      (byte) 0x89, 0x0d, // tag = 209, type = 1
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-      (byte) 0x89, 0x0d, // tag = 209, type = 1
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-
-      (byte) 0x91, 0x0d, // tag = 210, type = 1
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-      (byte) 0x91, 0x0d, // tag = 210, type = 1
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-
-      (byte) 0x98, 0x0d, // tag = 211, type = 0
-      0x01, // value = 1 (true)
-      (byte) 0x98, 0x0d, // tag = 211, type = 0
-      0x01, // value = 1 (true)
-
-      (byte) 0xa5, 0x0d, // tag = 212, type = 5
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-      (byte) 0xa5, 0x0d, // tag = 212, type = 5
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-
-      (byte) 0xa9, 0x0d, // tag = 213, type = 1
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-      (byte) 0xa9, 0x0d, // tag = 213, type = 1
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-
-      (byte) 0xb2, 0x0d, // tag = 214, type = 2
-      0x03, // length = 3
-      0x31, 0x32, 0x34, // value = "124"
-      (byte) 0xb2, 0x0d, // tag = 214, type = 2
-      0x03, // length = 3
-      0x31, 0x32, 0x34, // value = "124"
-
-      (byte) 0xba, 0x0d, // tag = 215, type = 2
-      0x02, // length = 2
-      0x7d, (byte) 0xe1, // value = { 125, 225 }
-      (byte) 0xba, 0x0d, // tag = 215, type = 2
-      0x02, // length = 2
-      0x7d, (byte) 0xe1, // value = { 125, 225 }
-
-      (byte) 0xc0, 0x0d, // tag = 216, type = 0
-      0x01, // value = 1
-      (byte) 0xc0, 0x0d, // tag = 216, type = 0
-      0x01, // value = 1
-
-      (byte) 0xca, 0x0d, // tag = 217, type = 2
-      0x03, // length = 3
-      0x08, // nested tag = 1, type = 0
-      (byte) 0xe7, 0x07, // value = 999
-      (byte) 0xca, 0x0d, // tag = 217, type = 2
-      0x03, // length = 3
-      0x08, // nested tag = 1, type = 0
-      (byte) 0xe7, 0x07, // value = 999
+        + "c80c"// tag = 201, type = 0
+        + "6f" // value = 111
+        + "c80c" // tag = 201, type = 0
+        + "6f" // value = 111
+        + "d00c" // tag = 202, type = 0
+        + "70" // value = 112
+        + "d00c" // tag = 202, type = 0
+        + "70" // value = 112
+        + "d80c" // tag = 203, type = 0
+        + "e201" // value = 226 (=113 zig-zag)
+        + "d80c" // tag = 203, type = 0
+        + "e201" // value = 226 (=113 zig-zag)
+        + "e50c" // tag = 204, type = 5
+        + "72000000" // value = 114 (fixed32)
+        + "e50c" // tag = 204, type = 5
+        + "72000000" // value = 114 (fixed32)
+        + "ed0c" // tag = 205, type = 5
+        + "73000000" // value = 115 (sfixed32)
+        + "ed0c" // tag = 205, type = 5
+        + "73000000" // value = 115 (sfixed32)
+        + "f00c" // tag = 206, type = 0
+        + "74" // value = 116
+        + "f00c" // tag = 206, type = 0
+        + "74" // value = 116
+        + "f80c" // tag = 207, type = 0
+        + "75" // value = 117
+        + "f80c" // tag = 207, type = 0
+        + "75" // value = 117
+        + "800d" // tag = 208, type = 0
+        + "ec01" // value = 236 (=118 zigzag)
+        + "800d" // tag = 208, type = 0
+        + "ec01" // value = 236 (=118 zigzag)
+        + "890d" // tag = 209, type = 1
+        + "7700000000000000" // value = 119
+        + "890d" // tag = 209, type = 1
+        + "7700000000000000" // value = 119
+        + "910d" // tag = 210, type = 1
+        + "7800000000000000" // value = 120
+        + "910d" // tag = 210, type = 1
+        + "7800000000000000" // value = 120
+        + "980d" // tag = 211, type = 0
+        + "01" // value = 1 (true)
+        + "980d" // tag = 211, type = 0
+        + "01" // value = 1 (true)
+        + "a50d" // tag = 212, type = 5
+        + "0000f442" // value = 122.0F
+        + "a50d" // tag = 212, type = 5
+        + "0000f442" // value = 122.0F
+        + "a90d" // tag = 213, type = 1
+        + "0000000000c05e40" // value = 123.0
+        + "a90d" // tag = 213, type = 1
+        + "0000000000c05e40" // value = 123.0
+        + "b20d" // tag = 214, type = 2
+        + "03" // length = 3
+        + "313234" // value = "124"
+        + "b20d" // tag = 214, type = 2
+        + "03" // length = 3
+        + "313234" // value = "124"
+        + "ba0d" // tag = 215, type = 2
+        + "02" // length = 2
+        + "7de1" // value = { 125, 225 }
+        + "ba0d" // tag = 215, type = 2
+        + "02" // length = 2
+        + "7de1" // value = { 125, 225 }
+        + "c00d" // tag = 216, type = 0
+        + "01" // value = 1
+        + "c00d" // tag = 216, type = 0
+        + "01" // value = 1
+        + "ca0d" // tag = 217, type = 2
+        + "03" // length = 3
+        + "08" // nested tag = 1, type = 0
+        + "e707" // value = 999
+        + "ca0d" // tag = 217, type = 2
+        + "03" // length = 3
+        + "08" // nested tag = 1, type = 0
+        + "e707" // value = 999
 
       // packed
 
-      (byte) 0xea, 0x12, // tag = 301, type = 2
-      0x02, // length = 2
-      0x6f, // value = 111
-      0x6f, // value = 111
-
-      (byte) 0xf2, 0x12, // tag = 302, type = 2
-      0x02, // length = 2
-      0x70, // value = 112
-      0x70, // value = 112
-
-      (byte) 0xfa, 0x12, // tag = 303, type = 2
-      0x04, // length = 4
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-
-      (byte) 0x82, 0x13, // tag = 304, type = 2
-      0x08, // length = 8
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-
-      (byte) 0x8a, 0x13, // tag = 305, type = 2
-      0x08, // length = 8
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-
-      (byte) 0x92, 0x13, // tag = 306, type = 2
-      0x02, // length = 2
-      0x74, // value = 116
-      0x74, // value = 116
-
-      (byte) 0x9a, 0x13, // tag = 307, type = 2
-      0x02, // length = 2
-      0x75, // value = 117
-      0x75, // value = 117
-
-      (byte) 0xa2, 0x13, // tag = 308, type = 2
-      0x04, // length = 4
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-
-      (byte) 0xaa, 0x13, // tag = 309, type = 2
-      0x10, // length = 16
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-
-      (byte) 0xb2, 0x13, // tag = 310, type = 2
-      0x10, // length = 16
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-
-      (byte) 0xba, 0x13, // tag = 311, type = 2
-      0x02, // length = 2
-      0x01, // value = 1 (true)
-      0x01, // value = 1 (true)
-
-      (byte) 0xc2, 0x13, // tag = 312, type = 2
-      0x08, // length = 8
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-
-      (byte) 0xca, 0x13, // tag = 313, type = 2
-      0x10, // length = 16
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-
-      (byte) 0xe2, 0x13, // tag = 316, type = 2
-      0x2, // length = 2
-      0x01, // value = 1
-      0x01, // value = 1
+        + "ea12" // tag = 301, type = 2
+        + "02" // length = 2
+        + "6f" // value = 111
+        + "6f" // value = 111
+        + "f212" // tag = 302, type = 2
+        + "02" // length = 2
+        + "70" // value = 112
+        + "70" // value = 112
+        + "fa12" // tag = 303, type = 2
+        + "04" // length = 4
+        + "e201" // value = 226 (=113 zig-zag)
+        + "e201" // value = 226 (=113 zig-zag)
+        + "8213" // tag = 304, type = 2
+        + "08" // length = 8
+        + "72000000" // value = 114 (fixed32)
+        + "72000000" // value = 114 (fixed32)
+        + "8a13" // tag = 305, type = 2
+        + "08" // length = 8
+        + "73000000" // value = 115 (sfixed32)
+        + "73000000" // value = 115 (sfixed32)
+        + "9213" // tag = 306, type = 2
+        + "02" // length = 2
+        + "74" // value = 116
+        + "74" // value = 116
+        + "9a13" // tag = 307, type = 2
+        + "02" // length = 2
+        + "75" // value = 117
+        + "75" // value = 117
+        + "a213" // tag = 308, type = 2
+        + "04" // length = 4
+        + "ec01" // value = 236 (=118 zigzag)
+        + "ec01" // value = 236 (=118 zigzag)
+        + "aa13" // tag = 309, type = 2
+        + "10" // length = 16
+        + "7700000000000000" // value = 119
+        + "7700000000000000" // value = 119
+        + "b213" // tag = 310, type = 2
+        + "10" // length = 16
+        + "7800000000000000" // value = 120
+        + "7800000000000000" // value = 120
+        + "ba13" // tag = 311, type = 2
+        + "02" // length = 2
+        + "01" // value = 1 (true)
+        + "01" // value = 1 (true)
+        + "c213" // tag = 312, type = 2
+        + "08" // length = 8
+        + "0000f442" // value = 122.0F
+        + "0000f442" // value = 122.0F
+        + "ca13" // tag = 313, type = 2
+        + "10" // length = 16
+        + "0000000000c05e40" // value = 123.0
+        + "0000000000c05e40" // value = 123.0
+        + "e213" // tag = 316, type = 2
+        + "02" // length = 2
+        + "01" // value = 1
+        + "01" // value = 1
 
       // extensions
 
-      (byte) 0x98, 0x3f, // tag = 1011, type = 0
-      0x01, // value = 1 (true)
-
-      (byte) 0xb8, 0x45, // tag = 1111, type = 0
-      0x01, // value = 1 (true)
-      (byte) 0xb8, 0x45, // tag = 1111, type = 0
-      0x01, // value = 1 (true)
-
-      (byte) 0xda, 0x4b, // tag = 1211, type = 2
-      0x02, // length = 2
-      0x01, // value = 1 (true)
-      0x01, // value = 1 (true)
-  };
+        + "983f" // tag = 1011, type = 0
+        + "01" // value = 1 (true)
+        + "b845" // tag = 1111, type = 0
+        + "01" // value = 1 (true)
+        + "b845" // tag = 1111, type = 0
+        + "01" // value = 1 (true)
+        + "da4b" // tag = 1211, type = 2
+        + "02" // length = 2
+        + "01" // value = 1 (true)
+        + "01"); // value = 1 (true)
 
   // message with 'packed' fields stored non-packed, must still be readable
-  public static final byte[] nonPacked = {
+  public static final ByteString nonPacked = ByteString.decodeHex(""
       // optional
 
-      0x8, // tag = 1, type = 0
-      0x6f, // value = 111
-      0x10, // tag = 2, type = 0
-      0x70, // value = 112
-      0x18, // tag = 3, type = 0
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-      0x25, // tag = 4, type = 5
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-      0x2d, // tag = 5, type = 5
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-      0x30, // tag = 6, type = 0
-      0x74, // value = 116
-      0x38, // tag = 7, type = 0
-      0x75, // value = 117
-      0x40, // tag = 8, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-      0x49, // tag = 9, type = 1
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-      0x51, // tag = 10, type = 1
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-      0x58, // tag = 11, type = 0
-      0x01, // value = 1 (true)
-      0x65, // tag = 12, type = 5
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-      0x69, // tag = 13, type = 1
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-      0x72, // tag = 14, type = 2
-      0x03, // length = 3
-      0x31, 0x32, 0x34, // value = "124"
-      0x7a, // tag = 15, type = 2
-      0x02, // length = 2
-      0x7d, (byte) 0xe1, // value = { 125, 225 }
-      (byte) 0x80, 0x01, // tag = 16, type = 0
-      0x01, // value = 1
-      (byte) 0x8a, 0x01, // tag = 17, type = 2
-      0x03, // length = 3
-      0x08, // nested tag = 1, type = 0
-      (byte)  0xe7, 0x7, // value = 999
+      + "08" // tag = 1, type = 0
+      + "6f" // value = 111
+      + "10" // tag = 2, type = 0
+      + "70" // value = 112
+      + "18" // tag = 3, type = 0
+      + "e201" // value = 226 (=113 zig-zag)
+      + "25" // tag = 4, type = 5
+      + "72000000" // value = 114 (fixed32)
+      + "2d" // tag = 5, type = 5
+      + "73000000" // value = 115 (sfixed32)
+      + "30" // tag = 6, type = 0
+      + "74" // value = 116
+      + "38" // tag = 7, type = 0
+      + "75" // value = 117
+      + "40" // tag = 8, type = 0
+      + "ec01" // value = 236 (=118 zigzag)
+      + "49" // tag = 9, type = 1
+      + "7700000000000000" // value = 119
+      + "51" // tag = 10, type = 1
+      + "7800000000000000" // value = 120
+      + "58" // tag = 11, type = 0
+      + "01" // value = 1 (true)
+      + "65" // tag = 12, type = 5
+      + "0000f442" // value = 122.0F
+      + "69" // tag = 13, type = 1
+      + "0000000000c05e40" // value = 123.0
+      + "72"  // tag = 14, type = 2
+      + "03"  // length = 3
+      + "313234"
+      + "7a" // tag = 15, type = 2
+      + "02" // length = 2
+      + "7de1" // value = { 125, 225 }
+      + "8001" // tag = 16, type = 0
+      + "01" // value = 1
+      + "8a01" // tag = 17, type = 2
+      + "03" // length = 3
+      + "08" // nested tag = 1, type = 0
+      + "e707" // value = 999
 
       // required
 
-      (byte) 0xa8, 0x06, // tag = 101, type = 0
-      0x6f, // value = 111
-      (byte) 0xb0, 0x06, // tag = 102, type = 0
-      0x70, // value = 112
-      (byte) 0xb8, 0x06, // tag = 103, type = 0
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-      (byte) 0xc5, 0x06, // tag = 104, type = 5
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-      (byte) 0xcd, 0x06, // tag = 105, type = 5
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-      (byte) 0xd0, 0x06, // tag = 106, type = 0
-      0x74, // value = 116
-      (byte) 0xd8, 0x06, // tag = 107, type = 0
-      0x75, // value = 117
-      (byte) 0xe0, 0x06, // tag = 108, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-      (byte) 0xe9, 0x06, // tag = 109, type = 1
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-      (byte) 0xf1, 0x06, // tag = 110, type = 1
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-      (byte) 0xf8, 0x06, // tag = 111, type = 0
-      0x01, // value = 1 (true)
-      (byte) 0x85, 0x07, // tag = 112, type = 5
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-      (byte) 0x89, 0x07, // tag = 113, type = 1
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-      (byte) 0x92, 0x07, // tag = 114, type = 2
-      0x03, // length = 3
-      0x31, 0x32, 0x34, // value = "124"
-      (byte) 0x9a, 0x07, // tag = 115, type = 2
-      0x02, // length = 2
-      0x7d, (byte) 0xe1, // value = { 125, 225 }
-      (byte) 0xa0, 0x07, // tag = 116, type = 0
-      0x01, // value = 1
-      (byte) 0xaa, 0x07, // tag = 117, type = 2
-      0x03, // length = 3
-      0x08, // nested tag = 1, type = 0
-      (byte) 0xe7, 0x07, // value = 999
+      + "a806" // tag = 101, type = 0
+      + "6f" // value = 111
+      + "b006" // tag = 102, type = 0
+      + "70" // value = 112
+      + "b806" // tag = 103, type = 0
+      + "e201" // value = 226 (=113 zig-zag)
+      + "c506" // tag = 104, type = 5
+      + "72000000" // value = 114 (fixed32)
+      + "cd06" // tag = 105, type = 5
+      + "73000000" // value = 115 (sfixed32)
+      + "d006" // tag = 106, type = 0
+      + "74" // value = 116
+      + "d806" // tag = 107, type = 0
+      + "75" // value = 117
+      + "e006" // tag = 108, type = 0
+      + "ec01" // value = 236 (=118 zigzag)
+      + "e906" // tag = 109, type = 1
+      + "7700000000000000" // value = 119
+      + "f106" // tag = 110, type = 1
+      + "7800000000000000" // value = 120
+      + "f806" // tag = 111, type = 0
+      + "01" // value = 1 (true)
+      + "8507" // tag = 112, type = 5
+      + "0000f442" // value = 122.0F
+      + "8907" // tag = 113, type = 1
+      + "0000000000c05e40" // value = 123.0
+      + "9207" // tag = 114, type = 2
+      + "03" // length = 3
+      + "313234" // value = "124"
+      + "9a07" // tag = 115, type = 2
+      + "02" // length = 2
+      + "7de1" // value = { 125, 225 }
+      + "a007" // tag = 116, type = 0
+      + "01" // value = 1
+      + "aa07" // tag = 117, type = 2
+      + "03" // length = 3
+      + "08" // nested tag = 1, type = 0
+      + "e707" // value = 999
 
       // repeated
 
-      (byte) 0xc8, 0x0c, // tag = 201, type = 0
-      0x6f, // value = 111
-      (byte) 0xc8, 0x0c, // tag = 201, type = 0
-      0x6f, // value = 111
-
-      (byte) 0xd0, 0x0c, // tag = 202, type = 0
-      0x70, // value = 112
-      (byte) 0xd0, 0x0c, // tag = 202, type = 0
-      0x70, // value = 112
-
-      (byte) 0xd8, 0x0c, // tag = 203, type = 0
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-      (byte) 0xd8, 0x0c, // tag = 203, type = 0
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-
-      (byte) 0xe5, 0x0c, // tag = 204, type = 5
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-      (byte) 0xe5, 0x0c, // tag = 204, type = 5
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-
-      (byte) 0xed, 0x0c, // tag = 205, type = 5
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-      (byte) 0xed, 0x0c, // tag = 205, type = 5
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-
-      (byte) 0xf0, 0x0c, // tag = 206, type = 0
-      0x74, // value = 116
-      (byte) 0xf0, 0x0c, // tag = 206, type = 0
-      0x74, // value = 116
-
-      (byte) 0xf8, 0x0c, // tag = 207, type = 0
-      0x75, // value = 117
-      (byte) 0xf8, 0x0c, // tag = 207, type = 0
-      0x75, // value = 117
-
-      (byte) 0x80, 0x0d, // tag = 208, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-      (byte) 0x80, 0x0d, // tag = 208, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-
-      (byte) 0x89, 0x0d, // tag = 209, type = 1
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-      (byte) 0x89, 0x0d, // tag = 209, type = 1
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-
-      (byte) 0x91, 0x0d, // tag = 210, type = 1
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-      (byte) 0x91, 0x0d, // tag = 210, type = 1
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-
-      (byte) 0x98, 0x0d, // tag = 211, type = 0
-      0x01, // value = 1 (true)
-      (byte) 0x98, 0x0d, // tag = 211, type = 0
-      0x01, // value = 1 (true)
-
-      (byte) 0xa5, 0x0d, // tag = 212, type = 5
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-      (byte) 0xa5, 0x0d, // tag = 212, type = 5
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-
-      (byte)  0xa9, 0x0d, // tag = 213, type = 1
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-      (byte) 0xa9, 0x0d, // tag = 213, type = 1
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-
-      (byte) 0xb2, 0x0d, // tag = 214, type = 2
-      0x03, // length = 3
-      0x31, 0x32, 0x34, // value = "124"
-      (byte) 0xb2, 0x0d, // tag = 214, type = 2
-      0x03, // length = 3
-      0x31, 0x32, 0x34, // value = "124"
-
-      (byte) 0xba, 0x0d, // tag = 215, type = 2
-      0x02, // length = 2
-      0x7d, (byte) 0xe1, // value = { 125, 225 }
-      (byte) 0xba, 0x0d, // tag = 215, type = 2
-      0x02, // length = 2
-      0x7d, (byte) 0xe1, // value = { 125, 225 }
-
-      (byte) 0xc0, 0x0d, // tag = 216, type = 0
-      0x01, // value = 1
-      (byte) 0xc0, 0x0d, // tag = 216, type = 0
-      0x01, // value = 1
-
-      (byte) 0xca, 0x0d, // tag = 217, type = 2
-      0x03, // length = 3
-      0x08, // nested tag = 1, type = 0
-      (byte) 0xe7, 0x07, // value = 999
-      (byte) 0xca, 0x0d, // tag = 217, type = 2
-      0x03, // length = 3
-      0x08, // nested tag = 1, type = 0
-      (byte) 0xe7, 0x07, // value = 999
+      + "c80c"// tag = 201, type = 0
+      + "6f" // value = 111
+      + "c80c" // tag = 201, type = 0
+      + "6f" // value = 111
+      + "d00c" // tag = 202, type = 0
+      + "70" // value = 112
+      + "d00c" // tag = 202, type = 0
+      + "70" // value = 112
+      + "d80c" // tag = 203, type = 0
+      + "e201" // value = 226 (=113 zig-zag)
+      + "d80c" // tag = 203, type = 0
+      + "e201" // value = 226 (=113 zig-zag)
+      + "e50c" // tag = 204, type = 5
+      + "72000000" // value = 114 (fixed32)
+      + "e50c" // tag = 204, type = 5
+      + "72000000" // value = 114 (fixed32)
+      + "ed0c" // tag = 205, type = 5
+      + "73000000" // value = 115 (sfixed32)
+      + "ed0c" // tag = 205, type = 5
+      + "73000000" // value = 115 (sfixed32)
+      + "f00c" // tag = 206, type = 0
+      + "74" // value = 116
+      + "f00c" // tag = 206, type = 0
+      + "74" // value = 116
+      + "f80c" // tag = 207, type = 0
+      + "75" // value = 117
+      + "f80c" // tag = 207, type = 0
+      + "75" // value = 117
+      + "800d" // tag = 208, type = 0
+      + "ec01" // value = 236 (=118 zigzag)
+      + "800d" // tag = 208, type = 0
+      + "ec01" // value = 236 (=118 zigzag)
+      + "890d" // tag = 209, type = 1
+      + "7700000000000000" // value = 119
+      + "890d" // tag = 209, type = 1
+      + "7700000000000000" // value = 119
+      + "910d" // tag = 210, type = 1
+      + "7800000000000000" // value = 120
+      + "910d" // tag = 210, type = 1
+      + "7800000000000000" // value = 120
+      + "980d" // tag = 211, type = 0
+      + "01" // value = 1 (true)
+      + "980d" // tag = 211, type = 0
+      + "01" // value = 1 (true)
+      + "a50d" // tag = 212, type = 5
+      + "0000f442" // value = 122.0F
+      + "a50d" // tag = 212, type = 5
+      + "0000f442" // value = 122.0F
+      + "a90d" // tag = 213, type = 1
+      + "0000000000c05e40" // value = 123.0
+      + "a90d" // tag = 213, type = 1
+      + "0000000000c05e40" // value = 123.0
+      + "b20d" // tag = 214, type = 2
+      + "03" // length = 3
+      + "313234" // value = "124"
+      + "b20d" // tag = 214, type = 2
+      + "03" // length = 3
+      + "313234" // value = "124"
+      + "ba0d" // tag = 215, type = 2
+      + "02" // length = 2
+      + "7de1" // value = { 125, 225 }
+      + "ba0d" // tag = 215, type = 2
+      + "02" // length = 2
+      + "7de1" // value = { 125, 225 }
+      + "c00d" // tag = 216, type = 0
+      + "01" // value = 1
+      + "c00d" // tag = 216, type = 0
+      + "01" // value = 1
+      + "ca0d" // tag = 217, type = 2
+      + "03" // length = 3
+      + "08" // nested tag = 1, type = 0
+      + "e707" // value = 999
+      + "ca0d" // tag = 217, type = 2
+      + "03" // length = 3
+      + "08" // nested tag = 1, type = 0
+      + "e707" // value = 999
 
       // packed
 
-      (byte) 0xe8, 0x12, // tag = 301, type = 0
-      0x6f, // value = 111
-      (byte) 0xe8, 0x12, // tag = 301, type = 0
-      0x6f, // value = 111
-
-      (byte) 0xf0, 0x12, // tag = 302, type = 0
-      0x70, // value = 112
-      (byte) 0xf0, 0x12, // tag = 302, type = 0
-      0x70, // value = 112
-
-      (byte) 0xf8, 0x12, // tag = 303, type = 0
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-      (byte) 0xf8, 0x12, // tag = 303, type = -
-      (byte) 0xe2, 0x01, // value = 226 (=113 zig-zag)
-
-      (byte) 0x80, 0x13, // tag = 304, type = 0
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-      (byte) 0x80, 0x13, // tag = 304, type = 0
-      0x72, 0x00, 0x00, 0x00, // value = 114 (fixed32)
-
-      (byte) 0x88, 0x13, // tag = 305, type = 0
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-      (byte) 0x88, 0x13, // tag = 305, type = 0
-      0x73, 0x00, 0x00, 0x00, // value = 115 (sfixed32)
-
-      (byte) 0x90, 0x13, // tag = 306, type = 0
-      0x74, // value = 116
-      (byte) 0x90, 0x13, // tag = 306, type = 0
-      0x74, // value = 116
-
-      (byte) 0x98, 0x13, // tag = 307, type = 0
-      0x75, // value = 117
-      (byte) 0x98, 0x13, // tag = 307, type = 0
-      0x75, // value = 117
-
-      (byte) 0xa0, 0x13, // tag = 308, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-      (byte) 0xa0, 0x13, // tag = 308, type = 0
-      (byte) 0xec, 0x01, // value = 236 (=118 zigzag)
-
-      (byte) 0xa8, 0x13, // tag = 309, type = 0
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-      (byte) 0xa8, 0x13, // tag = 309, type = 0
-      0x77, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 119
-
-      (byte) 0xb0, 0x13, // tag = 310, type = 0
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-      (byte) 0xb0, 0x13, // tag = 310, type = 0
-      0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // value = 120
-
-      (byte) 0xb8, 0x13, // tag = 311, type = 0
-      0x01, // value = 1 (true)
-      (byte) 0xb8, 0x13, // tag = 311, type = 0
-      0x01, // value = 1 (true)
-
-      (byte) 0xc0, 0x13, // tag = 312, type = 0
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-      (byte) 0xc0, 0x13, // tag = 312, type = 0
-      0x00, 0x00, (byte) 0xf4, 0x42, // value = 122.0F
-
-      (byte) 0xc8, 0x13, // tag = 313, type = 0
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-      (byte) 0xc8, 0x13, // tag = 313, type = 0
-      0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0xc0, 0x5e, 0x40, // value = 123.0
-
-      (byte) 0xe0, 0x13, // tag = 316, type = 0
-      0x01, // value = 1
-      (byte) 0xe0, 0x13, // tag = 316, type = 0
-      0x01, // value = 1
+      + "e812" // tag = 301, type = 0
+      + "6f" // value = 111
+      + "e812" // tag = 301, type = 0
+      + "6f" // value = 111
+      + "f012" // tag = 302, type = 0
+      + "70" // value = 112
+      + "f012" // tag = 302, type = 0
+      + "70" // value = 112
+      + "f812" // tag = 303, type = 0
+      + "e201" // value = 226 (=113 zig-zag)
+      + "f812" // tag = 303, type = -
+      + "e201" // value = 226 (=113 zig-zag)
+      + "8513" // tag = 304, type = 5
+      + "72000000" // value = 114 (fixed32)
+      + "8513" // tag = 304, type = 5
+      + "72000000" // value = 114 (fixed32)
+      + "8d13" // tag = 305, type = 5
+      + "73000000" // value = 115 (sfixed32)
+      + "8d13" // tag = 305, type = 5
+      + "73000000" // value = 115 (sfixed32)
+      + "9013" // tag = 306, type = 0
+      + "74" // value = 116
+      + "9013" // tag = 306, type = 0
+      + "74" // value = 116
+      + "9813" // tag = 307, type = 0
+      + "75" // value = 117
+      + "9813" // tag = 307, type = 0
+      + "75" // value = 117
+      + "a013" // tag = 308, type = 0
+      + "ec01" // value = 236 (=118 zigzag)
+      + "a013" // tag = 308, type = 0
+      + "ec01" // value = 236 (=118 zigzag)
+      + "a913" // tag = 309, type = 0
+      + "7700000000000000" // value = 119
+      + "a913" // tag = 309, type = 0
+      + "7700000000000000" // value = 119
+      + "b113" // tag = 310, type = 0
+      + "7800000000000000" // value = 120
+      + "b113" // tag = 310, type = 0
+      + "7800000000000000" // value = 120
+      + "b813" // tag = 311, type = 0
+      + "01" // value = 1 (true)
+      + "b813" // tag = 311, type = 0
+      + "01" // value = 1 (true)
+      + "c513" // tag = 312, type = 0
+      + "0000f442" // value = 122.0F
+      + "c513" // tag = 312, type = 0
+      + "0000f442" // value = 122.0F
+      + "c913" // tag = 313, type = 0
+      + "0000000000c05e40" // value = 123.0
+      + "c913" // tag = 313, type = 0
+      + "0000000000c05e40" // value = 123.0
+      + "e013" // tag = 316, type = 0
+      + "01" // value = 1
+      + "e013" // tag = 316, type = 0
+      + "01" // value = 1
 
       // extension
 
-      (byte) 0x98, 0x3f, // tag = 1011, type = 0
-      0x01, // value = 1 (true)
-
-      (byte) 0xb8, 0x45, // tag = 1111, type = 0
-      0x01, // value = 1 (true)
-      (byte) 0xb8, 0x45, // tag = 1111, type = 0
-      0x01, // value = 1 (true)
-
-      (byte) 0xd8, 0x4b, // tag = 1211, type = 0
-      0x01, // value = 1 (true)
-      (byte) 0xd8, 0x4b, // tag = 1211, type = 0
-      0x01, // value = 1 (true)
-  };
+      + "983f" // tag = 1011, type = 0
+      + "01" // value = 1 (true)
+      + "b845" // tag = 1111, type = 0
+      + "01" // value = 1 (true)
+      + "b845" // tag = 1111, type = 0
+      + "01" // value = 1 (true)
+      + "d84b" // tag = 1211, type = 0
+      + "01" // value = 1 (true)
+      + "d84b" // tag = 1211, type = 0
+      + "01"); // value = 1 (true)
 }

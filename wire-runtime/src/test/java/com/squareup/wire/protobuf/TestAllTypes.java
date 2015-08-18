@@ -312,22 +312,22 @@ public class TestAllTypes {
   @Test
   public void testWrite() {
     byte[] output = adapter.writeBytes(allTypes);
-    assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.length);
-    assertThat(ByteString.of(output)).isEqualTo(ByteString.of(TestAllTypesData.expectedOutput));
+    assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.size());
+    assertThat(ByteString.of(output)).isEqualTo(TestAllTypesData.expectedOutput);
   }
 
   @Test
   public void testWriteSource() throws IOException {
     Buffer sink = new Buffer();
     adapter.write(allTypes, sink);
-    assertThat(sink.readByteString()).isEqualTo(ByteString.of(TestAllTypesData.expectedOutput));
+    assertThat(sink.readByteString()).isEqualTo(TestAllTypesData.expectedOutput);
   }
 
   @Test
   public void testWriteBytes() throws IOException {
     byte[] output = adapter.writeBytes(allTypes);
-    assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.length);
-    assertThat(ByteString.of(output)).isEqualTo(ByteString.of(TestAllTypesData.expectedOutput));
+    assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.size());
+    assertThat(ByteString.of(output)).isEqualTo(TestAllTypesData.expectedOutput);
   }
 
   @Test
@@ -335,8 +335,8 @@ public class TestAllTypes {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     adapter.writeStream(allTypes, stream);
     byte[] output = stream.toByteArray();
-    assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.length);
-    assertThat(ByteString.of(output)).isEqualTo(ByteString.of(TestAllTypesData.expectedOutput));
+    assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.size());
+    assertThat(ByteString.of(output)).isEqualTo(TestAllTypesData.expectedOutput);
   }
 
   @Test
@@ -457,7 +457,7 @@ public class TestAllTypes {
 
   @Test
   public void testReadNonPacked() throws IOException {
-    AllTypes parsed = adapter.readBytes(TestAllTypesData.nonPacked);
+    AllTypes parsed = adapter.read(new Buffer().write(TestAllTypesData.nonPacked));
     assertThat(parsed).isEqualTo(allTypes);
   }
 
@@ -511,8 +511,8 @@ public class TestAllTypes {
 
   @Test
   public void testSkipGroup() throws IOException {
-    byte[] data =  new byte[TestAllTypesData.expectedOutput.length + 27];
-    System.arraycopy(TestAllTypesData.expectedOutput, 0, data, 0, 17);
+    byte[] data =  new byte[TestAllTypesData.expectedOutput.size() + 27];
+    System.arraycopy(TestAllTypesData.expectedOutput.toByteArray(), 0, data, 0, 17);
     int index = 17;
     data[index++] = (byte) 0xa3; // start group, tag = 20, type = 3
     data[index++] = (byte) 0x01;
@@ -542,8 +542,8 @@ public class TestAllTypes {
     data[index++] = (byte) 0xa4; // end group, tag = 20, type = 4
     data[index++] = (byte) 0x01;
 
-    System.arraycopy(TestAllTypesData.expectedOutput, 17, data, index,
-        TestAllTypesData.expectedOutput.length - 17);
+    System.arraycopy(TestAllTypesData.expectedOutput.toByteArray(), 17, data, index,
+        TestAllTypesData.expectedOutput.size() - 17);
 
     AllTypes parsed = wire.adapter(AllTypes.class).readBytes(data);
     assertThat(parsed).isEqualTo(allTypes);
@@ -555,7 +555,7 @@ public class TestAllTypes {
     builder.addVarint(10000, 1);
     AllTypes withUnknownField = builder.build();
     byte[] data = adapter.writeBytes(withUnknownField);
-    int count = TestAllTypesData.expectedOutput.length;
+    int count = TestAllTypesData.expectedOutput.size();
     assertThat(data.length).isEqualTo(count + 4);
     assertThat(data[count]).isEqualTo((byte) 0x80);
     assertThat(data[count + 1]).isEqualTo((byte) 0xf1);
