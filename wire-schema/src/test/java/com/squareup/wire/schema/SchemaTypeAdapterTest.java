@@ -156,7 +156,6 @@ public final class SchemaTypeAdapterTest {
     }
   }
 
-  @Ignore("packed isn't yet implemented")
   @Test public void decodeToUnpacked() throws IOException {
     MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
@@ -172,7 +171,6 @@ public final class SchemaTypeAdapterTest {
     assertThat(adapter.read(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
   }
 
-  @Ignore("packed isn't yet implemented")
   @Test public void decodeToPacked() throws IOException {
     MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""

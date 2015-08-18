@@ -138,7 +138,6 @@ final class SchemaTypeAdapterFactory {
               Integer.toString(tag), true, reader.peekFieldEncoding().rawTypeAdapter());
         }
 
-        // TODO(swankjesse): packed things.
         Object value = fieldAdapter.typeAdapter.read(reader);
         if (fieldAdapter.repeated) {
           List<Object> values = (List<Object>) result.get(fieldAdapter.name);

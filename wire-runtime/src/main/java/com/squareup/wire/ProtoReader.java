@@ -60,8 +60,16 @@ public final class ProtoReader {
 
   static final int FIELD_ENCODING_MASK = 0x7;
   static final int TAG_FIELD_ENCODING_BITS = 3;
-  private static final int START_GROUP = 3;
-  private static final int END_GROUP = 4;
+
+  /** Read states. These constants correspond to field encodings where both exist. */
+  private static final int STATE_VARINT = 0;
+  private static final int STATE_FIXED64 = 1;
+  private static final int STATE_LENGTH_DELIMITED = 2;
+  private static final int STATE_START_GROUP = 3;
+  private static final int STATE_END_GROUP = 4;
+  private static final int STATE_FIXED32 = 5;
+  private static final int STATE_TAG = 6; // Note: not a field encoding.
+  private static final int STATE_PACKED_TAG = 7; // Note: not a field encoding.
 
   private final BufferedSource source;
 
@@ -71,6 +79,12 @@ public final class ProtoReader {
   private long limit = Long.MAX_VALUE;
   /** The current number of levels of message nesting. */
   private int recursionDepth;
+  /** How to interpret the next read call. */
+  private int state = STATE_TAG;
+  /** The most recently read tag. Used to make packed values look like regular values. */
+  private int tag = -1;
+  /** Limit once we complete the current length-delimited value. */
+  private long pushedLimit = -1;
   /** The encoding of the next value to be read. */
   private FieldEncoding nextFieldEncoding;
 
@@ -79,50 +93,40 @@ public final class ProtoReader {
   }
 
   /**
-   * True if there is more data to process in the current scope. This method's return value is
-   * influenced by calls to {@link #beginLengthDelimited()}.
+   * Begin a nested message. A call to this method will restrict the reader so that {@link
+   * #nextTag()} returns -1 when the message is complete. An accompanying call to {@link
+   * #endMessage(long)} must then occur with the opaque token returned from this method.
    */
-  public boolean hasNext() throws IOException {
-    return pos < limit && !source.exhausted();
-  }
-
-  /**
-   * Begin a length-delimited section of the current message by reading the length prefix. A call
-   * to this method will restrict the reader so that {@link #hasNext()} returns false when the
-   * section is complete. An accompanying call to {@link #endLengthDelimited(long)} must then occur
-   * with the opaque token returned from this method.
-   */
-  public long beginLengthDelimited() throws IOException {
+  public long beginMessage() throws IOException {
+    if (state != STATE_LENGTH_DELIMITED) {
+      throw new IllegalStateException("Unexpected call to beginMessage()");
+    }
     if (++recursionDepth > RECURSION_LIMIT) {
       throw new IOException("Wire recursion limit exceeded");
     }
-    int length = readVarint32();
-    if (length < 0) {
-      throw new ProtocolException(ENCOUNTERED_A_NEGATIVE_SIZE);
-    }
-    long newLimit = pos + length;
-    long oldLimit = limit;
-    if (newLimit > oldLimit) {
-      throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
-    }
-    limit = newLimit;
-    // Give the old limit to the caller to hold. The value is returned in endLengthDelimited where
-    // we resume using it as our limit.
-    return oldLimit;
+    // Give the pushed limit to the caller to hold. The value is returned in endMessage() where we
+    // resume using it as our limit.
+    long token = pushedLimit;
+    pushedLimit = -1L;
+    state = STATE_TAG;
+    return token;
   }
 
   /**
-   * End a length-delimited section of the current message. Calls to this method must be symmetric
-   * with calls to {@link #beginLengthDelimited()}.
+   * End a length-delimited nested message. Calls to this method must be symmetric with calls to
+   * {@link #beginMessage()}.
    *
-   * @param token value returned from the corresponding call to {@link #beginLengthDelimited()}.
+   * @param token value returned from the corresponding call to {@link #beginMessage()}.
    */
-  public void endLengthDelimited(long token) throws IOException {
+  public void endMessage(long token) throws IOException {
+    if (state != STATE_TAG) {
+      throw new IllegalStateException("Unexpected call to endMessage()");
+    }
     if (pos != limit) {
       throw new IOException("Expected to end at " + limit + " but was " + pos);
     }
-    if (--recursionDepth < 0) {
-      throw new IllegalStateException("No corresponding call to beginLengthDelimited()");
+    if (--recursionDepth < 0 || pushedLimit != -1L) {
+      throw new IllegalStateException("No corresponding call to beginMessage()");
     }
     limit = token;
   }
@@ -133,21 +137,56 @@ public final class ProtoReader {
    * groups.
    */
   public int nextTag() throws IOException {
-    while (hasNext()) {
-      int tagAndFieldEncoding = readVarint32();
+    if (state == STATE_PACKED_TAG) {
+      state = STATE_LENGTH_DELIMITED;
+      return tag;
+    } else if (state != STATE_TAG) {
+      throw new IllegalStateException("Unexpected call to nextTag()");
+    }
+
+    while (pos < limit && !source.exhausted()) {
+      int tagAndFieldEncoding = internalReadVarint32();
       if (tagAndFieldEncoding == 0) throw new ProtocolException(PROTOCOL_MESSAGE_TAG_ZERO);
 
-      int tag = tagAndFieldEncoding >> TAG_FIELD_ENCODING_BITS;
+      tag = tagAndFieldEncoding >> TAG_FIELD_ENCODING_BITS;
       int groupOrFieldEncoding = tagAndFieldEncoding & FIELD_ENCODING_MASK;
       switch (groupOrFieldEncoding) {
-        case START_GROUP:
+        case STATE_START_GROUP:
           skipGroup(tag);
           continue;
-        case END_GROUP:
+
+        case STATE_END_GROUP:
           throw new ProtocolException(PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP);
-        default:
-          nextFieldEncoding = FieldEncoding.get(groupOrFieldEncoding);
+
+        case STATE_LENGTH_DELIMITED:
+          nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED;
+          state = STATE_LENGTH_DELIMITED;
+          int length = internalReadVarint32();
+          if (length < 0) throw new ProtocolException(ENCOUNTERED_A_NEGATIVE_SIZE);
+          if (pushedLimit != -1) throw new IllegalStateException();
+          // Push the current limit, and set a new limit to the length of this value.
+          pushedLimit = limit;
+          limit = pos + length;
+          if (limit > pushedLimit) throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
           return tag;
+
+        case STATE_VARINT:
+          nextFieldEncoding = FieldEncoding.VARINT;
+          state = STATE_VARINT;
+          return tag;
+
+        case STATE_FIXED64:
+          nextFieldEncoding = FieldEncoding.FIXED64;
+          state = STATE_FIXED64;
+          return tag;
+
+        case STATE_FIXED32:
+          nextFieldEncoding = FieldEncoding.FIXED32;
+          state = STATE_FIXED32;
+          return tag;
+
+        default:
+          throw new ProtocolException("Unexpected FieldEncoding: " + groupOrFieldEncoding);
       }
     }
     return -1;
@@ -163,30 +202,51 @@ public final class ProtoReader {
 
   /** Skips a section of the input delimited by START_GROUP/END_GROUP type markers. */
   private void skipGroup(int expectedEndTag) throws IOException {
-    while (hasNext()) {
-      int tagAndFieldEncoding = readVarint32();
+    while (pos < limit && !source.exhausted()) {
+      int tagAndFieldEncoding = internalReadVarint32();
       if (tagAndFieldEncoding == 0) throw new ProtocolException(PROTOCOL_MESSAGE_TAG_ZERO);
       int tag = tagAndFieldEncoding >> TAG_FIELD_ENCODING_BITS;
       int groupOrFieldEncoding = tagAndFieldEncoding & FIELD_ENCODING_MASK;
       switch (groupOrFieldEncoding) {
-        case START_GROUP:
+        case STATE_START_GROUP:
           skipGroup(tag); // Nested group.
           break;
-        case END_GROUP:
+        case STATE_END_GROUP:
           if (tag == expectedEndTag) return; // Success!
           throw new ProtocolException(PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP);
+        case STATE_LENGTH_DELIMITED:
+          int length = internalReadVarint32();
+          pos += length;
+          source.skip(length);
+          break;
+        case STATE_VARINT:
+          state = STATE_VARINT;
+          readVarint64();
+          break;
+        case STATE_FIXED64:
+          state = STATE_FIXED64;
+          readFixed64();
+          break;
+        case STATE_FIXED32:
+          state = STATE_FIXED32;
+          readFixed32();
+          break;
         default:
-          FieldEncoding fieldEncoding = FieldEncoding.get(groupOrFieldEncoding);
-          fieldEncoding.rawTypeAdapter().read(this);
+          throw new ProtocolException("Unexpected FieldEncoding: " + groupOrFieldEncoding);
       }
     }
     throw new ProtocolException(PROTOCOL_MESSAGE_GROUP_IS_TRUNCATED);
   }
 
   int readByte() throws IOException {
+    if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
+      throw new ProtocolException("Expected VARINT or LENGTH_DELIMITED but was " + state);
+    }
     source.require(1); // Throws EOFException if insufficient bytes are available.
     pos++;
-    return source.readByte() & 0xff;
+    int result = source.readByte() & 0xff;
+    afterPackableScalar(STATE_VARINT);
+    return result;
   }
 
   /**
@@ -194,18 +254,14 @@ public final class ProtoReader {
    * stream prior to the actual data.
    */
   ByteString readBytes() throws IOException {
-    int count = readVarint32();
-    source.require(count); // Throws EOFException if insufficient bytes are available.
-    pos += count;
-    return source.readByteString(count);
+    long byteCount = beforeLengthDelimitedScalar();
+    return source.readByteString(byteCount);
   }
 
   /** Reads a {@code string} field value from the stream. */
   String readString() throws IOException {
-    int count = readVarint32();
-    source.require(count); // Throws EOFException if insufficient bytes are available.
-    pos += count;
-    return source.readUtf8(count);
+    long byteCount = beforeLengthDelimitedScalar();
+    return source.readUtf8(byteCount);
   }
 
   /**
@@ -213,6 +269,15 @@ public final class ProtoReader {
    * upper bits.
    */
   int readVarint32() throws IOException {
+    if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
+      throw new ProtocolException("Expected VARINT or LENGTH_DELIMITED but was " + state);
+    }
+    int result = internalReadVarint32();
+    afterPackableScalar(STATE_VARINT);
+    return result;
+  }
+
+  private int internalReadVarint32() throws IOException {
     pos++;
     byte tmp = source.readByte();
     if (tmp >= 0) {
@@ -254,6 +319,9 @@ public final class ProtoReader {
 
   /** Reads a raw varint up to 64 bits in length from the stream. */
   long readVarint64() throws IOException {
+    if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
+      throw new ProtocolException("Expected VARINT or LENGTH_DELIMITED but was " + state);
+    }
     int shift = 0;
     long result = 0;
     while (shift < 64) {
@@ -261,6 +329,7 @@ public final class ProtoReader {
       byte b = source.readByte();
       result |= (long) (b & 0x7F) << shift;
       if ((b & 0x80) == 0) {
+        afterPackableScalar(STATE_VARINT);
         return result;
       }
       shift += 7;
@@ -270,15 +339,56 @@ public final class ProtoReader {
 
   /** Reads a 32-bit little-endian integer from the stream. */
   int readFixed32() throws IOException {
+    if (state != STATE_FIXED32 && state != STATE_LENGTH_DELIMITED) {
+      throw new ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was " + state);
+    }
     source.require(4); // Throws EOFException if insufficient bytes are available.
     pos += 4;
-    return source.readIntLe();
+    int result = source.readIntLe();
+    afterPackableScalar(STATE_FIXED32);
+    return result;
   }
 
   /** Reads a 64-bit little-endian integer from the stream. */
   long readFixed64() throws IOException {
+    if (state != STATE_FIXED64 && state != STATE_LENGTH_DELIMITED) {
+      throw new ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was " + state);
+    }
     source.require(8); // Throws EOFException if insufficient bytes are available.
     pos += 8;
-    return source.readLongLe();
+    long result = source.readLongLe();
+    afterPackableScalar(STATE_FIXED64);
+    return result;
+  }
+
+  private void afterPackableScalar(int fieldEncoding) throws IOException {
+    if (state == fieldEncoding) {
+      state = STATE_TAG;
+    } else {
+      if (pos > limit) {
+        throw new IOException("Expected to end at " + limit + " but was " + pos);
+      } else if (pos == limit) {
+        // We've completed a sequence of packed values. Pop the limit.
+        limit = pushedLimit;
+        pushedLimit = -1;
+        state = STATE_TAG;
+      } else {
+        state = STATE_PACKED_TAG;
+      }
+    }
+  }
+
+  private long beforeLengthDelimitedScalar() throws IOException {
+    if (state != STATE_LENGTH_DELIMITED) {
+      throw new ProtocolException("Expected LENGTH_DELIMITED but was " + state);
+    }
+    long byteCount = limit - pos;
+    source.require(byteCount); // Throws EOFException if insufficient bytes are available.
+    state = STATE_TAG;
+    // We've completed a length-delimited scalar. Pop the limit.
+    pos = limit;
+    limit = pushedLimit;
+    pushedLimit = -1;
+    return byteCount;
   }
 }

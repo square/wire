@@ -22,6 +22,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.ProtocolException;
 import okio.ByteString;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,6 +51,7 @@ public final class ParseTest {
     }
   }
 
+  @Ignore("TODO(jwilson)")
   @Test public void typeMismatchHonorsWireDeclaredType() throws Exception {
     // tag 1 / 3-byte length-delimited string: 0x109506
     // (0x109506 is a well-formed proto message that sets tag 2 to 456).
