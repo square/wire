@@ -30,7 +30,7 @@ public class OneOfTest {
   private static final byte[] BAR_BYTES = { 26, 6, 'b', 'a', 'r', 'b', 'a', 'r'};
 
   private final Wire wire = new Wire();
-  private final MessageAdapter<OneOfMessage> adapter = wire.adapter(OneOfMessage.class);
+  private final TypeAdapter<OneOfMessage> adapter = wire.adapter(OneOfMessage.class);
 
   @Test
   public void testOneOf() throws Exception {

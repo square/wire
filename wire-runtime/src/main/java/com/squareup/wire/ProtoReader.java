@@ -56,7 +56,7 @@ public final class ProtoReader {
   public static final String PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP =
       "Unexpected end group in protocol message.";
   /** The standard number of levels of message nesting to allow. */
-  private static final int RECURSION_LIMIT = 64;
+  private static final int RECURSION_LIMIT = 65;
 
   static final int FIELD_ENCODING_MASK = 0x7;
   static final int TAG_FIELD_ENCODING_BITS = 3;
@@ -80,7 +80,7 @@ public final class ProtoReader {
   /** The current number of levels of message nesting. */
   private int recursionDepth;
   /** How to interpret the next read call. */
-  private int state = STATE_TAG;
+  private int state = STATE_LENGTH_DELIMITED;
   /** The most recently read tag. Used to make packed values look like regular values. */
   private int tag = -1;
   /** Limit once we complete the current length-delimited value. */
@@ -122,11 +122,11 @@ public final class ProtoReader {
     if (state != STATE_TAG) {
       throw new IllegalStateException("Unexpected call to endMessage()");
     }
-    if (pos != limit) {
-      throw new IOException("Expected to end at " + limit + " but was " + pos);
-    }
     if (--recursionDepth < 0 || pushedLimit != -1L) {
       throw new IllegalStateException("No corresponding call to beginMessage()");
+    }
+    if (pos != limit && recursionDepth != 0) {
+      throw new IOException("Expected to end at " + limit + " but was " + pos);
     }
     limit = token;
   }

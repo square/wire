@@ -32,7 +32,7 @@ import java.util.Set;
 
 import static com.squareup.wire.Message.Builder;
 
-final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
+final class RuntimeMessageAdapter<M extends Message> extends TypeAdapter<M> {
   private final Wire wire;
   private final Class<M> messageType;
   private final Class<Builder<M>> builderType;
@@ -41,6 +41,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
 
   /** Cache information about the Message class and its mapping to proto wire format. */
   RuntimeMessageAdapter(Wire wire, Class<M> messageType) {
+    super(FieldEncoding.LENGTH_DELIMITED, messageType);
     this.wire = wire;
     this.messageType = messageType;
     this.builderType = getBuilderType(messageType);
@@ -71,16 +72,12 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     this.tagBindings = Collections.unmodifiableMap(tagBindings);
   }
 
-  @Override public Class<M> messageType() {
-    return messageType;
-  }
-
   private TypeAdapter<?> singleTypeAdapter(Wire wire, Field messageField, ProtoField protoField) {
     if (protoField.type() == Message.Datatype.ENUM) {
       return wire.enumAdapter(getEnumType(protoField, messageField));
     }
     if (protoField.type() == Message.Datatype.MESSAGE) {
-      return TypeAdapter.forMessage(wire.adapter(getMessageType(protoField, messageField)));
+      return wire.adapter(getMessageType(protoField, messageField));
     }
     return TypeAdapter.get(wire, protoField.type(), null, null);
   }
@@ -152,7 +149,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
 
   // Writing
 
-  @Override public int serializedSize(M message) {
+  @Override public int encodedSize(M message) {
     int cachedSerializedSize = message.cachedSerializedSize;
     if (cachedSerializedSize != -1) {
       return cachedSerializedSize;
@@ -199,7 +196,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
     return result;
   }
 
-  @Override public void write(M message, ProtoWriter writer) throws IOException {
+  @Override public void write(ProtoWriter writer, M message) throws IOException {
     for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
       Object value = tagBinding.get(message);
       if (value == null) continue;
@@ -215,7 +212,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
       if (tagBinding.redacted && tagBinding.label == Message.Label.REQUIRED) {
         throw new IllegalArgumentException(String.format(
             "Field %s.%s is REQUIRED and cannot be redacted.",
-            messageType().getName(), tagBinding.name));
+            javaType.getName(), tagBinding.name));
       }
       Object builderValue = tagBinding.getFromBuilder(builder);
       if (builderValue != null) {
@@ -249,20 +246,21 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
 
   // Reading
 
-  @Override public M read(ProtoReader input) throws IOException {
+  @Override public M read(ProtoReader reader) throws IOException {
     Builder<M> builder = newBuilder();
     Storage storage = new Storage();
 
-    for (int tag; (tag = input.nextTag()) != -1;) {
+    long token = reader.beginMessage();
+    for (int tag; (tag = reader.nextTag()) != -1;) {
       TagBinding<M, Builder<M>> tagBinding = tagBindings.get(tag);
       if (tagBinding == null) {
-        TypeAdapter<?> typeAdapter = input.peekFieldEncoding().rawTypeAdapter();
-        readUnknownField(builder, input, tag, typeAdapter);
+        TypeAdapter<?> typeAdapter = reader.peekFieldEncoding().rawTypeAdapter();
+        readUnknownField(builder, reader, tag, typeAdapter);
         continue;
       }
 
       try {
-        Object value = tagBinding.singleAdapter.read(input);
+        Object value = tagBinding.singleAdapter.read(reader);
         if (tagBinding.label.isRepeated()) {
           storage.add(tag, value);
         } else {
@@ -273,6 +271,7 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
         builder.addVarint(tag, e.value);
       }
     }
+    reader.endMessage(token);
 
     // Set repeated fields
     for (int storedTag : storage.getTags()) {

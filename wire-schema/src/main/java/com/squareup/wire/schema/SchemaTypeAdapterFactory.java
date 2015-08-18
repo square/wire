@@ -15,11 +15,10 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.MessageAdapter;
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.TypeAdapter;
-import com.squareup.wire.FieldEncoding;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -54,7 +53,7 @@ final class SchemaTypeAdapterFactory {
     adapterMap.put(Type.Name.UINT64, TypeAdapter.UINT64);
   }
 
-  public MessageAdapter<Map<String, Object>> get(Type.Name typeName) {
+  public TypeAdapter<Map<String, Object>> get(Type.Name typeName) {
     MessageType type = (MessageType) schema.getType(typeName);
     SchemaMessageAdapter messageAdapter = new SchemaMessageAdapter();
     for (Field field : type.fields()) {
@@ -74,7 +73,7 @@ final class SchemaTypeAdapterFactory {
 
       } else if (type instanceof MessageType) {
         // TODO(swankjesse): re-entrant calls.
-        result = TypeAdapter.forMessage(get(typeName));
+        result = get(typeName);
 
       } else {
         throw new IllegalArgumentException("unexpected type: " + typeName);
@@ -94,7 +93,7 @@ final class SchemaTypeAdapterFactory {
       this.enumType = enumType;
     }
 
-    @Override public int dataSize(Object value) {
+    @Override public int encodedSize(Object value) {
       throw new UnsupportedOperationException();
     }
 
@@ -109,28 +108,29 @@ final class SchemaTypeAdapterFactory {
     }
   }
 
-  static final class SchemaMessageAdapter extends MessageAdapter<Map<String, Object>> {
+  static final class SchemaMessageAdapter extends TypeAdapter<Map<String, Object>> {
     final Map<Integer, FieldAdapter> fieldAdapters = new LinkedHashMap<>();
 
-    @Override public Class<?> messageType() {
-      return Map.class;
+    public SchemaMessageAdapter() {
+      super(FieldEncoding.LENGTH_DELIMITED, Map.class);
     }
 
     @Override public Map<String, Object> redact(Map<String, Object> message) {
       throw new UnsupportedOperationException();
     }
 
-    @Override public int serializedSize(Map<String, Object> value) {
+    @Override public int encodedSize(Map<String, Object> value) {
       throw new UnsupportedOperationException();
     }
 
-    @Override public void write(Map<String, Object> value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, Map<String, Object> value) throws IOException {
       throw new UnsupportedOperationException();
     }
 
     @Override public Map<String, Object> read(ProtoReader reader) throws IOException {
       Map<String, Object> result = new LinkedHashMap<>();
 
+      long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
         FieldAdapter fieldAdapter = fieldAdapters.get(tag);
         if (fieldAdapter == null) {
@@ -150,6 +150,7 @@ final class SchemaTypeAdapterFactory {
           result.put(fieldAdapter.name, value);
         }
       }
+      reader.endMessage(token);
       return result;
     }
 

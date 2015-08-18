@@ -85,7 +85,7 @@ public final class Wire {
   }
 
   /** Returns an adapter for reading and writing {@code type}, creating it if necessary. */
-  public <M extends Message> MessageAdapter<M> adapter(Class<M> type) {
+  public <M extends Message> TypeAdapter<M> adapter(Class<M> type) {
     List<DeferredAdapter<?>> deferredAdapters = reentrantCalls.get();
     if (deferredAdapters == null) {
       deferredAdapters = new ArrayList<DeferredAdapter<?>>();
@@ -93,9 +93,9 @@ public final class Wire {
     } else {
       // Check that this isn't a reentrant call.
       for (DeferredAdapter<?> deferredAdapter : deferredAdapters) {
-        if (deferredAdapter.type.equals(type)) {
+        if (deferredAdapter.javaType.equals(type)) {
           //noinspection unchecked
-          return (MessageAdapter<M>) deferredAdapter;
+          return (TypeAdapter<M>) deferredAdapter;
         }
       }
     }
@@ -103,7 +103,7 @@ public final class Wire {
     DeferredAdapter<M> deferredAdapter = new DeferredAdapter<M>(type);
     deferredAdapters.add(deferredAdapter);
     try {
-      MessageAdapter<M> adapter = messageAdapter(type);
+      TypeAdapter<M> adapter = messageAdapter(type);
       deferredAdapter.ready(adapter);
       return adapter;
     } finally {
@@ -166,20 +166,15 @@ public final class Wire {
    * <p>Typically this is necessary in self-referential object models, such as an {@code Employee}
    * class that has a {@code List<Employee>} field for an organization's management hierarchy.
    */
-  private static class DeferredAdapter<M extends Message> extends MessageAdapter<M> {
-    private Class<M> type;
-    private MessageAdapter<M> delegate;
+  private static class DeferredAdapter<M extends Message> extends TypeAdapter<M> {
+    private TypeAdapter<M> delegate;
 
     DeferredAdapter(Class<M> type) {
-      this.type = type;
+      super(FieldEncoding.LENGTH_DELIMITED, type);
     }
 
-    public void ready(MessageAdapter<M> delegate) {
+    public void ready(TypeAdapter<M> delegate) {
       this.delegate = delegate;
-    }
-
-    @Override public Class<?> messageType() {
-      return type;
     }
 
     @Override public M redact(M message) {
@@ -192,14 +187,14 @@ public final class Wire {
       return delegate.toString(value);
     }
 
-    @Override public int serializedSize(M value) {
+    @Override public int encodedSize(M value) {
       if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
-      return delegate.serializedSize(value);
+      return delegate.encodedSize(value);
     }
 
-    @Override public void write(M value, ProtoWriter writer) throws IOException {
+    @Override public void write(ProtoWriter writer, M value) throws IOException {
       if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
-      delegate.write(value, writer);
+      delegate.write(writer, value);
     }
 
     @Override public M read(ProtoReader reader) throws IOException {

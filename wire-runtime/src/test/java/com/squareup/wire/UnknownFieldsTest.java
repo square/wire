@@ -26,8 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UnknownFieldsTest {
 
   private final Wire wire = new Wire();
-  private final MessageAdapter<VersionOne> v1Adapter = wire.adapter(VersionOne.class);
-  private final MessageAdapter<VersionTwo> v2Adapter = wire.adapter(VersionTwo.class);
+  private final TypeAdapter<VersionOne> v1Adapter = wire.adapter(VersionOne.class);
+  private final TypeAdapter<VersionTwo> v2Adapter = wire.adapter(VersionTwo.class);
 
   @Test
   public void testUnknownFields() throws IOException {

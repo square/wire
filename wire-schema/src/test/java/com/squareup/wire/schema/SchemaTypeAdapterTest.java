@@ -17,13 +17,12 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.squareup.wire.MessageAdapter;
+import com.squareup.wire.TypeAdapter;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.Map;
 import okio.Buffer;
 import okio.ByteString;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,13 +80,13 @@ public final class SchemaTypeAdapterTest {
 
   @Test public void typeAdapterDecode() throws Exception {
     MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
-    MessageAdapter<Map<String, Object>> adapter = typeAdapterFactory.get(cafeDrink.name());
+    TypeAdapter<Map<String, Object>> adapter = typeAdapterFactory.get(cafeDrink.name());
     assertThat(adapter.read(new Buffer().write(dansCoffeeEncoded))).isEqualTo(dansCoffee);
     assertThat(adapter.read(new Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee);
   }
 
   @Test public void groupsIgnored() throws IOException {
-    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -109,7 +108,7 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void startGroupWithoutEndGroup() throws IOException {
-    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -125,7 +124,7 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void unexpectedEndGroup() throws IOException {
-    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -141,7 +140,7 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void endGroupDoesntMatchStartGroup() throws IOException {
-    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -157,7 +156,7 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void decodeToUnpacked() throws IOException {
-    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = false];\n"
@@ -172,7 +171,7 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void decodeToPacked() throws IOException {
-    MessageAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = true];\n"
