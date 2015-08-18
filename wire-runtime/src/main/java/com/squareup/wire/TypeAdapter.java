@@ -16,7 +16,6 @@
 package com.squareup.wire;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
@@ -294,9 +293,9 @@ public abstract class TypeAdapter<E> {
       }
 
       @Override public M read(ProtoReader reader) throws IOException {
-        long token = reader.beginLengthDelimited();
+        long token = reader.beginMessage();
         M value = adapter.read(reader);
-        reader.endLengthDelimited(token);
+        reader.endMessage(token);
         return value;
       }
 
@@ -335,19 +334,7 @@ public abstract class TypeAdapter<E> {
       }
 
       @Override public List<T> read(ProtoReader reader) throws IOException {
-        // Check to ensure the bytes are actually packed on the wire which is optional.
-        if (reader.peekFieldEncoding() != FieldEncoding.LENGTH_DELIMITED) {
-          // TODO delegate to repeated if we get peekTag() on ProtoReader
-          return Collections.singletonList(adapter.read(reader));
-        }
-
-        List<T> items = new ArrayList<T>();
-        long token = reader.beginLengthDelimited();
-        while (reader.hasNext()) {
-          items.add(adapter.read(reader));
-        }
-        reader.endLengthDelimited(token);
-        return items;
+        throw new UnsupportedOperationException();
       }
 
       @Override List<T> redact(List<T> value) {
@@ -381,7 +368,7 @@ public abstract class TypeAdapter<E> {
       }
 
       @Override public List<T> read(ProtoReader reader) throws IOException {
-        throw new UnsupportedOperationException(); // TODO
+        throw new UnsupportedOperationException();
       }
 
       @Override List<T> redact(List<T> value) {

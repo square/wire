@@ -31,7 +31,6 @@ import java.util.RandomAccess;
 import java.util.Set;
 
 import static com.squareup.wire.Message.Builder;
-import static com.squareup.wire.Message.Label;
 
 final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
   private final Wire wire;
@@ -261,37 +260,17 @@ final class RuntimeMessageAdapter<M extends Message> extends MessageAdapter<M> {
         readUnknownField(builder, input, tag, typeAdapter);
         continue;
       }
-      Label label = tagBinding.label;
-      TypeAdapter<?> adapter = tagBinding.singleAdapter;
 
-      if (label.isPacked() && input.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
-        // Decode packed format
-        long token = input.beginLengthDelimited();
-        while (input.hasNext()) {
-          try {
-            Object value = adapter.read(input);
-            storage.add(tag, value);
-          } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
-            // An unknown Enum value was encountered, store it as an unknown field
-            builder.addVarint(tag, e.value);
-          }
-        }
-        input.endLengthDelimited(token);
-      } else {
-        // Read a single value
-        Object value;
-        try {
-          value = adapter.read(input);
-        } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
-          // An unknown Enum value was encountered, store it as an unknown field
-          builder.addVarint(tag, e.value);
-          continue;
-        }
-        if (label.isRepeated()) {
+      try {
+        Object value = tagBinding.singleAdapter.read(input);
+        if (tagBinding.label.isRepeated()) {
           storage.add(tag, value);
         } else {
           tagBinding.set(builder, value);
         }
+      } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
+        // An unknown Enum value was encountered, store it as an unknown field
+        builder.addVarint(tag, e.value);
       }
     }
 
