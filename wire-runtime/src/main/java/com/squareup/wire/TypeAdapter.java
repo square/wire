@@ -111,7 +111,7 @@ public abstract class TypeAdapter<E> {
   }
 
   /** Encode {@code value} and write it to {@code stream}. */
-  public final void write(E value, BufferedSink sink) throws IOException {
+  public final void write(BufferedSink sink, E value) throws IOException {
     checkNotNull(value, "value == null");
     checkNotNull(sink, "sink == null");
     write(new ProtoWriter(sink), value);
@@ -122,7 +122,7 @@ public abstract class TypeAdapter<E> {
     checkNotNull(value, "value == null");
     Buffer buffer = new Buffer();
     try {
-      write(value, buffer);
+      write(buffer, value);
     } catch (IOException e) {
       throw new AssertionError(e); // No I/O writing to Buffer.
     }
@@ -130,11 +130,11 @@ public abstract class TypeAdapter<E> {
   }
 
   /** Encode {@code value} and write it to {@code stream}. */
-  public final void writeStream(E value, OutputStream stream) throws IOException {
+  public final void writeStream(OutputStream stream, E value) throws IOException {
     checkNotNull(value, "value == null");
     checkNotNull(stream, "stream == null");
     BufferedSink buffer = Okio.buffer(Okio.sink(stream));
-    write(value, buffer);
+    write(buffer, value);
     buffer.emit();
   }
 
@@ -171,11 +171,11 @@ public abstract class TypeAdapter<E> {
     }
 
     @Override public void write(ProtoWriter writer, Boolean value) throws IOException {
-      writer.writeByte(value ? 1 : 0);
+      writer.writeVarint32(value ? 1 : 0);
     }
 
     @Override public Boolean read(ProtoReader reader) throws IOException {
-      int value = reader.readByte();
+      int value = reader.readVarint32();
       if (value == 0) return Boolean.FALSE;
       if (value == 1) return Boolean.TRUE;
       throw new IOException(String.format("Invalid boolean value 0x%02x", value));
@@ -317,8 +317,7 @@ public abstract class TypeAdapter<E> {
     }
 
     @Override public void write(ProtoWriter writer, String value) throws IOException {
-      ByteString bytes = ByteString.encodeUtf8(value);
-      writer.writeBytes(bytes);
+      writer.writeString(value);
     }
 
     @Override public String read(ProtoReader reader) throws IOException {

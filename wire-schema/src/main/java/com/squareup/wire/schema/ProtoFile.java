@@ -38,7 +38,7 @@ public final class ProtoFile {
     this.options = options;
   }
 
-  public static ProtoFile get(ProtoFileElement protoFileElement) {
+  static ProtoFile get(ProtoFileElement protoFileElement) {
     String packageName = protoFileElement.packageName();
 
     ImmutableList.Builder<Type> types = ImmutableList.builder();

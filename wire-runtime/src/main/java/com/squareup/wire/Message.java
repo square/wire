@@ -80,7 +80,7 @@ public abstract class Message implements Serializable {
   }
 
   // Increase visibility for testing
-  protected Collection<List<UnknownFieldMap.Value>> unknownFields() {
+  Collection<List<UnknownFieldMap.Value>> unknownFields() {
     return unknownFields == null ? Collections.<List<UnknownFieldMap.Value>>emptySet()
         : unknownFields.fieldMap.values();
   }

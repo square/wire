@@ -319,7 +319,7 @@ public class TestAllTypes {
   @Test
   public void testWriteSource() throws IOException {
     Buffer sink = new Buffer();
-    adapter.write(allTypes, sink);
+    adapter.write(sink, allTypes);
     assertThat(sink.readByteString()).isEqualTo(TestAllTypesData.expectedOutput);
   }
 
@@ -333,7 +333,7 @@ public class TestAllTypes {
   @Test
   public void testWriteStream() throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    adapter.writeStream(allTypes, stream);
+    adapter.writeStream(stream, allTypes);
     byte[] output = stream.toByteArray();
     assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.size());
     assertThat(ByteString.of(output)).isEqualTo(TestAllTypesData.expectedOutput);
