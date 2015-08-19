@@ -49,11 +49,11 @@ public final class ProtoReader {
       "The input ended unexpectedly in the middle of a field";
   private static final String PROTOCOL_MESSAGE_TAG_ZERO =
       "Protocol message contained an invalid tag (zero).";
-  public static final String PROTOCOL_MESSAGE_GROUP_IS_TRUNCATED =
+  private static final String PROTOCOL_MESSAGE_GROUP_IS_TRUNCATED =
       "Protocol message group is truncated.";
   private static final String ENCOUNTERED_A_MALFORMED_VARINT =
       "WireInput encountered a malformed varint.";
-  public static final String PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP =
+  private static final String PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP =
       "Unexpected end group in protocol message.";
   /** The standard number of levels of message nesting to allow. */
   private static final int RECURSION_LIMIT = 65;
@@ -238,28 +238,17 @@ public final class ProtoReader {
     throw new ProtocolException(PROTOCOL_MESSAGE_GROUP_IS_TRUNCATED);
   }
 
-  int readByte() throws IOException {
-    if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
-      throw new ProtocolException("Expected VARINT or LENGTH_DELIMITED but was " + state);
-    }
-    source.require(1); // Throws EOFException if insufficient bytes are available.
-    pos++;
-    int result = source.readByte() & 0xff;
-    afterPackableScalar(STATE_VARINT);
-    return result;
-  }
-
   /**
    * Reads a {@code bytes} field value from the stream. The length is read from the
    * stream prior to the actual data.
    */
-  ByteString readBytes() throws IOException {
+  public ByteString readBytes() throws IOException {
     long byteCount = beforeLengthDelimitedScalar();
     return source.readByteString(byteCount);
   }
 
   /** Reads a {@code string} field value from the stream. */
-  String readString() throws IOException {
+  public String readString() throws IOException {
     long byteCount = beforeLengthDelimitedScalar();
     return source.readUtf8(byteCount);
   }
@@ -268,7 +257,7 @@ public final class ProtoReader {
    * Reads a raw varint from the stream.  If larger than 32 bits, discard the
    * upper bits.
    */
-  int readVarint32() throws IOException {
+  public int readVarint32() throws IOException {
     if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
       throw new ProtocolException("Expected VARINT or LENGTH_DELIMITED but was " + state);
     }
@@ -318,7 +307,7 @@ public final class ProtoReader {
   }
 
   /** Reads a raw varint up to 64 bits in length from the stream. */
-  long readVarint64() throws IOException {
+  public long readVarint64() throws IOException {
     if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
       throw new ProtocolException("Expected VARINT or LENGTH_DELIMITED but was " + state);
     }
@@ -338,7 +327,7 @@ public final class ProtoReader {
   }
 
   /** Reads a 32-bit little-endian integer from the stream. */
-  int readFixed32() throws IOException {
+  public int readFixed32() throws IOException {
     if (state != STATE_FIXED32 && state != STATE_LENGTH_DELIMITED) {
       throw new ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was " + state);
     }
@@ -350,7 +339,7 @@ public final class ProtoReader {
   }
 
   /** Reads a 64-bit little-endian integer from the stream. */
-  long readFixed64() throws IOException {
+  public long readFixed64() throws IOException {
     if (state != STATE_FIXED64 && state != STATE_LENGTH_DELIMITED) {
       throw new ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was " + state);
     }

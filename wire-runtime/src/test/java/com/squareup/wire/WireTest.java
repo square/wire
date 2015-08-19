@@ -320,7 +320,8 @@ public class WireTest {
     assertThat(result.phone.get(0).type).isNull();
 
     // The value 17 will be stored as an unknown varint with tag number 2
-    Collection<List<UnknownFieldMap.Value>> unknownFields = result.phone.get(0).unknownFields();
+    Collection<List<UnknownFieldMap.Value>> unknownFields
+        = ((Message) result.phone.get(0)).unknownFields();
     assertThat(unknownFields).hasSize(1);
     List<UnknownFieldMap.Value> values = unknownFields.iterator().next();
     assertThat(values).hasSize(1);

@@ -185,16 +185,16 @@ public final class ProtoWriter {
     this.sink = sink;
   }
 
-  void writeByte(int value) throws IOException {
-    sink.writeByte(value);
-  }
-
-  void writeBytes(ByteString value) throws IOException {
+  public void writeBytes(ByteString value) throws IOException {
     sink.write(value);
   }
 
+  public void writeString(String value) throws IOException {
+    sink.writeUtf8(value);
+  }
+
   /** Encode and write a tag. */
-  void writeTag(int fieldNumber, FieldEncoding fieldEncoding) throws IOException {
+  public void writeTag(int fieldNumber, FieldEncoding fieldEncoding) throws IOException {
     writeVarint32(makeTag(fieldNumber, fieldEncoding));
   }
 
@@ -212,7 +212,7 @@ public final class ProtoWriter {
    * Encode and write a varint. {@code value} is treated as unsigned, so it won't be sign-extended
    * if negative.
    */
-  void writeVarint32(int value) throws IOException {
+  public void writeVarint32(int value) throws IOException {
     while ((value & ~0x7f) != 0) {
       sink.writeByte((value & 0x7f) | 0x80);
       value >>>= 7;
@@ -221,7 +221,7 @@ public final class ProtoWriter {
   }
 
   /** Encode and write a varint. */
-  void writeVarint64(long value) throws IOException {
+  public void writeVarint64(long value) throws IOException {
     while ((value & ~0x7fL) != 0) {
       sink.writeByte(((int) value & 0x7f) | 0x80);
       value >>>= 7;
@@ -230,12 +230,12 @@ public final class ProtoWriter {
   }
 
   /** Write a little-endian 32-bit integer. */
-  void writeFixed32(int value) throws IOException {
+  public void writeFixed32(int value) throws IOException {
     sink.writeIntLe(value);
   }
 
   /** Write a little-endian 64-bit integer. */
-  void writeFixed64(long value) throws IOException {
+  public void writeFixed64(long value) throws IOException {
     sink.writeLongLe(value);
   }
 }
