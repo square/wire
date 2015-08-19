@@ -16,10 +16,17 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.BufferedSource;
 import okio.ByteString;
+import okio.Okio;
 
+import static com.squareup.wire.Preconditions.checkNotNull;
 import static com.squareup.wire.ProtoWriter.decodeZigZag32;
 import static com.squareup.wire.ProtoWriter.decodeZigZag64;
 import static com.squareup.wire.ProtoWriter.encodeZigZag32;
@@ -56,7 +63,7 @@ public abstract class TypeAdapter<E> {
       case FLOAT: return FLOAT;
       case INT32: return INT32;
       case INT64: return INT64;
-      case MESSAGE: return forMessage(wire.adapter(messageType));
+      case MESSAGE: return wire.adapter(messageType);
       case SFIXED32: return SFIXED32;
       case SFIXED64: return SFIXED64;
       case SINT32: return SINT32;
@@ -69,7 +76,7 @@ public abstract class TypeAdapter<E> {
   }
 
   /** Returns the redacted form of {@code value}. */
-  E redact(E value) {
+  public E redact(E value) {
     return null;
   }
 
@@ -77,14 +84,14 @@ public abstract class TypeAdapter<E> {
    * The size of the non-null data {@code value}. This does not include the size required for
    * a length-delimited prefix (should the type require one).
    */
-  public abstract int dataSize(E value);
+  public abstract int encodedSize(E value);
 
   /**
    * The size of {@code tag} and non-null {@code value} in the wire format. This size includes the
    * tag, type, length-delimited prefix (should the type require one), and value.
    */
   int serializedSize(int tag, E value) {
-    int size = dataSize(value);
+    int size = encodedSize(value);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       size += varint32Size(size);
     }
@@ -98,17 +105,68 @@ public abstract class TypeAdapter<E> {
   void writeTagged(ProtoWriter writer, int tag, E value) throws IOException {
     writer.writeTag(tag, fieldEncoding);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
-      writer.writeVarint32(dataSize(value));
+      writer.writeVarint32(encodedSize(value));
     }
     write(writer, value);
+  }
+
+  /** Encode {@code value} and write it to {@code stream}. */
+  public final void write(E value, BufferedSink sink) throws IOException {
+    checkNotNull(value, "value == null");
+    checkNotNull(sink, "sink == null");
+    write(new ProtoWriter(sink), value);
+  }
+
+  /** Encode {@code value} as a {@code byte[]}. */
+  public final byte[] writeBytes(E value) {
+    checkNotNull(value, "value == null");
+    Buffer buffer = new Buffer();
+    try {
+      write(value, buffer);
+    } catch (IOException e) {
+      throw new AssertionError(e); // No I/O writing to Buffer.
+    }
+    return buffer.readByteArray();
+  }
+
+  /** Encode {@code value} and write it to {@code stream}. */
+  public final void writeStream(E value, OutputStream stream) throws IOException {
+    checkNotNull(value, "value == null");
+    checkNotNull(stream, "stream == null");
+    BufferedSink buffer = Okio.buffer(Okio.sink(stream));
+    write(value, buffer);
+    buffer.emit();
   }
 
   /** Read a non-null value from {@code reader}. */
   public abstract E read(ProtoReader reader) throws IOException;
 
+  /** Read an encoded message from {@code bytes}. */
+  public final E readBytes(byte[] bytes) throws IOException {
+    checkNotNull(bytes, "bytes == null");
+    return read(new Buffer().write(bytes));
+  }
+
+  /** Read an encoded message from {@code stream}. */
+  public final E readStream(InputStream stream) throws IOException {
+    checkNotNull(stream, "stream == null");
+    return read(Okio.buffer(Okio.source(stream)));
+  }
+
+  /** Read an encoded message from {@code source}. */
+  public final E read(BufferedSource source) throws IOException {
+    checkNotNull(source, "source == null");
+    return read(new ProtoReader(source));
+  }
+
+  /** Returns a human-readable version of the given {@code value}. */
+  public String toString(E value) {
+    return value.toString();
+  }
+
   public static final TypeAdapter<Boolean> BOOL = new TypeAdapter<Boolean>(
       FieldEncoding.VARINT, Boolean.class) {
-    @Override public int dataSize(Boolean value) {
+    @Override public int encodedSize(Boolean value) {
       return FIXED_BOOL_SIZE;
     }
 
@@ -125,7 +183,7 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<Integer> INT32 = new TypeAdapter<Integer>(
       FieldEncoding.VARINT, Integer.class) {
-    @Override public int dataSize(Integer value) {
+    @Override public int encodedSize(Integer value) {
       return int32Size(value);
     }
 
@@ -139,7 +197,7 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<Integer> UINT32 = new TypeAdapter<Integer>(
       FieldEncoding.VARINT, Integer.class) {
-    @Override public int dataSize(Integer value) {
+    @Override public int encodedSize(Integer value) {
       return varint32Size(value);
     }
 
@@ -153,7 +211,7 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<Integer> SINT32 = new TypeAdapter<Integer>(
       FieldEncoding.VARINT, Integer.class) {
-    @Override public int dataSize(Integer value) {
+    @Override public int encodedSize(Integer value) {
       return varint32Size(encodeZigZag32(value));
     }
 
@@ -167,7 +225,7 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<Integer> FIXED32 = new TypeAdapter<Integer>(
       FieldEncoding.FIXED32, Integer.class) {
-    @Override public int dataSize(Integer value) {
+    @Override public int encodedSize(Integer value) {
       return FIXED_32_SIZE;
     }
 
@@ -182,7 +240,7 @@ public abstract class TypeAdapter<E> {
   public static final TypeAdapter<Integer> SFIXED32 = FIXED32;
   public static final TypeAdapter<Long> INT64 = new TypeAdapter<Long>(
       FieldEncoding.VARINT, Long.class) {
-    @Override public int dataSize(Long value) {
+    @Override public int encodedSize(Long value) {
       return varint64Size(value);
     }
 
@@ -197,7 +255,7 @@ public abstract class TypeAdapter<E> {
   public static final TypeAdapter<Long> UINT64 = INT64;
   public static final TypeAdapter<Long> SINT64 = new TypeAdapter<Long>(
       FieldEncoding.VARINT, Long.class) {
-    @Override public int dataSize(Long value) {
+    @Override public int encodedSize(Long value) {
       return varint64Size(encodeZigZag64(value));
     }
 
@@ -211,7 +269,7 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<Long> FIXED64 = new TypeAdapter<Long>(
       FieldEncoding.FIXED64, Long.class) {
-    @Override public int dataSize(Long value) {
+    @Override public int encodedSize(Long value) {
       return FIXED_64_SIZE;
     }
 
@@ -226,7 +284,7 @@ public abstract class TypeAdapter<E> {
   public static final TypeAdapter<Long> SFIXED64 = FIXED64;
   public static final TypeAdapter<Float> FLOAT = new TypeAdapter<Float>(
       FieldEncoding.FIXED32, Float.class) {
-    @Override public int dataSize(Float value) {
+    @Override public int encodedSize(Float value) {
       return FIXED_32_SIZE;
     }
 
@@ -240,7 +298,7 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<Double> DOUBLE = new TypeAdapter<Double>(
       FieldEncoding.FIXED64, Double.class) {
-    @Override public int dataSize(Double value) {
+    @Override public int encodedSize(Double value) {
       return FIXED_64_SIZE;
     }
 
@@ -254,7 +312,7 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<String> STRING = new TypeAdapter<String>(
       FieldEncoding.LENGTH_DELIMITED, String.class) {
-    @Override public int dataSize(String value) {
+    @Override public int encodedSize(String value) {
       return utf8Length(value);
     }
 
@@ -269,7 +327,7 @@ public abstract class TypeAdapter<E> {
   };
   public static final TypeAdapter<ByteString> BYTES = new TypeAdapter<ByteString>(
       FieldEncoding.LENGTH_DELIMITED, ByteString.class) {
-    @Override public int dataSize(ByteString value) {
+    @Override public int encodedSize(ByteString value) {
       return value.size();
     }
 
@@ -282,30 +340,7 @@ public abstract class TypeAdapter<E> {
     }
   };
 
-  public static <M> TypeAdapter<M> forMessage(final MessageAdapter<M> adapter) {
-    return new TypeAdapter<M>(FieldEncoding.LENGTH_DELIMITED, adapter.messageType()) {
-      @Override public int dataSize(M value) {
-        return adapter.serializedSize(value);
-      }
-
-      @Override public void write(ProtoWriter writer, M value) throws IOException {
-        adapter.write(value, writer);
-      }
-
-      @Override public M read(ProtoReader reader) throws IOException {
-        long token = reader.beginMessage();
-        M value = adapter.read(reader);
-        reader.endMessage(token);
-        return value;
-      }
-
-      @Override M redact(M value) {
-        return adapter.redact(value);
-      }
-    };
-  }
-
-  public TypeAdapter<?> withLabel(Message.Label label) {
+  TypeAdapter<?> withLabel(Message.Label label) {
     if (label.isRepeated()) {
       return label.isPacked()
           ? createPacked(this)
@@ -319,10 +354,10 @@ public abstract class TypeAdapter<E> {
       throw new IllegalArgumentException("Unable to pack a length-delimited type.");
     }
     return new TypeAdapter<List<T>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
-      @Override public int dataSize(List<T> value) {
+      @Override public int encodedSize(List<T> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
-          size += adapter.dataSize(value.get(i));
+          size += adapter.encodedSize(value.get(i));
         }
         return size;
       }
@@ -337,7 +372,7 @@ public abstract class TypeAdapter<E> {
         throw new UnsupportedOperationException();
       }
 
-      @Override List<T> redact(List<T> value) {
+      @Override public List<T> redact(List<T> value) {
         return Collections.emptyList();
       }
     };
@@ -345,7 +380,7 @@ public abstract class TypeAdapter<E> {
 
   private static <T> TypeAdapter<List<T>> createRepeated(final TypeAdapter<T> adapter) {
     return new TypeAdapter<List<T>>(adapter.fieldEncoding, List.class) {
-      @Override public int dataSize(List<T> value) {
+      @Override public int encodedSize(List<T> value) {
         throw new UnsupportedOperationException();
       }
 
@@ -371,7 +406,7 @@ public abstract class TypeAdapter<E> {
         throw new UnsupportedOperationException();
       }
 
-      @Override List<T> redact(List<T> value) {
+      @Override public List<T> redact(List<T> value) {
         return Collections.emptyList();
       }
     };

@@ -65,7 +65,7 @@ final class RuntimeEnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
     }
   }
 
-  @Override public int dataSize(E value) {
+  @Override public int encodedSize(E value) {
     return ProtoWriter.varint32Size(value.getValue());
   }
 
