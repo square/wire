@@ -33,7 +33,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.6</java.version>
     <!-- TODO(shawn) pass in dependencies of the currently built wire artifact. -->
-    <wire.version>1.5.2-SNAPSHOT</wire.version>
+    <wire.version>1.8.0-SNAPSHOT</wire.version>
   </properties>
 
   <dependencies>
@@ -54,6 +54,7 @@
       <plugin>
         <groupId>com.squareup.wire</groupId>
         <artifactId>wire-maven-plugin</artifactId>
+        <version>${wire.version}</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>
@@ -61,6 +62,7 @@
               <goal>generate-sources</goal>
             </goals>
             <configuration>
+              <files>proto.include</files>
               <protoFiles>
                 <param>squareup/wire/exemplar.proto</param>
               </protoFiles>

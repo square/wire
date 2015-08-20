@@ -3,8 +3,13 @@ package com.squareup.wire.mojo;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.squareup.wire.WireCompiler;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -48,6 +53,12 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.protoFiles", required = true)
   private String[] protoFiles;
 
+  /**
+   * File containing new line separated list of proto files.
+   */
+  @Parameter(property = "wire.files")
+  private String files;
+
   @Parameter(
       property = "wire.generatedSourceDirectory",
       defaultValue = "${project.build.directory}/generated-sources/wire")
@@ -86,6 +97,17 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
       args.add("--service_factory=" + serviceFactory);
     }
     Collections.addAll(args, protoFiles);
+
+    if (files != null) {
+        File filePointer = new File(files);
+        String[] fileNames;
+        try {
+            fileNames = new Scanner(filePointer, "UTF-8").useDelimiter("\\A").next().split("\n");
+        } catch (FileNotFoundException ex) {
+            throw new MojoExecutionException("Error processing argument " + files, ex);
+        }
+        Collections.addAll(args, fileNames);
+    }
 
     getLog().info("Invoking wire compiler with arguments:");
     getLog().info(Joiner.on('\n').join(args));
