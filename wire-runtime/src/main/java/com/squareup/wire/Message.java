@@ -61,8 +61,8 @@ public abstract class Message implements Serializable {
   /** Set to null until a field is added. */
   private transient UnknownFieldMap unknownFields;
 
-  /** If not {@code -1} then the serialized size of this message. */
-  transient int cachedSerializedSize = -1;
+  /** If not {@code 0} then the serialized size of this message. */
+  transient int cachedSerializedSize = 0;
 
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected transient int hashCode = 0;
