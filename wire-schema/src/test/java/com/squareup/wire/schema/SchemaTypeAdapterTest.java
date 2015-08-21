@@ -85,6 +85,13 @@ public final class SchemaTypeAdapterTest {
     assertThat(adapter.read(new Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee);
   }
 
+  @Test public void typeAdapterEncode() throws IOException {
+    MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
+    TypeAdapter<Map<String, Object>> adapter = typeAdapterFactory.get(cafeDrink.name());
+    assertThat(ByteString.of(adapter.writeBytes(dansCoffee))).isEqualTo(dansCoffeeEncoded);
+    assertThat(ByteString.of(adapter.writeBytes(jessesCoffee))).isEqualTo(jessesCoffeeEncoded);
+  }
+
   @Test public void groupsIgnored() throws IOException {
     TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
