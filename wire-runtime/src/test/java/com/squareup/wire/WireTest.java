@@ -118,6 +118,23 @@ public class WireTest {
     assertThat(msg.repeated_double).isEqualTo(doubles);
   }
 
+  @Test public void mutateBuilder() throws Exception {
+    SimpleMessage message = new SimpleMessage.Builder()
+        .required_int32(10)
+        .build();
+
+    SimpleMessage.Builder builder = new SimpleMessage.Builder(message);
+    builder.required_int32 = 20;
+    builder.repeated_double.add(30.5);
+    builder.optional_int32 = 40;
+
+    assertThat(builder.build()).isEqualTo(new SimpleMessage.Builder()
+        .required_int32(20)
+        .repeated_double(Arrays.asList(30.5))
+        .optional_int32(40)
+        .build());
+  }
+
   @Test
   public void testPerson() throws IOException {
     Person person = new Person.Builder()
