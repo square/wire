@@ -90,9 +90,6 @@ public abstract class Message implements Serializable {
     if (list == null) {
       throw new NullPointerException("list == null");
     }
-    if (list == Collections.emptyList()) {
-      return list;
-    }
     return new ArrayList<T>(list);
   }
 
@@ -101,9 +98,7 @@ public abstract class Message implements Serializable {
     if (list == null) {
       throw new NullPointerException("list == null");
     }
-    if (list == Collections.emptyList()) {
-      return list;
-    } else if (list instanceof RuntimeMessageAdapter.ImmutableList) {
+    if (list == Collections.emptyList() || list instanceof RuntimeMessageAdapter.ImmutableList) {
       return list;
     }
     return Collections.unmodifiableList(new ArrayList<T>(list));
