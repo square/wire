@@ -18,9 +18,15 @@ import org.apache.maven.project.MavenProject;
  */
 @Mojo(name = "generate-sources", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class WireGenerateSourcesMojo extends AbstractMojo {
+  /**
+   * The root of the proto source directory.
+   */
   @Parameter(
-      property = "wire.protoPaths",
+      property = "wire.protoSourceDirectory",
       defaultValue = "${project.basedir}/src/main/proto")
+  private String protoSourceDirectory;
+
+  @Parameter(property = "wire.protoPaths")
   private String[] protoPaths;
 
   @Parameter(property = "wire.noOptions")
@@ -64,8 +70,12 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
 
   private void compileProtos() throws MojoExecutionException {
     List<String> args = Lists.newArrayList();
-    for (String protoPath : protoPaths) {
-      args.add("--proto_path=" + protoPath);
+    if (protoPaths != null && protoPaths.length > 0) {
+      for (String protoPath : protoPaths) {
+        args.add("--proto_path=" + protoPath);
+      }
+    } else {
+      args.add("--proto_path=" + protoSourceDirectory);
     }
     args.add("--java_out=" + generatedSourceDirectory);
     if (noOptions) {
