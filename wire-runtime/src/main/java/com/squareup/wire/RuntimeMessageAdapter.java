@@ -151,9 +151,7 @@ final class RuntimeMessageAdapter<M extends Message> extends TypeAdapter<M> {
 
   @Override public int encodedSize(M message) {
     int cachedSerializedSize = message.cachedSerializedSize;
-    if (cachedSerializedSize != -1) {
-      return cachedSerializedSize;
-    }
+    if (cachedSerializedSize != 0) return cachedSerializedSize;
 
     int size = 0;
     for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
