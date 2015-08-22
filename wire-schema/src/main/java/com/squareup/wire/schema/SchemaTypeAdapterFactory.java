@@ -99,7 +99,7 @@ final class SchemaTypeAdapterFactory {
       throw new UnsupportedOperationException();
     }
 
-    @Override public void write(ProtoWriter writer, Object value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Object value) throws IOException {
       if (value instanceof String) {
         EnumConstant constant = enumType.constant((String) value);
         writer.writeVarint32(constant.tag());
@@ -110,8 +110,8 @@ final class SchemaTypeAdapterFactory {
       }
     }
 
-    @Override public Object read(ProtoReader reader) throws IOException {
-      Integer value = TypeAdapter.UINT32.read(reader);
+    @Override public Object decode(ProtoReader reader) throws IOException {
+      Integer value = TypeAdapter.UINT32.decode(reader);
       EnumConstant constant = enumType.constant(value);
       return constant != null ? constant.name() : value;
     }
@@ -138,16 +138,16 @@ final class SchemaTypeAdapterFactory {
         TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) fieldAdapter.typeAdapter;
         if (fieldAdapter.repeated) {
           for (Object o : (List<?>) entry.getValue()) {
-            size += typeAdapter.serializedSize(fieldAdapter.tag, o);
+            size += typeAdapter.encodedSize(fieldAdapter.tag, o);
           }
         } else {
-          size += typeAdapter.serializedSize(fieldAdapter.tag, entry.getValue());
+          size += typeAdapter.encodedSize(fieldAdapter.tag, entry.getValue());
         }
       }
       return size;
     }
 
-    @Override public void write(ProtoWriter writer, Map<String, Object> value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Map<String, Object> value) throws IOException {
       for (Map.Entry<String, Object> entry : value.entrySet()) {
         FieldAdapter fieldAdapter = fieldsByName.get(entry.getKey());
         if (fieldAdapter == null) continue; // Ignore unknown values!
@@ -155,15 +155,15 @@ final class SchemaTypeAdapterFactory {
         TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) fieldAdapter.typeAdapter;
         if (fieldAdapter.repeated) {
           for (Object o : (List<?>) entry.getValue()) {
-            typeAdapter.writeTagged(writer, fieldAdapter.tag, o);
+            typeAdapter.encodeTagged(writer, fieldAdapter.tag, o);
           }
         } else {
-          typeAdapter.writeTagged(writer, fieldAdapter.tag, entry.getValue());
+          typeAdapter.encodeTagged(writer, fieldAdapter.tag, entry.getValue());
         }
       }
     }
 
-    @Override public Map<String, Object> read(ProtoReader reader) throws IOException {
+    @Override public Map<String, Object> decode(ProtoReader reader) throws IOException {
       Map<String, Object> result = new LinkedHashMap<>();
 
       long token = reader.beginMessage();
@@ -174,7 +174,7 @@ final class SchemaTypeAdapterFactory {
               Integer.toString(tag), tag, true, reader.peekFieldEncoding().rawTypeAdapter());
         }
 
-        Object value = fieldAdapter.typeAdapter.read(reader);
+        Object value = fieldAdapter.typeAdapter.decode(reader);
         if (fieldAdapter.repeated) {
           List<Object> values = (List<Object>) result.get(fieldAdapter.name);
           if (values == null) {

@@ -118,12 +118,12 @@ public abstract class Message implements Serializable {
 
   void writeUnknownFieldMap(ProtoWriter output) throws IOException {
     if (unknownFields != null) {
-      unknownFields.write(output);
+      unknownFields.encode(output);
     }
   }
 
   int getUnknownFieldsSerializedSize() {
-    return unknownFields == null ? 0 : unknownFields.getSerializedSize();
+    return unknownFields == null ? 0 : unknownFields.encodedSize();
   }
 
   protected static boolean equals(Object a, Object b) {

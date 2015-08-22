@@ -81,15 +81,15 @@ public final class SchemaTypeAdapterTest {
   @Test public void typeAdapterDecode() throws Exception {
     MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
     TypeAdapter<Map<String, Object>> adapter = typeAdapterFactory.get(cafeDrink.name());
-    assertThat(adapter.read(new Buffer().write(dansCoffeeEncoded))).isEqualTo(dansCoffee);
-    assertThat(adapter.read(new Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee);
+    assertThat(adapter.decode(new Buffer().write(dansCoffeeEncoded))).isEqualTo(dansCoffee);
+    assertThat(adapter.decode(new Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee);
   }
 
   @Test public void typeAdapterEncode() throws IOException {
     MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
     TypeAdapter<Map<String, Object>> adapter = typeAdapterFactory.get(cafeDrink.name());
-    assertThat(ByteString.of(adapter.writeBytes(dansCoffee))).isEqualTo(dansCoffeeEncoded);
-    assertThat(ByteString.of(adapter.writeBytes(jessesCoffee))).isEqualTo(jessesCoffeeEncoded);
+    assertThat(ByteString.of(adapter.encode(dansCoffee))).isEqualTo(dansCoffeeEncoded);
+    assertThat(ByteString.of(adapter.encode(jessesCoffee))).isEqualTo(jessesCoffeeEncoded);
   }
 
   @Test public void groupsIgnored() throws IOException {
@@ -111,7 +111,7 @@ public final class SchemaTypeAdapterTest {
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", "a",
         "b", "b");
-    assertThat(adapter.read(new Buffer().write(encoded))).isEqualTo(expected);
+    assertThat(adapter.decode(new Buffer().write(encoded))).isEqualTo(expected);
   }
 
   @Test public void startGroupWithoutEndGroup() throws IOException {
@@ -123,7 +123,7 @@ public final class SchemaTypeAdapterTest {
         .buildTypeAdapter("Message");
     ByteString encoded = ByteString.decodeHex("130a0161");
     try {
-      adapter.read(new Buffer().write(encoded));
+      adapter.decode(new Buffer().write(encoded));
       fail();
     } catch (ProtocolException expected) {
       assertThat(expected).hasMessage("Protocol message group is truncated.");
@@ -139,7 +139,7 @@ public final class SchemaTypeAdapterTest {
         .buildTypeAdapter("Message");
     ByteString encoded = ByteString.decodeHex("0a01611c");
     try {
-      adapter.read(new Buffer().write(encoded));
+      adapter.decode(new Buffer().write(encoded));
       fail();
     } catch (ProtocolException expected) {
       assertThat(expected).hasMessage("Unexpected end group in protocol message.");
@@ -155,7 +155,7 @@ public final class SchemaTypeAdapterTest {
         .buildTypeAdapter("Message");
     ByteString encoded = ByteString.decodeHex("130a01611c");
     try {
-      adapter.read(new Buffer().write(encoded));
+      adapter.decode(new Buffer().write(encoded));
       fail();
     } catch (ProtocolException expected) {
       assertThat(expected).hasMessage("Unexpected end group in protocol message.");
@@ -172,9 +172,9 @@ public final class SchemaTypeAdapterTest {
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
     ByteString packedEncoded = ByteString.decodeHex("d005d904d005bd05");
-    assertThat(adapter.read(new Buffer().write(packedEncoded))).isEqualTo(expected);
+    assertThat(adapter.decode(new Buffer().write(packedEncoded))).isEqualTo(expected);
     ByteString unpackedEncoded = ByteString.decodeHex("d20504d904bd05");
-    assertThat(adapter.read(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
+    assertThat(adapter.decode(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
   }
 
   @Test public void decodeToPacked() throws IOException {
@@ -187,8 +187,8 @@ public final class SchemaTypeAdapterTest {
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
     ByteString packedEncoded = ByteString.decodeHex("d005d904d005bd05");
-    assertThat(adapter.read(new Buffer().write(packedEncoded))).isEqualTo(expected);
+    assertThat(adapter.decode(new Buffer().write(packedEncoded))).isEqualTo(expected);
     ByteString unpackedEncoded = ByteString.decodeHex("d20504d904bd05");
-    assertThat(adapter.read(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
+    assertThat(adapter.decode(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
   }
 }

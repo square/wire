@@ -90,7 +90,7 @@ public abstract class TypeAdapter<E> {
    * The size of {@code tag} and non-null {@code value} in the wire format. This size includes the
    * tag, type, length-delimited prefix (should the type require one), and value.
    */
-  public int serializedSize(int tag, E value) {
+  public int encodedSize(int tag, E value) {
     int size = encodedSize(value);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       size += varint32Size(size);
@@ -99,30 +99,30 @@ public abstract class TypeAdapter<E> {
   }
 
   /** Write non-null {@code value} to {@code writer}. */
-  public abstract void write(ProtoWriter writer, E value) throws IOException;
+  public abstract void encode(ProtoWriter writer, E value) throws IOException;
 
   /** Write {@code tag} and non-null {@code value} to {@code writer}. */
-  public void writeTagged(ProtoWriter writer, int tag, E value) throws IOException {
+  public void encodeTagged(ProtoWriter writer, int tag, E value) throws IOException {
     writer.writeTag(tag, fieldEncoding);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       writer.writeVarint32(encodedSize(value));
     }
-    write(writer, value);
+    encode(writer, value);
   }
 
   /** Encode {@code value} and write it to {@code stream}. */
-  public final void write(BufferedSink sink, E value) throws IOException {
+  public final void encode(BufferedSink sink, E value) throws IOException {
     checkNotNull(value, "value == null");
     checkNotNull(sink, "sink == null");
-    write(new ProtoWriter(sink), value);
+    encode(new ProtoWriter(sink), value);
   }
 
   /** Encode {@code value} as a {@code byte[]}. */
-  public final byte[] writeBytes(E value) {
+  public final byte[] encode(E value) {
     checkNotNull(value, "value == null");
     Buffer buffer = new Buffer();
     try {
-      write(buffer, value);
+      encode(buffer, value);
     } catch (IOException e) {
       throw new AssertionError(e); // No I/O writing to Buffer.
     }
@@ -130,33 +130,33 @@ public abstract class TypeAdapter<E> {
   }
 
   /** Encode {@code value} and write it to {@code stream}. */
-  public final void writeStream(OutputStream stream, E value) throws IOException {
+  public final void encode(OutputStream stream, E value) throws IOException {
     checkNotNull(value, "value == null");
     checkNotNull(stream, "stream == null");
     BufferedSink buffer = Okio.buffer(Okio.sink(stream));
-    write(buffer, value);
+    encode(buffer, value);
     buffer.emit();
   }
 
   /** Read a non-null value from {@code reader}. */
-  public abstract E read(ProtoReader reader) throws IOException;
+  public abstract E decode(ProtoReader reader) throws IOException;
 
   /** Read an encoded message from {@code bytes}. */
-  public final E readBytes(byte[] bytes) throws IOException {
+  public final E decode(byte[] bytes) throws IOException {
     checkNotNull(bytes, "bytes == null");
-    return read(new Buffer().write(bytes));
+    return decode(new Buffer().write(bytes));
   }
 
   /** Read an encoded message from {@code stream}. */
-  public final E readStream(InputStream stream) throws IOException {
+  public final E decode(InputStream stream) throws IOException {
     checkNotNull(stream, "stream == null");
-    return read(Okio.buffer(Okio.source(stream)));
+    return decode(Okio.buffer(Okio.source(stream)));
   }
 
   /** Read an encoded message from {@code source}. */
-  public final E read(BufferedSource source) throws IOException {
+  public final E decode(BufferedSource source) throws IOException {
     checkNotNull(source, "source == null");
-    return read(new ProtoReader(source));
+    return decode(new ProtoReader(source));
   }
 
   /** Returns a human-readable version of the given {@code value}. */
@@ -170,11 +170,11 @@ public abstract class TypeAdapter<E> {
       return FIXED_BOOL_SIZE;
     }
 
-    @Override public void write(ProtoWriter writer, Boolean value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Boolean value) throws IOException {
       writer.writeVarint32(value ? 1 : 0);
     }
 
-    @Override public Boolean read(ProtoReader reader) throws IOException {
+    @Override public Boolean decode(ProtoReader reader) throws IOException {
       int value = reader.readVarint32();
       if (value == 0) return Boolean.FALSE;
       if (value == 1) return Boolean.TRUE;
@@ -187,11 +187,11 @@ public abstract class TypeAdapter<E> {
       return int32Size(value);
     }
 
-    @Override public void write(ProtoWriter writer, Integer value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Integer value) throws IOException {
       writer.writeSignedVarint32(value);
     }
 
-    @Override public Integer read(ProtoReader reader) throws IOException {
+    @Override public Integer decode(ProtoReader reader) throws IOException {
       return reader.readVarint32();
     }
   };
@@ -201,11 +201,11 @@ public abstract class TypeAdapter<E> {
       return varint32Size(value);
     }
 
-    @Override public void write(ProtoWriter writer, Integer value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Integer value) throws IOException {
       writer.writeVarint32(value);
     }
 
-    @Override public Integer read(ProtoReader reader) throws IOException {
+    @Override public Integer decode(ProtoReader reader) throws IOException {
       return reader.readVarint32();
     }
   };
@@ -215,11 +215,11 @@ public abstract class TypeAdapter<E> {
       return varint32Size(encodeZigZag32(value));
     }
 
-    @Override public void write(ProtoWriter writer, Integer value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Integer value) throws IOException {
       writer.writeVarint32(encodeZigZag32(value));
     }
 
-    @Override public Integer read(ProtoReader reader) throws IOException {
+    @Override public Integer decode(ProtoReader reader) throws IOException {
       return decodeZigZag32(reader.readVarint32());
     }
   };
@@ -229,11 +229,11 @@ public abstract class TypeAdapter<E> {
       return FIXED_32_SIZE;
     }
 
-    @Override public void write(ProtoWriter writer, Integer value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Integer value) throws IOException {
       writer.writeFixed32(value);
     }
 
-    @Override public Integer read(ProtoReader reader) throws IOException {
+    @Override public Integer decode(ProtoReader reader) throws IOException {
       return reader.readFixed32();
     }
   };
@@ -244,11 +244,11 @@ public abstract class TypeAdapter<E> {
       return varint64Size(value);
     }
 
-    @Override public void write(ProtoWriter writer, Long value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Long value) throws IOException {
       writer.writeVarint64(value);
     }
 
-    @Override public Long read(ProtoReader reader) throws IOException {
+    @Override public Long decode(ProtoReader reader) throws IOException {
       return reader.readVarint64();
     }
   };
@@ -259,11 +259,11 @@ public abstract class TypeAdapter<E> {
       return varint64Size(encodeZigZag64(value));
     }
 
-    @Override public void write(ProtoWriter writer, Long value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Long value) throws IOException {
       writer.writeVarint64(encodeZigZag64(value));
     }
 
-    @Override public Long read(ProtoReader reader) throws IOException {
+    @Override public Long decode(ProtoReader reader) throws IOException {
       return decodeZigZag64(reader.readVarint64());
     }
   };
@@ -273,11 +273,11 @@ public abstract class TypeAdapter<E> {
       return FIXED_64_SIZE;
     }
 
-    @Override public void write(ProtoWriter writer, Long value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Long value) throws IOException {
       writer.writeFixed64(value);
     }
 
-    @Override public Long read(ProtoReader reader) throws IOException {
+    @Override public Long decode(ProtoReader reader) throws IOException {
       return reader.readFixed64();
     }
   };
@@ -288,11 +288,11 @@ public abstract class TypeAdapter<E> {
       return FIXED_32_SIZE;
     }
 
-    @Override public void write(ProtoWriter writer, Float value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Float value) throws IOException {
       writer.writeFixed32(floatToIntBits(value));
     }
 
-    @Override public Float read(ProtoReader reader) throws IOException {
+    @Override public Float decode(ProtoReader reader) throws IOException {
       return Float.intBitsToFloat(reader.readFixed32());
     }
   };
@@ -302,11 +302,11 @@ public abstract class TypeAdapter<E> {
       return FIXED_64_SIZE;
     }
 
-    @Override public void write(ProtoWriter writer, Double value) throws IOException {
+    @Override public void encode(ProtoWriter writer, Double value) throws IOException {
       writer.writeFixed64(doubleToLongBits(value));
     }
 
-    @Override public Double read(ProtoReader reader) throws IOException {
+    @Override public Double decode(ProtoReader reader) throws IOException {
       return Double.longBitsToDouble(reader.readFixed64());
     }
   };
@@ -316,11 +316,11 @@ public abstract class TypeAdapter<E> {
       return utf8Length(value);
     }
 
-    @Override public void write(ProtoWriter writer, String value) throws IOException {
+    @Override public void encode(ProtoWriter writer, String value) throws IOException {
       writer.writeString(value);
     }
 
-    @Override public String read(ProtoReader reader) throws IOException {
+    @Override public String decode(ProtoReader reader) throws IOException {
       return reader.readString();
     }
   };
@@ -330,11 +330,11 @@ public abstract class TypeAdapter<E> {
       return value.size();
     }
 
-    @Override public void write(ProtoWriter writer, ByteString value) throws IOException {
+    @Override public void encode(ProtoWriter writer, ByteString value) throws IOException {
       writer.writeBytes(value);
     }
 
-    @Override public ByteString read(ProtoReader reader) throws IOException {
+    @Override public ByteString decode(ProtoReader reader) throws IOException {
       return reader.readBytes();
     }
   };
@@ -361,13 +361,13 @@ public abstract class TypeAdapter<E> {
         return size;
       }
 
-      @Override public void write(ProtoWriter writer, List<T> value) throws IOException {
+      @Override public void encode(ProtoWriter writer, List<T> value) throws IOException {
         for (int i = 0, count = value.size(); i < count; i++) {
-          adapter.write(writer, value.get(i));
+          adapter.encode(writer, value.get(i));
         }
       }
 
-      @Override public List<T> read(ProtoReader reader) throws IOException {
+      @Override public List<T> decode(ProtoReader reader) throws IOException {
         throw new UnsupportedOperationException();
       }
 
@@ -383,26 +383,26 @@ public abstract class TypeAdapter<E> {
         throw new UnsupportedOperationException();
       }
 
-      @Override public int serializedSize(int tag, List<T> value) {
+      @Override public int encodedSize(int tag, List<T> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
-          size += adapter.serializedSize(tag, value.get(i));
+          size += adapter.encodedSize(tag, value.get(i));
         }
         return size;
       }
 
-      @Override public void write(ProtoWriter writer, List<T> value) throws IOException {
+      @Override public void encode(ProtoWriter writer, List<T> value) throws IOException {
         throw new UnsupportedOperationException();
       }
 
-      @Override public void writeTagged(ProtoWriter writer, int tag, List<T> value)
+      @Override public void encodeTagged(ProtoWriter writer, int tag, List<T> value)
           throws IOException {
         for (int i = 0, count = value.size(); i < count; i++) {
-          adapter.writeTagged(writer, tag, value.get(i));
+          adapter.encodeTagged(writer, tag, value.get(i));
         }
       }
 
-      @Override public List<T> read(ProtoReader reader) throws IOException {
+      @Override public List<T> decode(ProtoReader reader) throws IOException {
         throw new UnsupportedOperationException();
       }
 
