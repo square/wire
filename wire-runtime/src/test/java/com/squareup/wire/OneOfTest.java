@@ -68,11 +68,11 @@ public class OneOfTest {
     assertThat(message.bar).isEqualTo(expectedBar);
 
     // Check serialized bytes.
-    byte[] bytes = adapter.writeBytes(message);
+    byte[] bytes = adapter.encode(message);
     assertThat(expectedBytes).isEqualTo(bytes);
 
     // Check result of deserialization.
-    OneOfMessage newMessage = adapter.readBytes(bytes);
+    OneOfMessage newMessage = adapter.decode(bytes);
     assertThat(newMessage.foo).isEqualTo(expectedFoo);
     assertThat(newMessage.bar).isEqualTo(expectedBar);
   }

@@ -47,23 +47,23 @@ public class UnknownFieldsTest {
     assertThat(v2.v2_f64).isEqualTo(new Long(98765L));
     assertThat(v2.v2_rs).containsExactly("1", "2");
     // Serialized
-    byte[] v2Bytes = v2Adapter.writeBytes(v2);
+    byte[] v2Bytes = v2Adapter.encode(v2);
 
     // Parse
-    VersionOne v1 = v1Adapter.readBytes(v2Bytes);
+    VersionOne v1 = v1Adapter.decode(v2Bytes);
     // v.1 fields are visible, v.2 fields are in unknownFieldSet
     assertThat(v1.i).isEqualTo(new Integer(111));
     // Serialized output should still contain the v.2 fields
-    byte[] v1Bytes = v1Adapter.writeBytes(v1);
+    byte[] v1Bytes = v1Adapter.encode(v1);
 
     // Unknown fields don't participate in equals() and hashCode()
     VersionOne v1Simple = new VersionOne.Builder().i(111).build();
     assertThat(v1).isEqualTo(v1Simple);
     assertThat(v1.hashCode()).isEqualTo(v1Simple.hashCode());
-    assertThat(v1Adapter.writeBytes(v1)).isNotSameAs(v1Adapter.writeBytes(v1Simple));
+    assertThat(v1Adapter.encode(v1)).isNotSameAs(v1Adapter.encode(v1Simple));
 
     // Re-parse
-    VersionTwo v2B = v2Adapter.readBytes(v1Bytes);
+    VersionTwo v2B = v2Adapter.decode(v1Bytes);
     assertThat(v2B.i).isEqualTo(new Integer(111));
     assertThat(v2B.v2_i).isEqualTo(new Integer(12345));
     assertThat(v2B.v2_s).isEqualTo("222");
@@ -74,9 +74,9 @@ public class UnknownFieldsTest {
     // "Modify" v1 via a merged builder, serialize, and re-parse
     VersionOne v1Modified = new VersionOne.Builder(v1).i(777).build();
     assertThat(v1Modified.i).isEqualTo(new Integer(777));
-    byte[] v1ModifiedBytes = v1Adapter.writeBytes(v1Modified);
+    byte[] v1ModifiedBytes = v1Adapter.encode(v1Modified);
 
-    VersionTwo v2C = v2Adapter.readBytes(v1ModifiedBytes);
+    VersionTwo v2C = v2Adapter.decode(v1ModifiedBytes);
     assertThat(v2C.i).isEqualTo(new Integer(777));
     assertThat(v2C.v2_i).isEqualTo(new Integer(12345));
     assertThat(v2C.v2_s).isEqualTo("222");

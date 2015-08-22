@@ -311,7 +311,7 @@ public class TestAllTypes {
 
   @Test
   public void testWrite() {
-    byte[] output = adapter.writeBytes(allTypes);
+    byte[] output = adapter.encode(allTypes);
     assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.size());
     assertThat(ByteString.of(output)).isEqualTo(TestAllTypesData.expectedOutput);
   }
@@ -319,13 +319,13 @@ public class TestAllTypes {
   @Test
   public void testWriteSource() throws IOException {
     Buffer sink = new Buffer();
-    adapter.write(sink, allTypes);
+    adapter.encode(sink, allTypes);
     assertThat(sink.readByteString()).isEqualTo(TestAllTypesData.expectedOutput);
   }
 
   @Test
   public void testWriteBytes() throws IOException {
-    byte[] output = adapter.writeBytes(allTypes);
+    byte[] output = adapter.encode(allTypes);
     assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.size());
     assertThat(ByteString.of(output)).isEqualTo(TestAllTypesData.expectedOutput);
   }
@@ -333,7 +333,7 @@ public class TestAllTypes {
   @Test
   public void testWriteStream() throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    adapter.writeStream(stream, allTypes);
+    adapter.encode(stream, allTypes);
     byte[] output = stream.toByteArray();
     assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.size());
     assertThat(ByteString.of(output)).isEqualTo(TestAllTypesData.expectedOutput);
@@ -341,10 +341,10 @@ public class TestAllTypes {
 
   @Test
   public void testReadSource() throws IOException {
-    byte[] data = adapter.writeBytes(allTypes);
+    byte[] data = adapter.encode(allTypes);
     Buffer input = new Buffer().write(data);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).read(input);
+    AllTypes parsed = wire.adapter(AllTypes.class).decode(input);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -360,9 +360,9 @@ public class TestAllTypes {
 
   @Test
   public void testReadBytes() throws IOException {
-    byte[] data = adapter.writeBytes(allTypes);
+    byte[] data = adapter.encode(allTypes);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).readBytes(data);
+    AllTypes parsed = wire.adapter(AllTypes.class).decode(data);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -378,10 +378,10 @@ public class TestAllTypes {
 
   @Test
   public void testReadStream() throws IOException {
-    byte[] data = adapter.writeBytes(allTypes);
+    byte[] data = adapter.encode(allTypes);
     InputStream stream = new ByteArrayInputStream(data);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).readStream(stream);
+    AllTypes parsed = wire.adapter(AllTypes.class).decode(stream);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -398,9 +398,9 @@ public class TestAllTypes {
   @Test
   public void testReadLongMessages() throws IOException {
     AllTypes allTypes = createAllTypes(50);
-    byte[] data = adapter.writeBytes(allTypes);
+    byte[] data = adapter.encode(allTypes);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).readBytes(data);
+    AllTypes parsed = wire.adapter(AllTypes.class).decode(data);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -431,10 +431,10 @@ public class TestAllTypes {
 
   @Test
   public void testReadFromSlowSource() throws IOException {
-    byte[] data = adapter.writeBytes(allTypes);
+    byte[] data = adapter.encode(allTypes);
 
     Source input = new SlowSource(new Buffer().write(data));
-    AllTypes parsed = wire.adapter(AllTypes.class).read(Okio.buffer(input));
+    AllTypes parsed = wire.adapter(AllTypes.class).decode(Okio.buffer(input));
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -450,21 +450,21 @@ public class TestAllTypes {
 
   @Test
   public void testReadNoExtension() throws IOException {
-    byte[] data = adapter.writeBytes(allTypes);
-    AllTypes parsed = new Wire().adapter(AllTypes.class).readBytes(data);
+    byte[] data = adapter.encode(allTypes);
+    AllTypes parsed = new Wire().adapter(AllTypes.class).decode(data);
     assertThat(allTypes).isNotEqualTo(parsed);
   }
 
   @Test
   public void testReadNonPacked() throws IOException {
-    AllTypes parsed = adapter.read(new Buffer().write(TestAllTypesData.nonPacked));
+    AllTypes parsed = adapter.decode(new Buffer().write(TestAllTypesData.nonPacked));
     assertThat(parsed).isEqualTo(allTypes);
   }
 
   @Test
   public void testToString() throws IOException {
-    byte[] data = adapter.writeBytes(allTypes);
-    AllTypes parsed = wire.adapter(AllTypes.class).readBytes(data);
+    byte[] data = adapter.encode(allTypes);
+    AllTypes parsed = wire.adapter(AllTypes.class).decode(data);
     assertThat(parsed.toString()).isEqualTo(TestAllTypesData.expectedToString);
   }
 
@@ -545,7 +545,7 @@ public class TestAllTypes {
     System.arraycopy(TestAllTypesData.expectedOutput.toByteArray(), 17, data, index,
         TestAllTypesData.expectedOutput.size() - 17);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).readBytes(data);
+    AllTypes parsed = wire.adapter(AllTypes.class).decode(data);
     assertThat(parsed).isEqualTo(allTypes);
   }
 
@@ -554,7 +554,7 @@ public class TestAllTypes {
     AllTypes.Builder builder = getBuilder();
     builder.addVarint(10000, 1);
     AllTypes withUnknownField = builder.build();
-    byte[] data = adapter.writeBytes(withUnknownField);
+    byte[] data = adapter.encode(withUnknownField);
     int count = TestAllTypesData.expectedOutput.size();
     assertThat(data.length).isEqualTo(count + 4);
     assertThat(data[count]).isEqualTo((byte) 0x80);

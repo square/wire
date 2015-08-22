@@ -106,10 +106,10 @@ public class WireTest {
     Wire wire = new Wire();
     TypeAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
-    byte[] result = adapter.writeBytes(msg);
+    byte[] result = adapter.encode(msg);
     assertThat(result.length).isEqualTo(46);
 
-    SimpleMessage newMsg = adapter.readBytes(result);
+    SimpleMessage newMsg = adapter.decode(result);
     assertThat(newMsg.optional_int32).isEqualTo(new Integer(789));
     assertThat(newMsg.optional_nested_msg.bb).isEqualTo(new Integer(2));
     assertThat(newMsg.optional_external_msg.f).isEqualTo(new Float(99.9F));
@@ -150,8 +150,8 @@ public class WireTest {
     Wire wire = new Wire();
     TypeAdapter<Person> adapter = wire.adapter(Person.class);
 
-    byte[] data = adapter.writeBytes(person);
-    adapter.readBytes(data);
+    byte[] data = adapter.encode(person);
+    adapter.decode(data);
   }
 
   @Test
@@ -180,10 +180,10 @@ public class WireTest {
     Wire wire = new Wire(Ext_simple_message.class);
     TypeAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
-    byte[] result = adapter.writeBytes(msg);
+    byte[] result = adapter.encode(msg);
     assertThat(result.length).isEqualTo(29);
 
-    SimpleMessage newMsg = adapter.readBytes(result);
+    SimpleMessage newMsg = adapter.decode(result);
     assertThat(newMsg.optional_external_msg.getExtension(fooext)).containsExactly(444, 555);
     assertThat(newMsg.optional_external_msg.getExtension(barext)).isEqualTo(new Integer(333));
     assertThat(newMsg.optional_external_msg.getExtension(bazext)).isEqualTo(new Integer(222));
@@ -205,13 +205,13 @@ public class WireTest {
     Wire wireExt = new Wire(Ext_simple_message.class);
     TypeAdapter<SimpleMessage> adapterExt = wireExt.adapter(SimpleMessage.class);
 
-    byte[] data = adapterNoExt.writeBytes(msg);
+    byte[] data = adapterNoExt.encode(msg);
 
     // Change BAZ enum to a value not known by this client.
     data[4] = 17;
 
     // Parse the altered message.
-    SimpleMessage newMsg = adapterExt.readBytes(data);
+    SimpleMessage newMsg = adapterExt.decode(data);
 
     // Original value shows up as an extension.
     assertThat(msg.toString()).contains("squareup.protos.simple.nested_enum_ext=BAZ");
@@ -219,7 +219,7 @@ public class WireTest {
     assertThat(newMsg.toString()).contains("ExternalMessage{}");
 
     // Serialized outputs are the same.
-    byte[] newData = adapterExt.writeBytes(newMsg);
+    byte[] newData = adapterExt.encode(newMsg);
     assertThat(data).isEqualTo(newData);
   }
 
@@ -258,10 +258,10 @@ public class WireTest {
     Wire wire = new Wire();
     TypeAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
-    byte[] result = adapter.writeBytes(msg);
+    byte[] result = adapter.encode(msg);
     assertThat(result.length).isEqualTo(21);
 
-    SimpleMessage newMsg = adapter.readBytes(result);
+    SimpleMessage newMsg = adapter.decode(result);
     assertThat(newMsg.optional_external_msg.getExtension(fooext)).isNull();
     assertThat(newMsg.optional_external_msg.getExtension(barext)).isNull();
     assertThat(newMsg.optional_external_msg.getExtension(bazext)).isNull();
@@ -294,8 +294,8 @@ public class WireTest {
     TypeAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
     // Empty lists and null lists occupy 0 bytes in the wire encoding
-    byte[] noListBytes = adapter.writeBytes(noListMessage);
-    byte[] emptyListBytes = adapter.writeBytes(emptyListMessage);
+    byte[] noListBytes = adapter.encode(noListMessage);
+    byte[] emptyListBytes = adapter.encode(emptyListMessage);
 
     assertThat(noListBytes.length).isEqualTo(2);
     assertThat(emptyListBytes.length).isEqualTo(2);
@@ -304,8 +304,8 @@ public class WireTest {
     assertThat(emptyListBytes[1]).isEqualTo(noListBytes[1]);
 
     // Parsed results have a null list
-    SimpleMessage noListParsed = adapter.readBytes(noListBytes);
-    SimpleMessage emptyListParsed = adapter.readBytes(emptyListBytes);
+    SimpleMessage noListParsed = adapter.decode(noListBytes);
+    SimpleMessage emptyListParsed = adapter.decode(emptyListBytes);
 
     assertThat(noListParsed.repeated_double).isNotNull();
     assertThat(noListParsed.repeated_double).hasSize(0);
@@ -327,13 +327,13 @@ public class WireTest {
     Wire wire = new Wire();
     TypeAdapter<Person> adapter = wire.adapter(Person.class);
 
-    byte[] data = adapter.writeBytes(person);
+    byte[] data = adapter.encode(person);
     assertThat(data[27]).isEqualTo((byte) PhoneType.WORK.getValue());
 
     // Corrupt the PhoneNumber type field with an undefined value
     data[27] = 17;
     // Parsed PhoneNumber has no value set
-    Person result = adapter.readBytes(data);
+    Person result = adapter.decode(data);
     assertThat(result.phone.get(0).type).isNull();
 
     // The value 17 will be stored as an unknown varint with tag number 2
@@ -347,13 +347,13 @@ public class WireTest {
     assertThat(value.value).isEqualTo(Long.valueOf(17L));
 
     // Serialize again, value is preserved
-    byte[] newData = adapter.writeBytes(result);
+    byte[] newData = adapter.encode(result);
     assertThat(data).isEqualTo(newData);
   }
 
   @Test public void missingRepeatedAndPackedFieldsBecomesEmptyList() throws IOException {
     byte[] bytes = new byte[0];
-    RepeatedAndPacked data = new Wire().adapter(RepeatedAndPacked.class).readBytes(bytes);
+    RepeatedAndPacked data = new Wire().adapter(RepeatedAndPacked.class).decode(bytes);
     assertThat(data.rep_int32).isEqualTo(Collections.emptyList());
     assertThat(data.pack_int32).isEqualTo(Collections.emptyList());
   }

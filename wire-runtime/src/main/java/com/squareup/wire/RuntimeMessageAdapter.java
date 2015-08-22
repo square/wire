@@ -157,7 +157,7 @@ final class RuntimeMessageAdapter<M extends Message> extends TypeAdapter<M> {
     for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
       Object value = tagBinding.get(message);
       if (value == null) continue;
-      size += ((TypeAdapter<Object>) tagBinding.adapter).serializedSize(tagBinding.tag, value);
+      size += ((TypeAdapter<Object>) tagBinding.adapter).encodedSize(tagBinding.tag, value);
     }
 
     size += message.getUnknownFieldsSerializedSize();
@@ -194,11 +194,11 @@ final class RuntimeMessageAdapter<M extends Message> extends TypeAdapter<M> {
     return result;
   }
 
-  @Override public void write(ProtoWriter writer, M message) throws IOException {
+  @Override public void encode(ProtoWriter writer, M message) throws IOException {
     for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
       Object value = tagBinding.get(message);
       if (value == null) continue;
-      ((TypeAdapter<Object>) tagBinding.adapter).writeTagged(writer, tagBinding.tag, value);
+      ((TypeAdapter<Object>) tagBinding.adapter).encodeTagged(writer, tagBinding.tag, value);
     }
     message.writeUnknownFieldMap(writer);
   }
@@ -244,7 +244,7 @@ final class RuntimeMessageAdapter<M extends Message> extends TypeAdapter<M> {
 
   // Reading
 
-  @Override public M read(ProtoReader reader) throws IOException {
+  @Override public M decode(ProtoReader reader) throws IOException {
     Builder<M> builder = newBuilder();
     Storage storage = new Storage();
 
@@ -258,7 +258,7 @@ final class RuntimeMessageAdapter<M extends Message> extends TypeAdapter<M> {
       }
 
       try {
-        Object value = tagBinding.singleAdapter.read(reader);
+        Object value = tagBinding.singleAdapter.decode(reader);
         if (tagBinding.label.isRepeated()) {
           storage.add(tag, value);
         } else {
@@ -282,7 +282,7 @@ final class RuntimeMessageAdapter<M extends Message> extends TypeAdapter<M> {
 
   private <T> void readUnknownField(
       Builder builder, ProtoReader input, int tag, TypeAdapter<T> typeAdapter) throws IOException {
-    builder.ensureUnknownFieldMap().add(tag, typeAdapter.read(input), typeAdapter);
+    builder.ensureUnknownFieldMap().add(tag, typeAdapter.decode(input), typeAdapter);
   }
 
   private static class Storage {

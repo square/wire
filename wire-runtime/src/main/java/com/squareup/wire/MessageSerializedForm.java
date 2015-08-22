@@ -28,7 +28,7 @@ final class MessageSerializedForm implements Serializable {
 
   public MessageSerializedForm(Message message, Class<? extends Message> messageClass) {
     //noinspection unchecked
-    this.bytes = Message.WIRE.adapter((Class<Message>) messageClass).writeBytes(message);
+    this.bytes = Message.WIRE.adapter((Class<Message>) messageClass).encode(message);
     this.messageClass = messageClass;
   }
 
@@ -37,7 +37,7 @@ final class MessageSerializedForm implements Serializable {
     try {
       // Extensions are not supported at this time. Extension fields will be added to the
       // unknownFields map.
-      return adapter.readBytes(bytes);
+      return adapter.decode(bytes);
     } catch (IOException e) {
       throw new StreamCorruptedException(e.getMessage());
     }

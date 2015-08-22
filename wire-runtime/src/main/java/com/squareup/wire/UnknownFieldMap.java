@@ -35,12 +35,12 @@ final class UnknownFieldMap {
       this.adapter = adapter;
     }
 
-    int serializedSize(int tag) {
-      return adapter.serializedSize(tag, value);
+    int encodedSize(int tag) {
+      return adapter.encodedSize(tag, value);
     }
 
-    void write(int tag, ProtoWriter output) throws IOException {
-      adapter.writeTagged(output, tag, value);
+    void encodeTagged(int tag, ProtoWriter output) throws IOException {
+      adapter.encodeTagged(output, tag, value);
     }
   }
 
@@ -79,22 +79,22 @@ final class UnknownFieldMap {
     values.add(value);
   }
 
-  int getSerializedSize() {
+  int encodedSize() {
     int size = 0;
     for (Map.Entry<Integer, List<Value>> entry : fieldMap.entrySet()) {
       int tag = entry.getKey();
       for (Value value : entry.getValue()) {
-        size += value.serializedSize(tag);
+        size += value.encodedSize(tag);
       }
     }
     return size;
   }
 
-  void write(ProtoWriter output) throws IOException {
+  void encode(ProtoWriter output) throws IOException {
     for (Map.Entry<Integer, List<Value>> entry : fieldMap.entrySet()) {
       int tag = entry.getKey();
       for (Value value : entry.getValue()) {
-        value.write(tag, output);
+        value.encodeTagged(tag, output);
       }
     }
   }

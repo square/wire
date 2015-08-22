@@ -192,14 +192,14 @@ public final class Wire {
       return delegate.encodedSize(value);
     }
 
-    @Override public void write(ProtoWriter writer, M value) throws IOException {
+    @Override public void encode(ProtoWriter writer, M value) throws IOException {
       if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
-      delegate.write(writer, value);
+      delegate.encode(writer, value);
     }
 
-    @Override public M read(ProtoReader reader) throws IOException {
+    @Override public M decode(ProtoReader reader) throws IOException {
       if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
-      return delegate.read(reader);
+      return delegate.decode(reader);
     }
   }
 }
