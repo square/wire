@@ -90,7 +90,7 @@ public abstract class TypeAdapter<E> {
    * The size of {@code tag} and non-null {@code value} in the wire format. This size includes the
    * tag, type, length-delimited prefix (should the type require one), and value.
    */
-  int serializedSize(int tag, E value) {
+  public int serializedSize(int tag, E value) {
     int size = encodedSize(value);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       size += varint32Size(size);
@@ -102,7 +102,7 @@ public abstract class TypeAdapter<E> {
   public abstract void write(ProtoWriter writer, E value) throws IOException;
 
   /** Write {@code tag} and non-null {@code value} to {@code writer}. */
-  void writeTagged(ProtoWriter writer, int tag, E value) throws IOException {
+  public void writeTagged(ProtoWriter writer, int tag, E value) throws IOException {
     writer.writeTag(tag, fieldEncoding);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       writer.writeVarint32(encodedSize(value));
@@ -383,7 +383,7 @@ public abstract class TypeAdapter<E> {
         throw new UnsupportedOperationException();
       }
 
-      @Override int serializedSize(int tag, List<T> value) {
+      @Override public int serializedSize(int tag, List<T> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
           size += adapter.serializedSize(tag, value.get(i));
@@ -395,7 +395,8 @@ public abstract class TypeAdapter<E> {
         throw new UnsupportedOperationException();
       }
 
-      @Override void writeTagged(ProtoWriter writer, int tag, List<T> value) throws IOException {
+      @Override public void writeTagged(ProtoWriter writer, int tag, List<T> value)
+          throws IOException {
         for (int i = 0, count = value.size(); i < count; i++) {
           adapter.writeTagged(writer, tag, value.get(i));
         }

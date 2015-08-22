@@ -57,8 +57,10 @@ final class SchemaTypeAdapterFactory {
     MessageType type = (MessageType) schema.getType(typeName);
     SchemaMessageAdapter messageAdapter = new SchemaMessageAdapter();
     for (Field field : type.fields()) {
-      messageAdapter.fieldAdapters.put(field.tag(), new FieldAdapter(
-          field.name(), field.isRepeated(), getTypeAdapter(field.type())));
+      FieldAdapter fieldAdapter = new FieldAdapter(
+          field.name(), field.tag(), field.isRepeated(), getTypeAdapter(field.type()));
+      messageAdapter.fieldsByName.put(field.name(), fieldAdapter);
+      messageAdapter.fieldsByTag.put(field.tag(), fieldAdapter);
     }
     return messageAdapter;
   }
@@ -98,7 +100,14 @@ final class SchemaTypeAdapterFactory {
     }
 
     @Override public void write(ProtoWriter writer, Object value) throws IOException {
-      throw new UnsupportedOperationException();
+      if (value instanceof String) {
+        EnumConstant constant = enumType.constant((String) value);
+        writer.writeVarint32(constant.tag());
+      } else if (value instanceof Integer) {
+        writer.writeVarint32((Integer) value);
+      } else {
+        throw new IllegalArgumentException("unexpected " + enumType.name() + ": " + value);
+      }
     }
 
     @Override public Object read(ProtoReader reader) throws IOException {
@@ -109,7 +118,8 @@ final class SchemaTypeAdapterFactory {
   }
 
   static final class SchemaMessageAdapter extends TypeAdapter<Map<String, Object>> {
-    final Map<Integer, FieldAdapter> fieldAdapters = new LinkedHashMap<>();
+    final Map<Integer, FieldAdapter> fieldsByTag = new LinkedHashMap<>();
+    final Map<String, FieldAdapter> fieldsByName = new LinkedHashMap<>();
 
     public SchemaMessageAdapter() {
       super(FieldEncoding.LENGTH_DELIMITED, Map.class);
@@ -120,11 +130,37 @@ final class SchemaTypeAdapterFactory {
     }
 
     @Override public int encodedSize(Map<String, Object> value) {
-      throw new UnsupportedOperationException();
+      int size = 0;
+      for (Map.Entry<String, Object> entry : value.entrySet()) {
+        FieldAdapter fieldAdapter = fieldsByName.get(entry.getKey());
+        if (fieldAdapter == null) continue; // Ignore unknown values!
+
+        TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) fieldAdapter.typeAdapter;
+        if (fieldAdapter.repeated) {
+          for (Object o : (List<?>) entry.getValue()) {
+            size += typeAdapter.serializedSize(fieldAdapter.tag, o);
+          }
+        } else {
+          size += typeAdapter.serializedSize(fieldAdapter.tag, entry.getValue());
+        }
+      }
+      return size;
     }
 
     @Override public void write(ProtoWriter writer, Map<String, Object> value) throws IOException {
-      throw new UnsupportedOperationException();
+      for (Map.Entry<String, Object> entry : value.entrySet()) {
+        FieldAdapter fieldAdapter = fieldsByName.get(entry.getKey());
+        if (fieldAdapter == null) continue; // Ignore unknown values!
+
+        TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) fieldAdapter.typeAdapter;
+        if (fieldAdapter.repeated) {
+          for (Object o : (List<?>) entry.getValue()) {
+            typeAdapter.writeTagged(writer, fieldAdapter.tag, o);
+          }
+        } else {
+          typeAdapter.writeTagged(writer, fieldAdapter.tag, entry.getValue());
+        }
+      }
     }
 
     @Override public Map<String, Object> read(ProtoReader reader) throws IOException {
@@ -132,10 +168,10 @@ final class SchemaTypeAdapterFactory {
 
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
-        FieldAdapter fieldAdapter = fieldAdapters.get(tag);
+        FieldAdapter fieldAdapter = fieldsByTag.get(tag);
         if (fieldAdapter == null) {
           fieldAdapter = new FieldAdapter(
-              Integer.toString(tag), true, reader.peekFieldEncoding().rawTypeAdapter());
+              Integer.toString(tag), tag, true, reader.peekFieldEncoding().rawTypeAdapter());
         }
 
         Object value = fieldAdapter.typeAdapter.read(reader);
@@ -161,11 +197,13 @@ final class SchemaTypeAdapterFactory {
 
   static class FieldAdapter {
     final String name;
+    final int tag;
     final boolean repeated;
     final TypeAdapter<?> typeAdapter;
 
-    public FieldAdapter(String name, boolean repeated, TypeAdapter<?> typeAdapter) {
+    public FieldAdapter(String name, int tag, boolean repeated, TypeAdapter<?> typeAdapter) {
       this.name = name;
+      this.tag = tag;
       this.repeated = repeated;
       this.typeAdapter = typeAdapter;
     }
