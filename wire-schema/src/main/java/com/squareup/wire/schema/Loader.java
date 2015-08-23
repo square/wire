@@ -92,8 +92,8 @@ public final class Loader {
     loaded.put(path, protoFile);
 
     // Recursively load dependencies.
-    for (String dependency : element.dependencies()) {
-      load(dependency);
+    for (String importedFile : element.imports()) {
+      load(importedFile);
     }
   }
 

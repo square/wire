@@ -91,6 +91,13 @@ public final class Service {
     options.link(linker);
   }
 
+  void validate(Linker linker) {
+    linker = linker.withContext(this);
+    for (Rpc rpc : rpcs) {
+      rpc.validate(linker);
+    }
+  }
+
   Service retainAll(Set<String> identifiers) {
     String serviceName = name.toString();
     if (identifiers.contains(serviceName)) {

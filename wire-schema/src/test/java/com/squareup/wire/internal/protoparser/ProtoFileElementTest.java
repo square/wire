@@ -57,7 +57,7 @@ public final class ProtoFileElementTest {
   @Test public void simpleWithImportsToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .dependencies(ImmutableList.of("example.other"))
+        .imports(ImmutableList.of("example.other"))
         .types(ImmutableList.of(element))
         .build();
     String expected = ""
@@ -72,16 +72,16 @@ public final class ProtoFileElementTest {
   @Test public void addMultipleDependencies() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .dependencies(ImmutableList.of("example.other", "example.another"))
+        .imports(ImmutableList.of("example.other", "example.another"))
         .types(ImmutableList.of(element))
         .build();
-    assertThat(file.dependencies()).hasSize(2);
+    assertThat(file.imports()).hasSize(2);
   }
 
   @Test public void simpleWithPublicImportsToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .publicDependencies(ImmutableList.of("example.other"))
+        .publicImports(ImmutableList.of("example.other"))
         .types(ImmutableList.of(element))
         .build();
     String expected = ""
@@ -96,17 +96,17 @@ public final class ProtoFileElementTest {
   @Test public void addMultiplePublicDependencies() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .publicDependencies(ImmutableList.of("example.other", "example.another"))
+        .publicImports(ImmutableList.of("example.other", "example.another"))
         .types(ImmutableList.of(element))
         .build();
-    assertThat(file.publicDependencies()).hasSize(2);
+    assertThat(file.publicImports()).hasSize(2);
   }
 
   @Test public void simpleWithBothImportsToSchema() {
     TypeElement element = MessageElement.builder(location).name("Message").build();
     ProtoFileElement file = ProtoFileElement.builder(location)
-        .dependencies(ImmutableList.of("example.thing"))
-        .publicDependencies(ImmutableList.of("example.other"))
+        .imports(ImmutableList.of("example.thing"))
+        .publicImports(ImmutableList.of("example.other"))
         .types(ImmutableList.of(element))
         .build();
     String expected = ""
@@ -221,8 +221,8 @@ public final class ProtoFileElementTest {
         .build();
     ProtoFileElement file = ProtoFileElement.builder(location)
         .packageName("example.simple")
-        .dependencies(ImmutableList.of("example.thing"))
-        .publicDependencies(ImmutableList.of("example.other"))
+        .imports(ImmutableList.of("example.thing"))
+        .publicImports(ImmutableList.of("example.other"))
         .types(ImmutableList.of(element1, element2))
         .services(ImmutableList.of(service1, service2))
         .extendDeclarations(ImmutableList.of(extend1, extend2))

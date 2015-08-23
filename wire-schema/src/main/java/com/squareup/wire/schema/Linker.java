@@ -33,6 +33,7 @@ final class Linker {
   private final ImmutableList<ProtoFile> protoFiles;
   private final Map<String, Type> protoTypeNames;
   private final Map<Type.Name, Map<String, Field>> extensionsMap;
+  private final Multimap<String, String> imports;
   private final List<String> errors;
   private final List<Object> contextStack;
 
@@ -40,6 +41,7 @@ final class Linker {
     this.protoFiles = ImmutableList.copyOf(protoFiles);
     this.protoTypeNames = new LinkedHashMap<>();
     this.extensionsMap = new LinkedHashMap<>();
+    this.imports = LinkedHashMultimap.create();
     this.contextStack = Collections.emptyList();
     this.errors = new ArrayList<>();
   }
@@ -48,6 +50,7 @@ final class Linker {
     this.protoFiles = enclosing.protoFiles;
     this.protoTypeNames = enclosing.protoTypeNames;
     this.extensionsMap = enclosing.extensionsMap;
+    this.imports = enclosing.imports;
     this.contextStack = Util.concatenate(enclosing.contextStack, additionalContext);
     this.errors = enclosing.errors;
   }
@@ -102,10 +105,25 @@ final class Linker {
       }
     }
 
+    // Compute public imports so we know that importing a.proto also imports b.proto and c.proto.
+    Multimap<String, String> publicImports = LinkedHashMultimap.create();
+    for (ProtoFile protoFile : protoFiles) {
+      publicImports.putAll(protoFile.location().path(), protoFile.publicImports());
+    }
+    // For each proto, gather its imports and its transitive imports.
+    for (ProtoFile protoFile : protoFiles) {
+      Collection<String> sink = imports.get(protoFile.location().path());
+      addImports(sink, protoFile.imports(), publicImports);
+      addImports(sink, protoFile.publicImports(), publicImports);
+    }
+
     // Validate the linked schema.
     for (ProtoFile protoFile : protoFiles) {
       for (Type type : protoFile.types()) {
         type.validate(this);
+      }
+      for (Service service : protoFile.services()) {
+        service.validate(this);
       }
       for (Extend extend : protoFile.extendList()) {
         extend.validate(this);
@@ -117,6 +135,16 @@ final class Linker {
     }
 
     return new Schema(protoFiles);
+  }
+
+  /** Add all paths in {@code paths} to {@code sink}, plus their public imports, recursively. */
+  private void addImports(Collection<String> sink,
+      Collection<String> paths, Multimap<String, String> publicImports) {
+    for (String path : paths) {
+      if (sink.add(path)) {
+        addImports(sink, publicImports.get(path), publicImports);
+      }
+    }
   }
 
   private void register(Type type) {
@@ -263,6 +291,15 @@ final class Linker {
         }
         addError("%s", error);
       }
+    }
+  }
+
+  void validateImport(Location location, Type.Name type) {
+    if (type.isScalar()) return;
+    String path = location.path();
+    String requiredImport = get(type).location().path();
+    if (!path.equals(requiredImport) && !imports.containsEntry(path, requiredImport)) {
+      addError("%s needs to import %s", path, requiredImport);
     }
   }
 

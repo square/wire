@@ -956,7 +956,7 @@ public final class ProtoParserTest {
   @Test public void imports() throws Exception {
     String proto = "import \"src/test/resources/unittest_import.proto\";\n";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .dependencies(ImmutableList.of(
+        .imports(ImmutableList.of(
             "src/test/resources/unittest_import.proto"))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
@@ -965,7 +965,7 @@ public final class ProtoParserTest {
   @Test public void publicImports() throws Exception {
     String proto = "import public \"src/test/resources/unittest_import.proto\";\n";
     ProtoFileElement expected = ProtoFileElement.builder(location)
-        .publicDependencies(ImmutableList.of("src/test/resources/unittest_import.proto"))
+        .publicImports(ImmutableList.of("src/test/resources/unittest_import.proto"))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }

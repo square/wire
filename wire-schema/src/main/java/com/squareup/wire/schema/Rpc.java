@@ -68,4 +68,10 @@ public final class Rpc {
     linker = linker.withContext(this);
     options.link(linker);
   }
+
+  void validate(Linker linker) {
+    linker = linker.withContext(this);
+    linker.validateImport(location(), requestType);
+    linker.validateImport(location(), responseType);
+  }
 }
