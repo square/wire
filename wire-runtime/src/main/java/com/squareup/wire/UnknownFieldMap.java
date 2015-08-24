@@ -27,9 +27,9 @@ final class UnknownFieldMap {
   static final class Value<T> {
     final int tag;
     final T value;
-    final TypeAdapter<T> adapter;
+    final WireAdapter<T> adapter;
 
-    public Value(int tag, T value, TypeAdapter<T> adapter) {
+    public Value(int tag, T value, WireAdapter<T> adapter) {
       this.tag = tag;
       this.value = value;
       this.adapter = adapter;
@@ -58,7 +58,7 @@ final class UnknownFieldMap {
     }
   }
 
-  <T> void add(int tag, T value, TypeAdapter<T> adapter) throws IOException {
+  <T> void add(int tag, T value, WireAdapter<T> adapter) throws IOException {
     addElement(tag, new Value<T>(tag, value, adapter));
   }
 

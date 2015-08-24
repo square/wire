@@ -20,7 +20,7 @@ import com.squareup.wire.ExtendableMessage.ExtendableBuilder;
 final class ExtensionTagBinding<M extends Message> extends TagBinding<M, Message.Builder<M>> {
   private final Extension<?, ?> extension;
 
-  public ExtensionTagBinding(Extension<?, ?> extension, TypeAdapter<?> singleAdapter) {
+  public ExtensionTagBinding(Extension<?, ?> extension, WireAdapter<?> singleAdapter) {
     super(extension.getLabel(), extension.getDatatype(), extension.getName(), extension.getTag(),
         false, singleAdapter, extension.getMessageType());
     this.extension = extension;

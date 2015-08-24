@@ -17,7 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireAdapter;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.Map;
@@ -28,7 +28,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public final class SchemaTypeAdapterTest {
+public final class SchemaWireAdapterTest {
   final Schema coffeeSchema = new SchemaBuilder()
       .add("coffee.proto", ""
           + "message CafeDrink {\n"
@@ -55,7 +55,7 @@ public final class SchemaTypeAdapterTest {
           + "}\n")
       .build();
 
-  final SchemaTypeAdapterFactory typeAdapterFactory = new SchemaTypeAdapterFactory(coffeeSchema);
+  final SchemaWireAdapterFactory factory = new SchemaWireAdapterFactory(coffeeSchema);
 
   // Golden data emitted by protoc using the schema above.
   final ImmutableMap<String, Object> dansCoffee = ImmutableMap.<String, Object>of(
@@ -78,22 +78,22 @@ public final class SchemaTypeAdapterTest {
   final ByteString jessesCoffeeEncoded = ByteString.decodeBase64(
       "CgVKZXNzZRIUCgljb2xvbWJpYW4RAAAAAAAA8D8SFAoJY29sb21iaWFuEQAAAAAAAPA/GANwGA==");
 
-  @Test public void typeAdapterDecode() throws Exception {
+  @Test public void decode() throws Exception {
     MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
-    TypeAdapter<Map<String, Object>> adapter = typeAdapterFactory.get(cafeDrink.name());
+    WireAdapter<Map<String, Object>> adapter = factory.get(cafeDrink.name());
     assertThat(adapter.decode(new Buffer().write(dansCoffeeEncoded))).isEqualTo(dansCoffee);
     assertThat(adapter.decode(new Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee);
   }
 
-  @Test public void typeAdapterEncode() throws IOException {
+  @Test public void encode() throws IOException {
     MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
-    TypeAdapter<Map<String, Object>> adapter = typeAdapterFactory.get(cafeDrink.name());
+    WireAdapter<Map<String, Object>> adapter = factory.get(cafeDrink.name());
     assertThat(ByteString.of(adapter.encode(dansCoffee))).isEqualTo(dansCoffeeEncoded);
     assertThat(ByteString.of(adapter.encode(jessesCoffee))).isEqualTo(jessesCoffeeEncoded);
   }
 
   @Test public void groupsIgnored() throws IOException {
-    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -105,7 +105,7 @@ public final class SchemaTypeAdapterTest {
             + "  // }\n"
             + "  optional string b = 4;\n"
             + "}\n")
-        .buildTypeAdapter("Message");
+        .buildWireAdapter("Message");
     ByteString encoded = ByteString.decodeHex("0a0161135a02080114135a02100214135a090803720568656c6c"
         + "6f141baa010208011c1baa010210021c1baa01090803720568656c6c6f1c220162");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
@@ -115,12 +115,12 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void startGroupWithoutEndGroup() throws IOException {
-    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
             + "}\n")
-        .buildTypeAdapter("Message");
+        .buildWireAdapter("Message");
     ByteString encoded = ByteString.decodeHex("130a0161");
     try {
       adapter.decode(new Buffer().write(encoded));
@@ -131,12 +131,12 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void unexpectedEndGroup() throws IOException {
-    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
             + "}\n")
-        .buildTypeAdapter("Message");
+        .buildWireAdapter("Message");
     ByteString encoded = ByteString.decodeHex("0a01611c");
     try {
       adapter.decode(new Buffer().write(encoded));
@@ -147,12 +147,12 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void endGroupDoesntMatchStartGroup() throws IOException {
-    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
             + "}\n")
-        .buildTypeAdapter("Message");
+        .buildWireAdapter("Message");
     ByteString encoded = ByteString.decodeHex("130a01611c");
     try {
       adapter.decode(new Buffer().write(encoded));
@@ -163,12 +163,12 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void decodeToUnpacked() throws IOException {
-    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = false];\n"
             + "}\n")
-        .buildTypeAdapter("Message");
+        .buildWireAdapter("Message");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
     ByteString packedEncoded = ByteString.decodeHex("d005d904d005bd05");
@@ -178,12 +178,12 @@ public final class SchemaTypeAdapterTest {
   }
 
   @Test public void decodeToPacked() throws IOException {
-    TypeAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = true];\n"
             + "}\n")
-        .buildTypeAdapter("Message");
+        .buildWireAdapter("Message");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
     ByteString packedEncoded = ByteString.decodeHex("d005d904d005bd05");

@@ -38,7 +38,7 @@ import static com.squareup.wire.ProtoWriter.varint64Size;
 import static java.lang.Double.doubleToLongBits;
 import static java.lang.Float.floatToIntBits;
 
-public abstract class TypeAdapter<E> {
+public abstract class WireAdapter<E> {
   static final int FIXED_BOOL_SIZE = 1;
   static final int FIXED_32_SIZE = 4;
   static final int FIXED_64_SIZE = 8;
@@ -46,20 +46,20 @@ public abstract class TypeAdapter<E> {
   final FieldEncoding fieldEncoding;
   final Class<?> javaType;
 
-  public TypeAdapter(FieldEncoding fieldEncoding, Class<?> javaType) {
+  public WireAdapter(FieldEncoding fieldEncoding, Class<?> javaType) {
     this.fieldEncoding = fieldEncoding;
     this.javaType = javaType;
   }
 
-  static TypeAdapter<?> get(Wire wire, Message.Datatype datatype,
+  static WireAdapter<?> get(Wire wire, Message.Datatype datatype,
       Class<? extends Message> messageType, Class<? extends ProtoEnum> enumType) {
     switch (datatype) {
       case BOOL: return BOOL;
-      case BYTES: return TypeAdapter.BYTES;
+      case BYTES: return WireAdapter.BYTES;
       case DOUBLE: return DOUBLE;
       case ENUM: return wire.enumAdapter(enumType);
-      case FIXED32: return TypeAdapter.FIXED32;
-      case FIXED64: return TypeAdapter.FIXED64;
+      case FIXED32: return WireAdapter.FIXED32;
+      case FIXED64: return WireAdapter.FIXED64;
       case FLOAT: return FLOAT;
       case INT32: return INT32;
       case INT64: return INT64;
@@ -70,7 +70,7 @@ public abstract class TypeAdapter<E> {
       case SINT64: return SINT64;
       case STRING: return STRING;
       case UINT32: return UINT32;
-      case UINT64: return TypeAdapter.UINT64;
+      case UINT64: return WireAdapter.UINT64;
       default: throw new AssertionError("Unknown data type " + datatype);
     }
   }
@@ -164,7 +164,7 @@ public abstract class TypeAdapter<E> {
     return value.toString();
   }
 
-  public static final TypeAdapter<Boolean> BOOL = new TypeAdapter<Boolean>(
+  public static final WireAdapter<Boolean> BOOL = new WireAdapter<Boolean>(
       FieldEncoding.VARINT, Boolean.class) {
     @Override public int encodedSize(Boolean value) {
       return FIXED_BOOL_SIZE;
@@ -181,7 +181,7 @@ public abstract class TypeAdapter<E> {
       throw new IOException(String.format("Invalid boolean value 0x%02x", value));
     }
   };
-  public static final TypeAdapter<Integer> INT32 = new TypeAdapter<Integer>(
+  public static final WireAdapter<Integer> INT32 = new WireAdapter<Integer>(
       FieldEncoding.VARINT, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return int32Size(value);
@@ -195,7 +195,7 @@ public abstract class TypeAdapter<E> {
       return reader.readVarint32();
     }
   };
-  public static final TypeAdapter<Integer> UINT32 = new TypeAdapter<Integer>(
+  public static final WireAdapter<Integer> UINT32 = new WireAdapter<Integer>(
       FieldEncoding.VARINT, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return varint32Size(value);
@@ -209,7 +209,7 @@ public abstract class TypeAdapter<E> {
       return reader.readVarint32();
     }
   };
-  public static final TypeAdapter<Integer> SINT32 = new TypeAdapter<Integer>(
+  public static final WireAdapter<Integer> SINT32 = new WireAdapter<Integer>(
       FieldEncoding.VARINT, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return varint32Size(encodeZigZag32(value));
@@ -223,7 +223,7 @@ public abstract class TypeAdapter<E> {
       return decodeZigZag32(reader.readVarint32());
     }
   };
-  public static final TypeAdapter<Integer> FIXED32 = new TypeAdapter<Integer>(
+  public static final WireAdapter<Integer> FIXED32 = new WireAdapter<Integer>(
       FieldEncoding.FIXED32, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return FIXED_32_SIZE;
@@ -237,8 +237,8 @@ public abstract class TypeAdapter<E> {
       return reader.readFixed32();
     }
   };
-  public static final TypeAdapter<Integer> SFIXED32 = FIXED32;
-  public static final TypeAdapter<Long> INT64 = new TypeAdapter<Long>(
+  public static final WireAdapter<Integer> SFIXED32 = FIXED32;
+  public static final WireAdapter<Long> INT64 = new WireAdapter<Long>(
       FieldEncoding.VARINT, Long.class) {
     @Override public int encodedSize(Long value) {
       return varint64Size(value);
@@ -252,8 +252,8 @@ public abstract class TypeAdapter<E> {
       return reader.readVarint64();
     }
   };
-  public static final TypeAdapter<Long> UINT64 = INT64;
-  public static final TypeAdapter<Long> SINT64 = new TypeAdapter<Long>(
+  public static final WireAdapter<Long> UINT64 = INT64;
+  public static final WireAdapter<Long> SINT64 = new WireAdapter<Long>(
       FieldEncoding.VARINT, Long.class) {
     @Override public int encodedSize(Long value) {
       return varint64Size(encodeZigZag64(value));
@@ -267,7 +267,7 @@ public abstract class TypeAdapter<E> {
       return decodeZigZag64(reader.readVarint64());
     }
   };
-  public static final TypeAdapter<Long> FIXED64 = new TypeAdapter<Long>(
+  public static final WireAdapter<Long> FIXED64 = new WireAdapter<Long>(
       FieldEncoding.FIXED64, Long.class) {
     @Override public int encodedSize(Long value) {
       return FIXED_64_SIZE;
@@ -281,8 +281,8 @@ public abstract class TypeAdapter<E> {
       return reader.readFixed64();
     }
   };
-  public static final TypeAdapter<Long> SFIXED64 = FIXED64;
-  public static final TypeAdapter<Float> FLOAT = new TypeAdapter<Float>(
+  public static final WireAdapter<Long> SFIXED64 = FIXED64;
+  public static final WireAdapter<Float> FLOAT = new WireAdapter<Float>(
       FieldEncoding.FIXED32, Float.class) {
     @Override public int encodedSize(Float value) {
       return FIXED_32_SIZE;
@@ -296,7 +296,7 @@ public abstract class TypeAdapter<E> {
       return Float.intBitsToFloat(reader.readFixed32());
     }
   };
-  public static final TypeAdapter<Double> DOUBLE = new TypeAdapter<Double>(
+  public static final WireAdapter<Double> DOUBLE = new WireAdapter<Double>(
       FieldEncoding.FIXED64, Double.class) {
     @Override public int encodedSize(Double value) {
       return FIXED_64_SIZE;
@@ -310,7 +310,7 @@ public abstract class TypeAdapter<E> {
       return Double.longBitsToDouble(reader.readFixed64());
     }
   };
-  public static final TypeAdapter<String> STRING = new TypeAdapter<String>(
+  public static final WireAdapter<String> STRING = new WireAdapter<String>(
       FieldEncoding.LENGTH_DELIMITED, String.class) {
     @Override public int encodedSize(String value) {
       return utf8Length(value);
@@ -324,7 +324,7 @@ public abstract class TypeAdapter<E> {
       return reader.readString();
     }
   };
-  public static final TypeAdapter<ByteString> BYTES = new TypeAdapter<ByteString>(
+  public static final WireAdapter<ByteString> BYTES = new WireAdapter<ByteString>(
       FieldEncoding.LENGTH_DELIMITED, ByteString.class) {
     @Override public int encodedSize(ByteString value) {
       return value.size();
@@ -339,7 +339,7 @@ public abstract class TypeAdapter<E> {
     }
   };
 
-  TypeAdapter<?> withLabel(Message.Label label) {
+  WireAdapter<?> withLabel(Message.Label label) {
     if (label.isRepeated()) {
       return label.isPacked()
           ? createPacked(this)
@@ -348,11 +348,11 @@ public abstract class TypeAdapter<E> {
     return this;
   }
 
-  private static <T> TypeAdapter<List<T>> createPacked(final TypeAdapter<T> adapter) {
+  private static <T> WireAdapter<List<T>> createPacked(final WireAdapter<T> adapter) {
     if (adapter.fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       throw new IllegalArgumentException("Unable to pack a length-delimited type.");
     }
-    return new TypeAdapter<List<T>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
+    return new WireAdapter<List<T>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
       @Override public int encodedSize(List<T> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
@@ -377,8 +377,8 @@ public abstract class TypeAdapter<E> {
     };
   }
 
-  private static <T> TypeAdapter<List<T>> createRepeated(final TypeAdapter<T> adapter) {
-    return new TypeAdapter<List<T>>(adapter.fieldEncoding, List.class) {
+  private static <T> WireAdapter<List<T>> createRepeated(final WireAdapter<T> adapter) {
+    return new WireAdapter<List<T>>(adapter.fieldEncoding, List.class) {
       @Override public int encodedSize(List<T> value) {
         throw new UnsupportedOperationException();
       }

@@ -25,12 +25,12 @@ abstract class TagBinding<M, B> {
   public final Message.Datatype datatype;
   public final Message.Label label;
   public final boolean redacted;
-  public final TypeAdapter<?> singleAdapter;
-  public final TypeAdapter<?> adapter;
+  public final WireAdapter<?> singleAdapter;
+  public final WireAdapter<?> adapter;
   public final Class<?> singleType;
 
   public TagBinding(Message.Label label, Message.Datatype datatype, String name, int tag,
-      boolean redacted, TypeAdapter<?> singleAdapter, Class<?> singleType) {
+      boolean redacted, WireAdapter<?> singleAdapter, Class<?> singleType) {
     this.tag = tag;
     this.name = name;
     this.datatype = datatype;

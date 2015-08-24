@@ -43,19 +43,19 @@ public enum FieldEncoding {
   }
 
   /**
-   * Returns a type adapter that reads this field encoding without interpretation. For example,
+   * Returns a Wire adapter that reads this field encoding without interpretation. For example,
    * messages are returned as byte strings and enums are returned as integers.
    */
-  public TypeAdapter<?> rawTypeAdapter() {
+  public WireAdapter<?> rawWireAdapter() {
     switch (this) {
       case VARINT:
-        return TypeAdapter.UINT64;
+        return WireAdapter.UINT64;
       case FIXED32:
-        return TypeAdapter.FIXED32;
+        return WireAdapter.FIXED32;
       case FIXED64:
-        return TypeAdapter.FIXED64;
+        return WireAdapter.FIXED64;
       case LENGTH_DELIMITED:
-        return TypeAdapter.BYTES;
+        return WireAdapter.BYTES;
       default:
         throw new AssertionError();
     }

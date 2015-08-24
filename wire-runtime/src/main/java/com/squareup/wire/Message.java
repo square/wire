@@ -167,7 +167,7 @@ public abstract class Message implements Serializable {
      */
     public void addVarint(int tag, long value) {
       try {
-        ensureUnknownFieldMap().add(tag, value, TypeAdapter.UINT64);
+        ensureUnknownFieldMap().add(tag, value, WireAdapter.UINT64);
       } catch (IOException e) {
         throw new IllegalArgumentException(e.getMessage());
       }
@@ -178,7 +178,7 @@ public abstract class Message implements Serializable {
      */
     public void addFixed32(int tag, int value) {
       try {
-        ensureUnknownFieldMap().add(tag, value, TypeAdapter.FIXED32);
+        ensureUnknownFieldMap().add(tag, value, WireAdapter.FIXED32);
       } catch (IOException e) {
         throw new IllegalArgumentException(e.getMessage());
       }
@@ -189,7 +189,7 @@ public abstract class Message implements Serializable {
      */
     public void addFixed64(int tag, long value) {
       try {
-        ensureUnknownFieldMap().add(tag, value, TypeAdapter.FIXED64);
+        ensureUnknownFieldMap().add(tag, value, WireAdapter.FIXED64);
       } catch (IOException e) {
         throw new IllegalArgumentException(e.getMessage());
       }
@@ -200,7 +200,7 @@ public abstract class Message implements Serializable {
      */
     public void addLengthDelimited(int tag, ByteString value) {
       try {
-        ensureUnknownFieldMap().add(tag, value, TypeAdapter.BYTES);
+        ensureUnknownFieldMap().add(tag, value, WireAdapter.BYTES);
       } catch (IOException e) {
         throw new IllegalArgumentException(e.getMessage());
       }

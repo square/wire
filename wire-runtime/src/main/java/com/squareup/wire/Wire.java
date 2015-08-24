@@ -85,7 +85,7 @@ public final class Wire {
   }
 
   /** Returns an adapter for reading and writing {@code type}, creating it if necessary. */
-  public <M extends Message> TypeAdapter<M> adapter(Class<M> type) {
+  public <M extends Message> WireAdapter<M> adapter(Class<M> type) {
     List<DeferredAdapter<?>> deferredAdapters = reentrantCalls.get();
     if (deferredAdapters == null) {
       deferredAdapters = new ArrayList<DeferredAdapter<?>>();
@@ -95,7 +95,7 @@ public final class Wire {
       for (DeferredAdapter<?> deferredAdapter : deferredAdapters) {
         if (deferredAdapter.javaType.equals(type)) {
           //noinspection unchecked
-          return (TypeAdapter<M>) deferredAdapter;
+          return (WireAdapter<M>) deferredAdapter;
         }
       }
     }
@@ -103,7 +103,7 @@ public final class Wire {
     DeferredAdapter<M> deferredAdapter = new DeferredAdapter<M>(type);
     deferredAdapters.add(deferredAdapter);
     try {
-      TypeAdapter<M> adapter = messageAdapter(type);
+      WireAdapter<M> adapter = messageAdapter(type);
       deferredAdapter.ready(adapter);
       return adapter;
     } finally {
@@ -166,14 +166,14 @@ public final class Wire {
    * <p>Typically this is necessary in self-referential object models, such as an {@code Employee}
    * class that has a {@code List<Employee>} field for an organization's management hierarchy.
    */
-  private static class DeferredAdapter<M extends Message> extends TypeAdapter<M> {
-    private TypeAdapter<M> delegate;
+  private static class DeferredAdapter<M extends Message> extends WireAdapter<M> {
+    private WireAdapter<M> delegate;
 
     DeferredAdapter(Class<M> type) {
       super(FieldEncoding.LENGTH_DELIMITED, type);
     }
 
-    public void ready(TypeAdapter<M> delegate) {
+    public void ready(WireAdapter<M> delegate) {
       this.delegate = delegate;
     }
 
