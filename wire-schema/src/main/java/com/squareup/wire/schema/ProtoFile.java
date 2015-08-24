@@ -69,6 +69,14 @@ public final class ProtoFile {
     return element.location();
   }
 
+  ImmutableList<String> imports() {
+    return element.imports();
+  }
+
+  ImmutableList<String> publicImports() {
+    return element.publicImports();
+  }
+
   /**
    * Returns the name of this proto file, like {@code simple_message} for {@code
    * squareup/protos/person/simple_message.proto}.

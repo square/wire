@@ -77,13 +77,6 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
   }
 
   /**
-   * Returns a string describing the extensions on this message.
-   */
-  String extensionsToString() {
-    return extensionMap == null ? "{}" : extensionMap.toString();
-  }
-
-  /**
    * Builds a message that declares an extension range.
    */
   public abstract static class ExtendableBuilder<T extends ExtendableMessage<T>,

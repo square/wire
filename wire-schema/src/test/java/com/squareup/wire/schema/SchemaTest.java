@@ -626,4 +626,177 @@ public final class SchemaTest {
     assertThat(enumType.constant("A").tag()).isEqualTo(1);
     assertThat(enumType.constant("B").tag()).isEqualTo(1);
   }
+
+  @Test public void fieldTypeImported() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a.proto", ""
+            + "package pa;\n"
+            + "import \"b.proto\";\n"
+            + "message A {\n"
+            + "  optional pb.B b = 1;\n"
+            + "}\n")
+        .add("b.proto", ""
+            + "package pb;\n"
+            + "message B {\n"
+            + "}\n")
+        .build();
+    MessageType a = (MessageType) schema.getType("pa.A");
+    MessageType b = (MessageType) schema.getType("pb.B");
+    assertThat(a.field("b").type()).isEqualTo(b.name());
+  }
+
+  @Test public void fieldTypeNotImported() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("a.proto", ""
+              + "package pa;\n"
+              + "message A {\n"
+              + "  optional pb.B b = 1;\n"
+              + "}\n")
+          .add("b.proto", ""
+              + "package pb;\n"
+              + "message B {\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import b.proto\n"
+          + "  for field b (a.proto at 3:3)\n"
+          + "  in message pa.A (a.proto at 2:1)");
+    }
+  }
+
+  @Test public void rpcTypeImported() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a.proto", ""
+            + "package pa;\n"
+            + "import \"b.proto\";\n"
+            + "service Service {\n"
+            + "  rpc Call (pb.B) returns (pb.B);\n"
+            + "}\n")
+        .add("b.proto", ""
+            + "package pb;\n"
+            + "message B {\n"
+            + "}\n")
+        .build();
+    Service service = schema.getService("pa.Service");
+    MessageType b = (MessageType) schema.getType("pb.B");
+    assertThat(service.rpcs().get(0).requestType()).isEqualTo(b.name());
+    assertThat(service.rpcs().get(0).responseType()).isEqualTo(b.name());
+  }
+
+  @Test public void rpcTypeNotImported() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("a.proto", ""
+              + "package pa;\n"
+              + "service Service {\n"
+              + "  rpc Call (pb.B) returns (pb.B);\n"
+              + "}\n")
+          .add("b.proto", ""
+              + "package pb;\n"
+              + "message B {\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected.getMessage()).isEqualTo(""
+          + "a.proto needs to import b.proto\n"
+          + "  for rpc Call (a.proto at 3:3)\n"
+          + "  in service pa.Service (a.proto at 2:1)\n"
+          + "a.proto needs to import b.proto\n"
+          + "  for rpc Call (a.proto at 3:3)\n"
+          + "  in service pa.Service (a.proto at 2:1)");
+    }
+  }
+
+  @Test public void extendTypeImported() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a.proto", ""
+            + "package pa;\n"
+            + "import \"b.proto\";\n"
+            + "extend pb.B {\n"
+            + "  optional string a = 1;\n"
+            + "}\n")
+        .add("b.proto", ""
+            + "package pb;\n"
+            + "message B {\n"
+            + "  extensions 1;\n"
+            + "}\n")
+        .build();
+    Extend extendB = schema.protoFiles().get(0).extendList().get(0);
+    MessageType b = (MessageType) schema.getType("pb.B");
+    assertThat(extendB.type()).isEqualTo(b.name());
+  }
+
+  @Test public void extendTypeNotImported() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("a.proto", ""
+              + "package pa;\n"
+              + "extend pb.B {\n"
+              + "  optional string a = 1;\n"
+              + "}\n")
+          .add("b.proto", ""
+              + "package pb;\n"
+              + "message B {\n"
+              + "  extensions 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import b.proto\n"
+          + "  for extend pb.B (a.proto at 2:1)");
+    }
+  }
+
+  @Test public void transitiveImportNotFollowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("a.proto", ""
+              + "package pa;\n"
+              + "import \"b.proto\";\n"
+              + "message A {\n"
+              + "  optional pc.C c = 1;\n"
+              + "}\n")
+          .add("b.proto", ""
+              + "package pb;\n"
+              + "import \"c.proto\";\n"
+              + "message B {\n"
+              + "}\n")
+          .add("c.proto", ""
+              + "package pc;\n"
+              + "message C {\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import c.proto\n"
+          + "  for field c (a.proto at 4:3)\n"
+          + "  in message pa.A (a.proto at 3:1)");
+    }
+  }
+
+  @Test public void transitivePublicImportFollowed() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a.proto", ""
+            + "package pa;\n"
+            + "import \"b.proto\";\n"
+            + "message A {\n"
+            + "  optional pc.C c = 1;\n"
+            + "}\n")
+        .add("b.proto", ""
+            + "package pb;\n"
+            + "import public \"c.proto\";\n"
+            + "message B {\n"
+            + "}\n")
+        .add("c.proto", ""
+            + "package pc;\n"
+            + "message C {\n"
+            + "}\n")
+        .build();
+    MessageType a = (MessageType) schema.getType("pa.A");
+    MessageType c = (MessageType) schema.getType("pc.C");
+    assertThat(a.field("c").type()).isEqualTo(c.name());
+  }
 }

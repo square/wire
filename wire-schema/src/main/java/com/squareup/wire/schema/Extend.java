@@ -69,5 +69,6 @@ public final class Extend {
     for (Field field : fields) {
       field.validate(linker, true);
     }
+    linker.validateImport(location(), type());
   }
 }

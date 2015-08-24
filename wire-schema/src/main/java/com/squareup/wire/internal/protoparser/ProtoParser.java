@@ -36,8 +36,8 @@ public final class ProtoParser {
   private final Location location;
   private final char[] data;
   private final ProtoFileElement.Builder fileBuilder;
-  private final ImmutableList.Builder<String> publicDependencies = ImmutableList.builder();
-  private final ImmutableList.Builder<String> dependencies = ImmutableList.builder();
+  private final ImmutableList.Builder<String> publicImports = ImmutableList.builder();
+  private final ImmutableList.Builder<String> imports = ImmutableList.builder();
   private final ImmutableList.Builder<TypeElement> nestedTypes = ImmutableList.builder();
   private final ImmutableList.Builder<ServiceElement> services = ImmutableList.builder();
   private final ImmutableList.Builder<ExtendElement> extendsList = ImmutableList.builder();
@@ -70,8 +70,8 @@ public final class ProtoParser {
       String documentation = readDocumentation();
       if (pos == data.length) {
         return fileBuilder.syntax(syntax)
-            .publicDependencies(publicDependencies.build())
-            .dependencies(dependencies.build())
+            .publicImports(publicImports.build())
+            .imports(imports.build())
             .types(nestedTypes.build())
             .services(services.build())
             .extendDeclarations(extendsList.build())
@@ -115,9 +115,9 @@ public final class ProtoParser {
       if (!context.permitsImport()) throw unexpected(location, "'import' in " + context);
       String importString = readString();
       if ("public".equals(importString)) {
-        publicDependencies.add(readString());
+        publicImports.add(readString());
       } else {
-        dependencies.add(importString);
+        imports.add(importString);
       }
       if (readChar() != ';') throw unexpected("expected ';'");
       return null;

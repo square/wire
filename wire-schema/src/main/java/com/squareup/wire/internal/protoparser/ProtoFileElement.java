@@ -27,8 +27,8 @@ public abstract class ProtoFileElement {
   public static Builder builder(Location location) {
     return new AutoValue_ProtoFileElement.Builder()
         .location(location)
-        .dependencies(ImmutableList.<String>of())
-        .publicDependencies(ImmutableList.<String>of())
+        .imports(ImmutableList.<String>of())
+        .publicImports(ImmutableList.<String>of())
         .types(ImmutableList.<TypeElement>of())
         .services(ImmutableList.<ServiceElement>of())
         .extendDeclarations(ImmutableList.<ExtendElement>of())
@@ -38,8 +38,8 @@ public abstract class ProtoFileElement {
   public abstract Location location();
   @Nullable public abstract String packageName();
   @Nullable public abstract ProtoFile.Syntax syntax();
-  public abstract ImmutableList<String> dependencies();
-  public abstract ImmutableList<String> publicDependencies();
+  public abstract ImmutableList<String> imports();
+  public abstract ImmutableList<String> publicImports();
   public abstract ImmutableList<TypeElement> types();
   public abstract ImmutableList<ServiceElement> services();
   public abstract ImmutableList<ExtendElement> extendDeclarations();
@@ -54,13 +54,13 @@ public abstract class ProtoFileElement {
     if (syntax() != null) {
       builder.append("syntax \"").append(syntax()).append("\";\n");
     }
-    if (!dependencies().isEmpty() || !publicDependencies().isEmpty()) {
+    if (!imports().isEmpty() || !publicImports().isEmpty()) {
       builder.append('\n');
-      for (String dependency : dependencies()) {
-        builder.append("import \"").append(dependency).append("\";\n");
+      for (String file : imports()) {
+        builder.append("import \"").append(file).append("\";\n");
       }
-      for (String publicDependency : publicDependencies()) {
-        builder.append("import public \"").append(publicDependency).append("\";\n");
+      for (String file : publicImports()) {
+        builder.append("import public \"").append(file).append("\";\n");
       }
     }
     if (!options().isEmpty()) {
@@ -95,8 +95,8 @@ public abstract class ProtoFileElement {
     Builder location(Location location);
     Builder packageName(@Nullable String packageName);
     Builder syntax(@Nullable ProtoFile.Syntax syntax);
-    Builder dependencies(ImmutableList<String> dependencies);
-    Builder publicDependencies(ImmutableList<String> dependencies);
+    Builder imports(ImmutableList<String> imports);
+    Builder publicImports(ImmutableList<String> publicImports);
     Builder types(ImmutableList<TypeElement> types);
     Builder services(ImmutableList<ServiceElement> services);
     Builder extendDeclarations(ImmutableList<ExtendElement> extendDeclarations);

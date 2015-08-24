@@ -107,6 +107,7 @@ public final class Field {
     if (extension && isRequired()) {
       linker.addError("extension fields cannot be required", type);
     }
+    linker.validateImport(location(), type);
   }
 
   private boolean isPackable(Linker linker, Type.Name type) {
