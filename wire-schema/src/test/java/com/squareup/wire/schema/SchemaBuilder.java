@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -60,10 +60,10 @@ class SchemaBuilder {
     }
   }
 
-  public TypeAdapter<Map<String, Object>> buildTypeAdapter(String messageTypeName) {
+  public WireAdapter<Map<String, Object>> buildWireAdapter(String messageTypeName) {
     Type.Name typeName = Type.Name.get(null, messageTypeName);
     Schema schema = build();
-    SchemaTypeAdapterFactory typeAdapterFactory = new SchemaTypeAdapterFactory(schema);
-    return typeAdapterFactory.get(typeName);
+    SchemaWireAdapterFactory factory = new SchemaWireAdapterFactory(schema);
+    return factory.get(typeName);
   }
 }

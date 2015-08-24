@@ -18,7 +18,7 @@ package com.squareup.wire.schema;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
-import com.squareup.wire.TypeAdapter;
+import com.squareup.wire.WireAdapter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -29,44 +29,44 @@ import java.util.Map;
  * Creates type adapters to read and write protocol buffer data from a schema model. This doesn't
  * require an intermediate code gen step.
  */
-final class SchemaTypeAdapterFactory {
+final class SchemaWireAdapterFactory {
   final Schema schema;
-  final Map<Type.Name, TypeAdapter<?>> adapterMap = new LinkedHashMap<>();
+  final Map<Type.Name, WireAdapter<?>> adapterMap = new LinkedHashMap<>();
 
-  public SchemaTypeAdapterFactory(Schema schema) {
+  public SchemaWireAdapterFactory(Schema schema) {
     this.schema = schema;
 
-    adapterMap.put(Type.Name.BOOL, TypeAdapter.BOOL);
-    adapterMap.put(Type.Name.BYTES, TypeAdapter.BYTES);
-    adapterMap.put(Type.Name.DOUBLE, TypeAdapter.DOUBLE);
-    adapterMap.put(Type.Name.FLOAT, TypeAdapter.FLOAT);
-    adapterMap.put(Type.Name.FIXED32, TypeAdapter.FIXED32);
-    adapterMap.put(Type.Name.FIXED64, TypeAdapter.FIXED64);
-    adapterMap.put(Type.Name.INT32, TypeAdapter.INT32);
-    adapterMap.put(Type.Name.INT64, TypeAdapter.INT64);
-    adapterMap.put(Type.Name.SFIXED32, TypeAdapter.SFIXED32);
-    adapterMap.put(Type.Name.SFIXED64, TypeAdapter.SFIXED64);
-    adapterMap.put(Type.Name.SINT32, TypeAdapter.SINT32);
-    adapterMap.put(Type.Name.SINT64, TypeAdapter.SINT64);
-    adapterMap.put(Type.Name.STRING, TypeAdapter.STRING);
-    adapterMap.put(Type.Name.UINT32, TypeAdapter.UINT32);
-    adapterMap.put(Type.Name.UINT64, TypeAdapter.UINT64);
+    adapterMap.put(Type.Name.BOOL, WireAdapter.BOOL);
+    adapterMap.put(Type.Name.BYTES, WireAdapter.BYTES);
+    adapterMap.put(Type.Name.DOUBLE, WireAdapter.DOUBLE);
+    adapterMap.put(Type.Name.FLOAT, WireAdapter.FLOAT);
+    adapterMap.put(Type.Name.FIXED32, WireAdapter.FIXED32);
+    adapterMap.put(Type.Name.FIXED64, WireAdapter.FIXED64);
+    adapterMap.put(Type.Name.INT32, WireAdapter.INT32);
+    adapterMap.put(Type.Name.INT64, WireAdapter.INT64);
+    adapterMap.put(Type.Name.SFIXED32, WireAdapter.SFIXED32);
+    adapterMap.put(Type.Name.SFIXED64, WireAdapter.SFIXED64);
+    adapterMap.put(Type.Name.SINT32, WireAdapter.SINT32);
+    adapterMap.put(Type.Name.SINT64, WireAdapter.SINT64);
+    adapterMap.put(Type.Name.STRING, WireAdapter.STRING);
+    adapterMap.put(Type.Name.UINT32, WireAdapter.UINT32);
+    adapterMap.put(Type.Name.UINT64, WireAdapter.UINT64);
   }
 
-  public TypeAdapter<Map<String, Object>> get(Type.Name typeName) {
+  public WireAdapter<Map<String, Object>> get(Type.Name typeName) {
     MessageType type = (MessageType) schema.getType(typeName);
     SchemaMessageAdapter messageAdapter = new SchemaMessageAdapter();
     for (Field field : type.fields()) {
       FieldAdapter fieldAdapter = new FieldAdapter(
-          field.name(), field.tag(), field.isRepeated(), getTypeAdapter(field.type()));
+          field.name(), field.tag(), field.isRepeated(), getWireAdapter(field.type()));
       messageAdapter.fieldsByName.put(field.name(), fieldAdapter);
       messageAdapter.fieldsByTag.put(field.tag(), fieldAdapter);
     }
     return messageAdapter;
   }
 
-  private synchronized TypeAdapter<?> getTypeAdapter(Type.Name typeName) {
-    TypeAdapter<?> result = adapterMap.get(typeName);
+  private synchronized WireAdapter<?> getWireAdapter(Type.Name typeName) {
+    WireAdapter<?> result = adapterMap.get(typeName);
 
     if (result == null) {
       Type type = schema.getType(typeName);
@@ -87,7 +87,7 @@ final class SchemaTypeAdapterFactory {
     return result;
   }
 
-  static final class SchemaEnumAdapter extends TypeAdapter<Object> {
+  static final class SchemaEnumAdapter extends WireAdapter<Object> {
     final EnumType enumType;
 
     public SchemaEnumAdapter(EnumType enumType) {
@@ -111,13 +111,13 @@ final class SchemaTypeAdapterFactory {
     }
 
     @Override public Object decode(ProtoReader reader) throws IOException {
-      Integer value = TypeAdapter.UINT32.decode(reader);
+      Integer value = WireAdapter.UINT32.decode(reader);
       EnumConstant constant = enumType.constant(value);
       return constant != null ? constant.name() : value;
     }
   }
 
-  static final class SchemaMessageAdapter extends TypeAdapter<Map<String, Object>> {
+  static final class SchemaMessageAdapter extends WireAdapter<Map<String, Object>> {
     final Map<Integer, FieldAdapter> fieldsByTag = new LinkedHashMap<>();
     final Map<String, FieldAdapter> fieldsByName = new LinkedHashMap<>();
 
@@ -135,13 +135,13 @@ final class SchemaTypeAdapterFactory {
         FieldAdapter fieldAdapter = fieldsByName.get(entry.getKey());
         if (fieldAdapter == null) continue; // Ignore unknown values!
 
-        TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) fieldAdapter.typeAdapter;
+        WireAdapter<Object> wireAdapter = (WireAdapter<Object>) fieldAdapter.wireAdapter;
         if (fieldAdapter.repeated) {
           for (Object o : (List<?>) entry.getValue()) {
-            size += typeAdapter.encodedSize(fieldAdapter.tag, o);
+            size += wireAdapter.encodedSize(fieldAdapter.tag, o);
           }
         } else {
-          size += typeAdapter.encodedSize(fieldAdapter.tag, entry.getValue());
+          size += wireAdapter.encodedSize(fieldAdapter.tag, entry.getValue());
         }
       }
       return size;
@@ -152,13 +152,13 @@ final class SchemaTypeAdapterFactory {
         FieldAdapter fieldAdapter = fieldsByName.get(entry.getKey());
         if (fieldAdapter == null) continue; // Ignore unknown values!
 
-        TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) fieldAdapter.typeAdapter;
+        WireAdapter<Object> wireAdapter = (WireAdapter<Object>) fieldAdapter.wireAdapter;
         if (fieldAdapter.repeated) {
           for (Object o : (List<?>) entry.getValue()) {
-            typeAdapter.encodeTagged(writer, fieldAdapter.tag, o);
+            wireAdapter.encodeTagged(writer, fieldAdapter.tag, o);
           }
         } else {
-          typeAdapter.encodeTagged(writer, fieldAdapter.tag, entry.getValue());
+          wireAdapter.encodeTagged(writer, fieldAdapter.tag, entry.getValue());
         }
       }
     }
@@ -171,10 +171,10 @@ final class SchemaTypeAdapterFactory {
         FieldAdapter fieldAdapter = fieldsByTag.get(tag);
         if (fieldAdapter == null) {
           fieldAdapter = new FieldAdapter(
-              Integer.toString(tag), tag, true, reader.peekFieldEncoding().rawTypeAdapter());
+              Integer.toString(tag), tag, true, reader.peekFieldEncoding().rawWireAdapter());
         }
 
-        Object value = fieldAdapter.typeAdapter.decode(reader);
+        Object value = fieldAdapter.wireAdapter.decode(reader);
         if (fieldAdapter.repeated) {
           List<Object> values = (List<Object>) result.get(fieldAdapter.name);
           if (values == null) {
@@ -199,13 +199,13 @@ final class SchemaTypeAdapterFactory {
     final String name;
     final int tag;
     final boolean repeated;
-    final TypeAdapter<?> typeAdapter;
+    final WireAdapter<?> wireAdapter;
 
-    public FieldAdapter(String name, int tag, boolean repeated, TypeAdapter<?> typeAdapter) {
+    public FieldAdapter(String name, int tag, boolean repeated, WireAdapter<?> wireAdapter) {
       this.name = name;
       this.tag = tag;
       this.repeated = repeated;
-      this.typeAdapter = typeAdapter;
+      this.wireAdapter = wireAdapter;
     }
   }
 }

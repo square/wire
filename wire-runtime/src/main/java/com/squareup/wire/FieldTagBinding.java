@@ -42,7 +42,7 @@ final class FieldTagBinding<M extends Message> extends TagBinding<M, Builder<M>>
   private final Field builderField;
   private final Method builderMethod;
 
-  FieldTagBinding(ProtoField protoField, TypeAdapter<?> singleAdapter, Class<?> singleType,
+  FieldTagBinding(ProtoField protoField, WireAdapter<?> singleAdapter, Class<?> singleType,
       Field messageField, Class<Builder<M>> builderType) {
     super(protoField.label(), protoField.type(), messageField.getName(), protoField.tag(),
         protoField.redacted(), singleAdapter, singleType);

@@ -22,7 +22,7 @@ import java.util.Comparator;
 /**
  * Converts values of an enum to and from integers.
  */
-final class RuntimeEnumAdapter<E extends ProtoEnum> extends TypeAdapter<E> {
+final class RuntimeEnumAdapter<E extends ProtoEnum> extends WireAdapter<E> {
   private static final Comparator<ProtoEnum> COMPARATOR = new Comparator<ProtoEnum>() {
     @Override public int compare(ProtoEnum o1, ProtoEnum o2) {
       return o1.getValue() - o2.getValue();
