@@ -23,7 +23,7 @@ public final class Extend {
   private final String packageName;
   private final ExtendElement element;
   private final ImmutableList<Field> fields;
-  private Type.Name name;
+  private WireType wireType;
 
   Extend(String packageName, ExtendElement element) {
     this.packageName = packageName;
@@ -44,8 +44,8 @@ public final class Extend {
     return packageName;
   }
 
-  public Type.Name type() {
-    return name;
+  public WireType type() {
+    return wireType;
   }
 
   public String documentation() {
@@ -58,7 +58,7 @@ public final class Extend {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    name = linker.resolveNamedType(packageName, element.name());
+    wireType = linker.resolveNamedType(packageName, element.name());
     for (Field field : fields) {
       field.link(linker);
     }

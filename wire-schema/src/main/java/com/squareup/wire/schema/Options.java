@@ -36,12 +36,12 @@ import static com.google.common.collect.Iterables.getOnlyElement;
  * messages.
  */
 public final class Options {
-  private final Type.Name optionType;
+  private final WireType optionType;
   private final String packageName;
   private final ImmutableList<OptionElement> optionElements;
   private ImmutableMap<Field, Object> map;
 
-  public Options(Type.Name optionType, String packageName, List<OptionElement> elements) {
+  public Options(WireType optionType, String packageName, List<OptionElement> elements) {
     this.optionType = optionType;
     this.packageName = packageName;
     this.optionElements = ImmutableList.copyOf(elements);
@@ -106,7 +106,7 @@ public final class Options {
   }
 
   Map<Field, Object> canonicalizeOption(
-      Linker linker, Type.Name extensionType, OptionElement option) {
+      Linker linker, WireType extensionType, OptionElement option) {
     Map<String, Field> extensionsForType = linker.extensions(extensionType);
     if (extensionsForType == null) {
       return null; // No known extensions for the given extension type.

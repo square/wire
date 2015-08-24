@@ -21,13 +21,13 @@ public final class Rpc {
   private final String packageName;
   private final RpcElement element;
   private final Options options;
-  private Type.Name requestType;
-  private Type.Name responseType;
+  private WireType requestType;
+  private WireType responseType;
 
   Rpc(String packageName, RpcElement element) {
     this.packageName = packageName;
     this.element = element;
-    this.options = new Options(Type.Name.METHOD_OPTIONS, packageName, element.options());
+    this.options = new Options(WireType.METHOD_OPTIONS, packageName, element.options());
   }
 
   public Location location() {
@@ -46,11 +46,11 @@ public final class Rpc {
     return element.documentation();
   }
 
-  public Type.Name requestType() {
+  public WireType requestType() {
     return requestType;
   }
 
-  public Type.Name responseType() {
+  public WireType responseType() {
     return responseType;
   }
 

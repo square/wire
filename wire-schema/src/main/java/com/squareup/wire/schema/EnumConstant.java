@@ -26,7 +26,7 @@ public final class EnumConstant {
     this.packageName = packageName;
     this.element = element;
     this.options = new Options(
-        Type.Name.ENUM_VALUE_OPTIONS, packageName, element.options());
+        WireType.ENUM_VALUE_OPTIONS, packageName, element.options());
   }
 
   public Location location() {

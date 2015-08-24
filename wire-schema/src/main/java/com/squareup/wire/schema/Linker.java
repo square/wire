@@ -32,7 +32,7 @@ import java.util.Map;
 final class Linker {
   private final ImmutableList<ProtoFile> protoFiles;
   private final Map<String, Type> protoTypeNames;
-  private final Map<Type.Name, Map<String, Field>> extensionsMap;
+  private final Map<WireType, Map<String, Field>> extensionsMap;
   private final Multimap<String, String> imports;
   private final List<String> errors;
   private final List<Object> contextStack;
@@ -155,17 +155,17 @@ final class Linker {
   }
 
   /** Returns the type name for the scalar, relative or fully-qualified name {@code name}. */
-  Type.Name resolveType(String packageName, String name) {
+  WireType resolveType(String packageName, String name) {
     return resolveType(packageName, name, false);
   }
 
   /** Returns the type name for the relative or fully-qualified name {@code name}. */
-  Type.Name resolveNamedType(String packageName, String name) {
+  WireType resolveNamedType(String packageName, String name) {
     return resolveType(packageName, name, true);
   }
 
-  private Type.Name resolveType(String packageName, String name, boolean namedTypesOnly) {
-    Type.Name scalar = Type.Name.getScalar(name);
+  private WireType resolveType(String packageName, String name, boolean namedTypesOnly) {
+    WireType scalar = WireType.getScalar(name);
     if (scalar != null) {
       if (namedTypesOnly) {
         addError("expected a message but was %s", name);
@@ -200,16 +200,16 @@ final class Linker {
     }
 
     addError("unable to resolve %s", name);
-    return Type.Name.BYTES; // Just return any placeholder.
+    return WireType.BYTES; // Just return any placeholder.
   }
 
   /** Returns the type or null if it doesn't exist. */
-  public Type get(Type.Name typeName) {
-    return protoTypeNames.get(typeName.toString());
+  public Type get(WireType wireType) {
+    return protoTypeNames.get(wireType.toString());
   }
 
   /** Returns the map of known extensions for {@code extensionType}. */
-  public Map<String, Field> extensions(Type.Name extensionType) {
+  public Map<String, Field> extensions(WireType extensionType) {
     Map<String, Field> result = extensionsMap.get(extensionType);
     return result != null ? result : ImmutableMap.<String, Field>of();
   }
@@ -294,7 +294,7 @@ final class Linker {
     }
   }
 
-  void validateImport(Location location, Type.Name type) {
+  void validateImport(Location location, WireType type) {
     if (type.isScalar()) return;
     String path = location.path();
     String requiredImport = get(type).location().path();
@@ -322,7 +322,7 @@ final class Linker {
 
       } else if (context instanceof Extend) {
         Extend extend = (Extend) context;
-        Type.Name type = extend.type();
+        WireType type = extend.type();
         error.append(type != null
             ? String.format("%s extend %s (%s)", prefix, type, extend.location())
             : String.format("%s extend (%s)", prefix, extend.location()));
@@ -344,7 +344,7 @@ final class Linker {
       } else if (context instanceof Service) {
         Service service = (Service) context;
         error.append(String.format("%s service %s (%s)",
-            prefix, service.name(), service.location()));
+            prefix, service.type(), service.location()));
 
       } else if (context instanceof Extensions) {
         Extensions extensions = (Extensions) context;

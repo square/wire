@@ -19,9 +19,9 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.schema.WireType;
 import com.squareup.wire.schema.Rpc;
 import com.squareup.wire.schema.Service;
-import com.squareup.wire.schema.Type;
 import java.io.IOException;
 import java.util.List;
 import javax.lang.model.element.Modifier;
@@ -32,7 +32,7 @@ import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 public class SimpleServiceFactory implements ServiceFactory {
   @Override public TypeSpec create(
       JavaGenerator javaGenerator, List<String> options, Service service) {
-    ClassName interfaceName = (ClassName) javaGenerator.typeName(service.name());
+    ClassName interfaceName = (ClassName) javaGenerator.typeName(service.type());
 
     TypeSpec.Builder typeBuilder = TypeSpec.interfaceBuilder(interfaceName.simpleName());
     typeBuilder.addModifiers(Modifier.PUBLIC);
@@ -42,9 +42,9 @@ public class SimpleServiceFactory implements ServiceFactory {
     }
 
     for (Rpc rpc : service.rpcs()) {
-      Type.Name requestType = rpc.requestType();
+      WireType requestType = rpc.requestType();
       TypeName requestJavaType = javaGenerator.typeName(requestType);
-      Type.Name responseType = rpc.responseType();
+      WireType responseType = rpc.responseType();
       TypeName responseJavaType = javaGenerator.typeName(responseType);
 
       MethodSpec.Builder rpcBuilder = MethodSpec.methodBuilder(upperToLowerCamel(rpc.name()));

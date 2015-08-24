@@ -43,14 +43,14 @@ public final class ProtoFile {
 
     ImmutableList.Builder<Type> types = ImmutableList.builder();
     for (TypeElement type : protoFileElement.types()) {
-      Type.Name name = Type.Name.get(packageName, type.name());
-      types.add(Type.get(name, type));
+      WireType wireType = WireType.get(packageName, type.name());
+      types.add(Type.get(wireType, type));
     }
 
     ImmutableList.Builder<Service> services = ImmutableList.builder();
     for (ServiceElement service : protoFileElement.services()) {
-      Type.Name name = Type.Name.get(packageName, service.name());
-      services.add(Service.get(name, service));
+      WireType wireType = WireType.get(packageName, service.name());
+      services.add(Service.get(wireType, service));
     }
 
     ImmutableList.Builder<Extend> wireExtends = ImmutableList.builder();
@@ -59,7 +59,7 @@ public final class ProtoFile {
     }
 
     Options options = new Options(
-        Type.Name.FILE_OPTIONS, packageName, protoFileElement.options());
+        WireType.FILE_OPTIONS, packageName, protoFileElement.options());
 
     return new ProtoFile(protoFileElement, types.build(), services.build(),
         wireExtends.build(), options);

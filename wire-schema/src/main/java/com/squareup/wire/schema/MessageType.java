@@ -22,7 +22,7 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class MessageType extends Type {
-  private final Name name;
+  private final WireType wireType;
   private final MessageElement element;
   private final ImmutableList<Field> fields;
   private final ImmutableList<OneOf> oneOfs;
@@ -30,10 +30,10 @@ public final class MessageType extends Type {
   private final ImmutableList<Extensions> extensionsList;
   private final Options options;
 
-  MessageType(Name name, MessageElement element,
+  MessageType(WireType wireType, MessageElement element,
       ImmutableList<Field> fields, ImmutableList<OneOf> oneOfs,
       ImmutableList<Type> nestedTypes, ImmutableList<Extensions> extensionsList, Options options) {
-    this.name = name;
+    this.wireType = wireType;
     this.element = element;
     this.fields = fields;
     this.oneOfs = oneOfs;
@@ -46,8 +46,8 @@ public final class MessageType extends Type {
     return element.location();
   }
 
-  @Override public Name name() {
-    return name;
+  @Override public WireType name() {
+    return wireType;
   }
 
   @Override public String documentation() {
@@ -166,8 +166,8 @@ public final class MessageType extends Type {
 
     // If this type is retained, or any of its nested types are retained, keep it.
     ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
-    if (identifiers.contains(name.toString()) || !retainedNestedTypes.isEmpty()) {
-      return new MessageType(name, element, fields, oneOfs, retainedNestedTypes, extensionsList,
+    if (identifiers.contains(wireType.toString()) || !retainedNestedTypes.isEmpty()) {
+      return new MessageType(wireType, element, fields, oneOfs, retainedNestedTypes, extensionsList,
           options);
     }
 

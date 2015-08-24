@@ -37,6 +37,7 @@ import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.MessageType;
+import com.squareup.wire.schema.WireType;
 import com.squareup.wire.schema.OneOf;
 import com.squareup.wire.schema.Options;
 import com.squareup.wire.schema.ProtoFile;
@@ -682,7 +683,7 @@ public final class TypeWriter {
     throw new WireCompilerException("Field " + field + " cannot have default value");
   }
 
-  private CodeBlock fieldInitializer(Type.Name type, Object value) {
+  private CodeBlock fieldInitializer(WireType type, Object value) {
     TypeName javaType = javaGenerator.typeName(type);
 
     if (value instanceof List) {
@@ -783,7 +784,7 @@ public final class TypeWriter {
         .build());
 
     for (Extend extend : protoFile.extendList()) {
-      Type.Name extendType = extend.type();
+      WireType extendType = extend.type();
       TypeName javaType = javaGenerator.typeName(extendType);
 
       if (!emitOptions && (extendType.isFieldOptions() || extendType.isMessageOptions())) {

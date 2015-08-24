@@ -61,9 +61,9 @@ class SchemaBuilder {
   }
 
   public WireAdapter<Map<String, Object>> buildWireAdapter(String messageTypeName) {
-    Type.Name typeName = Type.Name.get(null, messageTypeName);
+    WireType wireType = WireType.get(null, messageTypeName);
     Schema schema = build();
     SchemaWireAdapterFactory factory = new SchemaWireAdapterFactory(schema);
-    return factory.get(typeName);
+    return factory.get(wireType);
   }
 }
