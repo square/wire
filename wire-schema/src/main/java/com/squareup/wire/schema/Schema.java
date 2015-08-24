@@ -69,8 +69,8 @@ public final class Schema {
    * Returns the service with the fully qualified name {@code name}, or null if this schema defines
    * no such service.
    */
-  public Service getService(Type.Name name) {
-    return getService(name.toString());
+  public Service getService(WireType wireType) {
+    return getService(wireType.toString());
   }
 
   /**
@@ -85,8 +85,8 @@ public final class Schema {
    * Returns the type with the fully qualified name {@code name}, or null if this schema defines no
    * such type.
    */
-  public Type getType(Type.Name name) {
-    return getType(name.toString());
+  public Type getType(WireType wireType) {
+    return getType(wireType.toString());
   }
 
   private static ImmutableMap<String, Type> buildTypesIndex(Iterable<ProtoFile> protoFiles) {
@@ -110,7 +110,7 @@ public final class Schema {
     ImmutableMap.Builder<String, Service> result = ImmutableMap.builder();
     for (ProtoFile protoFile : protoFiles) {
       for (Service service : protoFile.services()) {
-        result.put(service.name().toString(), service);
+        result.put(service.type().toString(), service);
       }
     }
     return result.build();

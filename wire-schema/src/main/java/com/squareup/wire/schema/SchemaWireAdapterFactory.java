@@ -31,30 +31,30 @@ import java.util.Map;
  */
 final class SchemaWireAdapterFactory {
   final Schema schema;
-  final Map<Type.Name, WireAdapter<?>> adapterMap = new LinkedHashMap<>();
+  final Map<WireType, WireAdapter<?>> adapterMap = new LinkedHashMap<>();
 
   public SchemaWireAdapterFactory(Schema schema) {
     this.schema = schema;
 
-    adapterMap.put(Type.Name.BOOL, WireAdapter.BOOL);
-    adapterMap.put(Type.Name.BYTES, WireAdapter.BYTES);
-    adapterMap.put(Type.Name.DOUBLE, WireAdapter.DOUBLE);
-    adapterMap.put(Type.Name.FLOAT, WireAdapter.FLOAT);
-    adapterMap.put(Type.Name.FIXED32, WireAdapter.FIXED32);
-    adapterMap.put(Type.Name.FIXED64, WireAdapter.FIXED64);
-    adapterMap.put(Type.Name.INT32, WireAdapter.INT32);
-    adapterMap.put(Type.Name.INT64, WireAdapter.INT64);
-    adapterMap.put(Type.Name.SFIXED32, WireAdapter.SFIXED32);
-    adapterMap.put(Type.Name.SFIXED64, WireAdapter.SFIXED64);
-    adapterMap.put(Type.Name.SINT32, WireAdapter.SINT32);
-    adapterMap.put(Type.Name.SINT64, WireAdapter.SINT64);
-    adapterMap.put(Type.Name.STRING, WireAdapter.STRING);
-    adapterMap.put(Type.Name.UINT32, WireAdapter.UINT32);
-    adapterMap.put(Type.Name.UINT64, WireAdapter.UINT64);
+    adapterMap.put(WireType.BOOL, WireAdapter.BOOL);
+    adapterMap.put(WireType.BYTES, WireAdapter.BYTES);
+    adapterMap.put(WireType.DOUBLE, WireAdapter.DOUBLE);
+    adapterMap.put(WireType.FLOAT, WireAdapter.FLOAT);
+    adapterMap.put(WireType.FIXED32, WireAdapter.FIXED32);
+    adapterMap.put(WireType.FIXED64, WireAdapter.FIXED64);
+    adapterMap.put(WireType.INT32, WireAdapter.INT32);
+    adapterMap.put(WireType.INT64, WireAdapter.INT64);
+    adapterMap.put(WireType.SFIXED32, WireAdapter.SFIXED32);
+    adapterMap.put(WireType.SFIXED64, WireAdapter.SFIXED64);
+    adapterMap.put(WireType.SINT32, WireAdapter.SINT32);
+    adapterMap.put(WireType.SINT64, WireAdapter.SINT64);
+    adapterMap.put(WireType.STRING, WireAdapter.STRING);
+    adapterMap.put(WireType.UINT32, WireAdapter.UINT32);
+    adapterMap.put(WireType.UINT64, WireAdapter.UINT64);
   }
 
-  public WireAdapter<Map<String, Object>> get(Type.Name typeName) {
-    MessageType type = (MessageType) schema.getType(typeName);
+  public WireAdapter<Map<String, Object>> get(WireType wireType) {
+    MessageType type = (MessageType) schema.getType(wireType);
     SchemaMessageAdapter messageAdapter = new SchemaMessageAdapter();
     for (Field field : type.fields()) {
       FieldAdapter fieldAdapter = new FieldAdapter(
@@ -65,23 +65,23 @@ final class SchemaWireAdapterFactory {
     return messageAdapter;
   }
 
-  private synchronized WireAdapter<?> getWireAdapter(Type.Name typeName) {
-    WireAdapter<?> result = adapterMap.get(typeName);
+  private synchronized WireAdapter<?> getWireAdapter(WireType wireType) {
+    WireAdapter<?> result = adapterMap.get(wireType);
 
     if (result == null) {
-      Type type = schema.getType(typeName);
+      Type type = schema.getType(wireType);
       if (type instanceof EnumType) {
         result = new SchemaEnumAdapter((EnumType) type);
 
       } else if (type instanceof MessageType) {
         // TODO(swankjesse): re-entrant calls.
-        result = get(typeName);
+        result = get(wireType);
 
       } else {
-        throw new IllegalArgumentException("unexpected type: " + typeName);
+        throw new IllegalArgumentException("unexpected type: " + wireType);
       }
 
-      adapterMap.put(typeName, result);
+      adapterMap.put(wireType, result);
     }
 
     return result;

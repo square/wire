@@ -24,14 +24,14 @@ import java.util.Map;
 import java.util.Set;
 
 public final class EnumType extends Type {
-  private final Name name;
+  private final WireType wireType;
   private final EnumElement element;
   private final ImmutableList<EnumConstant> constants;
   private final Options options;
 
-  EnumType(Name name, EnumElement element,
+  EnumType(WireType wireType, EnumElement element,
       ImmutableList<EnumConstant> constants, Options options) {
-    this.name = name;
+    this.wireType = wireType;
     this.element = element;
     this.constants = constants;
     this.options = options;
@@ -41,8 +41,8 @@ public final class EnumType extends Type {
     return element.location();
   }
 
-  @Override public Name name() {
-    return name;
+  @Override public WireType name() {
+    return wireType;
   }
 
   @Override public String documentation() {
@@ -120,6 +120,6 @@ public final class EnumType extends Type {
   }
 
   @Override Type retainAll(Set<String> identifiers) {
-    return identifiers.contains(name.toString()) ? this : null;
+    return identifiers.contains(wireType.toString()) ? this : null;
   }
 }

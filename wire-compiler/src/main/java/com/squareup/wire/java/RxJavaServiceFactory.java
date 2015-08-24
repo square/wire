@@ -23,9 +23,9 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.schema.WireType;
 import com.squareup.wire.schema.Rpc;
 import com.squareup.wire.schema.Service;
-import com.squareup.wire.schema.Type;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 
@@ -64,9 +64,9 @@ public class RxJavaServiceFactory implements ServiceFactory {
         .build());
 
     for (Rpc rpc : service.rpcs()) {
-      Type.Name requestType = rpc.requestType();
+      WireType requestType = rpc.requestType();
       TypeName requestJavaType = javaGenerator.typeName(requestType);
-      Type.Name responseType = rpc.responseType();
+      WireType responseType = rpc.responseType();
       TypeName responseJavaType = javaGenerator.typeName(responseType);
 
       String methodName = upperToLowerCamel(rpc.name());
@@ -74,7 +74,7 @@ public class RxJavaServiceFactory implements ServiceFactory {
       rpcBuilder.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT);
       rpcBuilder.returns(responseJavaType);
       rpcBuilder.addAnnotation(AnnotationSpec.builder(POST)
-          .addMember("value", "$S", "/" + service.name() + "/" + rpc.name())
+          .addMember("value", "$S", "/" + service.type() + "/" + rpc.name())
           .build());
 
       rpcBuilder.addParameter(ParameterSpec.builder(requestJavaType, "request")
@@ -120,6 +120,6 @@ public class RxJavaServiceFactory implements ServiceFactory {
 
   protected ClassName interfaceName(
       JavaGenerator javaGenerator, List<String> options, Service service) {
-    return (ClassName) javaGenerator.typeName(service.name());
+    return (ClassName) javaGenerator.typeName(service.type());
   }
 }

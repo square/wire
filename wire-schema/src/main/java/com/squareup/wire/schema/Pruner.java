@@ -56,7 +56,7 @@ final class Pruner {
 
     // Mark everything reachable by what's enqueued, queueing new things as we go.
     for (String name; (name = queue.poll()) != null;) {
-      if (Type.Name.getScalar(name) != null) {
+      if (WireType.getScalar(name) != null) {
         continue; // Skip scalar types.
       }
 
@@ -99,8 +99,8 @@ final class Pruner {
     return new Schema(retained.build());
   }
 
-  private void mark(Type.Name typeName) {
-    mark(typeName.toString());
+  private void mark(WireType wireType) {
+    mark(wireType.toString());
   }
 
   private void mark(String identifier) {
@@ -117,9 +117,9 @@ final class Pruner {
   private void markType(Type type) {
     markOptions(type.options());
 
-    Type.Name enclosingTypeName = type.name().enclosingTypeName();
-    if (enclosingTypeName != null) {
-      mark(enclosingTypeName);
+    WireType wireType = type.name().enclosingType();
+    if (wireType != null) {
+      mark(wireType);
     }
 
     for (Type nestedType : type.nestedTypes()) {

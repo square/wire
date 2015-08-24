@@ -100,7 +100,7 @@ public final class WireCompiler {
         for (Service service : protoFile.services()) {
           TypeSpec typeSpec = options.serviceFactory.create(
               javaGenerator, options.serviceFactoryOptions, service);
-          ClassName baseJavaTypeName = (ClassName) javaGenerator.typeName(service.name());
+          ClassName baseJavaTypeName = (ClassName) javaGenerator.typeName(service.type());
           // Use 'peerClass' to track service factories that add a prefix or suffix.
           ClassName generatedJavaTypeName = baseJavaTypeName.peerClass(typeSpec.name);
           writeJavaFile(generatedJavaTypeName, typeSpec, service.location());

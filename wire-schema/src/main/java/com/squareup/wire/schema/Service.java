@@ -21,37 +21,37 @@ import com.squareup.wire.internal.protoparser.ServiceElement;
 import java.util.Set;
 
 public final class Service {
-  private final Type.Name name;
+  private final WireType wireType;
   private final ServiceElement element;
   private final ImmutableList<Rpc> rpcs;
   private final Options options;
 
-  private Service(Type.Name name, ServiceElement element,
+  private Service(WireType wireType, ServiceElement element,
       ImmutableList<Rpc> rpcs, Options options) {
-    this.name = name;
+    this.wireType = wireType;
     this.element = element;
     this.rpcs = rpcs;
     this.options = options;
   }
 
-  public static Service get(Type.Name name, ServiceElement element) {
+  public static Service get(WireType wireType, ServiceElement element) {
     ImmutableList.Builder<Rpc> rpcs = ImmutableList.builder();
     for (RpcElement rpc : element.rpcs()) {
-      rpcs.add(new Rpc(name.packageName(), rpc));
+      rpcs.add(new Rpc(wireType.packageName(), rpc));
     }
 
     Options options = new Options(
-        Type.Name.SERVICE_OPTIONS, name.packageName(), element.options());
+        WireType.SERVICE_OPTIONS, wireType.packageName(), element.options());
 
-    return new Service(name, element, rpcs.build(), options);
+    return new Service(wireType, element, rpcs.build(), options);
   }
 
   public Location location() {
     return element.location();
   }
 
-  public Type.Name name() {
-    return name;
+  public WireType type() {
+    return wireType;
   }
 
   public String documentation() {
@@ -99,7 +99,7 @@ public final class Service {
   }
 
   Service retainAll(Set<String> identifiers) {
-    String serviceName = name.toString();
+    String serviceName = wireType.toString();
     if (identifiers.contains(serviceName)) {
       return this; // Fully retained.
     }
@@ -114,7 +114,7 @@ public final class Service {
     // If child RPCs are retained, return a subset of this service.
     ImmutableList<Rpc> retainedRpcs = retainedRpcsBuilde.build();
     if (!retainedRpcs.isEmpty()) {
-      return new Service(name, element, retainedRpcs, options);
+      return new Service(wireType, element, retainedRpcs, options);
     }
 
     // Neither this service, nor any of its RPCs are retained.

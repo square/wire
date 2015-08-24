@@ -21,9 +21,9 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.schema.WireType;
 import com.squareup.wire.schema.Rpc;
 import com.squareup.wire.schema.Service;
-import com.squareup.wire.schema.Type;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 
@@ -37,7 +37,7 @@ public final class RetrofitServiceFactory implements ServiceFactory {
   @Override public TypeSpec create(
       JavaGenerator javaGenerator, List<String> options, Service service) {
 
-    ClassName interfaceName = (ClassName) javaGenerator.typeName(service.name());
+    ClassName interfaceName = (ClassName) javaGenerator.typeName(service.type());
 
     TypeSpec.Builder typeBuilder = TypeSpec.interfaceBuilder(interfaceName.simpleName());
     typeBuilder.addModifiers(Modifier.PUBLIC);
@@ -47,16 +47,16 @@ public final class RetrofitServiceFactory implements ServiceFactory {
     }
 
     for (Rpc rpc : service.rpcs()) {
-      Type.Name requestType = rpc.requestType();
+      WireType requestType = rpc.requestType();
       TypeName requestJavaType = javaGenerator.typeName(requestType);
-      Type.Name responseType = rpc.responseType();
+      WireType responseType = rpc.responseType();
       TypeName responseJavaType = javaGenerator.typeName(responseType);
 
       MethodSpec.Builder rpcBuilder = MethodSpec.methodBuilder(upperToLowerCamel(rpc.name()));
       rpcBuilder.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT);
       rpcBuilder.returns(responseJavaType);
       rpcBuilder.addAnnotation(AnnotationSpec.builder(POST)
-          .addMember("value", "$S", "/" + service.name() + "/" + rpc.name())
+          .addMember("value", "$S", "/" + service.type() + "/" + rpc.name())
           .build());
 
       rpcBuilder.addParameter(ParameterSpec.builder(requestJavaType, "request")

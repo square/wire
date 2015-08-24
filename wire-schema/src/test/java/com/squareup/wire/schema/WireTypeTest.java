@@ -19,39 +19,39 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public final class TypeNameTest {
+public final class WireTypeTest {
   @Test public void getScalar() throws Exception {
-    assertThat(Type.Name.getScalar("int32")).isSameAs(Type.Name.INT32);
+    assertThat(WireType.getScalar("int32")).isSameAs(WireType.INT32);
   }
 
   @Test public void scalarToString() throws Exception {
-    assertThat(Type.Name.INT32.toString()).isEqualTo("int32");
-    assertThat(Type.Name.STRING.toString()).isEqualTo("string");
-    assertThat(Type.Name.BYTES.toString()).isEqualTo("bytes");
+    assertThat(WireType.INT32.toString()).isEqualTo("int32");
+    assertThat(WireType.STRING.toString()).isEqualTo("string");
+    assertThat(WireType.BYTES.toString()).isEqualTo("bytes");
   }
 
   @Test public void messageToString() throws Exception {
-    Type.Name person = Type.Name.get("squareup.protos.person", "Person");
+    WireType person = WireType.get("squareup.protos.person", "Person");
     assertThat(person.toString()).isEqualTo("squareup.protos.person.Person");
 
-    Type.Name phoneType = person.nestedType("PhoneType");
+    WireType phoneType = person.nestedType("PhoneType");
     assertThat(phoneType.toString()).isEqualTo("squareup.protos.person.Person.PhoneType");
   }
 
   @Test public void enclosingTypeName() throws Exception {
-    assertThat(Type.Name.STRING.enclosingTypeName()).isNull();
+    assertThat(WireType.STRING.enclosingType()).isNull();
 
-    Type.Name person = Type.Name.get("squareup.protos.person", "Person");
-    assertThat(person.enclosingTypeName()).isNull();
+    WireType person = WireType.get("squareup.protos.person", "Person");
+    assertThat(person.enclosingType()).isNull();
 
-    Type.Name phoneType = person.nestedType("PhoneType");
-    assertThat(phoneType.enclosingTypeName()).isEqualTo(person);
+    WireType phoneType = person.nestedType("PhoneType");
+    assertThat(phoneType.enclosingType()).isEqualTo(person);
   }
 
   @Test public void isScalar() throws Exception {
-    assertThat(Type.Name.INT32.isScalar()).isTrue();
-    assertThat(Type.Name.STRING.isScalar()).isTrue();
-    assertThat(Type.Name.BYTES.isScalar()).isTrue();
-    assertThat(Type.Name.get("squareup.protos.person", "Person").isScalar()).isFalse();
+    assertThat(WireType.INT32.isScalar()).isTrue();
+    assertThat(WireType.STRING.isScalar()).isTrue();
+    assertThat(WireType.BYTES.isScalar()).isTrue();
+    assertThat(WireType.get("squareup.protos.person", "Person").isScalar()).isFalse();
   }
 }

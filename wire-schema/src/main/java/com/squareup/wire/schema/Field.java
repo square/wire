@@ -21,12 +21,12 @@ public final class Field {
   private final String packageName;
   private final FieldElement element;
   private final Options options;
-  private Type.Name type;
+  private WireType type;
 
   Field(String packageName, FieldElement element) {
     this.packageName = packageName;
     this.element = element;
-    this.options = new Options(Type.Name.FIELD_OPTIONS, packageName, element.options());
+    this.options = new Options(WireType.FIELD_OPTIONS, packageName, element.options());
   }
 
   public Location location() {
@@ -53,7 +53,7 @@ public final class Field {
     return label() == Label.REQUIRED;
   }
 
-  public Type.Name type() {
+  public WireType type() {
     return type;
   }
 
@@ -110,9 +110,9 @@ public final class Field {
     linker.validateImport(location(), type);
   }
 
-  private boolean isPackable(Linker linker, Type.Name type) {
-    return !type.equals(Type.Name.STRING)
-        && !type.equals(Type.Name.BYTES)
+  private boolean isPackable(Linker linker, WireType type) {
+    return !type.equals(WireType.STRING)
+        && !type.equals(WireType.BYTES)
         && !(linker.get(type) instanceof MessageType);
   }
 
