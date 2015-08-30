@@ -17,6 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.squareup.wire.WireAdapter;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -114,5 +115,26 @@ public final class Schema {
       }
     }
     return result.build();
+  }
+
+  /**
+   * Returns a wire adapter for the message or enum type named {@code typeName}. The returned type
+   * adapter doesn't have model classes to encode and decode from, so instead it uses scalar types
+   * ({@linkplain String}, {@linkplain okio.ByteString ByteString}, {@linkplain Integer}, etc.),
+   * {@linkplain Map maps}, and {@linkplain java.util.List lists}. It can both encode and decode
+   * these objects.
+   *
+   * <p>Map keys are field names, unless the field is unknown in which case the map key
+   * will be the string value of the field’s tag. Unknown values are decoded to {@linkplain Long},
+   * {@linkplain Long}, {@linkplain Integer}, or {@linkplain okio.ByteString ByteString} for
+   * {@linkplain com.squareup.wire.FieldEncoding#VARINT VARINT}, {@linkplain
+   * com.squareup.wire.FieldEncoding#FIXED64 FIXED64}, {@linkplain
+   * com.squareup.wire.FieldEncoding#FIXED32 FIXED32}, or {@linkplain
+   * com.squareup.wire.FieldEncoding#LENGTH_DELIMITED LENGTH_DELIMITED} respectively.
+   */
+  public WireAdapter<Object> wireAdapter(String typeName) {
+    Type type = getType(typeName);
+    if (type == null) throw new IllegalArgumentException("unexpected type " + typeName);
+    return new SchemaWireAdapterFactory(this).get(type.name());
   }
 }

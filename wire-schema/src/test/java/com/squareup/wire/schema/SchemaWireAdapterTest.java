@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableMap;
 import com.squareup.wire.WireAdapter;
 import java.io.IOException;
 import java.net.ProtocolException;
-import java.util.Map;
 import okio.Buffer;
 import okio.ByteString;
 import org.junit.Test;
@@ -80,20 +79,20 @@ public final class SchemaWireAdapterTest {
 
   @Test public void decode() throws Exception {
     MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
-    WireAdapter<Map<String, Object>> adapter = factory.get(cafeDrink.name());
+    WireAdapter<Object> adapter = factory.get(cafeDrink.name());
     assertThat(adapter.decode(new Buffer().write(dansCoffeeEncoded))).isEqualTo(dansCoffee);
     assertThat(adapter.decode(new Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee);
   }
 
   @Test public void encode() throws IOException {
     MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
-    WireAdapter<Map<String, Object>> adapter = factory.get(cafeDrink.name());
+    WireAdapter<Object> adapter = factory.get(cafeDrink.name());
     assertThat(ByteString.of(adapter.encode(dansCoffee))).isEqualTo(dansCoffeeEncoded);
     assertThat(ByteString.of(adapter.encode(jessesCoffee))).isEqualTo(jessesCoffeeEncoded);
   }
 
   @Test public void groupsIgnored() throws IOException {
-    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -115,7 +114,7 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void startGroupWithoutEndGroup() throws IOException {
-    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -131,7 +130,7 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void unexpectedEndGroup() throws IOException {
-    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -147,7 +146,7 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void endGroupDoesntMatchStartGroup() throws IOException {
-    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -163,7 +162,7 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void decodeToUnpacked() throws IOException {
-    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = false];\n"
@@ -178,7 +177,7 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void decodeToPacked() throws IOException {
-    WireAdapter<Map<String, Object>> adapter = new SchemaBuilder()
+    WireAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = true];\n"
@@ -190,5 +189,30 @@ public final class SchemaWireAdapterTest {
     assertThat(adapter.decode(new Buffer().write(packedEncoded))).isEqualTo(expected);
     ByteString unpackedEncoded = ByteString.decodeHex("d20504d904bd05");
     assertThat(adapter.decode(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
+  }
+
+  @Test public void recursiveMessage() throws IOException {
+    WireAdapter<Object> adapter = new SchemaBuilder()
+        .add("tree.proto", ""
+            + "message BinaryTreeNode {\n"
+            + "  optional BinaryTreeNode left = 1;\n"
+            + "  optional BinaryTreeNode right = 2;\n"
+            + "  optional string value = 3;\n"
+            + "}\n")
+        .buildWireAdapter("BinaryTreeNode");
+    ImmutableMap<String, Object> value = ImmutableMap.<String, Object>of(
+        "value", "D",
+        "left", ImmutableMap.of(
+            "value", "B",
+            "left", ImmutableMap.of("value", "A"),
+            "right", ImmutableMap.of("value", "C")),
+        "right", ImmutableMap.of(
+            "value", "F",
+            "left", ImmutableMap.of("value", "E"),
+            "right", ImmutableMap.of("value", "G")));
+    ByteString encoded = ByteString.decodeHex(
+        "1a01440a0d1a01420a031a014112031a0143120d1a01460a031a014512031a0147");
+    assertThat(ByteString.of(adapter.encode(value))).isEqualTo(encoded);
+    assertThat(adapter.decode(new Buffer().write(encoded))).isEqualTo(value);
   }
 }
