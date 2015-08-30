@@ -194,6 +194,11 @@ compile 'com.squareup.wire:wire-runtime:1.8.0'
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 
+If you use Proguard, then you need to add `keep` rules.  The simplest option is to tell Proguard not to touch the Wire library and your generated protocol buffers (of course these simple rules will miss opportunities to shrink and optimize the code):
+
+    -keep class com.squareup.wire.** { *; }    
+    -keep class com.yourcompany.yourgeneratedcode.** { *; }
+ 
 How Wire works
 --------------
 
