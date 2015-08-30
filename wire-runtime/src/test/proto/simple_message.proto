@@ -68,7 +68,7 @@ message SimpleMessage {
 extend ExternalMessage {
   repeated int32 fooext = 125;
   optional int32 barext = 126;
-  required int32 bazext = 127;
+  optional int32 bazext = 127;
   optional SimpleMessage.NestedMessage nested_message_ext = 128;
   optional SimpleMessage.NestedEnum nested_enum_ext = 129;
 }

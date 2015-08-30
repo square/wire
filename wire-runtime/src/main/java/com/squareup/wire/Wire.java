@@ -16,9 +16,10 @@
 package com.squareup.wire;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,18 +28,17 @@ import java.util.Map;
  * Encode and decode Wire protocol buffers.
  */
 public final class Wire {
+  private final ThreadLocal<List<DeferredAdapter<?>>> reentrantCalls =
+      new ThreadLocal<List<DeferredAdapter<?>>>();
+  private final Map<Class<? extends Message>, RuntimeMessageAdapter<? extends Message>>
+      messageAdapters =
+      new LinkedHashMap<Class<? extends Message>, RuntimeMessageAdapter<? extends Message>>();
+  private final Map<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>
+      enumAdapters =
+      new LinkedHashMap<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>();
 
-  private final Map<Class<? extends Message>, MessageAdapter<? extends Message>> messageAdapters =
-      new LinkedHashMap<Class<? extends Message>, MessageAdapter<? extends Message>>();
-  private final Map<Class<? extends Message.Builder>,
-      BuilderAdapter<? extends Message.Builder>> builderAdapters =
-          new LinkedHashMap<Class<? extends Message.Builder>,
-              BuilderAdapter<? extends Message.Builder>>();
-  private final Map<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>> enumAdapters =
-      new LinkedHashMap<Class<? extends ProtoEnum>, EnumAdapter<? extends ProtoEnum>>();
-
-  // Visible to MessageAdapter
-  final ExtensionRegistry registry;
+  private final Map<Class<? extends Message>, List<Extension<?, ?>>> messageToExtensions
+      = new LinkedHashMap<Class<? extends Message>, List<Extension<?, ?>>>();
 
   /**
    * Creates a new Wire that can encode and decode the extensions specified in
@@ -55,13 +55,11 @@ public final class Wire {
    * and start with the "Ext_" prefix.
    */
   public Wire(List<Class<?>> extensionClasses) {
-    this.registry = new ExtensionRegistry();
     for (Class<?> extensionClass : extensionClasses) {
       for (Field field : extensionClass.getDeclaredFields()) {
         if (field.getType().equals(Extension.class)) {
           try {
-            Extension extension = (Extension) field.get(null);
-            registry.add(extension);
+            registerExtension((Extension) field.get(null));
           } catch (IllegalAccessException e) {
             throw new AssertionError(e);
           }
@@ -70,29 +68,60 @@ public final class Wire {
     }
   }
 
+  private <T extends ExtendableMessage<T>, E> void registerExtension(Extension<T, E> extension) {
+    Class<? extends Message> messageClass = extension.getExtendedType();
+    List<Extension<?, ?>> extensions = messageToExtensions.get(messageClass);
+    if (extensions == null) {
+      extensions = new ArrayList<Extension<?, ?>>();
+      messageToExtensions.put(messageClass, extensions);
+    }
+    extensions.add(extension);
+  }
+
+  @SuppressWarnings("unchecked")
+  List<Extension<?, ?>> getExtensions(Class<? extends Message> messageClass) {
+    List<Extension<?, ?>> map = messageToExtensions.get(messageClass);
+    return map != null ? map : Collections.<Extension<?, ?>>emptyList();
+  }
+
+  /** Returns an adapter for reading and writing {@code type}, creating it if necessary. */
+  public <M extends Message> WireAdapter<M> adapter(Class<M> type) {
+    List<DeferredAdapter<?>> deferredAdapters = reentrantCalls.get();
+    if (deferredAdapters == null) {
+      deferredAdapters = new ArrayList<DeferredAdapter<?>>();
+      reentrantCalls.set(deferredAdapters);
+    } else {
+      // Check that this isn't a reentrant call.
+      for (DeferredAdapter<?> deferredAdapter : deferredAdapters) {
+        if (deferredAdapter.javaType.equals(type)) {
+          //noinspection unchecked
+          return (WireAdapter<M>) deferredAdapter;
+        }
+      }
+    }
+
+    DeferredAdapter<M> deferredAdapter = new DeferredAdapter<M>(type);
+    deferredAdapters.add(deferredAdapter);
+    try {
+      WireAdapter<M> adapter = messageAdapter(type);
+      deferredAdapter.ready(adapter);
+      return adapter;
+    } finally {
+      deferredAdapters.remove(deferredAdapters.size() - 1);
+    }
+  }
+
   /**
    * Returns a message adapter for {@code messageType}.
    */
   @SuppressWarnings("unchecked")
-  synchronized <M extends Message> MessageAdapter<M> messageAdapter(Class<M> messageType) {
-    MessageAdapter<M> adapter = (MessageAdapter<M>) messageAdapters.get(messageType);
+  synchronized <M extends Message> RuntimeMessageAdapter<M> messageAdapter(
+      Class<M> messageType) {
+    RuntimeMessageAdapter<M> adapter =
+        (RuntimeMessageAdapter<M>) messageAdapters.get(messageType);
     if (adapter == null) {
-      adapter = new MessageAdapter<M>(this, messageType);
+      adapter = new RuntimeMessageAdapter<M>(this, messageType);
       messageAdapters.put(messageType, adapter);
-    }
-    return adapter;
-  }
-
-  /**
-   * Returns a builder adapter for {@code builderType}.
-   */
-  @SuppressWarnings("unchecked")
-  synchronized <B extends Message.Builder> BuilderAdapter<B>
-      builderAdapter(Class<B> builderType) {
-    BuilderAdapter<B> adapter = (BuilderAdapter<B>) builderAdapters.get(builderType);
-    if (adapter == null) {
-      adapter = new BuilderAdapter<B>(builderType);
-      builderAdapters.put(builderType, adapter);
     }
     return adapter;
   }
@@ -101,47 +130,13 @@ public final class Wire {
    * Returns an enum adapter for {@code enumClass}.
    */
   @SuppressWarnings("unchecked")
-  synchronized <E extends ProtoEnum> EnumAdapter<E> enumAdapter(Class<E> enumClass) {
-    EnumAdapter<E> adapter = (EnumAdapter<E>) enumAdapters.get(enumClass);
+  synchronized <E extends ProtoEnum> RuntimeEnumAdapter<E> enumAdapter(Class<E> enumClass) {
+    RuntimeEnumAdapter<E> adapter = (RuntimeEnumAdapter<E>) enumAdapters.get(enumClass);
     if (adapter == null) {
-      adapter = new EnumAdapter<E>(enumClass);
+      adapter = new RuntimeEnumAdapter<E>(enumClass);
       enumAdapters.put(enumClass, adapter);
     }
     return adapter;
-  }
-
-  /**
-   * Reads a message of type {@code messageClass} from {@code bytes} and returns
-   * it.
-   */
-  public <M extends Message> M parseFrom(byte[] bytes, Class<M> messageClass) throws IOException {
-    return parseFrom(WireInput.newInstance(bytes), messageClass);
-  }
-
-  /**
-   * Reads a message of type {@code messageClass} from the given range of {@code
-   * bytes} and returns it.
-   */
-  public <M extends Message> M parseFrom(byte[] bytes, int offset, int count, Class<M> messageClass)
-      throws IOException {
-    return parseFrom(WireInput.newInstance(bytes, offset, count), messageClass);
-  }
-
-  /**
-   * Reads a message of type {@code messageClass} from the given {@link InputStream} and returns it.
-   */
-  public <M extends Message> M parseFrom(InputStream input, Class<M> messageClass)
-      throws IOException {
-    return parseFrom(WireInput.newInstance(input), messageClass);
-  }
-
-  /**
-   * Reads a message of type {@code messageClass} from {@code input} and returns it.
-   */
-  private <M extends Message> M parseFrom(WireInput input, Class<M> messageClass)
-      throws IOException {
-    MessageAdapter<M> adapter = messageAdapter(messageClass);
-    return adapter.read(input);
   }
 
   /**
@@ -161,5 +156,50 @@ public final class Wire {
    */
   public static <T> T get(T value, T defaultValue) {
     return value != null ? value : defaultValue;
+  }
+
+  /**
+   * Sometimes a type adapter factory depends on its own product; either directly or indirectly.
+   * To make this work, we offer this type adapter stub while the final adapter is being computed.
+   * When it is ready, we wire this to delegate to that finished adapter.
+   *
+   * <p>Typically this is necessary in self-referential object models, such as an {@code Employee}
+   * class that has a {@code List<Employee>} field for an organization's management hierarchy.
+   */
+  private static class DeferredAdapter<M extends Message> extends WireAdapter<M> {
+    private WireAdapter<M> delegate;
+
+    DeferredAdapter(Class<M> type) {
+      super(FieldEncoding.LENGTH_DELIMITED, type);
+    }
+
+    public void ready(WireAdapter<M> delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override public M redact(M message) {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      return delegate.redact(message);
+    }
+
+    @Override public String toString(M value) {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      return delegate.toString(value);
+    }
+
+    @Override public int encodedSize(M value) {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      return delegate.encodedSize(value);
+    }
+
+    @Override public void encode(ProtoWriter writer, M value) throws IOException {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      delegate.encode(writer, value);
+    }
+
+    @Override public M decode(ProtoReader reader) throws IOException {
+      if (delegate == null) throw new IllegalStateException("Type adapter isn't ready");
+      return delegate.decode(reader);
+    }
   }
 }

@@ -15,6 +15,7 @@
  */
 package com.squareup.wire;
 
+import com.squareup.wire.protos.RepeatedAndPacked;
 import com.squareup.wire.protos.person.Person;
 import com.squareup.wire.protos.person.Person.PhoneNumber;
 import com.squareup.wire.protos.person.Person.PhoneType;
@@ -24,6 +25,8 @@ import com.squareup.wire.protos.simple.SimpleMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 
@@ -31,11 +34,7 @@ import static com.squareup.wire.protos.simple.Ext_simple_message.barext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.bazext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.fooext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.nested_message_ext;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -46,13 +45,13 @@ public class WireTest {
   @Test
   public void testSimpleMessage() throws Exception {
     SimpleMessage msg = new SimpleMessage.Builder().required_int32(456).build();
-    assertEquals(null, msg.optional_int32);
-    assertEquals(null, msg.optional_nested_msg);
-    assertEquals(null, msg.optional_external_msg);
-    assertEquals(null, msg.default_nested_enum);
-    assertEquals(new Integer(456), msg.required_int32);
-    assertNotNull(msg.repeated_double);
-    assertEquals(0, msg.repeated_double.size());
+    assertThat(msg.optional_int32).isNull();
+    assertThat(msg.optional_nested_msg).isNull();
+    assertThat(msg.optional_external_msg).isNull();
+    assertThat(msg.default_nested_enum).isNull();
+    assertThat(msg.required_int32).isEqualTo(new Integer(456));
+    assertThat(msg.repeated_double).isNotNull();
+    assertThat(msg.repeated_double).hasSize(0);
 
     SimpleMessage.Builder builder = new SimpleMessage.Builder();
     builder.optional_int32(789);
@@ -70,22 +69,22 @@ public class WireTest {
     builder.repeated_double(doubles);
 
     msg = builder.build();
-    assertEquals(new Integer(789), msg.optional_int32);
-    assertEquals(new Integer(2), msg.optional_nested_msg.bb);
-    assertEquals(new Float(99.9f), msg.optional_external_msg.f);
-    assertEquals(SimpleMessage.NestedEnum.BAR, msg.default_nested_enum);
-    assertEquals(new Integer(456), msg.required_int32);
-    assertEquals(doubles, msg.repeated_double);
+    assertThat(msg.optional_int32).isEqualTo(new Integer(789));
+    assertThat(msg.optional_nested_msg.bb).isEqualTo(new Integer(2));
+    assertThat(msg.optional_external_msg.f).isEqualTo(new Float(99.9f));
+    assertThat(msg.default_nested_enum).isEqualTo(SimpleMessage.NestedEnum.BAR);
+    assertThat(msg.required_int32).isEqualTo(new Integer(456));
+    assertThat(msg.repeated_double).isEqualTo(doubles);
 
     // Modifying the builder list does not affect an already-built message
     List<Double> savedData = new ArrayList<Double>(msg.repeated_double);
     doubles.set(1, 1.1);
-    assertNotSame(doubles, msg.repeated_double);
-    assertEquals(savedData, msg.repeated_double);
+    assertThat(msg.repeated_double).isNotSameAs(doubles);
+    assertThat(msg.repeated_double).isEqualTo(savedData);
 
     // Rebuilding will use the new list
     msg = builder.build();
-    assertEquals(doubles, msg.repeated_double);
+    assertThat(msg.repeated_double).isEqualTo(doubles);
 
     // Check for required fields
     builder.required_int32(null);
@@ -93,7 +92,7 @@ public class WireTest {
       builder.build();
       fail();
     } catch (IllegalStateException e) {
-      assertEquals("Required field not set:\n  required_int32", e.getMessage());
+      assertThat(e).hasMessage("Required field not set:\n  required_int32");
     }
 
     // The message list is immutable
@@ -105,19 +104,35 @@ public class WireTest {
     }
 
     Wire wire = new Wire();
+    WireAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
-    assertEquals(46, msg.getSerializedSize());
-    byte[] result = new byte[msg.getSerializedSize()];
-    msg.writeTo(result, 0, result.length);
-    assertEquals(46, result.length);
+    byte[] result = adapter.encode(msg);
+    assertThat(result.length).isEqualTo(46);
 
-    SimpleMessage newMsg = wire.parseFrom(result, SimpleMessage.class);
-    assertEquals(new Integer(789), newMsg.optional_int32);
-    assertEquals(new Integer(2), newMsg.optional_nested_msg.bb);
-    assertEquals(new Float(99.9F), newMsg.optional_external_msg.f);
-    assertEquals(SimpleMessage.NestedEnum.BAR, newMsg.default_nested_enum);
-    assertEquals(new Integer(456), newMsg.required_int32);
-    assertEquals(doubles, msg.repeated_double);
+    SimpleMessage newMsg = adapter.decode(result);
+    assertThat(newMsg.optional_int32).isEqualTo(new Integer(789));
+    assertThat(newMsg.optional_nested_msg.bb).isEqualTo(new Integer(2));
+    assertThat(newMsg.optional_external_msg.f).isEqualTo(new Float(99.9F));
+    assertThat(newMsg.default_nested_enum).isEqualTo(SimpleMessage.NestedEnum.BAR);
+    assertThat(newMsg.required_int32).isEqualTo(new Integer(456));
+    assertThat(msg.repeated_double).isEqualTo(doubles);
+  }
+
+  @Test public void mutateBuilder() throws Exception {
+    SimpleMessage message = new SimpleMessage.Builder()
+        .required_int32(10)
+        .build();
+
+    SimpleMessage.Builder builder = new SimpleMessage.Builder(message);
+    builder.required_int32 = 20;
+    builder.repeated_double.add(30.5);
+    builder.optional_int32 = 40;
+
+    assertThat(builder.build()).isEqualTo(new SimpleMessage.Builder()
+        .required_int32(20)
+        .repeated_double(Arrays.asList(30.5))
+        .optional_int32(40)
+        .build());
   }
 
   @Test
@@ -132,15 +147,16 @@ public class WireTest {
             .build()))
         .build();
 
-    byte[] data = person.toByteArray();
     Wire wire = new Wire();
-    wire.parseFrom(data, Person.class);
+    WireAdapter<Person> adapter = wire.adapter(Person.class);
+
+    byte[] data = adapter.encode(person);
+    adapter.decode(data);
   }
 
   @Test
   public void testExtensions() throws Exception {
-    ExternalMessage optional_external_msg =
-        new ExternalMessage.Builder()
+    ExternalMessage optional_external_msg = new ExternalMessage.Builder()
         .setExtension(fooext, Arrays.asList(444, 555))
         .setExtension(barext, 333)
         .setExtension(bazext, 222)
@@ -153,39 +169,72 @@ public class WireTest {
         .required_int32(456)
         .build();
 
-    assertEquals(Arrays.asList(444, 555), msg.optional_external_msg.getExtension(
-        fooext));
-    assertEquals(new Integer(333), msg.optional_external_msg.getExtension(barext));
-    assertEquals(new Integer(222), msg.optional_external_msg.getExtension(bazext));
-    assertEquals(new Integer(77), msg.optional_external_msg.getExtension(nested_message_ext).bb);
-    assertEquals(SimpleMessage.NestedEnum.BAZ, msg.optional_external_msg.getExtension(
-        Ext_simple_message.nested_enum_ext));
+    assertThat(msg.optional_external_msg.getExtension(fooext)).containsExactly(444, 555);
+    assertThat(msg.optional_external_msg.getExtension(barext)).isEqualTo(new Integer(333));
+    assertThat(msg.optional_external_msg.getExtension(bazext)).isEqualTo(new Integer(222));
+    assertThat(msg.optional_external_msg.getExtension(nested_message_ext).bb)
+        .isEqualTo(new Integer(77));
+    assertThat(msg.optional_external_msg.getExtension(
+        Ext_simple_message.nested_enum_ext)).isEqualTo(SimpleMessage.NestedEnum.BAZ);
 
     Wire wire = new Wire(Ext_simple_message.class);
-    int msgSerializedSize = msg.getSerializedSize();
-    assertEquals(29, msgSerializedSize);
-    byte[] result = new byte[msgSerializedSize];
-    msg.writeTo(result);
-    assertEquals(29, result.length);
+    WireAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
-    SimpleMessage newMsg = wire.parseFrom(result, SimpleMessage.class);
-    assertEquals(Arrays.asList(444, 555), newMsg.optional_external_msg.getExtension(fooext));
-    assertEquals(new Integer(333), newMsg.optional_external_msg.getExtension(barext));
-    assertEquals(new Integer(222), newMsg.optional_external_msg.getExtension(bazext));
+    byte[] result = adapter.encode(msg);
+    assertThat(result.length).isEqualTo(29);
+
+    SimpleMessage newMsg = adapter.decode(result);
+    assertThat(newMsg.optional_external_msg.getExtension(fooext)).containsExactly(444, 555);
+    assertThat(newMsg.optional_external_msg.getExtension(barext)).isEqualTo(new Integer(333));
+    assertThat(newMsg.optional_external_msg.getExtension(bazext)).isEqualTo(new Integer(222));
+  }
+
+  @Test
+  public void testExtensionEnum() throws Exception {
+    ExternalMessage optional_external_msg = new ExternalMessage.Builder()
+        .setExtension(Ext_simple_message.nested_enum_ext, SimpleMessage.NestedEnum.BAZ)
+        .build();
+
+    SimpleMessage msg = new SimpleMessage.Builder()
+        .optional_external_msg(optional_external_msg)
+        .required_int32(456)
+        .build();
+
+    Wire wireNoExt = new Wire();
+    WireAdapter<SimpleMessage> adapterNoExt = wireNoExt.adapter(SimpleMessage.class);
+    Wire wireExt = new Wire(Ext_simple_message.class);
+    WireAdapter<SimpleMessage> adapterExt = wireExt.adapter(SimpleMessage.class);
+
+    byte[] data = adapterNoExt.encode(msg);
+
+    // Change BAZ enum to a value not known by this client.
+    data[4] = 17;
+
+    // Parse the altered message.
+    SimpleMessage newMsg = adapterExt.decode(data);
+
+    // Original value shows up as an extension.
+    assertThat(msg.toString()).contains("squareup.protos.simple.nested_enum_ext=BAZ");
+    // New value is placed into the unknown field map.
+    assertThat(newMsg.toString()).contains("ExternalMessage{}");
+
+    // Serialized outputs are the same.
+    byte[] newData = adapterExt.encode(newMsg);
+    assertThat(data).isEqualTo(newData);
   }
 
   @Test
   public void extensionToString() {
-    assertEquals("[REPEATED INT32 squareup.protos.simple.fooext = 125]",
-        Ext_simple_message.fooext.toString());
-    assertEquals("[OPTIONAL INT32 squareup.protos.simple.barext = 126]",
-        Ext_simple_message.barext.toString());
-    assertEquals("[REQUIRED INT32 squareup.protos.simple.bazext = 127]",
-        Ext_simple_message.bazext.toString());
-    assertEquals("[OPTIONAL MESSAGE squareup.protos.simple.nested_message_ext = 128]",
-        Ext_simple_message.nested_message_ext.toString());
-    assertEquals("[OPTIONAL ENUM squareup.protos.simple.nested_enum_ext = 129]",
-        Ext_simple_message.nested_enum_ext.toString());
+    assertThat(Ext_simple_message.fooext.toString()).isEqualTo(
+        "[REPEATED INT32 squareup.protos.simple.fooext = 125]");
+    assertThat(Ext_simple_message.barext.toString()).isEqualTo(
+        "[OPTIONAL INT32 squareup.protos.simple.barext = 126]");
+    assertThat(Ext_simple_message.bazext.toString()).isEqualTo(
+        "[OPTIONAL INT32 squareup.protos.simple.bazext = 127]");
+    assertThat(Ext_simple_message.nested_message_ext.toString()).isEqualTo(
+        "[OPTIONAL MESSAGE squareup.protos.simple.nested_message_ext = 128]");
+    assertThat(Ext_simple_message.nested_enum_ext.toString()).isEqualTo(
+        "[OPTIONAL ENUM squareup.protos.simple.nested_enum_ext = 129]");
   }
 
   @Test
@@ -202,21 +251,20 @@ public class WireTest {
         .required_int32(456)
         .build();
 
-    assertEquals(Arrays.asList(444, 555), msg.optional_external_msg.getExtension(fooext));
-    assertEquals(new Integer(333), msg.optional_external_msg.getExtension(barext));
-    assertEquals(new Integer(222), msg.optional_external_msg.getExtension(bazext));
+    assertThat(msg.optional_external_msg.getExtension(fooext)).containsExactly(444, 555);
+    assertThat(msg.optional_external_msg.getExtension(barext)).isEqualTo(new Integer(333));
+    assertThat(msg.optional_external_msg.getExtension(bazext)).isEqualTo(new Integer(222));
 
     Wire wire = new Wire();
-    int msgSerializedSize = msg.getSerializedSize();
-    assertEquals(21, msgSerializedSize);
-    byte[] result = new byte[msgSerializedSize];
-    msg.writeTo(result);
-    assertEquals(21, result.length);
+    WireAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
-    SimpleMessage newMsg = wire.parseFrom(result, SimpleMessage.class);
-    assertNull(newMsg.optional_external_msg.getExtension(fooext));
-    assertNull(newMsg.optional_external_msg.getExtension(barext));
-    assertNull(newMsg.optional_external_msg.getExtension(bazext));
+    byte[] result = adapter.encode(msg);
+    assertThat(result.length).isEqualTo(21);
+
+    SimpleMessage newMsg = adapter.decode(result);
+    assertThat(newMsg.optional_external_msg.getExtension(fooext)).isNull();
+    assertThat(newMsg.optional_external_msg.getExtension(barext)).isNull();
+    assertThat(newMsg.optional_external_msg.getExtension(bazext)).isNull();
   }
 
   @Test
@@ -229,36 +277,84 @@ public class WireTest {
         .repeated_double(new ArrayList<Double>())
         .build();
 
-    assertNotNull(noListMessage.repeated_double);
-    assertEquals(0, noListMessage.repeated_double.size());
-    assertNotNull(emptyListMessage.repeated_double);
-    assertEquals(0, emptyListMessage.repeated_double.size());
+    assertThat(noListMessage.repeated_double).isNotNull();
+    assertThat(noListMessage.repeated_double).hasSize(0);
+    assertThat(emptyListMessage.repeated_double).isNotNull();
+    assertThat(emptyListMessage.repeated_double).hasSize(0);
 
     // Empty lists and null lists compare as equals()
-    assertTrue(noListMessage.equals(emptyListMessage));
+    assertThat(noListMessage).isEqualTo(emptyListMessage);
 
     // Empty lists and null lists have the same hashCode()
     int noListHashCode = noListMessage.hashCode();
     int emptyListHashCode = emptyListMessage.hashCode();
-    assertTrue(noListHashCode == emptyListHashCode);
+    assertThat(noListHashCode).isEqualTo(emptyListHashCode);
+
+    Wire wire = new Wire();
+    WireAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
     // Empty lists and null lists occupy 0 bytes in the wire encoding
-    byte[] noListBytes = noListMessage.toByteArray();
-    byte[] emptyListBytes = emptyListMessage.toByteArray();
+    byte[] noListBytes = adapter.encode(noListMessage);
+    byte[] emptyListBytes = adapter.encode(emptyListMessage);
 
-    assertEquals(2, noListBytes.length);
-    assertEquals(2, emptyListBytes.length);
+    assertThat(noListBytes.length).isEqualTo(2);
+    assertThat(emptyListBytes.length).isEqualTo(2);
 
-    assertEquals(noListBytes[0], emptyListBytes[0]);
-    assertEquals(noListBytes[1], emptyListBytes[1]);
+    assertThat(emptyListBytes[0]).isEqualTo(noListBytes[0]);
+    assertThat(emptyListBytes[1]).isEqualTo(noListBytes[1]);
 
     // Parsed results have a null list
-    SimpleMessage noListParsed = new Wire().parseFrom(noListBytes, SimpleMessage.class);
-    SimpleMessage emptyListParsed = new Wire().parseFrom(emptyListBytes, SimpleMessage.class);
+    SimpleMessage noListParsed = adapter.decode(noListBytes);
+    SimpleMessage emptyListParsed = adapter.decode(emptyListBytes);
 
-    assertNotNull(noListParsed.repeated_double);
-    assertEquals(0, noListParsed.repeated_double.size());
-    assertNotNull(emptyListParsed.repeated_double);
-    assertEquals(0, emptyListParsed.repeated_double.size());
+    assertThat(noListParsed.repeated_double).isNotNull();
+    assertThat(noListParsed.repeated_double).hasSize(0);
+    assertThat(emptyListParsed.repeated_double).isNotNull();
+    assertThat(emptyListParsed.repeated_double).hasSize(0);
+  }
+
+  @Test
+  public void testBadEnum() throws IOException {
+    Person person = new Person.Builder()
+        .id(1)
+        .name("Joe Schmoe")
+        .phone(Arrays.asList(
+            new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build()))
+        .build();
+
+    assertThat(person.phone.get(0).type).isEqualTo(PhoneType.WORK);
+
+    Wire wire = new Wire();
+    WireAdapter<Person> adapter = wire.adapter(Person.class);
+
+    byte[] data = adapter.encode(person);
+    assertThat(data[27]).isEqualTo((byte) PhoneType.WORK.getValue());
+
+    // Corrupt the PhoneNumber type field with an undefined value
+    data[27] = 17;
+    // Parsed PhoneNumber has no value set
+    Person result = adapter.decode(data);
+    assertThat(result.phone.get(0).type).isNull();
+
+    // The value 17 will be stored as an unknown varint with tag number 2
+    Collection<List<UnknownFieldMap.Value>> unknownFields
+        = ((Message) result.phone.get(0)).unknownFields();
+    assertThat(unknownFields).hasSize(1);
+    List<UnknownFieldMap.Value> values = unknownFields.iterator().next();
+    assertThat(values).hasSize(1);
+    UnknownFieldMap.Value value = values.get(0);
+    assertThat(value.tag).isEqualTo(2);
+    assertThat(value.value).isEqualTo(Long.valueOf(17L));
+
+    // Serialize again, value is preserved
+    byte[] newData = adapter.encode(result);
+    assertThat(data).isEqualTo(newData);
+  }
+
+  @Test public void missingRepeatedAndPackedFieldsBecomesEmptyList() throws IOException {
+    byte[] bytes = new byte[0];
+    RepeatedAndPacked data = new Wire().adapter(RepeatedAndPacked.class).decode(bytes);
+    assertThat(data.rep_int32).isEqualTo(Collections.emptyList());
+    assertThat(data.pack_int32).isEqualTo(Collections.emptyList());
   }
 }

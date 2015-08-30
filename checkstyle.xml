@@ -41,7 +41,6 @@
 
     <!-- Checks for Naming Conventions.                  -->
     <!-- See http://checkstyle.sf.net/config_naming.html -->
-    <module name="ConstantName"/>
     <module name="LocalFinalVariableName"/>
     <module name="LocalVariableName"/>
     <module name="MemberName"/>
@@ -66,7 +65,6 @@
       <property name="max" value="100"/>
     </module>
     <module name="MethodLength"/>
-    <module name="ParameterNumber"/>
 
 
     <!-- Checks for whitespace                               -->
@@ -91,7 +89,7 @@
 
     <!-- Checks for blocks. You know, those {}'s         -->
     <!-- See http://checkstyle.sf.net/config_blocks.html -->
-    <module name="AvoidNestedBlocks"/>
+    <!--<module name="AvoidNestedBlocks"/>-->
     <!--module name="EmptyBlock"/-->
     <module name="LeftCurly"/>
     <!-- <module name="NeedBraces"/> -->
@@ -103,7 +101,7 @@
     <!--module name="AvoidInlineConditionals"/-->
     <module name="CovariantEquals"/>
     <module name="EmptyStatement"/>
-    <module name="EqualsAvoidNull"/>
+    <!--<module name="EqualsAvoidNull"/>-->
     <module name="EqualsHashCode"/>
     <!--module name="HiddenField"/-->
     <module name="IllegalInstantiation"/>

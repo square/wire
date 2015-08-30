@@ -1,7 +1,0 @@
-mvn clean package -U -DskipTests
-cd wire-runtime
-pushd src/test/proto
-PROTOS=`find . -name '*.proto' | sed 's/^\.\///'`
-popd
-echo $PROTOS
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar --proto_path=../wire-runtime/src/test/proto --java_out=../wire-runtime/src/test/java ${PROTOS}

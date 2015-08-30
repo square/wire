@@ -3,7 +3,6 @@ Wire Mobile Protocol Buffers
 
 *“A man got to have a code!”* - Omar Little
 
-
 Introduction
 ------------
 
@@ -17,7 +16,7 @@ Wire is built using the [Maven](http://maven.apache.org) build system.
 Compiling .proto files
 ----------------------
 
-Build the wire-compiler using Maven (alternatively you can just download 
+Build the wire-compiler using Maven (alternatively you can just download
 [the wire-compiler .jar][dl_compiler]):
 
     % mvn clean package
@@ -47,11 +46,11 @@ For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`,
     import java.util.List;
 
     public final class DescriptorProto
-        implements Message {
+        extends Message {
 
 Instead of supplying individual filename arguments on the command line, the `--files` flag may be
 used to specify a single file containing a list of `.proto` files. The file names are interpreted
-relative to the value given for the `--proto_path` flag.
+relative to the paths provided by `--proto_path` flags.
 
     % cat protos.include
     google/protobuf/descriptor.proto
@@ -69,9 +68,110 @@ relative to the value given for the `--proto_path` flag.
     Writing generated code to out/com/yourcompany/protos/stuff/Stuff.java
     ...
 
-The compiler will (recursively) import any needed `.proto` files from the `protos-repo/` directory, but
-will only generate output for the `.proto` files listed on the command line or in the file specified
-by the `--files` flag.
+The compiler will (recursively) import any needed `.proto` files from the `protos-repo/` directory,
+but will only generate output for the `.proto` files listed on the command line or in the file
+specified by the `--files` flag.
+
+The `--proto_path` flag may be specified multiple times to provide multiple paths in which to search
+for `.proto` files.
+
+Generating service interfaces
+-----------------------------
+
+To generate interface definitions for `service` definitions in your `.proto` files, use the
+following compiler flag:
+
+`--service_factory=`*fully_qualified_class_name*
+
+The named class must be on the classpath, must implment the `com.squareup.wire.java.ServiceFactory`
+interface class, and must have a public no-arguments constructor.
+
+Three experimental sample implementations are currenly bundled with the compiler,
+`com.squareup.wire.java.SimpleServiceFactory`, `com.squareup.wire.java.RetrofitServiceFactory`, and
+`com.squareup.wire.java.RxJavaServiceFactory`. If the `--service_factory` flag is not present,
+`service` definitions are ignored.
+
+A list of options may be passed to the `ServiceFactory` using one or more instances of the
+following compiler flag:
+
+`--service_factory_opt=`*option*
+
+The options from each instance of the flag will be placed into a `List` and passed as the
+second parameter of the `create` method.
+
+Given the following service definition:
+
+```protobuf
+service ExampleService {
+  /* Sends some data. */
+  rpc SendSomeData (SendDataRequest) returns (SendDataResponse);
+}
+```
+
+`com.squareup.wire.java.SimpleServiceFactory` will generate:
+
+```java
+public interface ExampleService {
+  /**
+   * Sends some data.
+   */
+  SendDataResponse sendSomeData(SendDataRequest sendDataRequest)
+      throws IOException;
+}
+```
+
+`com.squareup.wire.java.RetrofitServiceFactory` will generate:
+
+```java
+public interface ExampleService {
+  /**
+   * Sends some data.
+   */
+  @POST("/com.squareup.services.ExampleService/SendSomeData")
+  SendDataResponse sendSomeData(@Body SendDataRequest request);
+}
+```
+
+and `com.squareup.wire.java.RxJavaServiceFactory` will generate:
+
+```java
+public final class RxJavaService {
+
+  public interface Endpoint {
+
+    /**
+     * Sends some data.
+     */
+    @POST("/com.squareup.services.RxJavaService/SendSomeData")
+    SendDataResponse sendSomeData(@Body SendDataRequest request);
+  }
+
+  private final Func1<SendDataRequest, SendDataResponse> sendSomeData =
+      new Func1<SendDataRequest, SendDataResponse>() {
+        @Override
+        public SendDataResponse call(SendDataRequest request) {
+          return endpoint.sendSomeData(request);
+        }
+      };
+
+  private final Endpoint endpoint;
+
+  @Inject
+  public RxJavaService(Endpoint endpoint) {
+    this.endpoint = endpoint;
+  }
+
+  public Func1<SendDataRequest, SendDataResponse> getSendSomeData() {
+    return sendSomeData;
+  }
+}
+
+```
+
+(omitting the generated file comment, package declaration, and imports for clarity).
+
+If you would like to only generate interface definitions for some of the methods on a `Service`,
+use the `--roots` flag and specify each one as `fully.qualified.Service#MethodName`.
 
 Using Wire in your application
 ------------------------------
@@ -80,14 +180,19 @@ The `wire-runtime` package contains runtime support libraries that must be inclu
 that use Wire-generated code.
 
 Download [the latest runtime .jar][dl_runtime] or depend via Maven:
-
 ```xml
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>(latest version)</version>
+  <version>1.8.0</version>
 </dependency>
 ```
+or Gradle:
+```groovy
+compile 'com.squareup.wire:wire-runtime:1.8.0'
+```
+
+Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 
 If you use Proguard, then you need to add `keep` rules.  The simplest option is to tell Proguard not to touch the Wire library and your generated protocol buffers (of course these simple rules will miss opportunities to shrink and optimize the code):
 
@@ -97,11 +202,13 @@ If you use Proguard, then you need to add `keep` rules.  The simplest option is 
 How Wire works
 --------------
 
-The Wire compiler generates a Java class for each message or enum defined in a `.proto file` specified
-on the command line. Each message class has an associated Builder class that may be used to construct
-an instance manually:
+The Wire compiler generates a Java class for each message or enum defined in a `.proto file`
+specified on the command line. Each message class has an associated Builder class that may be used
+to construct an instance manually:
 
+```java
     MyMessage msg = new MyMessage.Builder().some_int_field(123).build();
+```
 
 Note that field names are not converted to camel case.
 
@@ -161,9 +268,10 @@ Unsupported
 Wire does not support:
 
  * Groups - they are skipped when parsing binary input data
- * Services - they are ignored by the compiler
 
-Wire supports custom options on messages and fields. Other custom options are ignored. Use the `--no_options` flag to omit option information from the generated code.
+Wire supports custom options on messages and fields. Other custom options are ignored. Use the
+`--no_options` flag to omit option information from the generated code.
 
- [dl_runtime]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-runtime&v=LATEST
- [dl_compiler]: http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
+ [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
+ [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
+ [snap]: https://oss.sonatype.org/content/repositories/snapshots/

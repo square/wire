@@ -1,6 +1,113 @@
 Change Log
 ==========
 
+Version 1.8.0 *(2015-06-27)*
+----------------------------
+
+ * New: `oneof` support!
+ * Fix: Correct serialization of repeated unknown fields.
+ * Fix: Removed superfluous `private` modifier on enum constructor.
+ * Warning: The 'protoparser' library was updated to version 4.0. This changes the type passed to
+   any `ServiceWriter` implementations.
+
+
+Version 1.7.0 *(2015-03-05)*
+----------------------------
+
+ * New: Messages implement `Serializable`. The serialized form follows protobuf encoding, so
+   renaming fields is safe as long as tags are consistent. (Renaming classes is unsafe, however).
+   Note that extension fields are deserialized as unknown fields.
+
+Version 1.6.1 *(2015-01-16)*
+----------------------------
+
+ * New: `--quiet` and `--dry-run` command-line arguments.
+ * Fix: Handle an extension registry with zero or only one item.
+ * Okio dependency bumped to 1.2.0.
+
+
+Version 1.6.0 *(2014-10-23)*
+----------------------------
+
+ * Fix: Correctly throw `IOException` when parsing bad input fails.
+ * Fix: Ensure emitted code references to `Arrays.asList` correctly compiles in some edge cases.
+ * '__UNDEFINED__' enum value has been removed.
+
+
+Version 1.5.2 *(2014-09-15)*
+----------------------------
+
+ * New: '__UNDEFINED__' enum value represents values that the generated code is unable to handle.
+ * New: Service writer implementation can now be specified on the command-line.
+
+
+Version 1.5.1 *(2014-06-18)*
+----------------------------
+
+ * New: Generate interface definition for a `Service` with a partial list of methods.
+ * Okio dependency bumped to 1.0.0.
+
+
+Version 1.5.0 *(2014-04-22)*
+----------------------------
+
+ * New: Options on enums and enum values are now supported.
+ * New: Options ending with `.redacted` on fields will omit values from `toString`.
+ * New: `Redactor` creates copies of messages with redacted fields omitted.
+ * Various internal serialization improvements and memory reduction.
+ * Okio dependency bumped to 0.9.0.
+
+
+Version 1.4.0 *(2014-04-22)*
+----------------------------
+
+ * Replace Wire's ByteString class with the one from Okio (https://github.com/square/okio).
+   **This is a breaking API change**.
+
+ * Add a new static method `Wire.parseFrom(okio.Source input, Class<M> messageClass)`.
+
+ * Reimplement Wire's input handling to use Okio internally.
+
+ * Provide basic support for generating code from service declarations (see README.md).
+
+ * Improve deserialization performance.
+
+ * Fix a bug where no some extension dependencies were not detected.
+
+
+Version 1.3.3 *(2014-03-28)*
+----------------------------
+
+ * New: Support service declarations as roots. The request and response types of their methods will
+   be included.
+
+
+Version 1.3.2 *(2014-03-27)*
+----------------------------
+
+ * Fix: Enum value duplicate check now correctly looks at names instead of values.
+
+
+Version 1.3.1 *(2014-03-25)*
+----------------------------
+
+ * New: Automatically add Maven plugin's generated source as a compilation root.
+ * Fix: Correct Maven plugin's 'no arguments' flag to work properly.
+ * Fix: Support extend declarations nested inside message types.
+
+
+Version 1.3.0 *(2014-03-21)*
+----------------------------
+
+ * New: Empty repeated fields are now initialized to an empty collection.
+ * New: Emit field options. Use `--no_options` flag to disable.
+ * New: `@Deprecated` is now added to fields and setters on the builder.
+ * New: Maven plugin for running the compiler as part of a build.
+ * Fix: Treat empty and null repeated fields the same in `equals()` and `hashCode()`.
+
+Note: This version is not backwards compatible with code generated from previous versions.
+
+
 Version 1.2.0 *(2013-11-01)*
 ----------------------------
 

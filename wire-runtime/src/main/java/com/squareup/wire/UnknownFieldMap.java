@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,235 +24,77 @@ import java.util.TreeMap;
 
 final class UnknownFieldMap {
 
-  enum UnknownFieldType {
-    VARINT, FIXED32, FIXED64, LENGTH_DELIMITED;
+  static final class Value<T> {
+    final int tag;
+    final T value;
+    final WireAdapter<T> adapter;
 
-    public static UnknownFieldType of(String name) {
-      if ("varint".equals(name)) return VARINT;
-      if ("fixed32".equals(name)) return FIXED32;
-      if ("fixed64".equals(name)) return FIXED64;
-      if ("length-delimited".equals(name)) return LENGTH_DELIMITED;
-      throw new IllegalArgumentException("Unknown type " + name);
-    }
-  }
-
-  abstract static class FieldValue {
-    private final int tag;
-    private final WireType wireType;
-
-    public FieldValue(int tag, WireType wireType) {
+    public Value(int tag, T value, WireAdapter<T> adapter) {
       this.tag = tag;
-      this.wireType = wireType;
-    }
-
-    public static VarintFieldValue varint(int tag, Long value) {
-      return new VarintFieldValue(tag, value);
-    }
-
-    public static Fixed32FieldValue fixed32(int tag, Integer value) {
-      return new Fixed32FieldValue(tag, value);
-    }
-
-    public static Fixed64FieldValue fixed64(int tag, Long value) {
-      return new Fixed64FieldValue(tag, value);
-    }
-
-    public static LengthDelimitedFieldValue lengthDelimited(int tag, ByteString value) {
-      return new LengthDelimitedFieldValue(tag, value);
-    }
-
-    public abstract int getSerializedSize();
-
-    public abstract void write(int tag, WireOutput output) throws IOException;
-
-    public int getTag() {
-      return tag;
-    }
-
-    public WireType getWireType() {
-      return wireType;
-    }
-
-    public Integer getAsInteger() {
-      throw new IllegalStateException();
-    }
-
-    public Long getAsLong() {
-      throw new IllegalStateException();
-    }
-
-    public ByteString getAsBytes() {
-      throw new IllegalStateException();
-    }
-  }
-
-  static final class VarintFieldValue extends FieldValue {
-    private final Long value;
-
-    public VarintFieldValue(int tag, Long value) {
-      super(tag, WireType.VARINT);
       this.value = value;
+      this.adapter = adapter;
     }
 
-    @Override public int getSerializedSize() {
-      return WireOutput.varint64Size(value);
+    int encodedSize(int tag) {
+      return adapter.encodedSize(tag, value);
     }
 
-    @Override public void write(int tag, WireOutput output) throws IOException {
-      output.writeTag(tag, WireType.VARINT);
-      output.writeVarint64(value);
-    }
-
-    @Override public Long getAsLong() {
-      return value;
+    void encodeTagged(int tag, ProtoWriter output) throws IOException {
+      adapter.encodeTagged(output, tag, value);
     }
   }
 
-  static final class Fixed32FieldValue extends FieldValue {
-    private final Integer value;
-
-    public Fixed32FieldValue(int tag, Integer value) {
-      super(tag, WireType.FIXED32);
-      this.value = value;
-    }
-
-    @Override public int getSerializedSize() {
-      return WireType.FIXED_32_SIZE;
-    }
-
-    @Override public void write(int tag, WireOutput output) throws IOException {
-      output.writeTag(tag, WireType.FIXED32);
-      output.writeFixed32(value);
-    }
-
-    @Override public Integer getAsInteger() {
-      return value;
-    }
-  }
-
-  static final class Fixed64FieldValue extends FieldValue {
-    private final Long value;
-
-    public Fixed64FieldValue(int tag, Long value) {
-      super(tag, WireType.FIXED64);
-      this.value = value;
-    }
-
-    @Override public int getSerializedSize() {
-      return WireType.FIXED_64_SIZE;
-    }
-
-    @Override public void write(int tag, WireOutput output) throws IOException {
-      output.writeTag(tag, WireType.FIXED64);
-      output.writeFixed64(value);
-    }
-
-    @Override public Long getAsLong() {
-      return value;
-    }
-  }
-
-  static final class LengthDelimitedFieldValue extends FieldValue {
-    private final ByteString value;
-
-    public LengthDelimitedFieldValue(int tag, ByteString value) {
-      super(tag, WireType.LENGTH_DELIMITED);
-      this.value = value;
-    }
-
-    @Override public int getSerializedSize() {
-      return WireOutput.varint32Size(value.size()) + value.size();
-    }
-
-    @Override public void write(int tag, WireOutput output) throws IOException {
-      output.writeTag(tag, WireType.LENGTH_DELIMITED);
-      output.writeVarint32(value.size());
-      output.writeRawBytes(value.toByteArray());
-    }
-
-    @Override public ByteString getAsBytes() {
-      return value;
-    }
-  }
-
-  Map<Integer, List<FieldValue>> fieldMap;
+  final Map<Integer, List<Value>> fieldMap;
 
   UnknownFieldMap() {
+    this(null);
   }
 
   UnknownFieldMap(UnknownFieldMap other) {
-    if (other.fieldMap != null) {
-      ensureFieldMap().putAll(other.fieldMap);
+    if (other != null && other.fieldMap != null) {
+      fieldMap = new TreeMap<Integer, List<Value>>(other.fieldMap);
+    } else {
+      fieldMap = new TreeMap<Integer, List<Value>>();
     }
   }
 
-  void addVarint(int tag, Long value) {
-    addElement(ensureFieldMap(), tag, value, WireType.VARINT);
+  <T> void add(int tag, T value, WireAdapter<T> adapter) throws IOException {
+    addElement(tag, new Value<T>(tag, value, adapter));
   }
 
-  void addFixed32(int tag, Integer value) {
-    addElement(ensureFieldMap(), tag, value, WireType.FIXED32);
-  }
-
-  void addFixed64(int tag, Long value) {
-    addElement(ensureFieldMap(), tag, value, WireType.FIXED64);
-  }
-
-  void addLengthDelimited(int tag, ByteString value) {
-    addElement(ensureFieldMap(), tag, value, WireType.LENGTH_DELIMITED);
-  }
-
-  private Map<Integer, List<FieldValue>> ensureFieldMap() {
-    if (fieldMap == null) {
-      fieldMap = new TreeMap<Integer, List<FieldValue>>();
-    }
-    return fieldMap;
-  }
-
-  private <T> void addElement(Map<Integer, List<FieldValue>> map, int tag, T value,
-      WireType wireType) {
-    List<FieldValue> values = map.get(tag);
+  /**
+   * @throws IOException if the added element's type doesn't match the types of the other elements
+   *     with the same tag.
+   */
+  private void addElement(int tag, Value value) throws IOException {
+    List<Value> values = fieldMap.get(tag);
     if (values == null) {
-      values = new ArrayList<FieldValue>();
-      map.put(tag, values);
+      values = new ArrayList<Value>();
+      fieldMap.put(tag, values);
+    } else if (values.get(0).adapter.fieldEncoding != value.adapter.fieldEncoding) {
+      throw new ProtocolException(
+          String.format("Wire type %s differs from previous type %s for tag %s",
+              value.adapter.fieldEncoding, values.get(0).adapter.fieldEncoding, tag));
     }
-    FieldValue fieldValue;
-    switch (wireType) {
-      case VARINT: fieldValue = FieldValue.varint(tag, (Long) value); break;
-      case FIXED32: fieldValue = FieldValue.fixed32(tag, (Integer) value); break;
-      case FIXED64: fieldValue = FieldValue.fixed64(tag, (Long) value); break;
-      case LENGTH_DELIMITED:
-        fieldValue = FieldValue.lengthDelimited(tag, (ByteString) value);
-        break;
-      default:
-        throw new IllegalArgumentException("Unsupported wireType = " + wireType);
-    }
-    if (values.size() > 0 && values.get(0).getWireType() != fieldValue.getWireType()) {
-      throw new IllegalStateException("Wire type differs from previous type for tag");
-    }
-    values.add(fieldValue);
+    values.add(value);
   }
 
-  int getSerializedSize() {
+  int encodedSize() {
     int size = 0;
-    if (fieldMap != null) {
-      for (Map.Entry<Integer, List<FieldValue>> entry : fieldMap.entrySet()) {
-        size += WireOutput.varintTagSize(entry.getKey());
-        for (FieldValue value : entry.getValue()) {
-          size += value.getSerializedSize();
-        }
+    for (Map.Entry<Integer, List<Value>> entry : fieldMap.entrySet()) {
+      int tag = entry.getKey();
+      for (Value value : entry.getValue()) {
+        size += value.encodedSize(tag);
       }
     }
     return size;
   }
 
-  void write(WireOutput output) throws IOException {
-    if (fieldMap != null) {
-      for (Map.Entry<Integer, List<FieldValue>> entry : fieldMap.entrySet()) {
-        int tag = entry.getKey();
-        for (FieldValue value : entry.getValue()) {
-          value.write(tag, output);
-        }
+  void encode(ProtoWriter output) throws IOException {
+    for (Map.Entry<Integer, List<Value>> entry : fieldMap.entrySet()) {
+      int tag = entry.getKey();
+      for (Value value : entry.getValue()) {
+        value.encodeTagged(tag, output);
       }
     }
   }

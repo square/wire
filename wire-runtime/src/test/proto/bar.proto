@@ -1,0 +1,11 @@
+package squareup.foobar;
+
+option java_package = "com.squareup.foobar.protos.bar";
+
+message Bar {
+  message Baz {
+    message Moo {
+      optional string boo = 1;
+    }
+  }
+}
