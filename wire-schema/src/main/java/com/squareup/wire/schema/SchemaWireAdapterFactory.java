@@ -53,44 +53,44 @@ final class SchemaWireAdapterFactory {
     adapterMap.put(WireType.UINT64, WireAdapter.UINT64);
   }
 
-  public WireAdapter<Map<String, Object>> get(WireType wireType) {
-    MessageType type = (MessageType) schema.getType(wireType);
-    SchemaMessageAdapter messageAdapter = new SchemaMessageAdapter();
-    for (Field field : type.fields()) {
-      FieldAdapter fieldAdapter = new FieldAdapter(
-          field.name(), field.tag(), field.isRepeated(), getWireAdapter(field.type()));
-      messageAdapter.fieldsByName.put(field.name(), fieldAdapter);
-      messageAdapter.fieldsByTag.put(field.tag(), fieldAdapter);
-    }
-    return messageAdapter;
-  }
-
-  private synchronized WireAdapter<?> getWireAdapter(WireType wireType) {
+  public WireAdapter<Object> get(WireType wireType) {
     WireAdapter<?> result = adapterMap.get(wireType);
-
-    if (result == null) {
-      Type type = schema.getType(wireType);
-      if (type instanceof EnumType) {
-        result = new SchemaEnumAdapter((EnumType) type);
-
-      } else if (type instanceof MessageType) {
-        // TODO(swankjesse): re-entrant calls.
-        result = get(wireType);
-
-      } else {
-        throw new IllegalArgumentException("unexpected type: " + wireType);
-      }
-
-      adapterMap.put(wireType, result);
+    if (result != null) {
+      return (WireAdapter<Object>) result;
     }
 
-    return result;
+    Type type = schema.getType(wireType);
+    if (type == null) {
+      throw new IllegalArgumentException("unknown type: " + wireType);
+    }
+
+    if (type instanceof EnumType) {
+      EnumAdapter enumAdapter = new EnumAdapter((EnumType) type);
+      adapterMap.put(wireType, enumAdapter);
+      return enumAdapter;
+    }
+
+    if (type instanceof MessageType) {
+      MessageAdapter messageAdapter = new MessageAdapter();
+      // Put the adapter in the map early to mitigate the recursive calls to get() made below.
+      adapterMap.put(wireType, messageAdapter);
+
+      for (com.squareup.wire.schema.Field field : ((MessageType) type).fields()) {
+        Field fieldAdapter = new Field(
+            field.name(), field.tag(), field.isRepeated(), get(field.type()));
+        messageAdapter.fieldsByName.put(field.name(), fieldAdapter);
+        messageAdapter.fieldsByTag.put(field.tag(), fieldAdapter);
+      }
+      return (WireAdapter) messageAdapter;
+    }
+
+    throw new IllegalArgumentException("unexpected type: " + wireType);
   }
 
-  static final class SchemaEnumAdapter extends WireAdapter<Object> {
+  static final class EnumAdapter extends WireAdapter<Object> {
     final EnumType enumType;
 
-    public SchemaEnumAdapter(EnumType enumType) {
+    public EnumAdapter(EnumType enumType) {
       super(FieldEncoding.VARINT, Object.class);
       this.enumType = enumType;
     }
@@ -117,11 +117,11 @@ final class SchemaWireAdapterFactory {
     }
   }
 
-  static final class SchemaMessageAdapter extends WireAdapter<Map<String, Object>> {
-    final Map<Integer, FieldAdapter> fieldsByTag = new LinkedHashMap<>();
-    final Map<String, FieldAdapter> fieldsByName = new LinkedHashMap<>();
+  static final class MessageAdapter extends WireAdapter<Map<String, Object>> {
+    final Map<Integer, Field> fieldsByTag = new LinkedHashMap<>();
+    final Map<String, Field> fieldsByName = new LinkedHashMap<>();
 
-    public SchemaMessageAdapter() {
+    public MessageAdapter() {
       super(FieldEncoding.LENGTH_DELIMITED, Map.class);
     }
 
@@ -132,16 +132,16 @@ final class SchemaWireAdapterFactory {
     @Override public int encodedSize(Map<String, Object> value) {
       int size = 0;
       for (Map.Entry<String, Object> entry : value.entrySet()) {
-        FieldAdapter fieldAdapter = fieldsByName.get(entry.getKey());
-        if (fieldAdapter == null) continue; // Ignore unknown values!
+        Field field = fieldsByName.get(entry.getKey());
+        if (field == null) continue; // Ignore unknown values!
 
-        WireAdapter<Object> wireAdapter = (WireAdapter<Object>) fieldAdapter.wireAdapter;
-        if (fieldAdapter.repeated) {
+        WireAdapter<Object> wireAdapter = (WireAdapter<Object>) field.wireAdapter;
+        if (field.repeated) {
           for (Object o : (List<?>) entry.getValue()) {
-            size += wireAdapter.encodedSize(fieldAdapter.tag, o);
+            size += wireAdapter.encodedSize(field.tag, o);
           }
         } else {
-          size += wireAdapter.encodedSize(fieldAdapter.tag, entry.getValue());
+          size += wireAdapter.encodedSize(field.tag, entry.getValue());
         }
       }
       return size;
@@ -149,16 +149,16 @@ final class SchemaWireAdapterFactory {
 
     @Override public void encode(ProtoWriter writer, Map<String, Object> value) throws IOException {
       for (Map.Entry<String, Object> entry : value.entrySet()) {
-        FieldAdapter fieldAdapter = fieldsByName.get(entry.getKey());
-        if (fieldAdapter == null) continue; // Ignore unknown values!
+        Field field = fieldsByName.get(entry.getKey());
+        if (field == null) continue; // Ignore unknown values!
 
-        WireAdapter<Object> wireAdapter = (WireAdapter<Object>) fieldAdapter.wireAdapter;
-        if (fieldAdapter.repeated) {
+        WireAdapter<Object> wireAdapter = (WireAdapter<Object>) field.wireAdapter;
+        if (field.repeated) {
           for (Object o : (List<?>) entry.getValue()) {
-            wireAdapter.encodeTagged(writer, fieldAdapter.tag, o);
+            wireAdapter.encodeTagged(writer, field.tag, o);
           }
         } else {
-          wireAdapter.encodeTagged(writer, fieldAdapter.tag, entry.getValue());
+          wireAdapter.encodeTagged(writer, field.tag, entry.getValue());
         }
       }
     }
@@ -168,22 +168,22 @@ final class SchemaWireAdapterFactory {
 
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
-        FieldAdapter fieldAdapter = fieldsByTag.get(tag);
-        if (fieldAdapter == null) {
-          fieldAdapter = new FieldAdapter(
+        Field field = fieldsByTag.get(tag);
+        if (field == null) {
+          field = new Field(
               Integer.toString(tag), tag, true, reader.peekFieldEncoding().rawWireAdapter());
         }
 
-        Object value = fieldAdapter.wireAdapter.decode(reader);
-        if (fieldAdapter.repeated) {
-          List<Object> values = (List<Object>) result.get(fieldAdapter.name);
+        Object value = field.wireAdapter.decode(reader);
+        if (field.repeated) {
+          List<Object> values = (List<Object>) result.get(field.name);
           if (values == null) {
             values = new ArrayList<>();
-            result.put(fieldAdapter.name, values);
+            result.put(field.name, values);
           }
           values.add(value);
         } else {
-          result.put(fieldAdapter.name, value);
+          result.put(field.name, value);
         }
       }
       reader.endMessage(token);
@@ -195,13 +195,13 @@ final class SchemaWireAdapterFactory {
     }
   }
 
-  static class FieldAdapter {
+  static class Field {
     final String name;
     final int tag;
     final boolean repeated;
     final WireAdapter<?> wireAdapter;
 
-    public FieldAdapter(String name, int tag, boolean repeated, WireAdapter<?> wireAdapter) {
+    public Field(String name, int tag, boolean repeated, WireAdapter<?> wireAdapter) {
       this.name = name;
       this.tag = tag;
       this.repeated = repeated;
