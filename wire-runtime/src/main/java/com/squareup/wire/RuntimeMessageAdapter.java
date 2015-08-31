@@ -221,6 +221,15 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     return builder.build();
   }
 
+  @Override public boolean equals(Object o) {
+    return o instanceof RuntimeMessageAdapter
+        && ((RuntimeMessageAdapter) o).messageType == messageType;
+  }
+
+  @Override public int hashCode() {
+    return messageType.hashCode();
+  }
+
   /**
    * Returns a human-readable version of the given {@link Message}.
    */

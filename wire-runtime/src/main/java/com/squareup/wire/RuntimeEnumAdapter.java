@@ -77,6 +77,15 @@ final class RuntimeEnumAdapter<E extends ProtoEnum> extends WireAdapter<E> {
     return fromInt(reader.readVarint32());
   }
 
+  @Override public boolean equals(Object o) {
+    return o instanceof RuntimeEnumAdapter
+        && ((RuntimeEnumAdapter) o).type == type;
+  }
+
+  @Override public int hashCode() {
+    return type.hashCode();
+  }
+
   static final class EnumConstantNotFoundException extends IllegalArgumentException {
     final int value;
 
