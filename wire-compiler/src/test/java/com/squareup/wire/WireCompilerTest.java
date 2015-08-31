@@ -170,7 +170,7 @@ public class WireCompilerTest {
     String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--java_out=" + testDir.getAbsolutePath();
-    args[2] = "--service_factory=com.squareup.wire.TestRxJavaServiceFactory";
+    args[2] = "--service_factory=com.squareup.wire.java.SimpleServiceFactory";
     args[3] = "--service_factory_opt=" + serviceSuffix;
     args[4] = "--roots=" + roots;
     System.arraycopy(sources, 0, args, numFlags, sources.length);
@@ -262,73 +262,23 @@ public class WireCompilerTest {
         "com.squareup.wire.java.SimpleServiceFactory");
   }
 
-  @Test public void testRetrofitService() throws Exception {
+  @Test public void testSimpleServiceWithPruning() throws Exception {
     String[] sources = {
         "request_response.proto",
-        "retrofit_service.proto"
-    };
-    String[] outputs = {
-        "com/squareup/services/anotherpackage/SendDataRequest.java",
-        "com/squareup/services/anotherpackage/SendDataResponse.java",
-        "com/squareup/services/RetrofitService.java"
-    };
-    testProto(sources, outputs,
-        "com.squareup.wire.java.RetrofitServiceFactory");
-  }
-
-  @Test public void testRxJavaService() throws Exception {
-    String[] sources = {
-        "request_response.proto",
-        "rxjava_service.proto"
-    };
-    String[] outputs = {
-        "com/squareup/services/anotherpackage/SendDataRequest.java",
-        "com/squareup/services/anotherpackage/SendDataResponse.java",
-        "com/squareup/services/RxJavaService.java"
-    };
-    testProto(sources, outputs,
-        "com.squareup.wire.java.RxJavaServiceFactory");
-  }
-
-  @Test
-  public void testUnlimitedRxJavaService() throws Exception {
-    String[] sources = {
-        "request_response.proto",
-        "rxjava_service.proto",
-        "rxjava_service2.proto"
-    };
-    String[] outputs = {
-        "com/squareup/services/anotherpackage/SendDataRequest.java",
-        "com/squareup/services/anotherpackage/SendDataResponse.java",
-        "com/squareup/services/HeresAllTheDataRequest.java",
-        "com/squareup/services/HeresAllTheDataResponse.java",
-        "com/squareup/services/LetsDataRequest.java",
-        "com/squareup/services/LetsDataResponse.java",
-        "com/squareup/services/RxJavaService.java",
-        "com/squareup/services/RxJavaService2.java"
-    };
-    String roots = "com.squareup.services.RxJavaService,com.squareup.services.RxJavaService2";
-    testLimitedServiceGeneration(sources, roots, outputs, "");
-  }
-
-  @Test
-  public void testLimitedRxJavaService() throws Exception {
-    String[] sources = {
-        "request_response.proto",
-        "rxjava_service.proto",
-        "rxjava_service2.proto"
+        "simple_service.proto",
+        "simple_service2.proto"
     };
     String[] outputs = {
         "com/squareup/services/anotherpackage/SendDataRequest.java",
         "com/squareup/services/anotherpackage/SendDataResponse.java",
         "com/squareup/services/LetsDataRequest.java",
         "com/squareup/services/LetsDataResponse.java",
-        "com/squareup/services/RxJavaService.java",
-        "com/squareup/services/RxJavaService2.java"
+        "com/squareup/services/SimpleService.java",
+        "com/squareup/services/SimpleService2.java"
     };
-    String roots = "com.squareup.services.RxJavaService#SendSomeData,"
-        + "com.squareup.services.RxJavaService2#LetsData,"
-        + "com.squareup.services.RxJavaService2#SendSomeMoreData";
+    String roots = "com.squareup.services.SimpleService#SendSomeData,"
+        + "com.squareup.services.SimpleService2#LetsData,"
+        + "com.squareup.services.SimpleService2#SendSomeMoreData";
     testLimitedServiceGeneration(sources, roots, outputs, "SomeEndpoints");
   }
 
