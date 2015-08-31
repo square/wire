@@ -19,7 +19,7 @@ message LetsDataResponse {
 }
 
 /** An example service. */
-service RxJavaService2 {
+service SimpleService2 {
   /** Sends some data. */
   rpc SendSomeData (com.squareup.services.anotherpackage.SendDataRequest)
   returns (com.squareup.services.anotherpackage.SendDataResponse);
