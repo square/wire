@@ -53,9 +53,9 @@ public final class NewTagMapTest {
 
   @Test public void putAndGetExtensionValues() throws Exception {
     NewTagMap tagMap = new NewTagMap();
-    tagMap.add(extensionA.getTag(), (WireAdapter<Double>) adapter(extensionA), 3.14159);
-    tagMap.add(extensionB.getTag(), (WireAdapter<String>) adapter(extensionB), "hello");
-    tagMap.add(extensionC.getTag(), (WireAdapter<Type>) adapter(extensionC), Type.TYPE_SINT64);
+    tagMap.add(extensionA, 3.14159);
+    tagMap.add(extensionB, "hello");
+    tagMap.add(extensionC, Type.TYPE_SINT64);
     assertThat(tagMap.get(extensionA)).isEqualTo(3.14159);
     assertThat(tagMap.get(extensionB)).isEqualTo("hello");
     assertThat(tagMap.get(extensionC)).isEqualTo(Type.TYPE_SINT64);
@@ -63,17 +63,17 @@ public final class NewTagMapTest {
 
   @Test public void equalsAndHashCode() throws Exception {
     NewTagMap tagMap1 = new NewTagMap();
-    tagMap1.add(extensionA.getTag(), (WireAdapter<Double>) adapter(extensionA), 3.14159);
-    tagMap1.add(extensionB.getTag(), (WireAdapter<String>) adapter(extensionB), "hello");
+    tagMap1.add(extensionA, 3.14159);
+    tagMap1.add(extensionB, "hello");
 
     NewTagMap tagMap2 = new NewTagMap();
-    tagMap2.add(extensionA.getTag(), (WireAdapter<Double>) adapter(extensionA), 3.14159);
-    tagMap2.add(extensionB.getTag(), (WireAdapter<String>) adapter(extensionB), "hello");
+    tagMap2.add(extensionA, 3.14159);
+    tagMap2.add(extensionB, "hello");
 
     NewTagMap tagMap3 = new NewTagMap();
 
     NewTagMap tagMap4 = new NewTagMap();
-    tagMap4.add(extensionC.getTag(), (WireAdapter<Type>) adapter(extensionC), Type.TYPE_SINT64);
+    tagMap4.add(extensionC, Type.TYPE_SINT64);
 
     assertThat(tagMap1.equals(tagMap1)).isTrue();
     assertThat(tagMap1.equals(tagMap2)).isTrue();
@@ -96,12 +96,12 @@ public final class NewTagMapTest {
 
   @Test public void putAndGetRepeatedValues() throws Exception {
     NewTagMap tagMap = new NewTagMap();
-    tagMap.add(extensionD.getTag(), (WireAdapter<Double>) adapter(extensionD), 1.0);
-    tagMap.add(extensionD.getTag(), (WireAdapter<Double>) adapter(extensionD), 2.0);
-    tagMap.add(extensionD.getTag(), (WireAdapter<Double>) adapter(extensionD), 3.0);
-    tagMap.add(extensionE.getTag(), (WireAdapter<String>) adapter(extensionE), "hacker");
-    tagMap.add(extensionE.getTag(), (WireAdapter<String>) adapter(extensionE), "slacker");
-    tagMap.add(extensionE.getTag(), (WireAdapter<String>) adapter(extensionE), "cracker");
+    tagMap.add(extensionD, 1.0);
+    tagMap.add(extensionD, 2.0);
+    tagMap.add(extensionD, 3.0);
+    tagMap.add(extensionE, "hacker");
+    tagMap.add(extensionE, "slacker");
+    tagMap.add(extensionE, "cracker");
     assertThat(tagMap.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0, 3.0));
     assertThat(tagMap.get(extensionE)).isEqualTo(Arrays.asList("hacker", "slacker", "cracker"));
   }
@@ -109,55 +109,48 @@ public final class NewTagMapTest {
   /** Confirm that the implementation doubles from 8 to 16 and 16 to 32 elements. */
   @Test public void manyRepeatedValues() throws Exception {
     NewTagMap tagMap = new NewTagMap();
-    WireAdapter<Double> doubleAdapter = (WireAdapter<Double>) adapter(extensionD);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 1.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 2.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 3.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 4.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 5.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 6.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 7.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 8.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 9.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 10.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 11.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 12.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 13.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 14.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 15.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 16.0);
-    tagMap.add(extensionD.getTag(), doubleAdapter, 17.0);
+    tagMap.add(extensionD, 1.0);
+    tagMap.add(extensionD, 2.0);
+    tagMap.add(extensionD, 3.0);
+    tagMap.add(extensionD, 4.0);
+    tagMap.add(extensionD, 5.0);
+    tagMap.add(extensionD, 6.0);
+    tagMap.add(extensionD, 7.0);
+    tagMap.add(extensionD, 8.0);
+    tagMap.add(extensionD, 9.0);
+    tagMap.add(extensionD, 10.0);
+    tagMap.add(extensionD, 11.0);
+    tagMap.add(extensionD, 12.0);
+    tagMap.add(extensionD, 13.0);
+    tagMap.add(extensionD, 14.0);
+    tagMap.add(extensionD, 15.0);
+    tagMap.add(extensionD, 16.0);
+    tagMap.add(extensionD, 17.0);
     assertThat(tagMap.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0,
         8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0));
   }
 
   @Test public void rawToExtensionConversionForDouble() throws Exception {
     NewTagMap tagMap = new NewTagMap();
-    tagMap.add(1, (WireAdapter<Long>) FieldEncoding.FIXED64.rawWireAdapter(), 4614256650576692846L);
+    tagMap.add(1, FieldEncoding.FIXED64, 4614256650576692846L);
     assertThat(tagMap.get(extensionA)).isEqualTo(3.14159);
   }
 
   @Test public void rawToExtensionConversionForString() throws Exception {
     NewTagMap tagMap = new NewTagMap();
-    tagMap.add(2, (WireAdapter<ByteString>) FieldEncoding.LENGTH_DELIMITED.rawWireAdapter(),
-        ByteString.encodeUtf8("hello"));
+    tagMap.add(2, FieldEncoding.LENGTH_DELIMITED, ByteString.encodeUtf8("hello"));
     assertThat(tagMap.get(extensionB)).isEqualTo("hello");
   }
 
   @Test public void rawToExtensionConversionForEnum() throws Exception {
     NewTagMap tagMap = new NewTagMap();
-    tagMap.add(3, (WireAdapter<Long>) FieldEncoding.VARINT.rawWireAdapter(), 18L);
+    tagMap.add(3, FieldEncoding.VARINT, 18L);
     assertThat(tagMap.get(extensionC)).isEqualTo(Type.TYPE_SINT64);
   }
 
   @Test public void rawToExtensionConversionForUnknownEnum() throws Exception {
     NewTagMap tagMap = new NewTagMap();
-    tagMap.add(3, (WireAdapter<Long>) FieldEncoding.VARINT.rawWireAdapter(), 2828L);
+    tagMap.add(3, FieldEncoding.VARINT, 2828L);
     assertThat(tagMap.get(extensionC)).isEqualTo(2828);
-  }
-
-  private WireAdapter<?> adapter(Extension<?, ?> extension) {
-    return WireAdapter.get(Message.WIRE, extension.getDatatype(), extension.getMessageType(),
-        extension.getEnumType());
   }
 }

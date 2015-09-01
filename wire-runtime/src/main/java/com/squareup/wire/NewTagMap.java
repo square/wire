@@ -22,13 +22,20 @@ import java.util.List;
 import okio.Buffer;
 
 /**
- * This collection keeps a set of tags, values for those tags, and encoders for those values.
- * Each value is decoded either with a <strong>known adapter</strong> or with a <strong>raw
- * adapter</strong>. For example, if an extension is known at the time of decoding, the proper
- * decoded value model is decoded and stored in this map. On the other hand if the extension is
- * unknown, only a byte string is stored in this map. In either case a lookup for with extension key
- * will return the value model, decoding it from the byte string if necessary. This uses the wire
- * adapters from {@link FieldEncoding#rawWireAdapter()} for unknown types.
+ * A collection of tagged, typed, values. The tag and type may be known or unknown.
+ * <ul>
+ *   <li><strong>Known values</strong> have a name and application-layer type that are specified
+ *       when a value is inserted. The tag and type are inserted using a user-provided {@link
+ *       Extension} instance that describes the value. Types of known values include messages,
+ *       enums, uint32s, sint32s, doubles, int64s, fixed64s strings, and bools.
+ *   <li><strong>Unknown values</strong> know just their tag and field encoding. This occurs when
+ *       a message field or extension field is unknown when the value is inserted. Types of unknown
+ *       values are limited to the four field encodings: uint64, fixed32, fixed64 and bytes.
+ * </ul>
+ *
+ * <p>It’s possible for us to have an unknown value and for the application to request it as a
+ * known type. In this case we will encode the unknown value back to bytes, and then decode it
+ * into the expected type. For example, we may convert a uint64 value '3' into the enum 'WEST'.
  *
  * <p>Lists are flattened, which means that tags are not-unique in the tags array, and that lookups
  * will create lists when necessary.
@@ -41,30 +48,27 @@ import okio.Buffer;
 final class NewTagMap {
   private int size = 0;
 
-  /** Tags. Defined only for [0..size). */
-  private int[] tags = new int[8];
-
-  /** Parallel to tags, this array contains single-element adapters. */
-  private WireAdapter<?>[] adapters = new WireAdapter<?>[8];
+  /** Known and unknown extensions. Defined only for [0..size). */
+  private Extension<?, ?>[] extensions = new Extension<?, ?>[8];
 
   /** Parallel to tags, this array contains single-element values. */
   private Object[] values = new Object[8];
 
-  public <T> void add(int tag, WireAdapter<T> singleAdapter, T value) {
-    if (size == tags.length) {
-      int newCapacity = tags.length * 2;
-      int[] newTags = new int[newCapacity];
-      WireAdapter<?>[] newAdapters = new WireAdapter<?>[newCapacity];
+  public <T> void add(int tag, FieldEncoding fieldEncoding, T value) {
+    add(Extension.unknown(ExtendableMessage.class, tag, fieldEncoding), value);
+  }
+
+  public void add(Extension<?, ?> extension, Object value) {
+    if (size == extensions.length) {
+      int newCapacity = extensions.length * 2;
+      Extension<?, ?>[] newExtensions = new Extension<?, ?>[newCapacity];
       Object[] newValues = new Object[newCapacity];
-      System.arraycopy(tags, 0, newTags, 0, size);
-      System.arraycopy(adapters, 0, newAdapters, 0, size);
+      System.arraycopy(extensions, 0, newExtensions, 0, size);
       System.arraycopy(values, 0, newValues, 0, size);
-      tags = newTags;
-      adapters = newAdapters;
+      extensions = newExtensions;
       values = newValues;
     }
-    tags[size] = tag;
-    adapters[size] = singleAdapter;
+    extensions[size] = extension;
     values[size] = value;
     size++;
   }
@@ -72,16 +76,14 @@ final class NewTagMap {
   public int encodedSize() {
     int result = 0;
     for (int i = 0; i < size; i++) {
-      WireAdapter<Object> adapter = (WireAdapter<Object>) adapters[i];
-      result += adapter.encodedSize(tags[i], values[i]);
+      result += adapter(extensions[i]).encodedSize(extensions[i].getTag(), values[i]);
     }
     return result;
   }
 
   public void encode(ProtoWriter output) throws IOException {
     for (int i = 0; i < size; i++) {
-      WireAdapter<Object> adapter = (WireAdapter<Object>) adapters[i];
-      adapter.encodeTagged(output, tags[i], values[i]);
+      adapter(extensions[i]).encodeTagged(output, extensions[i].getTag(), values[i]);
     }
   }
 
@@ -91,8 +93,8 @@ final class NewTagMap {
         : null;
 
     for (int i = 0; i < size; i++) {
-      if (tags[i] != extension.getTag()) continue;
-      Object value = decode(extension, (WireAdapter<Object>) adapters[i], values[i]);
+      if (extensions[i].getTag() != extension.getTag()) continue;
+      Object value = decode(extension, extensions[i], values[i]);
       if (list == null) return value;
       list.add(value);
     }
@@ -100,35 +102,38 @@ final class NewTagMap {
     return list;
   }
 
-  private <T> Object decode(Extension<?, ?> extension, WireAdapter<T> valueAdapter, T value) {
-    WireAdapter<?> resultAdapter = WireAdapter.get(Message.WIRE, extension.getDatatype(),
-        extension.getMessageType(), extension.getEnumType());
-
+  private Object decode(Extension<?, ?> target, Extension<?, ?> source, Object value) {
     // If the adapter we're expecting has already been applied, we're done.
-    if (valueAdapter.equals(resultAdapter)) return value;
+    if (source.getDatatype() == target.getDatatype()) return value;
 
     // We need to encode the value (like a ByteString) so we can decode it as the requested type.
     try {
       Buffer buffer = new Buffer();
-      valueAdapter.encodeTagged(new ProtoWriter(buffer), 1, value);
+      adapter(source).encodeTagged(new ProtoWriter(buffer), 1, value);
       ProtoReader reader = new ProtoReader(buffer);
       reader.beginMessage();
       reader.nextTag();
-      return resultAdapter.decode(reader);
+      return adapter(target).decode(reader);
     } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
       return e.value;
     } catch (IOException e) {
-      throw new IllegalStateException("failed to decode extension " + extension, e);
+      throw new IllegalStateException("failed to decode target " + target, e);
     }
+  }
+
+  @SuppressWarnings("unchecked") // Caller beware! Assumes the extension and value match at runtime.
+  private WireAdapter<Object> adapter(Extension<?, ?> extension) {
+    return (WireAdapter<Object>) WireAdapter.get(Message.WIRE, extension.getDatatype(),
+        extension.getMessageType(), extension.getEnumType());
   }
 
   @Override public boolean equals(Object o) {
     return o instanceof NewTagMap
-        && Arrays.equals(((NewTagMap) o).tags, tags)
+        && Arrays.equals(((NewTagMap) o).extensions, extensions)
         && Arrays.equals(((NewTagMap) o).values, values);
   }
 
   @Override public int hashCode() {
-    return Arrays.hashCode(tags) + 37 * Arrays.hashCode(values);
+    return Arrays.hashCode(extensions) + 37 * Arrays.hashCode(values);
   }
 }

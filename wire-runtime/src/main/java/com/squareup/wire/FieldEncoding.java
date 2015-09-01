@@ -42,6 +42,21 @@ public enum FieldEncoding {
     return value;
   }
 
+  Message.Datatype datatype() {
+    switch (this) {
+      case VARINT:
+        return Message.Datatype.UINT64;
+      case FIXED32:
+        return Message.Datatype.FIXED32;
+      case FIXED64:
+        return Message.Datatype.FIXED64;
+      case LENGTH_DELIMITED:
+        return Message.Datatype.BYTES;
+      default:
+        throw new AssertionError();
+    }
+  }
+
   /**
    * Returns a Wire adapter that reads this field encoding without interpretation. For example,
    * messages are returned as byte strings and enums are returned as integers.
