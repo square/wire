@@ -15,52 +15,35 @@
  */
 package com.squareup.wire;
 
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.Loader;
-import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.SchemaException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import okio.Buffer;
-import okio.Source;
 import org.junit.Test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class WireCompilerErrorTest {
 
-  static class StringIO implements Loader.IO, JavaGenerator.IO {
-    private final String protoFileName;
-    private final String source;
-    private final Map<String, StringWriter> writers = new LinkedHashMap<>();
+  static class StringIO implements JavaGenerator.IO {
+    private Map<String, StringWriter> writers = new LinkedHashMap<>();
 
-    public StringIO(String protoFileName, String source) {
-      this.protoFileName = protoFileName;
-      this.source = source;
-    }
-
-    @Override public Location locate(String path) throws IOException {
-      if (path.equals(protoFileName)) {
-        return Location.get(path);
-      } else {
-        throw new FileNotFoundException();
-      }
-    }
-
-    @Override public Source open(Location location) throws IOException {
-      return new Buffer().writeUtf8(source);
-    }
-
-    public Map<String, String> getOutput() {
+    Map<String, String> getOutput() {
       Map<String, String> output = new LinkedHashMap<>();
       for (Map.Entry<String, StringWriter> entry : writers.entrySet()) {
         output.put(entry.getKey(), entry.getValue().toString());
@@ -80,17 +63,17 @@ public class WireCompilerErrorTest {
    * indexed by class name.
    */
   private Map<String, String> compile(String source) throws Exception {
-    StringIO io = new StringIO("test.proto", source);
-
-    CommandLineOptions options = new CommandLineOptions(".",  new File("."),
-        Arrays.asList("test.proto"), new ArrayList<String>(), null, true,
+    CommandLineOptions options = new CommandLineOptions("/",  new File("."),
+        singletonList("test.proto"), new ArrayList<String>(), null, true,
         Collections.<String>emptySet(), null, Collections.<String>emptyList(), false, false);
 
-    try {
-      new WireCompiler(options, new Loader(io), io, new StringWireLogger(true)).compile();
-    } catch (WireException e) {
-      throw new AssertionError(e);
-    }
+    FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
+    Path test = fs.getPath("/test.proto");
+    Files.write(test, source.getBytes(UTF_8));
+
+    StringIO io = new StringIO();
+    new WireCompiler(options, fs, new Loader(singletonList(test.toAbsolutePath().getParent())), io,
+        new StringWireLogger(true)).compile();
     return io.getOutput();
   }
 

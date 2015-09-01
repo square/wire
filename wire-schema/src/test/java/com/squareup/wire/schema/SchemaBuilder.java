@@ -16,20 +16,39 @@
 package com.squareup.wire.schema;
 
 import com.squareup.wire.WireAdapter;
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import okio.Buffer;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import okio.Okio;
 import okio.Source;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.singletonList;
+
 /** Builds schemas for testing. */
 class SchemaBuilder {
-  final Map<String, String> paths = new LinkedHashMap<>();
+  final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
+  final Path root = fs.getPath("/");
+  final List<Path> files = new ArrayList<>();
 
   public SchemaBuilder add(String name, String protoFile) {
-    paths.put(name, protoFile);
+    Path path = root.resolve(name);
+    try {
+      Path parent = path.getParent();
+      if (parent != null) {
+        Files.createDirectories(parent);
+      }
+      Files.write(path, protoFile.getBytes(UTF_8));
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+    files.add(path);
     return this;
   }
 
@@ -42,19 +61,9 @@ class SchemaBuilder {
   }
 
   public Schema build() {
-    Loader.IO io = new Loader.IO() {
-      @Override public Location locate(String path) throws IOException {
-        return Location.get(path);
-      }
-
-      @Override public Source open(Location location) throws IOException {
-        String protoFile = paths.get(location.path());
-        return new Buffer().writeUtf8(protoFile);
-      }
-    };
-
+    Loader loader = new Loader(singletonList(root));
     try {
-      return new Loader(io).load(paths.keySet());
+      return loader.load(files);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
