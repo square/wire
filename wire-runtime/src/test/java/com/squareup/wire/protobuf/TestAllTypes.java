@@ -16,6 +16,7 @@
 package com.squareup.wire.protobuf;
 
 import com.squareup.wire.Extension;
+import com.squareup.wire.ExtensionRegistry;
 import com.squareup.wire.Message;
 import com.squareup.wire.Wire;
 import com.squareup.wire.WireAdapter;
@@ -135,7 +136,7 @@ public class TestAllTypes {
   }
 
   private final AllTypes allTypes = createAllTypes();
-  private final Wire wire = new Wire(Ext_all_types.class);
+  private final Wire wire = new Wire(new ExtensionRegistry(Ext_all_types.class));
   private final WireAdapter<AllTypes> adapter = wire.adapter(AllTypes.class);
 
   private AllTypes createAllTypes(int numRepeated) {

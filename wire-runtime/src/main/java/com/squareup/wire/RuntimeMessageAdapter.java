@@ -33,18 +33,10 @@ import java.util.Set;
 import static com.squareup.wire.Message.Builder;
 
 final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
-  private final Class<M> messageType;
-  private final Class<Builder<M>> builderType;
-  private final Constructor<Builder<M>> builderCopyConstructor;
-  private final Map<Integer, TagBinding<M, Builder<M>>> tagBindings;
-
-  /** Cache information about the Message class and its mapping to proto wire format. */
-  RuntimeMessageAdapter(Wire wire, Class<M> messageType) {
-    super(FieldEncoding.LENGTH_DELIMITED, messageType);
-    this.messageType = messageType;
-    this.builderType = getBuilderType(messageType);
-    this.builderCopyConstructor = getBuilderCopyConstructor(builderType, messageType);
-
+  static <M extends Message> RuntimeMessageAdapter<M> create(Wire wire, Class<M> messageType) {
+    Class<Builder<M>> builderType = getBuilderType(messageType);
+    Constructor<Builder<M>> builderCopyConstructor =
+        getBuilderCopyConstructor(builderType, messageType);
     Map<Integer, TagBinding<M, Builder<M>>> tagBindings
         = new LinkedHashMap<Integer, TagBinding<M, Builder<M>>>();
 
@@ -60,17 +52,12 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
       }
     }
 
-    // Create tag bindings for registered extensions.
-    for (Extension<?, ?> extension : wire.getExtensions(messageType)) {
-      WireAdapter<?> singleAdapter = WireAdapter.get(wire, extension.getDatatype(),
-          extension.getMessageType(), extension.getEnumType());
-      tagBindings.put(extension.getTag(), new ExtensionTagBinding<M>(extension, singleAdapter));
-    }
-
-    this.tagBindings = Collections.unmodifiableMap(tagBindings);
+    return new RuntimeMessageAdapter<M>(wire, messageType, builderType, builderCopyConstructor,
+        Collections.unmodifiableMap(tagBindings));
   }
 
-  private WireAdapter<?> singleAdapter(Wire wire, Field messageField, ProtoField protoField) {
+  private static WireAdapter<?> singleAdapter(Wire wire, Field messageField,
+      ProtoField protoField) {
     if (protoField.type() == Message.Datatype.ENUM) {
       return wire.enumAdapter(getEnumType(protoField, messageField));
     }
@@ -98,6 +85,37 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     } else {
       return (Class<ProtoEnum>) fieldType;
     }
+  }
+
+  private final Wire wire;
+  private final Class<M> messageType;
+  private final Class<Builder<M>> builderType;
+  private final Constructor<Builder<M>> builderCopyConstructor;
+  private final Map<Integer, TagBinding<M, Builder<M>>> tagBindings;
+
+  RuntimeMessageAdapter(Wire wire, Class<M> messageType, Class<Builder<M>> builderType,
+      Constructor<Builder<M>> builderCopyConstructor,
+      Map<Integer, TagBinding<M, Builder<M>>> tagBindings) {
+    super(FieldEncoding.LENGTH_DELIMITED, messageType);
+    this.wire = wire;
+    this.messageType = messageType;
+    this.builderType = builderType;
+    this.builderCopyConstructor = builderCopyConstructor;
+    this.tagBindings = tagBindings;
+  }
+
+  @Override public RuntimeMessageAdapter<M> withExtensions(ExtensionRegistry extensionRegistry) {
+    Map<Integer, TagBinding<M, Builder<M>>> tagBindings =
+        new LinkedHashMap<Integer, TagBinding<M, Builder<M>>>(this.tagBindings);
+
+    for (Extension<?, ?> extension : extensionRegistry.extensions(messageType)) {
+      WireAdapter<?> singleAdapter = WireAdapter.get(wire, extension.getDatatype(),
+          extension.getMessageType(), extension.getEnumType());
+      tagBindings.put(extension.getTag(), new ExtensionTagBinding<M>(extension, singleAdapter));
+    }
+
+    return new RuntimeMessageAdapter<M>(wire, messageType, builderType, builderCopyConstructor,
+        Collections.unmodifiableMap(tagBindings));
   }
 
   Map<Integer, TagBinding<M, Builder<M>>> tagBindings() {
