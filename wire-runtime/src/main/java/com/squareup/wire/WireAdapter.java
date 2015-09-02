@@ -75,6 +75,14 @@ public abstract class WireAdapter<E> {
     }
   }
 
+  /**
+   * Returns an adapter for the same type but with knowledge of the extensions in
+   * {@code extensionRegistry} when parsing. This only affects adapters for message types.
+   */
+  public WireAdapter<E> withExtensions(ExtensionRegistry extensionRegistry) {
+    return this;
+  }
+
   /** Returns the redacted form of {@code value}. */
   public E redact(E value) {
     return null;

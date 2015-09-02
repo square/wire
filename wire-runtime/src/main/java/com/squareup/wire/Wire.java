@@ -16,10 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,52 +33,14 @@ public final class Wire {
   private final Map<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>
       enumAdapters =
       new LinkedHashMap<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>();
+  private final ExtensionRegistry registry;
 
-  private final Map<Class<? extends Message>, List<Extension<?, ?>>> messageToExtensions
-      = new LinkedHashMap<Class<? extends Message>, List<Extension<?, ?>>>();
-
-  /**
-   * Creates a new Wire that can encode and decode the extensions specified in
-   * {@code extensionClasses}. Typically the classes in this list are generated
-   * and start with the "Ext_" prefix.
-   */
-  public Wire(Class<?>... extensionClasses) {
-    this(Arrays.asList(extensionClasses));
+  public Wire() {
+    this(null);
   }
 
-  /**
-   * Creates a new Wire that can encode and decode the extensions specified in
-   * {@code extensionClasses}. Typically the classes in this list are generated
-   * and start with the "Ext_" prefix.
-   */
-  public Wire(List<Class<?>> extensionClasses) {
-    for (Class<?> extensionClass : extensionClasses) {
-      for (Field field : extensionClass.getDeclaredFields()) {
-        if (field.getType().equals(Extension.class)) {
-          try {
-            registerExtension((Extension) field.get(null));
-          } catch (IllegalAccessException e) {
-            throw new AssertionError(e);
-          }
-        }
-      }
-    }
-  }
-
-  private <T extends ExtendableMessage<T>, E> void registerExtension(Extension<T, E> extension) {
-    Class<? extends Message> messageClass = extension.getExtendedType();
-    List<Extension<?, ?>> extensions = messageToExtensions.get(messageClass);
-    if (extensions == null) {
-      extensions = new ArrayList<Extension<?, ?>>();
-      messageToExtensions.put(messageClass, extensions);
-    }
-    extensions.add(extension);
-  }
-
-  @SuppressWarnings("unchecked")
-  List<Extension<?, ?>> getExtensions(Class<? extends Message> messageClass) {
-    List<Extension<?, ?>> map = messageToExtensions.get(messageClass);
-    return map != null ? map : Collections.<Extension<?, ?>>emptyList();
+  public Wire(ExtensionRegistry registry) {
+    this.registry = registry;
   }
 
   /** Returns an adapter for reading and writing {@code type}, creating it if necessary. */
@@ -120,7 +79,10 @@ public final class Wire {
     RuntimeMessageAdapter<M> adapter =
         (RuntimeMessageAdapter<M>) messageAdapters.get(messageType);
     if (adapter == null) {
-      adapter = new RuntimeMessageAdapter<M>(this, messageType);
+      adapter = RuntimeMessageAdapter.create(this, messageType);
+      if (registry != null) {
+        adapter = adapter.withExtensions(registry);
+      }
       messageAdapters.put(messageType, adapter);
     }
     return adapter;

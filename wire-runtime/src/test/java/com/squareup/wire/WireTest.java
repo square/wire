@@ -176,7 +176,7 @@ public class WireTest {
     assertThat(msg.optional_external_msg.getExtension(
         Ext_simple_message.nested_enum_ext)).isEqualTo(SimpleMessage.NestedEnum.BAZ);
 
-    Wire wire = new Wire(Ext_simple_message.class);
+    Wire wire = new Wire(new ExtensionRegistry(Ext_simple_message.class));
     WireAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
     byte[] result = adapter.encode(msg);
@@ -200,9 +200,9 @@ public class WireTest {
         .build();
 
     Wire wireNoExt = new Wire();
+    ExtensionRegistry simpleMessageExtensions = new ExtensionRegistry(Ext_simple_message.class);
     WireAdapter<SimpleMessage> adapterNoExt = wireNoExt.adapter(SimpleMessage.class);
-    Wire wireExt = new Wire(Ext_simple_message.class);
-    WireAdapter<SimpleMessage> adapterExt = wireExt.adapter(SimpleMessage.class);
+    WireAdapter<SimpleMessage> adapterExt = adapterNoExt.withExtensions(simpleMessageExtensions);
 
     byte[] data = adapterNoExt.encode(msg);
 
