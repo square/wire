@@ -246,7 +246,7 @@ public final class Extension<T extends ExtendableMessage<T>, E>
     this.enumType = enumType;
   }
 
-  /** Returns an extension that represents an unknown value, for {@link NewTagMap}. */
+  /** Returns an extension that represents an unknown value, for {@link TagMap}. */
   static <X extends ExtendableMessage<X>, T> Extension<?, T> unknown(
       Class<X> messageType, int tag, FieldEncoding fieldEncoding) {
     return new Extension<X, T>(messageType, null, null, null, tag, Label.REPEATED,

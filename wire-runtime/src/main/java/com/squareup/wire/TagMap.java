@@ -50,7 +50,7 @@ import static com.squareup.wire.ProtoWriter.varint32Size;
  * independent equals. This is unlikely to be a problem in practice because encoders typically use a
  * predictable encoding order.
  */
-final class NewTagMap {
+final class TagMap {
   private int size = 0;
 
   /** Known and unknown extensions. Defined only for [0..size). */
@@ -59,12 +59,12 @@ final class NewTagMap {
   /** Parallel to tags, this array contains single-element values. */
   private Object[] values = new Object[8];
 
-  public NewTagMap() {
+  public TagMap() {
     this.extensions = new Extension<?, ?>[8];
     this.values = new Object[8];
   }
 
-  public NewTagMap(NewTagMap copyFrom) {
+  public TagMap(TagMap copyFrom) {
     this.size = copyFrom.size;
     this.extensions = copyFrom.extensions.clone();
     this.values = copyFrom.values.clone();
@@ -238,8 +238,8 @@ final class NewTagMap {
   }
 
   /** Returns a copy of this tag map with redacted and unknown fields removed. */
-  public NewTagMap redact() {
-    NewTagMap result = new NewTagMap();
+  public TagMap redact() {
+    TagMap result = new TagMap();
     for (int i = 0; i < size; i++) {
       if (extensions[i].isUnknown()) continue;
 
@@ -267,9 +267,9 @@ final class NewTagMap {
   }
 
   @Override public boolean equals(Object o) {
-    return o instanceof NewTagMap
-        && Arrays.equals(((NewTagMap) o).extensions, extensions)
-        && Arrays.equals(((NewTagMap) o).values, values);
+    return o instanceof TagMap
+        && Arrays.equals(((TagMap) o).extensions, extensions)
+        && Arrays.equals(((TagMap) o).values, values);
   }
 
   @Override public int hashCode() {

@@ -27,7 +27,7 @@ final class ExtensionTagBinding<M extends Message> extends TagBinding<M, Message
   }
 
   @Override public Object get(M message) {
-    NewTagMap extensionMap = ((ExtendableMessage<?>) message).tagMap;
+    TagMap extensionMap = ((ExtendableMessage<?>) message).tagMap;
     return extensionMap != null
         ? extensionMap.get(extension)
         : null;
