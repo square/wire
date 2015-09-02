@@ -17,8 +17,10 @@ package com.squareup.wire;
 
 import com.google.protobuf.FieldDescriptorProto.Type;
 import com.google.protobuf.FileOptions;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import okio.Buffer;
 import okio.ByteString;
 import org.junit.Test;
 
@@ -152,5 +154,174 @@ public final class NewTagMapTest {
     NewTagMap tagMap = new NewTagMap();
     tagMap.add(3, FieldEncoding.VARINT, 2828L);
     assertThat(tagMap.get(extensionC)).isEqualTo(2828);
+  }
+
+  @Test public void copyConstructor() throws Exception {
+    NewTagMap a = new NewTagMap();
+    a.add(extensionD, 1.0);
+
+    NewTagMap b = new NewTagMap(a);
+    assertThat(b.get(extensionD)).isEqualTo(Arrays.asList(1.0));
+    assertThat(b.size()).isEqualTo(1);
+
+    a.add(extensionD, 2.0);
+    assertThat(a.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0));
+    assertThat(a.size()).isEqualTo(2);
+    assertThat(b.get(extensionD)).isEqualTo(Arrays.asList(1.0));
+    assertThat(b.size()).isEqualTo(1);
+
+    b.add(extensionD, 3.0);
+    assertThat(a.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0));
+    assertThat(a.size()).isEqualTo(2);
+    assertThat(b.get(extensionD)).isEqualTo(Arrays.asList(1.0, 3.0));
+    assertThat(b.size()).isEqualTo(2);
+  }
+
+  @Test public void removeAllNotFound() throws Exception {
+    NewTagMap map = new NewTagMap();
+    map.add(extensionA, 1.0);
+    map.add(extensionB, 2.0);
+    map.add(extensionC, 3.0);
+    map.add(extensionD, 4.0);
+    map.removeAll(extensionE.getTag());
+
+    NewTagMap expected = new NewTagMap();
+    expected.add(extensionA, 1.0);
+    expected.add(extensionB, 2.0);
+    expected.add(extensionC, 3.0);
+    expected.add(extensionD, 4.0);
+
+    assertThat(map).isEqualTo(expected);
+    assertThat(map.size()).isEqualTo(4);
+  }
+
+  @Test public void removeAllClearsMap() throws Exception {
+    NewTagMap map = new NewTagMap();
+    map.add(extensionA, 1.0);
+    map.add(extensionA, 2.0);
+    map.removeAll(extensionA.getTag());
+
+    NewTagMap expected = new NewTagMap();
+
+    assertThat(map).isEqualTo(expected);
+    assertThat(map.size()).isEqualTo(0);
+  }
+
+  @Test public void removeAllRangeShift() throws Exception {
+    NewTagMap map = new NewTagMap();
+    map.add(extensionA, 1.0);
+    map.add(extensionB, 2.0);
+    map.add(extensionB, 3.0);
+    map.add(extensionC, 4.0);
+    map.removeAll(extensionB.getTag());
+
+    NewTagMap expected = new NewTagMap();
+    expected.add(extensionA, 1.0);
+    expected.add(extensionC, 4.0);
+
+    assertThat(map).isEqualTo(expected);
+    assertThat(map.size()).isEqualTo(2);
+  }
+
+  @Test public void removeAllMultipleRanges() throws Exception {
+    NewTagMap map = new NewTagMap();
+    map.add(extensionA, 1.0);
+    map.add(extensionB, 2.0);
+    map.add(extensionB, 3.0);
+    map.add(extensionB, 4.0);
+    map.add(extensionC, 5.0);
+    map.add(extensionB, 6.0);
+    map.add(extensionD, 7.0);
+    map.removeAll(extensionB.getTag());
+
+    NewTagMap expected = new NewTagMap();
+    expected.add(extensionA, 1.0);
+    expected.add(extensionC, 5.0);
+    expected.add(extensionD, 7.0);
+
+    assertThat(map).isEqualTo(expected);
+    assertThat(map.size()).isEqualTo(3);
+  }
+
+  @Test public void encodeRepeatedExtension() throws IOException {
+    Extension<FileOptions, List<Integer>> extension
+        = Extension.int32Extending(FileOptions.class)
+        .setName("a")
+        .setTag(90)
+        .buildRepeated();
+
+    NewTagMap map = new NewTagMap();
+    map.add(extension, 601);
+    map.add(extension, 701);
+
+    Buffer buffer = new Buffer();
+    ProtoWriter protoWriter = new ProtoWriter(buffer);
+    map.encode(protoWriter);
+    assertThat(buffer.readByteString()).isEqualTo(ByteString.decodeHex("d005d904d005bd05"));
+  }
+
+  @Test public void encodePackedExtension() throws IOException {
+    Extension<FileOptions, List<Integer>> extension
+        = Extension.int32Extending(FileOptions.class)
+        .setName("a")
+        .setTag(90)
+        .buildPacked();
+
+    NewTagMap map = new NewTagMap();
+    map.add(extension, 601);
+    map.add(extension, 701);
+
+    Buffer buffer = new Buffer();
+    ProtoWriter protoWriter = new ProtoWriter(buffer);
+    map.encode(protoWriter);
+    assertThat(buffer.readByteString()).isEqualTo(ByteString.decodeHex("d20504d904bd05"));
+  }
+
+  @Test public void encodeUnknownEncodesAsRepeated() throws IOException {
+    NewTagMap map = new NewTagMap();
+    map.add(90, FieldEncoding.VARINT, 601L);
+    map.add(90, FieldEncoding.VARINT, 701L);
+
+    Buffer buffer = new Buffer();
+    ProtoWriter protoWriter = new ProtoWriter(buffer);
+    map.encode(protoWriter);
+    assertThat(buffer.readByteString()).isEqualTo(ByteString.decodeHex("d005d904d005bd05"));
+  }
+
+  /**
+   * Though it's unlikely in practice it's programmatically possible to have both extensions and
+   * unknown values with the same tag!
+   */
+  @Test public void encodeMixOfPackedAndUnknown() throws IOException {
+    Extension<FileOptions, List<Integer>> extension
+        = Extension.int32Extending(FileOptions.class)
+        .setName("a")
+        .setTag(90)
+        .buildPacked();
+
+    NewTagMap map = new NewTagMap();
+    map.add(extension, 601);
+    map.add(extension, 602);
+    map.add(90, FieldEncoding.VARINT, 701L);
+    map.add(90, FieldEncoding.VARINT, 702L);
+
+    Buffer buffer = new Buffer();
+    ProtoWriter protoWriter = new ProtoWriter(buffer);
+    map.encode(protoWriter);
+    assertThat(buffer.readByteString())
+        .isEqualTo(ByteString.decodeHex("d20504d904da04d005bd05d005be05"));
+  }
+
+  @Test public void transcodeUnknownValueToPackedList() throws Exception {
+    Extension<FileOptions, List<Integer>> extension
+        = Extension.int32Extending(FileOptions.class)
+        .setName("a")
+        .setTag(90)
+        .buildPacked();
+
+    NewTagMap map = new NewTagMap();
+    map.add(90, FieldEncoding.LENGTH_DELIMITED, ByteString.decodeHex("d904da04"));
+
+    assertThat(map.get(extension)).isEqualTo(Arrays.asList(601, 602));
   }
 }

@@ -170,9 +170,9 @@ public final class SchemaWireAdapterTest {
         .buildWireAdapter("Message");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
-    ByteString packedEncoded = ByteString.decodeHex("d005d904d005bd05");
+    ByteString packedEncoded = ByteString.decodeHex("d20504d904bd05");
     assertThat(adapter.decode(new Buffer().write(packedEncoded))).isEqualTo(expected);
-    ByteString unpackedEncoded = ByteString.decodeHex("d20504d904bd05");
+    ByteString unpackedEncoded = ByteString.decodeHex("d005d904d005bd05");
     assertThat(adapter.decode(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
   }
 
@@ -185,10 +185,10 @@ public final class SchemaWireAdapterTest {
         .buildWireAdapter("Message");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
-    ByteString packedEncoded = ByteString.decodeHex("d005d904d005bd05");
-    assertThat(adapter.decode(new Buffer().write(packedEncoded))).isEqualTo(expected);
-    ByteString unpackedEncoded = ByteString.decodeHex("d20504d904bd05");
+    ByteString unpackedEncoded = ByteString.decodeHex("d005d904d005bd05");
     assertThat(adapter.decode(new Buffer().write(unpackedEncoded))).isEqualTo(expected);
+    ByteString packedEncoded = ByteString.decodeHex("d20504d904bd05");
+    assertThat(adapter.decode(new Buffer().write(packedEncoded))).isEqualTo(expected);
   }
 
   @Test public void recursiveMessage() throws IOException {

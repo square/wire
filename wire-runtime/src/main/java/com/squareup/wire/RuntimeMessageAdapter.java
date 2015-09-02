@@ -33,7 +33,6 @@ import java.util.Set;
 import static com.squareup.wire.Message.Builder;
 
 final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
-  private final Wire wire;
   private final Class<M> messageType;
   private final Class<Builder<M>> builderType;
   private final Constructor<Builder<M>> builderCopyConstructor;
@@ -42,7 +41,6 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
   /** Cache information about the Message class and its mapping to proto wire format. */
   RuntimeMessageAdapter(Wire wire, Class<M> messageType) {
     super(FieldEncoding.LENGTH_DELIMITED, messageType);
-    this.wire = wire;
     this.messageType = messageType;
     this.builderType = getBuilderType(messageType);
     this.builderCopyConstructor = getBuilderCopyConstructor(builderType, messageType);
@@ -154,10 +152,12 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     if (cachedSerializedSize != 0) return cachedSerializedSize;
 
     int size = 0;
-    for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
+    for (TagBinding<M, Builder<M>> tagBinding : tagBindings.values()) {
       Object value = tagBinding.get(message);
       if (value == null) continue;
-      size += ((WireAdapter<Object>) tagBinding.adapter).encodedSize(tagBinding.tag, value);
+      if (tagBinding instanceof FieldTagBinding) {
+        size += ((WireAdapter<Object>) tagBinding.adapter).encodedSize(tagBinding.tag, value);
+      }
     }
 
     size += message.getUnknownFieldsSerializedSize();
@@ -165,47 +165,20 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     return size;
   }
 
-  /**
-   * Returns the tag bindings for this adapter, plus any extensions known by {@code message} but
-   * unknown to this adapter. If all extensions are registered this is returns the same map;
-   * otherwise the returned map may include more tags.
-   */
-  Map<Integer, TagBinding<M, Builder<M>>> tagBindingsForMessage(M message) {
-    Map<Integer, TagBinding<M, Builder<M>>> result = tagBindings;
-    if (!(message instanceof ExtendableMessage)) return result;
-
-    ExtensionMap map = ((ExtendableMessage) message).extensionMap;
-    if (map == null) return result;
-
-    for (int i = 0, count = map.size(); i < count; i++) {
-      Extension<?, ?> extension = map.getExtension(i);
-      if (tagBindings.containsKey(extension.getTag())) continue;
-
-      // Make a mutable copy before we mutate result.
-      if (result == tagBindings) {
-        result = new LinkedHashMap<Integer, TagBinding<M, Builder<M>>>(tagBindings);
-      }
-
-      WireAdapter<?> singleAdapter = WireAdapter.get(wire, extension.getDatatype(),
-          extension.getMessageType(), extension.getEnumType());
-      result.put(extension.getTag(), new ExtensionTagBinding<M>(extension, singleAdapter));
-    }
-
-    return result;
-  }
-
   @Override public void encode(ProtoWriter writer, M message) throws IOException {
-    for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
+    for (TagBinding<M, Builder<M>> tagBinding : tagBindings.values()) {
       Object value = tagBinding.get(message);
       if (value == null) continue;
-      ((WireAdapter<Object>) tagBinding.adapter).encodeTagged(writer, tagBinding.tag, value);
+      if (tagBinding instanceof FieldTagBinding) {
+        ((WireAdapter<Object>) tagBinding.adapter).encodeTagged(writer, tagBinding.tag, value);
+      }
     }
     message.writeUnknownFieldMap(writer);
   }
 
   @Override public M redact(M message) {
     Builder<M> builder = newBuilder(message);
-    for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
+    for (TagBinding<M, Builder<M>> tagBinding : tagBindings.values()) {
       if (!tagBinding.redacted && tagBinding.datatype != Message.Datatype.MESSAGE) continue;
       if (tagBinding.redacted && tagBinding.label == Message.Label.REQUIRED) {
         throw new IllegalArgumentException(String.format(
@@ -218,6 +191,9 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
         tagBinding.set(builder, redactedValue);
       }
     }
+    builder.tagMap = builder.tagMap != null
+        ? builder.tagMap.redact()
+        : null;
     return builder.build();
   }
 
@@ -238,14 +214,27 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     sb.append(messageType.getSimpleName());
     sb.append('{');
     boolean seenValue = false;
-    for (TagBinding<M, Builder<M>> tagBinding : tagBindingsForMessage(message).values()) {
+    for (TagBinding<M, Builder<M>> tagBinding : tagBindings.values()) {
+      if (!(tagBinding instanceof FieldTagBinding)) continue;
       Object value = tagBinding.get(message);
       if (value == null) continue;
       if (seenValue) sb.append(", ");
-      sb.append(tagBinding.name);
-      sb.append('=');
-      sb.append(tagBinding.redacted ? "██" : value);
+      sb.append(tagBinding.name)
+          .append('=')
+          .append(tagBinding.redacted ? "██" : value);
       seenValue = true;
+    }
+    if (message.tagMap != null) {
+      for (Extension<?, ?> extension : message.tagMap.extensions(true)) {
+        if (seenValue) sb.append(", ");
+        if (!extension.isUnknown()) {
+          sb.append(extension.getName());
+        } else {
+          sb.append(extension.getTag());
+        }
+        sb.append('=').append(message.tagMap.get(extension));
+        seenValue = true;
+      }
     }
     sb.append('}');
     return sb.toString();
@@ -261,8 +250,9 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     for (int tag; (tag = reader.nextTag()) != -1;) {
       TagBinding<M, Builder<M>> tagBinding = tagBindings.get(tag);
       if (tagBinding == null) {
-        WireAdapter<?> wireAdapter = reader.peekFieldEncoding().rawWireAdapter();
-        readUnknownField(builder, reader, tag, wireAdapter);
+        FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+        Object value = fieldEncoding.rawWireAdapter().decode(reader);
+        builder.ensureUnknownFieldMap().add(tag, fieldEncoding, value);
         continue;
       }
 
@@ -287,11 +277,6 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
       tagBinding.set(builder, value);
     }
     return builder.build();
-  }
-
-  private <T> void readUnknownField(
-      Builder builder, ProtoReader input, int tag, WireAdapter<T> wireAdapter) throws IOException {
-    builder.ensureUnknownFieldMap().add(tag, wireAdapter.decode(input), wireAdapter);
   }
 
   private static class Storage {

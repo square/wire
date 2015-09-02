@@ -17,6 +17,7 @@ package com.squareup.wire;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A message that declares an extension range.
@@ -26,9 +27,6 @@ import java.util.List;
 public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends Message {
   private static final long serialVersionUID = 0L;
 
-  @SuppressWarnings("unchecked")
-  transient ExtensionMap<T> extensionMap; // Null if empty.
-
   protected ExtendableMessage() {
   }
 
@@ -37,17 +35,15 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
    */
   protected void setBuilder(ExtendableBuilder<T, ?> builder) {
     super.setBuilder(builder);
-    if (builder.extensionMap != null) {
-      this.extensionMap = new ExtensionMap<T>(builder.extensionMap);
-    }
   }
 
   /**
    * Returns an immutable list of the extensions on this message in tag order.
    */
-  public List<Extension<T, ?>> getExtensions() {
-    return extensionMap == null ? Collections.<Extension<T, ?>>emptyList()
-        : extensionMap.getExtensions();
+  public Set<Extension<?, ?>> getExtensions() {
+    return tagMap != null
+        ? tagMap.extensions(false)
+        : Collections.<Extension<?, ?>>emptySet();
   }
 
   /**
@@ -55,7 +51,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
    * value is set.
    */
   public <E> E getExtension(Extension<T, E> extension) {
-    return extensionMap == null ? null : extensionMap.get(extension);
+    return tagMap != null ? (E) tagMap.get(extension) : null;
   }
 
   /**
@@ -63,17 +59,16 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
    * {@code other}.
    */
   protected boolean extensionsEqual(ExtendableMessage<T> other) {
-    if (extensionMap == null) {
-      return other.extensionMap == null;
-    }
-    return extensionMap.equals(other.extensionMap);
+    return tagMap != null
+        ? tagMap.equals(other.tagMap)
+        : other.tagMap == null;
   }
 
   /**
    * Returns a hash code for the extensions on this message.
    */
   protected int extensionsHashCode() {
-    return extensionMap == null ? 0 : extensionMap.hashCode();
+    return tagMap != null ? tagMap.hashCode() : 0;
   }
 
   /**
@@ -83,7 +78,6 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
       B extends ExtendableBuilder<T, B>> extends Builder<T> {
 
     @SuppressWarnings("unchecked")
-    ExtensionMap<T> extensionMap; // Null if empty.
     private final B self;
 
     protected ExtendableBuilder(Class<B> selfType) {
@@ -93,9 +87,6 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
     protected ExtendableBuilder(Class<B> selfType, ExtendableMessage<T> message) {
       super(message);
       self = selfType.cast(this);
-      if (message != null && message.extensionMap != null) {
-        this.extensionMap = new ExtensionMap<T>(message.extensionMap);
-      }
     }
 
     /**
@@ -103,17 +94,24 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
      * value is set.
      */
     public <E> E getExtension(Extension<T, E> extension) {
-      return extensionMap == null ? null : extensionMap.get(extension);
+      return tagMap != null ? (E) tagMap.get(extension) : null;
     }
 
     /**
      * Sets the value of {@code extension} on this builder to {@code value}.
      */
     public <E> B setExtension(Extension<T, E> extension, E value) {
-      if (extensionMap == null) {
-        extensionMap = new ExtensionMap<T>(extension, value);
+      if (tagMap == null) {
+        tagMap = new NewTagMap();
       } else {
-        extensionMap.put(extension, value);
+        tagMap.removeAll(extension.getTag());
+      }
+      if (value instanceof List) {
+        for (Object o : (List) value) {
+          tagMap.add(extension, o);
+        }
+      } else {
+        tagMap.add(extension, value);
       }
       return self;
     }

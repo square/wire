@@ -209,30 +209,30 @@ public class GsonTest {
 
   private AllTypes.Builder setExtensions(AllTypes.Builder builder) {
     AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
-    builder.setExtension(Ext_all_types.ext_opt_bool, true)
-        .setExtension(Ext_all_types.ext_rep_bool, list(true))
-        .setExtension(Ext_all_types.ext_pack_bool, list(true))
-        .setExtension(Ext_all_types.ext_opt_int32, Integer.MAX_VALUE)
-        .setExtension(Ext_all_types.ext_rep_int32, list(Integer.MAX_VALUE))
-        .setExtension(Ext_all_types.ext_pack_int32, list(Integer.MAX_VALUE))
+    builder.setExtension(Ext_all_types.ext_opt_int32, Integer.MAX_VALUE)
         .setExtension(Ext_all_types.ext_opt_int64, Long.MAX_VALUE / 2 + 178)
         .setExtension(Ext_all_types.ext_opt_uint64, Long.MIN_VALUE / 2 + 178)
-        .setExtension(Ext_all_types.ext_rep_uint64, list(Long.MIN_VALUE / 2 + 178))
-        .setExtension(Ext_all_types.ext_pack_uint64, list(Long.MIN_VALUE / 2 + 178))
         .setExtension(Ext_all_types.ext_opt_sint64, Long.MIN_VALUE / 2 + 178)
-        .setExtension(Ext_all_types.ext_rep_sint64, list(Long.MIN_VALUE / 2 + 178))
-        .setExtension(Ext_all_types.ext_pack_sint64, list(Long.MIN_VALUE / 2 + 178))
+        .setExtension(Ext_all_types.ext_opt_bool, true)
         .setExtension(Ext_all_types.ext_opt_float, 1.2345e6F)
-        .setExtension(Ext_all_types.ext_rep_float, list(1.2345e6F))
-        .setExtension(Ext_all_types.ext_pack_float, list(1.2345e6F))
         .setExtension(Ext_all_types.ext_opt_double, 1.2345e67)
-        .setExtension(Ext_all_types.ext_rep_double, list(1.2345e67))
-        .setExtension(Ext_all_types.ext_pack_double, list(1.2345e67))
         .setExtension(Ext_all_types.ext_opt_nested_enum, AllTypes.NestedEnum.A)
-        .setExtension(Ext_all_types.ext_rep_nested_enum, list(AllTypes.NestedEnum.A))
-        .setExtension(Ext_all_types.ext_pack_nested_enum, list(AllTypes.NestedEnum.A))
         .setExtension(Ext_all_types.ext_opt_nested_message, nestedMessage)
-        .setExtension(Ext_all_types.ext_rep_nested_message, list(nestedMessage));
+        .setExtension(Ext_all_types.ext_rep_int32, list(Integer.MAX_VALUE))
+        .setExtension(Ext_all_types.ext_rep_uint64, list(Long.MIN_VALUE / 2 + 178))
+        .setExtension(Ext_all_types.ext_rep_sint64, list(Long.MIN_VALUE / 2 + 178))
+        .setExtension(Ext_all_types.ext_rep_bool, list(true))
+        .setExtension(Ext_all_types.ext_rep_float, list(1.2345e6F))
+        .setExtension(Ext_all_types.ext_rep_double, list(1.2345e67))
+        .setExtension(Ext_all_types.ext_rep_nested_enum, list(AllTypes.NestedEnum.A))
+        .setExtension(Ext_all_types.ext_rep_nested_message, list(nestedMessage))
+        .setExtension(Ext_all_types.ext_pack_int32, list(Integer.MAX_VALUE))
+        .setExtension(Ext_all_types.ext_pack_uint64, list(Long.MIN_VALUE / 2 + 178))
+        .setExtension(Ext_all_types.ext_pack_sint64, list(Long.MIN_VALUE / 2 + 178))
+        .setExtension(Ext_all_types.ext_pack_bool, list(true))
+        .setExtension(Ext_all_types.ext_pack_float, list(1.2345e6F))
+        .setExtension(Ext_all_types.ext_pack_double, list(1.2345e67))
+        .setExtension(Ext_all_types.ext_pack_nested_enum, list(AllTypes.NestedEnum.A));
     return builder;
   }
 
@@ -305,7 +305,7 @@ public class GsonTest {
 
     AllTypes allTypes = setExtensions(builder).build();
     String json = gson.toJson(allTypes);
-    assertThat(json).isEqualTo("{" + JSON_BASE + JSON_EXTENSIONS + JSON_UNKNOWN_FIELDS + "}");
+    assertThat(json).isEqualTo("{" + JSON_BASE + JSON_UNKNOWN_FIELDS + JSON_EXTENSIONS + "}");
 
     AllTypes parsed = gson.fromJson(json, AllTypes.class);
     assertThat(parsed).isEqualTo(allTypes);

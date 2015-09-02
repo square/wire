@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,46 +77,58 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     }
 
     out.beginObject();
-    for (TagBinding<M, Message.Builder<M>> tagBinding
-        : messageAdapter.tagBindingsForMessage(message).values()) {
+    for (TagBinding<M, Message.Builder<M>> tagBinding : messageAdapter.tagBindings().values()) {
       Object value = tagBinding.get(message);
-      if (value == null) {
+      if (value == null || tagBinding instanceof ExtensionTagBinding) {
         continue;
       }
       out.name(tagBinding.name);
       emitJson(out, value, tagBinding.datatype, tagBinding.label);
     }
 
-    Collection<List<UnknownFieldMap.Value>> unknownFields = message.unknownFields();
-    if (unknownFields != null) {
-      for (List<UnknownFieldMap.Value> fieldList : unknownFields) {
-        int tag = fieldList.get(0).tag;
-        out.name(String.valueOf(tag));
-        out.beginArray();
-        for (int i = 0, count = fieldList.size(); i < count; i++) {
-          UnknownFieldMap.Value unknownField = fieldList.get(i);
-          switch (unknownField.adapter.fieldEncoding) {
-            case VARINT:
-              if (i == 0) out.value("varint");
-              out.value((Long) unknownField.value);
+    NewTagMap tagMap = message.unknownFields();
+    if (tagMap != null) {
+      for (Extension<?, ?> extension : tagMap.extensions(true)) {
+        if (extension.isUnknown()) {
+          List<?> values = (List<?>) tagMap.get(extension);
+          if (values.isEmpty()) continue;
+
+          out.name(Integer.toString(extension.getTag()));
+          out.beginArray();
+          switch (extension.getDatatype()) {
+            case UINT64:
+              out.value("varint");
+              for (Object o : values) {
+                out.value((Long) o);
+              }
               break;
             case FIXED32:
-              if (i == 0) out.value("fixed32");
-              out.value((Integer) unknownField.value);
+              out.value("fixed32");
+              for (Object o : values) {
+                out.value((Integer) o);
+              }
               break;
             case FIXED64:
-              if (i == 0) out.value("fixed64");
-              out.value((Long) unknownField.value);
+              out.value("fixed64");
+              for (Object o : values) {
+                out.value((Long) o);
+              }
               break;
-            case LENGTH_DELIMITED:
-              if (i == 0) out.value("length-delimited");
-              out.value(((ByteString) unknownField.value).base64());
+            case BYTES:
+              out.value("length-delimited");
+              for (Object o : values) {
+                out.value(((ByteString) o).base64());
+              }
               break;
             default:
-              throw new AssertionError("Unknown wire type " + unknownField.adapter.fieldEncoding);
+              throw new AssertionError("Unknown wire type " + extension.getDatatype());
           }
+          out.endArray();
+        } else {
+          Object value = tagMap.get(extension);
+          out.name(extension.getName());
+          emitJson(out, value, extension.getDatatype(), extension.getLabel());
         }
-        out.endArray();
       }
     }
 

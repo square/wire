@@ -17,8 +17,8 @@ package com.squareup.wire.protobuf;
 
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
-import com.squareup.wire.WireAdapter;
 import com.squareup.wire.Wire;
+import com.squareup.wire.WireAdapter;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.io.ByteArrayInputStream;
@@ -28,11 +28,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import okio.Buffer;
 import okio.ByteString;
 import okio.ForwardingSource;
 import okio.Okio;
 import okio.Source;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.squareup.wire.protos.alltypes.AllTypes.NestedEnum.A;
@@ -351,7 +353,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true));
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
 
-    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    Set<Extension<?, ?>> extensions = parsed.getExtensions();
     assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
@@ -369,7 +371,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true));
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
 
-    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    Set<Extension<?, ?>> extensions = parsed.getExtensions();
     assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
@@ -388,7 +390,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true));
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
 
-    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    Set<Extension<?, ?>> extensions = parsed.getExtensions();
     assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
@@ -407,7 +409,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true, 50));
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true, 50));
 
-    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    Set<Extension<?, ?>> extensions = parsed.getExtensions();
     assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
@@ -441,7 +443,7 @@ public class TestAllTypes {
     assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true));
     assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
 
-    List<Extension<AllTypes, ?>> extensions = parsed.getExtensions();
+    Set<Extension<?, ?>> extensions = parsed.getExtensions();
     assertThat(extensions).hasSize(3);
     assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
     assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
@@ -561,11 +563,14 @@ public class TestAllTypes {
     assertThat(data[count + 1]).isEqualTo((byte) 0xf1);
     assertThat(data[count + 2]).isEqualTo((byte) 0x04);
     assertThat(data[count + 3]).isEqualTo((byte) 0x01);
+  }
 
-    // Don't allow heterogeneous types for the same tag
+  @Test @Ignore("we no longer enforce this constraint")
+  public void testUnknownFieldsTypeMismatch() {
+    AllTypes.Builder builder = getBuilder();
+    builder.addVarint(10000, 1);
     try {
-      builder = getBuilder();
-      builder.addVarint(10000, 1);
+      // Don't allow heterogeneous types for the same tag
       builder.addFixed32(10000, 2);
       fail();
     } catch (IllegalArgumentException expected) {
