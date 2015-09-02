@@ -18,8 +18,13 @@ package com.squareup.wire;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import okio.Buffer;
+
+import static com.squareup.wire.ProtoWriter.varint32Size;
 
 /**
  * A collection of tagged, typed, values. The tag and type may be known or unknown.
@@ -49,10 +54,21 @@ final class NewTagMap {
   private int size = 0;
 
   /** Known and unknown extensions. Defined only for [0..size). */
-  private Extension<?, ?>[] extensions = new Extension<?, ?>[8];
+  private Extension<?, ?>[] extensions;
 
   /** Parallel to tags, this array contains single-element values. */
   private Object[] values = new Object[8];
+
+  public NewTagMap() {
+    this.extensions = new Extension<?, ?>[8];
+    this.values = new Object[8];
+  }
+
+  public NewTagMap(NewTagMap copyFrom) {
+    this.size = copyFrom.size;
+    this.extensions = copyFrom.extensions.clone();
+    this.values = copyFrom.values.clone();
+  }
 
   public <T> void add(int tag, FieldEncoding fieldEncoding, T value) {
     add(Extension.unknown(ExtendableMessage.class, tag, fieldEncoding), value);
@@ -73,52 +89,175 @@ final class NewTagMap {
     size++;
   }
 
+  /** Remove all elements in this map tagged {@code tag}. */
+  public void removeAll(int tag) {
+    for (int i = 0; i < size; i++) {
+      int runStart = i;
+
+      // When we encounter a value to remove, attempt to remove an entire run of values that share a
+      // tag. This optimization is particularly useful because lists are flattened.
+      while (i < size && extensions[i].getTag() == tag) i++;
+
+      // Shift elements after the deleted run to the left.
+      if (i > runStart) {
+        System.arraycopy(extensions, i, extensions, runStart, size - i);
+        System.arraycopy(values, i, values, runStart, size - i);
+        Arrays.fill(extensions, size - (i - runStart), size, null);
+        Arrays.fill(values, size - (i - runStart), size, null);
+        size -= (i - runStart);
+        i = runStart;
+      }
+    }
+  }
+
+  int size() {
+    return size;
+  }
+
   public int encodedSize() {
     int result = 0;
-    for (int i = 0; i < size; i++) {
-      result += adapter(extensions[i]).encodedSize(extensions[i].getTag(), values[i]);
+    for (int i = 0; i < size;) {
+      Extension<?, ?> extension = extensions[i];
+      WireAdapter<Object> adapter = adapter(extension);
+
+      if (extension.getLabel().isPacked()) {
+        int runSize = 0;
+        int runEnd = runEnd(i);
+        for (int j = i; j < runEnd; j++) {
+          runSize += adapter.encodedSize(values[j]);
+        }
+        result += ProtoWriter.tagSize(extension.getTag());
+        result += varint32Size(runSize);
+        result += runSize;
+        i = runEnd;
+      } else {
+        result += adapter.encodedSize(extension.getTag(), values[i]);
+        i++;
+      }
     }
     return result;
   }
 
   public void encode(ProtoWriter output) throws IOException {
-    for (int i = 0; i < size; i++) {
-      adapter(extensions[i]).encodeTagged(output, extensions[i].getTag(), values[i]);
+    for (int i = 0; i < size;) {
+      Extension<?, ?> extension = extensions[i];
+      WireAdapter<Object> adapter = adapter(extension);
+      if (extension.getLabel().isPacked()) {
+        int runEnd = runEnd(i);
+        int runSize = 0;
+        for (int j = i; j < runEnd; j++) {
+          runSize += adapter.encodedSize(values[j]);
+        }
+        output.writeTag(extension.getTag(), FieldEncoding.LENGTH_DELIMITED);
+        output.writeVarint32(runSize);
+        for (int j = i; j < runEnd; j++) {
+          adapter.encode(output, values[j]);
+        }
+        i = runEnd;
+      } else {
+        adapter.encodeTagged(output, extension.getTag(), values[i]);
+        i++;
+      }
     }
   }
 
-  public Object get(Extension<?, ?> extension) {
-    List<Object> list = extension.getLabel().isRepeated()
-        ? new ArrayList<Object>()
-        : null;
-
-    for (int i = 0; i < size; i++) {
-      if (extensions[i].getTag() != extension.getTag()) continue;
-      Object value = decode(extension, extensions[i], values[i]);
-      if (list == null) return value;
-      list.add(value);
+  /**
+   * Returns the first index after {@code runStart} that has a different tag or datatype. This is
+   * useful to write a run of packed values with a single tag.
+   */
+  private int runEnd(int runStart) {
+    Extension<?, ?> extension = extensions[runStart];
+    int runEnd = runStart + 1;
+    while (runEnd < size
+        && extensions[runEnd].getTag() == extension.getTag()
+        && extensions[runEnd].getDatatype() == extension.getDatatype()) {
+      runEnd++;
     }
-
-    return list;
+    return runEnd;
   }
 
-  private Object decode(Extension<?, ?> target, Extension<?, ?> source, Object value) {
+  public Object get(Extension<?, ?> targetExtension) {
+    List<Object> list = new ArrayList<Object>();
+
+    for (int i = 0; i < size; i++) {
+      Extension<?, ?> sourceExtension = extensions[i];
+      if (sourceExtension.getTag() == targetExtension.getTag()) {
+        transcode(list, sourceExtension, values[i], targetExtension);
+      }
+    }
+
+    if (targetExtension.getLabel().isRepeated()) {
+      return list;
+    } else if (list.isEmpty()) {
+      return null;
+    } else if (list.size() == 1) {
+      return list.get(0);
+    } else {
+      throw new IllegalArgumentException(
+          "found multiple values for non-repeated extension " + targetExtension);
+    }
+  }
+
+  private void transcode(List<Object> list, Extension<?, ?> sourceExtension,
+      Object value, Extension<?, ?> targetExtension) {
     // If the adapter we're expecting has already been applied, we're done.
-    if (source.getDatatype() == target.getDatatype()) return value;
-
-    // We need to encode the value (like a ByteString) so we can decode it as the requested type.
-    try {
-      Buffer buffer = new Buffer();
-      adapter(source).encodeTagged(new ProtoWriter(buffer), 1, value);
-      ProtoReader reader = new ProtoReader(buffer);
-      reader.beginMessage();
-      reader.nextTag();
-      return adapter(target).decode(reader);
-    } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
-      return e.value;
-    } catch (IOException e) {
-      throw new IllegalStateException("failed to decode target " + target, e);
+    if (sourceExtension.getDatatype() == targetExtension.getDatatype()) {
+      list.add(value);
+      return;
     }
+
+    try {
+      // Encode one source value to buffer.
+      Buffer buffer = new Buffer();
+      adapter(sourceExtension).encodeTagged(new ProtoWriter(buffer), 1, value);
+
+      // Read zero or more target values from buffer.
+      ProtoReader reader = new ProtoReader(buffer);
+      long token = reader.beginMessage();
+      while (reader.nextTag() != -1) {
+        try {
+          list.add(adapter(targetExtension).decode(reader));
+        } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
+          list.add(e.value);
+        }
+      }
+      reader.endMessage(token);
+    } catch (IOException e) {
+      throw new IllegalStateException("failed to transcode " + value + " to "
+          + targetExtension, e);
+    }
+  }
+
+  /** Returns a set of the unique, known extensions in use by this map. */
+  public Set<Extension<?, ?>> extensions(boolean includeUnknown) {
+    Set<Extension<?, ?>> result = new LinkedHashSet<Extension<?, ?>>();
+    for (int i = 0; i < size; i++) {
+      if (includeUnknown || !extensions[i].isUnknown()) result.add(extensions[i]);
+    }
+    return Collections.unmodifiableSet(result);
+  }
+
+  /** Returns a copy of this tag map with redacted and unknown fields removed. */
+  public NewTagMap redact() {
+    NewTagMap result = new NewTagMap();
+    for (int i = 0; i < size; i++) {
+      if (extensions[i].isUnknown()) continue;
+
+      Object redactedValue = adapter(extensions[i]).redact(values[i]);
+      if (redactedValue == null) continue; // This value was redacted completely.
+
+      result.add(extensions[i], redactedValue);
+    }
+    return result;
+  }
+
+  /** Returns the first value tagged {@code tag}, or null if there is no such value. */
+  Object firstWithTag(int tag) {
+    for (int i = 0; i < size; i++) {
+      if (extensions[i].getTag() != tag) continue;
+      return values[i];
+    }
+    return null;
   }
 
   @SuppressWarnings("unchecked") // Caller beware! Assumes the extension and value match at runtime.

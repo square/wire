@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
@@ -59,7 +58,7 @@ public abstract class Message implements Serializable {
   }
 
   /** Set to null until a field is added. */
-  private transient UnknownFieldMap unknownFields;
+  transient NewTagMap tagMap;
 
   /** If not {@code 0} then the serialized size of this message. */
   transient int cachedSerializedSize = 0;
@@ -74,15 +73,16 @@ public abstract class Message implements Serializable {
    * Initializes any unknown field data to that stored in the given {@code Builder}.
    */
   protected void setBuilder(Builder builder) {
-    if (builder.unknownFieldMap != null) {
-      unknownFields = new UnknownFieldMap(builder.unknownFieldMap);
+    if (builder.tagMap != null) {
+      tagMap = new NewTagMap(builder.tagMap);
     }
   }
 
   // Increase visibility for testing
-  Collection<List<UnknownFieldMap.Value>> unknownFields() {
-    return unknownFields == null ? Collections.<List<UnknownFieldMap.Value>>emptySet()
-        : unknownFields.fieldMap.values();
+  NewTagMap unknownFields() {
+    return tagMap != null
+        ? new NewTagMap(tagMap)
+        : new NewTagMap();
   }
 
   /** Utility method to return a mutable copy of a given List. Used by generated code. */
@@ -117,13 +117,13 @@ public abstract class Message implements Serializable {
   }
 
   void writeUnknownFieldMap(ProtoWriter output) throws IOException {
-    if (unknownFields != null) {
-      unknownFields.encode(output);
+    if (tagMap != null) {
+      tagMap.encode(output);
     }
   }
 
   int getUnknownFieldsSerializedSize() {
-    return unknownFields == null ? 0 : unknownFields.encodedSize();
+    return tagMap == null ? 0 : tagMap.encodedSize();
   }
 
   protected static boolean equals(Object a, Object b) {
@@ -144,7 +144,7 @@ public abstract class Message implements Serializable {
    */
   public abstract static class Builder<T extends Message> {
 
-    UnknownFieldMap unknownFieldMap;
+    NewTagMap tagMap;
 
     /**
      * Constructs a Builder with no unknown field data.
@@ -157,8 +157,8 @@ public abstract class Message implements Serializable {
      * field data in the given {@link Message}.
      */
     public Builder(Message message) {
-      if (message != null && message.unknownFields != null) {
-        this.unknownFieldMap = new UnknownFieldMap(message.unknownFields);
+      if (message != null && message.tagMap != null) {
+        this.tagMap = new NewTagMap(message.tagMap);
       }
     }
 
@@ -166,51 +166,35 @@ public abstract class Message implements Serializable {
      * Adds a {@code varint} value to the unknown field set with the given tag number.
      */
     public void addVarint(int tag, long value) {
-      try {
-        ensureUnknownFieldMap().add(tag, value, WireAdapter.UINT64);
-      } catch (IOException e) {
-        throw new IllegalArgumentException(e.getMessage());
-      }
+      ensureUnknownFieldMap().add(tag, FieldEncoding.VARINT, value);
     }
 
     /**
      * Adds a {@code fixed32} value to the unknown field set with the given tag number.
      */
     public void addFixed32(int tag, int value) {
-      try {
-        ensureUnknownFieldMap().add(tag, value, WireAdapter.FIXED32);
-      } catch (IOException e) {
-        throw new IllegalArgumentException(e.getMessage());
-      }
+      ensureUnknownFieldMap().add(tag, FieldEncoding.FIXED32, value);
     }
 
     /**
      * Adds a {@code fixed64} value to the unknown field set with the given tag number.
      */
     public void addFixed64(int tag, long value) {
-      try {
-        ensureUnknownFieldMap().add(tag, value, WireAdapter.FIXED64);
-      } catch (IOException e) {
-        throw new IllegalArgumentException(e.getMessage());
-      }
+      ensureUnknownFieldMap().add(tag, FieldEncoding.FIXED64, value);
     }
 
     /**
      * Adds a length delimited value to the unknown field set with the given tag number.
      */
     public void addLengthDelimited(int tag, ByteString value) {
-      try {
-        ensureUnknownFieldMap().add(tag, value, WireAdapter.BYTES);
-      } catch (IOException e) {
-        throw new IllegalArgumentException(e.getMessage());
-      }
+      ensureUnknownFieldMap().add(tag, FieldEncoding.LENGTH_DELIMITED, value);
     }
 
-    UnknownFieldMap ensureUnknownFieldMap() {
-      if (unknownFieldMap == null) {
-        unknownFieldMap = new UnknownFieldMap();
+    NewTagMap ensureUnknownFieldMap() {
+      if (tagMap == null) {
+        tagMap = new NewTagMap();
       }
-      return unknownFieldMap;
+      return tagMap;
     }
 
     /**

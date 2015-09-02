@@ -25,7 +25,6 @@ import com.squareup.wire.protos.simple.SimpleMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
@@ -216,7 +215,7 @@ public class WireTest {
     // Original value shows up as an extension.
     assertThat(msg.toString()).contains("squareup.protos.simple.nested_enum_ext=BAZ");
     // New value is placed into the unknown field map.
-    assertThat(newMsg.toString()).contains("ExternalMessage{}");
+    assertThat(newMsg.toString()).contains("ExternalMessage{129=[17]}");
 
     // Serialized outputs are the same.
     byte[] newData = adapterExt.encode(newMsg);
@@ -262,9 +261,9 @@ public class WireTest {
     assertThat(result.length).isEqualTo(21);
 
     SimpleMessage newMsg = adapter.decode(result);
-    assertThat(newMsg.optional_external_msg.getExtension(fooext)).isNull();
-    assertThat(newMsg.optional_external_msg.getExtension(barext)).isNull();
-    assertThat(newMsg.optional_external_msg.getExtension(bazext)).isNull();
+    assertThat(newMsg.optional_external_msg.getExtension(fooext)).isEqualTo(Arrays.asList(444, 555));
+    assertThat(newMsg.optional_external_msg.getExtension(barext)).isEqualTo(333);
+    assertThat(newMsg.optional_external_msg.getExtension(bazext)).isEqualTo(222);
   }
 
   @Test
@@ -337,14 +336,9 @@ public class WireTest {
     assertThat(result.phone.get(0).type).isNull();
 
     // The value 17 will be stored as an unknown varint with tag number 2
-    Collection<List<UnknownFieldMap.Value>> unknownFields
-        = ((Message) result.phone.get(0)).unknownFields();
-    assertThat(unknownFields).hasSize(1);
-    List<UnknownFieldMap.Value> values = unknownFields.iterator().next();
-    assertThat(values).hasSize(1);
-    UnknownFieldMap.Value value = values.get(0);
-    assertThat(value.tag).isEqualTo(2);
-    assertThat(value.value).isEqualTo(Long.valueOf(17L));
+    NewTagMap unknownFields = ((Message) result.phone.get(0)).unknownFields();
+    assertThat(unknownFields.size()).isEqualTo(1);
+    assertThat(unknownFields.firstWithTag(2)).isEqualTo(17L);
 
     // Serialize again, value is preserved
     byte[] newData = adapter.encode(result);

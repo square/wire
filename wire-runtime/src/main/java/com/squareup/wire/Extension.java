@@ -249,7 +249,12 @@ public final class Extension<T extends ExtendableMessage<T>, E>
   /** Returns an extension that represents an unknown value, for {@link NewTagMap}. */
   static <X extends ExtendableMessage<X>, T> Extension<?, T> unknown(
       Class<X> messageType, int tag, FieldEncoding fieldEncoding) {
-    return new Extension<X, T>(messageType, null, null, null, tag, null, fieldEncoding.datatype());
+    return new Extension<X, T>(messageType, null, null, null, tag, Label.REPEATED,
+        fieldEncoding.datatype());
+  }
+
+  boolean isUnknown() {
+    return name == null;
   }
 
   /**

@@ -57,7 +57,7 @@ public final class ParseTest {
     // (0x109506 is a well-formed proto message that sets tag 2 to 456).
     ByteString data = ByteString.decodeHex("0a03109506");
     OneField oneField = wire.adapter(OneField.class).decode(data.toByteArray());
-    assertThat(new OneField.Builder().opt_int32(3).build()).isEqualTo(oneField);
+    assertThat(oneField).isEqualTo(new OneField.Builder().opt_int32(3).build());
   }
 
   @Test public void truncatedMessageThrowsEOFException() throws Exception {
@@ -70,6 +70,7 @@ public final class ParseTest {
     }
   }
 
+  @Ignore("we no longer enforce this constraint")
   @Test public void repeatedUnknownValueWithDifferentTypesThrowsIOException() throws Exception {
     // tag 2 / 3-byte length-delimited string: 0x109506
     // tag 2 / type 0: 456
