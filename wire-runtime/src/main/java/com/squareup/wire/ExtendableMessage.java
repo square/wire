@@ -31,13 +31,6 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
   }
 
   /**
-   * Initializes any extension and unknown field data to that stored in the given {@code Builder}.
-   */
-  protected void setBuilder(ExtendableBuilder<T, ?> builder) {
-    super.setBuilder(builder);
-  }
-
-  /**
    * Returns an immutable list of the extensions on this message in tag order.
    */
   public Set<Extension<?, ?>> getExtensions() {
@@ -77,7 +70,6 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
   public abstract static class ExtendableBuilder<T extends ExtendableMessage<T>,
       B extends ExtendableBuilder<T, B>> extends Builder<T> {
 
-    @SuppressWarnings("unchecked")
     private final B self;
 
     protected ExtendableBuilder(Class<B> selfType) {
@@ -102,7 +94,7 @@ public abstract class ExtendableMessage<T extends ExtendableMessage<T>> extends 
      */
     public <E> B setExtension(Extension<T, E> extension, E value) {
       if (tagMap == null) {
-        tagMap = new NewTagMap();
+        tagMap = new TagMap();
       } else {
         tagMap.removeAll(extension.getTag());
       }

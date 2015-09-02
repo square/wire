@@ -58,7 +58,7 @@ public abstract class Message implements Serializable {
   }
 
   /** Set to null until a field is added. */
-  transient NewTagMap tagMap;
+  transient TagMap tagMap;
 
   /** If not {@code 0} then the serialized size of this message. */
   transient int cachedSerializedSize = 0;
@@ -74,15 +74,15 @@ public abstract class Message implements Serializable {
    */
   protected void setBuilder(Builder builder) {
     if (builder.tagMap != null) {
-      tagMap = new NewTagMap(builder.tagMap);
+      tagMap = new TagMap(builder.tagMap);
     }
   }
 
   // Increase visibility for testing
-  NewTagMap unknownFields() {
+  TagMap unknownFields() {
     return tagMap != null
-        ? new NewTagMap(tagMap)
-        : new NewTagMap();
+        ? new TagMap(tagMap)
+        : new TagMap();
   }
 
   /** Utility method to return a mutable copy of a given List. Used by generated code. */
@@ -144,7 +144,7 @@ public abstract class Message implements Serializable {
    */
   public abstract static class Builder<T extends Message> {
 
-    NewTagMap tagMap;
+    TagMap tagMap;
 
     /**
      * Constructs a Builder with no unknown field data.
@@ -158,7 +158,7 @@ public abstract class Message implements Serializable {
      */
     public Builder(Message message) {
       if (message != null && message.tagMap != null) {
-        this.tagMap = new NewTagMap(message.tagMap);
+        this.tagMap = new TagMap(message.tagMap);
       }
     }
 
@@ -190,9 +190,9 @@ public abstract class Message implements Serializable {
       ensureUnknownFieldMap().add(tag, FieldEncoding.LENGTH_DELIMITED, value);
     }
 
-    NewTagMap ensureUnknownFieldMap() {
+    TagMap ensureUnknownFieldMap() {
       if (tagMap == null) {
-        tagMap = new NewTagMap();
+        tagMap = new TagMap();
       }
       return tagMap;
     }
