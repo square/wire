@@ -21,7 +21,7 @@ import com.google.common.collect.Multimap;
 import com.squareup.wire.internal.protoparser.EnumElement;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
+import java.util.NavigableSet;
 
 public final class EnumType extends Type {
   private final WireType wireType;
@@ -119,7 +119,23 @@ public final class EnumType extends Type {
     }
   }
 
-  @Override Type retainAll(Set<String> identifiers) {
-    return identifiers.contains(wireType.toString()) ? this : null;
+  @Override Type retainAll(NavigableSet<String> identifiers) {
+    String typeName = wireType.toString();
+
+    // If this type is not retained, prune it.
+    if (!identifiers.contains(typeName)) return null;
+
+    ImmutableList<EnumConstant> retainedConstants = constants;
+    if (Pruner.hasMarkedMember(identifiers, wireType)) {
+      ImmutableList.Builder<EnumConstant> retainedConstantsBuilder = ImmutableList.builder();
+      for (EnumConstant constant : constants) {
+        if (identifiers.contains(typeName + '#' + constant.name())) {
+          retainedConstantsBuilder.add(constant);
+        }
+      }
+      retainedConstants = retainedConstantsBuilder.build();
+    }
+
+    return new EnumType(wireType, element, retainedConstants, options);
   }
 }
