@@ -39,23 +39,22 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     Class<Builder<M, B>> builderType = getBuilderType(messageType);
     Constructor<Builder<M, B>> builderCopyConstructor =
         getBuilderCopyConstructor(builderType, messageType);
-    Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings
-        = new LinkedHashMap<Integer, TagBinding<M, Builder<M, B>>>();
+    Map<Integer, FieldBinding<M, B>> fieldBindings
+        = new LinkedHashMap<Integer, FieldBinding<M, B>>();
 
     // Create tag bindings for fields annotated with '@ProtoField'
     for (Field messageField : messageType.getDeclaredFields()) {
       ProtoField protoField = messageField.getAnnotation(ProtoField.class);
       if (protoField != null) {
         WireAdapter<?> singleAdapter = singleAdapter(wire, messageField, protoField);
-        Class<?> singleType = singleAdapter.javaType;
-        FieldTagBinding<M, B> tagBinding = new FieldTagBinding<M, B>(
-            protoField, singleAdapter, singleType, messageField, builderType);
-        tagBindings.put(tagBinding.tag, tagBinding);
+        fieldBindings.put(protoField.tag(), new FieldBinding<M, B>(
+            protoField, singleAdapter, messageField, builderType));
       }
     }
 
+    Map<Integer, RegisteredExtension> extensions = Collections.emptyMap();
     return new RuntimeMessageAdapter<M, B>(wire, messageType, builderType, builderCopyConstructor,
-        Collections.unmodifiableMap(tagBindings));
+        Collections.unmodifiableMap(fieldBindings), extensions);
   }
 
   private static WireAdapter<?> singleAdapter(Wire wire, Field messageField,
@@ -93,40 +92,47 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   private final Class<M> messageType;
   private final Class<Builder<M, B>> builderType;
   private final Constructor<Builder<M, B>> builderCopyConstructor;
-  private final Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings;
+  private final Map<Integer, FieldBinding<M, B>> fieldBindings;
+  private final Map<Integer, RegisteredExtension> extensions;
 
   RuntimeMessageAdapter(Wire wire, Class<M> messageType, Class<Builder<M, B>> builderType,
       Constructor<Builder<M, B>> builderCopyConstructor,
-      Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings) {
+      Map<Integer, FieldBinding<M, B>> fieldBindings,
+      Map<Integer, RegisteredExtension> extensions) {
     super(FieldEncoding.LENGTH_DELIMITED, messageType);
     this.wire = wire;
     this.messageType = messageType;
     this.builderType = builderType;
     this.builderCopyConstructor = builderCopyConstructor;
-    this.tagBindings = tagBindings;
+    this.fieldBindings = fieldBindings;
+    this.extensions = extensions;
   }
 
   @Override public RuntimeMessageAdapter<M, B> withExtensions(ExtensionRegistry extensionRegistry) {
-    Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings =
-        new LinkedHashMap<Integer, TagBinding<M, Builder<M, B>>>(this.tagBindings);
+    Map<Integer, RegisteredExtension> extensions =
+        new LinkedHashMap<Integer, RegisteredExtension>(this.extensions);
 
     for (Extension<?, ?> extension : extensionRegistry.extensions(messageType)) {
       WireAdapter<?> singleAdapter = WireAdapter.get(wire, extension.getDatatype(),
           extension.getMessageType(), extension.getEnumType());
-      tagBindings.put(extension.getTag(), new ExtensionTagBinding<M, B>(extension, singleAdapter));
+      extensions.put(extension.getTag(), new RegisteredExtension(extension, singleAdapter));
     }
 
     return new RuntimeMessageAdapter<M, B>(wire, messageType, builderType, builderCopyConstructor,
-        Collections.unmodifiableMap(tagBindings));
+        fieldBindings, Collections.unmodifiableMap(extensions));
   }
 
-  Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings() {
-    return tagBindings;
+  Map<Integer, FieldBinding<M, B>> fieldBindings() {
+    return fieldBindings;
   }
 
-  Builder<M, B> newBuilder() {
+  Map<Integer, RegisteredExtension> extensions() {
+    return extensions;
+  }
+
+  B newBuilder() {
     try {
-      return builderType.newInstance();
+      return (B) builderType.newInstance();
     } catch (IllegalAccessException e) {
       throw new AssertionError(e);
     } catch (InstantiationException e) {
@@ -173,12 +179,10 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     if (cachedSerializedSize != 0) return cachedSerializedSize;
 
     int size = 0;
-    for (TagBinding<M, Builder<M, B>> tagBinding : tagBindings.values()) {
-      Object value = tagBinding.get(message);
+    for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
+      Object value = fieldBinding.get(message);
       if (value == null) continue;
-      if (tagBinding instanceof FieldTagBinding) {
-        size += ((WireAdapter<Object>) tagBinding.adapter).encodedSize(tagBinding.tag, value);
-      }
+      size += ((WireAdapter<Object>) fieldBinding.adapter).encodedSize(fieldBinding.tag, value);
     }
 
     size += message.getUnknownFieldsSerializedSize();
@@ -187,29 +191,27 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   }
 
   @Override public void encode(ProtoWriter writer, M message) throws IOException {
-    for (TagBinding<M, Builder<M, B>> tagBinding : tagBindings.values()) {
-      Object value = tagBinding.get(message);
+    for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
+      Object value = fieldBinding.get(message);
       if (value == null) continue;
-      if (tagBinding instanceof FieldTagBinding) {
-        ((WireAdapter<Object>) tagBinding.adapter).encodeTagged(writer, tagBinding.tag, value);
-      }
+      ((WireAdapter<Object>) fieldBinding.adapter).encodeTagged(writer, fieldBinding.tag, value);
     }
     message.writeUnknownFieldMap(writer);
   }
 
   @Override public M redact(M message) {
     Builder<M, B> builder = newBuilder(message);
-    for (TagBinding<M, Builder<M, B>> tagBinding : tagBindings.values()) {
-      if (!tagBinding.redacted && tagBinding.datatype != Message.Datatype.MESSAGE) continue;
-      if (tagBinding.redacted && tagBinding.label == Message.Label.REQUIRED) {
+    for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
+      if (!fieldBinding.redacted && fieldBinding.datatype != Message.Datatype.MESSAGE) continue;
+      if (fieldBinding.redacted && fieldBinding.label == Message.Label.REQUIRED) {
         throw new IllegalArgumentException(String.format(
             "Field %s.%s is REQUIRED and cannot be redacted.",
-            javaType.getName(), tagBinding.name));
+            javaType.getName(), fieldBinding.name));
       }
-      Object builderValue = tagBinding.getFromBuilder(builder);
+      Object builderValue = fieldBinding.getFromBuilder(builder);
       if (builderValue != null) {
-        Object redactedValue = ((WireAdapter<Object>) tagBinding.adapter).redact(builderValue);
-        tagBinding.set(builder, redactedValue);
+        Object redactedValue = ((WireAdapter<Object>) fieldBinding.adapter).redact(builderValue);
+        fieldBinding.set(builder, redactedValue);
       }
     }
     builder.tagMap = builder.tagMap != null
@@ -235,14 +237,13 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     sb.append(messageType.getSimpleName());
     sb.append('{');
     boolean seenValue = false;
-    for (TagBinding<M, Builder<M, B>> tagBinding : tagBindings.values()) {
-      if (!(tagBinding instanceof FieldTagBinding)) continue;
-      Object value = tagBinding.get(message);
+    for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
+      Object value = fieldBinding.get(message);
       if (value == null) continue;
       if (seenValue) sb.append(", ");
-      sb.append(tagBinding.name)
+      sb.append(fieldBinding.name)
           .append('=')
-          .append(tagBinding.redacted ? "██" : value);
+          .append(fieldBinding.redacted ? "██" : value);
       seenValue = true;
     }
     if (message.tagMap != null) {
@@ -264,38 +265,50 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   // Reading
 
   @Override public M decode(ProtoReader reader) throws IOException {
-    Builder<M, B> builder = newBuilder();
+    B builder = newBuilder();
     Storage storage = new Storage();
 
     long token = reader.beginMessage();
     for (int tag; (tag = reader.nextTag()) != -1;) {
-      TagBinding<M, Builder<M, B>> tagBinding = tagBindings.get(tag);
-      if (tagBinding == null) {
-        FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-        Object value = fieldEncoding.rawWireAdapter().decode(reader);
-        builder.ensureUnknownFieldMap().add(tag, fieldEncoding, value);
+      FieldBinding<M, B> fieldBinding = fieldBindings.get(tag);
+      if (fieldBinding != null) {
+        try {
+          Object value = fieldBinding.singleAdapter.decode(reader);
+          if (fieldBinding.label.isRepeated()) {
+            storage.add(tag, value);
+          } else {
+            fieldBinding.set(builder, value);
+          }
+        } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
+          // An unknown Enum value was encountered, store it as an unknown field
+          builder.addVarint(tag, e.value);
+        }
         continue;
       }
 
-      try {
-        Object value = tagBinding.singleAdapter.decode(reader);
-        if (tagBinding.label.isRepeated()) {
-          storage.add(tag, value);
-        } else {
-          tagBinding.set(builder, value);
+      RegisteredExtension registeredExtension = extensions.get(tag);
+      if (registeredExtension != null) {
+        try {
+          Object value = registeredExtension.adapter.decode(reader);
+          builder.ensureUnknownFieldMap().add(registeredExtension.extension, value);
+        } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
+          // An unknown Enum value was encountered, store it as an unknown field
+          builder.addVarint(tag, e.value);
         }
-      } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
-        // An unknown Enum value was encountered, store it as an unknown field
-        builder.addVarint(tag, e.value);
+        continue;
       }
+
+      FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+      Object value = fieldEncoding.rawWireAdapter().decode(reader);
+      builder.ensureUnknownFieldMap().add(tag, fieldEncoding, value);
     }
     reader.endMessage(token);
 
     // Set repeated fields
     for (int storedTag : storage.getTags()) {
-      TagBinding<M, Builder<M, B>> tagBinding = tagBindings.get(storedTag);
+      FieldBinding<M, B> fieldBinding = fieldBindings.get(storedTag);
       List<Object> value = storage.get(storedTag);
-      tagBinding.set(builder, value);
+      fieldBinding.set(builder, value);
     }
     return builder.build();
   }
