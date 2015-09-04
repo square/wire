@@ -17,7 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.protoparser.MessageElement;
-import java.util.Set;
+import java.util.NavigableSet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -155,7 +155,7 @@ public final class MessageType extends Type {
     options.link(linker);
   }
 
-  @Override Type retainAll(Set<String> identifiers) {
+  @Override Type retainAll(NavigableSet<String> identifiers) {
     ImmutableList.Builder<Type> retainedNestedTypesBuilder = ImmutableList.builder();
     for (Type nestedType : nestedTypes) {
       Type retainedNestedType = nestedType.retainAll(identifiers);
@@ -164,14 +164,27 @@ public final class MessageType extends Type {
       }
     }
 
-    // If this type is retained, or any of its nested types are retained, keep it.
+    String typeName = wireType.toString();
+
+    // If this type is not retained, and none of its nested types are retained, prune it.
     ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
-    if (identifiers.contains(wireType.toString()) || !retainedNestedTypes.isEmpty()) {
-      return new MessageType(wireType, element, fields, oneOfs, retainedNestedTypes, extensionsList,
-          options);
+    if (!identifiers.contains(typeName) && retainedNestedTypes.isEmpty()) {
+      return null;
     }
 
-    // This type isn't needed.
-    return null;
+    // If any of our fields are specifically retained, retain only that set.
+    ImmutableList<Field> retainedFields = fields;
+    if (Pruner.hasMarkedMember(identifiers, wireType)) {
+      ImmutableList.Builder<Field> retainedFieldsBuilder = ImmutableList.builder();
+      for (Field field : fields) {
+        if (identifiers.contains(typeName + '#' + field.name())) {
+          retainedFieldsBuilder.add(field);
+        }
+      }
+      retainedFields = retainedFieldsBuilder.build();
+    }
+
+    return new MessageType(wireType, element, retainedFields, oneOfs, retainedNestedTypes,
+        extensionsList, options);
   }
 }

@@ -19,13 +19,21 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.NavigableSet;
+import java.util.TreeSet;
 
 /** Removes unused types and services. */
 final class Pruner {
-  /** Homogeneous identifiers including type names, service names, and RPC names. */
-  final Set<String> marks = new LinkedHashSet<>();
+  /**
+   * Homogeneous identifiers including type names, service names, field names, enum constants, and
+   * RPC names. This uses a navigable set so that we can easily check for the presence of member
+   * fields.
+   *
+   * <p>Member names are omitted unless a specific subset is being retained. That is, if a type name
+   * {@code Foo} is present, all of Foo's members are retained unless some member name {@code
+   * Foo#Bar} is in the set.
+   */
+  final NavigableSet<String> marks = new TreeSet<>();
 
   /** Identifiers whose immediate dependencies have not yet been marked. */
   final Deque<String> queue = new ArrayDeque<>();
@@ -55,40 +63,65 @@ final class Pruner {
     }
 
     // Mark everything reachable by what's enqueued, queueing new things as we go.
-    for (String name; (name = queue.poll()) != null;) {
-      if (WireType.getScalar(name) != null) {
-        continue; // Skip scalar types.
-      }
-
-      Type type = schema.getType(name);
-      if (type != null) {
-        markType(type);
-        continue;
-      }
-
-      Service service = schema.getService(name);
-      if (service != null) {
-        markService(service);
-        continue;
-      }
-
-      // If the root set contains a method name like 'Service#Method', only that RPC is marked.
-      int hash = name.indexOf('#');
+    for (String root; (root = queue.poll()) != null;) {
+      int hash = root.indexOf('#');
       if (hash != -1) {
-        String serviceName = name.substring(0, hash);
-        String rpcName = name.substring(hash + 1);
-        Service partialService = schema.getService(serviceName);
-        if (partialService != null) {
-          Rpc rpc = partialService.rpc(rpcName);
-          if (rpc != null) {
-            markOptions(partialService.options());
-            markRpc(rpc);
+        // If the root set contains a field like 'Message#field' or an RPC like 'Service#Method',
+        // only that member is marked.
+        String typeOrServiceName = root.substring(0, hash);
+        String member = root.substring(hash + 1);
+
+        Type type = schema.getType(typeOrServiceName);
+        if (type instanceof MessageType) {
+          Field field = ((MessageType) type).field(member);
+          if (field != null) {
+            markOptions(type.options());
+            markField(field);
+            mark(type.name());
+            continue;
+          }
+        } else if (type instanceof EnumType) {
+          EnumConstant constant = ((EnumType) type).constant(member);
+          if (constant != null) {
+            markOptions(type.options());
+            markOptions(constant.options());
+            mark(type.name());
             continue;
           }
         }
-      }
 
-      throw new IllegalArgumentException("Unexpected type: " + name);
+        Service service = schema.getService(typeOrServiceName);
+        if (service != null) {
+          Rpc rpc = service.rpc(member);
+          if (rpc != null) {
+            markOptions(service.options());
+            markRpc(rpc);
+            mark(service.type());
+            continue;
+          }
+        }
+
+        throw new IllegalArgumentException("Unexpected member: " + root);
+
+      } else {
+        if (WireType.getScalar(root) != null) {
+          continue; // Skip scalar types.
+        }
+
+        Type type = schema.getType(root);
+        if (type != null) {
+          markType(type);
+          continue;
+        }
+
+        Service service = schema.getService(root);
+        if (service != null) {
+          markService(service);
+          continue;
+        }
+
+        throw new IllegalArgumentException("Unexpected type: " + root);
+      }
     }
 
     ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
@@ -97,6 +130,14 @@ final class Pruner {
     }
 
     return new Schema(retained.build());
+  }
+
+  /** Returns true if any RPC, enum constant or field of {@code identifier} is in marks. */
+  static boolean hasMarkedMember(NavigableSet<String> marks, WireType typeName) {
+    // If there's a member field, it will sort immediately after <Name># in the marks set.
+    String prefix = typeName + "#";
+    String ceiling = marks.ceiling(prefix);
+    return ceiling != null && ceiling.startsWith(prefix);
   }
 
   private void mark(WireType wireType) {
@@ -117,19 +158,21 @@ final class Pruner {
   private void markType(Type type) {
     markOptions(type.options());
 
-    WireType wireType = type.name().enclosingType();
-    if (wireType != null) {
-      mark(wireType);
+    WireType enclosingType = type.name().enclosingType();
+    if (enclosingType != null) {
+      mark(enclosingType);
     }
 
-    for (Type nestedType : type.nestedTypes()) {
-      mark(nestedType.name());
-    }
+    if (!hasMarkedMember(marks, type.name())) {
+      for (Type nestedType : type.nestedTypes()) {
+        mark(nestedType.name());
+      }
 
-    if (type instanceof MessageType) {
-      markMessage((MessageType) type);
-    } else if (type instanceof EnumType) {
-      markEnum((EnumType) type);
+      if (type instanceof MessageType) {
+        markMessage((MessageType) type);
+      } else if (type instanceof EnumType) {
+        markEnum((EnumType) type);
+      }
     }
   }
 
@@ -142,8 +185,10 @@ final class Pruner {
 
   private void markEnum(EnumType wireEnum) {
     markOptions(wireEnum.options());
-    for (EnumConstant constant : wireEnum.constants()) {
-      markOptions(constant.options());
+    if (!hasMarkedMember(marks, wireEnum.name())) {
+      for (EnumConstant constant : wireEnum.constants()) {
+        markOptions(constant.options());
+      }
     }
   }
 
@@ -166,8 +211,10 @@ final class Pruner {
 
   private void markService(Service service) {
     markOptions(service.options());
-    for (Rpc rpc : service.rpcs()) {
-      markRpc(rpc);
+    if (!hasMarkedMember(marks, service.type())) {
+      for (Rpc rpc : service.rpcs()) {
+        markRpc(rpc);
+      }
     }
   }
 

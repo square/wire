@@ -18,7 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.internal.protoparser.RpcElement;
 import com.squareup.wire.internal.protoparser.ServiceElement;
-import java.util.Set;
+import java.util.NavigableSet;
 
 public final class Service {
   private final WireType wireType;
@@ -98,26 +98,27 @@ public final class Service {
     }
   }
 
-  Service retainAll(Set<String> identifiers) {
+  Service retainAll(NavigableSet<String> identifiers) {
     String serviceName = wireType.toString();
-    if (identifiers.contains(serviceName)) {
-      return this; // Fully retained.
+
+    // If this service is not retained, prune it.
+    if (!identifiers.contains(serviceName)) {
+      return null;
     }
 
-    ImmutableList.Builder<Rpc> retainedRpcsBuilde = ImmutableList.builder();
-    for (Rpc rpc : rpcs) {
-      if (identifiers.contains(serviceName + '#' + rpc.name())) {
-        retainedRpcsBuilde.add(rpc);
+    ImmutableList<Rpc> retainedRpcs = rpcs;
+
+    // If any of our RPCs are specifically retained, retain only that set.
+    if (Pruner.hasMarkedMember(identifiers, wireType)) {
+      ImmutableList.Builder<Rpc> retainedRpcsBuilder = ImmutableList.builder();
+      for (Rpc rpc : rpcs) {
+        if (identifiers.contains(serviceName + '#' + rpc.name())) {
+          retainedRpcsBuilder.add(rpc);
+        }
       }
+      retainedRpcs = retainedRpcsBuilder.build();
     }
 
-    // If child RPCs are retained, return a subset of this service.
-    ImmutableList<Rpc> retainedRpcs = retainedRpcsBuilde.build();
-    if (!retainedRpcs.isEmpty()) {
-      return new Service(wireType, element, retainedRpcs, options);
-    }
-
-    // Neither this service, nor any of its RPCs are retained.
-    return null;
+    return new Service(wireType, element, retainedRpcs, options);
   }
 }

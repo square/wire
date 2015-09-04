@@ -23,7 +23,7 @@ import com.squareup.wire.internal.protoparser.FieldElement;
 import com.squareup.wire.internal.protoparser.MessageElement;
 import com.squareup.wire.internal.protoparser.OneOfElement;
 import com.squareup.wire.internal.protoparser.TypeElement;
-import java.util.Set;
+import java.util.NavigableSet;
 
 public abstract class Type {
   public abstract Location location();
@@ -34,7 +34,7 @@ public abstract class Type {
   abstract void validate(Linker linker);
   abstract void link(Linker linker);
   abstract void linkOptions(Linker linker);
-  abstract Type retainAll(Set<String> identifiers);
+  abstract Type retainAll(NavigableSet<String> identifiers);
 
   static Type get(WireType wireType, TypeElement type) {
     if (type instanceof EnumElement) {

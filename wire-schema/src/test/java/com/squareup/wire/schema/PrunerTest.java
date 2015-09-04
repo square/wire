@@ -79,4 +79,105 @@ public final class PrunerTest {
     assertThat(pruned.getType("RequestB")).isNull();
     assertThat(pruned.getType("ResponseB")).isNull();
   }
+
+  @Test public void retainField() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message MessageA {\n"
+            + "  optional string b = 1;\n"
+            + "  optional string c = 2;\n"
+            + "}\n"
+            + "message MessageB {\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("MessageA#b"));
+    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
+    assertThat(pruned.getType("MessageB")).isNull();
+  }
+
+  @Test public void retainFieldRetainsFieldTypesTransitively() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message MessageA {\n"
+            + "  optional MessageB b = 1;\n"
+            + "  optional MessageD d = 2;\n"
+            + "}\n"
+            + "message MessageB {\n"
+            + "  optional MessageC c = 1;\n"
+            + "}\n"
+            + "message MessageC {\n"
+            + "}\n"
+            + "message MessageD {\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("MessageA#b"));
+    assertThat(pruned.getType("MessageA")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("d")).isNull();
+    assertThat(pruned.getType("MessageB")).isNotNull();
+    assertThat(pruned.getType("MessageC")).isNotNull();
+    assertThat(pruned.getType("MessageD")).isNull();
+  }
+
+  @Test public void typeWithRetainedMembersOnlyHasThoseMembersRetained() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message MessageA {\n"
+            + "  optional MessageB b = 1;\n"
+            + "}\n"
+            + "message MessageB {\n"
+            + "  optional MessageC c = 1;\n"
+            + "  optional MessageD d = 2;\n"
+            + "}\n"
+            + "message MessageC {\n"
+            + "}\n"
+            + "message MessageD {\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("MessageA#b", "MessageB#c"));
+    assertThat(pruned.getType("MessageA")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
+    assertThat(pruned.getType("MessageB")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageB")).field("c")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageB")).field("d")).isNull();
+    assertThat(pruned.getType("MessageC")).isNotNull();
+    assertThat(pruned.getType("MessageD")).isNull();
+  }
+
+  @Test public void retainEnumConstant() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "enum Roshambo {\n"
+            + "  ROCK = 0;\n"
+            + "  SCISSORS = 1;\n"
+            + "  PAPER = 2;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("Roshambo#SCISSORS"));
+    assertThat(((EnumType) pruned.getType("Roshambo")).constant("ROCK")).isNull();
+    assertThat(((EnumType) pruned.getType("Roshambo")).constant("SCISSORS")).isNotNull();
+    assertThat(((EnumType) pruned.getType("Roshambo")).constant("PAPER")).isNull();
+  }
+
+  @Test public void enumWithRetainedConstantHasThatConstantRetained() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message Message {\n"
+            + "  optional Roshambo roshambo = 1;\n"
+            + "}\n"
+            + "enum Roshambo {\n"
+            + "  ROCK = 0;\n"
+            + "  SCISSORS = 1;\n"
+            + "  PAPER = 2;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("Message", "Roshambo#SCISSORS"));
+    assertThat(pruned.getType("Message")).isNotNull();
+    assertThat(((MessageType) pruned.getType("Message")).field("roshambo")).isNotNull();
+    assertThat(pruned.getType("Roshambo")).isNotNull();
+    assertThat(((EnumType) pruned.getType("Roshambo")).constant("ROCK")).isNull();
+    assertThat(((EnumType) pruned.getType("Roshambo")).constant("SCISSORS")).isNotNull();
+    assertThat(((EnumType) pruned.getType("Roshambo")).constant("PAPER")).isNull();
+  }
 }
