@@ -16,19 +16,13 @@
 package com.squareup.wire;
 
 import java.io.IOException;
-import java.io.ObjectStreamException;
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.RandomAccess;
-import java.util.Set;
 
 import static com.squareup.wire.Message.Builder;
 
@@ -185,7 +179,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       size += ((WireAdapter<Object>) fieldBinding.adapter).encodedSize(fieldBinding.tag, value);
     }
 
-    size += message.getUnknownFieldsSerializedSize();
+    size += message.tagMapEncodedSize();
     message.cachedSerializedSize = size;
     return size;
   }
@@ -196,7 +190,9 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       if (value == null) continue;
       ((WireAdapter<Object>) fieldBinding.adapter).encodeTagged(writer, fieldBinding.tag, value);
     }
-    message.writeUnknownFieldMap(writer);
+    if (message.tagMap != null) {
+      message.tagMap.encode(writer);
+    }
   }
 
   @Override public M redact(M message) {
@@ -266,19 +262,13 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
 
   @Override public M decode(ProtoReader reader) throws IOException {
     B builder = newBuilder();
-    Storage storage = new Storage();
-
     long token = reader.beginMessage();
     for (int tag; (tag = reader.nextTag()) != -1;) {
       FieldBinding<M, B> fieldBinding = fieldBindings.get(tag);
       if (fieldBinding != null) {
         try {
           Object value = fieldBinding.singleAdapter.decode(reader);
-          if (fieldBinding.label.isRepeated()) {
-            storage.add(tag, value);
-          } else {
-            fieldBinding.set(builder, value);
-          }
+          fieldBinding.value(builder, value);
         } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
           // An unknown Enum value was encountered, store it as an unknown field
           builder.addVarint(tag, e.value);
@@ -290,7 +280,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       if (registeredExtension != null) {
         try {
           Object value = registeredExtension.adapter.decode(reader);
-          builder.ensureUnknownFieldMap().add(registeredExtension.extension, value);
+          builder.ensureTagMap().add(registeredExtension.extension, value);
         } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
           // An unknown Enum value was encountered, store it as an unknown field
           builder.addVarint(tag, e.value);
@@ -300,66 +290,10 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
 
       FieldEncoding fieldEncoding = reader.peekFieldEncoding();
       Object value = fieldEncoding.rawWireAdapter().decode(reader);
-      builder.ensureUnknownFieldMap().add(tag, fieldEncoding, value);
+      builder.ensureTagMap().add(tag, fieldEncoding, value);
     }
     reader.endMessage(token);
 
-    // Set repeated fields
-    for (int storedTag : storage.getTags()) {
-      FieldBinding<M, B> fieldBinding = fieldBindings.get(storedTag);
-      List<Object> value = storage.get(storedTag);
-      fieldBinding.set(builder, value);
-    }
     return builder.build();
-  }
-
-  private static class Storage {
-    private Map<Integer, ImmutableList<Object>> map;
-
-    void add(int tag, Object value) {
-      ImmutableList<Object> list = map == null ? null : map.get(tag);
-      if (list == null) {
-        list = new ImmutableList<Object>();
-        if (map == null) {
-          map = new LinkedHashMap<Integer, ImmutableList<Object>>();
-        }
-        map.put(tag, list);
-      }
-      list.list.add(value);
-    }
-
-    Set<Integer> getTags() {
-      if (map == null) return Collections.emptySet();
-      return map.keySet();
-    }
-
-    List<Object> get(int tag) {
-      return map == null ? null : map.get(tag);
-    }
-  }
-
-  /**
-   * An immutable implementation of List that allows Wire messages to avoid the need to make copies.
-   */
-  static class ImmutableList<T> extends AbstractList<T>
-      implements Cloneable, RandomAccess, Serializable {
-
-    private final List<T> list = new ArrayList<T>();
-
-    @Override public Object clone() {
-      return this;
-    }
-
-    @Override public int size() {
-      return list.size();
-    }
-
-    @Override public T get(int i) {
-      return list.get(i);
-    }
-
-    private Object writeReplace() throws ObjectStreamException {
-      return Collections.unmodifiableList(list);
-    }
   }
 }

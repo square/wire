@@ -93,7 +93,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
       emitJson(out, value, tagBinding.datatype, tagBinding.label);
     }
 
-    TagMap tagMap = message.unknownFields();
+    TagMap tagMap = message.tagMap();
     if (tagMap != null) {
       for (Extension<?, ?> extension : tagMap.extensions(true)) {
         if (extension.isUnknown()) {
@@ -182,8 +182,8 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
 
     while (in.peek() == JsonToken.NAME) {
       String name = in.nextName();
-      FieldBinding<M, B> fieldBinding = fieldBindings.get(name);
 
+      FieldBinding<M, B> fieldBinding = fieldBindings.get(name);
       if (fieldBinding != null) {
         Object value = parseValue(fieldBinding.label, singleType(fieldBinding), parse(in));
         fieldBinding.set(builder, value);

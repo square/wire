@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -80,7 +79,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   }
 
   // Increase visibility for testing
-  TagMap unknownFields() {
+  TagMap tagMap() {
     return tagMap != null
         ? new TagMap(tagMap)
         : new TagMap();
@@ -99,7 +98,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     if (list == null) {
       throw new NullPointerException("list == null");
     }
-    if (list == Collections.emptyList() || list instanceof RuntimeMessageAdapter.ImmutableList) {
+    if (list == Collections.emptyList() || list instanceof ImmutableList) {
       return list;
     }
     return Collections.unmodifiableList(new ArrayList<T>(list));
@@ -117,13 +116,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     return adapter.fromInt(value);
   }
 
-  void writeUnknownFieldMap(ProtoWriter output) throws IOException {
-    if (tagMap != null) {
-      tagMap.encode(output);
-    }
-  }
-
-  int getUnknownFieldsSerializedSize() {
+  int tagMapEncodedSize() {
     return tagMap == null ? 0 : tagMap.encodedSize();
   }
 
@@ -201,31 +194,31 @@ public abstract class Message<T extends Message<T>> implements Serializable {
      * Adds a {@code varint} value to the unknown field set with the given tag number.
      */
     public void addVarint(int tag, long value) {
-      ensureUnknownFieldMap().add(tag, FieldEncoding.VARINT, value);
+      ensureTagMap().add(tag, FieldEncoding.VARINT, value);
     }
 
     /**
      * Adds a {@code fixed32} value to the unknown field set with the given tag number.
      */
     public void addFixed32(int tag, int value) {
-      ensureUnknownFieldMap().add(tag, FieldEncoding.FIXED32, value);
+      ensureTagMap().add(tag, FieldEncoding.FIXED32, value);
     }
 
     /**
      * Adds a {@code fixed64} value to the unknown field set with the given tag number.
      */
     public void addFixed64(int tag, long value) {
-      ensureUnknownFieldMap().add(tag, FieldEncoding.FIXED64, value);
+      ensureTagMap().add(tag, FieldEncoding.FIXED64, value);
     }
 
     /**
      * Adds a length delimited value to the unknown field set with the given tag number.
      */
     public void addLengthDelimited(int tag, ByteString value) {
-      ensureUnknownFieldMap().add(tag, FieldEncoding.LENGTH_DELIMITED, value);
+      ensureTagMap().add(tag, FieldEncoding.LENGTH_DELIMITED, value);
     }
 
-    TagMap ensureUnknownFieldMap() {
+    TagMap ensureTagMap() {
       if (tagMap == null) {
         tagMap = new TagMap();
       }

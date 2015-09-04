@@ -19,6 +19,8 @@ import com.squareup.wire.Message.Builder;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Read, write, and describe a tag within a message. This class knows how to assign fields to a
@@ -68,6 +70,25 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
     this.builderMethod = getBuilderMethod(builderType, name, messageField.getType());
   }
 
+  /** Accept a single value, independent of whether this value is single or repeated. */
+  void value(Builder<M, B> builder, Object value) {
+    if (label.isRepeated()) {
+      try {
+        List<?> list = (List<?>) builderField.get(builder);
+        if (list == Collections.emptyList()) {
+          list = new ImmutableList();
+          builderField.set(builder, list);
+        }
+        ((ImmutableList<Object>) list).list.add(value);
+      } catch (IllegalAccessException e) {
+        throw new AssertionError(e);
+      }
+    } else {
+      set(builder, value);
+    }
+  }
+
+  /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
   void set(Builder<M, B> builder, Object value) {
     try {
       if (label.isOneOf()) {

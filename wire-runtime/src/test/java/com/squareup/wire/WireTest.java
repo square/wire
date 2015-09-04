@@ -214,7 +214,7 @@ public class WireTest {
 
     // Original value shows up as an extension.
     assertThat(msg.toString()).contains("squareup.protos.simple.nested_enum_ext=BAZ");
-    // New value is placed into the unknown field map.
+    // New value is unknown in the tag map.
     assertThat(newMsg.toString()).contains("ExternalMessage{129=[17]}");
 
     // Serialized outputs are the same.
@@ -336,9 +336,9 @@ public class WireTest {
     assertThat(result.phone.get(0).type).isNull();
 
     // The value 17 will be stored as an unknown varint with tag number 2
-    TagMap unknownFields = ((Message) result.phone.get(0)).unknownFields();
-    assertThat(unknownFields.size()).isEqualTo(1);
-    assertThat(unknownFields.firstWithTag(2)).isEqualTo(17L);
+    TagMap tagMap = ((Message) result.phone.get(0)).tagMap();
+    assertThat(tagMap.size()).isEqualTo(1);
+    assertThat(tagMap.firstWithTag(2)).isEqualTo(17L);
 
     // Serialize again, value is preserved
     byte[] newData = adapter.encode(result);
