@@ -20,8 +20,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-final class FieldTagBinding<M extends Message<M>, B extends Message.Builder<M, B>>
-    extends TagBinding<M, Builder<M, B>> {
+/**
+ * Read, write, and describe a tag within a message. This class knows how to assign fields to a
+ * builder object, and how to extract values from a message object.
+ */
+final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> {
   private static Field getBuilderField(Class<?> builderType, String name) {
     try {
       return builderType.getField(name);
@@ -39,20 +42,33 @@ final class FieldTagBinding<M extends Message<M>, B extends Message.Builder<M, B
     }
   }
 
+  public final Message.Label label;
+  public final String name;
+  public final int tag;
+  public final Message.Datatype datatype;
+  public final boolean redacted;
+  public final WireAdapter<?> singleAdapter;
+  public final WireAdapter<?> adapter;
+
   private final Field messageField;
   private final Field builderField;
   private final Method builderMethod;
 
-  FieldTagBinding(ProtoField protoField, WireAdapter<?> singleAdapter, Class<?> singleType,
+  FieldBinding(ProtoField protoField, WireAdapter<?> singleAdapter,
       Field messageField, Class<Builder<M, B>> builderType) {
-    super(protoField.label(), protoField.type(), messageField.getName(), protoField.tag(),
-        protoField.redacted(), singleAdapter, singleType);
+    this.label = protoField.label();
+    this.name = messageField.getName();
+    this.tag = protoField.tag();
+    this.datatype = protoField.type();
+    this.redacted = protoField.redacted();
+    this.singleAdapter = singleAdapter;
+    this.adapter = singleAdapter.withLabel(label);
     this.messageField = messageField;
     this.builderField = getBuilderField(builderType, name);
     this.builderMethod = getBuilderMethod(builderType, name, messageField.getType());
   }
 
-  @Override void set(Builder<M, B> builder, Object value) {
+  void set(Builder<M, B> builder, Object value) {
     try {
       if (label.isOneOf()) {
         // In order to maintain the 'oneof' invariant, call the builder setter method rather
@@ -68,7 +84,7 @@ final class FieldTagBinding<M extends Message<M>, B extends Message.Builder<M, B
     }
   }
 
-  @Override Object get(M message) {
+  Object get(M message) {
     try {
       return messageField.get(message);
     } catch (IllegalAccessException e) {
@@ -76,7 +92,7 @@ final class FieldTagBinding<M extends Message<M>, B extends Message.Builder<M, B
     }
   }
 
-  @Override Object getFromBuilder(Builder<M, B> builder) {
+  Object getFromBuilder(Builder<M, B> builder) {
     try {
       return builderField.get(builder);
     } catch (IllegalAccessException e) {

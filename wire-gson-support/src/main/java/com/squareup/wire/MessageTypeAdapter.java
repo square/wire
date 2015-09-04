@@ -55,19 +55,25 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
 
   private final Gson gson;
   private final RuntimeMessageAdapter<M, B> messageAdapter;
-  private final Map<String, TagBinding<M, Message.Builder<M, B>>> tagMap;
+  private final Map<String, FieldBinding<M, B>> fieldBindings;
+  private final Map<String, RegisteredExtension> extensions;
 
   @SuppressWarnings("unchecked")
   public MessageTypeAdapter(Wire wire, Gson gson, TypeToken<M> type) {
     this.gson = gson;
     this.messageAdapter = wire.messageAdapter((Class<M>) type.getRawType());
 
-    Map<String, TagBinding<M, Message.Builder<M, B>>> tagMap
-        = new LinkedHashMap<String, TagBinding<M, Message.Builder<M, B>>>();
-    for (TagBinding<M, Message.Builder<M, B>> tagBinding : messageAdapter.tagBindings().values()) {
-      tagMap.put(tagBinding.name, tagBinding);
+    Map<String, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<String, FieldBinding<M, B>>();
+    for (FieldBinding<M, B> binding : messageAdapter.fieldBindings().values()) {
+      fieldBindings.put(binding.name, binding);
     }
-    this.tagMap = unmodifiableMap(tagMap);
+    this.fieldBindings = unmodifiableMap(fieldBindings);
+
+    Map<String, RegisteredExtension> extensions = new LinkedHashMap<String, RegisteredExtension>();
+    for (RegisteredExtension extension : messageAdapter.extensions().values()) {
+      extensions.put(extension.name, extension);
+    }
+    this.extensions = extensions;
   }
 
   @SuppressWarnings("unchecked")
@@ -78,9 +84,9 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
     }
 
     out.beginObject();
-    for (TagBinding<M, Message.Builder<M, B>> tagBinding : messageAdapter.tagBindings().values()) {
+    for (FieldBinding<M, B> tagBinding : messageAdapter.fieldBindings().values()) {
       Object value = tagBinding.get(message);
-      if (value == null || tagBinding instanceof ExtensionTagBinding) {
+      if (value == null) {
         continue;
       }
       out.name(tagBinding.name);
@@ -176,14 +182,23 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
 
     while (in.peek() == JsonToken.NAME) {
       String name = in.nextName();
-      TagBinding<M, Message.Builder<M, B>> tagBinding = tagMap.get(name);
+      FieldBinding<M, B> fieldBinding = fieldBindings.get(name);
 
-      if (tagBinding != null) {
-        Object value = parseValue(tagBinding.label, singleType(tagBinding), parse(in));
-        tagBinding.set(builder, value);
-      } else {
-        parseUnknownField(in, builder, Integer.parseInt(name));
+      if (fieldBinding != null) {
+        Object value = parseValue(fieldBinding.label, singleType(fieldBinding), parse(in));
+        fieldBinding.set(builder, value);
+        continue;
       }
+
+      RegisteredExtension registeredExtension = extensions.get(name);
+      if (registeredExtension != null) {
+        Object value = parseValue(registeredExtension.extension.getLabel(),
+            registeredExtension.adapter.javaType, parse(in));
+        builder.setExtension((Extension) registeredExtension.extension, value);
+        continue;
+      }
+
+      parseUnknownField(in, builder, Integer.parseInt(name));
     }
 
     in.endObject();
@@ -235,7 +250,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
     return gson.fromJson(element, valueType);
   }
 
-  private Type singleType(TagBinding<M, Message.Builder<M, B>> tagBinding) {
+  private Type singleType(FieldBinding<M, B> tagBinding) {
     return tagBinding.singleAdapter.javaType;
   }
 }
