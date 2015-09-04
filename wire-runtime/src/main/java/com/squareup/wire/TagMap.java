@@ -56,7 +56,7 @@ final class TagMap {
   /** Known and unknown extensions. Defined only for [0..size). */
   private Extension<?, ?>[] extensions;
 
-  /** Parallel to tags, this array contains single-element values. */
+  /** Parallel to extensions, this array contains single-element values. */
   private Object[] values = new Object[8];
 
   public TagMap() {
