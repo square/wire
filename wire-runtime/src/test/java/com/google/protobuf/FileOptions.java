@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 236:1
 package com.google.protobuf;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -40,7 +39,7 @@ import java.util.List;
  *   use them.  If this turns out to be popular, a web service will be set up
  *   to automatically assign option numbers.
  */
-public final class FileOptions extends ExtendableMessage<FileOptions> {
+public final class FileOptions extends Message<FileOptions> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_JAVA_PACKAGE = "";
@@ -209,7 +208,7 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FileOptions, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<FileOptions, Builder> {
     public String java_package;
 
     public String java_outer_classname;
@@ -229,11 +228,10 @@ public final class FileOptions extends ExtendableMessage<FileOptions> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(FileOptions message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.java_package = message.java_package;
       this.java_outer_classname = message.java_outer_classname;

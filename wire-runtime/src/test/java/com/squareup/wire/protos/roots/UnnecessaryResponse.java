@@ -6,7 +6,7 @@ import com.squareup.wire.Message;
 import java.lang.Object;
 import java.lang.Override;
 
-public final class UnnecessaryResponse extends Message {
+public final class UnnecessaryResponse extends Message<UnnecessaryResponse> {
   private static final long serialVersionUID = 0L;
 
   public UnnecessaryResponse() {
@@ -26,7 +26,7 @@ public final class UnnecessaryResponse extends Message {
     return 0;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<UnnecessaryResponse> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<UnnecessaryResponse, Builder> {
     public Builder() {
     }
 

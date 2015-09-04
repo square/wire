@@ -22,7 +22,7 @@ import java.lang.Override;
  *
  * I -> nothing
  */
-public final class A extends Message {
+public final class A extends Message<A> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
@@ -65,7 +65,7 @@ public final class A extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<A> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<A, Builder> {
     public B c;
 
     public D d;

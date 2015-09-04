@@ -8,7 +8,7 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 
-public final class Recursive extends Message {
+public final class Recursive extends Message<Recursive> {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_VALUE = 0;
@@ -54,7 +54,7 @@ public final class Recursive extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Recursive> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<Recursive, Builder> {
     public Integer value;
 
     public Recursive recursive;

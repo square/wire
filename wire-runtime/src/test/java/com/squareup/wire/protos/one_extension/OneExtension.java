@@ -2,14 +2,13 @@
 // Source file: ../wire-runtime/src/test/proto/one_extension.proto at 20:1
 package com.squareup.wire.protos.one_extension;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-public final class OneExtension extends ExtendableMessage<OneExtension> {
+public final class OneExtension extends Message<OneExtension> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_ID = "";
@@ -49,15 +48,14 @@ public final class OneExtension extends ExtendableMessage<OneExtension> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<OneExtension, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<OneExtension, Builder> {
     public String id;
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(OneExtension message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.id = message.id;
     }

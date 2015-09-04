@@ -71,7 +71,7 @@ final class TagMap {
   }
 
   public <T> void add(int tag, FieldEncoding fieldEncoding, T value) {
-    add(Extension.unknown(ExtendableMessage.class, tag, fieldEncoding), value);
+    add(Extension.unknown(Message.class, tag, fieldEncoding), value);
   }
 
   public void add(Extension<?, ?> extension, Object value) {

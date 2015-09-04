@@ -2,14 +2,13 @@
 // Source file: ../wire-runtime/src/test/proto/roots.proto at 69:1
 package com.squareup.wire.protos.roots;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 
-public final class I extends ExtendableMessage<I> {
+public final class I extends Message<I> {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;
@@ -49,15 +48,14 @@ public final class I extends ExtendableMessage<I> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<I, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<I, Builder> {
     public Integer i;
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(I message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.i = message.i;
     }

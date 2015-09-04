@@ -11,7 +11,7 @@ import java.lang.String;
 import java.util.Collections;
 import java.util.List;
 
-public final class RedactedRepeated extends Message {
+public final class RedactedRepeated extends Message<RedactedRepeated> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
@@ -48,7 +48,7 @@ public final class RedactedRepeated extends Message {
     return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 1);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRepeated> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRepeated, Builder> {
     public List<String> a = Collections.emptyList();
 
     public Builder() {

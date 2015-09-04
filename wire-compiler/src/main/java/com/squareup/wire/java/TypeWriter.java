@@ -37,12 +37,12 @@ import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.MessageType;
-import com.squareup.wire.schema.WireType;
 import com.squareup.wire.schema.OneOf;
 import com.squareup.wire.schema.Options;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Type;
+import com.squareup.wire.schema.WireType;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -180,9 +180,7 @@ public final class TypeWriter {
       builder.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(type.documentation()));
     }
 
-    builder.superclass(type.extensions().isEmpty()
-        ? JavaGenerator.MESSAGE
-        : JavaGenerator.extendableMessageOf(javaType));
+    builder.superclass(JavaGenerator.messageOf(javaType));
 
     builder.addField(FieldSpec.builder(TypeName.LONG, "serialVersionUID")
         .addModifiers(PRIVATE, STATIC, FINAL)
@@ -509,10 +507,7 @@ public final class TypeWriter {
     TypeSpec.Builder result = TypeSpec.classBuilder("Builder")
         .addModifiers(PUBLIC, STATIC, FINAL);
 
-    boolean hasExtensions = !type.extensions().isEmpty();
-    result.superclass(hasExtensions
-        ? JavaGenerator.extendableBuilderOf(javaType, builderType)
-        : JavaGenerator.builderOf(javaType));
+    result.superclass(JavaGenerator.builderOf(javaType, builderType));
 
     List<Field> fields = type.fieldsAndOneOfFields();
     for (Field field : fields) {
@@ -525,8 +520,8 @@ public final class TypeWriter {
       result.addField(fieldSpec.build());
     }
 
-    result.addMethod(builderNoArgsConstructor(hasExtensions, builderType));
-    result.addMethod(builderCopyConstructor(hasExtensions, builderType, type));
+    result.addMethod(builderNoArgsConstructor());
+    result.addMethod(builderCopyConstructor(type));
 
     for (Field field : type.fields()) {
       result.addMethod(setter(builderType, null, field));
@@ -547,12 +542,8 @@ public final class TypeWriter {
   // public Builder() {
   // }
   //
-  private MethodSpec builderNoArgsConstructor(boolean hasExtensions, ClassName builderType) {
-    MethodSpec.Builder builder = MethodSpec.constructorBuilder().addModifiers(PUBLIC);
-    if (hasExtensions) {
-      builder.addStatement("super($T.class)", builderType);
-    }
-    return builder.build();
+  private MethodSpec builderNoArgsConstructor() {
+    return MethodSpec.constructorBuilder().addModifiers(PUBLIC).build();
   }
 
   // Example:
@@ -564,18 +555,13 @@ public final class TypeWriter {
   //   ...
   // }
   //
-  private MethodSpec builderCopyConstructor(boolean hasExtensions, ClassName builderType,
-      MessageType message) {
+  private MethodSpec builderCopyConstructor(MessageType message) {
     TypeName javaType = javaGenerator.typeName(message.name());
 
     MethodSpec.Builder result = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameter(javaType, "message");
-    if (hasExtensions) {
-      result.addStatement("super($T.class, message)", builderType);
-    } else {
-      result.addStatement("super(message)");
-    }
+    result.addStatement("super(message)");
 
     List<Field> fields = message.fieldsAndOneOfFields();
     if (!fields.isEmpty()) {

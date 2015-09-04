@@ -9,7 +9,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-public final class RedactedRequired extends Message {
+public final class RedactedRequired extends Message<RedactedRequired> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
@@ -48,7 +48,7 @@ public final class RedactedRequired extends Message {
     return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRequired> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRequired, Builder> {
     public String a;
 
     public Builder() {

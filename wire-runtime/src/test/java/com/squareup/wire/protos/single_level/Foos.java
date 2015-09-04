@@ -9,7 +9,7 @@ import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
 
-public final class Foos extends Message {
+public final class Foos extends Message<Foos> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
@@ -41,7 +41,7 @@ public final class Foos extends Message {
     return result != 0 ? result : (hashCode = foos != null ? foos.hashCode() : 1);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Foos> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<Foos, Builder> {
     public List<Foo> foos = Collections.emptyList();
 
     public Builder() {

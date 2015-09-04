@@ -55,7 +55,7 @@ public final class ExtensionRegistry {
     }
   }
 
-  private <T extends ExtendableMessage<T>, E> void registerExtension(Extension<T, E> extension) {
+  private <T extends Message<T>, E> void registerExtension(Extension<T, E> extension) {
     Class<? extends Message> messageClass = extension.getExtendedType();
     List<Extension<?, ?>> extensions = messageToExtensions.get(messageClass);
     if (extensions == null) {

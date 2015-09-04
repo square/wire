@@ -8,7 +8,7 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 
-public final class E extends Message {
+public final class E extends Message<E> {
   private static final long serialVersionUID = 0L;
 
   public static final G DEFAULT_G = G.FOO;
@@ -54,7 +54,7 @@ public final class E extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<E> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<E, Builder> {
     public F f;
 
     public G g;
@@ -85,7 +85,7 @@ public final class E extends Message {
     }
   }
 
-  public static final class F extends Message {
+  public static final class F extends Message<F> {
     private static final long serialVersionUID = 0L;
 
     public static final Integer DEFAULT_I = 0;
@@ -118,7 +118,7 @@ public final class E extends Message {
       return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<F> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<F, Builder> {
       public Integer i;
 
       public Builder() {

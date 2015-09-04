@@ -13,7 +13,7 @@ import java.util.List;
  * The protocol compiler can output a FileDescriptorSet containing the .proto
  * files it parses.
  */
-public final class FileDescriptorSet extends Message {
+public final class FileDescriptorSet extends Message<FileDescriptorSet> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
@@ -45,7 +45,7 @@ public final class FileDescriptorSet extends Message {
     return result != 0 ? result : (hashCode = file != null ? file.hashCode() : 1);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorSet> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorSet, Builder> {
     public List<FileDescriptorProto> file = Collections.emptyList();
 
     public Builder() {

@@ -8,7 +8,7 @@ import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
 
-public final class SendDataRequest extends Message {
+public final class SendDataRequest extends Message<SendDataRequest> {
   private static final long serialVersionUID = 0L;
 
   public static final ByteString DEFAULT_DATA = ByteString.EMPTY;
@@ -41,7 +41,7 @@ public final class SendDataRequest extends Message {
     return result != 0 ? result : (hashCode = data != null ? data.hashCode() : 0);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<SendDataRequest> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<SendDataRequest, Builder> {
     public ByteString data;
 
     public Builder() {

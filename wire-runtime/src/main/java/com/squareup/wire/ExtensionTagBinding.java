@@ -15,9 +15,10 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.ExtendableMessage.ExtendableBuilder;
+import com.squareup.wire.Message.Builder;
 
-final class ExtensionTagBinding<M extends Message> extends TagBinding<M, Message.Builder<M>> {
+final class ExtensionTagBinding<M extends Message<M>, B extends Message.Builder<M, B>>
+    extends TagBinding<M, Message.Builder<M, B>> {
   private final Extension<?, ?> extension;
 
   public ExtensionTagBinding(Extension<?, ?> extension, WireAdapter<?> singleAdapter) {
@@ -27,17 +28,17 @@ final class ExtensionTagBinding<M extends Message> extends TagBinding<M, Message
   }
 
   @Override public Object get(M message) {
-    TagMap extensionMap = ((ExtendableMessage<?>) message).tagMap;
+    TagMap extensionMap = message.tagMap;
     return extensionMap != null
         ? extensionMap.get(extension)
         : null;
   }
 
-  @Override Object getFromBuilder(Message.Builder<M> builder) {
-    return ((ExtendableBuilder) builder).getExtension(extension);
+  @Override Object getFromBuilder(Builder<M, B> builder) {
+    return ((Builder) builder).getExtension(extension);
   }
 
-  @Override void set(Message.Builder<M> builder, Object value) {
-    ((ExtendableBuilder) builder).setExtension(extension, value);
+  @Override void set(Builder<M, B> builder, Object value) {
+    ((Builder) builder).setExtension(extension, value);
   }
 }

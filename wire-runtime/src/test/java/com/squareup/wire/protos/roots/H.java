@@ -7,7 +7,7 @@ import com.squareup.wire.ProtoField;
 import java.lang.Object;
 import java.lang.Override;
 
-public final class H extends Message {
+public final class H extends Message<H> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
@@ -37,7 +37,7 @@ public final class H extends Message {
     return result != 0 ? result : (hashCode = ef != null ? ef.hashCode() : 0);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<H> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<H, Builder> {
     public E.F ef;
 
     public Builder() {

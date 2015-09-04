@@ -11,7 +11,7 @@ import java.lang.String;
 /**
  * Describes a method of a service.
  */
-public final class MethodDescriptorProto extends Message {
+public final class MethodDescriptorProto extends Message<MethodDescriptorProto> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
@@ -97,7 +97,7 @@ public final class MethodDescriptorProto extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<MethodDescriptorProto> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<MethodDescriptorProto, Builder> {
     public String name;
 
     public String doc;

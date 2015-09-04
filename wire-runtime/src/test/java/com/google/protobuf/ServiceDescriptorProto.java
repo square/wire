@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Describes a service.
  */
-public final class ServiceDescriptorProto extends Message {
+public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
@@ -83,7 +83,7 @@ public final class ServiceDescriptorProto extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<ServiceDescriptorProto> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<ServiceDescriptorProto, Builder> {
     public String name;
 
     public List<MethodDescriptorProto> method = Collections.emptyList();

@@ -10,7 +10,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.util.Arrays;
 
-public final class MessageWithOptions extends Message {
+public final class MessageWithOptions extends Message<MessageWithOptions> {
   private static final long serialVersionUID = 0L;
 
   public static final MessageOptions MESSAGE_OPTIONS = new MessageOptions.Builder()
@@ -86,7 +86,7 @@ public final class MessageWithOptions extends Message {
     return 0;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions, Builder> {
     public Builder() {
     }
 

@@ -8,7 +8,7 @@ import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
 
-public final class OneBytesField extends Message {
+public final class OneBytesField extends Message<OneBytesField> {
   private static final long serialVersionUID = 0L;
 
   public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
@@ -41,7 +41,7 @@ public final class OneBytesField extends Message {
     return result != 0 ? result : (hashCode = opt_bytes != null ? opt_bytes.hashCode() : 0);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<OneBytesField> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<OneBytesField, Builder> {
     public ByteString opt_bytes;
 
     public Builder() {

@@ -16,7 +16,7 @@ import java.util.List;
  * Encapsulates information about the original source file from which a
  * FileDescriptorProto was generated.
  */
-public final class SourceCodeInfo extends Message {
+public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   private static final long serialVersionUID = 0L;
 
   /**
@@ -93,7 +93,7 @@ public final class SourceCodeInfo extends Message {
     return result != 0 ? result : (hashCode = location != null ? location.hashCode() : 1);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<SourceCodeInfo> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<SourceCodeInfo, Builder> {
     public List<Location> location = Collections.emptyList();
 
     public Builder() {
@@ -161,7 +161,7 @@ public final class SourceCodeInfo extends Message {
     }
   }
 
-  public static final class Location extends Message {
+  public static final class Location extends Message<Location> {
     private static final long serialVersionUID = 0L;
 
     /**
@@ -240,7 +240,7 @@ public final class SourceCodeInfo extends Message {
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<Location> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<Location, Builder> {
       public List<Integer> path = Collections.emptyList();
 
       public List<Integer> span = Collections.emptyList();

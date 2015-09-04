@@ -8,7 +8,7 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 
-public final class OneField extends Message {
+public final class OneField extends Message<OneField> {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
@@ -41,7 +41,7 @@ public final class OneField extends Message {
     return result != 0 ? result : (hashCode = opt_int32 != null ? opt_int32.hashCode() : 0);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<OneField> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<OneField, Builder> {
     public Integer opt_int32;
 
     public Builder() {

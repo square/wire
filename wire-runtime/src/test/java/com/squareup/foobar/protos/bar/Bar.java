@@ -8,7 +8,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-public final class Bar extends Message {
+public final class Bar extends Message<Bar> {
   private static final long serialVersionUID = 0L;
 
   public Bar() {
@@ -28,7 +28,7 @@ public final class Bar extends Message {
     return 0;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Bar> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<Bar, Builder> {
     public Builder() {
     }
 
@@ -42,7 +42,7 @@ public final class Bar extends Message {
     }
   }
 
-  public static final class Baz extends Message {
+  public static final class Baz extends Message<Baz> {
     private static final long serialVersionUID = 0L;
 
     public Baz() {
@@ -62,7 +62,7 @@ public final class Bar extends Message {
       return 0;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<Baz> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<Baz, Builder> {
       public Builder() {
       }
 
@@ -76,7 +76,7 @@ public final class Bar extends Message {
       }
     }
 
-    public static final class Moo extends Message {
+    public static final class Moo extends Message<Moo> {
       private static final long serialVersionUID = 0L;
 
       public static final String DEFAULT_BOO = "";
@@ -109,7 +109,7 @@ public final class Bar extends Message {
         return result != 0 ? result : (hashCode = boo != null ? boo.hashCode() : 0);
       }
 
-      public static final class Builder extends com.squareup.wire.Message.Builder<Moo> {
+      public static final class Builder extends com.squareup.wire.Message.Builder<Moo, Builder> {
         public String boo;
 
         public Builder() {

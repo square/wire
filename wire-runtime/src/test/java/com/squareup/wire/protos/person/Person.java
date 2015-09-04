@@ -12,7 +12,7 @@ import java.lang.String;
 import java.util.Collections;
 import java.util.List;
 
-public final class Person extends Message {
+public final class Person extends Message<Person> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
@@ -96,7 +96,7 @@ public final class Person extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Person> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<Person, Builder> {
     public String name;
 
     public Integer id;
@@ -182,7 +182,7 @@ public final class Person extends Message {
     }
   }
 
-  public static final class PhoneNumber extends Message {
+  public static final class PhoneNumber extends Message<PhoneNumber> {
     private static final long serialVersionUID = 0L;
 
     public static final String DEFAULT_NUMBER = "";
@@ -238,7 +238,7 @@ public final class Person extends Message {
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<PhoneNumber> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<PhoneNumber, Builder> {
       public String number;
 
       public PhoneType type;

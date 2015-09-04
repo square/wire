@@ -2,14 +2,13 @@
 // Source file: ../wire-runtime/src/test/proto/foreign.proto at 28:1
 package com.squareup.wire.protos.foreign;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 
-public final class ForeignMessage extends ExtendableMessage<ForeignMessage> {
+public final class ForeignMessage extends Message<ForeignMessage> {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;
@@ -49,15 +48,14 @@ public final class ForeignMessage extends ExtendableMessage<ForeignMessage> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<ForeignMessage, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<ForeignMessage, Builder> {
     public Integer i;
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(ForeignMessage message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.i = message.i;
     }

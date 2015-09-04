@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 397:1
 package com.google.protobuf;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Object;
@@ -10,7 +9,7 @@ import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
 
-public final class ServiceOptions extends ExtendableMessage<ServiceOptions> {
+public final class ServiceOptions extends Message<ServiceOptions> {
   private static final long serialVersionUID = 0L;
 
   /**
@@ -56,15 +55,14 @@ public final class ServiceOptions extends ExtendableMessage<ServiceOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<ServiceOptions, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<ServiceOptions, Builder> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(ServiceOptions message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.uninterpreted_option = copyOf(message.uninterpreted_option);
     }

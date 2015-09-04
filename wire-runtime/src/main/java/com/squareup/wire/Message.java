@@ -21,12 +21,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import okio.ByteString;
 
 /**
  * Superclass for protocol buffer messages.
  */
-public abstract class Message implements Serializable {
+public abstract class Message<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
   // Hidden Wire instance that can perform work that does not require knowledge of extensions.
@@ -130,6 +131,40 @@ public abstract class Message implements Serializable {
     return a == b || (a != null && a.equals(b));
   }
 
+  /**
+   * Returns an immutable list of the extensions on this message in tag order.
+   */
+  public Set<Extension<?, ?>> getExtensions() {
+    return tagMap != null
+        ? tagMap.extensions(false)
+        : Collections.<Extension<?, ?>>emptySet();
+  }
+
+  /**
+   * Returns the value for {@code extension} on this message, or null if no
+   * value is set.
+   */
+  public <E> E getExtension(Extension<T, E> extension) {
+    return tagMap != null ? (E) tagMap.get(extension) : null;
+  }
+
+  /**
+   * Returns true if the extensions on this message equals the extensions of
+   * {@code other}.
+   */
+  protected boolean extensionsEqual(Message<T> other) {
+    return tagMap != null
+        ? tagMap.equals(other.tagMap)
+        : other.tagMap == null;
+  }
+
+  /**
+   * Returns a hash code for the extensions on this message.
+   */
+  protected int extensionsHashCode() {
+    return tagMap != null ? tagMap.hashCode() : 0;
+  }
+
   @SuppressWarnings("unchecked")
   @Override public String toString() {
     return WIRE.adapter((Class<Message>) getClass()).toString(this);
@@ -142,7 +177,7 @@ public abstract class Message implements Serializable {
   /**
    * Superclass for protocol buffer message builders.
    */
-  public abstract static class Builder<T extends Message> {
+  public abstract static class Builder<T extends Message<T>, B extends Builder<T, B>> {
 
     TagMap tagMap;
 
@@ -232,6 +267,33 @@ public abstract class Message implements Serializable {
         }
       }
       return list;
+    }
+
+    /**
+     * Returns the value for {@code extension} on this message, or null if no
+     * value is set.
+     */
+    public <E> E getExtension(Extension<T, E> extension) {
+      return tagMap != null ? (E) tagMap.get(extension) : null;
+    }
+
+    /**
+     * Sets the value of {@code extension} on this builder to {@code value}.
+     */
+    public <E> B setExtension(Extension<T, E> extension, E value) {
+      if (tagMap == null) {
+        tagMap = new TagMap();
+      } else {
+        tagMap.removeAll(extension.getTag());
+      }
+      if (value instanceof List) {
+        for (Object o : (List) value) {
+          tagMap.add(extension, o);
+        }
+      } else {
+        tagMap.add(extension, value);
+      }
+      return (B) this;
     }
 
     /**

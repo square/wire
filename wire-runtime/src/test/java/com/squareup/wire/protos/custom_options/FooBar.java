@@ -4,7 +4,6 @@ package com.squareup.wire.protos.custom_options;
 
 import com.google.protobuf.EnumOptions;
 import com.google.protobuf.FieldOptions;
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -20,7 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public final class FooBar extends ExtendableMessage<FooBar> {
+public final class FooBar extends Message<FooBar> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
@@ -167,7 +166,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FooBar, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<FooBar, Builder> {
     public Integer foo;
 
     public String bar;
@@ -183,11 +182,10 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     public List<FooBar> nested = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(FooBar message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.foo = message.foo;
       this.bar = message.bar;
@@ -239,7 +237,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
-  public static final class Nested extends Message {
+  public static final class Nested extends Message<Nested> {
     private static final long serialVersionUID = 0L;
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
@@ -272,7 +270,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       return result != 0 ? result : (hashCode = value != null ? value.hashCode() : 0);
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<Nested> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<Nested, Builder> {
       public FooBarBazEnum value;
 
       public Builder() {
@@ -296,7 +294,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
     }
   }
 
-  public static final class More extends Message {
+  public static final class More extends Message<More> {
     private static final long serialVersionUID = 0L;
 
     @ProtoField(
@@ -328,7 +326,7 @@ public final class FooBar extends ExtendableMessage<FooBar> {
       return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 1);
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<More> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<More, Builder> {
       public List<Integer> serial = Collections.emptyList();
 
       public Builder() {

@@ -9,7 +9,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-public final class RedactedExtension extends Message {
+public final class RedactedExtension extends Message<RedactedExtension> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_D = new FieldOptions.Builder()
@@ -63,7 +63,7 @@ public final class RedactedExtension extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedExtension> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedExtension, Builder> {
     public String d;
 
     public String e;

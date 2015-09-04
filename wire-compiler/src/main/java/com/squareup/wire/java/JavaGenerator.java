@@ -20,18 +20,17 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
-import com.squareup.wire.schema.WireType;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
+import com.squareup.wire.schema.WireType;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -52,10 +51,7 @@ public final class JavaGenerator {
   public static final ClassName STRING = ClassName.get(String.class);
   public static final ClassName LIST = ClassName.get(List.class);
   public static final ClassName MESSAGE = ClassName.get(Message.class);
-  public static final ClassName EXTENDABLE_MESSAGE = ClassName.get(ExtendableMessage.class);
   public static final ClassName BUILDER = ClassName.get(Message.Builder.class);
-  public static final ClassName EXTENDABLE_BUILDER
-      = ClassName.get(ExtendableMessage.ExtendableBuilder.class);
   public static final ClassName EXTENSION = ClassName.get(Extension.class);
   public static final TypeName MESSAGE_OPTIONS
       = ClassName.get("com.google.protobuf", "MessageOptions");
@@ -174,16 +170,12 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(LIST, type);
   }
 
-  public static TypeName extendableMessageOf(TypeName type) {
-    return ParameterizedTypeName.get(JavaGenerator.EXTENDABLE_MESSAGE, type);
+  public static TypeName messageOf(TypeName type) {
+    return ParameterizedTypeName.get(JavaGenerator.MESSAGE, type);
   }
 
-  public static TypeName builderOf(TypeName messageType) {
-    return ParameterizedTypeName.get(BUILDER, messageType);
-  }
-
-  public static TypeName extendableBuilderOf(TypeName messageType, ClassName builderType) {
-    return ParameterizedTypeName.get(EXTENDABLE_BUILDER, messageType, builderType);
+  public static TypeName builderOf(TypeName messageType, ClassName builderType) {
+    return ParameterizedTypeName.get(BUILDER, messageType, builderType);
   }
 
   public static TypeName extensionOf(TypeName messageType, TypeName fieldType) {

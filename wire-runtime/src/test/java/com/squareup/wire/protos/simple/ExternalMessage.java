@@ -2,14 +2,13 @@
 // Source file: ../wire-runtime/src/test/proto/external_message.proto at 20:1
 package com.squareup.wire.protos.simple;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Float;
 import java.lang.Object;
 import java.lang.Override;
 
-public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
+public final class ExternalMessage extends Message<ExternalMessage> {
   private static final long serialVersionUID = 0L;
 
   public static final Float DEFAULT_F = 20f;
@@ -49,15 +48,14 @@ public final class ExternalMessage extends ExtendableMessage<ExternalMessage> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<ExternalMessage, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<ExternalMessage, Builder> {
     public Float f;
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(ExternalMessage message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.f = message.f;
     }
