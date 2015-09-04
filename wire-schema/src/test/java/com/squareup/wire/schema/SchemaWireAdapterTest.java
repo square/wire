@@ -54,8 +54,6 @@ public final class SchemaWireAdapterTest {
           + "}\n")
       .build();
 
-  final SchemaWireAdapterFactory factory = new SchemaWireAdapterFactory(coffeeSchema);
-
   // Golden data emitted by protoc using the schema above.
   final ImmutableMap<String, Object> dansCoffee = ImmutableMap.<String, Object>of(
       "customer_name", "Dan",
@@ -64,7 +62,8 @@ public final class SchemaWireAdapterTest {
       ),
       "size_ounces", 16,
       "dairy", ImmutableMap.of("count", 1));
-  final ByteString dansCoffeeEncoded = ByteString.decodeBase64("CgNEYW4SCREAAAAAAADgP3AQegIQAQ==");
+  final ByteString dansCoffeeEncoded = ByteString.decodeHex(
+      "0a0344616e120911000000000000e03f70107a021001");
 
   final ImmutableMap<String, Object> jessesCoffee = ImmutableMap.<String, Object>of(
       "customer_name", "Jesse",
@@ -74,19 +73,17 @@ public final class SchemaWireAdapterTest {
       ),
       "foam", "ZOMG_SO_FOAMY",
       "size_ounces", 24);
-  final ByteString jessesCoffeeEncoded = ByteString.decodeBase64(
-      "CgVKZXNzZRIUCgljb2xvbWJpYW4RAAAAAAAA8D8SFAoJY29sb21iaWFuEQAAAAAAAPA/GANwGA==");
+  final ByteString jessesCoffeeEncoded = ByteString.decodeHex("0a054a6573736512140a09636f6c"
+      + "6f6d6269616e11000000000000f03f12140a09636f6c6f6d6269616e11000000000000f03f18037018");
 
   @Test public void decode() throws Exception {
-    MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
-    WireAdapter<Object> adapter = factory.get(cafeDrink.name());
+    WireAdapter<Object> adapter = coffeeSchema.wireAdapter("CafeDrink", true);
     assertThat(adapter.decode(new Buffer().write(dansCoffeeEncoded))).isEqualTo(dansCoffee);
     assertThat(adapter.decode(new Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee);
   }
 
   @Test public void encode() throws IOException {
-    MessageType cafeDrink = (MessageType) coffeeSchema.getType("CafeDrink");
-    WireAdapter<Object> adapter = factory.get(cafeDrink.name());
+    WireAdapter<Object> adapter = coffeeSchema.wireAdapter("CafeDrink", true);
     assertThat(ByteString.of(adapter.encode(dansCoffee))).isEqualTo(dansCoffeeEncoded);
     assertThat(ByteString.of(adapter.encode(jessesCoffee))).isEqualTo(jessesCoffeeEncoded);
   }
@@ -214,5 +211,43 @@ public final class SchemaWireAdapterTest {
         "1a01440a0d1a01420a031a014112031a0143120d1a01460a031a014512031a0147");
     assertThat(ByteString.of(adapter.encode(value))).isEqualTo(encoded);
     assertThat(adapter.decode(new Buffer().write(encoded))).isEqualTo(value);
+  }
+
+  @Test public void includeUnknowns() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("coffee.proto", ""
+            + "message CafeDrink {\n"
+            + "  optional string customer_name = 1;\n"
+            + "  optional int32 size_ounces = 14;\n"
+            + "}\n")
+        .build();
+
+    ImmutableMap<String, Object> dansCoffeeWithUnknowns = ImmutableMap.<String, Object>of(
+        "customer_name", "Dan",
+        "2", ImmutableList.of(ByteString.decodeHex("11000000000000e03f")),
+        "size_ounces", 16,
+        "15", ImmutableList.of(ByteString.decodeHex("1001")));
+
+    WireAdapter<Object> adapter = schema.wireAdapter("CafeDrink", true);
+    assertThat(adapter.decode(new Buffer().write(dansCoffeeEncoded)))
+        .isEqualTo(dansCoffeeWithUnknowns);
+  }
+
+  @Test public void omitUnknowns() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("coffee.proto", ""
+            + "message CafeDrink {\n"
+            + "  optional string customer_name = 1;\n"
+            + "  optional int32 size_ounces = 14;\n"
+            + "}\n")
+        .build();
+
+    ImmutableMap<String, Object> dansCoffeeWithoutUnknowns = ImmutableMap.<String, Object>of(
+        "customer_name", "Dan",
+        "size_ounces", 16);
+
+    WireAdapter<Object> adapter = schema.wireAdapter("CafeDrink", false);
+    assertThat(adapter.decode(new Buffer().write(dansCoffeeEncoded)))
+        .isEqualTo(dansCoffeeWithoutUnknowns);
   }
 }

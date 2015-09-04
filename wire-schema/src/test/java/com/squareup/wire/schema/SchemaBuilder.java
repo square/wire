@@ -62,6 +62,6 @@ class SchemaBuilder {
 
   public WireAdapter<Object> buildWireAdapter(String messageTypeName) {
     Schema schema = build();
-    return schema.wireAdapter(messageTypeName);
+    return schema.wireAdapter(messageTypeName, true);
   }
 }

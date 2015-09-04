@@ -31,10 +31,12 @@ import java.util.Map;
  */
 final class SchemaWireAdapterFactory {
   final Schema schema;
+  final boolean includeUnknown;
   final Map<WireType, WireAdapter<?>> adapterMap = new LinkedHashMap<>();
 
-  public SchemaWireAdapterFactory(Schema schema) {
+  public SchemaWireAdapterFactory(Schema schema, boolean includeUnknown) {
     this.schema = schema;
+    this.includeUnknown = includeUnknown;
 
     adapterMap.put(WireType.BOOL, WireAdapter.BOOL);
     adapterMap.put(WireType.BYTES, WireAdapter.BYTES);
@@ -71,7 +73,7 @@ final class SchemaWireAdapterFactory {
     }
 
     if (type instanceof MessageType) {
-      MessageAdapter messageAdapter = new MessageAdapter();
+      MessageAdapter messageAdapter = new MessageAdapter(includeUnknown);
       // Put the adapter in the map early to mitigate the recursive calls to get() made below.
       adapterMap.put(wireType, messageAdapter);
 
@@ -120,9 +122,11 @@ final class SchemaWireAdapterFactory {
   static final class MessageAdapter extends WireAdapter<Map<String, Object>> {
     final Map<Integer, Field> fieldsByTag = new LinkedHashMap<>();
     final Map<String, Field> fieldsByName = new LinkedHashMap<>();
+    final boolean includeUnknown;
 
-    public MessageAdapter() {
+    public MessageAdapter(boolean includeUnknown) {
       super(FieldEncoding.LENGTH_DELIMITED, Map.class);
+      this.includeUnknown = includeUnknown;
     }
 
     @Override public Map<String, Object> redact(Map<String, Object> message) {
@@ -170,8 +174,13 @@ final class SchemaWireAdapterFactory {
       for (int tag; (tag = reader.nextTag()) != -1;) {
         Field field = fieldsByTag.get(tag);
         if (field == null) {
-          field = new Field(
-              Integer.toString(tag), tag, true, reader.peekFieldEncoding().rawWireAdapter());
+          if (includeUnknown) {
+            String name = Integer.toString(tag);
+            field = new Field(name, tag, true, reader.peekFieldEncoding().rawWireAdapter());
+          } else {
+            reader.skip();
+            continue;
+          }
         }
 
         Object value = field.wireAdapter.decode(reader);

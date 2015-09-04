@@ -200,6 +200,30 @@ public final class ProtoReader {
     return nextFieldEncoding;
   }
 
+  /**
+   * Skips the current field's value. This is only safe to call immediately following a call to
+   * {@link #nextTag()}.
+   */
+  public void skip() throws IOException {
+    switch (state) {
+      case STATE_LENGTH_DELIMITED:
+        long byteCount = beforeLengthDelimitedScalar();
+        source.skip(byteCount);
+        break;
+      case STATE_VARINT:
+        readVarint64();
+        break;
+      case STATE_FIXED64:
+        readFixed64();
+        break;
+      case STATE_FIXED32:
+        readFixed32();
+        break;
+      default:
+        throw new IllegalStateException("Unexpected call to skip()");
+    }
+  }
+
   /** Skips a section of the input delimited by START_GROUP/END_GROUP type markers. */
   private void skipGroup(int expectedEndTag) throws IOException {
     while (pos < limit && !source.exhausted()) {
