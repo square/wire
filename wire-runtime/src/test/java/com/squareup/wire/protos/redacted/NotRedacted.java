@@ -8,7 +8,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-public final class NotRedacted extends Message {
+public final class NotRedacted extends Message<NotRedacted> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_A = "";
@@ -57,7 +57,7 @@ public final class NotRedacted extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<NotRedacted> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<NotRedacted, Builder> {
     public String a;
 
     public String b;

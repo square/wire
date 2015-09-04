@@ -3,14 +3,13 @@
 package com.squareup.wire.protos.redacted;
 
 import com.google.protobuf.FieldOptions;
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-public final class Redacted extends ExtendableMessage<Redacted> {
+public final class Redacted extends Message<Redacted> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
@@ -81,7 +80,7 @@ public final class Redacted extends ExtendableMessage<Redacted> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<Redacted, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<Redacted, Builder> {
     public String a;
 
     public String b;
@@ -89,11 +88,10 @@ public final class Redacted extends ExtendableMessage<Redacted> {
     public String c;
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(Redacted message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.a = message.a;
       this.b = message.b;

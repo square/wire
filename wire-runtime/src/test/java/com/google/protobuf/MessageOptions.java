@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 299:1
 package com.google.protobuf;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Boolean;
@@ -11,7 +10,7 @@ import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
 
-public final class MessageOptions extends ExtendableMessage<MessageOptions> {
+public final class MessageOptions extends Message<MessageOptions> {
   private static final long serialVersionUID = 0L;
 
   public static final Boolean DEFAULT_MESSAGE_SET_WIRE_FORMAT = false;
@@ -100,7 +99,7 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<MessageOptions, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<MessageOptions, Builder> {
     public Boolean message_set_wire_format;
 
     public Boolean no_standard_descriptor_accessor;
@@ -108,11 +107,10 @@ public final class MessageOptions extends ExtendableMessage<MessageOptions> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(MessageOptions message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.message_set_wire_format = message.message_set_wire_format;
       this.no_standard_descriptor_accessor = message.no_standard_descriptor_accessor;

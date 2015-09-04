@@ -101,7 +101,7 @@ public class WireCompilerErrorTest {
         + "  optional int32 f = 1;\n"
         + "}\n");
     String generatedSource = output.get("com.squareup.protos.test.Simple");
-    assertThat(generatedSource).contains("public final class Simple extends Message {");
+    assertThat(generatedSource).contains("public final class Simple extends Message<Simple> {");
   }
 
   @Test public void testZeroTag() {

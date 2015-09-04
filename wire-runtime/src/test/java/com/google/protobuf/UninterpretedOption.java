@@ -22,7 +22,7 @@ import okio.ByteString;
  * or produced by Descriptor::CopyTo()) will never have UninterpretedOptions
  * in them.
  */
-public final class UninterpretedOption extends Message {
+public final class UninterpretedOption extends Message<UninterpretedOption> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_IDENTIFIER_VALUE = "";
@@ -129,7 +129,7 @@ public final class UninterpretedOption extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<UninterpretedOption> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<UninterpretedOption, Builder> {
     public List<NamePart> name = Collections.emptyList();
 
     public String identifier_value;
@@ -211,7 +211,7 @@ public final class UninterpretedOption extends Message {
    * E.g.,{ ["foo", false], ["bar.baz", true], ["qux", false] } represents
    * "foo.(bar.baz).qux".
    */
-  public static final class NamePart extends Message {
+  public static final class NamePart extends Message<NamePart> {
     private static final long serialVersionUID = 0L;
 
     public static final String DEFAULT_NAME_PART = "";
@@ -262,7 +262,7 @@ public final class UninterpretedOption extends Message {
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NamePart> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<NamePart, Builder> {
       public String name_part;
 
       public Boolean is_extension;

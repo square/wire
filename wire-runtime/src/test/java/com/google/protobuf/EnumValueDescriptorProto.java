@@ -12,7 +12,7 @@ import java.lang.String;
 /**
  * Describes a value within an enum.
  */
-public final class EnumValueDescriptorProto extends Message {
+public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorProto> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
@@ -83,7 +83,7 @@ public final class EnumValueDescriptorProto extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<EnumValueDescriptorProto> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<EnumValueDescriptorProto, Builder> {
     public String name;
 
     public String doc;

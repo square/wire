@@ -32,13 +32,15 @@ import java.util.Set;
 
 import static com.squareup.wire.Message.Builder;
 
-final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
-  static <M extends Message> RuntimeMessageAdapter<M> create(Wire wire, Class<M> messageType) {
-    Class<Builder<M>> builderType = getBuilderType(messageType);
-    Constructor<Builder<M>> builderCopyConstructor =
+final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
+    extends WireAdapter<M> {
+  static <M extends Message<M>, B extends Builder<M, B>> RuntimeMessageAdapter<M, B> create(
+      Wire wire, Class<M> messageType) {
+    Class<Builder<M, B>> builderType = getBuilderType(messageType);
+    Constructor<Builder<M, B>> builderCopyConstructor =
         getBuilderCopyConstructor(builderType, messageType);
-    Map<Integer, TagBinding<M, Builder<M>>> tagBindings
-        = new LinkedHashMap<Integer, TagBinding<M, Builder<M>>>();
+    Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings
+        = new LinkedHashMap<Integer, TagBinding<M, Builder<M, B>>>();
 
     // Create tag bindings for fields annotated with '@ProtoField'
     for (Field messageField : messageType.getDeclaredFields()) {
@@ -46,13 +48,13 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
       if (protoField != null) {
         WireAdapter<?> singleAdapter = singleAdapter(wire, messageField, protoField);
         Class<?> singleType = singleAdapter.javaType;
-        FieldTagBinding<M> tagBinding = new FieldTagBinding<M>(
+        FieldTagBinding<M, B> tagBinding = new FieldTagBinding<M, B>(
             protoField, singleAdapter, singleType, messageField, builderType);
         tagBindings.put(tagBinding.tag, tagBinding);
       }
     }
 
-    return new RuntimeMessageAdapter<M>(wire, messageType, builderType, builderCopyConstructor,
+    return new RuntimeMessageAdapter<M, B>(wire, messageType, builderType, builderCopyConstructor,
         Collections.unmodifiableMap(tagBindings));
   }
 
@@ -89,13 +91,13 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
 
   private final Wire wire;
   private final Class<M> messageType;
-  private final Class<Builder<M>> builderType;
-  private final Constructor<Builder<M>> builderCopyConstructor;
-  private final Map<Integer, TagBinding<M, Builder<M>>> tagBindings;
+  private final Class<Builder<M, B>> builderType;
+  private final Constructor<Builder<M, B>> builderCopyConstructor;
+  private final Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings;
 
-  RuntimeMessageAdapter(Wire wire, Class<M> messageType, Class<Builder<M>> builderType,
-      Constructor<Builder<M>> builderCopyConstructor,
-      Map<Integer, TagBinding<M, Builder<M>>> tagBindings) {
+  RuntimeMessageAdapter(Wire wire, Class<M> messageType, Class<Builder<M, B>> builderType,
+      Constructor<Builder<M, B>> builderCopyConstructor,
+      Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings) {
     super(FieldEncoding.LENGTH_DELIMITED, messageType);
     this.wire = wire;
     this.messageType = messageType;
@@ -104,25 +106,25 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     this.tagBindings = tagBindings;
   }
 
-  @Override public RuntimeMessageAdapter<M> withExtensions(ExtensionRegistry extensionRegistry) {
-    Map<Integer, TagBinding<M, Builder<M>>> tagBindings =
-        new LinkedHashMap<Integer, TagBinding<M, Builder<M>>>(this.tagBindings);
+  @Override public RuntimeMessageAdapter<M, B> withExtensions(ExtensionRegistry extensionRegistry) {
+    Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings =
+        new LinkedHashMap<Integer, TagBinding<M, Builder<M, B>>>(this.tagBindings);
 
     for (Extension<?, ?> extension : extensionRegistry.extensions(messageType)) {
       WireAdapter<?> singleAdapter = WireAdapter.get(wire, extension.getDatatype(),
           extension.getMessageType(), extension.getEnumType());
-      tagBindings.put(extension.getTag(), new ExtensionTagBinding<M>(extension, singleAdapter));
+      tagBindings.put(extension.getTag(), new ExtensionTagBinding<M, B>(extension, singleAdapter));
     }
 
-    return new RuntimeMessageAdapter<M>(wire, messageType, builderType, builderCopyConstructor,
+    return new RuntimeMessageAdapter<M, B>(wire, messageType, builderType, builderCopyConstructor,
         Collections.unmodifiableMap(tagBindings));
   }
 
-  Map<Integer, TagBinding<M, Builder<M>>> tagBindings() {
+  Map<Integer, TagBinding<M, Builder<M, B>>> tagBindings() {
     return tagBindings;
   }
 
-  Builder<M> newBuilder() {
+  Builder<M, B> newBuilder() {
     try {
       return builderType.newInstance();
     } catch (IllegalAccessException e) {
@@ -132,7 +134,7 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     }
   }
 
-  Builder<M> newBuilder(M value) {
+  Builder<M, B> newBuilder(M value) {
     try {
       return builderCopyConstructor.newInstance(value);
     } catch (InvocationTargetException e) {
@@ -145,17 +147,18 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
   }
 
   @SuppressWarnings("unchecked")
-  private static <M extends Message> Class<Builder<M>> getBuilderType(Class<M> messageType) {
+  private static <M extends Message<M>, B extends Builder<M, B>> Class<Builder<M, B>>
+  getBuilderType(Class<M> messageType) {
     try {
-      return (Class<Builder<M>>) Class.forName(messageType.getName() + "$Builder");
+      return (Class<Builder<M, B>>) Class.forName(messageType.getName() + "$Builder");
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException("No builder class found for message type "
           + messageType.getName());
     }
   }
 
-  private static <M extends Message> Constructor<Builder<M>> getBuilderCopyConstructor(
-      Class<Builder<M>> builderType, Class<M> messageType) {
+  private static <M extends Message<M>, B extends Builder<M, B>> Constructor<Builder<M, B>>
+  getBuilderCopyConstructor(Class<Builder<M, B>> builderType, Class<M> messageType) {
     try {
       return builderType.getConstructor(messageType);
     } catch (NoSuchMethodException e) {
@@ -170,7 +173,7 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     if (cachedSerializedSize != 0) return cachedSerializedSize;
 
     int size = 0;
-    for (TagBinding<M, Builder<M>> tagBinding : tagBindings.values()) {
+    for (TagBinding<M, Builder<M, B>> tagBinding : tagBindings.values()) {
       Object value = tagBinding.get(message);
       if (value == null) continue;
       if (tagBinding instanceof FieldTagBinding) {
@@ -184,7 +187,7 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
   }
 
   @Override public void encode(ProtoWriter writer, M message) throws IOException {
-    for (TagBinding<M, Builder<M>> tagBinding : tagBindings.values()) {
+    for (TagBinding<M, Builder<M, B>> tagBinding : tagBindings.values()) {
       Object value = tagBinding.get(message);
       if (value == null) continue;
       if (tagBinding instanceof FieldTagBinding) {
@@ -195,8 +198,8 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
   }
 
   @Override public M redact(M message) {
-    Builder<M> builder = newBuilder(message);
-    for (TagBinding<M, Builder<M>> tagBinding : tagBindings.values()) {
+    Builder<M, B> builder = newBuilder(message);
+    for (TagBinding<M, Builder<M, B>> tagBinding : tagBindings.values()) {
       if (!tagBinding.redacted && tagBinding.datatype != Message.Datatype.MESSAGE) continue;
       if (tagBinding.redacted && tagBinding.label == Message.Label.REQUIRED) {
         throw new IllegalArgumentException(String.format(
@@ -232,7 +235,7 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
     sb.append(messageType.getSimpleName());
     sb.append('{');
     boolean seenValue = false;
-    for (TagBinding<M, Builder<M>> tagBinding : tagBindings.values()) {
+    for (TagBinding<M, Builder<M, B>> tagBinding : tagBindings.values()) {
       if (!(tagBinding instanceof FieldTagBinding)) continue;
       Object value = tagBinding.get(message);
       if (value == null) continue;
@@ -261,12 +264,12 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
   // Reading
 
   @Override public M decode(ProtoReader reader) throws IOException {
-    Builder<M> builder = newBuilder();
+    Builder<M, B> builder = newBuilder();
     Storage storage = new Storage();
 
     long token = reader.beginMessage();
     for (int tag; (tag = reader.nextTag()) != -1;) {
-      TagBinding<M, Builder<M>> tagBinding = tagBindings.get(tag);
+      TagBinding<M, Builder<M, B>> tagBinding = tagBindings.get(tag);
       if (tagBinding == null) {
         FieldEncoding fieldEncoding = reader.peekFieldEncoding();
         Object value = fieldEncoding.rawWireAdapter().decode(reader);
@@ -290,7 +293,7 @@ final class RuntimeMessageAdapter<M extends Message> extends WireAdapter<M> {
 
     // Set repeated fields
     for (int storedTag : storage.getTags()) {
-      TagBinding<M, Builder<M>> tagBinding = tagBindings.get(storedTag);
+      TagBinding<M, Builder<M, B>> tagBinding = tagBindings.get(storedTag);
       List<Object> value = storage.get(storedTag);
       tagBinding.set(builder, value);
     }

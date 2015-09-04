@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Describes a message type.
  */
-public final class DescriptorProto extends Message {
+public final class DescriptorProto extends Message<DescriptorProto> {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
@@ -124,7 +124,7 @@ public final class DescriptorProto extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<DescriptorProto> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<DescriptorProto, Builder> {
     public String name;
 
     public String doc;
@@ -206,7 +206,7 @@ public final class DescriptorProto extends Message {
     }
   }
 
-  public static final class ExtensionRange extends Message {
+  public static final class ExtensionRange extends Message<ExtensionRange> {
     private static final long serialVersionUID = 0L;
 
     public static final Integer DEFAULT_START = 0;
@@ -255,7 +255,7 @@ public final class DescriptorProto extends Message {
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<ExtensionRange> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<ExtensionRange, Builder> {
       public Integer start;
 
       public Integer end;

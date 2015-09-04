@@ -9,7 +9,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
-public final class OneOfMessage extends Message {
+public final class OneOfMessage extends Message<OneOfMessage> {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_FOO = 0;
@@ -64,7 +64,7 @@ public final class OneOfMessage extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<OneOfMessage> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<OneOfMessage, Builder> {
     public Integer foo;
 
     public String bar;

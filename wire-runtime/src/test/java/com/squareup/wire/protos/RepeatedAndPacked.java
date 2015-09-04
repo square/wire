@@ -10,7 +10,7 @@ import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
 
-public final class RepeatedAndPacked extends Message {
+public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
@@ -57,7 +57,7 @@ public final class RepeatedAndPacked extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RepeatedAndPacked> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<RepeatedAndPacked, Builder> {
     public List<Integer> rep_int32 = Collections.emptyList();
 
     public List<Integer> pack_int32 = Collections.emptyList();

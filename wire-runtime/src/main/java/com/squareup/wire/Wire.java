@@ -25,14 +25,15 @@ import java.util.Map;
  * Encode and decode Wire protocol buffers.
  */
 public final class Wire {
-  private final ThreadLocal<List<DeferredAdapter<?>>> reentrantCalls =
-      new ThreadLocal<List<DeferredAdapter<?>>>();
-  private final Map<Class<? extends Message>, RuntimeMessageAdapter<? extends Message>>
-      messageAdapters =
-      new LinkedHashMap<Class<? extends Message>, RuntimeMessageAdapter<? extends Message>>();
+  private final ThreadLocal<List<DeferredAdapter<?>>> reentrantCalls
+      = new ThreadLocal<List<DeferredAdapter<?>>>();
+  private final LinkedHashMap<Class<? extends Message<?>>,
+      RuntimeMessageAdapter<? extends Message<?>, ? extends Message.Builder<?, ?>>> messageAdapters
+      = new LinkedHashMap<Class<? extends Message<?>>, RuntimeMessageAdapter<? extends Message<?>,
+      ? extends Message.Builder<?, ?>>>();
   private final Map<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>
-      enumAdapters =
-      new LinkedHashMap<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>();
+      enumAdapters = new LinkedHashMap<Class<? extends ProtoEnum>,
+      RuntimeEnumAdapter<? extends ProtoEnum>>();
   private final ExtensionRegistry registry;
 
   public Wire() {
@@ -74,10 +75,10 @@ public final class Wire {
    * Returns a message adapter for {@code messageType}.
    */
   @SuppressWarnings("unchecked")
-  synchronized <M extends Message> RuntimeMessageAdapter<M> messageAdapter(
-      Class<M> messageType) {
-    RuntimeMessageAdapter<M> adapter =
-        (RuntimeMessageAdapter<M>) messageAdapters.get(messageType);
+  synchronized <M extends Message<M>, B extends Message.Builder<M, B>> RuntimeMessageAdapter<M, B>
+  messageAdapter(Class<M> messageType) {
+    RuntimeMessageAdapter<M, B> adapter = (RuntimeMessageAdapter<M, B>) messageAdapters.get(
+        messageType);
     if (adapter == null) {
       adapter = RuntimeMessageAdapter.create(this, messageType);
       if (registry != null) {

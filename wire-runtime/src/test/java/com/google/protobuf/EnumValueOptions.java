@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 389:1
 package com.google.protobuf;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
 import java.lang.Object;
@@ -10,7 +9,7 @@ import java.lang.Override;
 import java.util.Collections;
 import java.util.List;
 
-public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> {
+public final class EnumValueOptions extends Message<EnumValueOptions> {
   private static final long serialVersionUID = 0L;
 
   /**
@@ -52,15 +51,14 @@ public final class EnumValueOptions extends ExtendableMessage<EnumValueOptions> 
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<EnumValueOptions, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<EnumValueOptions, Builder> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(EnumValueOptions message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.uninterpreted_option = copyOf(message.uninterpreted_option);
     }

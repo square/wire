@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 332:1
 package com.google.protobuf;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -13,7 +12,7 @@ import java.lang.String;
 import java.util.Collections;
 import java.util.List;
 
-public final class FieldOptions extends ExtendableMessage<FieldOptions> {
+public final class FieldOptions extends Message<FieldOptions> {
   private static final long serialVersionUID = 0L;
 
   public static final CType DEFAULT_CTYPE = CType.STRING;
@@ -131,7 +130,7 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<FieldOptions, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<FieldOptions, Builder> {
     public CType ctype;
 
     public Boolean packed;
@@ -143,11 +142,10 @@ public final class FieldOptions extends ExtendableMessage<FieldOptions> {
     public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(FieldOptions message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.ctype = message.ctype;
       this.packed = message.packed;

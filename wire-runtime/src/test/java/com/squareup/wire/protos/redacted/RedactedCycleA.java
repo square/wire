@@ -7,7 +7,7 @@ import com.squareup.wire.ProtoField;
 import java.lang.Object;
 import java.lang.Override;
 
-public final class RedactedCycleA extends Message {
+public final class RedactedCycleA extends Message<RedactedCycleA> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
@@ -37,7 +37,7 @@ public final class RedactedCycleA extends Message {
     return result != 0 ? result : (hashCode = b != null ? b.hashCode() : 0);
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedCycleA> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedCycleA, Builder> {
     public RedactedCycleB b;
 
     public Builder() {

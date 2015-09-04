@@ -12,7 +12,7 @@ import java.lang.String;
 import java.util.Collections;
 import java.util.List;
 
-public final class VersionTwo extends Message {
+public final class VersionTwo extends Message<VersionTwo> {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;
@@ -104,7 +104,7 @@ public final class VersionTwo extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<VersionTwo> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<VersionTwo, Builder> {
     public Integer i;
 
     public Integer v2_i;

@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * A message for testing.
  */
-public final class SimpleMessage extends Message {
+public final class SimpleMessage extends Message<SimpleMessage> {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
@@ -208,7 +208,7 @@ public final class SimpleMessage extends Message {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<SimpleMessage> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<SimpleMessage, Builder> {
     public Integer optional_int32;
 
     public NestedMessage optional_nested_msg;
@@ -357,7 +357,7 @@ public final class SimpleMessage extends Message {
     }
   }
 
-  public static final class NestedMessage extends Message {
+  public static final class NestedMessage extends Message<NestedMessage> {
     private static final long serialVersionUID = 0L;
 
     public static final Integer DEFAULT_BB = 0;
@@ -393,7 +393,7 @@ public final class SimpleMessage extends Message {
       return result != 0 ? result : (hashCode = bb != null ? bb.hashCode() : 0);
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, Builder> {
       public Integer bb;
 
       public Builder() {

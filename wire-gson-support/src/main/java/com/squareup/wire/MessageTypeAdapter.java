@@ -35,7 +35,8 @@ import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
 import static java.util.Collections.unmodifiableMap;
 
-class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
+class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
+    extends TypeAdapter<M> {
 
   enum UnknownFieldType {
     VARINT, FIXED32, FIXED64, LENGTH_DELIMITED;
@@ -53,17 +54,17 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
   private static final BigInteger POWER_64 = new BigInteger("18446744073709551616");
 
   private final Gson gson;
-  private final RuntimeMessageAdapter<M> messageAdapter;
-  private final Map<String, TagBinding<M, Message.Builder<M>>> tagMap;
+  private final RuntimeMessageAdapter<M, B> messageAdapter;
+  private final Map<String, TagBinding<M, Message.Builder<M, B>>> tagMap;
 
   @SuppressWarnings("unchecked")
   public MessageTypeAdapter(Wire wire, Gson gson, TypeToken<M> type) {
     this.gson = gson;
     this.messageAdapter = wire.messageAdapter((Class<M>) type.getRawType());
 
-    Map<String, TagBinding<M, Message.Builder<M>>> tagMap
-        = new LinkedHashMap<String, TagBinding<M, Message.Builder<M>>>();
-    for (TagBinding<M, Message.Builder<M>> tagBinding : messageAdapter.tagBindings().values()) {
+    Map<String, TagBinding<M, Message.Builder<M, B>>> tagMap
+        = new LinkedHashMap<String, TagBinding<M, Message.Builder<M, B>>>();
+    for (TagBinding<M, Message.Builder<M, B>> tagBinding : messageAdapter.tagBindings().values()) {
       tagMap.put(tagBinding.name, tagBinding);
     }
     this.tagMap = unmodifiableMap(tagMap);
@@ -77,7 +78,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     }
 
     out.beginObject();
-    for (TagBinding<M, Message.Builder<M>> tagBinding : messageAdapter.tagBindings().values()) {
+    for (TagBinding<M, Message.Builder<M, B>> tagBinding : messageAdapter.tagBindings().values()) {
       Object value = tagBinding.get(message);
       if (value == null || tagBinding instanceof ExtensionTagBinding) {
         continue;
@@ -170,12 +171,12 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
       return null;
     }
 
-    Message.Builder<M> builder = messageAdapter.newBuilder();
+    Message.Builder<M, B> builder = messageAdapter.newBuilder();
     in.beginObject();
 
     while (in.peek() == JsonToken.NAME) {
       String name = in.nextName();
-      TagBinding<M, Message.Builder<M>> tagBinding = tagMap.get(name);
+      TagBinding<M, Message.Builder<M, B>> tagBinding = tagMap.get(name);
 
       if (tagBinding != null) {
         Object value = parseValue(tagBinding.label, singleType(tagBinding), parse(in));
@@ -205,7 +206,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     }
   }
 
-  private void parseUnknownField(JsonReader in, Message.Builder<M> builder, int tag)
+  private void parseUnknownField(JsonReader in, Message.Builder<M, B> builder, int tag)
       throws IOException {
     in.beginArray();
     UnknownFieldType type = UnknownFieldType.of(in.nextString());
@@ -234,7 +235,7 @@ class MessageTypeAdapter<M extends Message> extends TypeAdapter<M> {
     return gson.fromJson(element, valueType);
   }
 
-  private Type singleType(TagBinding<M, Message.Builder<M>> tagBinding) {
+  private Type singleType(TagBinding<M, Message.Builder<M, B>> tagBinding) {
     return tagBinding.singleAdapter.javaType;
   }
 }

@@ -2,7 +2,6 @@
 // Source file: ../wire-runtime/src/test/proto/all_types.proto at 21:1
 package com.squareup.wire.protos.alltypes;
 
-import com.squareup.wire.ExtendableMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
@@ -18,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
 
-public final class AllTypes extends ExtendableMessage<AllTypes> {
+public final class AllTypes extends Message<AllTypes> {
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
@@ -921,7 +920,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     return result;
   }
 
-  public static final class Builder extends ExtendableMessage.ExtendableBuilder<AllTypes, Builder> {
+  public static final class Builder extends com.squareup.wire.Message.Builder<AllTypes, Builder> {
     public Integer opt_int32;
 
     public Integer opt_uint32;
@@ -1085,11 +1084,10 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     public NestedEnum default_nested_enum;
 
     public Builder() {
-      super(Builder.class);
     }
 
     public Builder(AllTypes message) {
-      super(Builder.class, message);
+      super(message);
       if (message == null) return;
       this.opt_int32 = message.opt_int32;
       this.opt_uint32 = message.opt_uint32;
@@ -1635,7 +1633,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
     }
   }
 
-  public static final class NestedMessage extends Message {
+  public static final class NestedMessage extends Message<NestedMessage> {
     private static final long serialVersionUID = 0L;
 
     public static final Integer DEFAULT_A = 0;
@@ -1668,7 +1666,7 @@ public final class AllTypes extends ExtendableMessage<AllTypes> {
       return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, Builder> {
       public Integer a;
 
       public Builder() {
