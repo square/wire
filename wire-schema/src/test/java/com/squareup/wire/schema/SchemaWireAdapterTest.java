@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.squareup.wire.WireAdapter;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ProtocolException;
 import okio.Buffer;
@@ -121,8 +122,7 @@ public final class SchemaWireAdapterTest {
     try {
       adapter.decode(new Buffer().write(encoded));
       fail();
-    } catch (ProtocolException expected) {
-      assertThat(expected).hasMessage("Protocol message group is truncated.");
+    } catch (EOFException expected) {
     }
   }
 
@@ -138,7 +138,7 @@ public final class SchemaWireAdapterTest {
       adapter.decode(new Buffer().write(encoded));
       fail();
     } catch (ProtocolException expected) {
-      assertThat(expected).hasMessage("Unexpected end group in protocol message.");
+      assertThat(expected).hasMessage("Unexpected end group");
     }
   }
 
@@ -154,7 +154,7 @@ public final class SchemaWireAdapterTest {
       adapter.decode(new Buffer().write(encoded));
       fail();
     } catch (ProtocolException expected) {
-      assertThat(expected).hasMessage("Unexpected end group in protocol message.");
+      assertThat(expected).hasMessage("Unexpected end group");
     }
   }
 

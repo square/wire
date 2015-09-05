@@ -43,22 +43,10 @@ import okio.ByteString;
  * Reads and decodes protocol message fields.
  */
 public final class ProtoReader {
-  private static final String ENCOUNTERED_A_NEGATIVE_SIZE =
-      "Encountered a negative size";
-  private static final String INPUT_ENDED_UNEXPECTEDLY =
-      "The input ended unexpectedly in the middle of a field";
-  private static final String PROTOCOL_MESSAGE_TAG_ZERO =
-      "Protocol message contained an invalid tag (zero).";
-  private static final String PROTOCOL_MESSAGE_GROUP_IS_TRUNCATED =
-      "Protocol message group is truncated.";
-  private static final String ENCOUNTERED_A_MALFORMED_VARINT =
-      "WireInput encountered a malformed varint.";
-  private static final String PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP =
-      "Unexpected end group in protocol message.";
   /** The standard number of levels of message nesting to allow. */
   private static final int RECURSION_LIMIT = 65;
 
-  static final int FIELD_ENCODING_MASK = 0x7;
+  private static final int FIELD_ENCODING_MASK = 0x7;
   static final int TAG_FIELD_ENCODING_BITS = 3;
 
   /** Read states. These constants correspond to field encodings where both exist. */
@@ -146,7 +134,7 @@ public final class ProtoReader {
 
     while (pos < limit && !source.exhausted()) {
       int tagAndFieldEncoding = internalReadVarint32();
-      if (tagAndFieldEncoding == 0) throw new ProtocolException(PROTOCOL_MESSAGE_TAG_ZERO);
+      if (tagAndFieldEncoding == 0) throw new ProtocolException("Unexpected tag 0");
 
       tag = tagAndFieldEncoding >> TAG_FIELD_ENCODING_BITS;
       int groupOrFieldEncoding = tagAndFieldEncoding & FIELD_ENCODING_MASK;
@@ -156,18 +144,18 @@ public final class ProtoReader {
           continue;
 
         case STATE_END_GROUP:
-          throw new ProtocolException(PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP);
+          throw new ProtocolException("Unexpected end group");
 
         case STATE_LENGTH_DELIMITED:
           nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED;
           state = STATE_LENGTH_DELIMITED;
           int length = internalReadVarint32();
-          if (length < 0) throw new ProtocolException(ENCOUNTERED_A_NEGATIVE_SIZE);
+          if (length < 0) throw new ProtocolException("Negative length: " + length);
           if (pushedLimit != -1) throw new IllegalStateException();
           // Push the current limit, and set a new limit to the length of this value.
           pushedLimit = limit;
           limit = pos + length;
-          if (limit > pushedLimit) throw new EOFException(INPUT_ENDED_UNEXPECTEDLY);
+          if (limit > pushedLimit) throw new EOFException();
           return tag;
 
         case STATE_VARINT:
@@ -186,7 +174,7 @@ public final class ProtoReader {
           return tag;
 
         default:
-          throw new ProtocolException("Unexpected FieldEncoding: " + groupOrFieldEncoding);
+          throw new ProtocolException("Unexpected field encoding: " + groupOrFieldEncoding);
       }
     }
     return -1;
@@ -228,7 +216,7 @@ public final class ProtoReader {
   private void skipGroup(int expectedEndTag) throws IOException {
     while (pos < limit && !source.exhausted()) {
       int tagAndFieldEncoding = internalReadVarint32();
-      if (tagAndFieldEncoding == 0) throw new ProtocolException(PROTOCOL_MESSAGE_TAG_ZERO);
+      if (tagAndFieldEncoding == 0) throw new ProtocolException("Unexpected tag 0");
       int tag = tagAndFieldEncoding >> TAG_FIELD_ENCODING_BITS;
       int groupOrFieldEncoding = tagAndFieldEncoding & FIELD_ENCODING_MASK;
       switch (groupOrFieldEncoding) {
@@ -237,7 +225,7 @@ public final class ProtoReader {
           break;
         case STATE_END_GROUP:
           if (tag == expectedEndTag) return; // Success!
-          throw new ProtocolException(PROTOCOL_MESSAGE_UNEXPECTED_END_GROUP);
+          throw new ProtocolException("Unexpected end group");
         case STATE_LENGTH_DELIMITED:
           int length = internalReadVarint32();
           pos += length;
@@ -256,10 +244,10 @@ public final class ProtoReader {
           readFixed32();
           break;
         default:
-          throw new ProtocolException("Unexpected FieldEncoding: " + groupOrFieldEncoding);
+          throw new ProtocolException("Unexpected field encoding: " + groupOrFieldEncoding);
       }
     }
-    throw new ProtocolException(PROTOCOL_MESSAGE_GROUP_IS_TRUNCATED);
+    throw new EOFException();
   }
 
   /**
@@ -322,7 +310,7 @@ public final class ProtoReader {
                 return result;
               }
             }
-            throw new ProtocolException(ENCOUNTERED_A_MALFORMED_VARINT);
+            throw new ProtocolException("Malformed VARINT");
           }
         }
       }
@@ -347,7 +335,7 @@ public final class ProtoReader {
       }
       shift += 7;
     }
-    throw new ProtocolException(ENCOUNTERED_A_MALFORMED_VARINT);
+    throw new ProtocolException("WireInput encountered a malformed varint");
   }
 
   /** Reads a 32-bit little-endian integer from the stream. */
