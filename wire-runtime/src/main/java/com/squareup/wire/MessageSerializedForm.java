@@ -35,8 +35,7 @@ final class MessageSerializedForm implements Serializable {
   Object readResolve() throws ObjectStreamException {
     WireAdapter<? extends Message> adapter = Message.WIRE.adapter(messageClass);
     try {
-      // Extensions are not supported at this time. Extension fields will be added to the
-      // unknownFields map.
+      // Extensions will be decoded as unknown values.
       return adapter.decode(bytes);
     } catch (IOException e) {
       throw new StreamCorruptedException(e.getMessage());
