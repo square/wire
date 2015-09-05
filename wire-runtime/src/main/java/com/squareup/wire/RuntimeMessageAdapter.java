@@ -30,9 +30,8 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     extends WireAdapter<M> {
   static <M extends Message<M>, B extends Builder<M, B>> RuntimeMessageAdapter<M, B> create(
       Wire wire, Class<M> messageType) {
-    Class<Builder<M, B>> builderType = getBuilderType(messageType);
-    Constructor<Builder<M, B>> builderCopyConstructor =
-        getBuilderCopyConstructor(builderType, messageType);
+    Class<B> builderType = getBuilderType(messageType);
+    Constructor<B> builderCopyConstructor = getBuilderCopyConstructor(builderType, messageType);
     Map<Integer, FieldBinding<M, B>> fieldBindings
         = new LinkedHashMap<Integer, FieldBinding<M, B>>();
 
@@ -84,14 +83,13 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
 
   private final Wire wire;
   private final Class<M> messageType;
-  private final Class<Builder<M, B>> builderType;
-  private final Constructor<Builder<M, B>> builderCopyConstructor;
+  private final Class<B> builderType;
+  private final Constructor<B> builderCopyConstructor;
   private final Map<Integer, FieldBinding<M, B>> fieldBindings;
   private final Map<Integer, RegisteredExtension> extensions;
 
-  RuntimeMessageAdapter(Wire wire, Class<M> messageType, Class<Builder<M, B>> builderType,
-      Constructor<Builder<M, B>> builderCopyConstructor,
-      Map<Integer, FieldBinding<M, B>> fieldBindings,
+  RuntimeMessageAdapter(Wire wire, Class<M> messageType, Class<B> builderType,
+      Constructor<B> builderCopyConstructor, Map<Integer, FieldBinding<M, B>> fieldBindings,
       Map<Integer, RegisteredExtension> extensions) {
     super(FieldEncoding.LENGTH_DELIMITED, messageType);
     this.wire = wire;
@@ -126,7 +124,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
 
   B newBuilder() {
     try {
-      return (B) builderType.newInstance();
+      return builderType.newInstance();
     } catch (IllegalAccessException e) {
       throw new AssertionError(e);
     } catch (InstantiationException e) {
@@ -134,7 +132,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     }
   }
 
-  Builder<M, B> newBuilder(M value) {
+  B newBuilder(M value) {
     try {
       return builderCopyConstructor.newInstance(value);
     } catch (InvocationTargetException e) {
@@ -147,18 +145,18 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   }
 
   @SuppressWarnings("unchecked")
-  private static <M extends Message<M>, B extends Builder<M, B>> Class<Builder<M, B>>
-  getBuilderType(Class<M> messageType) {
+  private static <M extends Message<M>, B extends Builder<M, B>> Class<B> getBuilderType(
+      Class<M> messageType) {
     try {
-      return (Class<Builder<M, B>>) Class.forName(messageType.getName() + "$Builder");
+      return (Class<B>) Class.forName(messageType.getName() + "$Builder");
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException("No builder class found for message type "
           + messageType.getName());
     }
   }
 
-  private static <M extends Message<M>, B extends Builder<M, B>> Constructor<Builder<M, B>>
-  getBuilderCopyConstructor(Class<Builder<M, B>> builderType, Class<M> messageType) {
+  private static <M extends Message<M>, B extends Builder<M, B>> Constructor<B>
+  getBuilderCopyConstructor(Class<B> builderType, Class<M> messageType) {
     try {
       return builderType.getConstructor(messageType);
     } catch (NoSuchMethodException e) {
@@ -196,7 +194,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   }
 
   @Override public M redact(M message) {
-    Builder<M, B> builder = newBuilder(message);
+    B builder = newBuilder(message);
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
       if (!fieldBinding.redacted && fieldBinding.datatype != Message.Datatype.MESSAGE) continue;
       if (fieldBinding.redacted && fieldBinding.label == Message.Label.REQUIRED) {

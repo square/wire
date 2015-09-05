@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.Message.Builder;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -57,7 +56,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
   private final Method builderMethod;
 
   FieldBinding(ProtoField protoField, WireAdapter<?> singleAdapter,
-      Field messageField, Class<Builder<M, B>> builderType) {
+      Field messageField, Class<B> builderType) {
     this.label = protoField.label();
     this.name = messageField.getName();
     this.tag = protoField.tag();
@@ -71,7 +70,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
-  void value(Builder<M, B> builder, Object value) {
+  void value(B builder, Object value) {
     if (label.isRepeated()) {
       try {
         List<?> list = (List<?>) builderField.get(builder);
@@ -89,7 +88,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
   }
 
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
-  void set(Builder<M, B> builder, Object value) {
+  void set(B builder, Object value) {
     try {
       if (label.isOneOf()) {
         // In order to maintain the 'oneof' invariant, call the builder setter method rather
@@ -113,7 +112,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
     }
   }
 
-  Object getFromBuilder(Builder<M, B> builder) {
+  Object getFromBuilder(B builder) {
     try {
       return builderField.get(builder);
     } catch (IllegalAccessException e) {

@@ -177,7 +177,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
       return null;
     }
 
-    Message.Builder<M, B> builder = messageAdapter.newBuilder();
+    B builder = messageAdapter.newBuilder();
     in.beginObject();
 
     while (in.peek() == JsonToken.NAME) {
@@ -221,8 +221,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
     }
   }
 
-  private void parseUnknownField(JsonReader in, Message.Builder<M, B> builder, int tag)
-      throws IOException {
+  private void parseUnknownField(JsonReader in, B builder, int tag) throws IOException {
     in.beginArray();
     UnknownFieldType type = UnknownFieldType.of(in.nextString());
     while (in.peek() != JsonToken.END_ARRAY) {
