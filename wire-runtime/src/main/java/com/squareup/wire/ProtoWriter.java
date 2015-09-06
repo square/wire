@@ -69,21 +69,26 @@ public final class ProtoWriter {
   }
 
   static int utf8Length(String s) {
-    int count = 0;
+    int result = 0;
     for (int i = 0, length = s.length(); i < length; i++) {
-      char ch = s.charAt(i);
-      if (ch <= 0x7F) {
-        count++;
-      } else if (ch <= 0x7FF) {
-        count += 2;
-      } else if (Character.isHighSurrogate(ch)) {
-        count += 4;
-        ++i;
+      char c = s.charAt(i);
+      if (c < 0x80) {
+        result++;
+      } else if (c < 0x800) {
+        result += 2;
+      } else if (c < 0xd800 || c > 0xdfff) {
+        result += 3;
+      } else if (c <= 0xdbff && i + 1 < length
+          && s.charAt(i + 1) >= 0xdc00 && s.charAt(i + 1) <= 0xdfff) {
+        // A UTF-16 high surrogate followed by UTF-16 low surrogate yields 4 UTF-8 bytes.
+        result += 4;
+        i++;
       } else {
-        count += 3;
+        // An unexpected surrogate yields a '?' character.
+        result++;
       }
     }
-    return count;
+    return result;
   }
 
   /**
