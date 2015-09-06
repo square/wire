@@ -47,7 +47,7 @@ public final class ParseTest {
       wire.adapter(OneField.class).decode(data.toByteArray());
       fail();
     } catch (ProtocolException expected) {
-      assertThat(expected).hasMessage("Unexpected FieldEncoding: 7");
+      assertThat(expected).hasMessage("Unexpected field encoding: 7");
     }
   }
 
