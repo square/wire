@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.squareup.wire.internal.Util;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -798,5 +799,152 @@ public final class SchemaTest {
     MessageType a = (MessageType) schema.getType("pa.A");
     MessageType c = (MessageType) schema.getType("pc.C");
     assertThat(a.field("c").type()).isEqualTo(c.name());
+  }
+
+  @Ignore("import resolution isn't to spec")
+  @Test public void importSamePackageDifferentFile() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a_b_1.proto", ""
+            + "package a.b;\n"
+            + "\n"
+            + "import \"a_b_2.proto\";\n"
+            + "\n"
+            + "message MessageB {\n"
+            + "  optional .a.b.MessageC c1 = 1;\n"
+            + "  optional a.b.MessageC c2 = 2;\n"
+            + "  optional b.MessageC c3 = 2;\n"
+            + "  optional MessageC c4 = 4;\n"
+            + "}\n")
+        .add("a_b_2.proto", ""
+            + "package a.b;\n"
+            + "\n"
+            + "message MessageC {\n"
+            + "}\n")
+        .build();
+    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
+    assertThat(messageC.field("c1").type()).isEqualTo(WireType.get("a.b", "MessageC"));
+    assertThat(messageC.field("c2").type()).isEqualTo(WireType.get("a.b", "MessageC"));
+    assertThat(messageC.field("c3").type()).isEqualTo(WireType.get("a.b", "MessageC"));
+    assertThat(messageC.field("c4").type()).isEqualTo(WireType.get("a.b", "MessageC"));
+  }
+
+  @Ignore("import resolution isn't to spec")
+  @Test public void importResolvesEnclosingPackageSuffix() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a_b.proto", ""
+            + "package a.b;\n"
+            + "\n"
+            + "message MessageB {\n"
+            + "}\n")
+        .add("a_b_c.proto", ""
+            + "package a.b.c;\n"
+            + "\n"
+            + "import \"a_b.proto\";\n"
+            + "\n"
+            + "message MessageC {\n"
+            + "  optional b.MessageB message_b = 1;\n"
+            + "}\n")
+        .build();
+    MessageType messageC = (MessageType) schema.getType("a.b.c.MessageC");
+    assertThat(messageC.field("message_b").type()).isEqualTo(WireType.get("a.b", "MessageB"));
+  }
+
+  @Ignore("import resolution isn't to spec")
+  @Test public void importResolvesNestedPackageSuffix() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a_b.proto", ""
+            + "package a.b;\n"
+            + "\n"
+            + "import \"a_b_c.proto\";\n"
+            + "\n"
+            + "message MessageB {\n"
+            + "  optional c.MessageC message_c = 1;\n"
+            + "}\n")
+        .add("a_b_c.proto", ""
+            + "package a.b.c;\n"
+            + "\n"
+            + "message MessageC {\n"
+            + "}\n")
+        .build();
+    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
+    assertThat(messageC.field("message_b").type()).isEqualTo(WireType.get("a.b.c", "MessageC"));
+  }
+
+  @Ignore("import resolution isn't to spec")
+  @Test public void nestedPackagePreferredOverEnclosingPackage() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a.proto", ""
+            + "package a;\n"
+            + "\n"
+            + "message MessageA {\n"
+            + "}\n")
+        .add("a_b.proto", ""
+            + "package a.b;\n"
+            + "\n"
+            + "import \"a.proto\";\n"
+            + "import \"a_b_a.proto\";\n"
+            + "\n"
+            + "message MessageB {\n"
+            + "  optional a.MessageA message_a = 1;\n"
+            + "}\n")
+        .add("a_b_a.proto", ""
+            + "package a.b.a;\n"
+            + "\n"
+            + "message MessageA {\n"
+            + "}\n")
+        .build();
+    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
+    assertThat(messageC.field("message_a").type()).isEqualTo(WireType.get("a.b.a", "MessageA"));
+  }
+
+  @Ignore("import resolution isn't to spec")
+  @Test public void dotPrefixRefersToRootPackage() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a.proto", ""
+            + "package a;\n"
+            + "\n"
+            + "message MessageA {\n"
+            + "}\n")
+        .add("a_b.proto", ""
+            + "package a.b;\n"
+            + "\n"
+            + "import \"a.proto\";\n"
+            + "import \"a_b_a.proto\";\n"
+            + "\n"
+            + "message MessageB {\n"
+            + "  optional .a.MessageA message_a = 1;\n"
+            + "}\n")
+        .add("a_b_a.proto", ""
+            + "package a.b.a;\n"
+            + "\n"
+            + "message MessageA {\n"
+            + "}\n")
+        .build();
+    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
+    assertThat(messageC.field("message_a").type()).isEqualTo(WireType.get("a", "MessageA"));
+  }
+
+  @Test public void dotPrefixMustBeRoot() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("a_b.proto", ""
+              + "package a.b;\n"
+              + "\n"
+              + "message MessageB {\n"
+              + "}\n")
+          .add("a_b_c.proto", ""
+              + "package a.b.c;\n"
+              + "\n"
+              + "import \"a_b.proto\";\n"
+              + "\n"
+              + "message MessageC {\n"
+              + "  optional .b.MessageB message_b = 1;\n"
+              + "}\n")
+          .build();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("unable to resolve .b.MessageB\n"
+          + "  for field message_b (a_b_c.proto at 6:3)\n"
+          + "  in message a.b.c.MessageC (a_b_c.proto at 5:1)");
+    }
   }
 }
