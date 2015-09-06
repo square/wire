@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,34 +51,21 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
         Collections.unmodifiableMap(fieldBindings), extensions);
   }
 
-  private static WireAdapter<?> singleAdapter(Wire wire, Field messageField,
-      ProtoField protoField) {
-    if (protoField.type() == Message.Datatype.ENUM) {
-      return wire.enumAdapter(getEnumType(protoField, messageField));
-    }
-    if (protoField.type() == Message.Datatype.MESSAGE) {
-      return wire.adapter(getMessageType(protoField, messageField));
-    }
-    return WireAdapter.get(wire, protoField.type(), null, null);
-  }
-
   @SuppressWarnings("unchecked")
-  private static Class<? extends Message> getMessageType(ProtoField protoField, Field field) {
-    Class<?> fieldType = field.getType();
-    if (List.class.isAssignableFrom(fieldType)) {
-      return protoField.messageType();
-    } else {
-      return (Class<Message>) fieldType;
+  private static WireAdapter<?> singleAdapter(
+      Wire wire, Field messageField, ProtoField protoField) {
+    Class<?> singleType = messageField.getType();
+    if (List.class.isAssignableFrom(singleType)) {
+      ParameterizedType listType = (ParameterizedType) messageField.getGenericType();
+      singleType = (Class<?>) listType.getActualTypeArguments()[0];
     }
-  }
 
-  @SuppressWarnings("unchecked")
-  private static Class<? extends ProtoEnum> getEnumType(ProtoField protoField, Field field) {
-    Class<?> fieldType = field.getType();
-    if (List.class.isAssignableFrom(fieldType)) {
-      return protoField.enumType();
+    if (Message.class.isAssignableFrom(singleType)) {
+      return wire.adapter((Class<? extends Message>) singleType);
+    } else if (ProtoEnum.class.isAssignableFrom(singleType)) {
+      return wire.enumAdapter((Class<? extends ProtoEnum>) singleType);
     } else {
-      return (Class<ProtoEnum>) fieldType;
+      return WireAdapter.get(wire, protoField.type(), null, null);
     }
   }
 

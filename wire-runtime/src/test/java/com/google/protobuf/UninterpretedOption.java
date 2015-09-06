@@ -39,8 +39,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
   @ProtoField(
       tag = 2,
-      label = Message.Label.REPEATED,
-      messageType = NamePart.class
+      label = Message.Label.REPEATED
   )
   public final List<NamePart> name;
 

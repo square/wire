@@ -325,11 +325,6 @@ public final class TypeWriter {
       }
     }
 
-    if (field.isRepeated() && !isScalar) {
-      String key = isEnum ? "enumType" : "messageType";
-      result.addMember(key, "$T.class", messageType);
-    }
-
     if (field.isDeprecated()) {
       result.addMember("deprecated", "true");
     }

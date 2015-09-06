@@ -28,8 +28,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   @ProtoField(
       tag = 2,
-      label = Message.Label.REPEATED,
-      messageType = MethodDescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<MethodDescriptorProto> method;
 

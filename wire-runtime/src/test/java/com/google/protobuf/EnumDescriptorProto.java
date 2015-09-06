@@ -37,8 +37,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
 
   @ProtoField(
       tag = 2,
-      label = Message.Label.REPEATED,
-      messageType = EnumValueDescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<EnumValueDescriptorProto> value;
 

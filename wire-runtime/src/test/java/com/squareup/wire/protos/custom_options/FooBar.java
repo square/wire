@@ -114,8 +114,7 @@ public final class FooBar extends Message<FooBar> {
 
   @ProtoField(
       tag = 7,
-      label = Message.Label.REPEATED,
-      messageType = FooBar.class
+      label = Message.Label.REPEATED
   )
   public final List<FooBar> nested;
 

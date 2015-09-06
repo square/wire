@@ -66,8 +66,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
    */
   @ProtoField(
       tag = 1,
-      label = Message.Label.REPEATED,
-      messageType = Location.class
+      label = Message.Label.REPEATED
   )
   public final List<Location> location;
 
