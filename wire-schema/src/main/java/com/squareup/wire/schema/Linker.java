@@ -65,8 +65,9 @@ final class Linker {
 
     // Link extensions. This depends on type registration.
     for (ProtoFile protoFile : protoFiles) {
+      Linker linker = withContext(protoFile);
       for (Extend extend : protoFile.extendList()) {
-        extend.link(this);
+        extend.link(linker);
       }
     }
 
@@ -79,29 +80,31 @@ final class Linker {
           extensionsMap.put(extend.type(), map);
         }
         for (Field field : extend.fields()) {
-          map.put(extend.packageName() + "." + field.name(), field);
+          map.put(field.packageName() + "." + field.name(), field);
         }
       }
     }
 
     // Link proto files and services.
     for (ProtoFile protoFile : protoFiles) {
+      Linker linker = withContext(protoFile);
       for (Type type : protoFile.types()) {
-        type.link(this);
+        type.link(linker);
       }
       for (Service service : protoFile.services()) {
-        service.link(this);
+        service.link(linker);
       }
     }
 
     // Link options. We can't link any options until we've linked all fields!
     for (ProtoFile protoFile : protoFiles) {
-      protoFile.options().link(this);
+      Linker linker = withContext(protoFile);
+      protoFile.options().link(linker);
       for (Type type : protoFile.types()) {
-        type.linkOptions(this);
+        type.linkOptions(linker);
       }
       for (Service service : protoFile.services()) {
-        service.linkOptions(this);
+        service.linkOptions(linker);
       }
     }
 
@@ -119,14 +122,15 @@ final class Linker {
 
     // Validate the linked schema.
     for (ProtoFile protoFile : protoFiles) {
+      Linker linker = withContext(protoFile);
       for (Type type : protoFile.types()) {
-        type.validate(this);
+        type.validate(linker);
       }
       for (Service service : protoFile.services()) {
-        service.validate(this);
+        service.validate(linker);
       }
       for (Extend extend : protoFile.extendList()) {
-        extend.validate(this);
+        extend.validate(linker);
       }
     }
 
@@ -155,16 +159,16 @@ final class Linker {
   }
 
   /** Returns the type name for the scalar, relative or fully-qualified name {@code name}. */
-  WireType resolveType(String packageName, String name) {
-    return resolveType(packageName, name, false);
+  WireType resolveType(String name) {
+    return resolveType(name, false);
   }
 
   /** Returns the type name for the relative or fully-qualified name {@code name}. */
-  WireType resolveNamedType(String packageName, String name) {
-    return resolveType(packageName, name, true);
+  WireType resolveNamedType(String name) {
+    return resolveType(name, true);
   }
 
-  private WireType resolveType(String packageName, String name, boolean namedTypesOnly) {
+  private WireType resolveType(String name, boolean namedTypesOnly) {
     WireType scalar = WireType.getScalar(name);
     if (scalar != null) {
       if (namedTypesOnly) {
@@ -173,34 +177,49 @@ final class Linker {
       return scalar;
     }
 
-    Type fullyQualified = protoTypeNames.get(name);
-    if (fullyQualified != null) return fullyQualified.name();
+    if (name.startsWith(".")) {
+      // If name starts with a '.', the rest of it is fully qualified.
+      Type type = protoTypeNames.get(name.substring(1));
+      if (type != null) return type.name();
+    } else {
+      // We've got a name suffix, like 'Person' or 'protos.Person'. Start the search from with the
+      // longest prefix like foo.bar.Baz.Quux, shortening the prefix until we find a match.
+      String prefix = resolveContext();
+      while (!prefix.isEmpty()) {
+        Type type = protoTypeNames.get(prefix + '.' + name);
+        if (type != null) return type.name();
 
-    if (packageName != null) {
-      Type samePackage = protoTypeNames.get(packageName + "." + name);
-      if (samePackage != null) return samePackage.name();
-    }
-
-    // Look at the enclosing type, and its children, all the way up the nesting hierarchy.
-    for (int i = contextStack.size() - 1; i >= 0; i--) {
-      Object context = contextStack.get(i);
-      if (!(context instanceof Type)) continue;
-
-      Type enclosingType = (Type) context;
-
-      if (name.equals(enclosingType.name().simpleName())) {
-        return enclosingType.name();
+        // Strip the last nested class name or package name from the end and try again.
+        int dot = prefix.lastIndexOf('.');
+        prefix = dot != -1 ? prefix.substring(0, dot) : "";
       }
-
-      for (Type peerType : enclosingType.nestedTypes()) {
-        if (name.equals(peerType.name().simpleName())) {
-          return peerType.name();
-        }
-      }
+      Type type = protoTypeNames.get(name);
+      if (type != null) return type.name();
     }
 
     addError("unable to resolve %s", name);
     return WireType.BYTES; // Just return any placeholder.
+  }
+
+  private String resolveContext() {
+    for (int i = contextStack.size() - 1; i >= 0; i--) {
+      Object context = contextStack.get(i);
+      if (context instanceof Type) {
+        return ((Type) context).name().toString();
+      } else if (context instanceof ProtoFile) {
+        String packageName = ((ProtoFile) context).packageName();
+        return packageName != null ? packageName : "";
+      }
+    }
+    throw new IllegalStateException();
+  }
+
+  /** Returns the current package name from the context stack. */
+  String packageName() {
+    for (Object context : contextStack) {
+      if (context instanceof ProtoFile) return ((ProtoFile) context).packageName();
+    }
+    return null;
   }
 
   /** Returns the type or null if it doesn't exist. */
@@ -215,7 +234,8 @@ final class Linker {
   }
 
   /** Returns the field named {@code field} on the message type of {@code self}. */
-  Field dereference(String packageName, Field self, String field) {
+  Field dereference(Field self, String field) {
+    String packageName = packageName();
     if (field.startsWith("[") && field.endsWith("]")) {
       field = field.substring(1, field.length() - 1);
     }

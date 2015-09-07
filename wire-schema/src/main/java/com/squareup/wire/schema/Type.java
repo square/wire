@@ -36,23 +36,21 @@ public abstract class Type {
   abstract void linkOptions(Linker linker);
   abstract Type retainAll(NavigableSet<String> identifiers);
 
-  static Type get(WireType wireType, TypeElement type) {
+  static Type get(String packageName, WireType wireType, TypeElement type) {
     if (type instanceof EnumElement) {
       EnumElement enumElement = (EnumElement) type;
 
       ImmutableList.Builder<EnumConstant> constants = ImmutableList.builder();
       for (EnumConstantElement constant : enumElement.constants()) {
-        constants.add(new EnumConstant(wireType.packageName(), constant));
+        constants.add(new EnumConstant(constant));
       }
 
-      Options options = new Options(
-          WireType.ENUM_OPTIONS, wireType.packageName(), enumElement.options());
+      Options options = new Options(WireType.ENUM_OPTIONS, enumElement.options());
 
       return new EnumType(wireType, enumElement, constants.build(), options);
 
     } else if (type instanceof MessageElement) {
       MessageElement messageElement = (MessageElement) type;
-      String packageName = wireType.packageName();
 
       ImmutableList.Builder<Field> fields = ImmutableList.builder();
       for (FieldElement field : messageElement.fields()) {
@@ -66,7 +64,7 @@ public abstract class Type {
 
       ImmutableList.Builder<Type> nestedTypes = ImmutableList.builder();
       for (TypeElement nestedType : messageElement.nestedTypes()) {
-        nestedTypes.add(Type.get(wireType.nestedType(nestedType.name()), nestedType));
+        nestedTypes.add(Type.get(packageName, wireType.nestedType(nestedType.name()), nestedType));
       }
 
       ImmutableList.Builder<Extensions> extensionsList = ImmutableList.builder();
@@ -74,8 +72,7 @@ public abstract class Type {
         extensionsList.add(new Extensions(element));
       }
 
-      Options options = new Options(
-          WireType.MESSAGE_OPTIONS, wireType.packageName(), messageElement.options());
+      Options options = new Options(WireType.MESSAGE_OPTIONS, messageElement.options());
 
       return new MessageType(wireType, messageElement, fields.build(), oneOfs.build(),
           nestedTypes.build(), extensionsList.build(), options);

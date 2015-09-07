@@ -20,12 +20,10 @@ import com.squareup.wire.internal.protoparser.FieldElement;
 import com.squareup.wire.internal.protoparser.OneOfElement;
 
 public final class OneOf {
-  private final String packageName;
   private final OneOfElement element;
   private final ImmutableList<Field> fields;
 
   OneOf(String packageName, OneOfElement element) {
-    this.packageName = packageName;
     this.element = element;
 
     ImmutableList.Builder<Field> fields = ImmutableList.builder();
@@ -33,10 +31,6 @@ public final class OneOf {
       fields.add(new Field(packageName, field));
     }
     this.fields = fields.build();
-  }
-
-  public String packageName() {
-    return packageName;
   }
 
   public String name() {

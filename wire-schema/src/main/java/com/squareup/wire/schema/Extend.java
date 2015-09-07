@@ -20,13 +20,11 @@ import com.squareup.wire.internal.protoparser.ExtendElement;
 import com.squareup.wire.internal.protoparser.FieldElement;
 
 public final class Extend {
-  private final String packageName;
   private final ExtendElement element;
   private final ImmutableList<Field> fields;
   private WireType wireType;
 
   Extend(String packageName, ExtendElement element) {
-    this.packageName = packageName;
     this.element = element;
 
     ImmutableList.Builder<Field> fields = ImmutableList.builder();
@@ -38,10 +36,6 @@ public final class Extend {
 
   public Location location() {
     return element.location();
-  }
-
-  public String packageName() {
-    return packageName;
   }
 
   public WireType type() {
@@ -58,7 +52,7 @@ public final class Extend {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    wireType = linker.resolveNamedType(packageName, element.name());
+    wireType = linker.resolveNamedType(element.name());
     for (Field field : fields) {
       field.link(linker);
     }

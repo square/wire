@@ -75,10 +75,6 @@ public final class WireType {
     this.string = (protoPackage != null ? (protoPackage + '.') : "") + Joiner.on('.').join(names);
   }
 
-  public String packageName() {
-    return protoPackage;
-  }
-
   public String simpleName() {
     return names.get(names.size() - 1);
   }
