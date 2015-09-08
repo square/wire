@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.WireType;
 import com.squareup.wire.internal.protoparser.ExtendElement;
 import com.squareup.wire.internal.protoparser.ProtoFileElement;
 import com.squareup.wire.internal.protoparser.ServiceElement;
@@ -58,7 +59,7 @@ public final class ProtoFile {
       wireExtends.add(new Extend(packageName, extend));
     }
 
-    Options options = new Options(WireType.FILE_OPTIONS, protoFileElement.options());
+    Options options = new Options(Options.FILE_OPTIONS, protoFileElement.options());
 
     return new ProtoFile(protoFileElement, types.build(), services.build(),
         wireExtends.build(), options);

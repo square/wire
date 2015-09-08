@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema;
 
+import com.squareup.wire.WireType;
 import com.squareup.wire.internal.protoparser.FieldElement;
 
 public final class Field {
@@ -26,7 +27,7 @@ public final class Field {
   Field(String packageName, FieldElement element) {
     this.packageName = packageName;
     this.element = element;
-    this.options = new Options(WireType.FIELD_OPTIONS, element.options());
+    this.options = new Options(Options.FIELD_OPTIONS, element.options());
   }
 
   public Location location() {

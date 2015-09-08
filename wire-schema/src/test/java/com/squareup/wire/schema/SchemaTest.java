@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.schema;
 
+import com.squareup.wire.WireType;
 import com.squareup.wire.internal.Util;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -821,10 +821,10 @@ public final class SchemaTest {
             + "}\n")
         .build();
     MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
-    assertThat(messageC.field("c1").type()).isEqualTo(WireType.get("a.b", "MessageC"));
-    assertThat(messageC.field("c2").type()).isEqualTo(WireType.get("a.b", "MessageC"));
-    assertThat(messageC.field("c3").type()).isEqualTo(WireType.get("a.b", "MessageC"));
-    assertThat(messageC.field("c4").type()).isEqualTo(WireType.get("a.b", "MessageC"));
+    assertThat(messageC.field("c1").type()).isEqualTo(WireType.get("a.b.MessageC"));
+    assertThat(messageC.field("c2").type()).isEqualTo(WireType.get("a.b.MessageC"));
+    assertThat(messageC.field("c3").type()).isEqualTo(WireType.get("a.b.MessageC"));
+    assertThat(messageC.field("c4").type()).isEqualTo(WireType.get("a.b.MessageC"));
   }
 
   @Test public void importResolvesEnclosingPackageSuffix() throws Exception {
@@ -844,7 +844,7 @@ public final class SchemaTest {
             + "}\n")
         .build();
     MessageType messageC = (MessageType) schema.getType("a.b.c.MessageC");
-    assertThat(messageC.field("message_b").type()).isEqualTo(WireType.get("a.b", "MessageB"));
+    assertThat(messageC.field("message_b").type()).isEqualTo(WireType.get("a.b.MessageB"));
   }
 
   @Test public void importResolvesNestedPackageSuffix() throws Exception {
@@ -864,7 +864,7 @@ public final class SchemaTest {
             + "}\n")
         .build();
     MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
-    assertThat(messageC.field("message_c").type()).isEqualTo(WireType.get("a.b.c", "MessageC"));
+    assertThat(messageC.field("message_c").type()).isEqualTo(WireType.get("a.b.c.MessageC"));
   }
 
   @Test public void nestedPackagePreferredOverEnclosingPackage() throws Exception {
@@ -890,7 +890,7 @@ public final class SchemaTest {
             + "}\n")
         .build();
     MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
-    assertThat(messageC.field("message_a").type()).isEqualTo(WireType.get("a.b.a", "MessageA"));
+    assertThat(messageC.field("message_a").type()).isEqualTo(WireType.get("a.b.a.MessageA"));
   }
 
   @Test public void dotPrefixRefersToRootPackage() throws Exception {
@@ -916,7 +916,7 @@ public final class SchemaTest {
             + "}\n")
         .build();
     MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
-    assertThat(messageC.field("message_a").type()).isEqualTo(WireType.get("a", "MessageA"));
+    assertThat(messageC.field("message_a").type()).isEqualTo(WireType.get("a.MessageA"));
   }
 
   @Test public void dotPrefixMustBeRoot() throws Exception {

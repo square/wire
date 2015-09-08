@@ -19,7 +19,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.schema.WireType;
+import com.squareup.wire.WireType;
 import com.squareup.wire.schema.Rpc;
 import com.squareup.wire.schema.Service;
 import java.io.IOException;

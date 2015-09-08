@@ -23,7 +23,7 @@ public final class EnumConstant {
 
   EnumConstant(EnumConstantElement element) {
     this.element = element;
-    this.options = new Options(WireType.ENUM_VALUE_OPTIONS, element.options());
+    this.options = new Options(Options.ENUM_VALUE_OPTIONS, element.options());
   }
 
   public Location location() {

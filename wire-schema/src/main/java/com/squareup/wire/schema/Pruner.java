@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.WireType;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
@@ -104,13 +105,13 @@ final class Pruner {
         throw new IllegalArgumentException("Unexpected member: " + root);
 
       } else {
-        if (WireType.getScalar(root) != null) {
+        if (WireType.get(root).isScalar()) {
           continue; // Skip scalar types.
         }
 
         Type type = schema.getType(root);
         if (type != null) {
-          markType(type);
+          markType(schema, type);
           continue;
         }
 
@@ -155,12 +156,13 @@ final class Pruner {
     markFields(extend.fields());
   }
 
-  private void markType(Type type) {
+  private void markType(Schema schema, Type type) {
     markOptions(type.options());
 
-    WireType enclosingType = type.name().enclosingType();
+    String enclosingTypeOrPackage = type.name().enclosingTypeOrPackage();
+    Type enclosingType = schema.getType(enclosingTypeOrPackage);
     if (enclosingType != null) {
-      mark(enclosingType);
+      mark(enclosingTypeOrPackage);
     }
 
     if (!hasMarkedMember(marks, type.name())) {
