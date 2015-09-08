@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import okio.ByteString;
 
-import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
 import static java.util.Collections.unmodifiableMap;
 
@@ -90,7 +89,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
         continue;
       }
       out.name(tagBinding.name);
-      emitJson(out, value, tagBinding.datatype, tagBinding.label);
+      emitJson(out, value, tagBinding.type, tagBinding.label);
     }
 
     TagMap tagMap = message.tagMap();
@@ -102,39 +101,34 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
 
           out.name(Integer.toString(extension.getTag()));
           out.beginArray();
-          switch (extension.getDatatype()) {
-            case UINT64:
-              out.value("varint");
-              for (Object o : values) {
-                out.value((Long) o);
-              }
-              break;
-            case FIXED32:
-              out.value("fixed32");
-              for (Object o : values) {
-                out.value((Integer) o);
-              }
-              break;
-            case FIXED64:
-              out.value("fixed64");
-              for (Object o : values) {
-                out.value((Long) o);
-              }
-              break;
-            case BYTES:
-              out.value("length-delimited");
-              for (Object o : values) {
-                out.value(((ByteString) o).base64());
-              }
-              break;
-            default:
-              throw new AssertionError("Unknown wire type " + extension.getDatatype());
+          if (extension.getType() == WireType.UINT64) {
+            out.value("varint");
+            for (Object o : values) {
+              out.value((Long) o);
+            }
+          } else if (extension.getType() == WireType.FIXED32) {
+            out.value("fixed32");
+            for (Object o : values) {
+              out.value((Integer) o);
+            }
+          } else if (extension.getType() == WireType.FIXED64) {
+            out.value("fixed64");
+            for (Object o : values) {
+              out.value((Long) o);
+            }
+          } else if (extension.getType() == WireType.BYTES) {
+            out.value("length-delimited");
+            for (Object o : values) {
+              out.value(((ByteString) o).base64());
+            }
+          } else {
+            throw new AssertionError("Unknown wire type " + extension.getType());
           }
           out.endArray();
         } else {
           Object value = tagMap.get(extension);
           out.name(extension.getName());
-          emitJson(out, value, extension.getDatatype(), extension.getLabel());
+          emitJson(out, value, extension.getType(), extension.getLabel());
         }
       }
     }
@@ -143,9 +137,9 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
   }
 
   @SuppressWarnings("unchecked")
-  private void emitJson(JsonWriter out, Object value, Datatype datatype, Label label)
+  private void emitJson(JsonWriter out, Object value, WireType type, Label label)
       throws IOException {
-    if (datatype == Datatype.UINT64) {
+    if (type == WireType.UINT64) {
       if (label.isRepeated()) {
         List<Long> longs = (List<Long>) value;
         out.beginArray();

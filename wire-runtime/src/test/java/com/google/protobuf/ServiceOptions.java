@@ -21,6 +21,7 @@ public final class ServiceOptions extends Message<ServiceOptions> {
    */
   @ProtoField(
       tag = 999,
+      type = "google.protobuf.UninterpretedOption",
       label = Message.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;

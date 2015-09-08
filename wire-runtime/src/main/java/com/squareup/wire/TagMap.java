@@ -170,7 +170,7 @@ final class TagMap {
     int runEnd = runStart + 1;
     while (runEnd < size
         && extensions[runEnd].getTag() == extension.getTag()
-        && extensions[runEnd].getDatatype() == extension.getDatatype()) {
+        && extensions[runEnd].getType().equals(extension.getType())) {
       runEnd++;
     }
     return runEnd;
@@ -201,7 +201,7 @@ final class TagMap {
   private void transcode(List<Object> list, Extension<?, ?> sourceExtension,
       Object value, Extension<?, ?> targetExtension) {
     // If the adapter we're expecting has already been applied, we're done.
-    if (sourceExtension.getDatatype() == targetExtension.getDatatype()) {
+    if (sourceExtension.getType().equals(targetExtension.getType())) {
       list.add(value);
       return;
     }
@@ -262,7 +262,7 @@ final class TagMap {
 
   @SuppressWarnings("unchecked") // Caller beware! Assumes the extension and value match at runtime.
   private WireAdapter<Object> adapter(Extension<?, ?> extension) {
-    return (WireAdapter<Object>) WireAdapter.get(Message.WIRE, extension.getDatatype(),
+    return (WireAdapter<Object>) WireAdapter.get(Message.WIRE, extension.getType(),
         extension.getMessageType(), extension.getEnumType());
   }
 

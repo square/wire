@@ -46,7 +46,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
   public final Message.Label label;
   public final String name;
   public final int tag;
-  public final Message.Datatype datatype;
+  public final WireType type;
   public final boolean redacted;
   public final WireAdapter<?> singleAdapter;
   public final WireAdapter<?> adapter;
@@ -60,7 +60,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
     this.label = protoField.label();
     this.name = messageField.getName();
     this.tag = protoField.tag();
-    this.datatype = protoField.type();
+    this.type = WireType.get(protoField.type());
     this.redacted = protoField.redacted();
     this.singleAdapter = singleAdapter;
     this.adapter = singleAdapter.withLabel(label);

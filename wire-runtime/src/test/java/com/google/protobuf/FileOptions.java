@@ -66,7 +66,7 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String java_package;
 
@@ -79,7 +79,7 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @ProtoField(
       tag = 8,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String java_outer_classname;
 
@@ -93,7 +93,7 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @ProtoField(
       tag = 10,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean java_multiple_files;
 
@@ -105,13 +105,13 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @ProtoField(
       tag = 20,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean java_generate_equals_and_hash;
 
   @ProtoField(
       tag = 9,
-      type = Message.Datatype.ENUM
+      type = "google.protobuf.FileOptions.OptimizeMode"
   )
   public final OptimizeMode optimize_for;
 
@@ -129,19 +129,19 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @ProtoField(
       tag = 16,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean cc_generic_services;
 
   @ProtoField(
       tag = 17,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean java_generic_services;
 
   @ProtoField(
       tag = 18,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean py_generic_services;
 
@@ -150,6 +150,7 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @ProtoField(
       tag = 999,
+      type = "google.protobuf.UninterpretedOption",
       label = Message.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;

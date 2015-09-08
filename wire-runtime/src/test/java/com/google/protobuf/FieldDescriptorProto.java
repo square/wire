@@ -34,7 +34,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String name;
 
@@ -43,19 +43,19 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @ProtoField(
       tag = 9,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String doc;
 
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer number;
 
   @ProtoField(
       tag = 4,
-      type = Message.Datatype.ENUM
+      type = "google.protobuf.FieldDescriptorProto.Label"
   )
   public final Label label;
 
@@ -65,7 +65,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @ProtoField(
       tag = 5,
-      type = Message.Datatype.ENUM
+      type = "google.protobuf.FieldDescriptorProto.Type"
   )
   public final Type type;
 
@@ -78,7 +78,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @ProtoField(
       tag = 6,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String type_name;
 
@@ -88,7 +88,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String extendee;
 
@@ -101,12 +101,13 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @ProtoField(
       tag = 7,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String default_value;
 
   @ProtoField(
-      tag = 8
+      tag = 8,
+      type = "google.protobuf.FieldOptions"
   )
   public final FieldOptions options;
 

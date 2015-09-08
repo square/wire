@@ -44,7 +44,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer optional_int32;
 
@@ -53,6 +53,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 2,
+      type = "squareup.protos.simple.SimpleMessage.NestedMessage",
       deprecated = true
   )
   @Deprecated
@@ -62,13 +63,14 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    * An optional ExternalMessage
    */
   @ProtoField(
-      tag = 3
+      tag = 3,
+      type = "squareup.protos.simple.ExternalMessage"
   )
   public final ExternalMessage optional_external_msg;
 
   @ProtoField(
       tag = 4,
-      type = Message.Datatype.ENUM
+      type = "squareup.protos.simple.SimpleMessage.NestedEnum"
   )
   public final NestedEnum default_nested_enum;
 
@@ -77,7 +79,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 5,
-      type = Message.Datatype.INT32,
+      type = "int32",
       label = Message.Label.REQUIRED
   )
   public final Integer required_int32;
@@ -87,7 +89,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 6,
-      type = Message.Datatype.DOUBLE,
+      type = "double",
       label = Message.Label.REPEATED,
       deprecated = true
   )
@@ -99,7 +101,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 7,
-      type = Message.Datatype.ENUM
+      type = "squareup.protos.foreign.ForeignEnum"
   )
   public final ForeignEnum default_foreign_enum;
 
@@ -108,7 +110,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 8,
-      type = Message.Datatype.ENUM
+      type = "squareup.protos.foreign.ForeignEnum"
   )
   public final ForeignEnum no_default_foreign_enum;
 
@@ -117,7 +119,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 9,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String _package;
 
@@ -126,7 +128,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 10,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String result;
 
@@ -135,7 +137,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 11,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String other;
 
@@ -144,7 +146,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @ProtoField(
       tag = 12,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String o;
 
@@ -367,7 +369,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
      */
     @ProtoField(
         tag = 1,
-        type = Message.Datatype.INT32
+        type = "int32"
     )
     public final Integer bb;
 

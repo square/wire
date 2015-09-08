@@ -12,7 +12,8 @@ public final class Foo extends Message<Foo> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
-      tag = 1
+      tag = 1,
+      type = "squareup.foobar.Bar.Baz.Moo"
   )
   public final Bar.Baz.Moo moo;
 

@@ -17,7 +17,7 @@ public final class Ext_custom_options {
       .buildOptional();
 
   public static final Extension<EnumValueOptions, FooBar.More> complex_enum_value_option = Extension
-      .messageExtending(FooBar.More.class, EnumValueOptions.class)
+      .messageExtending("squareup.protos.custom_options.FooBar.More", FooBar.More.class, EnumValueOptions.class)
       .setName("squareup.protos.custom_options.complex_enum_value_option")
       .setTag(70001)
       .buildOptional();
@@ -29,13 +29,13 @@ public final class Ext_custom_options {
       .buildOptional();
 
   public static final Extension<FooBar, FooBar.FooBarBazEnum> ext = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)
+      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, FooBar.class)
       .setName("squareup.protos.custom_options.ext")
       .setTag(101)
       .buildOptional();
 
   public static final Extension<FooBar, List<FooBar.FooBarBazEnum>> rep = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)
+      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, FooBar.class)
       .setName("squareup.protos.custom_options.rep")
       .setTag(102)
       .buildRepeated();

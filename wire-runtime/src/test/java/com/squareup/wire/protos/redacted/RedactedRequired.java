@@ -20,7 +20,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING,
+      type = "string",
       label = Message.Label.REQUIRED,
       redacted = true
   )

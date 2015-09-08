@@ -83,7 +83,7 @@ public final class Bar extends Message<Bar> {
 
       @ProtoField(
           tag = 1,
-          type = Message.Datatype.STRING
+          type = "string"
       )
       public final String boo;
 

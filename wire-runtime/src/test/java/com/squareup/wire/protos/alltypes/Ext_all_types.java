@@ -104,13 +104,13 @@ public final class Ext_all_types {
       .buildOptional();
 
   public static final Extension<AllTypes, AllTypes.NestedEnum> ext_opt_nested_enum = Extension
-      .enumExtending(AllTypes.NestedEnum.class, AllTypes.class)
+      .enumExtending("squareup.protos.alltypes.AllTypes.NestedEnum", AllTypes.NestedEnum.class, AllTypes.class)
       .setName("squareup.protos.alltypes.ext_opt_nested_enum")
       .setTag(1016)
       .buildOptional();
 
   public static final Extension<AllTypes, AllTypes.NestedMessage> ext_opt_nested_message = Extension
-      .messageExtending(AllTypes.NestedMessage.class, AllTypes.class)
+      .messageExtending("squareup.protos.alltypes.AllTypes.NestedMessage", AllTypes.NestedMessage.class, AllTypes.class)
       .setName("squareup.protos.alltypes.ext_opt_nested_message")
       .setTag(1017)
       .buildOptional();
@@ -206,13 +206,13 @@ public final class Ext_all_types {
       .buildRepeated();
 
   public static final Extension<AllTypes, List<AllTypes.NestedEnum>> ext_rep_nested_enum = Extension
-      .enumExtending(AllTypes.NestedEnum.class, AllTypes.class)
+      .enumExtending("squareup.protos.alltypes.AllTypes.NestedEnum", AllTypes.NestedEnum.class, AllTypes.class)
       .setName("squareup.protos.alltypes.ext_rep_nested_enum")
       .setTag(1116)
       .buildRepeated();
 
   public static final Extension<AllTypes, List<AllTypes.NestedMessage>> ext_rep_nested_message = Extension
-      .messageExtending(AllTypes.NestedMessage.class, AllTypes.class)
+      .messageExtending("squareup.protos.alltypes.AllTypes.NestedMessage", AllTypes.NestedMessage.class, AllTypes.class)
       .setName("squareup.protos.alltypes.ext_rep_nested_message")
       .setTag(1117)
       .buildRepeated();
@@ -296,7 +296,7 @@ public final class Ext_all_types {
       .buildPacked();
 
   public static final Extension<AllTypes, List<AllTypes.NestedEnum>> ext_pack_nested_enum = Extension
-      .enumExtending(AllTypes.NestedEnum.class, AllTypes.class)
+      .enumExtending("squareup.protos.alltypes.AllTypes.NestedEnum", AllTypes.NestedEnum.class, AllTypes.class)
       .setName("squareup.protos.alltypes.ext_pack_nested_enum")
       .setTag(1216)
       .buildPacked();

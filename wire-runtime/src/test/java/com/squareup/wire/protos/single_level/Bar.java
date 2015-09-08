@@ -15,7 +15,7 @@ public final class Bar extends Message<Bar> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer baz;
 

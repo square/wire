@@ -119,532 +119,535 @@ public final class AllTypes extends Message<AllTypes> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer opt_int32;
 
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.UINT32
+      type = "uint32"
   )
   public final Integer opt_uint32;
 
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.SINT32
+      type = "sint32"
   )
   public final Integer opt_sint32;
 
   @ProtoField(
       tag = 4,
-      type = Message.Datatype.FIXED32
+      type = "fixed32"
   )
   public final Integer opt_fixed32;
 
   @ProtoField(
       tag = 5,
-      type = Message.Datatype.SFIXED32
+      type = "sfixed32"
   )
   public final Integer opt_sfixed32;
 
   @ProtoField(
       tag = 6,
-      type = Message.Datatype.INT64
+      type = "int64"
   )
   public final Long opt_int64;
 
   @ProtoField(
       tag = 7,
-      type = Message.Datatype.UINT64
+      type = "uint64"
   )
   public final Long opt_uint64;
 
   @ProtoField(
       tag = 8,
-      type = Message.Datatype.SINT64
+      type = "sint64"
   )
   public final Long opt_sint64;
 
   @ProtoField(
       tag = 9,
-      type = Message.Datatype.FIXED64
+      type = "fixed64"
   )
   public final Long opt_fixed64;
 
   @ProtoField(
       tag = 10,
-      type = Message.Datatype.SFIXED64
+      type = "sfixed64"
   )
   public final Long opt_sfixed64;
 
   @ProtoField(
       tag = 11,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean opt_bool;
 
   @ProtoField(
       tag = 12,
-      type = Message.Datatype.FLOAT
+      type = "float"
   )
   public final Float opt_float;
 
   @ProtoField(
       tag = 13,
-      type = Message.Datatype.DOUBLE
+      type = "double"
   )
   public final Double opt_double;
 
   @ProtoField(
       tag = 14,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String opt_string;
 
   @ProtoField(
       tag = 15,
-      type = Message.Datatype.BYTES
+      type = "bytes"
   )
   public final ByteString opt_bytes;
 
   @ProtoField(
       tag = 16,
-      type = Message.Datatype.ENUM
+      type = "squareup.protos.alltypes.AllTypes.NestedEnum"
   )
   public final NestedEnum opt_nested_enum;
 
   @ProtoField(
-      tag = 17
+      tag = 17,
+      type = "squareup.protos.alltypes.AllTypes.NestedMessage"
   )
   public final NestedMessage opt_nested_message;
 
   @ProtoField(
       tag = 101,
-      type = Message.Datatype.INT32,
+      type = "int32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_int32;
 
   @ProtoField(
       tag = 102,
-      type = Message.Datatype.UINT32,
+      type = "uint32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_uint32;
 
   @ProtoField(
       tag = 103,
-      type = Message.Datatype.SINT32,
+      type = "sint32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_sint32;
 
   @ProtoField(
       tag = 104,
-      type = Message.Datatype.FIXED32,
+      type = "fixed32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_fixed32;
 
   @ProtoField(
       tag = 105,
-      type = Message.Datatype.SFIXED32,
+      type = "sfixed32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_sfixed32;
 
   @ProtoField(
       tag = 106,
-      type = Message.Datatype.INT64,
+      type = "int64",
       label = Message.Label.REQUIRED
   )
   public final Long req_int64;
 
   @ProtoField(
       tag = 107,
-      type = Message.Datatype.UINT64,
+      type = "uint64",
       label = Message.Label.REQUIRED
   )
   public final Long req_uint64;
 
   @ProtoField(
       tag = 108,
-      type = Message.Datatype.SINT64,
+      type = "sint64",
       label = Message.Label.REQUIRED
   )
   public final Long req_sint64;
 
   @ProtoField(
       tag = 109,
-      type = Message.Datatype.FIXED64,
+      type = "fixed64",
       label = Message.Label.REQUIRED
   )
   public final Long req_fixed64;
 
   @ProtoField(
       tag = 110,
-      type = Message.Datatype.SFIXED64,
+      type = "sfixed64",
       label = Message.Label.REQUIRED
   )
   public final Long req_sfixed64;
 
   @ProtoField(
       tag = 111,
-      type = Message.Datatype.BOOL,
+      type = "bool",
       label = Message.Label.REQUIRED
   )
   public final Boolean req_bool;
 
   @ProtoField(
       tag = 112,
-      type = Message.Datatype.FLOAT,
+      type = "float",
       label = Message.Label.REQUIRED
   )
   public final Float req_float;
 
   @ProtoField(
       tag = 113,
-      type = Message.Datatype.DOUBLE,
+      type = "double",
       label = Message.Label.REQUIRED
   )
   public final Double req_double;
 
   @ProtoField(
       tag = 114,
-      type = Message.Datatype.STRING,
+      type = "string",
       label = Message.Label.REQUIRED
   )
   public final String req_string;
 
   @ProtoField(
       tag = 115,
-      type = Message.Datatype.BYTES,
+      type = "bytes",
       label = Message.Label.REQUIRED
   )
   public final ByteString req_bytes;
 
   @ProtoField(
       tag = 116,
-      type = Message.Datatype.ENUM,
+      type = "squareup.protos.alltypes.AllTypes.NestedEnum",
       label = Message.Label.REQUIRED
   )
   public final NestedEnum req_nested_enum;
 
   @ProtoField(
       tag = 117,
+      type = "squareup.protos.alltypes.AllTypes.NestedMessage",
       label = Message.Label.REQUIRED
   )
   public final NestedMessage req_nested_message;
 
   @ProtoField(
       tag = 201,
-      type = Message.Datatype.INT32,
+      type = "int32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_int32;
 
   @ProtoField(
       tag = 202,
-      type = Message.Datatype.UINT32,
+      type = "uint32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_uint32;
 
   @ProtoField(
       tag = 203,
-      type = Message.Datatype.SINT32,
+      type = "sint32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_sint32;
 
   @ProtoField(
       tag = 204,
-      type = Message.Datatype.FIXED32,
+      type = "fixed32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_fixed32;
 
   @ProtoField(
       tag = 205,
-      type = Message.Datatype.SFIXED32,
+      type = "sfixed32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_sfixed32;
 
   @ProtoField(
       tag = 206,
-      type = Message.Datatype.INT64,
+      type = "int64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_int64;
 
   @ProtoField(
       tag = 207,
-      type = Message.Datatype.UINT64,
+      type = "uint64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_uint64;
 
   @ProtoField(
       tag = 208,
-      type = Message.Datatype.SINT64,
+      type = "sint64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_sint64;
 
   @ProtoField(
       tag = 209,
-      type = Message.Datatype.FIXED64,
+      type = "fixed64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_fixed64;
 
   @ProtoField(
       tag = 210,
-      type = Message.Datatype.SFIXED64,
+      type = "sfixed64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_sfixed64;
 
   @ProtoField(
       tag = 211,
-      type = Message.Datatype.BOOL,
+      type = "bool",
       label = Message.Label.REPEATED
   )
   public final List<Boolean> rep_bool;
 
   @ProtoField(
       tag = 212,
-      type = Message.Datatype.FLOAT,
+      type = "float",
       label = Message.Label.REPEATED
   )
   public final List<Float> rep_float;
 
   @ProtoField(
       tag = 213,
-      type = Message.Datatype.DOUBLE,
+      type = "double",
       label = Message.Label.REPEATED
   )
   public final List<Double> rep_double;
 
   @ProtoField(
       tag = 214,
-      type = Message.Datatype.STRING,
+      type = "string",
       label = Message.Label.REPEATED
   )
   public final List<String> rep_string;
 
   @ProtoField(
       tag = 215,
-      type = Message.Datatype.BYTES,
+      type = "bytes",
       label = Message.Label.REPEATED
   )
   public final List<ByteString> rep_bytes;
 
   @ProtoField(
       tag = 216,
-      type = Message.Datatype.ENUM,
+      type = "squareup.protos.alltypes.AllTypes.NestedEnum",
       label = Message.Label.REPEATED
   )
   public final List<NestedEnum> rep_nested_enum;
 
   @ProtoField(
       tag = 217,
+      type = "squareup.protos.alltypes.AllTypes.NestedMessage",
       label = Message.Label.REPEATED
   )
   public final List<NestedMessage> rep_nested_message;
 
   @ProtoField(
       tag = 301,
-      type = Message.Datatype.INT32,
+      type = "int32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_int32;
 
   @ProtoField(
       tag = 302,
-      type = Message.Datatype.UINT32,
+      type = "uint32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_uint32;
 
   @ProtoField(
       tag = 303,
-      type = Message.Datatype.SINT32,
+      type = "sint32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_sint32;
 
   @ProtoField(
       tag = 304,
-      type = Message.Datatype.FIXED32,
+      type = "fixed32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_fixed32;
 
   @ProtoField(
       tag = 305,
-      type = Message.Datatype.SFIXED32,
+      type = "sfixed32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_sfixed32;
 
   @ProtoField(
       tag = 306,
-      type = Message.Datatype.INT64,
+      type = "int64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_int64;
 
   @ProtoField(
       tag = 307,
-      type = Message.Datatype.UINT64,
+      type = "uint64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_uint64;
 
   @ProtoField(
       tag = 308,
-      type = Message.Datatype.SINT64,
+      type = "sint64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_sint64;
 
   @ProtoField(
       tag = 309,
-      type = Message.Datatype.FIXED64,
+      type = "fixed64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_fixed64;
 
   @ProtoField(
       tag = 310,
-      type = Message.Datatype.SFIXED64,
+      type = "sfixed64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_sfixed64;
 
   @ProtoField(
       tag = 311,
-      type = Message.Datatype.BOOL,
+      type = "bool",
       label = Message.Label.PACKED
   )
   public final List<Boolean> pack_bool;
 
   @ProtoField(
       tag = 312,
-      type = Message.Datatype.FLOAT,
+      type = "float",
       label = Message.Label.PACKED
   )
   public final List<Float> pack_float;
 
   @ProtoField(
       tag = 313,
-      type = Message.Datatype.DOUBLE,
+      type = "double",
       label = Message.Label.PACKED
   )
   public final List<Double> pack_double;
 
   @ProtoField(
       tag = 316,
-      type = Message.Datatype.ENUM,
+      type = "squareup.protos.alltypes.AllTypes.NestedEnum",
       label = Message.Label.PACKED
   )
   public final List<NestedEnum> pack_nested_enum;
 
   @ProtoField(
       tag = 401,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer default_int32;
 
   @ProtoField(
       tag = 402,
-      type = Message.Datatype.UINT32
+      type = "uint32"
   )
   public final Integer default_uint32;
 
   @ProtoField(
       tag = 403,
-      type = Message.Datatype.SINT32
+      type = "sint32"
   )
   public final Integer default_sint32;
 
   @ProtoField(
       tag = 404,
-      type = Message.Datatype.FIXED32
+      type = "fixed32"
   )
   public final Integer default_fixed32;
 
   @ProtoField(
       tag = 405,
-      type = Message.Datatype.SFIXED32
+      type = "sfixed32"
   )
   public final Integer default_sfixed32;
 
   @ProtoField(
       tag = 406,
-      type = Message.Datatype.INT64
+      type = "int64"
   )
   public final Long default_int64;
 
   @ProtoField(
       tag = 407,
-      type = Message.Datatype.UINT64
+      type = "uint64"
   )
   public final Long default_uint64;
 
   @ProtoField(
       tag = 408,
-      type = Message.Datatype.SINT64
+      type = "sint64"
   )
   public final Long default_sint64;
 
   @ProtoField(
       tag = 409,
-      type = Message.Datatype.FIXED64
+      type = "fixed64"
   )
   public final Long default_fixed64;
 
   @ProtoField(
       tag = 410,
-      type = Message.Datatype.SFIXED64
+      type = "sfixed64"
   )
   public final Long default_sfixed64;
 
   @ProtoField(
       tag = 411,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean default_bool;
 
   @ProtoField(
       tag = 412,
-      type = Message.Datatype.FLOAT
+      type = "float"
   )
   public final Float default_float;
 
   @ProtoField(
       tag = 413,
-      type = Message.Datatype.DOUBLE
+      type = "double"
   )
   public final Double default_double;
 
   @ProtoField(
       tag = 414,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String default_string;
 
   @ProtoField(
       tag = 415,
-      type = Message.Datatype.BYTES
+      type = "bytes"
   )
   public final ByteString default_bytes;
 
   @ProtoField(
       tag = 416,
-      type = Message.Datatype.ENUM
+      type = "squareup.protos.alltypes.AllTypes.NestedEnum"
   )
   public final NestedEnum default_nested_enum;
 
@@ -1637,7 +1640,7 @@ public final class AllTypes extends Message<AllTypes> {
 
     @ProtoField(
         tag = 1,
-        type = Message.Datatype.INT32
+        type = "int32"
     )
     public final Integer a;
 

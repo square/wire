@@ -225,15 +225,17 @@ public class WireTest {
   @Test
   public void extensionToString() {
     assertThat(Ext_simple_message.fooext.toString()).isEqualTo(
-        "[REPEATED INT32 squareup.protos.simple.fooext = 125]");
+        "[REPEATED int32 squareup.protos.simple.fooext = 125]");
     assertThat(Ext_simple_message.barext.toString()).isEqualTo(
-        "[OPTIONAL INT32 squareup.protos.simple.barext = 126]");
+        "[OPTIONAL int32 squareup.protos.simple.barext = 126]");
     assertThat(Ext_simple_message.bazext.toString()).isEqualTo(
-        "[OPTIONAL INT32 squareup.protos.simple.bazext = 127]");
+        "[OPTIONAL int32 squareup.protos.simple.bazext = 127]");
     assertThat(Ext_simple_message.nested_message_ext.toString()).isEqualTo(
-        "[OPTIONAL MESSAGE squareup.protos.simple.nested_message_ext = 128]");
+        "[OPTIONAL squareup.protos.simple.SimpleMessage.NestedMessage "
+            + "squareup.protos.simple.nested_message_ext = 128]");
     assertThat(Ext_simple_message.nested_enum_ext.toString()).isEqualTo(
-        "[OPTIONAL ENUM squareup.protos.simple.nested_enum_ext = 129]");
+        "[OPTIONAL squareup.protos.simple.SimpleMessage.NestedEnum"
+            + " squareup.protos.simple.nested_enum_ext = 129]");
   }
 
   @Test

@@ -14,7 +14,7 @@ public final class Ext_redacted_test {
       .buildOptional();
 
   public static final Extension<Redacted, RedactedExtension> extension = Extension
-      .messageExtending(RedactedExtension.class, Redacted.class)
+      .messageExtending("squareup.protos.redacted_test.RedactedExtension", RedactedExtension.class, Redacted.class)
       .setName("squareup.protos.redacted_test.extension")
       .setTag(10)
       .buildOptional();

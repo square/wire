@@ -15,7 +15,7 @@ public final class ChildPackage extends Message<ChildPackage> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.ENUM
+      type = "squareup.protos.foreign.ForeignEnum"
   )
   public final ForeignEnum inner_foreign_enum;
 

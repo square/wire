@@ -21,7 +21,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
    */
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer foo;
 
@@ -30,7 +30,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
    */
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String bar;
 

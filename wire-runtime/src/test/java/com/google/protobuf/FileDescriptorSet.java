@@ -18,6 +18,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
 
   @ProtoField(
       tag = 1,
+      type = "google.protobuf.FileDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<FileDescriptorProto> file;

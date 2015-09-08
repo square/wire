@@ -33,11 +33,11 @@ public @interface ProtoField {
   int tag();
 
   /**
-   * The field's protocol buffer datatype, e.g., {@code Datatype#INT32},
-   * {@code Datatype#MESSAGE}, or {@code Datatype#ENUM}. Defaults to
-   * {@code Datatype#MESSAGE}.
+   * The field's protocol buffer data type. This is either a scalar (like {@code int32} or {@code
+   * string}), a message type (like {@code squareup.protos.Person}), or an enum type (like {@code
+   * squareup.protos.CurrencyCode}).
    */
-  Message.Datatype type() default Message.Datatype.MESSAGE;
+  String type();
 
   /**
    * The field's protocol buffer label, one of {@link Label#OPTIONAL},

@@ -25,7 +25,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String name;
 
@@ -34,7 +34,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String _package;
 
@@ -43,7 +43,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.STRING,
+      type = "string",
       label = Message.Label.REPEATED
   )
   public final List<String> dependency;
@@ -53,30 +53,35 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @ProtoField(
       tag = 4,
+      type = "google.protobuf.DescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<DescriptorProto> message_type;
 
   @ProtoField(
       tag = 5,
+      type = "google.protobuf.EnumDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @ProtoField(
       tag = 6,
+      type = "google.protobuf.ServiceDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<ServiceDescriptorProto> service;
 
   @ProtoField(
       tag = 7,
+      type = "google.protobuf.FieldDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 
   @ProtoField(
-      tag = 8
+      tag = 8,
+      type = "google.protobuf.FileOptions"
   )
   public final FileOptions options;
 
@@ -87,7 +92,8 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    * development tools.
    */
   @ProtoField(
-      tag = 9
+      tag = 9,
+      type = "google.protobuf.SourceCodeInfo"
   )
   public final SourceCodeInfo source_code_info;
 

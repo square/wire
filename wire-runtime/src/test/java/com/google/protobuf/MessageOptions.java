@@ -39,7 +39,7 @@ public final class MessageOptions extends Message<MessageOptions> {
    */
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean message_set_wire_format;
 
@@ -50,7 +50,7 @@ public final class MessageOptions extends Message<MessageOptions> {
    */
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean no_standard_descriptor_accessor;
 
@@ -59,6 +59,7 @@ public final class MessageOptions extends Message<MessageOptions> {
    */
   @ProtoField(
       tag = 999,
+      type = "google.protobuf.UninterpretedOption",
       label = Message.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;

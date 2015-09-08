@@ -14,13 +14,14 @@ public final class E extends Message<E> {
   public static final G DEFAULT_G = G.FOO;
 
   @ProtoField(
-      tag = 1
+      tag = 1,
+      type = "squareup.protos.roots.E.F"
   )
   public final F f;
 
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.ENUM
+      type = "squareup.protos.roots.G"
   )
   public final G g;
 
@@ -92,7 +93,7 @@ public final class E extends Message<E> {
 
     @ProtoField(
         tag = 1,
-        type = Message.Datatype.INT32
+        type = "int32"
     )
     public final Integer i;
 

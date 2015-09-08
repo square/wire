@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -51,28 +53,13 @@ public abstract class WireAdapter<E> {
     this.javaType = javaType;
   }
 
-  static WireAdapter<?> get(Wire wire, Message.Datatype datatype,
+  static WireAdapter<?> get(Wire wire, WireType type,
       Class<? extends Message> messageType, Class<? extends ProtoEnum> enumType) {
-    switch (datatype) {
-      case BOOL: return BOOL;
-      case BYTES: return WireAdapter.BYTES;
-      case DOUBLE: return DOUBLE;
-      case ENUM: return wire.enumAdapter(enumType);
-      case FIXED32: return WireAdapter.FIXED32;
-      case FIXED64: return WireAdapter.FIXED64;
-      case FLOAT: return FLOAT;
-      case INT32: return INT32;
-      case INT64: return INT64;
-      case MESSAGE: return wire.adapter(messageType);
-      case SFIXED32: return SFIXED32;
-      case SFIXED64: return SFIXED64;
-      case SINT32: return SINT32;
-      case SINT64: return SINT64;
-      case STRING: return STRING;
-      case UINT32: return UINT32;
-      case UINT64: return WireAdapter.UINT64;
-      default: throw new AssertionError("Unknown data type " + datatype);
-    }
+    WireAdapter<?> result = TYPE_TO_ADAPTER.get(type);
+    if (result != null) return result;
+    if (messageType != null) return wire.adapter(messageType);
+    if (enumType != null) return wire.enumAdapter(enumType);
+    throw new AssertionError("Unknown data type " + type);
   }
 
   /**
@@ -346,6 +333,27 @@ public abstract class WireAdapter<E> {
       return reader.readBytes();
     }
   };
+
+  private static final Map<WireType, WireAdapter<?>> TYPE_TO_ADAPTER;
+  static {
+    Map<WireType, WireAdapter<?>> map = new LinkedHashMap<WireType, WireAdapter<?>>();
+    map.put(WireType.BOOL, WireAdapter.BOOL);
+    map.put(WireType.BYTES, WireAdapter.BYTES);
+    map.put(WireType.DOUBLE, WireAdapter.DOUBLE);
+    map.put(WireType.FIXED32, WireAdapter.FIXED32);
+    map.put(WireType.FIXED64, WireAdapter.FIXED64);
+    map.put(WireType.FLOAT, WireAdapter.FLOAT);
+    map.put(WireType.INT32, WireAdapter.INT32);
+    map.put(WireType.INT64, WireAdapter.INT64);
+    map.put(WireType.SFIXED32, WireAdapter.SFIXED32);
+    map.put(WireType.SFIXED64, WireAdapter.SFIXED64);
+    map.put(WireType.SINT32, WireAdapter.SINT32);
+    map.put(WireType.SINT64, WireAdapter.SINT64);
+    map.put(WireType.STRING, WireAdapter.STRING);
+    map.put(WireType.UINT32, WireAdapter.UINT32);
+    map.put(WireType.UINT64, WireAdapter.UINT64);
+    TYPE_TO_ADAPTER = Collections.unmodifiableMap(map);
+  }
 
   WireAdapter<?> withLabel(Message.Label label) {
     if (label.isRepeated()) {

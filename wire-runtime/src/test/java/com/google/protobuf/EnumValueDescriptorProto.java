@@ -23,7 +23,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String name;
 
@@ -32,18 +32,19 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
    */
   @ProtoField(
       tag = 4,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String doc;
 
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer number;
 
   @ProtoField(
-      tag = 3
+      tag = 3,
+      type = "google.protobuf.EnumValueOptions"
   )
   public final EnumValueOptions options;
 

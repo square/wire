@@ -11,7 +11,8 @@ public final class RedactedCycleA extends Message<RedactedCycleA> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
-      tag = 1
+      tag = 1,
+      type = "squareup.protos.redacted_test.RedactedCycleB"
   )
   public final RedactedCycleB b;
 

@@ -65,7 +65,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     } else if (ProtoEnum.class.isAssignableFrom(singleType)) {
       return wire.enumAdapter((Class<? extends ProtoEnum>) singleType);
     } else {
-      return WireAdapter.get(wire, protoField.type(), null, null);
+      return WireAdapter.get(wire, WireType.get(protoField.type()), null, null);
     }
   }
 
@@ -93,7 +93,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
         new LinkedHashMap<Integer, RegisteredExtension>(this.extensions);
 
     for (Extension<?, ?> extension : extensionRegistry.extensions(messageType)) {
-      WireAdapter<?> singleAdapter = WireAdapter.get(wire, extension.getDatatype(),
+      WireAdapter<?> singleAdapter = WireAdapter.get(wire, extension.getType(),
           extension.getMessageType(), extension.getEnumType());
       extensions.put(extension.getTag(), new RegisteredExtension(extension, singleAdapter));
     }
@@ -184,7 +184,10 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   @Override public M redact(M message) {
     B builder = newBuilder(message);
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
-      if (!fieldBinding.redacted && fieldBinding.datatype != Message.Datatype.MESSAGE) continue;
+      if (!fieldBinding.redacted && (fieldBinding.type.isScalar()
+          || fieldBinding.getFromBuilder(builder) instanceof ProtoEnum)) {
+        continue;
+      }
       if (fieldBinding.redacted && fieldBinding.label == Message.Label.REQUIRED) {
         throw new IllegalArgumentException(String.format(
             "Field %s.%s is REQUIRED and cannot be redacted.",

@@ -39,6 +39,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
   @ProtoField(
       tag = 2,
+      type = "google.protobuf.UninterpretedOption.NamePart",
       label = Message.Label.REPEATED
   )
   public final List<NamePart> name;
@@ -49,37 +50,37 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
    */
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String identifier_value;
 
   @ProtoField(
       tag = 4,
-      type = Message.Datatype.UINT64
+      type = "uint64"
   )
   public final Long positive_int_value;
 
   @ProtoField(
       tag = 5,
-      type = Message.Datatype.INT64
+      type = "int64"
   )
   public final Long negative_int_value;
 
   @ProtoField(
       tag = 6,
-      type = Message.Datatype.DOUBLE
+      type = "double"
   )
   public final Double double_value;
 
   @ProtoField(
       tag = 7,
-      type = Message.Datatype.BYTES
+      type = "bytes"
   )
   public final ByteString string_value;
 
   @ProtoField(
       tag = 8,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String aggregate_value;
 
@@ -219,14 +220,14 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
     @ProtoField(
         tag = 1,
-        type = Message.Datatype.STRING,
+        type = "string",
         label = Message.Label.REQUIRED
     )
     public final String name_part;
 
     @ProtoField(
         tag = 2,
-        type = Message.Datatype.BOOL,
+        type = "bool",
         label = Message.Label.REQUIRED
     )
     public final Boolean is_extension;

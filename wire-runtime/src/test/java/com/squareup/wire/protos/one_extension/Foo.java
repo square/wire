@@ -15,7 +15,7 @@ public final class Foo extends Message<Foo> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String bar;
 

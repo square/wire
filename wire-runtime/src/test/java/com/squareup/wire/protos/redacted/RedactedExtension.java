@@ -22,14 +22,14 @@ public final class RedactedExtension extends Message<RedactedExtension> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING,
+      type = "string",
       redacted = true
   )
   public final String d;
 
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String e;
 

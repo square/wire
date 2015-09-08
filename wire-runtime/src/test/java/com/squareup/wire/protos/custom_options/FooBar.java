@@ -78,42 +78,44 @@ public final class FooBar extends Message<FooBar> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer foo;
 
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String bar;
 
   @ProtoField(
-      tag = 3
+      tag = 3,
+      type = "squareup.protos.custom_options.FooBar.Nested"
   )
   public final Nested baz;
 
   @ProtoField(
       tag = 4,
-      type = Message.Datatype.UINT64
+      type = "uint64"
   )
   public final Long qux;
 
   @ProtoField(
       tag = 5,
-      type = Message.Datatype.FLOAT,
+      type = "float",
       label = Message.Label.REPEATED
   )
   public final List<Float> fred;
 
   @ProtoField(
       tag = 6,
-      type = Message.Datatype.DOUBLE
+      type = "double"
   )
   public final Double daisy;
 
   @ProtoField(
       tag = 7,
+      type = "squareup.protos.custom_options.FooBar",
       label = Message.Label.REPEATED
   )
   public final List<FooBar> nested;
@@ -243,7 +245,7 @@ public final class FooBar extends Message<FooBar> {
 
     @ProtoField(
         tag = 1,
-        type = Message.Datatype.ENUM
+        type = "squareup.protos.custom_options.FooBar.FooBarBazEnum"
     )
     public final FooBarBazEnum value;
 
@@ -298,7 +300,7 @@ public final class FooBar extends Message<FooBar> {
 
     @ProtoField(
         tag = 1,
-        type = Message.Datatype.INT32,
+        type = "int32",
         label = Message.Label.REPEATED
     )
     public final List<Integer> serial;

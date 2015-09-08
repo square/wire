@@ -31,7 +31,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.ENUM
+      type = "google.protobuf.FieldOptions.CType"
   )
   public final CType ctype;
 
@@ -43,7 +43,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean packed;
 
@@ -55,7 +55,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.BOOL
+      type = "bool"
   )
   public final Boolean deprecated;
 
@@ -75,7 +75,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @ProtoField(
       tag = 9,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String experimental_map_key;
 
@@ -84,6 +84,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @ProtoField(
       tag = 999,
+      type = "google.protobuf.UninterpretedOption",
       label = Message.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;

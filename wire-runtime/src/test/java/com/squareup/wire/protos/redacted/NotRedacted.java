@@ -17,13 +17,13 @@ public final class NotRedacted extends Message<NotRedacted> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String a;
 
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String b;
 
