@@ -18,23 +18,16 @@ package com.squareup.wire.schema;
 import com.squareup.wire.internal.protoparser.EnumConstantElement;
 
 public final class EnumConstant {
-  private final String packageName;
   private final EnumConstantElement element;
   private final Options options;
 
-  EnumConstant(String packageName, EnumConstantElement element) {
-    this.packageName = packageName;
+  EnumConstant(EnumConstantElement element) {
     this.element = element;
-    this.options = new Options(
-        WireType.ENUM_VALUE_OPTIONS, packageName, element.options());
+    this.options = new Options(WireType.ENUM_VALUE_OPTIONS, element.options());
   }
 
   public Location location() {
     return element.location();
-  }
-
-  public String packageName() {
-    return packageName;
   }
 
   public String name() {

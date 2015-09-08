@@ -18,24 +18,18 @@ package com.squareup.wire.schema;
 import com.squareup.wire.internal.protoparser.RpcElement;
 
 public final class Rpc {
-  private final String packageName;
   private final RpcElement element;
   private final Options options;
   private WireType requestType;
   private WireType responseType;
 
-  Rpc(String packageName, RpcElement element) {
-    this.packageName = packageName;
+  Rpc(RpcElement element) {
     this.element = element;
-    this.options = new Options(WireType.METHOD_OPTIONS, packageName, element.options());
+    this.options = new Options(WireType.METHOD_OPTIONS, element.options());
   }
 
   public Location location() {
     return element.location();
-  }
-
-  public String packageName() {
-    return packageName;
   }
 
   public String name() {
@@ -60,8 +54,8 @@ public final class Rpc {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    requestType = linker.resolveNamedType(packageName, element.requestType());
-    responseType = linker.resolveNamedType(packageName, element.responseType());
+    requestType = linker.resolveNamedType(element.requestType());
+    responseType = linker.resolveNamedType(element.responseType());
   }
 
   void linkOptions(Linker linker) {

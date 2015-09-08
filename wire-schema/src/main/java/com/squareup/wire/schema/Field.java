@@ -26,7 +26,7 @@ public final class Field {
   Field(String packageName, FieldElement element) {
     this.packageName = packageName;
     this.element = element;
-    this.options = new Options(WireType.FIELD_OPTIONS, packageName, element.options());
+    this.options = new Options(WireType.FIELD_OPTIONS, element.options());
   }
 
   public Location location() {
@@ -87,7 +87,7 @@ public final class Field {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    type = linker.resolveType(packageName, element.type());
+    type = linker.resolveType(element.type());
   }
 
   void linkOptions(Linker linker) {

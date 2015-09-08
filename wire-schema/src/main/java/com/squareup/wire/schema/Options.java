@@ -37,18 +37,12 @@ import static com.google.common.collect.Iterables.getOnlyElement;
  */
 public final class Options {
   private final WireType optionType;
-  private final String packageName;
   private final ImmutableList<OptionElement> optionElements;
   private ImmutableMap<Field, Object> map;
 
-  public Options(WireType optionType, String packageName, List<OptionElement> elements) {
+  public Options(WireType optionType, List<OptionElement> elements) {
     this.optionType = optionType;
-    this.packageName = packageName;
     this.optionElements = ImmutableList.copyOf(elements);
-  }
-
-  public String packageName() {
-    return packageName;
   }
 
   /**
@@ -113,6 +107,7 @@ public final class Options {
     }
 
     String[] path = resolveFieldPath(option.name(), extensionsForType.keySet());
+    String packageName = linker.packageName();
     if (path == null && packageName != null) {
       // If the path couldn't be resolved, attempt again by prefixing it with the package name.
       path = resolveFieldPath(packageName + "." + option.name(), extensionsForType.keySet());
@@ -129,7 +124,7 @@ public final class Options {
       Map<Field, Object> nested = new LinkedHashMap<>();
       last.put(field, nested);
       last = nested;
-      field = linker.dereference(packageName, field, path[i]);
+      field = linker.dereference(field, path[i]);
     }
 
     last.put(field, canonicalizeValue(linker, field, option.value()));
@@ -170,7 +165,7 @@ public final class Options {
     if (value instanceof OptionElement) {
       ImmutableMap.Builder<Field, Object> result = ImmutableMap.builder();
       OptionElement option = (OptionElement) value;
-      Field field = linker.dereference(packageName, context, option.name());
+      Field field = linker.dereference(context, option.name());
       result.put(field, canonicalizeValue(linker, field, option.value()));
       return coerceValueForField(context, result.build());
     }
@@ -179,7 +174,7 @@ public final class Options {
       ImmutableMap.Builder<Field, Object> result = ImmutableMap.builder();
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
         String name = (String) entry.getKey();
-        Field field = linker.dereference(packageName, context, name);
+        Field field = linker.dereference(context, name);
         result.put(field, canonicalizeValue(linker, field, entry.getValue()));
       }
       return coerceValueForField(context, result.build());

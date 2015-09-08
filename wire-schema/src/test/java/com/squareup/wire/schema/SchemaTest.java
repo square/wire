@@ -801,7 +801,6 @@ public final class SchemaTest {
     assertThat(a.field("c").type()).isEqualTo(c.name());
   }
 
-  @Ignore("import resolution isn't to spec")
   @Test public void importSamePackageDifferentFile() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("a_b_1.proto", ""
@@ -812,7 +811,7 @@ public final class SchemaTest {
             + "message MessageB {\n"
             + "  optional .a.b.MessageC c1 = 1;\n"
             + "  optional a.b.MessageC c2 = 2;\n"
-            + "  optional b.MessageC c3 = 2;\n"
+            + "  optional b.MessageC c3 = 3;\n"
             + "  optional MessageC c4 = 4;\n"
             + "}\n")
         .add("a_b_2.proto", ""
@@ -828,7 +827,6 @@ public final class SchemaTest {
     assertThat(messageC.field("c4").type()).isEqualTo(WireType.get("a.b", "MessageC"));
   }
 
-  @Ignore("import resolution isn't to spec")
   @Test public void importResolvesEnclosingPackageSuffix() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("a_b.proto", ""
@@ -849,7 +847,6 @@ public final class SchemaTest {
     assertThat(messageC.field("message_b").type()).isEqualTo(WireType.get("a.b", "MessageB"));
   }
 
-  @Ignore("import resolution isn't to spec")
   @Test public void importResolvesNestedPackageSuffix() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("a_b.proto", ""
@@ -867,10 +864,9 @@ public final class SchemaTest {
             + "}\n")
         .build();
     MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
-    assertThat(messageC.field("message_b").type()).isEqualTo(WireType.get("a.b.c", "MessageC"));
+    assertThat(messageC.field("message_c").type()).isEqualTo(WireType.get("a.b.c", "MessageC"));
   }
 
-  @Ignore("import resolution isn't to spec")
   @Test public void nestedPackagePreferredOverEnclosingPackage() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("a.proto", ""
@@ -897,7 +893,6 @@ public final class SchemaTest {
     assertThat(messageC.field("message_a").type()).isEqualTo(WireType.get("a.b.a", "MessageA"));
   }
 
-  @Ignore("import resolution isn't to spec")
   @Test public void dotPrefixRefersToRootPackage() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("a.proto", ""

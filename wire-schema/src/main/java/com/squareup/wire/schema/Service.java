@@ -37,11 +37,10 @@ public final class Service {
   public static Service get(WireType wireType, ServiceElement element) {
     ImmutableList.Builder<Rpc> rpcs = ImmutableList.builder();
     for (RpcElement rpc : element.rpcs()) {
-      rpcs.add(new Rpc(wireType.packageName(), rpc));
+      rpcs.add(new Rpc(rpc));
     }
 
-    Options options = new Options(
-        WireType.SERVICE_OPTIONS, wireType.packageName(), element.options());
+    Options options = new Options(WireType.SERVICE_OPTIONS, element.options());
 
     return new Service(wireType, element, rpcs.build(), options);
   }
