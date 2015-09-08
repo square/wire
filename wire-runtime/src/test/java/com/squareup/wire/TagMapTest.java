@@ -38,7 +38,7 @@ public final class TagMapTest {
       .setTag(2)
       .buildOptional();
   final Extension<FileOptions, Type> extensionC
-      = Extension.enumExtending(Type.class, FileOptions.class)
+      = Extension.enumExtending("google.protobuf.FileOptions", Type.class, FileOptions.class)
       .setName("c")
       .setTag(3)
       .buildOptional();

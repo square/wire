@@ -14,6 +14,7 @@ public final class Bars extends Message<Bars> {
 
   @ProtoField(
       tag = 1,
+      type = "single_level.Bar",
       label = Message.Label.REPEATED
   )
   public final List<Bar> bars;

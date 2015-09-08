@@ -6,7 +6,7 @@ import com.squareup.wire.Extension;
 
 public final class Ext_one_extension {
   public static final Extension<OneExtension, Foo> foo = Extension
-      .messageExtending(Foo.class, OneExtension.class)
+      .messageExtending("squareup.protos.one_extension.Foo", Foo.class, OneExtension.class)
       .setName("squareup.protos.one_extension.foo")
       .setTag(1000)
       .buildOptional();

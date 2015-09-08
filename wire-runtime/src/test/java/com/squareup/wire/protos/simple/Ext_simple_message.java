@@ -27,13 +27,13 @@ public final class Ext_simple_message {
       .buildOptional();
 
   public static final Extension<ExternalMessage, SimpleMessage.NestedMessage> nested_message_ext = Extension
-      .messageExtending(SimpleMessage.NestedMessage.class, ExternalMessage.class)
+      .messageExtending("squareup.protos.simple.SimpleMessage.NestedMessage", SimpleMessage.NestedMessage.class, ExternalMessage.class)
       .setName("squareup.protos.simple.nested_message_ext")
       .setTag(128)
       .buildOptional();
 
   public static final Extension<ExternalMessage, SimpleMessage.NestedEnum> nested_enum_ext = Extension
-      .enumExtending(SimpleMessage.NestedEnum.class, ExternalMessage.class)
+      .enumExtending("squareup.protos.simple.SimpleMessage.NestedEnum", SimpleMessage.NestedEnum.class, ExternalMessage.class)
       .setName("squareup.protos.simple.nested_enum_ext")
       .setTag(129)
       .buildOptional();

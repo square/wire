@@ -26,7 +26,7 @@ public final class Person extends Message<Person> {
    */
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING,
+      type = "string",
       label = Message.Label.REQUIRED
   )
   public final String name;
@@ -36,7 +36,7 @@ public final class Person extends Message<Person> {
    */
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.INT32,
+      type = "int32",
       label = Message.Label.REQUIRED
   )
   public final Integer id;
@@ -46,7 +46,7 @@ public final class Person extends Message<Person> {
    */
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String email;
 
@@ -55,6 +55,7 @@ public final class Person extends Message<Person> {
    */
   @ProtoField(
       tag = 4,
+      type = "squareup.protos.person.Person.PhoneNumber",
       label = Message.Label.REPEATED
   )
   public final List<PhoneNumber> phone;
@@ -193,7 +194,7 @@ public final class Person extends Message<Person> {
      */
     @ProtoField(
         tag = 1,
-        type = Message.Datatype.STRING,
+        type = "string",
         label = Message.Label.REQUIRED
     )
     public final String number;
@@ -203,7 +204,7 @@ public final class Person extends Message<Person> {
      */
     @ProtoField(
         tag = 2,
-        type = Message.Datatype.ENUM
+        type = "squareup.protos.person.Person.PhoneType"
     )
     public final PhoneType type;
 

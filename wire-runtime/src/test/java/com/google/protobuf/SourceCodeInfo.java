@@ -66,6 +66,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
    */
   @ProtoField(
       tag = 1,
+      type = "google.protobuf.SourceCodeInfo.Location",
       label = Message.Label.REPEATED
   )
   public final List<Location> location;
@@ -190,7 +191,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
      */
     @ProtoField(
         tag = 1,
-        type = Message.Datatype.INT32,
+        type = "int32",
         label = Message.Label.PACKED
     )
     public final List<Integer> path;
@@ -204,7 +205,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
      */
     @ProtoField(
         tag = 2,
-        type = Message.Datatype.INT32,
+        type = "int32",
         label = Message.Label.PACKED
     )
     public final List<Integer> span;

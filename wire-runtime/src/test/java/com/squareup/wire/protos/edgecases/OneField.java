@@ -15,7 +15,7 @@ public final class OneField extends Message<OneField> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer opt_int32;
 

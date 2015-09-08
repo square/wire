@@ -22,12 +22,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String name;
 
   @ProtoField(
       tag = 2,
+      type = "google.protobuf.MethodDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<MethodDescriptorProto> method;
@@ -37,12 +38,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
    */
   @ProtoField(
       tag = 4,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String doc;
 
   @ProtoField(
-      tag = 3
+      tag = 3,
+      type = "google.protobuf.ServiceOptions"
   )
   public final ServiceOptions options;
 

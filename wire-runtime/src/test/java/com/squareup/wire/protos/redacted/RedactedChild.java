@@ -15,17 +15,19 @@ public final class RedactedChild extends Message<RedactedChild> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String a;
 
   @ProtoField(
-      tag = 2
+      tag = 2,
+      type = "squareup.protos.redacted_test.Redacted"
   )
   public final Redacted b;
 
   @ProtoField(
-      tag = 3
+      tag = 3,
+      type = "squareup.protos.redacted_test.NotRedacted"
   )
   public final NotRedacted c;
 

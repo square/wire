@@ -11,7 +11,8 @@ public final class H extends Message<H> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
-      tag = 1
+      tag = 1,
+      type = "squareup.protos.roots.E.F"
   )
   public final E.F ef;
 

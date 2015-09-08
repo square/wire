@@ -15,7 +15,7 @@ public final class ExternalMessage extends Message<ExternalMessage> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.FLOAT
+      type = "float"
   )
   public final Float f;
 

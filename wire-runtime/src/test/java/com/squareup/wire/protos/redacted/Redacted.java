@@ -28,20 +28,20 @@ public final class Redacted extends Message<Redacted> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING,
+      type = "string",
       redacted = true
   )
   public final String a;
 
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String b;
 
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String c;
 

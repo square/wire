@@ -24,7 +24,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String name;
 
@@ -33,7 +33,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
    */
   @ProtoField(
       tag = 5,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String doc;
 
@@ -43,18 +43,19 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
    */
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String input_type;
 
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String output_type;
 
   @ProtoField(
-      tag = 4
+      tag = 4,
+      type = "google.protobuf.MethodOptions"
   )
   public final MethodOptions options;
 

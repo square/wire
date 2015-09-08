@@ -15,12 +15,13 @@ public final class Recursive extends Message<Recursive> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer value;
 
   @ProtoField(
-      tag = 2
+      tag = 2,
+      type = "squareup.protos.edgecases.Recursive"
   )
   public final Recursive recursive;
 

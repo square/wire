@@ -12,6 +12,7 @@ public final class B extends Message<B> {
 
   @ProtoField(
       tag = 1,
+      type = "squareup.protos.roots.C",
       label = Message.Label.REQUIRED
   )
   public final C c;

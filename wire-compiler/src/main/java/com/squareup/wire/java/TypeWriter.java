@@ -32,6 +32,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
 import com.squareup.wire.WireCompilerException;
+import com.squareup.wire.WireType;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
@@ -42,7 +43,6 @@ import com.squareup.wire.schema.Options;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Type;
-import com.squareup.wire.WireType;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -300,22 +300,7 @@ public final class TypeWriter {
 
     int tag = field.tag();
     result.addMember("tag", String.valueOf(tag));
-
-    boolean isScalar = field.type().isScalar();
-    boolean isEnum = javaGenerator.isEnum(field.type());
-
-    String fieldType;
-    if (isScalar) {
-      fieldType = field.type().toString().toUpperCase(Locale.US);
-    } else if (isEnum) {
-      fieldType = "ENUM";
-    } else {
-      fieldType = null;
-    }
-
-    if (fieldType != null) {
-      result.addMember("type", "$T.$L", Message.Datatype.class, fieldType);
-    }
+    result.addMember("type", "$S", field.type().toString());
 
     if (!field.isOptional()) {
       if (field.isPacked()) {
@@ -791,9 +776,11 @@ public final class TypeWriter {
     if (field.type().isScalar()) {
       initializer.add(".$LExtending($T.class)\n", field.type(), extendType);
     } else if (javaGenerator.isEnum(field.type())) {
-      initializer.add(".enumExtending($T.class, $T.class)\n", fieldType, extendType);
+      initializer.add(".enumExtending($S, $T.class, $T.class)\n",
+          field.type(), fieldType, extendType);
     } else {
-      initializer.add(".messageExtending($T.class, $T.class)\n", fieldType, extendType);
+      initializer.add(".messageExtending($S, $T.class, $T.class)\n",
+          field.type(), fieldType, extendType);
     }
 
     initializer.add(".setName($S)\n", protoFile.packageName() + "." + field.name());

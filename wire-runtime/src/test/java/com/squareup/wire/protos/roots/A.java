@@ -26,12 +26,14 @@ public final class A extends Message<A> {
   private static final long serialVersionUID = 0L;
 
   @ProtoField(
-      tag = 1
+      tag = 1,
+      type = "squareup.protos.roots.B"
   )
   public final B c;
 
   @ProtoField(
-      tag = 2
+      tag = 2,
+      type = "squareup.protos.roots.D"
   )
   public final D d;
 

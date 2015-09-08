@@ -32,12 +32,6 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   // Hidden Wire instance that can perform work that does not require knowledge of extensions.
   static final Wire WIRE = new Wire();
 
-  /** A protocol buffer data type. */
-  public enum Datatype {
-    INT32, INT64, UINT32, UINT64, SINT32, SINT64, BOOL, ENUM, STRING, BYTES, MESSAGE,
-    FIXED32, SFIXED32, FIXED64, SFIXED64, FLOAT, DOUBLE
-  }
-
   /** A protocol buffer label. */
   public enum Label {
     REQUIRED, OPTIONAL, REPEATED, ONE_OF,

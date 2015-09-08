@@ -9,7 +9,7 @@ import java.lang.Boolean;
 
 public final class Ext_foreign {
   public static final Extension<MessageOptions, ForeignMessage> foreign_message_option = Extension
-      .messageExtending(ForeignMessage.class, MessageOptions.class)
+      .messageExtending("squareup.protos.foreign.ForeignMessage", ForeignMessage.class, MessageOptions.class)
       .setName("squareup.protos.foreign.foreign_message_option")
       .setTag(50007)
       .buildOptional();

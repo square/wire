@@ -42,16 +42,16 @@ public enum FieldEncoding {
     return value;
   }
 
-  Message.Datatype datatype() {
+  WireType datatype() {
     switch (this) {
       case VARINT:
-        return Message.Datatype.UINT64;
+        return WireType.UINT64;
       case FIXED32:
-        return Message.Datatype.FIXED32;
+        return WireType.FIXED32;
       case FIXED64:
-        return Message.Datatype.FIXED64;
+        return WireType.FIXED64;
       case LENGTH_DELIMITED:
-        return Message.Datatype.BYTES;
+        return WireType.BYTES;
       default:
         throw new AssertionError();
     }

@@ -18,7 +18,6 @@ package com.squareup.wire;
 import java.util.List;
 import okio.ByteString;
 
-import static com.squareup.wire.Message.Datatype;
 import static com.squareup.wire.Message.Label;
 
 /**
@@ -59,24 +58,24 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
     private final Class<T> extendedType;
     private final Class<? extends Message> messageType;
     private final Class<? extends ProtoEnum> enumType;
-    private final Datatype datatype;
+    private final WireType type;
     private String name = null;
     private int tag = -1;
     private Label label = null;
 
-    private Builder(Class<T> extendedType, Datatype datatype) {
+    private Builder(Class<T> extendedType, WireType type) {
       this.extendedType = extendedType;
       this.messageType = null;
       this.enumType = null;
-      this.datatype = datatype;
+      this.type = type;
     }
 
     private Builder(Class<T> extendedType, Class<? extends Message> messageType,
-        Class<? extends ProtoEnum> enumType, Datatype datatype) {
+        Class<? extends ProtoEnum> enumType, WireType type) {
       this.extendedType = extendedType;
       this.messageType = messageType;
       this.enumType = enumType;
-      this.datatype = datatype;
+      this.type = type;
     }
 
     public Builder<T, E> setName(String name) {
@@ -92,21 +91,19 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
     public Extension<T, E> buildOptional() {
       this.label = Label.OPTIONAL;
       validate();
-      return new Extension<T, E>(extendedType, messageType, enumType, name, tag, label, datatype);
+      return new Extension<T, E>(extendedType, messageType, enumType, name, tag, label, type);
     }
 
     public Extension<T, List<E>> buildRepeated() {
       this.label = Label.REPEATED;
       validate();
-      return new Extension<T, List<E>>(extendedType, messageType, enumType, name, tag, label,
-          datatype);
+      return new Extension<T, List<E>>(extendedType, messageType, enumType, name, tag, label, type);
     }
 
     public Extension<T, List<E>> buildPacked() {
       this.label = Label.PACKED;
       validate();
-      return new Extension<T, List<E>>(extendedType, messageType, enumType, name, tag, label,
-          datatype);
+      return new Extension<T, List<E>>(extendedType, messageType, enumType, name, tag, label, type);
     }
 
     private void validate() {
@@ -116,8 +113,8 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
       if (name == null) {
         throw new IllegalArgumentException("name == null");
       }
-      if (datatype == null) {
-        throw new IllegalArgumentException("datatype == null");
+      if (type == null) {
+        throw new IllegalArgumentException("type == null");
       }
       if (label == null) {
         throw new IllegalArgumentException("label == null");
@@ -125,105 +122,95 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
       if (tag <= 0) {
         throw new IllegalArgumentException("tag == " + tag);
       }
-      if (datatype == Datatype.MESSAGE) {
-        if (messageType == null || enumType != null) {
-          throw new IllegalStateException("Message w/o messageType or w/ enumType");
-        }
-      } else if (datatype == Datatype.ENUM) {
-        if (messageType != null || enumType == null) {
-          throw new IllegalStateException("Enum w/ messageType or w/o enumType");
-        }
-      } else {
-        if (messageType != null || enumType != null) {
-          throw new IllegalStateException("Scalar w/ messageType or enumType");
-        }
+      if (!(type.isScalar() ^ messageType != null ^ enumType != null)) {
+        throw new IllegalStateException("type must be a scalar, enum, or message");
       }
     }
   }
 
   public static <T extends Message<T>> Builder<T, Integer> int32Extending(
       Class<T> extendedType) {
-    return new Builder<T, Integer>(extendedType, Datatype.INT32);
+    return new Builder<T, Integer>(extendedType, WireType.INT32);
   }
 
   public static <T extends Message<T>> Builder<T, Integer> sint32Extending(
       Class<T> extendedType) {
-    return new Builder<T, Integer>(extendedType, Datatype.SINT32);
+    return new Builder<T, Integer>(extendedType, WireType.SINT32);
   }
 
   public static <T extends Message<T>> Builder<T, Integer> uint32Extending(
       Class<T> extendedType) {
-    return new Builder<T, Integer>(extendedType, Datatype.UINT32);
+    return new Builder<T, Integer>(extendedType, WireType.UINT32);
   }
 
   public static <T extends Message<T>> Builder<T, Integer> fixed32Extending(
       Class<T> extendedType) {
-    return new Builder<T, Integer>(extendedType, Datatype.FIXED32);
+    return new Builder<T, Integer>(extendedType, WireType.FIXED32);
   }
 
   public static <T extends Message<T>> Builder<T, Integer> sfixed32Extending(
       Class<T> extendedType) {
-    return new Builder<T, Integer>(extendedType, Datatype.SFIXED32);
+    return new Builder<T, Integer>(extendedType, WireType.SFIXED32);
   }
 
   public static <T extends Message<T>> Builder<T, Long> int64Extending(
       Class<T> extendedType) {
-    return new Builder<T, Long>(extendedType, Datatype.INT64);
+    return new Builder<T, Long>(extendedType, WireType.INT64);
   }
 
   public static <T extends Message<T>> Builder<T, Long> sint64Extending(
       Class<T> extendedType) {
-    return new Builder<T, Long>(extendedType, Datatype.SINT64);
+    return new Builder<T, Long>(extendedType, WireType.SINT64);
   }
 
   public static <T extends Message<T>> Builder<T, Long> uint64Extending(
       Class<T> extendedType) {
-    return new Builder<T, Long>(extendedType, Datatype.UINT64);
+    return new Builder<T, Long>(extendedType, WireType.UINT64);
   }
 
   public static <T extends Message<T>> Builder<T, Long> fixed64Extending(
       Class<T> extendedType) {
-    return new Builder<T, Long>(extendedType, Datatype.FIXED64);
+    return new Builder<T, Long>(extendedType, WireType.FIXED64);
   }
 
   public static <T extends Message<T>> Builder<T, Long> sfixed64Extending(
       Class<T> extendedType) {
-    return new Builder<T, Long>(extendedType, Datatype.SFIXED64);
+    return new Builder<T, Long>(extendedType, WireType.SFIXED64);
   }
 
   public static <T extends Message<T>> Builder<T, Boolean> boolExtending(
       Class<T> extendedType) {
-    return new Builder<T, Boolean>(extendedType, Datatype.BOOL);
+    return new Builder<T, Boolean>(extendedType, WireType.BOOL);
   }
 
   public static <T extends Message<T>> Builder<T, String> stringExtending(
       Class<T> extendedType) {
-    return new Builder<T, String>(extendedType, Datatype.STRING);
+    return new Builder<T, String>(extendedType, WireType.STRING);
   }
 
   public static <T extends Message<T>> Builder<T, ByteString> bytesExtending(
       Class<T> extendedType) {
-    return new Builder<T, ByteString>(extendedType, Datatype.BYTES);
+    return new Builder<T, ByteString>(extendedType, WireType.BYTES);
   }
 
   public static <T extends Message<T>> Builder<T, Float> floatExtending(
       Class<T> extendedType) {
-    return new Builder<T, Float>(extendedType, Datatype.FLOAT);
+    return new Builder<T, Float>(extendedType, WireType.FLOAT);
   }
 
   public static <T extends Message<T>> Builder<T, Double> doubleExtending(
       Class<T> extendedType) {
-    return new Builder<T, Double>(extendedType, Datatype.DOUBLE);
+    return new Builder<T, Double>(extendedType, WireType.DOUBLE);
   }
 
   public static <T extends Message<T>, E extends Enum & ProtoEnum> Builder<T, E> //
-  enumExtending(Class<E> enumType, Class<T> extendedType) {
-    return new Builder<T, E>(extendedType, null, enumType, Datatype.ENUM);
+  enumExtending(String type, Class<E> enumType, Class<T> extendedType) {
+    return new Builder<T, E>(extendedType, null, enumType, WireType.get(type));
   }
 
   public static <T extends Message<T>, M extends Message> Builder<T, M> messageExtending(
-      Class<M> messageType, Class<T> extendedType) {
-    return new Builder<T, M>(extendedType, messageType, null, Datatype.MESSAGE);
+      String type, Class<M> messageType, Class<T> extendedType) {
+    return new Builder<T, M>(extendedType, messageType, null, WireType.get(type));
   }
 
   private final Class<T> extendedType;
@@ -231,15 +218,15 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
   private final Class<? extends ProtoEnum> enumType;
   private final String name;
   private final int tag;
-  private final Datatype datatype;
+  private final WireType type;
   private final Label label;
 
   private Extension(Class<T> extendedType, Class<? extends Message> messageType,
-      Class<? extends ProtoEnum> enumType, String name, int tag, Label label, Datatype datatype) {
+      Class<? extends ProtoEnum> enumType, String name, int tag, Label label, WireType type) {
     this.extendedType = extendedType;
     this.name = name;
     this.tag = tag;
-    this.datatype = datatype;
+    this.type = type;
     this.label = label;
     this.messageType = messageType;
     this.enumType = enumType;
@@ -269,7 +256,7 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
 
   @Override public int hashCode() {
     int hash = tag;
-    hash = hash * 37 + datatype.hashCode();
+    hash = hash * 37 + type.hashCode();
     hash = hash * 37 + label.hashCode();
     hash = hash * 37 + extendedType.hashCode();
     hash = hash * 37 + (messageType != null ? messageType.hashCode() : 0);
@@ -278,7 +265,7 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
   }
 
   @Override public String toString() {
-    return String.format("[%s %s %s = %d]", label, datatype, name, tag);
+    return String.format("[%s %s %s = %d]", label, type, name, tag);
   }
 
   public Class<T> getExtendedType() {
@@ -301,8 +288,8 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
     return tag;
   }
 
-  public Datatype getDatatype() {
-    return datatype;
+  public WireType getType() {
+    return type;
   }
 
   public Label getLabel() {

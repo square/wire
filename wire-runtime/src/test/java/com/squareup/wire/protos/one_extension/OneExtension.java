@@ -15,7 +15,7 @@ public final class OneExtension extends Message<OneExtension> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String id;
 

@@ -22,7 +22,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String name;
 
@@ -31,18 +31,20 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
    */
   @ProtoField(
       tag = 4,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String doc;
 
   @ProtoField(
       tag = 2,
+      type = "google.protobuf.EnumValueDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<EnumValueDescriptorProto> value;
 
   @ProtoField(
-      tag = 3
+      tag = 3,
+      type = "google.protobuf.EnumOptions"
   )
   public final EnumOptions options;
 

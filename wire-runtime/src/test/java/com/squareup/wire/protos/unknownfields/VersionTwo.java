@@ -27,37 +27,37 @@ public final class VersionTwo extends Message<VersionTwo> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer i;
 
   @ProtoField(
       tag = 2,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer v2_i;
 
   @ProtoField(
       tag = 3,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String v2_s;
 
   @ProtoField(
       tag = 4,
-      type = Message.Datatype.FIXED32
+      type = "fixed32"
   )
   public final Integer v2_f32;
 
   @ProtoField(
       tag = 5,
-      type = Message.Datatype.FIXED64
+      type = "fixed64"
   )
   public final Long v2_f64;
 
   @ProtoField(
       tag = 6,
-      type = Message.Datatype.STRING,
+      type = "string",
       label = Message.Label.REPEATED
   )
   public final List<String> v2_rs;

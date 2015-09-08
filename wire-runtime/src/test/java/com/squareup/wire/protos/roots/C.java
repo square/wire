@@ -15,7 +15,7 @@ public final class C extends Message<C> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.INT32
+      type = "int32"
   )
   public final Integer i;
 

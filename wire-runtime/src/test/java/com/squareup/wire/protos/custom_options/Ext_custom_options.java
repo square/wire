@@ -14,7 +14,7 @@ import java.util.List;
 
 public final class Ext_custom_options {
   public static final Extension<MessageOptions, FooBar> my_message_option_one = Extension
-      .messageExtending(FooBar.class, MessageOptions.class)
+      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, MessageOptions.class)
       .setName("squareup.protos.custom_options.my_message_option_one")
       .setTag(50001)
       .buildOptional();
@@ -26,25 +26,25 @@ public final class Ext_custom_options {
       .buildOptional();
 
   public static final Extension<MessageOptions, FooBar> my_message_option_three = Extension
-      .messageExtending(FooBar.class, MessageOptions.class)
+      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, MessageOptions.class)
       .setName("squareup.protos.custom_options.my_message_option_three")
       .setTag(50003)
       .buildOptional();
 
   public static final Extension<MessageOptions, FooBar.FooBarBazEnum> my_message_option_four = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, MessageOptions.class)
+      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, MessageOptions.class)
       .setName("squareup.protos.custom_options.my_message_option_four")
       .setTag(50004)
       .buildOptional();
 
   public static final Extension<MessageOptions, FooBar> my_message_option_five = Extension
-      .messageExtending(FooBar.class, MessageOptions.class)
+      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, MessageOptions.class)
       .setName("squareup.protos.custom_options.my_message_option_five")
       .setTag(50005)
       .buildOptional();
 
   public static final Extension<MessageOptions, FooBar> my_message_option_six = Extension
-      .messageExtending(FooBar.class, MessageOptions.class)
+      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, MessageOptions.class)
       .setName("squareup.protos.custom_options.my_message_option_six")
       .setTag(50006)
       .buildOptional();
@@ -62,13 +62,13 @@ public final class Ext_custom_options {
       .buildOptional();
 
   public static final Extension<FieldOptions, FooBar.FooBarBazEnum> my_field_option_three = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FieldOptions.class)
+      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, FieldOptions.class)
       .setName("squareup.protos.custom_options.my_field_option_three")
       .setTag(60003)
       .buildOptional();
 
   public static final Extension<FieldOptions, FooBar> my_field_option_four = Extension
-      .messageExtending(FooBar.class, FieldOptions.class)
+      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, FieldOptions.class)
       .setName("squareup.protos.custom_options.my_field_option_four")
       .setTag(60004)
       .buildOptional();
@@ -80,7 +80,7 @@ public final class Ext_custom_options {
       .buildOptional();
 
   public static final Extension<EnumValueOptions, FooBar.More> complex_enum_value_option = Extension
-      .messageExtending(FooBar.More.class, EnumValueOptions.class)
+      .messageExtending("squareup.protos.custom_options.FooBar.More", FooBar.More.class, EnumValueOptions.class)
       .setName("squareup.protos.custom_options.complex_enum_value_option")
       .setTag(70001)
       .buildOptional();
@@ -92,13 +92,13 @@ public final class Ext_custom_options {
       .buildOptional();
 
   public static final Extension<FooBar, FooBar.FooBarBazEnum> ext = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)
+      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, FooBar.class)
       .setName("squareup.protos.custom_options.ext")
       .setTag(101)
       .buildOptional();
 
   public static final Extension<FooBar, List<FooBar.FooBarBazEnum>> rep = Extension
-      .enumExtending(FooBar.FooBarBazEnum.class, FooBar.class)
+      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, FooBar.class)
       .setName("squareup.protos.custom_options.rep")
       .setTag(102)
       .buildRepeated();

@@ -15,14 +15,14 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
 
   @ProtoField(
       tag = 201,
-      type = Message.Datatype.INT32,
+      type = "int32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_int32;
 
   @ProtoField(
       tag = 301,
-      type = Message.Datatype.INT32,
+      type = "int32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_int32;

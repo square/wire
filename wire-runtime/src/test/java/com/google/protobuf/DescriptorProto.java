@@ -23,7 +23,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String name;
 
@@ -32,42 +32,48 @@ public final class DescriptorProto extends Message<DescriptorProto> {
    */
   @ProtoField(
       tag = 8,
-      type = Message.Datatype.STRING
+      type = "string"
   )
   public final String doc;
 
   @ProtoField(
       tag = 2,
+      type = "google.protobuf.FieldDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<FieldDescriptorProto> field;
 
   @ProtoField(
       tag = 6,
+      type = "google.protobuf.FieldDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 
   @ProtoField(
       tag = 3,
+      type = "google.protobuf.DescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<DescriptorProto> nested_type;
 
   @ProtoField(
       tag = 4,
+      type = "google.protobuf.EnumDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @ProtoField(
       tag = 5,
+      type = "google.protobuf.DescriptorProto.ExtensionRange",
       label = Message.Label.REPEATED
   )
   public final List<ExtensionRange> extension_range;
 
   @ProtoField(
-      tag = 7
+      tag = 7,
+      type = "google.protobuf.MessageOptions"
   )
   public final MessageOptions options;
 
@@ -210,13 +216,13 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
     @ProtoField(
         tag = 1,
-        type = Message.Datatype.INT32
+        type = "int32"
     )
     public final Integer start;
 
     @ProtoField(
         tag = 2,
-        type = Message.Datatype.INT32
+        type = "int32"
     )
     public final Integer end;
 

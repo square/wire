@@ -15,7 +15,7 @@ public final class SendDataRequest extends Message<SendDataRequest> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.BYTES
+      type = "bytes"
   )
   public final ByteString data;
 

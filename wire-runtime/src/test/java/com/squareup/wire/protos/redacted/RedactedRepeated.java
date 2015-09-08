@@ -20,7 +20,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
 
   @ProtoField(
       tag = 1,
-      type = Message.Datatype.STRING,
+      type = "string",
       label = Message.Label.REPEATED,
       redacted = true
   )
