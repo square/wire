@@ -84,8 +84,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @ProtoField(
       tag = 999,
-      label = Message.Label.REPEATED,
-      messageType = UninterpretedOption.class
+      label = Message.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;
 

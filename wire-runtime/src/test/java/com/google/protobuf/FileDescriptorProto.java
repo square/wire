@@ -53,29 +53,25 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @ProtoField(
       tag = 4,
-      label = Message.Label.REPEATED,
-      messageType = DescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<DescriptorProto> message_type;
 
   @ProtoField(
       tag = 5,
-      label = Message.Label.REPEATED,
-      messageType = EnumDescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @ProtoField(
       tag = 6,
-      label = Message.Label.REPEATED,
-      messageType = ServiceDescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<ServiceDescriptorProto> service;
 
   @ProtoField(
       tag = 7,
-      label = Message.Label.REPEATED,
-      messageType = FieldDescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 

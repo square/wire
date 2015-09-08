@@ -14,8 +14,7 @@ public final class Foos extends Message<Foos> {
 
   @ProtoField(
       tag = 1,
-      label = Message.Label.REPEATED,
-      messageType = Foo.class
+      label = Message.Label.REPEATED
   )
   public final List<Foo> foos;
 

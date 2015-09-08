@@ -38,36 +38,31 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
   @ProtoField(
       tag = 2,
-      label = Message.Label.REPEATED,
-      messageType = FieldDescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<FieldDescriptorProto> field;
 
   @ProtoField(
       tag = 6,
-      label = Message.Label.REPEATED,
-      messageType = FieldDescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 
   @ProtoField(
       tag = 3,
-      label = Message.Label.REPEATED,
-      messageType = DescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<DescriptorProto> nested_type;
 
   @ProtoField(
       tag = 4,
-      label = Message.Label.REPEATED,
-      messageType = EnumDescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @ProtoField(
       tag = 5,
-      label = Message.Label.REPEATED,
-      messageType = ExtensionRange.class
+      label = Message.Label.REPEATED
   )
   public final List<ExtensionRange> extension_range;
 

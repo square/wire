@@ -55,8 +55,7 @@ public final class Person extends Message<Person> {
    */
   @ProtoField(
       tag = 4,
-      label = Message.Label.REPEATED,
-      messageType = PhoneNumber.class
+      label = Message.Label.REPEATED
   )
   public final List<PhoneNumber> phone;
 

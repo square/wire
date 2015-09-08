@@ -18,8 +18,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
 
   @ProtoField(
       tag = 1,
-      label = Message.Label.REPEATED,
-      messageType = FileDescriptorProto.class
+      label = Message.Label.REPEATED
   )
   public final List<FileDescriptorProto> file;
 

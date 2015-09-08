@@ -444,15 +444,13 @@ public final class AllTypes extends Message<AllTypes> {
   @ProtoField(
       tag = 216,
       type = Message.Datatype.ENUM,
-      label = Message.Label.REPEATED,
-      enumType = NestedEnum.class
+      label = Message.Label.REPEATED
   )
   public final List<NestedEnum> rep_nested_enum;
 
   @ProtoField(
       tag = 217,
-      label = Message.Label.REPEATED,
-      messageType = NestedMessage.class
+      label = Message.Label.REPEATED
   )
   public final List<NestedMessage> rep_nested_message;
 
@@ -550,8 +548,7 @@ public final class AllTypes extends Message<AllTypes> {
   @ProtoField(
       tag = 316,
       type = Message.Datatype.ENUM,
-      label = Message.Label.PACKED,
-      enumType = NestedEnum.class
+      label = Message.Label.PACKED
   )
   public final List<NestedEnum> pack_nested_enum;
 
