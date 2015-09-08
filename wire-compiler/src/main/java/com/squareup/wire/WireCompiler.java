@@ -41,7 +41,7 @@ public final class WireCompiler {
   /**
    * Runs the compiler.  See {@link CommandLineOptions} for command line options.
    */
-  public static void main(String... args) {
+  public static void main(String... args) throws IOException {
     try {
       new WireCompiler(new CommandLineOptions(args)).compile();
     } catch (WireException e) {
@@ -68,7 +68,7 @@ public final class WireCompiler {
     }
   }
 
-  public void compile() throws WireException {
+  public void compile() throws WireException, IOException {
     Schema schema;
     try {
       schema = loader.load(options.sourceFileNames);
@@ -121,8 +121,8 @@ public final class WireCompiler {
     }
   }
 
-  private void writeJavaFile(
-      ClassName javaTypeName, TypeSpec typeSpec, Location location) throws WireException {
+  private void writeJavaFile(ClassName javaTypeName, TypeSpec typeSpec, Location location)
+      throws IOException {
     JavaFile.Builder builder = JavaFile.builder(javaTypeName.packageName(), typeSpec)
         .addFileComment("$L", CODE_GENERATED_BY_WIRE);
     if (location != null) {
@@ -137,7 +137,7 @@ public final class WireCompiler {
         javaGeneratorIo.write(options.javaOut, javaFile);
       }
     } catch (IOException e) {
-      throw new WireException("Error emitting " + javaFile.packageName + "."
+      throw new IOException("Error emitting " + javaFile.packageName + "."
           + javaFile.typeSpec.name + " to " + options.javaOut, e);
     }
   }

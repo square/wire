@@ -657,7 +657,7 @@ public class WireCompilerTest {
     }
   }
 
-  private void invokeCompiler(String[] args) throws WireException {
+  private void invokeCompiler(String[] args) throws Exception {
     CommandLineOptions options = new CommandLineOptions(args);
     logger = new StringWireLogger(options.quiet);
     Loader loader = Loader.forSearchPaths(options.protoPaths());

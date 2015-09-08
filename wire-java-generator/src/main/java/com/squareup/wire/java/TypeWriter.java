@@ -31,7 +31,6 @@ import com.squareup.javapoet.WildcardTypeName;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoEnum;
 import com.squareup.wire.ProtoField;
-import com.squareup.wire.WireCompilerException;
 import com.squareup.wire.WireType;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
@@ -646,7 +645,7 @@ public final class TypeWriter {
       return fieldInitializer(field.type(), defaultValue);
     }
 
-    throw new WireCompilerException("Field " + field + " cannot have default value");
+    throw new IllegalStateException("Field " + field + " cannot have default value");
   }
 
   private CodeBlock fieldInitializer(WireType type, Object value) {
@@ -715,7 +714,7 @@ public final class TypeWriter {
       return codeBlock("$T.$L", javaType, value);
 
     } else {
-      throw new WireCompilerException(type + " is not an allowed scalar type");
+      throw new IllegalStateException(type + " is not an allowed scalar type");
     }
   }
 
@@ -809,7 +808,7 @@ public final class TypeWriter {
         return field.isPacked() ? "Packed" : "Repeated";
 
       default:
-        throw new WireCompilerException("Unknown extension label \"" + field.label() + "\"");
+        throw new AssertionError("Unexpected extension label \"" + field.label() + "\"");
     }
   }
 
