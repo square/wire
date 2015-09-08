@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.squareup.wire.WireType;
 import com.squareup.wire.internal.Util;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -169,8 +170,8 @@ final class Linker {
   }
 
   private WireType resolveType(String name, boolean namedTypesOnly) {
-    WireType scalar = WireType.getScalar(name);
-    if (scalar != null) {
+    WireType scalar = WireType.get(name);
+    if (scalar.isScalar()) {
       if (namedTypesOnly) {
         addError("expected a message but was %s", name);
       }

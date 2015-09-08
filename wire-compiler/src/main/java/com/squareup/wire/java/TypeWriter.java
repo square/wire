@@ -42,7 +42,7 @@ import com.squareup.wire.schema.Options;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Type;
-import com.squareup.wire.schema.WireType;
+import com.squareup.wire.WireType;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -768,7 +768,8 @@ public final class TypeWriter {
       WireType extendType = extend.type();
       TypeName javaType = javaGenerator.typeName(extendType);
 
-      if (!emitOptions && (extendType.isFieldOptions() || extendType.isMessageOptions())) {
+      if (!emitOptions && (extendType.equals(Options.FIELD_OPTIONS)
+          || extendType.equals(Options.MESSAGE_OPTIONS))) {
         continue;
       }
 

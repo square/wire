@@ -30,7 +30,7 @@ import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
-import com.squareup.wire.schema.WireType;
+import com.squareup.wire.WireType;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;

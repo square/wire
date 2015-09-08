@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.squareup.wire.WireType;
 import com.squareup.wire.internal.protoparser.OptionElement;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +37,15 @@ import static com.google.common.collect.Iterables.getOnlyElement;
  * messages.
  */
 public final class Options {
+  public static final WireType FILE_OPTIONS = WireType.get("google.protobuf.FileOptions");
+  public static final WireType MESSAGE_OPTIONS = WireType.get("google.protobuf.MessageOptions");
+  public static final WireType FIELD_OPTIONS = WireType.get("google.protobuf.FieldOptions");
+  public static final WireType ENUM_OPTIONS = WireType.get("google.protobuf.EnumOptions");
+  public static final WireType ENUM_VALUE_OPTIONS
+      = WireType.get("google.protobuf.EnumValueOptions");
+  public static final WireType SERVICE_OPTIONS = WireType.get("google.protobuf.ServiceOptions");
+  public static final WireType METHOD_OPTIONS = WireType.get("google.protobuf.MethodOptions");
+
   private final WireType optionType;
   private final ImmutableList<OptionElement> optionElements;
   private ImmutableMap<Field, Object> map;

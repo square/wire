@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.WireType;
 import com.squareup.wire.internal.protoparser.RpcElement;
 import com.squareup.wire.internal.protoparser.ServiceElement;
 import java.util.NavigableSet;
@@ -40,7 +41,7 @@ public final class Service {
       rpcs.add(new Rpc(rpc));
     }
 
-    Options options = new Options(WireType.SERVICE_OPTIONS, element.options());
+    Options options = new Options(Options.SERVICE_OPTIONS, element.options());
 
     return new Service(wireType, element, rpcs.build(), options);
   }

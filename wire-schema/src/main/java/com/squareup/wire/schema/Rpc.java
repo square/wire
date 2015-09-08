@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema;
 
+import com.squareup.wire.WireType;
 import com.squareup.wire.internal.protoparser.RpcElement;
 
 public final class Rpc {
@@ -25,7 +26,7 @@ public final class Rpc {
 
   Rpc(RpcElement element) {
     this.element = element;
-    this.options = new Options(WireType.METHOD_OPTIONS, element.options());
+    this.options = new Options(Options.METHOD_OPTIONS, element.options());
   }
 
   public Location location() {

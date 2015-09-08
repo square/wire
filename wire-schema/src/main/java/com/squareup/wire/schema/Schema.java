@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.squareup.wire.WireAdapter;
+import com.squareup.wire.WireType;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire;
 
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public final class WireTypeTest {
-  @Test public void getScalar() throws Exception {
-    assertThat(WireType.getScalar("int32")).isSameAs(WireType.INT32);
+  @Test public void get() throws Exception {
+    assertThat(WireType.get("int32")).isSameAs(WireType.INT32);
+    assertThat(WireType.get("Person")).isEqualTo(WireType.get("Person"));
+    assertThat(WireType.get("squareup.protos.person", "Person"))
+        .isEqualTo(WireType.get("squareup.protos.person.Person"));
+  }
+
+  @Test public void simpleName() throws Exception {
+    WireType person = WireType.get("squareup.protos.person.Person");
+    assertThat(person.simpleName()).isEqualTo("Person");
   }
 
   @Test public void scalarToString() throws Exception {
@@ -30,28 +39,41 @@ public final class WireTypeTest {
     assertThat(WireType.BYTES.toString()).isEqualTo("bytes");
   }
 
+  @Test public void nestedType() throws Exception {
+    assertThat(WireType.get("squareup.protos.person.Person").nestedType("PhoneType"))
+        .isEqualTo(WireType.get("squareup.protos.person.Person.PhoneType"));
+  }
+
+  @Test public void primitivesCannotNest() throws Exception {
+    try {
+      WireType.INT32.nestedType("PhoneType");
+      fail();
+    } catch (UnsupportedOperationException expected) {
+    }
+  }
+
   @Test public void messageToString() throws Exception {
-    WireType person = WireType.get("squareup.protos.person", "Person");
+    WireType person = WireType.get("squareup.protos.person.Person");
     assertThat(person.toString()).isEqualTo("squareup.protos.person.Person");
 
     WireType phoneType = person.nestedType("PhoneType");
     assertThat(phoneType.toString()).isEqualTo("squareup.protos.person.Person.PhoneType");
   }
 
-  @Test public void enclosingTypeName() throws Exception {
-    assertThat(WireType.STRING.enclosingType()).isNull();
+  @Test public void enclosingTypeOrPackage() throws Exception {
+    assertThat(WireType.STRING.enclosingTypeOrPackage()).isNull();
 
-    WireType person = WireType.get("squareup.protos.person", "Person");
-    assertThat(person.enclosingType()).isNull();
+    WireType person = WireType.get("squareup.protos.person.Person");
+    assertThat(person.enclosingTypeOrPackage()).isEqualTo("squareup.protos.person");
 
     WireType phoneType = person.nestedType("PhoneType");
-    assertThat(phoneType.enclosingType()).isEqualTo(person);
+    assertThat(phoneType.enclosingTypeOrPackage()).isEqualTo("squareup.protos.person.Person");
   }
 
   @Test public void isScalar() throws Exception {
     assertThat(WireType.INT32.isScalar()).isTrue();
     assertThat(WireType.STRING.isScalar()).isTrue();
     assertThat(WireType.BYTES.isScalar()).isTrue();
-    assertThat(WireType.get("squareup.protos.person", "Person").isScalar()).isFalse();
+    assertThat(WireType.get("squareup.protos.person.Person").isScalar()).isFalse();
   }
 }

@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.WireType;
 import com.squareup.wire.internal.protoparser.EnumConstantElement;
 import com.squareup.wire.internal.protoparser.EnumElement;
 import com.squareup.wire.internal.protoparser.ExtensionsElement;
@@ -45,7 +46,7 @@ public abstract class Type {
         constants.add(new EnumConstant(constant));
       }
 
-      Options options = new Options(WireType.ENUM_OPTIONS, enumElement.options());
+      Options options = new Options(Options.ENUM_OPTIONS, enumElement.options());
 
       return new EnumType(wireType, enumElement, constants.build(), options);
 
@@ -72,7 +73,7 @@ public abstract class Type {
         extensionsList.add(new Extensions(element));
       }
 
-      Options options = new Options(WireType.MESSAGE_OPTIONS, messageElement.options());
+      Options options = new Options(Options.MESSAGE_OPTIONS, messageElement.options());
 
       return new MessageType(wireType, messageElement, fields.build(), oneOfs.build(),
           nestedTypes.build(), extensionsList.build(), options);
