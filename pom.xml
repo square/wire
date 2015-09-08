@@ -45,6 +45,7 @@
 
   <modules>
     <module>wire-compiler</module>
+    <module>wire-java-generator</module>
     <module>wire-runtime</module>
     <module>wire-gson-support</module>
     <module>wire-maven-plugin</module>

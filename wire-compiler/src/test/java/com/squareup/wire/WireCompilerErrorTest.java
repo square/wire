@@ -68,8 +68,7 @@ public class WireCompilerErrorTest {
       return output;
     }
 
-    @Override public void write(File outputDirectory, JavaFile javaFile)
-        throws IOException {
+    @Override public void write(File outputDirectory, JavaFile javaFile) throws IOException {
       StringWriter writer = new StringWriter();
       writers.put(javaFile.packageName + "." + javaFile.typeSpec.name, writer);
       javaFile.writeTo(writer);
@@ -80,7 +79,7 @@ public class WireCompilerErrorTest {
    * Compile a .proto containing in a String and returns the contents of each output file,
    * indexed by class name.
    */
-  private Map<String, String> compile(String source) {
+  private Map<String, String> compile(String source) throws Exception {
     StringIO io = new StringIO("test.proto", source);
 
     CommandLineOptions options = new CommandLineOptions(".",  new File("."),
@@ -95,7 +94,7 @@ public class WireCompilerErrorTest {
     return io.getOutput();
   }
 
-  @Test public void testCorrect() throws IOException {
+  @Test public void testCorrect() throws Exception {
     Map<String, String> output = compile("package com.squareup.protos.test;\n"
         + "message Simple {\n"
         + "  optional int32 f = 1;\n"
@@ -104,7 +103,7 @@ public class WireCompilerErrorTest {
     assertThat(generatedSource).contains("public final class Simple extends Message<Simple> {");
   }
 
-  @Test public void testZeroTag() {
+  @Test public void testZeroTag() throws Exception {
     try {
       compile("package com.squareup.protos.test;\n"
           + "message Simple {\n"
@@ -118,7 +117,7 @@ public class WireCompilerErrorTest {
     }
   }
 
-  @Test public void testDuplicateTag() {
+  @Test public void testDuplicateTag() throws Exception {
     try {
       compile("package com.squareup.protos.test;\n"
           + "message Simple {\n"
@@ -134,7 +133,7 @@ public class WireCompilerErrorTest {
     }
   }
 
-  @Test public void testEnumNamespace() {
+  @Test public void testEnumNamespace() throws Exception {
     try {
       compile("package com.squareup.protos.test;\n"
           + "  message Foo {\n"
@@ -157,7 +156,7 @@ public class WireCompilerErrorTest {
     }
   }
 
-  @Test public void testNoPackageNameIsLegal() {
+  @Test public void testNoPackageNameIsLegal() throws Exception {
     Map<String, String> output = compile("message Simple { optional int32 f = 1; }");
     assertThat(output).containsKey(".Simple");
     // Output should not have a 'package' declaration.
