@@ -25,7 +25,7 @@ import java.util.Map;
 
 public final class ExtensionRegistry {
   private final Map<Class<? extends Message>, List<Extension<?, ?>>> messageToExtensions =
-      new LinkedHashMap<Class<? extends Message>, List<Extension<?, ?>>>();
+      new LinkedHashMap<>();
 
   /**
    * Creates a new instance that can encode and decode the extensions specified in
@@ -59,7 +59,7 @@ public final class ExtensionRegistry {
     Class<? extends Message> messageClass = extension.getExtendedType();
     List<Extension<?, ?>> extensions = messageToExtensions.get(messageClass);
     if (extensions == null) {
-      extensions = new ArrayList<Extension<?, ?>>();
+      extensions = new ArrayList<>();
       messageToExtensions.put(messageClass, extensions);
     }
     extensions.add(extension);

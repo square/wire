@@ -33,21 +33,20 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       Wire wire, Class<M> messageType) {
     Class<B> builderType = getBuilderType(messageType);
     Constructor<B> builderCopyConstructor = getBuilderCopyConstructor(builderType, messageType);
-    Map<Integer, FieldBinding<M, B>> fieldBindings
-        = new LinkedHashMap<Integer, FieldBinding<M, B>>();
+    Map<Integer, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<>();
 
     // Create tag bindings for fields annotated with '@ProtoField'
     for (Field messageField : messageType.getDeclaredFields()) {
       ProtoField protoField = messageField.getAnnotation(ProtoField.class);
       if (protoField != null) {
         WireAdapter<?> singleAdapter = singleAdapter(wire, messageField, protoField);
-        fieldBindings.put(protoField.tag(), new FieldBinding<M, B>(
-            protoField, singleAdapter, messageField, builderType));
+        fieldBindings.put(protoField.tag(),
+            new FieldBinding<>(protoField, singleAdapter, messageField, builderType));
       }
     }
 
     Map<Integer, RegisteredExtension> extensions = Collections.emptyMap();
-    return new RuntimeMessageAdapter<M, B>(wire, messageType, builderType, builderCopyConstructor,
+    return new RuntimeMessageAdapter<>(wire, messageType, builderType, builderCopyConstructor,
         Collections.unmodifiableMap(fieldBindings), extensions);
   }
 
@@ -89,8 +88,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   }
 
   @Override public RuntimeMessageAdapter<M, B> withExtensions(ExtensionRegistry extensionRegistry) {
-    Map<Integer, RegisteredExtension> extensions =
-        new LinkedHashMap<Integer, RegisteredExtension>(this.extensions);
+    Map<Integer, RegisteredExtension> extensions = new LinkedHashMap<>(this.extensions);
 
     for (Extension<?, ?> extension : extensionRegistry.extensions(messageType)) {
       WireAdapter<?> singleAdapter = WireAdapter.get(wire, extension.getType(),
@@ -98,7 +96,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       extensions.put(extension.getTag(), new RegisteredExtension(extension, singleAdapter));
     }
 
-    return new RuntimeMessageAdapter<M, B>(wire, messageType, builderType, builderCopyConstructor,
+    return new RuntimeMessageAdapter<>(wire, messageType, builderType, builderCopyConstructor,
         fieldBindings, Collections.unmodifiableMap(extensions));
   }
 
@@ -113,9 +111,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   B newBuilder() {
     try {
       return builderType.newInstance();
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    } catch (InstantiationException e) {
+    } catch (IllegalAccessException | InstantiationException e) {
       throw new AssertionError(e);
     }
   }
@@ -123,11 +119,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   B newBuilder(M value) {
     try {
       return builderCopyConstructor.newInstance(value);
-    } catch (InvocationTargetException e) {
-      throw new AssertionError(e);
-    } catch (InstantiationException e) {
-      throw new AssertionError(e);
-    } catch (IllegalAccessException e) {
+    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
       throw new AssertionError(e);
     }
   }

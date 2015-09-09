@@ -43,7 +43,7 @@ public class CommandLineOptionsTest {
     CommandLineOptions options = new CommandLineOptions();
     assertThat(options.sourceFileNames).isEmpty();
 
-    List<String> expected = new ArrayList<String>();
+    List<String> expected = new ArrayList<>();
     options = new CommandLineOptions("baz", "qux");
     expected.add("baz");
     expected.add("qux");
@@ -59,7 +59,7 @@ public class CommandLineOptionsTest {
       out.close();
 
       CommandLineOptions options = new CommandLineOptions("--files=" + tmpFile.getAbsolutePath());
-      List<String> expected = new ArrayList<String>();
+      List<String> expected = new ArrayList<>();
       expected.add("foo");
       expected.add("bar");
       assertThat(options.sourceFileNames).isEqualTo(expected);
@@ -78,7 +78,7 @@ public class CommandLineOptionsTest {
     assertThat(options.roots).isEmpty();
 
     options = new CommandLineOptions("--roots=com.example.foo");
-    List<String> expected = new ArrayList<String>();
+    List<String> expected = new ArrayList<>();
     expected.add("com.example.foo");
     assertThat(options.roots).isEqualTo(expected);
     options = new CommandLineOptions("--roots=com.example.foo,com.example.bar");
@@ -106,7 +106,7 @@ public class CommandLineOptionsTest {
     assertThat(options.enumOptions).isEmpty();
 
     options = new CommandLineOptions("--enum_options=foo");
-    Set<String> expected = new HashSet<String>();
+    Set<String> expected = new HashSet<>();
     expected.add("foo");
     assertThat(options.enumOptions).isEqualTo(expected);
     options = new CommandLineOptions("--enum_options=foo,bar");
@@ -128,7 +128,7 @@ public class CommandLineOptionsTest {
     assertThat(options.serviceFactoryOptions).isEmpty();
 
     options = new CommandLineOptions("--service_factory_opt=foo");
-    List<String> expected = new ArrayList<String>();
+    List<String> expected = new ArrayList<>();
     expected.add("foo");
     assertThat(options.serviceFactoryOptions).isEqualTo(expected);
     options = new CommandLineOptions("--service_factory_opt=foo", "--service_factory_opt=bar");

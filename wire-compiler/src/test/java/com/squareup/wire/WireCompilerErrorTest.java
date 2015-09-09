@@ -41,7 +41,7 @@ public class WireCompilerErrorTest {
   static class StringIO implements Loader.IO, JavaGenerator.IO {
     private final String protoFileName;
     private final String source;
-    private final Map<String, StringWriter> writers = new LinkedHashMap<String, StringWriter>();
+    private final Map<String, StringWriter> writers = new LinkedHashMap<>();
 
     public StringIO(String protoFileName, String source) {
       this.protoFileName = protoFileName;
@@ -61,7 +61,7 @@ public class WireCompilerErrorTest {
     }
 
     public Map<String, String> getOutput() {
-      Map<String, String> output = new LinkedHashMap<String, String>();
+      Map<String, String> output = new LinkedHashMap<>();
       for (Map.Entry<String, StringWriter> entry : writers.entrySet()) {
         output.put(entry.getKey(), entry.getValue().toString());
       }

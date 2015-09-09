@@ -43,7 +43,7 @@ public final class WireType {
 
   private static final Map<String, WireType> SCALAR_TYPES;
   static {
-    Map<String, WireType> scalarTypes = new LinkedHashMap<String, WireType>();
+    Map<String, WireType> scalarTypes = new LinkedHashMap<>();
     scalarTypes.put(BOOL.string, BOOL);
     scalarTypes.put(BYTES.string, BYTES);
     scalarTypes.put(DOUBLE.string, DOUBLE);

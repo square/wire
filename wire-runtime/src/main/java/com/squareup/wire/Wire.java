@@ -25,15 +25,12 @@ import java.util.Map;
  * Encode and decode Wire protocol buffers.
  */
 public final class Wire {
-  private final ThreadLocal<List<DeferredAdapter<?>>> reentrantCalls
-      = new ThreadLocal<List<DeferredAdapter<?>>>();
+  private final ThreadLocal<List<DeferredAdapter<?>>> reentrantCalls = new ThreadLocal<>();
   private final LinkedHashMap<Class<? extends Message<?>>,
       RuntimeMessageAdapter<? extends Message<?>, ? extends Message.Builder<?, ?>>> messageAdapters
-      = new LinkedHashMap<Class<? extends Message<?>>, RuntimeMessageAdapter<? extends Message<?>,
-      ? extends Message.Builder<?, ?>>>();
+      = new LinkedHashMap<>();
   private final Map<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>
-      enumAdapters = new LinkedHashMap<Class<? extends ProtoEnum>,
-      RuntimeEnumAdapter<? extends ProtoEnum>>();
+      enumAdapters = new LinkedHashMap<>();
   private final ExtensionRegistry registry;
 
   public Wire() {
@@ -48,7 +45,7 @@ public final class Wire {
   public <M extends Message> WireAdapter<M> adapter(Class<M> type) {
     List<DeferredAdapter<?>> deferredAdapters = reentrantCalls.get();
     if (deferredAdapters == null) {
-      deferredAdapters = new ArrayList<DeferredAdapter<?>>();
+      deferredAdapters = new ArrayList<>();
       reentrantCalls.set(deferredAdapters);
     } else {
       // Check that this isn't a reentrant call.
@@ -60,7 +57,7 @@ public final class Wire {
       }
     }
 
-    DeferredAdapter<M> deferredAdapter = new DeferredAdapter<M>(type);
+    DeferredAdapter<M> deferredAdapter = new DeferredAdapter<>(type);
     deferredAdapters.add(deferredAdapter);
     try {
       WireAdapter<M> adapter = messageAdapter(type);
@@ -96,7 +93,7 @@ public final class Wire {
   synchronized <E extends ProtoEnum> RuntimeEnumAdapter<E> enumAdapter(Class<E> enumClass) {
     RuntimeEnumAdapter<E> adapter = (RuntimeEnumAdapter<E>) enumAdapters.get(enumClass);
     if (adapter == null) {
-      adapter = new RuntimeEnumAdapter<E>(enumClass);
+      adapter = new RuntimeEnumAdapter<>(enumClass);
       enumAdapters.put(enumClass, adapter);
     }
     return adapter;
