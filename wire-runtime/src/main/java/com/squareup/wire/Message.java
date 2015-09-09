@@ -84,7 +84,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     if (list == null) {
       throw new NullPointerException("list == null");
     }
-    return new ArrayList<T>(list);
+    return new ArrayList<>(list);
   }
 
   /** Utility method to return an immutable copy of a given List. Used by generated code. */
@@ -95,7 +95,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     if (list == Collections.emptyList() || list instanceof ImmutableList) {
       return list;
     }
-    return Collections.unmodifiableList(new ArrayList<T>(list));
+    return Collections.unmodifiableList(new ArrayList<>(list));
   }
 
   /**

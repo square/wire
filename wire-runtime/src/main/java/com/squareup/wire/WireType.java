@@ -18,7 +18,8 @@ package com.squareup.wire;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
+
+import static com.squareup.wire.Preconditions.checkNotNull;
 
 /**
  * Names a protocol buffer message, enumerated type, service, or a scalar. This class models a
@@ -43,7 +44,7 @@ public final class WireType {
 
   private static final Map<String, WireType> SCALAR_TYPES;
   static {
-    Map<String, WireType> scalarTypes = new LinkedHashMap<String, WireType>();
+    Map<String, WireType> scalarTypes = new LinkedHashMap<>();
     scalarTypes.put(BOOL.string, BOOL);
     scalarTypes.put(BYTES.string, BYTES);
     scalarTypes.put(DOUBLE.string, DOUBLE);
@@ -66,6 +67,7 @@ public final class WireType {
   private final String string;
 
   private WireType(boolean isScalar, String string) {
+    checkNotNull(string, "string == null");
     this.isScalar = isScalar;
     this.string = string;
   }
@@ -113,7 +115,7 @@ public final class WireType {
 
   @Override public boolean equals(Object o) {
     return o instanceof WireType
-        && Objects.equals(((WireType) o).string, string);
+        && string.equals(((WireType) o).string);
   }
 
   @Override public int hashCode() {

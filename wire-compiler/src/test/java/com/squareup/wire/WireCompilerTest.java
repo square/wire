@@ -68,7 +68,7 @@ public class WireCompilerTest {
 
   private void testProto(String[] sources, String[] outputs,
       String serviceFactory, String... options) throws Exception {
-    List<String> args = new ArrayList<String>();
+    List<String> args = new ArrayList<>();
     args.add("--proto_path=../wire-runtime/src/test/proto");
     args.add("--java_out=" + testDir.getAbsolutePath());
     args.add("--enum_options=squareup.protos.custom_options.enum_value_option,"
@@ -640,7 +640,7 @@ public class WireCompilerTest {
   }
 
   private List<String> getAllFiles(File root) {
-    List<String> files = new ArrayList<String>();
+    List<String> files = new ArrayList<>();
     getAllFilesHelper(root, files);
     return files;
   }

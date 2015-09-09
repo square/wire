@@ -336,7 +336,7 @@ public abstract class WireAdapter<E> {
 
   private static final Map<WireType, WireAdapter<?>> TYPE_TO_ADAPTER;
   static {
-    Map<WireType, WireAdapter<?>> map = new LinkedHashMap<WireType, WireAdapter<?>>();
+    Map<WireType, WireAdapter<?>> map = new LinkedHashMap<>();
     map.put(WireType.BOOL, WireAdapter.BOOL);
     map.put(WireType.BYTES, WireAdapter.BYTES);
     map.put(WireType.DOUBLE, WireAdapter.DOUBLE);

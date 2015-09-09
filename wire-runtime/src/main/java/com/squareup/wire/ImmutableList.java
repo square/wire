@@ -26,7 +26,7 @@ import java.util.RandomAccess;
 /** An immutable list that avoids copies during decoding. */
 final class ImmutableList<T> extends AbstractList<T>
     implements Cloneable, RandomAccess, Serializable {
-  final List<T> list = new ArrayList<T>();
+  final List<T> list = new ArrayList<>();
 
   @Override public Object clone() {
     return this;

@@ -177,7 +177,7 @@ final class TagMap {
   }
 
   public Object get(Extension<?, ?> targetExtension) {
-    List<Object> list = new ArrayList<Object>();
+    List<Object> list = new ArrayList<>();
 
     for (int i = 0; i < size; i++) {
       Extension<?, ?> sourceExtension = extensions[i];
@@ -230,7 +230,7 @@ final class TagMap {
 
   /** Returns a set of the unique, known extensions in use by this map. */
   public Set<Extension<?, ?>> extensions(boolean includeUnknown) {
-    Set<Extension<?, ?>> result = new LinkedHashSet<Extension<?, ?>>();
+    Set<Extension<?, ?>> result = new LinkedHashSet<>();
     for (int i = 0; i < size; i++) {
       if (includeUnknown || !extensions[i].isUnknown()) result.add(extensions[i]);
     }

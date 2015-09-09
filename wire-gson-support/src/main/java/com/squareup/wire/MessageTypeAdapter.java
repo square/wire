@@ -62,13 +62,13 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
     this.gson = gson;
     this.messageAdapter = wire.messageAdapter((Class<M>) type.getRawType());
 
-    Map<String, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<String, FieldBinding<M, B>>();
+    Map<String, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<>();
     for (FieldBinding<M, B> binding : messageAdapter.fieldBindings().values()) {
       fieldBindings.put(binding.name, binding);
     }
     this.fieldBindings = unmodifiableMap(fieldBindings);
 
-    Map<String, RegisteredExtension> extensions = new LinkedHashMap<String, RegisteredExtension>();
+    Map<String, RegisteredExtension> extensions = new LinkedHashMap<>();
     for (RegisteredExtension extension : messageAdapter.extensions().values()) {
       extensions.put(extension.name, extension);
     }
@@ -205,7 +205,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
 
   private Object parseValue(Label label, Type valueType, JsonElement valueElement) {
     if (label.isRepeated()) {
-      List<Object> valueList = new ArrayList<Object>();
+      List<Object> valueList = new ArrayList<>();
       for (JsonElement element : valueElement.getAsJsonArray()) {
         valueList.add(readJson(valueType, element));
       }
