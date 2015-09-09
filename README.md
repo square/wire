@@ -83,7 +83,7 @@ following compiler flag:
 
 `--service_factory=`*fully_qualified_class_name*
 
-The named class must be on the classpath, must implment the `com.squareup.wire.java.ServiceFactory`
+The named class must be on the classpath, must implement the `com.squareup.wire.java.ServiceFactory`
 interface class, and must have a public no-arguments constructor.
 
 Three experimental sample implementations are currenly bundled with the compiler,
