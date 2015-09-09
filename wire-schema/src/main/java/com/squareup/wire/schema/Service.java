@@ -17,8 +17,8 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.WireType;
-import com.squareup.wire.internal.protoparser.RpcElement;
-import com.squareup.wire.internal.protoparser.ServiceElement;
+import com.squareup.wire.schema.internal.parser.RpcElement;
+import com.squareup.wire.schema.internal.parser.ServiceElement;
 import java.util.NavigableSet;
 
 public final class Service {

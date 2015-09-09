@@ -21,7 +21,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.squareup.wire.WireType;
-import com.squareup.wire.internal.Util;
+import com.squareup.wire.schema.internal.Util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

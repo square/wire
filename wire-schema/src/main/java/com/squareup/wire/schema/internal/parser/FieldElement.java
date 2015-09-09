@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Square, Inc.
+ * Copyright (C) 2014 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,59 +13,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Location;
+import java.util.Locale;
 
-import static com.squareup.wire.internal.Util.appendDocumentation;
-import static com.squareup.wire.internal.Util.appendIndented;
+import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
-public abstract class ServiceElement {
+public abstract class FieldElement {
   public static Builder builder(Location location) {
-    return new AutoValue_ServiceElement.Builder()
-        .location(location)
+    return new AutoValue_FieldElement.Builder()
         .documentation("")
-        .rpcs(ImmutableList.<RpcElement>of())
-        .options(ImmutableList.<OptionElement>of());
+        .options(ImmutableList.<OptionElement>of())
+        .location(location);
   }
 
   public abstract Location location();
+  @Nullable public abstract Field.Label label();
+  public abstract String type();
   public abstract String name();
+  public abstract int tag();
   public abstract String documentation();
-  public abstract ImmutableList<RpcElement> rpcs();
   public abstract ImmutableList<OptionElement> options();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    builder.append("service ")
+    if (label() != null) {
+      builder.append(label().name().toLowerCase(Locale.US)).append(' ');
+    }
+    builder.append(type())
+        .append(' ')
         .append(name())
-        .append(" {");
+        .append(" = ")
+        .append(tag());
     if (!options().isEmpty()) {
-      builder.append('\n');
+      builder.append(" [\n");
       for (OptionElement option : options()) {
-        appendIndented(builder, option.toSchemaDeclaration());
+        appendIndented(builder, option.toSchema());
       }
+      builder.append(']');
     }
-    if (!rpcs().isEmpty()) {
-      builder.append('\n');
-      for (RpcElement rpc : rpcs()) {
-        appendIndented(builder, rpc.toSchema());
-      }
-    }
-    return builder.append("}\n").toString();
+    return builder.append(";\n").toString();
   }
 
   @AutoValue.Builder
   public interface Builder {
     Builder location(Location location);
+    Builder label(@Nullable Field.Label label);
+    Builder type(String type);
     Builder name(String name);
+    Builder tag(int tag);
     Builder documentation(String documentation);
-    Builder rpcs(ImmutableList<RpcElement> rpcs);
     Builder options(ImmutableList<OptionElement> options);
-    ServiceElement build();
+    FieldElement build();
   }
 }

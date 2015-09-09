@@ -13,41 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 
-import static com.squareup.wire.internal.Util.appendDocumentation;
-import static com.squareup.wire.internal.Util.appendIndented;
+import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
-public abstract class MessageElement implements TypeElement {
+public abstract class EnumElement implements TypeElement {
   public static Builder builder(Location location) {
-    return new AutoValue_MessageElement.Builder()
+    return new AutoValue_EnumElement.Builder()
         .location(location)
         .documentation("")
-        .fields(ImmutableList.<FieldElement>of())
-        .oneOfs(ImmutableList.<OneOfElement>of())
-        .nestedTypes(ImmutableList.<TypeElement>of())
-        .extensions(ImmutableList.<ExtensionsElement>of())
+        .constants(ImmutableList.<EnumConstantElement>of())
         .options(ImmutableList.<OptionElement>of());
   }
 
   @Override public abstract Location location();
   @Override public abstract String name();
   @Override public abstract String documentation();
-  @Override public abstract ImmutableList<TypeElement> nestedTypes();
   @Override public abstract ImmutableList<OptionElement> options();
-  public abstract ImmutableList<FieldElement> fields();
-  public abstract ImmutableList<OneOfElement> oneOfs();
-  public abstract ImmutableList<ExtensionsElement> extensions();
+  @Override public final ImmutableList<TypeElement> nestedTypes() {
+    return ImmutableList.of(); // Enums do not allow nested type declarations.
+  }
+
+  public abstract ImmutableList<EnumConstantElement> constants();
 
   @Override public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    builder.append("message ")
+    builder.append("enum ")
         .append(name())
         .append(" {");
     if (!options().isEmpty()) {
@@ -56,43 +54,22 @@ public abstract class MessageElement implements TypeElement {
         appendIndented(builder, option.toSchemaDeclaration());
       }
     }
-    if (!fields().isEmpty()) {
+    if (!constants().isEmpty()) {
       builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
-      }
-    }
-    if (!oneOfs().isEmpty()) {
-      builder.append('\n');
-      for (OneOfElement oneOf : oneOfs()) {
-        appendIndented(builder, oneOf.toSchema());
-      }
-    }
-    if (!extensions().isEmpty()) {
-      builder.append('\n');
-      for (ExtensionsElement extension : extensions()) {
-        appendIndented(builder, extension.toSchema());
-      }
-    }
-    if (!nestedTypes().isEmpty()) {
-      builder.append('\n');
-      for (TypeElement type : nestedTypes()) {
-        appendIndented(builder, type.toSchema());
+      for (EnumConstantElement constant : constants()) {
+        appendIndented(builder, constant.toSchema());
       }
     }
     return builder.append("}\n").toString();
   }
 
   @AutoValue.Builder
-  public interface Builder {
+  public interface  Builder {
     Builder location(Location location);
     Builder name(String name);
     Builder documentation(String documentation);
-    Builder fields(ImmutableList<FieldElement> fields);
-    Builder oneOfs(ImmutableList<OneOfElement> oneOfs);
-    Builder nestedTypes(ImmutableList<TypeElement> types);
-    Builder extensions(ImmutableList<ExtensionsElement> extensions);
+    Builder constants(ImmutableList<EnumConstantElement> constants);
     Builder options(ImmutableList<OptionElement> options);
-    MessageElement build();
+    EnumElement build();
   }
 }

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.schema.internal.parser;
 
-import com.squareup.wire.internal.Util;
+import com.squareup.wire.schema.internal.Util;
 import com.squareup.wire.schema.Location;
 import org.junit.Test;
 

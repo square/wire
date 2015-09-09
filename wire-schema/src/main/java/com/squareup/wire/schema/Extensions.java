@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.internal.Util;
-import com.squareup.wire.internal.protoparser.ExtensionsElement;
+import com.squareup.wire.schema.internal.Util;
+import com.squareup.wire.schema.internal.parser.ExtensionsElement;
 
 public final class Extensions {
   private final ExtensionsElement element;
