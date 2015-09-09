@@ -18,13 +18,11 @@ package com.squareup.wire;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.SimpleServiceFactory;
-import com.squareup.wire.schema.Loader;
 import com.squareup.wire.schema.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -664,14 +662,7 @@ public class WireCompilerTest {
     CommandLineOptions options = new CommandLineOptions(args);
     logger = new StringWireLogger(options.quiet);
     FileSystem fs = FileSystems.getDefault();
-    List<String> protoPaths = options.protoPaths;
-    List<Path> paths = new ArrayList<>(protoPaths.size());
-    for (String path : protoPaths) {
-      paths.add(fs.getPath(path));
-    }
-    Loader loader = new Loader(paths);
-    new WireCompiler(options, fs, loader, JavaGenerator.IO.DEFAULT,
-        logger).compile();
+    new WireCompiler(options, fs, JavaGenerator.IO.DEFAULT, logger).compile();
   }
 
   private void assertFilesMatch(File outputDir, String path) throws IOException {

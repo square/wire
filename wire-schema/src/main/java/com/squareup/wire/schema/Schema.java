@@ -27,7 +27,7 @@ import java.util.Map;
  * A collection of .proto files that describe a set of messages. A schema is <i>linked</i>: each
  * field's type name is resolved to the corresponding type definition.
  *
- * <p>Use {@link Loader} to load a schema from source files.
+ * <p>Use {@link SchemaLoader} to load a schema from source files.
  */
 public final class Schema {
   private final ImmutableList<ProtoFile> protoFiles;

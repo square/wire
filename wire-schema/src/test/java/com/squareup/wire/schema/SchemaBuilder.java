@@ -15,27 +15,24 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.WireAdapter;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+import com.squareup.wire.WireAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import okio.Okio;
 import okio.Source;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 
 /** Builds schemas for testing. */
 class SchemaBuilder {
   final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
   final Path root = fs.getPath("/");
-  final List<Path> files = new ArrayList<>();
+  final SchemaLoader schemaLoader = new SchemaLoader().addDirectory(root);
 
   public SchemaBuilder add(String name, String protoFile) {
     Path path = root.resolve(name);
@@ -48,7 +45,7 @@ class SchemaBuilder {
     } catch (IOException e) {
       throw new AssertionError(e);
     }
-    files.add(path);
+    schemaLoader.addProto(path);
     return this;
   }
 
@@ -61,9 +58,8 @@ class SchemaBuilder {
   }
 
   public Schema build() {
-    Loader loader = new Loader(singletonList(root));
     try {
-      return loader.load(files);
+      return schemaLoader.load();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

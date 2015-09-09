@@ -16,36 +16,40 @@
 package com.squareup.wire.schema;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import static org.junit.Assert.fail;
 
-public final class LoaderTest {
+public final class SchemaLoaderTest {
   @Rule public final TemporaryFolder tempFolder1 = new TemporaryFolder();
   @Rule public final TemporaryFolder tempFolder2 = new TemporaryFolder();
-  @Rule public final ExpectedException exception = ExpectedException.none();
 
   @Test public void locateInMultiplePaths() throws IOException {
     File file1 = tempFolder1.newFile();
     File file2 = tempFolder2.newFile();
 
-    Loader loader = new Loader(asList(
-        tempFolder1.getRoot().toPath(),
-        tempFolder2.getRoot().toPath()));
-    loader.load(asList(file1.toPath(), file2.toPath()));
+    new SchemaLoader()
+        .addDirectory(tempFolder1.getRoot())
+        .addDirectory(tempFolder2.getRoot())
+        .addProto(file1)
+        .addProto(file2)
+        .load();
   }
 
   @Test public void failLocate() throws IOException {
     File file = tempFolder2.newFile();
 
-    Loader loader = new Loader(singletonList(tempFolder1.getRoot().toPath()));
-
-    exception.expect(IOException.class);
-    loader.load(singletonList(file.toPath()));
+    SchemaLoader loader = new SchemaLoader()
+        .addDirectory(tempFolder1.getRoot())
+        .addProto(file);
+    try {
+      loader.load();
+      fail();
+    } catch (FileNotFoundException expected) {
+    }
   }
 }
