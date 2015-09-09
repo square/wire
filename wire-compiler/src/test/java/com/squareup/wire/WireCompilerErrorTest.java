@@ -19,7 +19,6 @@ import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.wire.java.JavaGenerator;
-import com.squareup.wire.schema.Loader;
 import com.squareup.wire.schema.SchemaException;
 import java.io.File;
 import java.io.IOException;
@@ -72,8 +71,7 @@ public class WireCompilerErrorTest {
     Files.write(test, source.getBytes(UTF_8));
 
     StringIO io = new StringIO();
-    new WireCompiler(options, fs, new Loader(singletonList(test.toAbsolutePath().getParent())), io,
-        new StringWireLogger(true)).compile();
+    new WireCompiler(options, fs, io, new StringWireLogger(true)).compile();
     return io.getOutput();
   }
 
