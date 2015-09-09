@@ -13,44 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Location;
 
-import static com.squareup.wire.internal.Util.appendDocumentation;
-import static com.squareup.wire.internal.Util.appendIndented;
+import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+import static com.squareup.wire.schema.internal.parser.OptionElement.formatOptionList;
 
 @AutoValue
-public abstract class OneOfElement {
-  public static Builder builder() {
-    return new AutoValue_OneOfElement.Builder()
+public abstract class EnumConstantElement {
+  public static Builder builder(Location location) {
+    return new AutoValue_EnumConstantElement.Builder()
+        .location(location)
         .documentation("")
-        .fields(ImmutableList.<FieldElement>of());
+        .options(ImmutableList.<OptionElement>of());
   }
 
+  public abstract Location location();
   public abstract String name();
+  public abstract int tag();
   public abstract String documentation();
-  public abstract ImmutableList<FieldElement> fields();
+  public abstract ImmutableList<OptionElement> options();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    builder.append("oneof ").append(name()).append(" {");
-    if (!fields().isEmpty()) {
-      builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
-      }
+    builder.append(name())
+        .append(" = ")
+        .append(tag());
+    if (!options().isEmpty()) {
+      builder.append(" [\n");
+      formatOptionList(builder, options());
+      builder.append(']');
     }
-    return builder.append("}\n").toString();
+    return builder.append(";\n").toString();
   }
 
   @AutoValue.Builder
   public interface Builder {
+    Builder location(Location location);
     Builder name(String name);
+    Builder tag(int tag);
     Builder documentation(String documentation);
-    Builder fields(ImmutableList<FieldElement> fields);
-    OneOfElement build();
+    Builder options(ImmutableList<OptionElement> options);
+    EnumConstantElement build();
   }
 }

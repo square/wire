@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Square, Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,51 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 
-import static com.squareup.wire.internal.Util.appendDocumentation;
-import static com.squareup.wire.internal.protoparser.OptionElement.formatOptionList;
+import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
-public abstract class EnumConstantElement {
+public abstract class ExtendElement {
   public static Builder builder(Location location) {
-    return new AutoValue_EnumConstantElement.Builder()
-        .location(location)
+    return new AutoValue_ExtendElement.Builder()
         .documentation("")
-        .options(ImmutableList.<OptionElement>of());
+        .fields(ImmutableList.<FieldElement>of())
+        .location(location);
   }
 
   public abstract Location location();
   public abstract String name();
-  public abstract int tag();
   public abstract String documentation();
-  public abstract ImmutableList<OptionElement> options();
+  public abstract ImmutableList<FieldElement> fields();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    builder.append(name())
-        .append(" = ")
-        .append(tag());
-    if (!options().isEmpty()) {
-      builder.append(" [\n");
-      formatOptionList(builder, options());
-      builder.append(']');
+    builder.append("extend ")
+        .append(name())
+        .append(" {");
+    if (!fields().isEmpty()) {
+      builder.append('\n');
+      for (FieldElement field : fields()) {
+        appendIndented(builder, field.toSchema());
+      }
     }
-    return builder.append(";\n").toString();
+    return builder.append("}\n").toString();
   }
 
   @AutoValue.Builder
   public interface Builder {
     Builder location(Location location);
     Builder name(String name);
-    Builder tag(int tag);
     Builder documentation(String documentation);
-    Builder options(ImmutableList<OptionElement> options);
-    EnumConstantElement build();
+    Builder fields(ImmutableList<FieldElement> fields);
+    ExtendElement build();
   }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal;
+package com.squareup.wire.schema.internal;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;

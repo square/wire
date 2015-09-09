@@ -16,8 +16,8 @@
 package com.squareup.wire.schema;
 
 import com.google.common.base.Joiner;
-import com.squareup.wire.internal.protoparser.ProtoFileElement;
-import com.squareup.wire.internal.protoparser.ProtoParser;
+import com.squareup.wire.schema.internal.parser.ProtoFileElement;
+import com.squareup.wire.schema.internal.parser.ProtoParser;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;

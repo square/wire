@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal;
+package com.squareup.wire.schema.internal;
 
 import org.junit.Test;
 
-import static com.squareup.wire.internal.Util.appendDocumentation;
-import static com.squareup.wire.internal.Util.appendIndented;
+import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+import static com.squareup.wire.schema.internal.Util.appendIndented;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class UtilTest {

@@ -16,8 +16,8 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.internal.protoparser.FieldElement;
-import com.squareup.wire.internal.protoparser.OneOfElement;
+import com.squareup.wire.schema.internal.parser.FieldElement;
+import com.squareup.wire.schema.internal.parser.OneOfElement;
 
 public final class OneOf {
   private final OneOfElement element;

@@ -17,13 +17,13 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.WireType;
-import com.squareup.wire.internal.protoparser.EnumConstantElement;
-import com.squareup.wire.internal.protoparser.EnumElement;
-import com.squareup.wire.internal.protoparser.ExtensionsElement;
-import com.squareup.wire.internal.protoparser.FieldElement;
-import com.squareup.wire.internal.protoparser.MessageElement;
-import com.squareup.wire.internal.protoparser.OneOfElement;
-import com.squareup.wire.internal.protoparser.TypeElement;
+import com.squareup.wire.schema.internal.parser.EnumConstantElement;
+import com.squareup.wire.schema.internal.parser.EnumElement;
+import com.squareup.wire.schema.internal.parser.ExtensionsElement;
+import com.squareup.wire.schema.internal.parser.FieldElement;
+import com.squareup.wire.schema.internal.parser.MessageElement;
+import com.squareup.wire.schema.internal.parser.OneOfElement;
+import com.squareup.wire.schema.internal.parser.TypeElement;
 import java.util.NavigableSet;
 
 public abstract class Type {

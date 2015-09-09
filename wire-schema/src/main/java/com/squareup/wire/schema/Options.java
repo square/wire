@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.squareup.wire.WireType;
-import com.squareup.wire.internal.protoparser.OptionElement;
+import com.squareup.wire.schema.internal.parser.OptionElement;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;

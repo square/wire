@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Square, Inc.
+ * Copyright (C) 2014 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,42 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 
-import static com.squareup.wire.internal.Util.appendDocumentation;
-import static com.squareup.wire.internal.Util.appendIndented;
+import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
-public abstract class ExtendElement {
+public abstract class RpcElement {
   public static Builder builder(Location location) {
-    return new AutoValue_ExtendElement.Builder()
+    return new AutoValue_RpcElement.Builder()
         .documentation("")
-        .fields(ImmutableList.<FieldElement>of())
-        .location(location);
+        .location(location)
+        .options(ImmutableList.<OptionElement>of());
   }
 
   public abstract Location location();
   public abstract String name();
   public abstract String documentation();
-  public abstract ImmutableList<FieldElement> fields();
+  public abstract String requestType();
+  public abstract String responseType();
+  public abstract ImmutableList<OptionElement> options();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    builder.append("extend ")
+    builder.append("rpc ")
         .append(name())
-        .append(" {");
-    if (!fields().isEmpty()) {
-      builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
+        .append(" (")
+        .append(requestType())
+        .append(") returns (")
+        .append(responseType())
+        .append(')');
+    if (!options().isEmpty()) {
+      builder.append(" {\n");
+      for (OptionElement option : options()) {
+        appendIndented(builder, option.toSchemaDeclaration());
       }
+      builder.append("}");
     }
-    return builder.append("}\n").toString();
+    return builder.append(";\n").toString();
   }
 
   @AutoValue.Builder
@@ -56,7 +63,9 @@ public abstract class ExtendElement {
     Builder location(Location location);
     Builder name(String name);
     Builder documentation(String documentation);
-    Builder fields(ImmutableList<FieldElement> fields);
-    ExtendElement build();
+    Builder requestType(String requestType);
+    Builder responseType(String responseType);
+    Builder options(ImmutableList<OptionElement> options);
+    RpcElement build();
   }
 }

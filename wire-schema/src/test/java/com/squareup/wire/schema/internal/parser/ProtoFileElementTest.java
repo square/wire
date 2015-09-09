@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.schema.internal.parser;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.internal.protoparser.OptionElement.Kind;
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
 import org.junit.Test;
 

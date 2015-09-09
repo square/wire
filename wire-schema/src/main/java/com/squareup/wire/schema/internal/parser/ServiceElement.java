@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Square, Inc.
+ * Copyright (C) 2013 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,49 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 
-import static com.squareup.wire.internal.Util.appendDocumentation;
-import static com.squareup.wire.internal.Util.appendIndented;
+import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
-public abstract class RpcElement {
+public abstract class ServiceElement {
   public static Builder builder(Location location) {
-    return new AutoValue_RpcElement.Builder()
-        .documentation("")
+    return new AutoValue_ServiceElement.Builder()
         .location(location)
+        .documentation("")
+        .rpcs(ImmutableList.<RpcElement>of())
         .options(ImmutableList.<OptionElement>of());
   }
 
   public abstract Location location();
   public abstract String name();
   public abstract String documentation();
-  public abstract String requestType();
-  public abstract String responseType();
+  public abstract ImmutableList<RpcElement> rpcs();
   public abstract ImmutableList<OptionElement> options();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    builder.append("rpc ")
+    builder.append("service ")
         .append(name())
-        .append(" (")
-        .append(requestType())
-        .append(") returns (")
-        .append(responseType())
-        .append(')');
+        .append(" {");
     if (!options().isEmpty()) {
-      builder.append(" {\n");
+      builder.append('\n');
       for (OptionElement option : options()) {
         appendIndented(builder, option.toSchemaDeclaration());
       }
-      builder.append("}");
     }
-    return builder.append(";\n").toString();
+    if (!rpcs().isEmpty()) {
+      builder.append('\n');
+      for (RpcElement rpc : rpcs()) {
+        appendIndented(builder, rpc.toSchema());
+      }
+    }
+    return builder.append("}\n").toString();
   }
 
   @AutoValue.Builder
@@ -63,9 +64,8 @@ public abstract class RpcElement {
     Builder location(Location location);
     Builder name(String name);
     Builder documentation(String documentation);
-    Builder requestType(String requestType);
-    Builder responseType(String responseType);
+    Builder rpcs(ImmutableList<RpcElement> rpcs);
     Builder options(ImmutableList<OptionElement> options);
-    RpcElement build();
+    ServiceElement build();
   }
 }

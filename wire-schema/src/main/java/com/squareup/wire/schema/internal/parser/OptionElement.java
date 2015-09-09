@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal.protoparser;
+package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.squareup.wire.internal.Util.appendIndented;
+import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class OptionElement {
