@@ -40,5 +40,11 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.jimfs</groupId>
+      <artifactId>jimfs</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

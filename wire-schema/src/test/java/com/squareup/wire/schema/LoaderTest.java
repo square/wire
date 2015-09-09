@@ -15,14 +15,15 @@
  */
 package com.squareup.wire.schema;
 
+import java.io.File;
+import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 public final class LoaderTest {
   @Rule public final TemporaryFolder tempFolder1 = new TemporaryFolder();
@@ -33,17 +34,18 @@ public final class LoaderTest {
     File file1 = tempFolder1.newFile();
     File file2 = tempFolder2.newFile();
 
-    Loader loader = Loader.forSearchPaths(
-        Arrays.asList(tempFolder1.getRoot().getPath(), tempFolder2.getRoot().getPath()));
-    loader.load(Arrays.asList(file1.getName(), file2.getName()));
+    Loader loader = new Loader(asList(
+        tempFolder1.getRoot().toPath(),
+        tempFolder2.getRoot().toPath()));
+    loader.load(asList(file1.toPath(), file2.toPath()));
   }
 
   @Test public void failLocate() throws IOException {
     File file = tempFolder2.newFile();
 
-    Loader loader = Loader.forSearchPaths(Arrays.asList(tempFolder1.getRoot().getPath()));
+    Loader loader = new Loader(singletonList(tempFolder1.getRoot().toPath()));
 
     exception.expect(IOException.class);
-    loader.load(Arrays.asList(file.getName()));
+    loader.load(singletonList(file.toPath()));
   }
 }
