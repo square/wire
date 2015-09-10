@@ -15,13 +15,19 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.base.Charsets;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class SchemaLoaderTest {
@@ -48,6 +54,37 @@ public final class SchemaLoaderTest {
         .addProto(file);
     try {
       loader.load();
+      fail();
+    } catch (FileNotFoundException expected) {
+    }
+  }
+
+  @Test public void locateInZipFile() throws IOException {
+    File file = tempFolder1.newFile();
+    ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
+    zipOutputStream.putNextEntry(new ZipEntry("a/b/message.proto"));
+    zipOutputStream.write("message Message {}".getBytes(Charsets.UTF_8));
+    zipOutputStream.close();
+
+    Schema schema = new SchemaLoader()
+        .addDirectory(file)
+        .addProto(Paths.get("a", "b", "message.proto"))
+        .load();
+    assertThat(schema.getType("Message")).isNotNull();
+  }
+
+  @Test public void failLocateInZipFile() throws IOException {
+    File file = tempFolder1.newFile();
+    ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
+    zipOutputStream.putNextEntry(new ZipEntry("a/b/trix.proto"));
+    zipOutputStream.write("message Trix {}".getBytes(Charsets.UTF_8));
+    zipOutputStream.close();
+
+    try {
+      new SchemaLoader()
+          .addDirectory(file)
+          .addProto(Paths.get("a", "b", "rabbit_food.proto"))
+          .load();
       fail();
     } catch (FileNotFoundException expected) {
     }
