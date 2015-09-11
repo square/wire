@@ -1,7 +1,6 @@
 package com.squareup.wire;
 
 import com.google.common.collect.Lists;
-import com.squareup.wire.java.SimpleServiceFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -115,27 +114,5 @@ public class CommandLineOptionsTest {
     options = new CommandLineOptions("--enum_options=foo,bar");
     expected.add("bar");
     assertThat(options.enumOptions).isEqualTo(expected);
-  }
-
-  @Test public void serviceFactory() throws Exception {
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.serviceFactory).isNull();
-
-    String name = SimpleServiceFactory.class.getName();
-    options = new CommandLineOptions("--service_factory=" + name);
-    assertThat(options.serviceFactory).isInstanceOf(SimpleServiceFactory.class);
-  }
-
-  @Test public void serviceFactoryOptions() throws Exception {
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.serviceFactoryOptions).isEmpty();
-
-    options = new CommandLineOptions("--service_factory_opt=foo");
-    List<String> expected = new ArrayList<>();
-    expected.add("foo");
-    assertThat(options.serviceFactoryOptions).isEqualTo(expected);
-    options = new CommandLineOptions("--service_factory_opt=foo", "--service_factory_opt=bar");
-    expected.add("bar");
-    assertThat(options.serviceFactoryOptions).isEqualTo(expected);
   }
 }

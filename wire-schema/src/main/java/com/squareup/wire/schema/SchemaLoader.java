@@ -15,9 +15,6 @@
  */
 package com.squareup.wire.schema;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ProtoParser;
 import java.io.File;
@@ -27,7 +24,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,14 +42,8 @@ import okio.Source;
  * relative to the root of the archive.
  */
 public final class SchemaLoader {
-  private static final Function<File, Path> FILE_TO_PATH = new Function<File, Path>() {
-    @Override public Path apply(File file) {
-      return file.toPath();
-    }
-  };
-
-  private final ImmutableList.Builder<Path> directories = ImmutableList.builder();
-  private final ImmutableList.Builder<Path> protos = ImmutableList.builder();
+  private final List<Path> directories = new ArrayList<>();
+  private final List<Path> protos = new ArrayList<>();
 
   /** Open ZIP files that need to be released. Only non-empty while loading. */
   private final Map<Path, ZipFile> zipFiles = new LinkedHashMap<>();
@@ -62,21 +53,15 @@ public final class SchemaLoader {
     return addDirectory(file.toPath());
   }
 
-  /** Add directories from which proto files will be loaded. */
-  public SchemaLoader addDirectories(Collection<? extends File> files) {
-    return addDirectories(Iterables.transform(files, FILE_TO_PATH));
-  }
-
   /** Add one or more directories from which proto files will be loaded. */
   public SchemaLoader addDirectory(Path path) {
     directories.add(path);
     return this;
   }
 
-  /** Add directories from which proto files will be loaded. */
-  public SchemaLoader addDirectories(Iterable<? extends Path> paths) {
-    directories.addAll(paths);
-    return this;
+  /** Returns a mutable list of the directories that this loader will load from. */
+  public List<Path> directories() {
+    return directories;
   }
 
   /**
@@ -88,14 +73,6 @@ public final class SchemaLoader {
   }
 
   /**
-   * Add proto files to load. Dependencies will be loaded automatically from the configured
-   * directories.
-   */
-  public SchemaLoader addProtos(Collection<? extends File> files) {
-    return addProtos(Iterables.transform(files, FILE_TO_PATH));
-  }
-
-  /**
    * Add one or more proto files to load. Dependencies will be loaded automatically from the
    * configured directories.
    */
@@ -104,17 +81,12 @@ public final class SchemaLoader {
     return this;
   }
 
-  /**
-   * Add proto files to load. Dependencies will be loaded automatically from the configured
-   * directories.
-   */
-  public SchemaLoader addProtos(Iterable<? extends Path> paths) {
-    protos.addAll(paths);
-    return this;
+  /** Returns a mutable list of the protos that this loader will load. */
+  public List<Path> protos() {
+    return protos;
   }
 
   public Schema load() throws IOException {
-    ImmutableList<Path> directories = this.directories.build();
     if (directories.isEmpty()) {
       throw new IllegalStateException("No directories added.");
     }
@@ -132,7 +104,7 @@ public final class SchemaLoader {
           }
         }
       }
-      return load(directories);
+      return loadZipsAndDirectories();
     } finally {
       for (ZipFile zipFile : zipFiles.values()) {
         try {
@@ -144,8 +116,8 @@ public final class SchemaLoader {
     }
   }
 
-  private Schema load(List<Path> directories) throws IOException {
-    Deque<Path> protos = new ArrayDeque<>(this.protos.build());
+  private Schema loadZipsAndDirectories() throws IOException {
+    Deque<Path> protos = new ArrayDeque<>(this.protos);
     if (protos.isEmpty()) {
       // TODO traverse all files in every directory.
     }

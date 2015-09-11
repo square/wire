@@ -24,7 +24,6 @@ import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaLoader;
-import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -96,17 +95,6 @@ public final class WireCompiler {
         ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.name());
         TypeSpec typeSpec = typeWriter.toTypeSpec(type);
         writeJavaFile(javaTypeName, typeSpec, type.location());
-      }
-
-      if (options.serviceFactory != null) {
-        for (Service service : protoFile.services()) {
-          TypeSpec typeSpec = options.serviceFactory.create(
-              javaGenerator, options.serviceFactoryOptions, service);
-          ClassName baseJavaTypeName = (ClassName) javaGenerator.typeName(service.type());
-          // Use 'peerClass' to track service factories that add a prefix or suffix.
-          ClassName generatedJavaTypeName = baseJavaTypeName.peerClass(typeSpec.name);
-          writeJavaFile(generatedJavaTypeName, typeSpec, service.location());
-        }
       }
 
       if (!protoFile.extendList().isEmpty()) {
