@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.java.ServiceFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -33,8 +32,6 @@ final class CommandLineOptions {
   public static final String REGISTRY_CLASS_FLAG = "--registry_class=";
   public static final String NO_OPTIONS_FLAG = "--no_options";
   public static final String ENUM_OPTIONS_FLAG = "--enum_options=";
-  public static final String SERVICE_FACTORY_FLAG = "--service_factory=";
-  public static final String SERVICE_FACTORY_OPT_FLAG = "--service_factory_opt=";
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
 
@@ -46,8 +43,6 @@ final class CommandLineOptions {
   final String registryClass;
   final boolean emitOptions;
   final Set<String> enumOptions;
-  final ServiceFactory serviceFactory;
-  final List<String> serviceFactoryOptions;
   final boolean quiet;
   final boolean dryRun;
 
@@ -55,8 +50,6 @@ final class CommandLineOptions {
       List<String> sourceFileNames, List<String> roots,
       String registryClass, boolean emitOptions,
       Set<String> enumOptions,
-      ServiceFactory serviceFactory,
-      List<String> serviceFactoryOptions,
       boolean quiet,
       boolean dryRun) {
     this.protoPaths = Arrays.asList(protoPath);
@@ -66,8 +59,6 @@ final class CommandLineOptions {
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
     this.enumOptions = enumOptions;
-    this.serviceFactory = serviceFactory;
-    this.serviceFactoryOptions = serviceFactoryOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;
   }
@@ -119,14 +110,12 @@ final class CommandLineOptions {
     int index = 0;
 
     List<String> sourceFileNames = new ArrayList<>();
-    List<String> serviceFactoryOptions = new ArrayList<>();
     List<String> roots = new ArrayList<>();
     boolean emitOptions = true;
     List<String> protoPaths = new ArrayList<>();
     String javaOut = null;
     String registryClass = null;
     List<String> enumOptionsList = new ArrayList<>();
-    ServiceFactory serviceFactory = null;
     boolean quiet = false;
     boolean dryRun = false;
 
@@ -152,11 +141,6 @@ final class CommandLineOptions {
         emitOptions = false;
       } else if (args[index].startsWith(ENUM_OPTIONS_FLAG)) {
         enumOptionsList.addAll(splitArg(args[index], ENUM_OPTIONS_FLAG.length()));
-      } else if (args[index].startsWith(SERVICE_FACTORY_FLAG)) {
-        String serviceFactoryClassName = args[index].substring(SERVICE_FACTORY_FLAG.length());
-        serviceFactory = loadServiceFactory(serviceFactoryClassName);
-      } else if (args[index].startsWith(SERVICE_FACTORY_OPT_FLAG)) {
-        serviceFactoryOptions.add(args[index].substring(SERVICE_FACTORY_OPT_FLAG.length()));
       } else if (args[index].startsWith(QUIET_FLAG)) {
         quiet = true;
       } else if (args[index].startsWith(DRY_RUN_FLAG)) {
@@ -174,42 +158,11 @@ final class CommandLineOptions {
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
     this.enumOptions = new LinkedHashSet<>(enumOptionsList);
-    this.serviceFactory = serviceFactory;
-    this.serviceFactoryOptions = serviceFactoryOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;
   }
 
-  private ServiceFactory loadServiceFactory(String className) throws WireException {
-    try {
-      Class<?> serviceFactoryClass = Class.forName(className);
-      return (ServiceFactory) serviceFactoryClass.newInstance();
-    } catch (ClassNotFoundException e) {
-      throw new WireException(
-          "Failed to load ServiceFactory: " + className, e);
-    } catch (ClassCastException e) {
-      throw new WireException(
-          "Class " + className + " does not implement ServiceFactory interface.");
-    } catch (InstantiationException e) {
-      throw new WireException(
-          "Failed to instantiate ServiceFactory: " + className, e);
-    } catch (IllegalAccessException e) {
-      throw new WireException(
-          "Failed to access ServiceFactory: " + className, e);
-    }
-  }
-
   private static List<String> splitArg(String arg, int flagLength) {
     return Arrays.asList(arg.substring(flagLength).split(","));
-  }
-
-  public List<String> protoPaths() {
-    List<String> result = protoPaths;
-    if (result == null || result.isEmpty()) {
-      result = Arrays.asList(System.getProperty("user.dir"));
-      System.err.println(CommandLineOptions.PROTO_PATH_FLAG + " flag not specified, "
-          + "using current dir " + result);
-    }
-    return result;
   }
 }

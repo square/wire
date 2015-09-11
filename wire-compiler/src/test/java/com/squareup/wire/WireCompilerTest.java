@@ -15,10 +15,7 @@
  */
 package com.squareup.wire;
 
-import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.java.JavaGenerator;
-import com.squareup.wire.java.SimpleServiceFactory;
-import com.squareup.wire.schema.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -141,12 +138,11 @@ public class WireCompilerTest {
 
   private void testProtoWithRoots(
       String[] sources, String roots, String[] outputs, String[] extraArgs) throws Exception {
-    int numFlags = 4;
+    int numFlags = 3;
     String[] args = new String[numFlags + sources.length + extraArgs.length];
     int index = 0;
     args[index++] = "--proto_path=../wire-runtime/src/test/proto";
     args[index++] = "--java_out=" + testDir.getAbsolutePath();
-    args[index++] = "--service_factory=com.squareup.wire.java.SimpleServiceFactory";
     args[index++] = "--roots=" + roots;
     for (int i = 0; i < extraArgs.length; i++) {
       args[index++] = extraArgs[i];
@@ -162,29 +158,6 @@ public class WireCompilerTest {
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
-    }
-  }
-
-  private void testLimitedServiceGeneration(String[] sources, String roots, String[] outputs,
-      String serviceSuffix) throws Exception {
-    int numFlags = 5;
-    String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
-    args[1] = "--java_out=" + testDir.getAbsolutePath();
-    args[2] = "--service_factory=com.squareup.wire.java.SimpleServiceFactory";
-    args[3] = "--service_factory_opt=" + serviceSuffix;
-    args[4] = "--roots=" + roots;
-    System.arraycopy(sources, 0, args, numFlags, sources.length);
-
-    invokeCompiler(args);
-
-    List<String> filesAfter = getAllFiles(testDir);
-    assertThat(filesAfter.size())
-        .overridingErrorMessage(filesAfter.toString())
-        .isEqualTo(outputs.length);
-
-    for (String output : outputs) {
-      assertJavaFilesMatchWithSuffix(testDir, output, serviceSuffix);
     }
   }
 
@@ -247,64 +220,6 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/oneof/OneOfMessage.java"
     };
     testProto(sources, outputs);
-  }
-
-  @Test public void testSimpleService() throws Exception {
-    String[] sources = {
-        "request_response.proto",
-        "service.proto"
-    };
-    String[] outputs = {
-        "com/squareup/services/anotherpackage/SendDataRequest.java",
-        "com/squareup/services/anotherpackage/SendDataResponse.java",
-        "com/squareup/services/ExampleService.java"
-    };
-    testProto(sources, outputs,
-        "com.squareup.wire.java.SimpleServiceFactory");
-  }
-
-  @Test public void testSimpleServiceWithPruning() throws Exception {
-    String[] sources = {
-        "request_response.proto",
-        "simple_service.proto",
-        "simple_service2.proto"
-    };
-    String[] outputs = {
-        "com/squareup/services/anotherpackage/SendDataRequest.java",
-        "com/squareup/services/anotherpackage/SendDataResponse.java",
-        "com/squareup/services/LetsDataRequest.java",
-        "com/squareup/services/LetsDataResponse.java",
-        "com/squareup/services/SimpleService.java",
-        "com/squareup/services/SimpleService2.java"
-    };
-    String roots = "com.squareup.services.SimpleService#SendSomeData,"
-        + "com.squareup.services.SimpleService2#LetsData,"
-        + "com.squareup.services.SimpleService2#SendSomeMoreData";
-    testLimitedServiceGeneration(sources, roots, outputs, "SomeEndpoints");
-  }
-
-  // Verify that the --service_factory_opt flag works correctly with --service_factory.
-  @SuppressWarnings("UnusedDeclaration")
-  public static class TestServiceFactory extends SimpleServiceFactory {
-    @Override public TypeSpec create(
-        JavaGenerator javaGenerator, List<String> options, Service service) {
-      assertThat(options).containsExactly("OPTION1", "OPTION2");
-      return super.create(javaGenerator, options, service);
-    }
-  }
-
-  @Test public void testSimpleServiceOption() throws Exception {
-    String[] sources = {
-        "request_response.proto",
-        "service.proto"
-    };
-    String[] outputs = {
-        "com/squareup/services/anotherpackage/SendDataRequest.java",
-        "com/squareup/services/anotherpackage/SendDataResponse.java",
-        "com/squareup/services/ExampleService.java"
-    };
-    testProto(sources, outputs,
-        "com.squareup.wire.WireCompilerTest$TestServiceFactory", "OPTION1", "OPTION2");
   }
 
   @Test public void testRegistry() throws Exception {
@@ -565,35 +480,6 @@ public class WireCompilerTest {
     testProtoWithRoots(sources, roots, outputs);
   }
 
-  @Test public void testServiceRoots1() throws Exception {
-    String[] sources = {
-        "service_root.proto"
-    };
-    String[] outputs = {
-        "com/squareup/wire/protos/roots/TheRequest.java",
-        "com/squareup/wire/protos/roots/TheResponse.java",
-        "com/squareup/wire/protos/roots/UnnecessaryResponse.java",
-        "com/squareup/wire/protos/roots/TheService.java",
-        "com/squareup/wire/protos/roots/UnnecessaryService.java"
-    };
-    String roots =
-        "squareup.wire.protos.roots.TheService,squareup.wire.protos.roots.UnnecessaryService";
-    testProtoWithRoots(sources, roots, outputs);
-  }
-
-  @Test public void testServiceRoots2() throws Exception {
-    String[] sources = {
-        "service_root.proto"
-    };
-    String[] outputs = {
-        "com/squareup/wire/protos/roots/TheRequest.java",
-        "com/squareup/wire/protos/roots/TheResponse.java",
-        "com/squareup/wire/protos/roots/TheService.java"
-    };
-    String roots = "squareup.wire.protos.roots.TheService";
-    testProtoWithRoots(sources, roots, outputs);
-  }
-
   @Test public void testDryRun() throws Exception {
     String[] sources = {
         "service_root.proto"
@@ -610,8 +496,7 @@ public class WireCompilerTest {
     testProtoWithRoots(sources, roots, outputs, extraArgs);
     assertThat(logger.getLog()).isEqualTo(""
             + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
-            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n"
-            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheService\n");
+            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
   }
 
   private void cleanup(File dir) {

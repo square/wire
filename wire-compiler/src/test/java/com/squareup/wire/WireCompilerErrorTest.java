@@ -43,7 +43,7 @@ public class WireCompilerErrorTest {
   private void compile(String source) throws Exception {
     CommandLineOptions options = new CommandLineOptions("/source",  "/target",
         singletonList("test.proto"), new ArrayList<String>(), null, true,
-        Collections.<String>emptySet(), null, Collections.<String>emptyList(), false, false);
+        Collections.<String>emptySet(), false, false);
 
     Path test = fileSystem.getPath("/source/test.proto");
     Files.createDirectory(fileSystem.getPath("/source"));
