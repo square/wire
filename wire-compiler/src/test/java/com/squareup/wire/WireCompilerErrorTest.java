@@ -17,19 +17,15 @@ package com.squareup.wire;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.SchemaException;
-import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import okio.Okio;
+import okio.Source;
 import org.junit.Test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -38,49 +34,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class WireCompilerErrorTest {
-
-  static class StringIO implements JavaGenerator.IO {
-    private Map<String, StringWriter> writers = new LinkedHashMap<>();
-
-    Map<String, String> getOutput() {
-      Map<String, String> output = new LinkedHashMap<>();
-      for (Map.Entry<String, StringWriter> entry : writers.entrySet()) {
-        output.put(entry.getKey(), entry.getValue().toString());
-      }
-      return output;
-    }
-
-    @Override public void write(File outputDirectory, JavaFile javaFile) throws IOException {
-      StringWriter writer = new StringWriter();
-      writers.put(javaFile.packageName + "." + javaFile.typeSpec.name, writer);
-      javaFile.writeTo(writer);
-    }
-  }
+  FileSystem fileSystem = Jimfs.newFileSystem(Configuration.unix());
 
   /**
    * Compile a .proto containing in a String and returns the contents of each output file,
    * indexed by class name.
    */
-  private Map<String, String> compile(String source) throws Exception {
-    CommandLineOptions options = new CommandLineOptions("/",  new File("."),
+  private void compile(String source) throws Exception {
+    CommandLineOptions options = new CommandLineOptions("/source",  "/target",
         singletonList("test.proto"), new ArrayList<String>(), null, true,
         Collections.<String>emptySet(), null, Collections.<String>emptyList(), false, false);
 
-    FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
-    Path test = fs.getPath("/test.proto");
+    Path test = fileSystem.getPath("/source/test.proto");
+    Files.createDirectory(fileSystem.getPath("/source"));
+    Files.createDirectory(fileSystem.getPath("/target"));
     Files.write(test, source.getBytes(UTF_8));
 
-    StringIO io = new StringIO();
-    new WireCompiler(options, fs, io, new StringWireLogger(true)).compile();
-    return io.getOutput();
+    new WireCompiler(options, fileSystem, new StringWireLogger(true)).compile();
   }
 
   @Test public void testCorrect() throws Exception {
-    Map<String, String> output = compile("package com.squareup.protos.test;\n"
+    compile("package com.squareup.protos.test;\n"
         + "message Simple {\n"
         + "  optional int32 f = 1;\n"
         + "}\n");
-    String generatedSource = output.get("com.squareup.protos.test.Simple");
+    String generatedSource = readFile("/target/com/squareup/protos/test/Simple.java");
     assertThat(generatedSource).contains("public final class Simple extends Message<Simple> {");
   }
 
@@ -93,8 +71,8 @@ public class WireCompilerErrorTest {
       fail();
     } catch (SchemaException e) {
       assertThat(e).hasMessage("tag is out of range: 0\n"
-          + "  for field f (test.proto at 3:3)\n"
-          + "  in message com.squareup.protos.test.Simple (test.proto at 2:1)");
+          + "  for field f (/source/test.proto at 3:3)\n"
+          + "  in message com.squareup.protos.test.Simple (/source/test.proto at 2:1)");
     }
   }
 
@@ -108,9 +86,9 @@ public class WireCompilerErrorTest {
       fail();
     } catch (SchemaException e) {
       assertThat(e).hasMessage("multiple fields share tag 1:\n"
-          + "  1. f (test.proto at 3:3)\n"
-          + "  2. g (test.proto at 4:3)\n"
-          + "  for message com.squareup.protos.test.Simple (test.proto at 2:1)");
+          + "  1. f (/source/test.proto at 3:3)\n"
+          + "  2. g (/source/test.proto at 4:3)\n"
+          + "  for message com.squareup.protos.test.Simple (/source/test.proto at 2:1)");
     }
   }
 
@@ -131,16 +109,21 @@ public class WireCompilerErrorTest {
       fail();
     } catch (SchemaException e) {
       assertThat(e).hasMessage("multiple enums share constant QUIX:\n"
-          + "  1. com.squareup.protos.test.Foo.Bar.QUIX (test.proto at 4:7)\n"
-          + "  2. com.squareup.protos.test.Foo.Bar2.QUIX (test.proto at 10:7)\n"
-          + "  for message com.squareup.protos.test.Foo (test.proto at 2:3)");
+          + "  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test.proto at 4:7)\n"
+          + "  2. com.squareup.protos.test.Foo.Bar2.QUIX (/source/test.proto at 10:7)\n"
+          + "  for message com.squareup.protos.test.Foo (/source/test.proto at 2:3)");
     }
   }
 
   @Test public void testNoPackageNameIsLegal() throws Exception {
-    Map<String, String> output = compile("message Simple { optional int32 f = 1; }");
-    assertThat(output).containsKey(".Simple");
+    compile("message Simple { optional int32 f = 1; }");
     // Output should not have a 'package' declaration.
-    assertThat(output.get(".Simple")).doesNotContain("package");
+    assertThat(readFile("/target/Simple.java")).doesNotContain("package");
+  }
+
+  private String readFile(String path) throws IOException {
+    try (Source source = Okio.source(fileSystem.getPath(path))) {
+      return Okio.buffer(source).readUtf8();
+    }
   }
 }

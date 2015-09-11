@@ -662,7 +662,7 @@ public class WireCompilerTest {
     CommandLineOptions options = new CommandLineOptions(args);
     logger = new StringWireLogger(options.quiet);
     FileSystem fs = FileSystems.getDefault();
-    new WireCompiler(options, fs, JavaGenerator.IO.DEFAULT, logger).compile();
+    new WireCompiler(options, fs, logger).compile();
   }
 
   private void assertFilesMatch(File outputDir, String path) throws IOException {

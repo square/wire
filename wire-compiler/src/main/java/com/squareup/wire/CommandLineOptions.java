@@ -40,7 +40,7 @@ final class CommandLineOptions {
 
   final List<String> protoPaths;
 
-  final File javaOut;
+  final String javaOut;
   final List<String> sourceFileNames;
   final List<String> roots;
   final String registryClass;
@@ -51,7 +51,7 @@ final class CommandLineOptions {
   final boolean quiet;
   final boolean dryRun;
 
-  CommandLineOptions(String protoPath, File javaOut,
+  CommandLineOptions(String protoPath, String javaOut,
       List<String> sourceFileNames, List<String> roots,
       String registryClass, boolean emitOptions,
       Set<String> enumOptions,
@@ -123,7 +123,7 @@ final class CommandLineOptions {
     List<String> roots = new ArrayList<>();
     boolean emitOptions = true;
     List<String> protoPaths = new ArrayList<>();
-    File javaOut = null;
+    String javaOut = null;
     String registryClass = null;
     List<String> enumOptionsList = new ArrayList<>();
     ServiceFactory serviceFactory = null;
@@ -134,7 +134,7 @@ final class CommandLineOptions {
       if (args[index].startsWith(PROTO_PATH_FLAG)) {
         protoPaths.add(args[index].substring(PROTO_PATH_FLAG.length()));
       } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
-        javaOut = new File(args[index].substring(JAVA_OUT_FLAG.length()));
+        javaOut = args[index].substring(JAVA_OUT_FLAG.length());
       } else if (args[index].startsWith(FILES_FLAG)) {
         File files = new File(args[index].substring(FILES_FLAG.length()));
         String[] fileNames;

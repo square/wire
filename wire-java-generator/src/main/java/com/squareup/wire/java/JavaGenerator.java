@@ -17,11 +17,11 @@ package com.squareup.wire.java;
 
 import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
+import com.squareup.wire.WireType;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
@@ -30,9 +30,6 @@ import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
-import com.squareup.wire.WireType;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import okio.ByteString;
@@ -191,15 +188,5 @@ public final class JavaGenerator {
     documentation = documentation.replaceAll(
         "@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
     return documentation;
-  }
-
-  public interface IO {
-    IO DEFAULT = new IO() {
-      @Override public void write(File outputDirectory, JavaFile javaFile) throws IOException {
-        javaFile.writeTo(outputDirectory);
-      }
-    };
-
-    void write(File outputDirectory, JavaFile javaFile) throws IOException;
   }
 }
