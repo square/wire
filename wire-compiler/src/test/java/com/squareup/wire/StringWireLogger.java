@@ -1,7 +1,7 @@
 package com.squareup.wire;
 
 import com.squareup.javapoet.JavaFile;
-import java.io.File;
+import java.nio.file.Path;
 
 final class StringWireLogger implements WireLogger {
   private final boolean isQuiet;
@@ -11,8 +11,8 @@ final class StringWireLogger implements WireLogger {
     this.isQuiet = quiet;
   }
 
-  @Override public void artifact(File outputDirectory, JavaFile javaFile) {
-    buffer.append(outputDirectory);
+  @Override public void artifact(Path outputPath, JavaFile javaFile) {
+    buffer.append(outputPath);
     buffer.append(" ");
     buffer.append(javaFile.packageName);
     buffer.append(".");

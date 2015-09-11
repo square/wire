@@ -2,12 +2,15 @@ package com.squareup.wire;
 
 import com.google.common.collect.Lists;
 import com.squareup.wire.java.SimpleServiceFactory;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +39,7 @@ public class CommandLineOptionsTest {
     assertThat(options.javaOut).isNull();
 
     options = new CommandLineOptions("--java_out=baz/qux");
-    assertThat(options.javaOut).isEqualTo(new File("baz/qux"));
+    assertThat(options.javaOut).isEqualTo("baz/qux");
   }
 
   @Test public void sourceFileNames() throws Exception {
@@ -135,5 +138,4 @@ public class CommandLineOptionsTest {
     expected.add("bar");
     assertThat(options.serviceFactoryOptions).isEqualTo(expected);
   }
-
 }

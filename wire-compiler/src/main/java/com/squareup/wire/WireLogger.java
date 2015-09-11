@@ -16,9 +16,9 @@
 package com.squareup.wire;
 
 import com.squareup.javapoet.JavaFile;
-import java.io.File;
+import java.nio.file.Path;
 
 interface WireLogger {
-  void artifact(File outputDirectory, JavaFile javaFile);
+  void artifact(Path outputPath, JavaFile javaFile);
   void info(String message);
 }
