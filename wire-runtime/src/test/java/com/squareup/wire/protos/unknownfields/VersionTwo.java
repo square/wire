@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Object;
@@ -25,37 +25,37 @@ public final class VersionTwo extends Message<VersionTwo> {
 
   public static final Long DEFAULT_V2_F64 = 0L;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "int32"
   )
   public final Integer i;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "int32"
   )
   public final Integer v2_i;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "string"
   )
   public final String v2_s;
 
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "fixed32"
   )
   public final Integer v2_f32;
 
-  @ProtoField(
+  @WireField(
       tag = 5,
       type = "fixed64"
   )
   public final Long v2_f64;
 
-  @ProtoField(
+  @WireField(
       tag = 6,
       type = "string",
       label = Message.Label.REPEATED

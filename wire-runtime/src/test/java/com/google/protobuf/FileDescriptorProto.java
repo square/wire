@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -23,7 +23,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   /**
    * file name, relative to root of source tree
    */
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string"
   )
@@ -32,7 +32,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   /**
    * e.g. "foo", "foo.bar", etc.
    */
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "string"
   )
@@ -41,7 +41,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   /**
    * Names of files imported by this file.
    */
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "string",
       label = Message.Label.REPEATED
@@ -51,35 +51,35 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   /**
    * All top-level definitions in this file.
    */
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "google.protobuf.DescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<DescriptorProto> message_type;
 
-  @ProtoField(
+  @WireField(
       tag = 5,
       type = "google.protobuf.EnumDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
-  @ProtoField(
+  @WireField(
       tag = 6,
       type = "google.protobuf.ServiceDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<ServiceDescriptorProto> service;
 
-  @ProtoField(
+  @WireField(
       tag = 7,
       type = "google.protobuf.FieldDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 
-  @ProtoField(
+  @WireField(
       tag = 8,
       type = "google.protobuf.FileOptions"
   )
@@ -91,7 +91,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    * functionality of the descriptors -- the information is needed only by
    * development tools.
    */
-  @ProtoField(
+  @WireField(
       tag = 9,
       type = "google.protobuf.SourceCodeInfo"
   )

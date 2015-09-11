@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.single_level;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.List;
 public final class Foos extends Message<Foos> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "single_level.Foo",
       label = Message.Label.REPEATED

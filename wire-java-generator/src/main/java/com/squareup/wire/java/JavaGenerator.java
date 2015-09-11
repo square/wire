@@ -21,7 +21,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
@@ -55,34 +55,34 @@ public final class JavaGenerator {
   public static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
   public static final TypeName ENUM_OPTIONS = ClassName.get("com.google.protobuf", "EnumOptions");
 
-  private static final Map<WireType, TypeName> SCALAR_TYPES_MAP =
-      ImmutableMap.<WireType, TypeName>builder()
-          .put(WireType.BOOL, TypeName.BOOLEAN.box())
-          .put(WireType.BYTES, ClassName.get(ByteString.class))
-          .put(WireType.DOUBLE, TypeName.DOUBLE.box())
-          .put(WireType.FLOAT, TypeName.FLOAT.box())
-          .put(WireType.FIXED32, TypeName.INT.box())
-          .put(WireType.FIXED64, TypeName.LONG.box())
-          .put(WireType.INT32, TypeName.INT.box())
-          .put(WireType.INT64, TypeName.LONG.box())
-          .put(WireType.SFIXED32, TypeName.INT.box())
-          .put(WireType.SFIXED64, TypeName.LONG.box())
-          .put(WireType.SINT32, TypeName.INT.box())
-          .put(WireType.SINT64, TypeName.LONG.box())
-          .put(WireType.STRING, ClassName.get(String.class))
-          .put(WireType.UINT32, TypeName.INT.box())
-          .put(WireType.UINT64, TypeName.LONG.box())
+  private static final Map<ProtoType, TypeName> SCALAR_TYPES_MAP =
+      ImmutableMap.<ProtoType, TypeName>builder()
+          .put(ProtoType.BOOL, TypeName.BOOLEAN.box())
+          .put(ProtoType.BYTES, ClassName.get(ByteString.class))
+          .put(ProtoType.DOUBLE, TypeName.DOUBLE.box())
+          .put(ProtoType.FLOAT, TypeName.FLOAT.box())
+          .put(ProtoType.FIXED32, TypeName.INT.box())
+          .put(ProtoType.FIXED64, TypeName.LONG.box())
+          .put(ProtoType.INT32, TypeName.INT.box())
+          .put(ProtoType.INT64, TypeName.LONG.box())
+          .put(ProtoType.SFIXED32, TypeName.INT.box())
+          .put(ProtoType.SFIXED64, TypeName.LONG.box())
+          .put(ProtoType.SINT32, TypeName.INT.box())
+          .put(ProtoType.SINT64, TypeName.LONG.box())
+          .put(ProtoType.STRING, ClassName.get(String.class))
+          .put(ProtoType.UINT32, TypeName.INT.box())
+          .put(ProtoType.UINT64, TypeName.LONG.box())
           .build();
 
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
 
   private final Schema schema;
-  private final ImmutableMap<WireType, TypeName> nameToJavaName;
+  private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
   private final ImmutableMap<Field, ProtoFile> extensionFieldToFile;
 
   private JavaGenerator(
       Schema schema,
-      ImmutableMap<WireType, TypeName> nameToJavaName,
+      ImmutableMap<ProtoType, TypeName> nameToJavaName,
       ImmutableMap<Field, ProtoFile> extensionFieldToFile) {
     this.schema = schema;
     this.nameToJavaName = nameToJavaName;
@@ -90,7 +90,7 @@ public final class JavaGenerator {
   }
 
   public static JavaGenerator get(Schema schema) {
-    ImmutableMap.Builder<WireType, TypeName> nameToJavaName = ImmutableMap.builder();
+    ImmutableMap.Builder<ProtoType, TypeName> nameToJavaName = ImmutableMap.builder();
     ImmutableMap.Builder<Field, ProtoFile> extensionFieldToFile = ImmutableMap.builder();
     nameToJavaName.putAll(SCALAR_TYPES_MAP);
 
@@ -112,7 +112,7 @@ public final class JavaGenerator {
     return new JavaGenerator(schema, nameToJavaName.build(), extensionFieldToFile.build());
   }
 
-  private static void putAll(ImmutableMap.Builder<WireType, TypeName> wireToJava,
+  private static void putAll(ImmutableMap.Builder<ProtoType, TypeName> wireToJava,
       String javaPackage, ClassName enclosingClassName, List<Type> types) {
     for (Type type : types) {
       ClassName className = enclosingClassName != null
@@ -136,9 +136,9 @@ public final class JavaGenerator {
     return protoFile != null ? extensionsClass(protoFile) : null;
   }
 
-  public TypeName typeName(WireType wireType) {
-    TypeName candidate = nameToJavaName.get(wireType);
-    checkArgument(candidate != null, "unexpected type %s", wireType);
+  public TypeName typeName(ProtoType protoType) {
+    TypeName candidate = nameToJavaName.get(protoType);
+    checkArgument(candidate != null, "unexpected type %s", protoType);
     return candidate;
   }
 
@@ -153,12 +153,11 @@ public final class JavaGenerator {
     }
   }
 
-  public boolean isEnum(WireType type) {
-    Type wireType = schema.getType(type);
-    return wireType instanceof EnumType;
+  public boolean isEnum(ProtoType type) {
+    return schema.getType(type) instanceof EnumType;
   }
 
-  public EnumConstant enumDefault(WireType type) {
+  public EnumConstant enumDefault(ProtoType type) {
     EnumType wireEnum = (EnumType) schema.getType(type);
     return wireEnum.constants().get(0);
   }

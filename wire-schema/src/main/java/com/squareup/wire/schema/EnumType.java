@@ -18,21 +18,21 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.EnumElement;
 import java.util.Collection;
 import java.util.Map;
 import java.util.NavigableSet;
 
 public final class EnumType extends Type {
-  private final WireType wireType;
+  private final ProtoType protoType;
   private final EnumElement element;
   private final ImmutableList<EnumConstant> constants;
   private final Options options;
 
-  EnumType(WireType wireType, EnumElement element,
+  EnumType(ProtoType protoType, EnumElement element,
       ImmutableList<EnumConstant> constants, Options options) {
-    this.wireType = wireType;
+    this.protoType = protoType;
     this.element = element;
     this.constants = constants;
     this.options = options;
@@ -42,8 +42,8 @@ public final class EnumType extends Type {
     return element.location();
   }
 
-  @Override public WireType name() {
-    return wireType;
+  @Override public ProtoType name() {
+    return protoType;
   }
 
   @Override public String documentation() {
@@ -121,13 +121,13 @@ public final class EnumType extends Type {
   }
 
   @Override Type retainAll(NavigableSet<String> identifiers) {
-    String typeName = wireType.toString();
+    String typeName = protoType.toString();
 
     // If this type is not retained, prune it.
     if (!identifiers.contains(typeName)) return null;
 
     ImmutableList<EnumConstant> retainedConstants = constants;
-    if (Pruner.hasMarkedMember(identifiers, wireType)) {
+    if (Pruner.hasMarkedMember(identifiers, protoType)) {
       ImmutableList.Builder<EnumConstant> retainedConstantsBuilder = ImmutableList.builder();
       for (EnumConstant constant : constants) {
         if (identifiers.contains(typeName + '#' + constant.name())) {
@@ -137,6 +137,6 @@ public final class EnumType extends Type {
       retainedConstants = retainedConstantsBuilder.build();
     }
 
-    return new EnumType(wireType, element, retainedConstants, options);
+    return new EnumType(protoType, element, retainedConstants, options);
   }
 }

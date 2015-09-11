@@ -19,7 +19,7 @@ package com.squareup.wire;
  * Interface for generated {@link Enum} values to help serialization and
  * deserialization.
  */
-public interface ProtoEnum {
+public interface WireEnum {
   /**
    * The tag value of an enum constant.
    */

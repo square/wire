@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -13,19 +13,19 @@ public final class RedactedChild extends Message<RedactedChild> {
 
   public static final String DEFAULT_A = "";
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string"
   )
   public final String a;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "squareup.protos.redacted_test.Redacted"
   )
   public final Redacted b;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "squareup.protos.redacted_test.NotRedacted"
   )

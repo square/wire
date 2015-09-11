@@ -16,7 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.EnumConstantElement;
 import com.squareup.wire.schema.internal.parser.EnumElement;
 import com.squareup.wire.schema.internal.parser.ExtensionsElement;
@@ -28,7 +28,7 @@ import java.util.NavigableSet;
 
 public abstract class Type {
   public abstract Location location();
-  public abstract WireType name();
+  public abstract ProtoType name();
   public abstract String documentation();
   public abstract Options options();
   public abstract ImmutableList<Type> nestedTypes();
@@ -37,7 +37,7 @@ public abstract class Type {
   abstract void linkOptions(Linker linker);
   abstract Type retainAll(NavigableSet<String> identifiers);
 
-  static Type get(String packageName, WireType wireType, TypeElement type) {
+  static Type get(String packageName, ProtoType protoType, TypeElement type) {
     if (type instanceof EnumElement) {
       EnumElement enumElement = (EnumElement) type;
 
@@ -48,7 +48,7 @@ public abstract class Type {
 
       Options options = new Options(Options.ENUM_OPTIONS, enumElement.options());
 
-      return new EnumType(wireType, enumElement, constants.build(), options);
+      return new EnumType(protoType, enumElement, constants.build(), options);
 
     } else if (type instanceof MessageElement) {
       MessageElement messageElement = (MessageElement) type;
@@ -65,7 +65,7 @@ public abstract class Type {
 
       ImmutableList.Builder<Type> nestedTypes = ImmutableList.builder();
       for (TypeElement nestedType : messageElement.nestedTypes()) {
-        nestedTypes.add(Type.get(packageName, wireType.nestedType(nestedType.name()), nestedType));
+        nestedTypes.add(Type.get(packageName, protoType.nestedType(nestedType.name()), nestedType));
       }
 
       ImmutableList.Builder<Extensions> extensionsList = ImmutableList.builder();
@@ -75,7 +75,7 @@ public abstract class Type {
 
       Options options = new Options(Options.MESSAGE_OPTIONS, messageElement.options());
 
-      return new MessageType(wireType, messageElement, fields.build(), oneOfs.build(),
+      return new MessageType(protoType, messageElement, fields.build(), oneOfs.build(),
           nestedTypes.build(), extensionsList.build(), options);
 
     } else {

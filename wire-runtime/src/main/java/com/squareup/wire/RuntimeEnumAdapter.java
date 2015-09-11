@@ -22,9 +22,9 @@ import java.util.Comparator;
 /**
  * Converts values of an enum to and from integers.
  */
-final class RuntimeEnumAdapter<E extends ProtoEnum> extends WireAdapter<E> {
-  private static final Comparator<ProtoEnum> COMPARATOR = new Comparator<ProtoEnum>() {
-    @Override public int compare(ProtoEnum o1, ProtoEnum o2) {
+final class RuntimeEnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
+  private static final Comparator<WireEnum> COMPARATOR = new Comparator<WireEnum>() {
+    @Override public int compare(WireEnum o1, WireEnum o2) {
       return o1.getValue() - o2.getValue();
     }
   };

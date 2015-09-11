@@ -15,14 +15,14 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.FieldElement;
 
 public final class Field {
   private final String packageName;
   private final FieldElement element;
   private final Options options;
-  private WireType type;
+  private ProtoType type;
 
   Field(String packageName, FieldElement element) {
     this.packageName = packageName;
@@ -54,7 +54,7 @@ public final class Field {
     return label() == Label.REQUIRED;
   }
 
-  public WireType type() {
+  public ProtoType type() {
     return type;
   }
 
@@ -111,9 +111,9 @@ public final class Field {
     linker.validateImport(location(), type);
   }
 
-  private boolean isPackable(Linker linker, WireType type) {
-    return !type.equals(WireType.STRING)
-        && !type.equals(WireType.BYTES)
+  private boolean isPackable(Linker linker, ProtoType type) {
+    return !type.equals(ProtoType.STRING)
+        && !type.equals(ProtoType.BYTES)
         && !(linker.get(type) instanceof MessageType);
   }
 

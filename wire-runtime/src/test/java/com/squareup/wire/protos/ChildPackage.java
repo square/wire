@@ -3,7 +3,7 @@
 package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.lang.Object;
 import java.lang.Override;
@@ -13,7 +13,7 @@ public final class ChildPackage extends Message<ChildPackage> {
 
   public static final ForeignEnum DEFAULT_INNER_FOREIGN_ENUM = ForeignEnum.BAV;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "squareup.protos.foreign.ForeignEnum"
   )

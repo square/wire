@@ -41,7 +41,7 @@ For example, to compile the file `protos-repo/google/protobuf/descriptor.proto`,
     package com.google.protobuf;
 
     import com.squareup.wire.Message;
-    import com.squareup.wire.ProtoField;
+    import com.squareup.wire.WireField;
     import java.util.Collections;
     import java.util.List;
 
@@ -115,7 +115,7 @@ to construct an instance manually:
 Note that field names are not converted to camel case.
 
 Wire messages contain a `public final` field for each field of the protocol buffer message.
-Each field is annotated with a `@ProtoField` annotation containing the field metadata required
+Each field is annotated with a `@WireField` annotation containing the field metadata required
 by the Wire runtime.
 
 Numeric and boolean values are stored using boxed primitive types (e.g., Integer or Long).

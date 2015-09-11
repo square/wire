@@ -4,7 +4,7 @@ package com.squareup.wire.protos.redacted;
 
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -18,7 +18,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
 
   public static final String DEFAULT_A = "";
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string",
       label = Message.Label.REQUIRED,

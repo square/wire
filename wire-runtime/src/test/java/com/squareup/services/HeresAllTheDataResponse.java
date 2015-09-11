@@ -3,7 +3,7 @@
 package com.squareup.services;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
@@ -13,7 +13,7 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
 
   public static final ByteString DEFAULT_DATA = ByteString.EMPTY;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "bytes"
   )

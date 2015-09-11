@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.Override;
@@ -37,7 +37,7 @@ public final class MessageOptions extends Message<MessageOptions> {
    * Because this is an option, the above two restrictions are not enforced by
    * the protocol compiler.
    */
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "bool"
   )
@@ -48,7 +48,7 @@ public final class MessageOptions extends Message<MessageOptions> {
    * conflict with a field of the same name.  This is meant to make migration
    * from proto1 easier; new code should avoid fields named "descriptor".
    */
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "bool"
   )
@@ -57,7 +57,7 @@ public final class MessageOptions extends Message<MessageOptions> {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(
+  @WireField(
       tag = 999,
       type = "google.protobuf.UninterpretedOption",
       label = Message.Label.REPEATED

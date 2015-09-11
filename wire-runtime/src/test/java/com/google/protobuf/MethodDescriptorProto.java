@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -22,7 +22,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
 
   public static final String DEFAULT_OUTPUT_TYPE = "";
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string"
   )
@@ -31,7 +31,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
+  @WireField(
       tag = 5,
       type = "string"
   )
@@ -41,19 +41,19 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
    * Input and output type names.  These are resolved in the same way as
    * FieldDescriptorProto.type_name, but must refer to a message type.
    */
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "string"
   )
   public final String input_type;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "string"
   )
   public final String output_type;
 
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "google.protobuf.MethodOptions"
   )

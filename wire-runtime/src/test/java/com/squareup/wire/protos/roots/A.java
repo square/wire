@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 
@@ -25,13 +25,13 @@ import java.lang.Override;
 public final class A extends Message<A> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "squareup.protos.roots.B"
   )
   public final B c;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "squareup.protos.roots.D"
   )

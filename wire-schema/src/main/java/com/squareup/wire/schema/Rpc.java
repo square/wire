@@ -15,14 +15,14 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.RpcElement;
 
 public final class Rpc {
   private final RpcElement element;
   private final Options options;
-  private WireType requestType;
-  private WireType responseType;
+  private ProtoType requestType;
+  private ProtoType responseType;
 
   Rpc(RpcElement element) {
     this.element = element;
@@ -41,11 +41,11 @@ public final class Rpc {
     return element.documentation();
   }
 
-  public WireType requestType() {
+  public ProtoType requestType() {
     return requestType;
   }
 
-  public WireType responseType() {
+  public ProtoType responseType() {
     return responseType;
   }
 

@@ -3,8 +3,8 @@
 package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.lang.Deprecated;
 import java.lang.Double;
@@ -42,7 +42,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * An optional int32
    */
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "int32"
   )
@@ -51,7 +51,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * An optional NestedMessage, deprecated
    */
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "squareup.protos.simple.SimpleMessage.NestedMessage",
       deprecated = true
@@ -62,13 +62,13 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * An optional ExternalMessage
    */
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "squareup.protos.simple.ExternalMessage"
   )
   public final ExternalMessage optional_external_msg;
 
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "squareup.protos.simple.SimpleMessage.NestedEnum"
   )
@@ -77,7 +77,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * A required int32
    */
-  @ProtoField(
+  @WireField(
       tag = 5,
       type = "int32",
       label = Message.Label.REQUIRED
@@ -87,7 +87,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * A repeated double, deprecated
    */
-  @ProtoField(
+  @WireField(
       tag = 6,
       type = "double",
       label = Message.Label.REPEATED,
@@ -99,7 +99,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * enum from another package with an explicit default
    */
-  @ProtoField(
+  @WireField(
       tag = 7,
       type = "squareup.protos.foreign.ForeignEnum"
   )
@@ -108,7 +108,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * enum from another package without an explicit default
    */
-  @ProtoField(
+  @WireField(
       tag = 8,
       type = "squareup.protos.foreign.ForeignEnum"
   )
@@ -117,7 +117,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * field with the same name as a Java keyword
    */
-  @ProtoField(
+  @WireField(
       tag = 9,
       type = "string"
   )
@@ -126,7 +126,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * field with the name "result"
    */
-  @ProtoField(
+  @WireField(
       tag = 10,
       type = "string"
   )
@@ -135,7 +135,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * field with the name "other"
    */
-  @ProtoField(
+  @WireField(
       tag = 11,
       type = "string"
   )
@@ -144,7 +144,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   /**
    * field with the name "o"
    */
-  @ProtoField(
+  @WireField(
       tag = 12,
       type = "string"
   )
@@ -367,7 +367,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     /**
      * An optional int32
      */
-    @ProtoField(
+    @WireField(
         tag = 1,
         type = "int32"
     )
@@ -422,7 +422,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     }
   }
 
-  public enum NestedEnum implements ProtoEnum {
+  public enum NestedEnum implements WireEnum {
     FOO(1),
 
     BAR(2),

@@ -3,7 +3,7 @@
 package com.squareup.differentpackage.protos.bar;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -81,7 +81,7 @@ public final class Bar extends Message<Bar> {
 
       public static final String DEFAULT_BOO = "";
 
-      @ProtoField(
+      @WireField(
           tag = 1,
           type = "string"
       )

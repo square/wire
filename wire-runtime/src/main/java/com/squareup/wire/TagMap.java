@@ -118,7 +118,7 @@ final class TagMap {
     int result = 0;
     for (int i = 0; i < size;) {
       Extension<?, ?> extension = extensions[i];
-      WireAdapter<Object> adapter = adapter(extension);
+      ProtoAdapter<Object> adapter = adapter(extension);
 
       if (extension.getLabel().isPacked()) {
         int runSize = 0;
@@ -141,7 +141,7 @@ final class TagMap {
   public void encode(ProtoWriter output) throws IOException {
     for (int i = 0; i < size;) {
       Extension<?, ?> extension = extensions[i];
-      WireAdapter<Object> adapter = adapter(extension);
+      ProtoAdapter<Object> adapter = adapter(extension);
       if (extension.getLabel().isPacked()) {
         int runEnd = runEnd(i);
         int runSize = 0;
@@ -261,8 +261,8 @@ final class TagMap {
   }
 
   @SuppressWarnings("unchecked") // Caller beware! Assumes the extension and value match at runtime.
-  private WireAdapter<Object> adapter(Extension<?, ?> extension) {
-    return (WireAdapter<Object>) WireAdapter.get(Message.WIRE, extension.getType(),
+  private ProtoAdapter<Object> adapter(Extension<?, ?> extension) {
+    return (ProtoAdapter<Object>) ProtoAdapter.get(Message.WIRE, extension.getType(),
         extension.getMessageType(), extension.getEnumType());
   }
 

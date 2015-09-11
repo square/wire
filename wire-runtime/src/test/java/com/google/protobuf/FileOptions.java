@@ -3,8 +3,8 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.Override;
@@ -64,7 +64,7 @@ public final class FileOptions extends Message<FileOptions> {
    * inappropriate because proto packages do not normally start with backwards
    * domain names.
    */
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string"
   )
@@ -77,7 +77,7 @@ public final class FileOptions extends Message<FileOptions> {
    * a .proto always translates to a single class, but you may want to
    * explicitly choose the class name).
    */
-  @ProtoField(
+  @WireField(
       tag = 8,
       type = "string"
   )
@@ -91,7 +91,7 @@ public final class FileOptions extends Message<FileOptions> {
    * generated to contain the file's getDescriptor() method as well as any
    * top-level extensions defined in the file.
    */
-  @ProtoField(
+  @WireField(
       tag = 10,
       type = "bool"
   )
@@ -103,13 +103,13 @@ public final class FileOptions extends Message<FileOptions> {
    * purely a speed optimization, as the AbstractMessage base class includes
    * reflection-based implementations of these methods.
    */
-  @ProtoField(
+  @WireField(
       tag = 20,
       type = "bool"
   )
   public final Boolean java_generate_equals_and_hash;
 
-  @ProtoField(
+  @WireField(
       tag = 9,
       type = "google.protobuf.FileOptions.OptimizeMode"
   )
@@ -127,19 +127,19 @@ public final class FileOptions extends Message<FileOptions> {
    * these default to false.  Old code which depends on generic services should
    * explicitly set them to true.
    */
-  @ProtoField(
+  @WireField(
       tag = 16,
       type = "bool"
   )
   public final Boolean cc_generic_services;
 
-  @ProtoField(
+  @WireField(
       tag = 17,
       type = "bool"
   )
   public final Boolean java_generic_services;
 
-  @ProtoField(
+  @WireField(
       tag = 18,
       type = "bool"
   )
@@ -148,7 +148,7 @@ public final class FileOptions extends Message<FileOptions> {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(
+  @WireField(
       tag = 999,
       type = "google.protobuf.UninterpretedOption",
       label = Message.Label.REPEATED
@@ -340,7 +340,7 @@ public final class FileOptions extends Message<FileOptions> {
   /**
    * Generated classes can be optimized for speed or code size.
    */
-  public enum OptimizeMode implements ProtoEnum {
+  public enum OptimizeMode implements WireEnum {
     /**
      * Generate complete code for parsing, serialization,
      */

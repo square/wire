@@ -21,9 +21,9 @@ final class RegisteredExtension {
   final Message.Label label;
   final String name;
   final int tag;
-  final WireAdapter<?> adapter;
+  final ProtoAdapter<?> adapter;
 
-  public RegisteredExtension(Extension<?, ?> extension, WireAdapter<?> singleAdapter) {
+  public RegisteredExtension(Extension<?, ?> extension, ProtoAdapter<?> singleAdapter) {
     this.label = extension.getLabel();
     this.name = extension.getName();
     this.tag = extension.getTag();

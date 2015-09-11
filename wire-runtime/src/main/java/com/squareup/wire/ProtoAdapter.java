@@ -40,7 +40,7 @@ import static com.squareup.wire.ProtoWriter.varint64Size;
 import static java.lang.Double.doubleToLongBits;
 import static java.lang.Float.floatToIntBits;
 
-public abstract class WireAdapter<E> {
+public abstract class ProtoAdapter<E> {
   static final int FIXED_BOOL_SIZE = 1;
   static final int FIXED_32_SIZE = 4;
   static final int FIXED_64_SIZE = 8;
@@ -48,14 +48,14 @@ public abstract class WireAdapter<E> {
   final FieldEncoding fieldEncoding;
   final Class<?> javaType;
 
-  public WireAdapter(FieldEncoding fieldEncoding, Class<?> javaType) {
+  public ProtoAdapter(FieldEncoding fieldEncoding, Class<?> javaType) {
     this.fieldEncoding = fieldEncoding;
     this.javaType = javaType;
   }
 
-  static WireAdapter<?> get(Wire wire, WireType type,
-      Class<? extends Message> messageType, Class<? extends ProtoEnum> enumType) {
-    WireAdapter<?> result = TYPE_TO_ADAPTER.get(type);
+  static ProtoAdapter<?> get(Wire wire, ProtoType type,
+      Class<? extends Message> messageType, Class<? extends WireEnum> enumType) {
+    ProtoAdapter<?> result = TYPE_TO_ADAPTER.get(type);
     if (result != null) return result;
     if (messageType != null) return wire.adapter(messageType);
     if (enumType != null) return wire.enumAdapter(enumType);
@@ -66,7 +66,7 @@ public abstract class WireAdapter<E> {
    * Returns an adapter for the same type but with knowledge of the extensions in
    * {@code extensionRegistry} when parsing. This only affects adapters for message types.
    */
-  public WireAdapter<E> withExtensions(ExtensionRegistry extensionRegistry) {
+  public ProtoAdapter<E> withExtensions(ExtensionRegistry extensionRegistry) {
     return this;
   }
 
@@ -159,7 +159,7 @@ public abstract class WireAdapter<E> {
     return value.toString();
   }
 
-  public static final WireAdapter<Boolean> BOOL = new WireAdapter<Boolean>(
+  public static final ProtoAdapter<Boolean> BOOL = new ProtoAdapter<Boolean>(
       FieldEncoding.VARINT, Boolean.class) {
     @Override public int encodedSize(Boolean value) {
       return FIXED_BOOL_SIZE;
@@ -176,7 +176,7 @@ public abstract class WireAdapter<E> {
       throw new IOException(String.format("Invalid boolean value 0x%02x", value));
     }
   };
-  public static final WireAdapter<Integer> INT32 = new WireAdapter<Integer>(
+  public static final ProtoAdapter<Integer> INT32 = new ProtoAdapter<Integer>(
       FieldEncoding.VARINT, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return int32Size(value);
@@ -190,7 +190,7 @@ public abstract class WireAdapter<E> {
       return reader.readVarint32();
     }
   };
-  public static final WireAdapter<Integer> UINT32 = new WireAdapter<Integer>(
+  public static final ProtoAdapter<Integer> UINT32 = new ProtoAdapter<Integer>(
       FieldEncoding.VARINT, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return varint32Size(value);
@@ -204,7 +204,7 @@ public abstract class WireAdapter<E> {
       return reader.readVarint32();
     }
   };
-  public static final WireAdapter<Integer> SINT32 = new WireAdapter<Integer>(
+  public static final ProtoAdapter<Integer> SINT32 = new ProtoAdapter<Integer>(
       FieldEncoding.VARINT, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return varint32Size(encodeZigZag32(value));
@@ -218,7 +218,7 @@ public abstract class WireAdapter<E> {
       return decodeZigZag32(reader.readVarint32());
     }
   };
-  public static final WireAdapter<Integer> FIXED32 = new WireAdapter<Integer>(
+  public static final ProtoAdapter<Integer> FIXED32 = new ProtoAdapter<Integer>(
       FieldEncoding.FIXED32, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return FIXED_32_SIZE;
@@ -232,8 +232,8 @@ public abstract class WireAdapter<E> {
       return reader.readFixed32();
     }
   };
-  public static final WireAdapter<Integer> SFIXED32 = FIXED32;
-  public static final WireAdapter<Long> INT64 = new WireAdapter<Long>(
+  public static final ProtoAdapter<Integer> SFIXED32 = FIXED32;
+  public static final ProtoAdapter<Long> INT64 = new ProtoAdapter<Long>(
       FieldEncoding.VARINT, Long.class) {
     @Override public int encodedSize(Long value) {
       return varint64Size(value);
@@ -247,8 +247,8 @@ public abstract class WireAdapter<E> {
       return reader.readVarint64();
     }
   };
-  public static final WireAdapter<Long> UINT64 = INT64;
-  public static final WireAdapter<Long> SINT64 = new WireAdapter<Long>(
+  public static final ProtoAdapter<Long> UINT64 = INT64;
+  public static final ProtoAdapter<Long> SINT64 = new ProtoAdapter<Long>(
       FieldEncoding.VARINT, Long.class) {
     @Override public int encodedSize(Long value) {
       return varint64Size(encodeZigZag64(value));
@@ -262,7 +262,7 @@ public abstract class WireAdapter<E> {
       return decodeZigZag64(reader.readVarint64());
     }
   };
-  public static final WireAdapter<Long> FIXED64 = new WireAdapter<Long>(
+  public static final ProtoAdapter<Long> FIXED64 = new ProtoAdapter<Long>(
       FieldEncoding.FIXED64, Long.class) {
     @Override public int encodedSize(Long value) {
       return FIXED_64_SIZE;
@@ -276,8 +276,8 @@ public abstract class WireAdapter<E> {
       return reader.readFixed64();
     }
   };
-  public static final WireAdapter<Long> SFIXED64 = FIXED64;
-  public static final WireAdapter<Float> FLOAT = new WireAdapter<Float>(
+  public static final ProtoAdapter<Long> SFIXED64 = FIXED64;
+  public static final ProtoAdapter<Float> FLOAT = new ProtoAdapter<Float>(
       FieldEncoding.FIXED32, Float.class) {
     @Override public int encodedSize(Float value) {
       return FIXED_32_SIZE;
@@ -291,7 +291,7 @@ public abstract class WireAdapter<E> {
       return Float.intBitsToFloat(reader.readFixed32());
     }
   };
-  public static final WireAdapter<Double> DOUBLE = new WireAdapter<Double>(
+  public static final ProtoAdapter<Double> DOUBLE = new ProtoAdapter<Double>(
       FieldEncoding.FIXED64, Double.class) {
     @Override public int encodedSize(Double value) {
       return FIXED_64_SIZE;
@@ -305,7 +305,7 @@ public abstract class WireAdapter<E> {
       return Double.longBitsToDouble(reader.readFixed64());
     }
   };
-  public static final WireAdapter<String> STRING = new WireAdapter<String>(
+  public static final ProtoAdapter<String> STRING = new ProtoAdapter<String>(
       FieldEncoding.LENGTH_DELIMITED, String.class) {
     @Override public int encodedSize(String value) {
       return utf8Length(value);
@@ -319,7 +319,7 @@ public abstract class WireAdapter<E> {
       return reader.readString();
     }
   };
-  public static final WireAdapter<ByteString> BYTES = new WireAdapter<ByteString>(
+  public static final ProtoAdapter<ByteString> BYTES = new ProtoAdapter<ByteString>(
       FieldEncoding.LENGTH_DELIMITED, ByteString.class) {
     @Override public int encodedSize(ByteString value) {
       return value.size();
@@ -334,28 +334,28 @@ public abstract class WireAdapter<E> {
     }
   };
 
-  private static final Map<WireType, WireAdapter<?>> TYPE_TO_ADAPTER;
+  private static final Map<ProtoType, ProtoAdapter<?>> TYPE_TO_ADAPTER;
   static {
-    Map<WireType, WireAdapter<?>> map = new LinkedHashMap<>();
-    map.put(WireType.BOOL, WireAdapter.BOOL);
-    map.put(WireType.BYTES, WireAdapter.BYTES);
-    map.put(WireType.DOUBLE, WireAdapter.DOUBLE);
-    map.put(WireType.FIXED32, WireAdapter.FIXED32);
-    map.put(WireType.FIXED64, WireAdapter.FIXED64);
-    map.put(WireType.FLOAT, WireAdapter.FLOAT);
-    map.put(WireType.INT32, WireAdapter.INT32);
-    map.put(WireType.INT64, WireAdapter.INT64);
-    map.put(WireType.SFIXED32, WireAdapter.SFIXED32);
-    map.put(WireType.SFIXED64, WireAdapter.SFIXED64);
-    map.put(WireType.SINT32, WireAdapter.SINT32);
-    map.put(WireType.SINT64, WireAdapter.SINT64);
-    map.put(WireType.STRING, WireAdapter.STRING);
-    map.put(WireType.UINT32, WireAdapter.UINT32);
-    map.put(WireType.UINT64, WireAdapter.UINT64);
+    Map<ProtoType, ProtoAdapter<?>> map = new LinkedHashMap<>();
+    map.put(ProtoType.BOOL, ProtoAdapter.BOOL);
+    map.put(ProtoType.BYTES, ProtoAdapter.BYTES);
+    map.put(ProtoType.DOUBLE, ProtoAdapter.DOUBLE);
+    map.put(ProtoType.FIXED32, ProtoAdapter.FIXED32);
+    map.put(ProtoType.FIXED64, ProtoAdapter.FIXED64);
+    map.put(ProtoType.FLOAT, ProtoAdapter.FLOAT);
+    map.put(ProtoType.INT32, ProtoAdapter.INT32);
+    map.put(ProtoType.INT64, ProtoAdapter.INT64);
+    map.put(ProtoType.SFIXED32, ProtoAdapter.SFIXED32);
+    map.put(ProtoType.SFIXED64, ProtoAdapter.SFIXED64);
+    map.put(ProtoType.SINT32, ProtoAdapter.SINT32);
+    map.put(ProtoType.SINT64, ProtoAdapter.SINT64);
+    map.put(ProtoType.STRING, ProtoAdapter.STRING);
+    map.put(ProtoType.UINT32, ProtoAdapter.UINT32);
+    map.put(ProtoType.UINT64, ProtoAdapter.UINT64);
     TYPE_TO_ADAPTER = Collections.unmodifiableMap(map);
   }
 
-  WireAdapter<?> withLabel(Message.Label label) {
+  ProtoAdapter<?> withLabel(Message.Label label) {
     if (label.isRepeated()) {
       return label.isPacked()
           ? createPacked(this)
@@ -364,11 +364,11 @@ public abstract class WireAdapter<E> {
     return this;
   }
 
-  private static <T> WireAdapter<List<T>> createPacked(final WireAdapter<T> adapter) {
+  private static <T> ProtoAdapter<List<T>> createPacked(final ProtoAdapter<T> adapter) {
     if (adapter.fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       throw new IllegalArgumentException("Unable to pack a length-delimited type.");
     }
-    return new WireAdapter<List<T>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
+    return new ProtoAdapter<List<T>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
       @Override public int encodedSize(List<T> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
@@ -393,8 +393,8 @@ public abstract class WireAdapter<E> {
     };
   }
 
-  private static <T> WireAdapter<List<T>> createRepeated(final WireAdapter<T> adapter) {
-    return new WireAdapter<List<T>>(adapter.fieldEncoding, List.class) {
+  private static <T> ProtoAdapter<List<T>> createRepeated(final ProtoAdapter<T> adapter) {
+    return new ProtoAdapter<List<T>>(adapter.fieldEncoding, List.class) {
       @Override public int encodedSize(List<T> value) {
         throw new UnsupportedOperationException();
       }

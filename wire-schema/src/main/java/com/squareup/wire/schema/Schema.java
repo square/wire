@@ -17,8 +17,8 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.squareup.wire.WireAdapter;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoType;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -71,8 +71,8 @@ public final class Schema {
    * Returns the service with the fully qualified name {@code name}, or null if this schema defines
    * no such service.
    */
-  public Service getService(WireType wireType) {
-    return getService(wireType.toString());
+  public Service getService(ProtoType protoType) {
+    return getService(protoType.toString());
   }
 
   /**
@@ -87,8 +87,8 @@ public final class Schema {
    * Returns the type with the fully qualified name {@code name}, or null if this schema defines no
    * such type.
    */
-  public Type getType(WireType wireType) {
-    return getType(wireType.toString());
+  public Type getType(ProtoType protoType) {
+    return getType(protoType.toString());
   }
 
   private static ImmutableMap<String, Type> buildTypesIndex(Iterable<ProtoFile> protoFiles) {
@@ -133,9 +133,9 @@ public final class Schema {
    *     com.squareup.wire.FieldEncoding#FIXED32 FIXED32}, or {@linkplain
    *     com.squareup.wire.FieldEncoding#LENGTH_DELIMITED LENGTH_DELIMITED} respectively.
    */
-  public WireAdapter<Object> wireAdapter(String typeName, boolean includeUnknown) {
+  public ProtoAdapter<Object> protoAdapter(String typeName, boolean includeUnknown) {
     Type type = getType(typeName);
     if (type == null) throw new IllegalArgumentException("unexpected type " + typeName);
-    return new SchemaWireAdapterFactory(this, includeUnknown).get(type.name());
+    return new SchemaProtoAdapterFactory(this, includeUnknown).get(type.name());
   }
 }

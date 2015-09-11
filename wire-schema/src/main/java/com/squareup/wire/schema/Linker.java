@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.Util;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +33,7 @@ import java.util.Map;
 final class Linker {
   private final ImmutableList<ProtoFile> protoFiles;
   private final Map<String, Type> protoTypeNames;
-  private final Map<WireType, Map<String, Field>> extensionsMap;
+  private final Map<ProtoType, Map<String, Field>> extensionsMap;
   private final Multimap<String, String> imports;
   private final List<String> errors;
   private final List<Object> contextStack;
@@ -160,17 +160,17 @@ final class Linker {
   }
 
   /** Returns the type name for the scalar, relative or fully-qualified name {@code name}. */
-  WireType resolveType(String name) {
+  ProtoType resolveType(String name) {
     return resolveType(name, false);
   }
 
   /** Returns the type name for the relative or fully-qualified name {@code name}. */
-  WireType resolveNamedType(String name) {
+  ProtoType resolveNamedType(String name) {
     return resolveType(name, true);
   }
 
-  private WireType resolveType(String name, boolean namedTypesOnly) {
-    WireType scalar = WireType.get(name);
+  private ProtoType resolveType(String name, boolean namedTypesOnly) {
+    ProtoType scalar = ProtoType.get(name);
     if (scalar.isScalar()) {
       if (namedTypesOnly) {
         addError("expected a message but was %s", name);
@@ -199,7 +199,7 @@ final class Linker {
     }
 
     addError("unable to resolve %s", name);
-    return WireType.BYTES; // Just return any placeholder.
+    return ProtoType.BYTES; // Just return any placeholder.
   }
 
   private String resolveContext() {
@@ -224,12 +224,12 @@ final class Linker {
   }
 
   /** Returns the type or null if it doesn't exist. */
-  public Type get(WireType wireType) {
-    return protoTypeNames.get(wireType.toString());
+  public Type get(ProtoType protoType) {
+    return protoTypeNames.get(protoType.toString());
   }
 
   /** Returns the map of known extensions for {@code extensionType}. */
-  public Map<String, Field> extensions(WireType extensionType) {
+  public Map<String, Field> extensions(ProtoType extensionType) {
     Map<String, Field> result = extensionsMap.get(extensionType);
     return result != null ? result : ImmutableMap.<String, Field>of();
   }
@@ -315,7 +315,7 @@ final class Linker {
     }
   }
 
-  void validateImport(Location location, WireType type) {
+  void validateImport(Location location, ProtoType type) {
     if (type.isScalar()) return;
     String path = location.path();
     String requiredImport = get(type).location().path();
@@ -343,7 +343,7 @@ final class Linker {
 
       } else if (context instanceof Extend) {
         Extend extend = (Extend) context;
-        WireType type = extend.type();
+        ProtoType type = extend.type();
         error.append(type != null
             ? String.format("%s extend %s (%s)", prefix, type, extend.location())
             : String.format("%s extend (%s)", prefix, extend.location()));

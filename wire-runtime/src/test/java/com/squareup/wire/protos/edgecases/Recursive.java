@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -13,13 +13,13 @@ public final class Recursive extends Message<Recursive> {
 
   public static final Integer DEFAULT_VALUE = 0;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "int32"
   )
   public final Integer value;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "squareup.protos.edgecases.Recursive"
   )

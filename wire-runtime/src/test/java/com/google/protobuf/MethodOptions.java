@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.Collections;
@@ -19,7 +19,7 @@ public final class MethodOptions extends Message<MethodOptions> {
    *   Buffers.
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(
+  @WireField(
       tag = 999,
       type = "google.protobuf.UninterpretedOption",
       label = Message.Label.REPEATED

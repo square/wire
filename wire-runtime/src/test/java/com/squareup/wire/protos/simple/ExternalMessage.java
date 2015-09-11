@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Float;
 import java.lang.Object;
 import java.lang.Override;
@@ -13,7 +13,7 @@ public final class ExternalMessage extends Message<ExternalMessage> {
 
   public static final Float DEFAULT_F = 20f;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "float"
   )

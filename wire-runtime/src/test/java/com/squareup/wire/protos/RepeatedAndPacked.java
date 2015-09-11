@@ -3,7 +3,7 @@
 package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -13,14 +13,14 @@ import java.util.List;
 public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
+  @WireField(
       tag = 201,
       type = "int32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_int32;
 
-  @ProtoField(
+  @WireField(
       tag = 301,
       type = "int32",
       label = Message.Label.PACKED

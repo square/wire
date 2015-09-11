@@ -105,7 +105,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    *
    * @param <E> the enum class type
    */
-  public static <E extends Enum & ProtoEnum> E enumFromInt(Class<E> enumClass, int value) {
+  public static <E extends Enum & WireEnum> E enumFromInt(Class<E> enumClass, int value) {
     RuntimeEnumAdapter<E> adapter = WIRE.enumAdapter(enumClass);
     return adapter.fromInt(value);
   }

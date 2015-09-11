@@ -18,7 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.OptionElement;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,20 +37,20 @@ import static com.google.common.collect.Iterables.getOnlyElement;
  * messages.
  */
 public final class Options {
-  public static final WireType FILE_OPTIONS = WireType.get("google.protobuf.FileOptions");
-  public static final WireType MESSAGE_OPTIONS = WireType.get("google.protobuf.MessageOptions");
-  public static final WireType FIELD_OPTIONS = WireType.get("google.protobuf.FieldOptions");
-  public static final WireType ENUM_OPTIONS = WireType.get("google.protobuf.EnumOptions");
-  public static final WireType ENUM_VALUE_OPTIONS
-      = WireType.get("google.protobuf.EnumValueOptions");
-  public static final WireType SERVICE_OPTIONS = WireType.get("google.protobuf.ServiceOptions");
-  public static final WireType METHOD_OPTIONS = WireType.get("google.protobuf.MethodOptions");
+  public static final ProtoType FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions");
+  public static final ProtoType MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions");
+  public static final ProtoType FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions");
+  public static final ProtoType ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions");
+  public static final ProtoType ENUM_VALUE_OPTIONS
+      = ProtoType.get("google.protobuf.EnumValueOptions");
+  public static final ProtoType SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions");
+  public static final ProtoType METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions");
 
-  private final WireType optionType;
+  private final ProtoType optionType;
   private final ImmutableList<OptionElement> optionElements;
   private ImmutableMap<Field, Object> map;
 
-  public Options(WireType optionType, List<OptionElement> elements) {
+  public Options(ProtoType optionType, List<OptionElement> elements) {
     this.optionType = optionType;
     this.optionElements = ImmutableList.copyOf(elements);
   }
@@ -110,7 +110,7 @@ public final class Options {
   }
 
   Map<Field, Object> canonicalizeOption(
-      Linker linker, WireType extensionType, OptionElement option) {
+      Linker linker, ProtoType extensionType, OptionElement option) {
     Map<String, Field> extensionsForType = linker.extensions(extensionType);
     if (extensionsForType == null) {
       return null; // No known extensions for the given extension type.

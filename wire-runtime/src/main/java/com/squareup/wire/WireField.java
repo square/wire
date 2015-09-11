@@ -28,7 +28,7 @@ import static com.squareup.wire.Message.Label;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ProtoField {
+public @interface WireField {
   /** The tag number used to store the field's value. */
   int tag();
 

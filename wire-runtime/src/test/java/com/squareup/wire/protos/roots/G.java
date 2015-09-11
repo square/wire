@@ -2,10 +2,10 @@
 // Source file: ../wire-runtime/src/test/proto/roots.proto at 60:1
 package com.squareup.wire.protos.roots;
 
-import com.squareup.wire.ProtoEnum;
+import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
-public enum G implements ProtoEnum {
+public enum G implements WireEnum {
   FOO(1),
 
   BAR(2);

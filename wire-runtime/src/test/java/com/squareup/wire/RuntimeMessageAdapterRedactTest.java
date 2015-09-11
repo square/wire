@@ -89,7 +89,7 @@ public class RuntimeMessageAdapterRedactTest {
   }
 
   @Test public void requiredRedactedFieldThrowsRedacting() {
-    WireAdapter<RedactedRequired> adapter = wire.adapter(RedactedRequired.class);
+    ProtoAdapter<RedactedRequired> adapter = wire.adapter(RedactedRequired.class);
     try {
       adapter.redact(new RedactedRequired("a"));
       fail();
@@ -100,7 +100,7 @@ public class RuntimeMessageAdapterRedactTest {
   }
 
   @Test public void requiredRedactedFieldToString() {
-    WireAdapter<RedactedRequired> adapter = wire.adapter(RedactedRequired.class);
+    ProtoAdapter<RedactedRequired> adapter = wire.adapter(RedactedRequired.class);
     assertThat(adapter.toString(new RedactedRequired("a"))).isEqualTo("RedactedRequired{a=██}");
   }
 }

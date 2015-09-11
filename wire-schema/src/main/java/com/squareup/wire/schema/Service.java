@@ -16,26 +16,26 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.RpcElement;
 import com.squareup.wire.schema.internal.parser.ServiceElement;
 import java.util.NavigableSet;
 
 public final class Service {
-  private final WireType wireType;
+  private final ProtoType protoType;
   private final ServiceElement element;
   private final ImmutableList<Rpc> rpcs;
   private final Options options;
 
-  private Service(WireType wireType, ServiceElement element,
+  private Service(ProtoType protoType, ServiceElement element,
       ImmutableList<Rpc> rpcs, Options options) {
-    this.wireType = wireType;
+    this.protoType = protoType;
     this.element = element;
     this.rpcs = rpcs;
     this.options = options;
   }
 
-  public static Service get(WireType wireType, ServiceElement element) {
+  public static Service get(ProtoType protoType, ServiceElement element) {
     ImmutableList.Builder<Rpc> rpcs = ImmutableList.builder();
     for (RpcElement rpc : element.rpcs()) {
       rpcs.add(new Rpc(rpc));
@@ -43,15 +43,15 @@ public final class Service {
 
     Options options = new Options(Options.SERVICE_OPTIONS, element.options());
 
-    return new Service(wireType, element, rpcs.build(), options);
+    return new Service(protoType, element, rpcs.build(), options);
   }
 
   public Location location() {
     return element.location();
   }
 
-  public WireType type() {
-    return wireType;
+  public ProtoType type() {
+    return protoType;
   }
 
   public String documentation() {
@@ -99,7 +99,7 @@ public final class Service {
   }
 
   Service retainAll(NavigableSet<String> identifiers) {
-    String serviceName = wireType.toString();
+    String serviceName = protoType.toString();
 
     // If this service is not retained, prune it.
     if (!identifiers.contains(serviceName)) {
@@ -109,7 +109,7 @@ public final class Service {
     ImmutableList<Rpc> retainedRpcs = rpcs;
 
     // If any of our RPCs are specifically retained, retain only that set.
-    if (Pruner.hasMarkedMember(identifiers, wireType)) {
+    if (Pruner.hasMarkedMember(identifiers, protoType)) {
       ImmutableList.Builder<Rpc> retainedRpcsBuilder = ImmutableList.builder();
       for (Rpc rpc : rpcs) {
         if (identifiers.contains(serviceName + '#' + rpc.name())) {
@@ -119,6 +119,6 @@ public final class Service {
       retainedRpcs = retainedRpcsBuilder.build();
     }
 
-    return new Service(wireType, element, retainedRpcs, options);
+    return new Service(protoType, element, retainedRpcs, options);
   }
 }

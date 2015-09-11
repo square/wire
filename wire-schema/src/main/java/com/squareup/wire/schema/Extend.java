@@ -16,14 +16,14 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.ExtendElement;
 import com.squareup.wire.schema.internal.parser.FieldElement;
 
 public final class Extend {
   private final ExtendElement element;
   private final ImmutableList<Field> fields;
-  private WireType wireType;
+  private ProtoType protoType;
 
   Extend(String packageName, ExtendElement element) {
     this.element = element;
@@ -39,8 +39,8 @@ public final class Extend {
     return element.location();
   }
 
-  public WireType type() {
-    return wireType;
+  public ProtoType type() {
+    return protoType;
   }
 
   public String documentation() {
@@ -53,7 +53,7 @@ public final class Extend {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    wireType = linker.resolveNamedType(element.name());
+    protoType = linker.resolveNamedType(element.name());
     for (Field field : fields) {
       field.link(linker);
     }

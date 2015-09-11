@@ -29,9 +29,9 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
-import com.squareup.wire.WireType;
+import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Extend;
@@ -92,7 +92,7 @@ public final class TypeWriter {
 
     TypeSpec.Builder builder = TypeSpec.enumBuilder(typeName.simpleName())
         .addModifiers(PUBLIC)
-        .addSuperinterface(ProtoEnum.class);
+        .addSuperinterface(WireEnum.class);
 
     if (!type.documentation().isEmpty()) {
       builder.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(type.documentation()));
@@ -214,7 +214,7 @@ public final class TypeWriter {
 
       String name = sanitize(field.name());
       FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, name, PUBLIC, FINAL);
-      fieldBuilder.addAnnotation(protoFieldAnnotation(field, javaGenerator.typeName(field.type())));
+      fieldBuilder.addAnnotation(wireFieldAnnotation(field, javaGenerator.typeName(field.type())));
       if (!field.documentation().isEmpty()) {
         fieldBuilder.addJavadoc("$L\n", JavaGenerator.sanitizeJavadoc(field.documentation()));
       }
@@ -289,13 +289,13 @@ public final class TypeWriter {
 
   // Example:
   //
-  // @ProtoField(
+  // @WireField(
   //   tag = 1,
   //   type = INT32
   // )
   //
-  private AnnotationSpec protoFieldAnnotation(Field field, TypeName messageType) {
-    AnnotationSpec.Builder result = AnnotationSpec.builder(ProtoField.class);
+  private AnnotationSpec wireFieldAnnotation(Field field, TypeName messageType) {
+    AnnotationSpec.Builder result = AnnotationSpec.builder(WireField.class);
 
     int tag = field.tag();
     result.addMember("tag", String.valueOf(tag));
@@ -648,7 +648,7 @@ public final class TypeWriter {
     throw new IllegalStateException("Field " + field + " cannot have default value");
   }
 
-  private CodeBlock fieldInitializer(WireType type, Object value) {
+  private CodeBlock fieldInitializer(ProtoType type, Object value) {
     TypeName javaType = javaGenerator.typeName(type);
 
     if (value instanceof List) {
@@ -749,7 +749,7 @@ public final class TypeWriter {
         .build());
 
     for (Extend extend : protoFile.extendList()) {
-      WireType extendType = extend.type();
+      ProtoType extendType = extend.type();
       TypeName javaType = javaGenerator.typeName(extendType);
 
       if (!emitOptions && (extendType.equals(Options.FIELD_OPTIONS)

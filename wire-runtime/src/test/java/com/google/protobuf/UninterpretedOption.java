@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Long;
@@ -37,7 +37,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
   public static final String DEFAULT_AGGREGATE_VALUE = "";
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "google.protobuf.UninterpretedOption.NamePart",
       label = Message.Label.REPEATED
@@ -48,37 +48,37 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
    * The value of the uninterpreted option, in whatever type the tokenizer
    * identified it as during parsing. Exactly one of these should be set.
    */
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "string"
   )
   public final String identifier_value;
 
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "uint64"
   )
   public final Long positive_int_value;
 
-  @ProtoField(
+  @WireField(
       tag = 5,
       type = "int64"
   )
   public final Long negative_int_value;
 
-  @ProtoField(
+  @WireField(
       tag = 6,
       type = "double"
   )
   public final Double double_value;
 
-  @ProtoField(
+  @WireField(
       tag = 7,
       type = "bytes"
   )
   public final ByteString string_value;
 
-  @ProtoField(
+  @WireField(
       tag = 8,
       type = "string"
   )
@@ -218,14 +218,14 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
     public static final Boolean DEFAULT_IS_EXTENSION = false;
 
-    @ProtoField(
+    @WireField(
         tag = 1,
         type = "string",
         label = Message.Label.REQUIRED
     )
     public final String name_part;
 
-    @ProtoField(
+    @WireField(
         tag = 2,
         type = "bool",
         label = Message.Label.REQUIRED
