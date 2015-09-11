@@ -17,7 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
-import com.squareup.wire.WireAdapter;
+import com.squareup.wire.ProtoAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -65,8 +65,8 @@ class SchemaBuilder {
     }
   }
 
-  public WireAdapter<Object> buildWireAdapter(String messageTypeName) {
+  public ProtoAdapter<Object> buildProtoAdapter(String messageTypeName) {
     Schema schema = build();
-    return schema.wireAdapter(messageTypeName, true);
+    return schema.protoAdapter(messageTypeName, true);
   }
 }

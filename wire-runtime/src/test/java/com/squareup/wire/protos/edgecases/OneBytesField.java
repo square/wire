@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
@@ -13,7 +13,7 @@ public final class OneBytesField extends Message<OneBytesField> {
 
   public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "bytes"
   )

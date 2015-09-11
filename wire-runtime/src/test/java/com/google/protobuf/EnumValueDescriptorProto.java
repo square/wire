@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -21,7 +21,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
   public static final Integer DEFAULT_NUMBER = 0;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string"
   )
@@ -30,19 +30,19 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "string"
   )
   public final String doc;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "int32"
   )
   public final Integer number;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "google.protobuf.EnumValueOptions"
   )

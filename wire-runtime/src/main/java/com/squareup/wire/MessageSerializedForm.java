@@ -33,7 +33,7 @@ final class MessageSerializedForm implements Serializable {
   }
 
   Object readResolve() throws ObjectStreamException {
-    WireAdapter<? extends Message> adapter = Message.WIRE.adapter(messageClass);
+    ProtoAdapter<? extends Message> adapter = Message.WIRE.adapter(messageClass);
     try {
       // Extensions will be decoded as unknown values.
       return adapter.decode(bytes);

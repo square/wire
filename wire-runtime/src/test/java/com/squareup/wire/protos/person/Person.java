@@ -3,8 +3,8 @@
 package com.squareup.wire.protos.person;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -24,7 +24,7 @@ public final class Person extends Message<Person> {
   /**
    * The customer's full name.
    */
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string",
       label = Message.Label.REQUIRED
@@ -34,7 +34,7 @@ public final class Person extends Message<Person> {
   /**
    * The customer's ID number.
    */
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "int32",
       label = Message.Label.REQUIRED
@@ -44,7 +44,7 @@ public final class Person extends Message<Person> {
   /**
    * Email address for the customer.
    */
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "string"
   )
@@ -53,7 +53,7 @@ public final class Person extends Message<Person> {
   /**
    * A list of the customer's phone numbers.
    */
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "squareup.protos.person.Person.PhoneNumber",
       label = Message.Label.REPEATED
@@ -160,7 +160,7 @@ public final class Person extends Message<Person> {
     }
   }
 
-  public enum PhoneType implements ProtoEnum {
+  public enum PhoneType implements WireEnum {
     MOBILE(0),
 
     HOME(1),
@@ -192,7 +192,7 @@ public final class Person extends Message<Person> {
     /**
      * The customer's phone number.
      */
-    @ProtoField(
+    @WireField(
         tag = 1,
         type = "string",
         label = Message.Label.REQUIRED
@@ -202,7 +202,7 @@ public final class Person extends Message<Person> {
     /**
      * The type of phone stored here.
      */
-    @ProtoField(
+    @WireField(
         tag = 2,
         type = "squareup.protos.person.Person.PhoneType"
     )

@@ -17,7 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.squareup.wire.WireAdapter;
+import com.squareup.wire.ProtoAdapter;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -28,7 +28,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public final class SchemaWireAdapterTest {
+public final class SchemaProtoAdapterTest {
   final Schema coffeeSchema = new SchemaBuilder()
       .add("coffee.proto", ""
           + "message CafeDrink {\n"
@@ -78,19 +78,19 @@ public final class SchemaWireAdapterTest {
       + "6f6d6269616e11000000000000f03f12140a09636f6c6f6d6269616e11000000000000f03f18037018");
 
   @Test public void decode() throws Exception {
-    WireAdapter<Object> adapter = coffeeSchema.wireAdapter("CafeDrink", true);
+    ProtoAdapter<Object> adapter = coffeeSchema.protoAdapter("CafeDrink", true);
     assertThat(adapter.decode(new Buffer().write(dansCoffeeEncoded))).isEqualTo(dansCoffee);
     assertThat(adapter.decode(new Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee);
   }
 
   @Test public void encode() throws IOException {
-    WireAdapter<Object> adapter = coffeeSchema.wireAdapter("CafeDrink", true);
+    ProtoAdapter<Object> adapter = coffeeSchema.protoAdapter("CafeDrink", true);
     assertThat(ByteString.of(adapter.encode(dansCoffee))).isEqualTo(dansCoffeeEncoded);
     assertThat(ByteString.of(adapter.encode(jessesCoffee))).isEqualTo(jessesCoffeeEncoded);
   }
 
   @Test public void groupsIgnored() throws IOException {
-    WireAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -102,7 +102,7 @@ public final class SchemaWireAdapterTest {
             + "  // }\n"
             + "  optional string b = 4;\n"
             + "}\n")
-        .buildWireAdapter("Message");
+        .buildProtoAdapter("Message");
     ByteString encoded = ByteString.decodeHex("0a0161135a02080114135a02100214135a090803720568656c6c"
         + "6f141baa010208011c1baa010210021c1baa01090803720568656c6c6f1c220162");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
@@ -112,12 +112,12 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void startGroupWithoutEndGroup() throws IOException {
-    WireAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
             + "}\n")
-        .buildWireAdapter("Message");
+        .buildProtoAdapter("Message");
     ByteString encoded = ByteString.decodeHex("130a0161");
     try {
       adapter.decode(new Buffer().write(encoded));
@@ -127,12 +127,12 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void unexpectedEndGroup() throws IOException {
-    WireAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
             + "}\n")
-        .buildWireAdapter("Message");
+        .buildProtoAdapter("Message");
     ByteString encoded = ByteString.decodeHex("0a01611c");
     try {
       adapter.decode(new Buffer().write(encoded));
@@ -143,12 +143,12 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void endGroupDoesntMatchStartGroup() throws IOException {
-    WireAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
             + "}\n")
-        .buildWireAdapter("Message");
+        .buildProtoAdapter("Message");
     ByteString encoded = ByteString.decodeHex("130a01611c");
     try {
       adapter.decode(new Buffer().write(encoded));
@@ -159,12 +159,12 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void decodeToUnpacked() throws IOException {
-    WireAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = false];\n"
             + "}\n")
-        .buildWireAdapter("Message");
+        .buildProtoAdapter("Message");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
     ByteString packedEncoded = ByteString.decodeHex("d20504d904bd05");
@@ -174,12 +174,12 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void decodeToPacked() throws IOException {
-    WireAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new SchemaBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = true];\n"
             + "}\n")
-        .buildWireAdapter("Message");
+        .buildProtoAdapter("Message");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
     ByteString unpackedEncoded = ByteString.decodeHex("d005d904d005bd05");
@@ -189,14 +189,14 @@ public final class SchemaWireAdapterTest {
   }
 
   @Test public void recursiveMessage() throws IOException {
-    WireAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new SchemaBuilder()
         .add("tree.proto", ""
             + "message BinaryTreeNode {\n"
             + "  optional BinaryTreeNode left = 1;\n"
             + "  optional BinaryTreeNode right = 2;\n"
             + "  optional string value = 3;\n"
             + "}\n")
-        .buildWireAdapter("BinaryTreeNode");
+        .buildProtoAdapter("BinaryTreeNode");
     ImmutableMap<String, Object> value = ImmutableMap.<String, Object>of(
         "value", "D",
         "left", ImmutableMap.of(
@@ -228,7 +228,7 @@ public final class SchemaWireAdapterTest {
         "size_ounces", 16,
         "15", ImmutableList.of(ByteString.decodeHex("1001")));
 
-    WireAdapter<Object> adapter = schema.wireAdapter("CafeDrink", true);
+    ProtoAdapter<Object> adapter = schema.protoAdapter("CafeDrink", true);
     assertThat(adapter.decode(new Buffer().write(dansCoffeeEncoded)))
         .isEqualTo(dansCoffeeWithUnknowns);
   }
@@ -246,7 +246,7 @@ public final class SchemaWireAdapterTest {
         "customer_name", "Dan",
         "size_ounces", 16);
 
-    WireAdapter<Object> adapter = schema.wireAdapter("CafeDrink", false);
+    ProtoAdapter<Object> adapter = schema.protoAdapter("CafeDrink", false);
     assertThat(adapter.decode(new Buffer().write(dansCoffeeEncoded)))
         .isEqualTo(dansCoffeeWithoutUnknowns);
   }

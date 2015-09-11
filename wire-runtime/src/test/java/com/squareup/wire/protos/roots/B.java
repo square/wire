@@ -3,14 +3,14 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 
 public final class B extends Message<B> {
   private static final long serialVersionUID = 0L;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "squareup.protos.roots.C",
       label = Message.Label.REQUIRED

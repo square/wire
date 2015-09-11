@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -13,7 +13,7 @@ public final class OneField extends Message<OneField> {
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "int32"
   )

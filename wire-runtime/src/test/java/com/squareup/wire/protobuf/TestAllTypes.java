@@ -19,7 +19,7 @@ import com.squareup.wire.Extension;
 import com.squareup.wire.ExtensionRegistry;
 import com.squareup.wire.Message;
 import com.squareup.wire.Wire;
-import com.squareup.wire.WireAdapter;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.io.ByteArrayInputStream;
@@ -137,7 +137,7 @@ public class TestAllTypes {
 
   private final AllTypes allTypes = createAllTypes();
   private final Wire wire = new Wire(new ExtensionRegistry(Ext_all_types.class));
-  private final WireAdapter<AllTypes> adapter = wire.adapter(AllTypes.class);
+  private final ProtoAdapter<AllTypes> adapter = wire.adapter(AllTypes.class);
 
   private AllTypes createAllTypes(int numRepeated) {
     return getBuilder(numRepeated).build();

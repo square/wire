@@ -3,8 +3,8 @@
 package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Float;
@@ -117,535 +117,535 @@ public final class AllTypes extends Message<AllTypes> {
 
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.A;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "int32"
   )
   public final Integer opt_int32;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "uint32"
   )
   public final Integer opt_uint32;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "sint32"
   )
   public final Integer opt_sint32;
 
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "fixed32"
   )
   public final Integer opt_fixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 5,
       type = "sfixed32"
   )
   public final Integer opt_sfixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 6,
       type = "int64"
   )
   public final Long opt_int64;
 
-  @ProtoField(
+  @WireField(
       tag = 7,
       type = "uint64"
   )
   public final Long opt_uint64;
 
-  @ProtoField(
+  @WireField(
       tag = 8,
       type = "sint64"
   )
   public final Long opt_sint64;
 
-  @ProtoField(
+  @WireField(
       tag = 9,
       type = "fixed64"
   )
   public final Long opt_fixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 10,
       type = "sfixed64"
   )
   public final Long opt_sfixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 11,
       type = "bool"
   )
   public final Boolean opt_bool;
 
-  @ProtoField(
+  @WireField(
       tag = 12,
       type = "float"
   )
   public final Float opt_float;
 
-  @ProtoField(
+  @WireField(
       tag = 13,
       type = "double"
   )
   public final Double opt_double;
 
-  @ProtoField(
+  @WireField(
       tag = 14,
       type = "string"
   )
   public final String opt_string;
 
-  @ProtoField(
+  @WireField(
       tag = 15,
       type = "bytes"
   )
   public final ByteString opt_bytes;
 
-  @ProtoField(
+  @WireField(
       tag = 16,
       type = "squareup.protos.alltypes.AllTypes.NestedEnum"
   )
   public final NestedEnum opt_nested_enum;
 
-  @ProtoField(
+  @WireField(
       tag = 17,
       type = "squareup.protos.alltypes.AllTypes.NestedMessage"
   )
   public final NestedMessage opt_nested_message;
 
-  @ProtoField(
+  @WireField(
       tag = 101,
       type = "int32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_int32;
 
-  @ProtoField(
+  @WireField(
       tag = 102,
       type = "uint32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_uint32;
 
-  @ProtoField(
+  @WireField(
       tag = 103,
       type = "sint32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_sint32;
 
-  @ProtoField(
+  @WireField(
       tag = 104,
       type = "fixed32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_fixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 105,
       type = "sfixed32",
       label = Message.Label.REQUIRED
   )
   public final Integer req_sfixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 106,
       type = "int64",
       label = Message.Label.REQUIRED
   )
   public final Long req_int64;
 
-  @ProtoField(
+  @WireField(
       tag = 107,
       type = "uint64",
       label = Message.Label.REQUIRED
   )
   public final Long req_uint64;
 
-  @ProtoField(
+  @WireField(
       tag = 108,
       type = "sint64",
       label = Message.Label.REQUIRED
   )
   public final Long req_sint64;
 
-  @ProtoField(
+  @WireField(
       tag = 109,
       type = "fixed64",
       label = Message.Label.REQUIRED
   )
   public final Long req_fixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 110,
       type = "sfixed64",
       label = Message.Label.REQUIRED
   )
   public final Long req_sfixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 111,
       type = "bool",
       label = Message.Label.REQUIRED
   )
   public final Boolean req_bool;
 
-  @ProtoField(
+  @WireField(
       tag = 112,
       type = "float",
       label = Message.Label.REQUIRED
   )
   public final Float req_float;
 
-  @ProtoField(
+  @WireField(
       tag = 113,
       type = "double",
       label = Message.Label.REQUIRED
   )
   public final Double req_double;
 
-  @ProtoField(
+  @WireField(
       tag = 114,
       type = "string",
       label = Message.Label.REQUIRED
   )
   public final String req_string;
 
-  @ProtoField(
+  @WireField(
       tag = 115,
       type = "bytes",
       label = Message.Label.REQUIRED
   )
   public final ByteString req_bytes;
 
-  @ProtoField(
+  @WireField(
       tag = 116,
       type = "squareup.protos.alltypes.AllTypes.NestedEnum",
       label = Message.Label.REQUIRED
   )
   public final NestedEnum req_nested_enum;
 
-  @ProtoField(
+  @WireField(
       tag = 117,
       type = "squareup.protos.alltypes.AllTypes.NestedMessage",
       label = Message.Label.REQUIRED
   )
   public final NestedMessage req_nested_message;
 
-  @ProtoField(
+  @WireField(
       tag = 201,
       type = "int32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_int32;
 
-  @ProtoField(
+  @WireField(
       tag = 202,
       type = "uint32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_uint32;
 
-  @ProtoField(
+  @WireField(
       tag = 203,
       type = "sint32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_sint32;
 
-  @ProtoField(
+  @WireField(
       tag = 204,
       type = "fixed32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_fixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 205,
       type = "sfixed32",
       label = Message.Label.REPEATED
   )
   public final List<Integer> rep_sfixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 206,
       type = "int64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_int64;
 
-  @ProtoField(
+  @WireField(
       tag = 207,
       type = "uint64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_uint64;
 
-  @ProtoField(
+  @WireField(
       tag = 208,
       type = "sint64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_sint64;
 
-  @ProtoField(
+  @WireField(
       tag = 209,
       type = "fixed64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_fixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 210,
       type = "sfixed64",
       label = Message.Label.REPEATED
   )
   public final List<Long> rep_sfixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 211,
       type = "bool",
       label = Message.Label.REPEATED
   )
   public final List<Boolean> rep_bool;
 
-  @ProtoField(
+  @WireField(
       tag = 212,
       type = "float",
       label = Message.Label.REPEATED
   )
   public final List<Float> rep_float;
 
-  @ProtoField(
+  @WireField(
       tag = 213,
       type = "double",
       label = Message.Label.REPEATED
   )
   public final List<Double> rep_double;
 
-  @ProtoField(
+  @WireField(
       tag = 214,
       type = "string",
       label = Message.Label.REPEATED
   )
   public final List<String> rep_string;
 
-  @ProtoField(
+  @WireField(
       tag = 215,
       type = "bytes",
       label = Message.Label.REPEATED
   )
   public final List<ByteString> rep_bytes;
 
-  @ProtoField(
+  @WireField(
       tag = 216,
       type = "squareup.protos.alltypes.AllTypes.NestedEnum",
       label = Message.Label.REPEATED
   )
   public final List<NestedEnum> rep_nested_enum;
 
-  @ProtoField(
+  @WireField(
       tag = 217,
       type = "squareup.protos.alltypes.AllTypes.NestedMessage",
       label = Message.Label.REPEATED
   )
   public final List<NestedMessage> rep_nested_message;
 
-  @ProtoField(
+  @WireField(
       tag = 301,
       type = "int32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_int32;
 
-  @ProtoField(
+  @WireField(
       tag = 302,
       type = "uint32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_uint32;
 
-  @ProtoField(
+  @WireField(
       tag = 303,
       type = "sint32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_sint32;
 
-  @ProtoField(
+  @WireField(
       tag = 304,
       type = "fixed32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_fixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 305,
       type = "sfixed32",
       label = Message.Label.PACKED
   )
   public final List<Integer> pack_sfixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 306,
       type = "int64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_int64;
 
-  @ProtoField(
+  @WireField(
       tag = 307,
       type = "uint64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_uint64;
 
-  @ProtoField(
+  @WireField(
       tag = 308,
       type = "sint64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_sint64;
 
-  @ProtoField(
+  @WireField(
       tag = 309,
       type = "fixed64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_fixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 310,
       type = "sfixed64",
       label = Message.Label.PACKED
   )
   public final List<Long> pack_sfixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 311,
       type = "bool",
       label = Message.Label.PACKED
   )
   public final List<Boolean> pack_bool;
 
-  @ProtoField(
+  @WireField(
       tag = 312,
       type = "float",
       label = Message.Label.PACKED
   )
   public final List<Float> pack_float;
 
-  @ProtoField(
+  @WireField(
       tag = 313,
       type = "double",
       label = Message.Label.PACKED
   )
   public final List<Double> pack_double;
 
-  @ProtoField(
+  @WireField(
       tag = 316,
       type = "squareup.protos.alltypes.AllTypes.NestedEnum",
       label = Message.Label.PACKED
   )
   public final List<NestedEnum> pack_nested_enum;
 
-  @ProtoField(
+  @WireField(
       tag = 401,
       type = "int32"
   )
   public final Integer default_int32;
 
-  @ProtoField(
+  @WireField(
       tag = 402,
       type = "uint32"
   )
   public final Integer default_uint32;
 
-  @ProtoField(
+  @WireField(
       tag = 403,
       type = "sint32"
   )
   public final Integer default_sint32;
 
-  @ProtoField(
+  @WireField(
       tag = 404,
       type = "fixed32"
   )
   public final Integer default_fixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 405,
       type = "sfixed32"
   )
   public final Integer default_sfixed32;
 
-  @ProtoField(
+  @WireField(
       tag = 406,
       type = "int64"
   )
   public final Long default_int64;
 
-  @ProtoField(
+  @WireField(
       tag = 407,
       type = "uint64"
   )
   public final Long default_uint64;
 
-  @ProtoField(
+  @WireField(
       tag = 408,
       type = "sint64"
   )
   public final Long default_sint64;
 
-  @ProtoField(
+  @WireField(
       tag = 409,
       type = "fixed64"
   )
   public final Long default_fixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 410,
       type = "sfixed64"
   )
   public final Long default_sfixed64;
 
-  @ProtoField(
+  @WireField(
       tag = 411,
       type = "bool"
   )
   public final Boolean default_bool;
 
-  @ProtoField(
+  @WireField(
       tag = 412,
       type = "float"
   )
   public final Float default_float;
 
-  @ProtoField(
+  @WireField(
       tag = 413,
       type = "double"
   )
   public final Double default_double;
 
-  @ProtoField(
+  @WireField(
       tag = 414,
       type = "string"
   )
   public final String default_string;
 
-  @ProtoField(
+  @WireField(
       tag = 415,
       type = "bytes"
   )
   public final ByteString default_bytes;
 
-  @ProtoField(
+  @WireField(
       tag = 416,
       type = "squareup.protos.alltypes.AllTypes.NestedEnum"
   )
@@ -1618,7 +1618,7 @@ public final class AllTypes extends Message<AllTypes> {
     }
   }
 
-  public enum NestedEnum implements ProtoEnum {
+  public enum NestedEnum implements WireEnum {
     A(1);
 
     private final int value;
@@ -1638,7 +1638,7 @@ public final class AllTypes extends Message<AllTypes> {
 
     public static final Integer DEFAULT_A = 0;
 
-    @ProtoField(
+    @WireField(
         tag = 1,
         type = "int32"
     )

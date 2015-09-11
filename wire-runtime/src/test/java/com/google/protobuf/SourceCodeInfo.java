@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -64,7 +64,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
    *   ignore those that it doesn't understand, as more types of locations could
    *   be recorded in the future.
    */
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "google.protobuf.SourceCodeInfo.Location",
       label = Message.Label.REPEATED
@@ -189,7 +189,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
      * this path refers to the whole field declaration (from the beginning
      * of the label to the terminating semicolon).
      */
-    @ProtoField(
+    @WireField(
         tag = 1,
         type = "int32",
         label = Message.Label.PACKED
@@ -203,7 +203,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
      * and column numbers are zero-based -- typically you will want to add
      * 1 to each before displaying to a user.
      */
-    @ProtoField(
+    @WireField(
         tag = 2,
         type = "int32",
         label = Message.Label.PACKED

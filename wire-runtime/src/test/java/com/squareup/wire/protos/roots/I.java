@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -13,7 +13,7 @@ public final class I extends Message<I> {
 
   public static final Integer DEFAULT_I = 0;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "int32"
   )

@@ -4,7 +4,7 @@ package com.squareup.wire.protos.redacted;
 
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -26,20 +26,20 @@ public final class Redacted extends Message<Redacted> {
 
   public static final String DEFAULT_C = "";
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string",
       redacted = true
   )
   public final String a;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "string"
   )
   public final String b;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "string"
   )

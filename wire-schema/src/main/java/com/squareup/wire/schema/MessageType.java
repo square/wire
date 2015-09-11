@@ -16,14 +16,14 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.MessageElement;
 import java.util.NavigableSet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class MessageType extends Type {
-  private final WireType wireType;
+  private final ProtoType protoType;
   private final MessageElement element;
   private final ImmutableList<Field> fields;
   private final ImmutableList<OneOf> oneOfs;
@@ -31,10 +31,10 @@ public final class MessageType extends Type {
   private final ImmutableList<Extensions> extensionsList;
   private final Options options;
 
-  MessageType(WireType wireType, MessageElement element,
+  MessageType(ProtoType protoType, MessageElement element,
       ImmutableList<Field> fields, ImmutableList<OneOf> oneOfs,
       ImmutableList<Type> nestedTypes, ImmutableList<Extensions> extensionsList, Options options) {
-    this.wireType = wireType;
+    this.protoType = protoType;
     this.element = element;
     this.fields = fields;
     this.oneOfs = oneOfs;
@@ -47,8 +47,8 @@ public final class MessageType extends Type {
     return element.location();
   }
 
-  @Override public WireType name() {
-    return wireType;
+  @Override public ProtoType name() {
+    return protoType;
   }
 
   @Override public String documentation() {
@@ -165,7 +165,7 @@ public final class MessageType extends Type {
       }
     }
 
-    String typeName = wireType.toString();
+    String typeName = protoType.toString();
 
     // If this type is not retained, and none of its nested types are retained, prune it.
     ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
@@ -175,7 +175,7 @@ public final class MessageType extends Type {
 
     // If any of our fields are specifically retained, retain only that set.
     ImmutableList<Field> retainedFields = fields;
-    if (Pruner.hasMarkedMember(identifiers, wireType)) {
+    if (Pruner.hasMarkedMember(identifiers, protoType)) {
       ImmutableList.Builder<Field> retainedFieldsBuilder = ImmutableList.builder();
       for (Field field : fields) {
         if (identifiers.contains(typeName + '#' + field.name())) {
@@ -185,7 +185,7 @@ public final class MessageType extends Type {
       retainedFields = retainedFieldsBuilder.build();
     }
 
-    return new MessageType(wireType, element, retainedFields, oneOfs, retainedNestedTypes,
+    return new MessageType(protoType, element, retainedFields, oneOfs, retainedNestedTypes,
         extensionsList, options);
   }
 }

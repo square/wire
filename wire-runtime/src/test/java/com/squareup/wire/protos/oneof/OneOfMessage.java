@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.oneof;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -19,7 +19,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
   /**
    * What foo.
    */
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "int32"
   )
@@ -28,7 +28,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
   /**
    * Such bar.
    */
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "string"
   )

@@ -16,7 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
@@ -105,7 +105,7 @@ final class Pruner {
         throw new IllegalArgumentException("Unexpected member: " + root);
 
       } else {
-        if (WireType.get(root).isScalar()) {
+        if (ProtoType.get(root).isScalar()) {
           continue; // Skip scalar types.
         }
 
@@ -134,15 +134,15 @@ final class Pruner {
   }
 
   /** Returns true if any RPC, enum constant or field of {@code identifier} is in marks. */
-  static boolean hasMarkedMember(NavigableSet<String> marks, WireType typeName) {
+  static boolean hasMarkedMember(NavigableSet<String> marks, ProtoType typeName) {
     // If there's a member field, it will sort immediately after <Name># in the marks set.
     String prefix = typeName + "#";
     String ceiling = marks.ceiling(prefix);
     return ceiling != null && ceiling.startsWith(prefix);
   }
 
-  private void mark(WireType wireType) {
-    mark(wireType.toString());
+  private void mark(ProtoType protoType) {
+    mark(protoType.toString());
   }
 
   private void mark(String identifier) {

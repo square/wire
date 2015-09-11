@@ -3,8 +3,8 @@
 package com.squareup.wire.protos.custom_options;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.lang.Double;
 import java.lang.Float;
 import java.lang.Integer;
@@ -26,44 +26,44 @@ public final class FooBar extends Message<FooBar> {
 
   public static final Double DEFAULT_DAISY = 0.0d;
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "int32"
   )
   public final Integer foo;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "string"
   )
   public final String bar;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "squareup.protos.custom_options.FooBar.Nested"
   )
   public final Nested baz;
 
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "uint64"
   )
   public final Long qux;
 
-  @ProtoField(
+  @WireField(
       tag = 5,
       type = "float",
       label = Message.Label.REPEATED
   )
   public final List<Float> fred;
 
-  @ProtoField(
+  @WireField(
       tag = 6,
       type = "double"
   )
   public final Double daisy;
 
-  @ProtoField(
+  @WireField(
       tag = 7,
       type = "squareup.protos.custom_options.FooBar",
       label = Message.Label.REPEATED
@@ -193,7 +193,7 @@ public final class FooBar extends Message<FooBar> {
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
 
-    @ProtoField(
+    @WireField(
         tag = 1,
         type = "squareup.protos.custom_options.FooBar.FooBarBazEnum"
     )
@@ -248,7 +248,7 @@ public final class FooBar extends Message<FooBar> {
   public static final class More extends Message<More> {
     private static final long serialVersionUID = 0L;
 
-    @ProtoField(
+    @WireField(
         tag = 1,
         type = "int32",
         label = Message.Label.REPEATED
@@ -301,7 +301,7 @@ public final class FooBar extends Message<FooBar> {
     }
   }
 
-  public enum FooBarBazEnum implements ProtoEnum {
+  public enum FooBarBazEnum implements WireEnum {
     FOO(1, 17),
 
     BAR(2, null),

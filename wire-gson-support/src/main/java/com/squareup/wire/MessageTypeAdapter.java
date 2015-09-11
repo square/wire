@@ -101,22 +101,22 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
 
           out.name(Integer.toString(extension.getTag()));
           out.beginArray();
-          if (extension.getType() == WireType.UINT64) {
+          if (extension.getType() == ProtoType.UINT64) {
             out.value("varint");
             for (Object o : values) {
               out.value((Long) o);
             }
-          } else if (extension.getType() == WireType.FIXED32) {
+          } else if (extension.getType() == ProtoType.FIXED32) {
             out.value("fixed32");
             for (Object o : values) {
               out.value((Integer) o);
             }
-          } else if (extension.getType() == WireType.FIXED64) {
+          } else if (extension.getType() == ProtoType.FIXED64) {
             out.value("fixed64");
             for (Object o : values) {
               out.value((Long) o);
             }
-          } else if (extension.getType() == WireType.BYTES) {
+          } else if (extension.getType() == ProtoType.BYTES) {
             out.value("length-delimited");
             for (Object o : values) {
               out.value(((ByteString) o).base64());
@@ -137,9 +137,9 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
   }
 
   @SuppressWarnings("unchecked")
-  private void emitJson(JsonWriter out, Object value, WireType type, Label label)
+  private void emitJson(JsonWriter out, Object value, ProtoType type, Label label)
       throws IOException {
-    if (type == WireType.UINT64) {
+    if (type == ProtoType.UINT64) {
       if (label.isRepeated()) {
         List<Long> longs = (List<Long>) value;
         out.beginArray();

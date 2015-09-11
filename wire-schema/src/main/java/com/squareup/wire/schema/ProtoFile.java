@@ -16,7 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.WireType;
+import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.ExtendElement;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ServiceElement;
@@ -44,14 +44,14 @@ public final class ProtoFile {
 
     ImmutableList.Builder<Type> types = ImmutableList.builder();
     for (TypeElement type : protoFileElement.types()) {
-      WireType wireType = WireType.get(packageName, type.name());
-      types.add(Type.get(packageName, wireType, type));
+      ProtoType protoType = ProtoType.get(packageName, type.name());
+      types.add(Type.get(packageName, protoType, type));
     }
 
     ImmutableList.Builder<Service> services = ImmutableList.builder();
     for (ServiceElement service : protoFileElement.services()) {
-      WireType wireType = WireType.get(packageName, service.name());
-      services.add(Service.get(wireType, service));
+      ProtoType protoType = ProtoType.get(packageName, service.name());
+      services.add(Service.get(protoType, service));
     }
 
     ImmutableList.Builder<Extend> wireExtends = ImmutableList.builder();

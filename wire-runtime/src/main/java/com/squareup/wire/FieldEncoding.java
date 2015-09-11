@@ -42,16 +42,16 @@ public enum FieldEncoding {
     return value;
   }
 
-  WireType datatype() {
+  ProtoType datatype() {
     switch (this) {
       case VARINT:
-        return WireType.UINT64;
+        return ProtoType.UINT64;
       case FIXED32:
-        return WireType.FIXED32;
+        return ProtoType.FIXED32;
       case FIXED64:
-        return WireType.FIXED64;
+        return ProtoType.FIXED64;
       case LENGTH_DELIMITED:
-        return WireType.BYTES;
+        return ProtoType.BYTES;
       default:
         throw new AssertionError();
     }
@@ -61,16 +61,16 @@ public enum FieldEncoding {
    * Returns a Wire adapter that reads this field encoding without interpretation. For example,
    * messages are returned as byte strings and enums are returned as integers.
    */
-  public WireAdapter<?> rawWireAdapter() {
+  public ProtoAdapter<?> rawProtoAdapter() {
     switch (this) {
       case VARINT:
-        return WireAdapter.UINT64;
+        return ProtoAdapter.UINT64;
       case FIXED32:
-        return WireAdapter.FIXED32;
+        return ProtoAdapter.FIXED32;
       case FIXED64:
-        return WireAdapter.FIXED64;
+        return ProtoAdapter.FIXED64;
       case LENGTH_DELIMITED:
-        return WireAdapter.BYTES;
+        return ProtoAdapter.BYTES;
       default:
         throw new AssertionError();
     }

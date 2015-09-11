@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -20,7 +20,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
 
   public static final String DEFAULT_DOC = "";
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string"
   )
@@ -29,20 +29,20 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "string"
   )
   public final String doc;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "google.protobuf.EnumValueDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<EnumValueDescriptorProto> value;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "google.protobuf.EnumOptions"
   )

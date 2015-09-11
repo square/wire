@@ -29,7 +29,7 @@ public final class Wire {
   private final LinkedHashMap<Class<? extends Message<?>>,
       RuntimeMessageAdapter<? extends Message<?>, ? extends Message.Builder<?, ?>>> messageAdapters
       = new LinkedHashMap<>();
-  private final Map<Class<? extends ProtoEnum>, RuntimeEnumAdapter<? extends ProtoEnum>>
+  private final Map<Class<? extends WireEnum>, RuntimeEnumAdapter<? extends WireEnum>>
       enumAdapters = new LinkedHashMap<>();
   private final ExtensionRegistry registry;
 
@@ -42,7 +42,7 @@ public final class Wire {
   }
 
   /** Returns an adapter for reading and writing {@code type}, creating it if necessary. */
-  public <M extends Message> WireAdapter<M> adapter(Class<M> type) {
+  public <M extends Message> ProtoAdapter<M> adapter(Class<M> type) {
     List<DeferredAdapter<?>> deferredAdapters = reentrantCalls.get();
     if (deferredAdapters == null) {
       deferredAdapters = new ArrayList<>();
@@ -52,7 +52,7 @@ public final class Wire {
       for (DeferredAdapter<?> deferredAdapter : deferredAdapters) {
         if (deferredAdapter.javaType.equals(type)) {
           //noinspection unchecked
-          return (WireAdapter<M>) deferredAdapter;
+          return (ProtoAdapter<M>) deferredAdapter;
         }
       }
     }
@@ -60,7 +60,7 @@ public final class Wire {
     DeferredAdapter<M> deferredAdapter = new DeferredAdapter<>(type);
     deferredAdapters.add(deferredAdapter);
     try {
-      WireAdapter<M> adapter = messageAdapter(type);
+      ProtoAdapter<M> adapter = messageAdapter(type);
       deferredAdapter.ready(adapter);
       return adapter;
     } finally {
@@ -90,7 +90,7 @@ public final class Wire {
    * Returns an enum adapter for {@code enumClass}.
    */
   @SuppressWarnings("unchecked")
-  synchronized <E extends ProtoEnum> RuntimeEnumAdapter<E> enumAdapter(Class<E> enumClass) {
+  synchronized <E extends WireEnum> RuntimeEnumAdapter<E> enumAdapter(Class<E> enumClass) {
     RuntimeEnumAdapter<E> adapter = (RuntimeEnumAdapter<E>) enumAdapters.get(enumClass);
     if (adapter == null) {
       adapter = new RuntimeEnumAdapter<>(enumClass);
@@ -126,14 +126,14 @@ public final class Wire {
    * <p>Typically this is necessary in self-referential object models, such as an {@code Employee}
    * class that has a {@code List<Employee>} field for an organization's management hierarchy.
    */
-  private static class DeferredAdapter<M extends Message> extends WireAdapter<M> {
-    private WireAdapter<M> delegate;
+  private static class DeferredAdapter<M extends Message> extends ProtoAdapter<M> {
+    private ProtoAdapter<M> delegate;
 
     DeferredAdapter(Class<M> type) {
       super(FieldEncoding.LENGTH_DELIMITED, type);
     }
 
-    public void ready(WireAdapter<M> delegate) {
+    public void ready(ProtoAdapter<M> delegate) {
       this.delegate = delegate;
     }
 

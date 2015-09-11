@@ -25,26 +25,26 @@ import static com.squareup.wire.Preconditions.checkNotNull;
  * Names a protocol buffer message, enumerated type, service, or a scalar. This class models a
  * fully-qualified name using the protocol buffer package.
  */
-public final class WireType {
-  public static final WireType BOOL = new WireType(true, "bool");
-  public static final WireType BYTES = new WireType(true, "bytes");
-  public static final WireType DOUBLE = new WireType(true, "double");
-  public static final WireType FLOAT = new WireType(true, "float");
-  public static final WireType FIXED32 = new WireType(true, "fixed32");
-  public static final WireType FIXED64 = new WireType(true, "fixed64");
-  public static final WireType INT32 = new WireType(true, "int32");
-  public static final WireType INT64 = new WireType(true, "int64");
-  public static final WireType SFIXED32 = new WireType(true, "sfixed32");
-  public static final WireType SFIXED64 = new WireType(true, "sfixed64");
-  public static final WireType SINT32 = new WireType(true, "sint32");
-  public static final WireType SINT64 = new WireType(true, "sint64");
-  public static final WireType STRING = new WireType(true, "string");
-  public static final WireType UINT32 = new WireType(true, "uint32");
-  public static final WireType UINT64 = new WireType(true, "uint64");
+public final class ProtoType {
+  public static final ProtoType BOOL = new ProtoType(true, "bool");
+  public static final ProtoType BYTES = new ProtoType(true, "bytes");
+  public static final ProtoType DOUBLE = new ProtoType(true, "double");
+  public static final ProtoType FLOAT = new ProtoType(true, "float");
+  public static final ProtoType FIXED32 = new ProtoType(true, "fixed32");
+  public static final ProtoType FIXED64 = new ProtoType(true, "fixed64");
+  public static final ProtoType INT32 = new ProtoType(true, "int32");
+  public static final ProtoType INT64 = new ProtoType(true, "int64");
+  public static final ProtoType SFIXED32 = new ProtoType(true, "sfixed32");
+  public static final ProtoType SFIXED64 = new ProtoType(true, "sfixed64");
+  public static final ProtoType SINT32 = new ProtoType(true, "sint32");
+  public static final ProtoType SINT64 = new ProtoType(true, "sint64");
+  public static final ProtoType STRING = new ProtoType(true, "string");
+  public static final ProtoType UINT32 = new ProtoType(true, "uint32");
+  public static final ProtoType UINT64 = new ProtoType(true, "uint64");
 
-  private static final Map<String, WireType> SCALAR_TYPES;
+  private static final Map<String, ProtoType> SCALAR_TYPES;
   static {
-    Map<String, WireType> scalarTypes = new LinkedHashMap<>();
+    Map<String, ProtoType> scalarTypes = new LinkedHashMap<>();
     scalarTypes.put(BOOL.string, BOOL);
     scalarTypes.put(BYTES.string, BYTES);
     scalarTypes.put(DOUBLE.string, DOUBLE);
@@ -66,7 +66,7 @@ public final class WireType {
   private final boolean isScalar;
   private final String string;
 
-  private WireType(boolean isScalar, String string) {
+  private ProtoType(boolean isScalar, String string) {
     checkNotNull(string, "string == null");
     this.isScalar = isScalar;
     this.string = string;
@@ -87,35 +87,35 @@ public final class WireType {
     return isScalar;
   }
 
-  public static WireType get(String enclosingTypeOrPackage, String typeName) {
+  public static ProtoType get(String enclosingTypeOrPackage, String typeName) {
     return enclosingTypeOrPackage != null
         ? get(enclosingTypeOrPackage + '.' + typeName)
         : get(typeName);
   }
 
-  public static WireType get(String name) {
-    WireType scalar = SCALAR_TYPES.get(name);
+  public static ProtoType get(String name) {
+    ProtoType scalar = SCALAR_TYPES.get(name);
     if (scalar != null) return scalar;
 
     if (name == null || name.isEmpty()) {
       throw new IllegalArgumentException("unexpected name: " + name);
     }
-    return new WireType(false, name);
+    return new ProtoType(false, name);
   }
 
-  public WireType nestedType(String name) {
+  public ProtoType nestedType(String name) {
     if (isScalar) {
       throw new UnsupportedOperationException("scalar cannot have a nested type");
     }
     if (name == null || name.contains(".") || name.isEmpty()) {
       throw new IllegalArgumentException("unexpected name: " + name);
     }
-    return new WireType(false, string + '.' + name);
+    return new ProtoType(false, string + '.' + name);
   }
 
   @Override public boolean equals(Object o) {
-    return o instanceof WireType
-        && string.equals(((WireType) o).string);
+    return o instanceof ProtoType
+        && string.equals(((ProtoType) o).string);
   }
 
   @Override public int hashCode() {

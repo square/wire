@@ -3,8 +3,8 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -32,7 +32,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
 
   public static final String DEFAULT_DEFAULT_VALUE = "";
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string"
   )
@@ -41,19 +41,19 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
+  @WireField(
       tag = 9,
       type = "string"
   )
   public final String doc;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "int32"
   )
   public final Integer number;
 
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "google.protobuf.FieldDescriptorProto.Label"
   )
@@ -63,7 +63,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    * If type_name is set, this need not be set.  If both this and type_name
    * are set, this must be either TYPE_ENUM or TYPE_MESSAGE.
    */
-  @ProtoField(
+  @WireField(
       tag = 5,
       type = "google.protobuf.FieldDescriptorProto.Type"
   )
@@ -76,7 +76,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    * message are searched, then within the parent, on up to the root
    * namespace).
    */
-  @ProtoField(
+  @WireField(
       tag = 6,
       type = "string"
   )
@@ -86,7 +86,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    * For extensions, this is the name of the type being extended.  It is
    * resolved in the same manner as type_name.
    */
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "string"
   )
@@ -99,13 +99,13 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    * For bytes, contains the C escaped value.  All bytes >= 128 are escaped.
    * TODO(kenton):  Base-64 encode?
    */
-  @ProtoField(
+  @WireField(
       tag = 7,
       type = "string"
   )
   public final String default_value;
 
-  @ProtoField(
+  @WireField(
       tag = 8,
       type = "google.protobuf.FieldOptions"
   )
@@ -274,7 +274,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
     }
   }
 
-  public enum Type implements ProtoEnum {
+  public enum Type implements WireEnum {
     /**
      * 0 is reserved for errors.
      * Order is weird for historical reasons.
@@ -356,7 +356,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
     }
   }
 
-  public enum Label implements ProtoEnum {
+  public enum Label implements WireEnum {
     /**
      * 0 is reserved for errors
      */

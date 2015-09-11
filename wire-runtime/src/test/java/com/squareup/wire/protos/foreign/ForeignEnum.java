@@ -2,10 +2,10 @@
 // Source file: ../wire-runtime/src/test/proto/foreign.proto at 23:1
 package com.squareup.wire.protos.foreign;
 
-import com.squareup.wire.ProtoEnum;
+import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
-public enum ForeignEnum implements ProtoEnum {
+public enum ForeignEnum implements WireEnum {
   BAV(0),
 
   BAX(1);

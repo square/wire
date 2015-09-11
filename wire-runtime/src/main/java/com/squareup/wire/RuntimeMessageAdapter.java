@@ -28,20 +28,20 @@ import java.util.Map;
 import static com.squareup.wire.Message.Builder;
 
 final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
-    extends WireAdapter<M> {
+    extends ProtoAdapter<M> {
   static <M extends Message<M>, B extends Builder<M, B>> RuntimeMessageAdapter<M, B> create(
       Wire wire, Class<M> messageType) {
     Class<B> builderType = getBuilderType(messageType);
     Constructor<B> builderCopyConstructor = getBuilderCopyConstructor(builderType, messageType);
     Map<Integer, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<>();
 
-    // Create tag bindings for fields annotated with '@ProtoField'
+    // Create tag bindings for fields annotated with '@WireField'
     for (Field messageField : messageType.getDeclaredFields()) {
-      ProtoField protoField = messageField.getAnnotation(ProtoField.class);
-      if (protoField != null) {
-        WireAdapter<?> singleAdapter = singleAdapter(wire, messageField, protoField);
-        fieldBindings.put(protoField.tag(),
-            new FieldBinding<>(protoField, singleAdapter, messageField, builderType));
+      WireField wireField = messageField.getAnnotation(WireField.class);
+      if (wireField != null) {
+        ProtoAdapter<?> singleAdapter = singleAdapter(wire, messageField, wireField);
+        fieldBindings.put(wireField.tag(),
+            new FieldBinding<>(wireField, singleAdapter, messageField, builderType));
       }
     }
 
@@ -51,8 +51,8 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   }
 
   @SuppressWarnings("unchecked")
-  private static WireAdapter<?> singleAdapter(
-      Wire wire, Field messageField, ProtoField protoField) {
+  private static ProtoAdapter<?> singleAdapter(
+      Wire wire, Field messageField, WireField wireField) {
     Class<?> singleType = messageField.getType();
     if (List.class.isAssignableFrom(singleType)) {
       ParameterizedType listType = (ParameterizedType) messageField.getGenericType();
@@ -61,10 +61,10 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
 
     if (Message.class.isAssignableFrom(singleType)) {
       return wire.adapter((Class<? extends Message>) singleType);
-    } else if (ProtoEnum.class.isAssignableFrom(singleType)) {
-      return wire.enumAdapter((Class<? extends ProtoEnum>) singleType);
+    } else if (WireEnum.class.isAssignableFrom(singleType)) {
+      return wire.enumAdapter((Class<? extends WireEnum>) singleType);
     } else {
-      return WireAdapter.get(wire, WireType.get(protoField.type()), null, null);
+      return ProtoAdapter.get(wire, ProtoType.get(wireField.type()), null, null);
     }
   }
 
@@ -91,7 +91,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     Map<Integer, RegisteredExtension> extensions = new LinkedHashMap<>(this.extensions);
 
     for (Extension<?, ?> extension : extensionRegistry.extensions(messageType)) {
-      WireAdapter<?> singleAdapter = WireAdapter.get(wire, extension.getType(),
+      ProtoAdapter<?> singleAdapter = ProtoAdapter.get(wire, extension.getType(),
           extension.getMessageType(), extension.getEnumType());
       extensions.put(extension.getTag(), new RegisteredExtension(extension, singleAdapter));
     }
@@ -154,7 +154,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
       Object value = fieldBinding.get(message);
       if (value == null) continue;
-      size += ((WireAdapter<Object>) fieldBinding.adapter).encodedSize(fieldBinding.tag, value);
+      size += ((ProtoAdapter<Object>) fieldBinding.adapter).encodedSize(fieldBinding.tag, value);
     }
 
     size += message.tagMapEncodedSize();
@@ -166,7 +166,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
       Object value = fieldBinding.get(message);
       if (value == null) continue;
-      ((WireAdapter<Object>) fieldBinding.adapter).encodeTagged(writer, fieldBinding.tag, value);
+      ((ProtoAdapter<Object>) fieldBinding.adapter).encodeTagged(writer, fieldBinding.tag, value);
     }
     if (message.tagMap != null) {
       message.tagMap.encode(writer);
@@ -177,7 +177,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     B builder = newBuilder(message);
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
       if (!fieldBinding.redacted && (fieldBinding.type.isScalar()
-          || fieldBinding.getFromBuilder(builder) instanceof ProtoEnum)) {
+          || fieldBinding.getFromBuilder(builder) instanceof WireEnum)) {
         continue;
       }
       if (fieldBinding.redacted && fieldBinding.label == Message.Label.REQUIRED) {
@@ -187,7 +187,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       }
       Object builderValue = fieldBinding.getFromBuilder(builder);
       if (builderValue != null) {
-        Object redactedValue = ((WireAdapter<Object>) fieldBinding.adapter).redact(builderValue);
+        Object redactedValue = ((ProtoAdapter<Object>) fieldBinding.adapter).redact(builderValue);
         fieldBinding.set(builder, redactedValue);
       }
     }
@@ -270,7 +270,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       }
 
       FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-      Object value = fieldEncoding.rawWireAdapter().decode(reader);
+      Object value = fieldEncoding.rawProtoAdapter().decode(reader);
       builder.ensureTagMap().add(tag, fieldEncoding, value);
     }
     reader.endMessage(token);

@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -20,13 +20,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   public static final String DEFAULT_DOC = "";
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string"
   )
   public final String name;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "google.protobuf.MethodDescriptorProto",
       label = Message.Label.REPEATED
@@ -36,13 +36,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "string"
   )
   public final String doc;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "google.protobuf.ServiceOptions"
   )

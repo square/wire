@@ -3,8 +3,8 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoEnum;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.Override;
@@ -29,7 +29,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    * options below.  This option is not yet implemented in the open source
    * release -- sorry, we'll try to include it in a future version!
    */
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "google.protobuf.FieldOptions.CType"
   )
@@ -41,7 +41,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    * writing the tag and type for each element, the entire array is encoded as
    * a single length-delimited blob.
    */
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "bool"
   )
@@ -53,7 +53,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    * for accessors, or it will be completely ignored; in the very least, this
    * is a formalization for deprecating fields.
    */
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "bool"
   )
@@ -73,7 +73,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    * In this situation, the map key for Item will be set to "name".
    * TODO: Fully-implement this, then remove the "experimental_" prefix.
    */
-  @ProtoField(
+  @WireField(
       tag = 9,
       type = "string"
   )
@@ -82,7 +82,7 @@ public final class FieldOptions extends Message<FieldOptions> {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @ProtoField(
+  @WireField(
       tag = 999,
       type = "google.protobuf.UninterpretedOption",
       label = Message.Label.REPEATED
@@ -220,7 +220,7 @@ public final class FieldOptions extends Message<FieldOptions> {
     }
   }
 
-  public enum CType implements ProtoEnum {
+  public enum CType implements WireEnum {
     /**
      * Default mode.
      */

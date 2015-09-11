@@ -3,7 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
-import com.squareup.wire.ProtoField;
+import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
@@ -21,7 +21,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
   public static final String DEFAULT_DOC = "";
 
-  @ProtoField(
+  @WireField(
       tag = 1,
       type = "string"
   )
@@ -30,48 +30,48 @@ public final class DescriptorProto extends Message<DescriptorProto> {
   /**
    * Doc string for generated code.
    */
-  @ProtoField(
+  @WireField(
       tag = 8,
       type = "string"
   )
   public final String doc;
 
-  @ProtoField(
+  @WireField(
       tag = 2,
       type = "google.protobuf.FieldDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<FieldDescriptorProto> field;
 
-  @ProtoField(
+  @WireField(
       tag = 6,
       type = "google.protobuf.FieldDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 
-  @ProtoField(
+  @WireField(
       tag = 3,
       type = "google.protobuf.DescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<DescriptorProto> nested_type;
 
-  @ProtoField(
+  @WireField(
       tag = 4,
       type = "google.protobuf.EnumDescriptorProto",
       label = Message.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
-  @ProtoField(
+  @WireField(
       tag = 5,
       type = "google.protobuf.DescriptorProto.ExtensionRange",
       label = Message.Label.REPEATED
   )
   public final List<ExtensionRange> extension_range;
 
-  @ProtoField(
+  @WireField(
       tag = 7,
       type = "google.protobuf.MessageOptions"
   )
@@ -214,13 +214,13 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
     public static final Integer DEFAULT_END = 0;
 
-    @ProtoField(
+    @WireField(
         tag = 1,
         type = "int32"
     )
     public final Integer start;
 
-    @ProtoField(
+    @WireField(
         tag = 2,
         type = "int32"
     )
