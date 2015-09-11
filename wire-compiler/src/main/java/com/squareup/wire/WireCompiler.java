@@ -19,8 +19,9 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.java.JavaGenerator;
-import com.squareup.wire.java.TypeWriter;
+import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaLoader;
@@ -82,9 +83,8 @@ public final class WireCompiler {
       schema = schema.retainRoots(options.roots);
     }
 
-    JavaGenerator javaGenerator = JavaGenerator.get(schema);
-    TypeWriter typeWriter = new TypeWriter(
-        javaGenerator, options.emitOptions, options.enumOptions);
+    JavaGenerator javaGenerator = JavaGenerator.get(schema)
+        .withOptions(options.emitOptions, options.enumOptions);
 
     for (ProtoFile protoFile : schema.protoFiles()) {
       if (!options.sourceFileNames.contains(protoFile.location().path())) {
@@ -93,20 +93,22 @@ public final class WireCompiler {
 
       for (Type type : protoFile.types()) {
         ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.name());
-        TypeSpec typeSpec = typeWriter.toTypeSpec(type);
+        TypeSpec typeSpec = type instanceof MessageType
+            ? javaGenerator.generateMessage((MessageType) type)
+            : javaGenerator.generateEnum((EnumType) type);
         writeJavaFile(javaTypeName, typeSpec, type.location());
       }
 
       if (!protoFile.extendList().isEmpty()) {
         ClassName javaTypeName = javaGenerator.extensionsClass(protoFile);
-        TypeSpec typeSpec = typeWriter.extensionsType(javaTypeName, protoFile);
+        TypeSpec typeSpec = javaGenerator.generateExtensionsClass(javaTypeName, protoFile);
         writeJavaFile(javaTypeName, typeSpec, protoFile.location());
       }
     }
 
     if (options.registryClass != null) {
       ClassName className = ClassName.bestGuess(options.registryClass);
-      TypeSpec typeSpec = typeWriter.registryType(className, schema);
+      TypeSpec typeSpec = javaGenerator.generateRegistry(className);
       writeJavaFile(className, typeSpec, null);
     }
   }
