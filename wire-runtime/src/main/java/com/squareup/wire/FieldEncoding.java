@@ -42,7 +42,7 @@ public enum FieldEncoding {
     return value;
   }
 
-  ProtoType datatype() {
+  ProtoType protoType() {
     switch (this) {
       case VARINT:
         return ProtoType.UINT64;

@@ -54,7 +54,7 @@ public final class TagMapTest {
       .buildRepeated();
 
   @Test public void putAndGetExtensionValues() throws Exception {
-    TagMap tagMap = new TagMap();
+    TagMap.Builder tagMap = new TagMap.Builder();
     tagMap.add(extensionA, 3.14159);
     tagMap.add(extensionB, "hello");
     tagMap.add(extensionC, Type.TYPE_SINT64);
@@ -64,18 +64,21 @@ public final class TagMapTest {
   }
 
   @Test public void equalsAndHashCode() throws Exception {
-    TagMap tagMap1 = new TagMap();
-    tagMap1.add(extensionA, 3.14159);
-    tagMap1.add(extensionB, "hello");
+    TagMap tagMap1 = new TagMap.Builder()
+        .add(extensionA, 3.14159)
+        .add(extensionB, "hello")
+        .build();
 
-    TagMap tagMap2 = new TagMap();
-    tagMap2.add(extensionA, 3.14159);
-    tagMap2.add(extensionB, "hello");
+    TagMap tagMap2 = new TagMap.Builder()
+        .add(extensionA, 3.14159)
+        .add(extensionB, "hello")
+        .build();
 
-    TagMap tagMap3 = new TagMap();
+    TagMap tagMap3 = new TagMap.Builder().build();
 
-    TagMap tagMap4 = new TagMap();
-    tagMap4.add(extensionC, Type.TYPE_SINT64);
+    TagMap tagMap4 = new TagMap.Builder()
+        .add(extensionC, Type.TYPE_SINT64)
+        .build();
 
     assertThat(tagMap1.equals(tagMap1)).isTrue();
     assertThat(tagMap1.equals(tagMap2)).isTrue();
@@ -97,147 +100,165 @@ public final class TagMapTest {
   }
 
   @Test public void putAndGetRepeatedValues() throws Exception {
-    TagMap tagMap = new TagMap();
-    tagMap.add(extensionD, 1.0);
-    tagMap.add(extensionD, 2.0);
-    tagMap.add(extensionD, 3.0);
-    tagMap.add(extensionE, "hacker");
-    tagMap.add(extensionE, "slacker");
-    tagMap.add(extensionE, "cracker");
+    TagMap tagMap = new TagMap.Builder()
+        .add(extensionD, 1.0)
+        .add(extensionD, 2.0)
+        .add(extensionD, 3.0)
+        .add(extensionE, "hacker")
+        .add(extensionE, "slacker")
+        .add(extensionE, "cracker")
+        .build();
     assertThat(tagMap.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0, 3.0));
     assertThat(tagMap.get(extensionE)).isEqualTo(Arrays.asList("hacker", "slacker", "cracker"));
   }
 
   /** Confirm that the implementation doubles from 8 to 16 and 16 to 32 elements. */
   @Test public void manyRepeatedValues() throws Exception {
-    TagMap tagMap = new TagMap();
-    tagMap.add(extensionD, 1.0);
-    tagMap.add(extensionD, 2.0);
-    tagMap.add(extensionD, 3.0);
-    tagMap.add(extensionD, 4.0);
-    tagMap.add(extensionD, 5.0);
-    tagMap.add(extensionD, 6.0);
-    tagMap.add(extensionD, 7.0);
-    tagMap.add(extensionD, 8.0);
-    tagMap.add(extensionD, 9.0);
-    tagMap.add(extensionD, 10.0);
-    tagMap.add(extensionD, 11.0);
-    tagMap.add(extensionD, 12.0);
-    tagMap.add(extensionD, 13.0);
-    tagMap.add(extensionD, 14.0);
-    tagMap.add(extensionD, 15.0);
-    tagMap.add(extensionD, 16.0);
-    tagMap.add(extensionD, 17.0);
+    TagMap tagMap = new TagMap.Builder()
+        .add(extensionD, 1.0)
+        .add(extensionD, 2.0)
+        .add(extensionD, 3.0)
+        .add(extensionD, 4.0)
+        .add(extensionD, 5.0)
+        .add(extensionD, 6.0)
+        .add(extensionD, 7.0)
+        .add(extensionD, 8.0)
+        .add(extensionD, 9.0)
+        .add(extensionD, 10.0)
+        .add(extensionD, 11.0)
+        .add(extensionD, 12.0)
+        .add(extensionD, 13.0)
+        .add(extensionD, 14.0)
+        .add(extensionD, 15.0)
+        .add(extensionD, 16.0)
+        .add(extensionD, 17.0)
+        .build();
     assertThat(tagMap.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0,
         8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0));
   }
 
   @Test public void rawToExtensionConversionForDouble() throws Exception {
-    TagMap tagMap = new TagMap();
-    tagMap.add(1, FieldEncoding.FIXED64, 4614256650576692846L);
+    TagMap tagMap = new TagMap.Builder()
+        .add(1, FieldEncoding.FIXED64, 4614256650576692846L)
+        .build();
     assertThat(tagMap.get(extensionA)).isEqualTo(3.14159);
   }
 
   @Test public void rawToExtensionConversionForString() throws Exception {
-    TagMap tagMap = new TagMap();
-    tagMap.add(2, FieldEncoding.LENGTH_DELIMITED, ByteString.encodeUtf8("hello"));
+    TagMap tagMap = new TagMap.Builder()
+        .add(2, FieldEncoding.LENGTH_DELIMITED, ByteString.encodeUtf8("hello"))
+        .build();
     assertThat(tagMap.get(extensionB)).isEqualTo("hello");
   }
 
   @Test public void rawToExtensionConversionForEnum() throws Exception {
-    TagMap tagMap = new TagMap();
-    tagMap.add(3, FieldEncoding.VARINT, 18L);
+    TagMap tagMap = new TagMap.Builder()
+        .add(3, FieldEncoding.VARINT, 18L)
+        .build();
     assertThat(tagMap.get(extensionC)).isEqualTo(Type.TYPE_SINT64);
   }
 
   @Test public void rawToExtensionConversionForUnknownEnum() throws Exception {
-    TagMap tagMap = new TagMap();
-    tagMap.add(3, FieldEncoding.VARINT, 2828L);
+    TagMap tagMap = new TagMap.Builder()
+        .add(3, FieldEncoding.VARINT, 2828L)
+        .build();
     assertThat(tagMap.get(extensionC)).isEqualTo(2828);
   }
 
   @Test public void copyConstructor() throws Exception {
-    TagMap a = new TagMap();
-    a.add(extensionD, 1.0);
+    TagMap a = new TagMap.Builder()
+        .add(extensionD, 1.0)
+        .build();
 
-    TagMap b = new TagMap(a);
+    TagMap b = new TagMap.Builder(a).build();
     assertThat(b.get(extensionD)).isEqualTo(Arrays.asList(1.0));
     assertThat(b.size()).isEqualTo(1);
 
-    a.add(extensionD, 2.0);
-    assertThat(a.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0));
-    assertThat(a.size()).isEqualTo(2);
+    TagMap c = new TagMap.Builder(a)
+        .add(extensionD, 2.0)
+        .build();
+    assertThat(c.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0));
+    assertThat(c.size()).isEqualTo(2);
     assertThat(b.get(extensionD)).isEqualTo(Arrays.asList(1.0));
     assertThat(b.size()).isEqualTo(1);
 
-    b.add(extensionD, 3.0);
-    assertThat(a.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0));
-    assertThat(a.size()).isEqualTo(2);
-    assertThat(b.get(extensionD)).isEqualTo(Arrays.asList(1.0, 3.0));
-    assertThat(b.size()).isEqualTo(2);
+    TagMap d = new TagMap.Builder(b)
+        .add(extensionD, 3.0)
+        .build();
+    assertThat(c.get(extensionD)).isEqualTo(Arrays.asList(1.0, 2.0));
+    assertThat(c.size()).isEqualTo(2);
+    assertThat(d.get(extensionD)).isEqualTo(Arrays.asList(1.0, 3.0));
+    assertThat(d.size()).isEqualTo(2);
   }
 
   @Test public void removeAllNotFound() throws Exception {
-    TagMap map = new TagMap();
-    map.add(extensionA, 1.0);
-    map.add(extensionB, 2.0);
-    map.add(extensionC, 3.0);
-    map.add(extensionD, 4.0);
-    map.removeAll(extensionE.getTag());
+    TagMap map = new TagMap.Builder()
+        .add(extensionA, 1.0)
+        .add(extensionB, 2.0)
+        .add(extensionC, 3.0)
+        .add(extensionD, 4.0)
+        .removeAll(extensionE.getTag())
+        .build();
 
-    TagMap expected = new TagMap();
-    expected.add(extensionA, 1.0);
-    expected.add(extensionB, 2.0);
-    expected.add(extensionC, 3.0);
-    expected.add(extensionD, 4.0);
+    TagMap expected = new TagMap.Builder()
+        .add(extensionA, 1.0)
+        .add(extensionB, 2.0)
+        .add(extensionC, 3.0)
+        .add(extensionD, 4.0)
+        .build();
 
     assertThat(map).isEqualTo(expected);
     assertThat(map.size()).isEqualTo(4);
   }
 
   @Test public void removeAllClearsMap() throws Exception {
-    TagMap map = new TagMap();
-    map.add(extensionA, 1.0);
-    map.add(extensionA, 2.0);
-    map.removeAll(extensionA.getTag());
+    TagMap map = new TagMap.Builder()
+        .add(extensionA, 1.0)
+        .add(extensionA, 2.0)
+        .removeAll(extensionA.getTag())
+        .build();
 
-    TagMap expected = new TagMap();
+    TagMap expected = new TagMap.Builder().build();
 
     assertThat(map).isEqualTo(expected);
     assertThat(map.size()).isEqualTo(0);
   }
 
   @Test public void removeAllRangeShift() throws Exception {
-    TagMap map = new TagMap();
-    map.add(extensionA, 1.0);
-    map.add(extensionB, 2.0);
-    map.add(extensionB, 3.0);
-    map.add(extensionC, 4.0);
-    map.removeAll(extensionB.getTag());
+    TagMap map = new TagMap.Builder()
+        .add(extensionA, 1.0)
+        .add(extensionB, 2.0)
+        .add(extensionB, 3.0)
+        .add(extensionC, 4.0)
+        .removeAll(extensionB.getTag())
+        .build();
 
-    TagMap expected = new TagMap();
-    expected.add(extensionA, 1.0);
-    expected.add(extensionC, 4.0);
+    TagMap expected = new TagMap.Builder()
+        .add(extensionA, 1.0)
+        .add(extensionC, 4.0)
+        .build();
 
     assertThat(map).isEqualTo(expected);
     assertThat(map.size()).isEqualTo(2);
   }
 
   @Test public void removeAllMultipleRanges() throws Exception {
-    TagMap map = new TagMap();
-    map.add(extensionA, 1.0);
-    map.add(extensionB, 2.0);
-    map.add(extensionB, 3.0);
-    map.add(extensionB, 4.0);
-    map.add(extensionC, 5.0);
-    map.add(extensionB, 6.0);
-    map.add(extensionD, 7.0);
-    map.removeAll(extensionB.getTag());
+    TagMap map = new TagMap.Builder()
+        .add(extensionA, 1.0)
+        .add(extensionB, 2.0)
+        .add(extensionB, 3.0)
+        .add(extensionB, 4.0)
+        .add(extensionC, 5.0)
+        .add(extensionB, 6.0)
+        .add(extensionD, 7.0)
+        .removeAll(extensionB.getTag())
+        .build();
 
-    TagMap expected = new TagMap();
-    expected.add(extensionA, 1.0);
-    expected.add(extensionC, 5.0);
-    expected.add(extensionD, 7.0);
+    TagMap expected = new TagMap.Builder()
+        .add(extensionA, 1.0)
+        .add(extensionC, 5.0)
+        .add(extensionD, 7.0)
+        .build();
 
     assertThat(map).isEqualTo(expected);
     assertThat(map.size()).isEqualTo(3);
@@ -250,9 +271,10 @@ public final class TagMapTest {
         .setTag(90)
         .buildRepeated();
 
-    TagMap map = new TagMap();
-    map.add(extension, 601);
-    map.add(extension, 701);
+    TagMap map = new TagMap.Builder()
+        .add(extension, 601)
+        .add(extension, 701)
+        .build();
 
     Buffer buffer = new Buffer();
     ProtoWriter protoWriter = new ProtoWriter(buffer);
@@ -267,9 +289,10 @@ public final class TagMapTest {
         .setTag(90)
         .buildPacked();
 
-    TagMap map = new TagMap();
-    map.add(extension, 601);
-    map.add(extension, 701);
+    TagMap map = new TagMap.Builder()
+        .add(extension, 601)
+        .add(extension, 701)
+        .build();
 
     Buffer buffer = new Buffer();
     ProtoWriter protoWriter = new ProtoWriter(buffer);
@@ -278,9 +301,10 @@ public final class TagMapTest {
   }
 
   @Test public void encodeUnknownEncodesAsRepeated() throws IOException {
-    TagMap map = new TagMap();
-    map.add(90, FieldEncoding.VARINT, 601L);
-    map.add(90, FieldEncoding.VARINT, 701L);
+    TagMap map = new TagMap.Builder()
+        .add(90, FieldEncoding.VARINT, 601L)
+        .add(90, FieldEncoding.VARINT, 701L)
+        .build();
 
     Buffer buffer = new Buffer();
     ProtoWriter protoWriter = new ProtoWriter(buffer);
@@ -299,11 +323,12 @@ public final class TagMapTest {
         .setTag(90)
         .buildPacked();
 
-    TagMap map = new TagMap();
-    map.add(extension, 601);
-    map.add(extension, 602);
-    map.add(90, FieldEncoding.VARINT, 701L);
-    map.add(90, FieldEncoding.VARINT, 702L);
+    TagMap map = new TagMap.Builder()
+        .add(extension, 601)
+        .add(extension, 602)
+        .add(90, FieldEncoding.VARINT, 701L)
+        .add(90, FieldEncoding.VARINT, 702L)
+        .build();
 
     Buffer buffer = new Buffer();
     ProtoWriter protoWriter = new ProtoWriter(buffer);
@@ -319,9 +344,28 @@ public final class TagMapTest {
         .setTag(90)
         .buildPacked();
 
-    TagMap map = new TagMap();
-    map.add(90, FieldEncoding.LENGTH_DELIMITED, ByteString.decodeHex("d904da04"));
+    TagMap map = new TagMap.Builder()
+        .add(90, FieldEncoding.LENGTH_DELIMITED, ByteString.decodeHex("d904da04"))
+        .build();
 
     assertThat(map.get(extension)).isEqualTo(Arrays.asList(601, 602));
+  }
+
+  /** We had a bug where the capacity was being included in {@link TagMap#equals}. */
+  @Test public void removeAllAndEquals() throws Exception {
+    TagMap.Builder builder = new TagMap.Builder();
+    builder.add(extensionA, 1.0);
+    for (int i = 0; i < TagMap.Builder.INITIAL_CAPACITY; i++) {
+      builder.add(extensionB, 1.0);
+    }
+    builder.removeAll(extensionB.getTag());
+    TagMap map = builder.build();
+
+    TagMap expected = new TagMap.Builder()
+        .add(extensionA, 1.0)
+        .build();
+
+    assertThat(map).isEqualTo(expected);
+    assertThat(map.size()).isEqualTo(1);
   }
 }
