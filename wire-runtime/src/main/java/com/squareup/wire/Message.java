@@ -67,16 +67,14 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    * Initializes any unknown field data to that stored in the given {@code Builder}.
    */
   protected void setBuilder(Builder builder) {
-    if (builder.tagMap != null) {
-      tagMap = new TagMap(builder.tagMap);
+    if (builder.tagMapBuilder != null) {
+      tagMap = builder.tagMapBuilder.build();
     }
   }
 
   // Increase visibility for testing
   TagMap tagMap() {
-    return tagMap != null
-        ? new TagMap(tagMap)
-        : new TagMap();
+    return tagMap;
   }
 
   /** Utility method to return a mutable copy of a given List. Used by generated code. */
@@ -166,7 +164,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    */
   public abstract static class Builder<T extends Message<T>, B extends Builder<T, B>> {
 
-    TagMap tagMap;
+    TagMap.Builder tagMapBuilder;
 
     /**
      * Constructs a Builder with no unknown field data.
@@ -180,7 +178,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
      */
     public Builder(Message message) {
       if (message != null && message.tagMap != null) {
-        this.tagMap = new TagMap(message.tagMap);
+        this.tagMapBuilder = new TagMap.Builder(message.tagMap);
       }
     }
 
@@ -212,11 +210,11 @@ public abstract class Message<T extends Message<T>> implements Serializable {
       ensureTagMap().add(tag, FieldEncoding.LENGTH_DELIMITED, value);
     }
 
-    TagMap ensureTagMap() {
-      if (tagMap == null) {
-        tagMap = new TagMap();
+    TagMap.Builder ensureTagMap() {
+      if (tagMapBuilder == null) {
+        tagMapBuilder = new TagMap.Builder();
       }
-      return tagMap;
+      return tagMapBuilder;
     }
 
     /**
@@ -261,24 +259,24 @@ public abstract class Message<T extends Message<T>> implements Serializable {
      * value is set.
      */
     public <E> E getExtension(Extension<T, E> extension) {
-      return tagMap != null ? (E) tagMap.get(extension) : null;
+      return tagMapBuilder != null ? (E) tagMapBuilder.get(extension) : null;
     }
 
     /**
      * Sets the value of {@code extension} on this builder to {@code value}.
      */
     public <E> B setExtension(Extension<T, E> extension, E value) {
-      if (tagMap == null) {
-        tagMap = new TagMap();
+      if (tagMapBuilder == null) {
+        tagMapBuilder = new TagMap.Builder();
       } else {
-        tagMap.removeAll(extension.getTag());
+        tagMapBuilder.removeAll(extension.getTag());
       }
       if (value instanceof List) {
         for (Object o : (List) value) {
-          tagMap.add(extension, o);
+          tagMapBuilder.add(extension, o);
         }
       } else {
-        tagMap.add(extension, value);
+        tagMapBuilder.add(extension, value);
       }
       return (B) this;
     }

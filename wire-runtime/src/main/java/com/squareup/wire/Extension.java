@@ -232,15 +232,17 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
     this.enumType = enumType;
   }
 
-  /** Returns an extension that represents an unknown value, for {@link TagMap}. */
-  static <X extends Message<X>, T> Extension<?, T> unknown(
-      Class<X> messageType, int tag, FieldEncoding fieldEncoding) {
-    return new Extension<>(messageType, null, null, null, tag, Label.REPEATED,
-        fieldEncoding.datatype());
+  /**
+   * Returns an extension that represents an unknown value. This occurs when the decoder was
+   * prepared with an older schema (if a field was added), or if an extension is not registered.
+   */
+  public static <T> Extension<?, T> unknown(int tag, FieldEncoding fieldEncoding) {
+    return new Extension<>(Message.class, null, null, null, tag, Label.REPEATED,
+        fieldEncoding.protoType());
   }
 
-  boolean isUnknown() {
-    return name == null;
+  public boolean isUnknown() {
+    return extendedType == (Class<?>) Message.class;
   }
 
   /**
@@ -265,7 +267,9 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
   }
 
   @Override public String toString() {
-    return String.format("[%s %s %s = %d]", label, type, name, tag);
+    return isUnknown()
+        ? String.format("[UNKNOWN %s = %d]", type, tag)
+        : String.format("[%s %s %s = %d]", label, type, name, tag);
   }
 
   public Class<T> getExtendedType() {

@@ -191,9 +191,9 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
         fieldBinding.set(builder, redactedValue);
       }
     }
-    builder.tagMap = builder.tagMap != null
-        ? builder.tagMap.redact()
-        : null;
+    if (builder.tagMapBuilder != null) {
+      builder.tagMapBuilder.redact();
+    }
     return builder.build();
   }
 
@@ -226,10 +226,10 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     if (message.tagMap != null) {
       for (Extension<?, ?> extension : message.tagMap.extensions(true)) {
         if (seenValue) sb.append(", ");
-        if (!extension.isUnknown()) {
-          sb.append(extension.getName());
-        } else {
+        if (extension.isUnknown()) {
           sb.append(extension.getTag());
+        } else {
+          sb.append(extension.getName());
         }
         sb.append('=').append(message.tagMap.get(extension));
         seenValue = true;

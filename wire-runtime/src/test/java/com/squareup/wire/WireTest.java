@@ -340,7 +340,8 @@ public class WireTest {
     // The value 17 will be stored as an unknown varint with tag number 2
     TagMap tagMap = ((Message) result.phone.get(0)).tagMap();
     assertThat(tagMap.size()).isEqualTo(1);
-    assertThat(tagMap.firstWithTag(2)).isEqualTo(17L);
+    assertThat(tagMap.get(Extension.unknown(2, FieldEncoding.VARINT)))
+        .isEqualTo(Arrays.asList(17L));
 
     // Serialize again, value is preserved
     byte[] newData = adapter.encode(result);
