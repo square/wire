@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 import okio.ByteString;
 
-import static com.squareup.wire.FieldEncoding.FIXED32;
-import static com.squareup.wire.FieldEncoding.FIXED64;
-import static com.squareup.wire.FieldEncoding.LENGTH_DELIMITED;
-import static com.squareup.wire.FieldEncoding.VARINT;
+import static com.squareup.wire.ProtoEncoding.FIXED32;
+import static com.squareup.wire.ProtoEncoding.FIXED64;
+import static com.squareup.wire.ProtoEncoding.LENGTH_DELIMITED;
+import static com.squareup.wire.ProtoEncoding.VARINT;
 import static com.squareup.wire.Message.Label;
 import static java.util.Collections.unmodifiableMap;
 

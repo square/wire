@@ -128,10 +128,10 @@ public final class Schema {
    * @param includeUnknown true to include values for unknown tags in the returned model. Map keys
    *     for such values is the unknown value's tag name as a string. Unknown values are decoded to
    *     {@linkplain Long}, {@linkplain Long}, {@linkplain Integer}, or {@linkplain okio.ByteString
-   *     ByteString} for {@linkplain com.squareup.wire.FieldEncoding#VARINT VARINT}, {@linkplain
-   *     com.squareup.wire.FieldEncoding#FIXED64 FIXED64}, {@linkplain
-   *     com.squareup.wire.FieldEncoding#FIXED32 FIXED32}, or {@linkplain
-   *     com.squareup.wire.FieldEncoding#LENGTH_DELIMITED LENGTH_DELIMITED} respectively.
+   *     ByteString} for {@linkplain com.squareup.wire.ProtoEncoding#VARINT VARINT}, {@linkplain
+   *     com.squareup.wire.ProtoEncoding#FIXED64 FIXED64}, {@linkplain
+   *     com.squareup.wire.ProtoEncoding#FIXED32 FIXED32}, or {@linkplain
+   *     com.squareup.wire.ProtoEncoding#LENGTH_DELIMITED LENGTH_DELIMITED} respectively.
    */
   public ProtoAdapter<Object> protoAdapter(String typeName, boolean includeUnknown) {
     Type type = getType(typeName);

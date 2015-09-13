@@ -19,16 +19,17 @@ import java.io.IOException;
 import java.net.ProtocolException;
 import okio.ByteString;
 
-public enum FieldEncoding {
+/** The byte format of an encoded proto object (message or field value). */
+public enum ProtoEncoding {
   VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), FIXED32(5);
 
   final int value;
 
-  FieldEncoding(int value) {
+  ProtoEncoding(int value) {
     this.value = value;
   }
 
-  static FieldEncoding get(int value) throws IOException {
+  static ProtoEncoding get(int value) throws IOException {
     switch (value) {
       case 0: return VARINT;
       case 1: return FIXED64;

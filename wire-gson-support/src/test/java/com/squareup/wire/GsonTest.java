@@ -279,11 +279,11 @@ public class GsonTest {
     Gson gson = createGson();
 
     AllTypes.Builder builder = createBuilder();
-    builder.setExtension(Extension.unknown(AllTypes.class, 9000, FieldEncoding.FIXED32), 9000);
-    builder.setExtension(Extension.unknown(AllTypes.class, 9001, FieldEncoding.FIXED64), 9001L);
-    builder.setExtension(Extension.unknown(AllTypes.class, 9002, FieldEncoding.LENGTH_DELIMITED),
+    builder.setExtension(Extension.unknown(AllTypes.class, 9000, ProtoEncoding.FIXED32), 9000);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9001, ProtoEncoding.FIXED64), 9001L);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9002, ProtoEncoding.LENGTH_DELIMITED),
         ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
-    builder.setExtension(Extension.unknown(AllTypes.class, 9003, FieldEncoding.VARINT), 9003L);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9003, ProtoEncoding.VARINT), 9003L);
 
     AllTypes allTypes = builder.build();
     String json = gson.toJson(allTypes);
@@ -299,11 +299,11 @@ public class GsonTest {
     Gson gson = createGson();
 
     AllTypes.Builder builder = createBuilder();
-    builder.setExtension(Extension.unknown(AllTypes.class, 9000, FieldEncoding.FIXED32), 9000);
-    builder.setExtension(Extension.unknown(AllTypes.class, 9001, FieldEncoding.FIXED64), 9001L);
-    builder.setExtension(Extension.unknown(AllTypes.class, 9002, FieldEncoding.LENGTH_DELIMITED),
+    builder.setExtension(Extension.unknown(AllTypes.class, 9000, ProtoEncoding.FIXED32), 9000);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9001, ProtoEncoding.FIXED64), 9001L);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9002, ProtoEncoding.LENGTH_DELIMITED),
         ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
-    builder.setExtension(Extension.unknown(AllTypes.class, 9003, FieldEncoding.VARINT), 9003L);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9003, ProtoEncoding.VARINT), 9003L);
 
     AllTypes allTypes = setExtensions(builder).build();
     String json = gson.toJson(allTypes);

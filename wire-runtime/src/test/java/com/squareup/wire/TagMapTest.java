@@ -28,21 +28,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public final class TagMapTest {
   final Extension<FileOptions, Object> unknownA
-      = Extension.unknown(FileOptions.class, 1, FieldEncoding.FIXED64);
+      = Extension.unknown(FileOptions.class, 1, ProtoEncoding.FIXED64);
   final Extension<FileOptions, Double> extensionA
       = Extension.doubleExtending(FileOptions.class)
       .setName("a")
       .setTag(1)
       .buildOptional();
   final Extension<FileOptions, Object> unknownB
-      = Extension.unknown(FileOptions.class, 2, FieldEncoding.LENGTH_DELIMITED);
+      = Extension.unknown(FileOptions.class, 2, ProtoEncoding.LENGTH_DELIMITED);
   final Extension<FileOptions, String> extensionB
       = Extension.stringExtending(FileOptions.class)
       .setName("b")
       .setTag(2)
       .buildOptional();
   final Extension<FileOptions, Object> unknownC
-      = Extension.unknown(FileOptions.class, 3, FieldEncoding.VARINT);
+      = Extension.unknown(FileOptions.class, 3, ProtoEncoding.VARINT);
   final Extension<FileOptions, Type> extensionC
       = Extension.enumExtending("google.protobuf.FileOptions", Type.class, FileOptions.class)
       .setName("c")
@@ -308,7 +308,7 @@ public final class TagMapTest {
 
   @Test public void encodeUnknownEncodesAsRepeated() throws IOException {
     Extension<FileOptions, Object> unknown
-        = Extension.unknown(FileOptions.class, 90, FieldEncoding.VARINT);
+        = Extension.unknown(FileOptions.class, 90, ProtoEncoding.VARINT);
     TagMap map = new TagMap.Builder()
         .add(unknown, 601L)
         .add(unknown, 701L)
@@ -332,7 +332,7 @@ public final class TagMapTest {
         .buildPacked();
 
     Extension<FileOptions, Object> unknown
-        = Extension.unknown(FileOptions.class, 90, FieldEncoding.VARINT);
+        = Extension.unknown(FileOptions.class, 90, ProtoEncoding.VARINT);
     TagMap map = new TagMap.Builder()
         .add(extension, 601)
         .add(extension, 602)
@@ -355,7 +355,7 @@ public final class TagMapTest {
         .buildPacked();
 
     Extension<FileOptions, Object> unknown
-        = Extension.unknown(FileOptions.class, 90, FieldEncoding.LENGTH_DELIMITED);
+        = Extension.unknown(FileOptions.class, 90, ProtoEncoding.LENGTH_DELIMITED);
     TagMap map = new TagMap.Builder()
         .add(unknown, ByteString.decodeHex("d904da04"))
         .build();

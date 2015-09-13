@@ -219,8 +219,8 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
    * prepared with an older schema (if a field was added), or if an extension is not registered.
    */
   public static <T extends Message<T>, E> Extension<T, E> unknown(
-      Class<T> messageType, int tag, FieldEncoding fieldEncoding) {
-    return new Extension<>(messageType, fieldEncoding.javaType(), fieldEncoding.protoType(),
+      Class<T> messageType, int tag, ProtoEncoding protoEncoding) {
+    return new Extension<>(messageType, protoEncoding.javaType(), protoEncoding.protoType(),
         null, tag, Label.REPEATED);
   }
 
