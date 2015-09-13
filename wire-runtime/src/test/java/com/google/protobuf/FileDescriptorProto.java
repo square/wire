@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -14,6 +15,8 @@ import java.util.List;
  * Describes a complete .proto file.
  */
 public final class FileDescriptorProto extends Message<FileDescriptorProto> {
+  public static final ProtoAdapter<FileDescriptorProto> ADAPTER = ProtoAdapter.forMessage(FileDescriptorProto.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";

@@ -82,7 +82,6 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
 
   @SuppressWarnings("unchecked")
   private ProtoAdapter<Object> getSingleAdapter() {
-    // TODO(jwilson): attempt to pull this from a static ADAPTER field on the message class.
     Class<?> singleType = messageField.getType();
     if (List.class.isAssignableFrom(singleType)) {
       ParameterizedType listType = (ParameterizedType) messageField.getGenericType();

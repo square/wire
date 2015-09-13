@@ -3,12 +3,15 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 
 public final class OneField extends Message<OneField> {
+  public static final ProtoAdapter<OneField> ADAPTER = ProtoAdapter.forMessage(OneField.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPT_INT32 = 0;

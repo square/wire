@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
@@ -13,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class FieldOptions extends Message<FieldOptions> {
+  public static final ProtoAdapter<FieldOptions> ADAPTER = ProtoAdapter.forMessage(FieldOptions.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final CType DEFAULT_CTYPE = CType.STRING;
@@ -229,6 +232,8 @@ public final class FieldOptions extends Message<FieldOptions> {
     CORD(1),
 
     STRING_PIECE(2);
+
+    public static final ProtoAdapter<CType> ADAPTER = ProtoAdapter.forEnum(CType.class);
 
     private final int value;
 

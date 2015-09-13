@@ -3,11 +3,14 @@
 package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 
 public final class RedactedCycleB extends Message<RedactedCycleB> {
+  public static final ProtoAdapter<RedactedCycleB> ADAPTER = ProtoAdapter.forMessage(RedactedCycleB.class);
+
   private static final long serialVersionUID = 0L;
 
   @WireField(

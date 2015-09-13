@@ -2,6 +2,7 @@
 // Source file: ../wire-runtime/src/test/proto/roots.proto at 60:1
 package com.squareup.wire.protos.roots;
 
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
@@ -9,6 +10,8 @@ public enum G implements WireEnum {
   FOO(1),
 
   BAR(2);
+
+  public static final ProtoAdapter<G> ADAPTER = ProtoAdapter.forEnum(G.class);
 
   private final int value;
 

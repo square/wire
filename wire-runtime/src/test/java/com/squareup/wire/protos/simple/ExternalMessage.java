@@ -3,12 +3,15 @@
 package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Float;
 import java.lang.Object;
 import java.lang.Override;
 
 public final class ExternalMessage extends Message<ExternalMessage> {
+  public static final ProtoAdapter<ExternalMessage> ADAPTER = ProtoAdapter.forMessage(ExternalMessage.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final Float DEFAULT_F = 20f;

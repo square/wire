@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -17,6 +18,8 @@ import java.util.List;
  * FileDescriptorProto was generated.
  */
 public final class SourceCodeInfo extends Message<SourceCodeInfo> {
+  public static final ProtoAdapter<SourceCodeInfo> ADAPTER = ProtoAdapter.forMessage(SourceCodeInfo.class);
+
   private static final long serialVersionUID = 0L;
 
   /**
@@ -162,6 +165,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   }
 
   public static final class Location extends Message<Location> {
+    public static final ProtoAdapter<Location> ADAPTER = ProtoAdapter.forMessage(Location.class);
+
     private static final long serialVersionUID = 0L;
 
     /**

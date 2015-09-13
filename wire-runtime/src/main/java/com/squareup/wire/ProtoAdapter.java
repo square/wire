@@ -53,14 +53,28 @@ public abstract class ProtoAdapter<E> {
     this.javaType = javaType;
   }
 
+  /** Creates a new wire adapter for {@code type}. */
+  public static <M extends Message<M>> ProtoAdapter<M> forMessage(Class<M> type) {
+    return RuntimeMessageAdapter.create(type);
+  }
+
+  /** Creates a new wire adapter for {@code type}. */
+  public static <E extends WireEnum> RuntimeEnumAdapter<E> forEnum(Class<E> type) {
+    return new RuntimeEnumAdapter<>(type);
+  }
+
+  /** Retrieves the constant wire adapter for {@code type}, decoded to {@code javaType}. */
   static ProtoAdapter<?> get(ProtoType type, Class<?> javaType) {
     ProtoAdapter<?> scalarAdapter = TYPE_TO_ADAPTER.get(type);
     if (scalarAdapter != null) {
       return scalarAdapter;
-    } else if (Message.class.isAssignableFrom(javaType)) {
-      return RuntimeMessageAdapter.create((Class<? extends Message>) javaType);
-    } else if (WireEnum.class.isAssignableFrom(javaType)) {
-      return new RuntimeEnumAdapter<>((Class<? extends WireEnum>) javaType);
+    } else if (Message.class.isAssignableFrom(javaType)
+        || WireEnum.class.isAssignableFrom(javaType)) {
+      try {
+        return (ProtoAdapter<?>) javaType.getField("ADAPTER").get(null);
+      } catch (IllegalAccessException | NoSuchFieldException e) {
+        throw new AssertionError("unexpected exception: " + e);
+      }
     } else {
       throw new AssertionError("unknown data type: " + type);
     }

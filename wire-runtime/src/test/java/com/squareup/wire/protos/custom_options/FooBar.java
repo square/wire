@@ -5,6 +5,7 @@ package com.squareup.wire.protos.custom_options;
 import com.google.protobuf.EnumOptions;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
@@ -20,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class FooBar extends Message<FooBar> {
+  public static final ProtoAdapter<FooBar> ADAPTER = ProtoAdapter.forMessage(FooBar.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
@@ -239,6 +242,8 @@ public final class FooBar extends Message<FooBar> {
   }
 
   public static final class Nested extends Message<Nested> {
+    public static final ProtoAdapter<Nested> ADAPTER = ProtoAdapter.forMessage(Nested.class);
+
     private static final long serialVersionUID = 0L;
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
@@ -296,6 +301,8 @@ public final class FooBar extends Message<FooBar> {
   }
 
   public static final class More extends Message<More> {
+    public static final ProtoAdapter<More> ADAPTER = ProtoAdapter.forMessage(More.class);
+
     private static final long serialVersionUID = 0L;
 
     @WireField(
@@ -361,6 +368,8 @@ public final class FooBar extends Message<FooBar> {
     BAR(2, null, null, true),
 
     BAZ(3, 18, null, false);
+
+    public static final ProtoAdapter<FooBarBazEnum> ADAPTER = ProtoAdapter.forEnum(FooBarBazEnum.class);
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .setExtension(Ext_custom_options.enum_option, true)

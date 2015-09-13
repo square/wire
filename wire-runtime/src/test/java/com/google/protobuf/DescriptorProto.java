@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -15,6 +16,8 @@ import java.util.List;
  * Describes a message type.
  */
 public final class DescriptorProto extends Message<DescriptorProto> {
+  public static final ProtoAdapter<DescriptorProto> ADAPTER = ProtoAdapter.forMessage(DescriptorProto.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
@@ -208,6 +211,8 @@ public final class DescriptorProto extends Message<DescriptorProto> {
   }
 
   public static final class ExtensionRange extends Message<ExtensionRange> {
+    public static final ProtoAdapter<ExtensionRange> ADAPTER = ProtoAdapter.forMessage(ExtensionRange.class);
+
     private static final long serialVersionUID = 0L;
 
     public static final Integer DEFAULT_START = 0;

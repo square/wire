@@ -4,12 +4,15 @@ package com.squareup.wire.protos.redacted;
 
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
 public final class RedactedExtension extends Message<RedactedExtension> {
+  public static final ProtoAdapter<RedactedExtension> ADAPTER = ProtoAdapter.forMessage(RedactedExtension.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_D = new FieldOptions.Builder()

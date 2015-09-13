@@ -95,7 +95,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    * @param <E> the enum class type
    */
   public static <E extends Enum & WireEnum> E enumFromInt(Class<E> enumClass, int value) {
-    RuntimeEnumAdapter<E> adapter = new RuntimeEnumAdapter<>(enumClass);
+    RuntimeEnumAdapter<E> adapter = ProtoAdapter.forEnum(enumClass);
     return adapter.fromInt(value);
   }
 
@@ -143,7 +143,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
 
   @SuppressWarnings("unchecked")
   @Override public String toString() {
-    return RuntimeMessageAdapter.create((Class<Message>) getClass()).toString(this);
+    return ProtoAdapter.forMessage((Class<Message>) getClass()).toString(this);
   }
 
   private Object writeReplace() throws ObjectStreamException {

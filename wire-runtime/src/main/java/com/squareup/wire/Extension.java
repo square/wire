@@ -47,7 +47,7 @@ import static com.squareup.wire.Message.Label;
  * <p>Application code shouldn't create extension instances directly; instead
  * they should use the generated instances created with {@code Ext_} prefixes.
  * To serialize and deserialize extensions, specify all of your {@code Ext_}
- * classes when creating a {@link Wire} instance.
+ * classes when creating an {@linkplain ExtensionRegistry extension registry}.
  *
  * @param <T> the type of message being extended
  * @param <E> the (boxed) Java data type of the extension value

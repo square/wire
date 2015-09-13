@@ -3,6 +3,7 @@
 package com.squareup.wire.protos.person;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
@@ -13,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class Person extends Message<Person> {
+  public static final ProtoAdapter<Person> ADAPTER = ProtoAdapter.forMessage(Person.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
@@ -170,6 +173,8 @@ public final class Person extends Message<Person> {
      */
     WORK(2);
 
+    public static final ProtoAdapter<PhoneType> ADAPTER = ProtoAdapter.forEnum(PhoneType.class);
+
     private final int value;
 
     PhoneType(int value) {
@@ -183,6 +188,8 @@ public final class Person extends Message<Person> {
   }
 
   public static final class PhoneNumber extends Message<PhoneNumber> {
+    public static final ProtoAdapter<PhoneNumber> ADAPTER = ProtoAdapter.forMessage(PhoneNumber.class);
+
     private static final long serialVersionUID = 0L;
 
     public static final String DEFAULT_NUMBER = "";

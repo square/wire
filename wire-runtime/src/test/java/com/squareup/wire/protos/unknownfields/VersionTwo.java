@@ -3,6 +3,7 @@
 package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Long;
@@ -13,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class VersionTwo extends Message<VersionTwo> {
+  public static final ProtoAdapter<VersionTwo> ADAPTER = ProtoAdapter.forMessage(VersionTwo.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;

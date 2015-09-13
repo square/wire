@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -14,6 +15,8 @@ import java.util.List;
  * Describes a service.
  */
 public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto> {
+  public static final ProtoAdapter<ServiceDescriptorProto> ADAPTER = ProtoAdapter.forMessage(ServiceDescriptorProto.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";

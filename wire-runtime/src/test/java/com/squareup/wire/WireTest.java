@@ -102,8 +102,7 @@ public class WireTest {
       // expected
     }
 
-    Wire wire = new Wire();
-    ProtoAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
 
     byte[] result = adapter.encode(msg);
     assertThat(result.length).isEqualTo(46);
@@ -146,8 +145,7 @@ public class WireTest {
             .build()))
         .build();
 
-    Wire wire = new Wire();
-    ProtoAdapter<Person> adapter = wire.adapter(Person.class);
+    ProtoAdapter<Person> adapter = Person.ADAPTER;
 
     byte[] data = adapter.encode(person);
     adapter.decode(data);
@@ -176,8 +174,7 @@ public class WireTest {
     assertThat(msg.optional_external_msg.getExtension(
         Ext_simple_message.nested_enum_ext)).isEqualTo(SimpleMessage.NestedEnum.BAZ);
 
-    Wire wire = new Wire();
-    ProtoAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
 
     byte[] result = adapter.encode(msg);
     assertThat(result.length).isEqualTo(29);
@@ -199,9 +196,8 @@ public class WireTest {
         .required_int32(456)
         .build();
 
-    Wire wireNoExt = new Wire();
     ExtensionRegistry simpleMessageExtensions = new ExtensionRegistry(Ext_simple_message.class);
-    ProtoAdapter<SimpleMessage> adapter = wireNoExt.adapter(SimpleMessage.class);
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
 
     byte[] data = adapter.encode(msg);
 
@@ -255,8 +251,7 @@ public class WireTest {
     assertThat(msg.optional_external_msg.getExtension(barext)).isEqualTo(new Integer(333));
     assertThat(msg.optional_external_msg.getExtension(bazext)).isEqualTo(new Integer(222));
 
-    Wire wire = new Wire();
-    ProtoAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
 
     byte[] result = adapter.encode(msg);
     assertThat(result.length).isEqualTo(21);
@@ -290,8 +285,7 @@ public class WireTest {
     int emptyListHashCode = emptyListMessage.hashCode();
     assertThat(noListHashCode).isEqualTo(emptyListHashCode);
 
-    Wire wire = new Wire();
-    ProtoAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
+    ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
 
     // Empty lists and null lists occupy 0 bytes in the wire encoding
     byte[] noListBytes = adapter.encode(noListMessage);
@@ -324,8 +318,7 @@ public class WireTest {
 
     assertThat(person.phone.get(0).type).isEqualTo(PhoneType.WORK);
 
-    Wire wire = new Wire();
-    ProtoAdapter<Person> adapter = wire.adapter(Person.class);
+    ProtoAdapter<Person> adapter = Person.ADAPTER;
 
     byte[] data = adapter.encode(person);
     assertThat(data[27]).isEqualTo((byte) PhoneType.WORK.getValue());
@@ -349,7 +342,7 @@ public class WireTest {
 
   @Test public void missingRepeatedAndPackedFieldsBecomesEmptyList() throws IOException {
     byte[] bytes = new byte[0];
-    RepeatedAndPacked data = new Wire().adapter(RepeatedAndPacked.class).decode(bytes);
+    RepeatedAndPacked data = RepeatedAndPacked.ADAPTER.decode(bytes);
     assertThat(data.rep_int32).isEqualTo(Collections.emptyList());
     assertThat(data.pack_int32).isEqualTo(Collections.emptyList());
   }

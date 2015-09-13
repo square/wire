@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
@@ -40,6 +41,8 @@ import java.util.List;
  *   to automatically assign option numbers.
  */
 public final class FileOptions extends Message<FileOptions> {
+  public static final ProtoAdapter<FileOptions> ADAPTER = ProtoAdapter.forMessage(FileOptions.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_JAVA_PACKAGE = "";
@@ -356,6 +359,8 @@ public final class FileOptions extends Message<FileOptions> {
      * Generate code using MessageLite and the lite runtime.
      */
     LITE_RUNTIME(3);
+
+    public static final ProtoAdapter<OptimizeMode> ADAPTER = ProtoAdapter.forEnum(OptimizeMode.class);
 
     private final int value;
 

@@ -195,8 +195,6 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     return sb.toString();
   }
 
-  // Reading
-
   @Override public M decode(ProtoReader reader) throws IOException {
     B builder = newBuilder();
     long token = reader.beginMessage();

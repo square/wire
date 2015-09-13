@@ -3,6 +3,7 @@
 package com.squareup.wire.protos.single_level;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -10,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class Bars extends Message<Bars> {
+  public static final ProtoAdapter<Bars> ADAPTER = ProtoAdapter.forMessage(Bars.class);
+
   private static final long serialVersionUID = 0L;
 
   @WireField(
