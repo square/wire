@@ -62,7 +62,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   /**
    * Initializes any unknown field data to that stored in the given {@code Builder}.
    */
-  protected void setBuilder(Builder builder) {
+  protected final void setBuilder(Builder builder) {
     if (builder.tagMapBuilder != null) {
       tagMap = builder.tagMapBuilder.build();
     }
@@ -110,7 +110,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   /**
    * Returns an immutable list of the extensions on this message in tag order.
    */
-  public Set<Extension<?, ?>> getExtensions() {
+  public final Set<Extension<?, ?>> getExtensions() {
     return tagMap != null
         ? tagMap.extensions(false)
         : Collections.<Extension<?, ?>>emptySet();
@@ -120,7 +120,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    * Returns the value for {@code extension} on this message, or null if no
    * value is set.
    */
-  public <E> E getExtension(Extension<T, E> extension) {
+  public final <E> E getExtension(Extension<T, E> extension) {
     return tagMap != null ? (E) tagMap.get(extension) : null;
   }
 
@@ -128,7 +128,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    * Returns true if the extensions on this message equals the extensions of
    * {@code other}.
    */
-  protected boolean extensionsEqual(Message<T> other) {
+  protected final boolean extensionsEqual(Message<T> other) {
     return tagMap != null
         ? tagMap.equals(other.tagMap)
         : other.tagMap == null;
@@ -137,7 +137,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   /**
    * Returns a hash code for the extensions on this message.
    */
-  protected int extensionsHashCode() {
+  protected final int extensionsHashCode() {
     return tagMap != null ? tagMap.hashCode() : 0;
   }
 
@@ -185,7 +185,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
      *
      * @param args Alternating field value and field name pairs.
      */
-    protected IllegalStateException missingRequiredFields(Object... args) {
+    protected static IllegalStateException missingRequiredFields(Object... args) {
       StringBuilder sb = new StringBuilder();
       String plural = "";
       for (int i = 0, size = args.length; i < size; i += 2) {
@@ -221,14 +221,14 @@ public abstract class Message<T extends Message<T>> implements Serializable {
      * Returns the value for {@code extension} on this message, or null if no
      * value is set.
      */
-    public <E> E getExtension(Extension<T, E> extension) {
+    public final <E> E getExtension(Extension<T, E> extension) {
       return tagMapBuilder != null ? (E) tagMapBuilder.get(extension) : null;
     }
 
     /**
      * Sets the value of {@code extension} on this builder to {@code value}.
      */
-    public <E> B setExtension(Extension<T, E> extension, E value) {
+    public final <E> B setExtension(Extension<T, E> extension, E value) {
       if (tagMapBuilder == null) {
         tagMapBuilder = new TagMap.Builder();
       } else {
