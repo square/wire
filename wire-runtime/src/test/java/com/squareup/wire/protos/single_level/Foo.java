@@ -18,7 +18,7 @@ public final class Foo extends Message<Foo> {
 
   @WireField(
       tag = 1,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer bar;
 

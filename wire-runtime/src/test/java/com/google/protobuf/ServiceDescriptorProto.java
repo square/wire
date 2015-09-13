@@ -25,13 +25,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String name;
 
   @WireField(
       tag = 2,
-      type = "google.protobuf.MethodDescriptorProto",
+      adapter = "com.google.protobuf.MethodDescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<MethodDescriptorProto> method;
@@ -41,13 +41,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
    */
   @WireField(
       tag = 4,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String doc;
 
   @WireField(
       tag = 3,
-      type = "google.protobuf.ServiceOptions"
+      adapter = "com.google.protobuf.ServiceOptions#ADAPTER"
   )
   public final ServiceOptions options;
 

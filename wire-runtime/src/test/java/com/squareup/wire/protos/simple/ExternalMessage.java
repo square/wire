@@ -18,7 +18,7 @@ public final class ExternalMessage extends Message<ExternalMessage> {
 
   @WireField(
       tag = 1,
-      type = "float"
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   public final Float f;
 

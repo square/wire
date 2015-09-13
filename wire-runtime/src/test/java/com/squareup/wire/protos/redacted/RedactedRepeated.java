@@ -23,7 +23,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
 
   @WireField(
       tag = 1,
-      type = "string",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REPEATED,
       redacted = true
   )

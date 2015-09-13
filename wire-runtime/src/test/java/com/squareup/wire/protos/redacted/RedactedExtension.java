@@ -25,14 +25,14 @@ public final class RedactedExtension extends Message<RedactedExtension> {
 
   @WireField(
       tag = 1,
-      type = "string",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
       redacted = true
   )
   public final String d;
 
   @WireField(
       tag = 2,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String e;
 

@@ -30,37 +30,37 @@ public final class VersionTwo extends Message<VersionTwo> {
 
   @WireField(
       tag = 1,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer i;
 
   @WireField(
       tag = 2,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer v2_i;
 
   @WireField(
       tag = 3,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String v2_s;
 
   @WireField(
       tag = 4,
-      type = "fixed32"
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   public final Integer v2_f32;
 
   @WireField(
       tag = 5,
-      type = "fixed64"
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   public final Long v2_f64;
 
   @WireField(
       tag = 6,
-      type = "string",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REPEATED
   )
   public final List<String> v2_rs;

@@ -24,7 +24,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
    */
   @WireField(
       tag = 1,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer foo;
 
@@ -33,7 +33,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
    */
   @WireField(
       tag = 3,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String bar;
 

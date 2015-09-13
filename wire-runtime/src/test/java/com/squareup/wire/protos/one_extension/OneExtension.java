@@ -18,7 +18,7 @@ public final class OneExtension extends Message<OneExtension> {
 
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String id;
 

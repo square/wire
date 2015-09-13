@@ -42,7 +42,7 @@ public final class MessageOptions extends Message<MessageOptions> {
    */
   @WireField(
       tag = 1,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean message_set_wire_format;
 
@@ -53,7 +53,7 @@ public final class MessageOptions extends Message<MessageOptions> {
    */
   @WireField(
       tag = 2,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean no_standard_descriptor_accessor;
 
@@ -62,7 +62,7 @@ public final class MessageOptions extends Message<MessageOptions> {
    */
   @WireField(
       tag = 999,
-      type = "google.protobuf.UninterpretedOption",
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;

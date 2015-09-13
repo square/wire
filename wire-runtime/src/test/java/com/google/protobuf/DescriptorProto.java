@@ -26,7 +26,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String name;
 
@@ -35,48 +35,48 @@ public final class DescriptorProto extends Message<DescriptorProto> {
    */
   @WireField(
       tag = 8,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String doc;
 
   @WireField(
       tag = 2,
-      type = "google.protobuf.FieldDescriptorProto",
+      adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<FieldDescriptorProto> field;
 
   @WireField(
       tag = 6,
-      type = "google.protobuf.FieldDescriptorProto",
+      adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 
   @WireField(
       tag = 3,
-      type = "google.protobuf.DescriptorProto",
+      adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<DescriptorProto> nested_type;
 
   @WireField(
       tag = 4,
-      type = "google.protobuf.EnumDescriptorProto",
+      adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @WireField(
       tag = 5,
-      type = "google.protobuf.DescriptorProto.ExtensionRange",
+      adapter = "com.google.protobuf.DescriptorProto$ExtensionRange#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<ExtensionRange> extension_range;
 
   @WireField(
       tag = 7,
-      type = "google.protobuf.MessageOptions"
+      adapter = "com.google.protobuf.MessageOptions#ADAPTER"
   )
   public final MessageOptions options;
 
@@ -221,13 +221,13 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
     @WireField(
         tag = 1,
-        type = "int32"
+        adapter = "com.squareup.wire.ProtoAdapter#INT32"
     )
     public final Integer start;
 
     @WireField(
         tag = 2,
-        type = "int32"
+        adapter = "com.squareup.wire.ProtoAdapter#INT32"
     )
     public final Integer end;
 

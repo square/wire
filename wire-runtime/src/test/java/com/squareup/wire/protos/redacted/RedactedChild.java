@@ -18,19 +18,19 @@ public final class RedactedChild extends Message<RedactedChild> {
 
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String a;
 
   @WireField(
       tag = 2,
-      type = "squareup.protos.redacted_test.Redacted"
+      adapter = "com.squareup.wire.protos.redacted.Redacted#ADAPTER"
   )
   public final Redacted b;
 
   @WireField(
       tag = 3,
-      type = "squareup.protos.redacted_test.NotRedacted"
+      adapter = "com.squareup.wire.protos.redacted.NotRedacted#ADAPTER"
   )
   public final NotRedacted c;
 

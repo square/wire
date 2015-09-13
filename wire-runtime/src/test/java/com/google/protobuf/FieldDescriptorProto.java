@@ -37,7 +37,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
 
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String name;
 
@@ -46,19 +46,19 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @WireField(
       tag = 9,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String doc;
 
   @WireField(
       tag = 3,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer number;
 
   @WireField(
       tag = 4,
-      type = "google.protobuf.FieldDescriptorProto.Label"
+      adapter = "com.google.protobuf.FieldDescriptorProto$Label#ADAPTER"
   )
   public final Label label;
 
@@ -68,7 +68,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @WireField(
       tag = 5,
-      type = "google.protobuf.FieldDescriptorProto.Type"
+      adapter = "com.google.protobuf.FieldDescriptorProto$Type#ADAPTER"
   )
   public final Type type;
 
@@ -81,7 +81,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @WireField(
       tag = 6,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String type_name;
 
@@ -91,7 +91,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @WireField(
       tag = 2,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String extendee;
 
@@ -104,13 +104,13 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
    */
   @WireField(
       tag = 7,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String default_value;
 
   @WireField(
       tag = 8,
-      type = "google.protobuf.FieldOptions"
+      adapter = "com.google.protobuf.FieldOptions#ADAPTER"
   )
   public final FieldOptions options;
 

@@ -18,13 +18,13 @@ public final class E extends Message<E> {
 
   @WireField(
       tag = 1,
-      type = "squareup.protos.roots.E.F"
+      adapter = "com.squareup.wire.protos.roots.E$F#ADAPTER"
   )
   public final F f;
 
   @WireField(
       tag = 2,
-      type = "squareup.protos.roots.G"
+      adapter = "com.squareup.wire.protos.roots.G#ADAPTER"
   )
   public final G g;
 
@@ -98,7 +98,7 @@ public final class E extends Message<E> {
 
     @WireField(
         tag = 1,
-        type = "int32"
+        adapter = "com.squareup.wire.ProtoAdapter#INT32"
     )
     public final Integer i;
 

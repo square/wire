@@ -132,8 +132,8 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   @Override public M redact(M message) {
     B builder = newBuilder(message);
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
-      if (!fieldBinding.redacted && (fieldBinding.type.isScalar()
-          || fieldBinding.getFromBuilder(builder) instanceof WireEnum)) {
+      if (!fieldBinding.redacted
+          && !Message.class.isAssignableFrom(fieldBinding.singleAdapter().javaType)) {
         continue;
       }
       if (fieldBinding.redacted && fieldBinding.label == WireField.Label.REQUIRED) {

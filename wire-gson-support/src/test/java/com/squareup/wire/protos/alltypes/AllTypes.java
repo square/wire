@@ -122,535 +122,535 @@ public final class AllTypes extends Message<AllTypes> {
 
   @WireField(
       tag = 1,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer opt_int32;
 
   @WireField(
       tag = 2,
-      type = "uint32"
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
   )
   public final Integer opt_uint32;
 
   @WireField(
       tag = 3,
-      type = "sint32"
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
   )
   public final Integer opt_sint32;
 
   @WireField(
       tag = 4,
-      type = "fixed32"
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   public final Integer opt_fixed32;
 
   @WireField(
       tag = 5,
-      type = "sfixed32"
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
   )
   public final Integer opt_sfixed32;
 
   @WireField(
       tag = 6,
-      type = "int64"
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   public final Long opt_int64;
 
   @WireField(
       tag = 7,
-      type = "uint64"
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   public final Long opt_uint64;
 
   @WireField(
       tag = 8,
-      type = "sint64"
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
   )
   public final Long opt_sint64;
 
   @WireField(
       tag = 9,
-      type = "fixed64"
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   public final Long opt_fixed64;
 
   @WireField(
       tag = 10,
-      type = "sfixed64"
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
   )
   public final Long opt_sfixed64;
 
   @WireField(
       tag = 11,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean opt_bool;
 
   @WireField(
       tag = 12,
-      type = "float"
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   public final Float opt_float;
 
   @WireField(
       tag = 13,
-      type = "double"
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   public final Double opt_double;
 
   @WireField(
       tag = 14,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String opt_string;
 
   @WireField(
       tag = 15,
-      type = "bytes"
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   public final ByteString opt_bytes;
 
   @WireField(
       tag = 16,
-      type = "squareup.protos.alltypes.AllTypes.NestedEnum"
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER"
   )
   public final NestedEnum opt_nested_enum;
 
   @WireField(
       tag = 17,
-      type = "squareup.protos.alltypes.AllTypes.NestedMessage"
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER"
   )
   public final NestedMessage opt_nested_message;
 
   @WireField(
       tag = 101,
-      type = "int32",
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.REQUIRED
   )
   public final Integer req_int32;
 
   @WireField(
       tag = 102,
-      type = "uint32",
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
       label = WireField.Label.REQUIRED
   )
   public final Integer req_uint32;
 
   @WireField(
       tag = 103,
-      type = "sint32",
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
       label = WireField.Label.REQUIRED
   )
   public final Integer req_sint32;
 
   @WireField(
       tag = 104,
-      type = "fixed32",
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
       label = WireField.Label.REQUIRED
   )
   public final Integer req_fixed32;
 
   @WireField(
       tag = 105,
-      type = "sfixed32",
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
       label = WireField.Label.REQUIRED
   )
   public final Integer req_sfixed32;
 
   @WireField(
       tag = 106,
-      type = "int64",
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
       label = WireField.Label.REQUIRED
   )
   public final Long req_int64;
 
   @WireField(
       tag = 107,
-      type = "uint64",
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
       label = WireField.Label.REQUIRED
   )
   public final Long req_uint64;
 
   @WireField(
       tag = 108,
-      type = "sint64",
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
       label = WireField.Label.REQUIRED
   )
   public final Long req_sint64;
 
   @WireField(
       tag = 109,
-      type = "fixed64",
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
       label = WireField.Label.REQUIRED
   )
   public final Long req_fixed64;
 
   @WireField(
       tag = 110,
-      type = "sfixed64",
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
       label = WireField.Label.REQUIRED
   )
   public final Long req_sfixed64;
 
   @WireField(
       tag = 111,
-      type = "bool",
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
       label = WireField.Label.REQUIRED
   )
   public final Boolean req_bool;
 
   @WireField(
       tag = 112,
-      type = "float",
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
       label = WireField.Label.REQUIRED
   )
   public final Float req_float;
 
   @WireField(
       tag = 113,
-      type = "double",
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
       label = WireField.Label.REQUIRED
   )
   public final Double req_double;
 
   @WireField(
       tag = 114,
-      type = "string",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REQUIRED
   )
   public final String req_string;
 
   @WireField(
       tag = 115,
-      type = "bytes",
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
       label = WireField.Label.REQUIRED
   )
   public final ByteString req_bytes;
 
   @WireField(
       tag = 116,
-      type = "squareup.protos.alltypes.AllTypes.NestedEnum",
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
       label = WireField.Label.REQUIRED
   )
   public final NestedEnum req_nested_enum;
 
   @WireField(
       tag = 117,
-      type = "squareup.protos.alltypes.AllTypes.NestedMessage",
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER",
       label = WireField.Label.REQUIRED
   )
   public final NestedMessage req_nested_message;
 
   @WireField(
       tag = 201,
-      type = "int32",
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_int32;
 
   @WireField(
       tag = 202,
-      type = "uint32",
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
       label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_uint32;
 
   @WireField(
       tag = 203,
-      type = "sint32",
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
       label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_sint32;
 
   @WireField(
       tag = 204,
-      type = "fixed32",
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
       label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_fixed32;
 
   @WireField(
       tag = 205,
-      type = "sfixed32",
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
       label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_sfixed32;
 
   @WireField(
       tag = 206,
-      type = "int64",
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
       label = WireField.Label.REPEATED
   )
   public final List<Long> rep_int64;
 
   @WireField(
       tag = 207,
-      type = "uint64",
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
       label = WireField.Label.REPEATED
   )
   public final List<Long> rep_uint64;
 
   @WireField(
       tag = 208,
-      type = "sint64",
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
       label = WireField.Label.REPEATED
   )
   public final List<Long> rep_sint64;
 
   @WireField(
       tag = 209,
-      type = "fixed64",
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
       label = WireField.Label.REPEATED
   )
   public final List<Long> rep_fixed64;
 
   @WireField(
       tag = 210,
-      type = "sfixed64",
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
       label = WireField.Label.REPEATED
   )
   public final List<Long> rep_sfixed64;
 
   @WireField(
       tag = 211,
-      type = "bool",
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
       label = WireField.Label.REPEATED
   )
   public final List<Boolean> rep_bool;
 
   @WireField(
       tag = 212,
-      type = "float",
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
       label = WireField.Label.REPEATED
   )
   public final List<Float> rep_float;
 
   @WireField(
       tag = 213,
-      type = "double",
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
       label = WireField.Label.REPEATED
   )
   public final List<Double> rep_double;
 
   @WireField(
       tag = 214,
-      type = "string",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REPEATED
   )
   public final List<String> rep_string;
 
   @WireField(
       tag = 215,
-      type = "bytes",
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
       label = WireField.Label.REPEATED
   )
   public final List<ByteString> rep_bytes;
 
   @WireField(
       tag = 216,
-      type = "squareup.protos.alltypes.AllTypes.NestedEnum",
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<NestedEnum> rep_nested_enum;
 
   @WireField(
       tag = 217,
-      type = "squareup.protos.alltypes.AllTypes.NestedMessage",
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<NestedMessage> rep_nested_message;
 
   @WireField(
       tag = 301,
-      type = "int32",
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.PACKED
   )
   public final List<Integer> pack_int32;
 
   @WireField(
       tag = 302,
-      type = "uint32",
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
       label = WireField.Label.PACKED
   )
   public final List<Integer> pack_uint32;
 
   @WireField(
       tag = 303,
-      type = "sint32",
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
       label = WireField.Label.PACKED
   )
   public final List<Integer> pack_sint32;
 
   @WireField(
       tag = 304,
-      type = "fixed32",
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
       label = WireField.Label.PACKED
   )
   public final List<Integer> pack_fixed32;
 
   @WireField(
       tag = 305,
-      type = "sfixed32",
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
       label = WireField.Label.PACKED
   )
   public final List<Integer> pack_sfixed32;
 
   @WireField(
       tag = 306,
-      type = "int64",
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
       label = WireField.Label.PACKED
   )
   public final List<Long> pack_int64;
 
   @WireField(
       tag = 307,
-      type = "uint64",
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
       label = WireField.Label.PACKED
   )
   public final List<Long> pack_uint64;
 
   @WireField(
       tag = 308,
-      type = "sint64",
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
       label = WireField.Label.PACKED
   )
   public final List<Long> pack_sint64;
 
   @WireField(
       tag = 309,
-      type = "fixed64",
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
       label = WireField.Label.PACKED
   )
   public final List<Long> pack_fixed64;
 
   @WireField(
       tag = 310,
-      type = "sfixed64",
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
       label = WireField.Label.PACKED
   )
   public final List<Long> pack_sfixed64;
 
   @WireField(
       tag = 311,
-      type = "bool",
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
       label = WireField.Label.PACKED
   )
   public final List<Boolean> pack_bool;
 
   @WireField(
       tag = 312,
-      type = "float",
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
       label = WireField.Label.PACKED
   )
   public final List<Float> pack_float;
 
   @WireField(
       tag = 313,
-      type = "double",
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
       label = WireField.Label.PACKED
   )
   public final List<Double> pack_double;
 
   @WireField(
       tag = 316,
-      type = "squareup.protos.alltypes.AllTypes.NestedEnum",
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
       label = WireField.Label.PACKED
   )
   public final List<NestedEnum> pack_nested_enum;
 
   @WireField(
       tag = 401,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer default_int32;
 
   @WireField(
       tag = 402,
-      type = "uint32"
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
   )
   public final Integer default_uint32;
 
   @WireField(
       tag = 403,
-      type = "sint32"
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
   )
   public final Integer default_sint32;
 
   @WireField(
       tag = 404,
-      type = "fixed32"
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   public final Integer default_fixed32;
 
   @WireField(
       tag = 405,
-      type = "sfixed32"
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
   )
   public final Integer default_sfixed32;
 
   @WireField(
       tag = 406,
-      type = "int64"
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   public final Long default_int64;
 
   @WireField(
       tag = 407,
-      type = "uint64"
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   public final Long default_uint64;
 
   @WireField(
       tag = 408,
-      type = "sint64"
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
   )
   public final Long default_sint64;
 
   @WireField(
       tag = 409,
-      type = "fixed64"
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   public final Long default_fixed64;
 
   @WireField(
       tag = 410,
-      type = "sfixed64"
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
   )
   public final Long default_sfixed64;
 
   @WireField(
       tag = 411,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean default_bool;
 
   @WireField(
       tag = 412,
-      type = "float"
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   public final Float default_float;
 
   @WireField(
       tag = 413,
-      type = "double"
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   public final Double default_double;
 
   @WireField(
       tag = 414,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String default_string;
 
   @WireField(
       tag = 415,
-      type = "bytes"
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   public final ByteString default_bytes;
 
   @WireField(
       tag = 416,
-      type = "squareup.protos.alltypes.AllTypes.NestedEnum"
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER"
   )
   public final NestedEnum default_nested_enum;
 
@@ -1647,7 +1647,7 @@ public final class AllTypes extends Message<AllTypes> {
 
     @WireField(
         tag = 1,
-        type = "int32"
+        adapter = "com.squareup.wire.ProtoAdapter#INT32"
     )
     public final Integer a;
 

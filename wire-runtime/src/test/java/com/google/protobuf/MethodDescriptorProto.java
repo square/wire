@@ -27,7 +27,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
 
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String name;
 
@@ -36,7 +36,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
    */
   @WireField(
       tag = 5,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String doc;
 
@@ -46,19 +46,19 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
    */
   @WireField(
       tag = 2,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String input_type;
 
   @WireField(
       tag = 3,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String output_type;
 
   @WireField(
       tag = 4,
-      type = "google.protobuf.MethodOptions"
+      adapter = "com.google.protobuf.MethodOptions#ADAPTER"
   )
   public final MethodOptions options;
 

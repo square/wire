@@ -42,7 +42,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
   @WireField(
       tag = 2,
-      type = "google.protobuf.UninterpretedOption.NamePart",
+      adapter = "com.google.protobuf.UninterpretedOption$NamePart#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<NamePart> name;
@@ -53,37 +53,37 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
    */
   @WireField(
       tag = 3,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String identifier_value;
 
   @WireField(
       tag = 4,
-      type = "uint64"
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   public final Long positive_int_value;
 
   @WireField(
       tag = 5,
-      type = "int64"
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   public final Long negative_int_value;
 
   @WireField(
       tag = 6,
-      type = "double"
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   public final Double double_value;
 
   @WireField(
       tag = 7,
-      type = "bytes"
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   public final ByteString string_value;
 
   @WireField(
       tag = 8,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String aggregate_value;
 
@@ -225,14 +225,14 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
     @WireField(
         tag = 1,
-        type = "string",
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
         label = WireField.Label.REQUIRED
     )
     public final String name_part;
 
     @WireField(
         tag = 2,
-        type = "bool",
+        adapter = "com.squareup.wire.ProtoAdapter#BOOL",
         label = WireField.Label.REQUIRED
     )
     public final Boolean is_extension;

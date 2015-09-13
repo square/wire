@@ -98,7 +98,7 @@ public class GsonTest {
 
   private static final String JSON_EXTENSIONS =
       ",\"squareup.protos.alltypes.ext_opt_int32\":2147483647,"
-          + "\"squareup.protos.alltypes.ext_opt_int64\":4611686018427388081,"
+          + "\"squareup.protos.alltypes.ext_opt_int64\":-4611686018427387726,"
           + "\"squareup.protos.alltypes.ext_opt_uint64\":13835058055282163890,"
           + "\"squareup.protos.alltypes.ext_opt_sint64\":-4611686018427387726,"
           + "\"squareup.protos.alltypes.ext_opt_bool\":true,"
@@ -210,7 +210,7 @@ public class GsonTest {
   private AllTypes.Builder setExtensions(AllTypes.Builder builder) {
     AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
     builder.setExtension(Ext_all_types.ext_opt_int32, Integer.MAX_VALUE)
-        .setExtension(Ext_all_types.ext_opt_int64, Long.MAX_VALUE / 2 + 178)
+        .setExtension(Ext_all_types.ext_opt_int64, Long.MIN_VALUE / 2 + 178)
         .setExtension(Ext_all_types.ext_opt_uint64, Long.MIN_VALUE / 2 + 178)
         .setExtension(Ext_all_types.ext_opt_sint64, Long.MIN_VALUE / 2 + 178)
         .setExtension(Ext_all_types.ext_opt_bool, true)

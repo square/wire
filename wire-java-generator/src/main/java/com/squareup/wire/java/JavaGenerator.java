@@ -16,6 +16,7 @@
 package com.squareup.wire.java;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -382,16 +383,16 @@ public final class JavaGenerator {
     }
 
     for (Field field : type.fieldsAndOneOfFields()) {
-      TypeName fieldType = fieldType(field);
+      TypeName fieldJavaType = fieldType(field);
 
       if ((field.type().isScalar() || isEnum(field.type()))
           && !field.isRepeated()
           && !field.isPacked()) {
-        builder.addField(defaultField(field, fieldType));
+        builder.addField(defaultField(field, fieldJavaType));
       }
 
       String name = sanitize(field.name());
-      FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, name, PUBLIC, FINAL);
+      FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldJavaType, name, PUBLIC, FINAL);
       fieldBuilder.addAnnotation(wireFieldAnnotation(field));
       if (!field.documentation().isEmpty()) {
         fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(field.documentation()));
@@ -480,7 +481,10 @@ public final class JavaGenerator {
 
     int tag = field.tag();
     result.addMember("tag", String.valueOf(tag));
-    result.addMember("type", "$S", field.type().toString());
+    String adapter = field.type().isScalar()
+        ? ProtoAdapter.class.getName() + '#' + field.type().toString().toUpperCase(Locale.US)
+        : reflectionName((ClassName) typeName(field.type())) + "#ADAPTER";
+    result.addMember("adapter", "$S", adapter);
 
     if (!field.isOptional()) {
       if (field.isPacked()) {
@@ -500,6 +504,10 @@ public final class JavaGenerator {
     }
 
     return result.build();
+  }
+
+  private String reflectionName(ClassName className) {
+    return className.packageName() + '.' + Joiner.on('$').join(className.simpleNames());
   }
 
   // Example:
