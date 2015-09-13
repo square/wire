@@ -52,7 +52,7 @@ import static com.squareup.wire.ProtoWriter.varint32Size;
  *
  * <p>Instances of this class are immutable.
  */
-public final class TagMap {
+final class TagMap {
   /**
    * Alternating extensions and values. Extensions are both known and unknown extensions. Values
    * are single elements. Extensions with multiple elements occur multiple times in this array.
