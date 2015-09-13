@@ -17,9 +17,10 @@ package com.squareup.wire.protobuf;
 
 import com.squareup.wire.Extension;
 import com.squareup.wire.ExtensionRegistry;
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
-import com.squareup.wire.Wire;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.Wire;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.io.ByteArrayInputStream;
@@ -136,8 +137,8 @@ public class TestAllTypes {
   }
 
   private final AllTypes allTypes = createAllTypes();
-  private final Wire wire = new Wire(new ExtensionRegistry(Ext_all_types.class));
-  private final ProtoAdapter<AllTypes> adapter = wire.adapter(AllTypes.class);
+  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry(Ext_all_types.class);
+  private final ProtoAdapter<AllTypes> adapter = new Wire().adapter(AllTypes.class);
 
   private AllTypes createAllTypes(int numRepeated) {
     return getBuilder(numRepeated).build();
@@ -347,7 +348,7 @@ public class TestAllTypes {
     byte[] data = adapter.encode(allTypes);
     Buffer input = new Buffer().write(data);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).decode(input);
+    AllTypes parsed = adapter.decode(input, extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -365,7 +366,7 @@ public class TestAllTypes {
   public void testReadBytes() throws IOException {
     byte[] data = adapter.encode(allTypes);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).decode(data);
+    AllTypes parsed = adapter.decode(data, extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -384,7 +385,7 @@ public class TestAllTypes {
     byte[] data = adapter.encode(allTypes);
     InputStream stream = new ByteArrayInputStream(data);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).decode(stream);
+    AllTypes parsed = adapter.decode(stream, extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -403,7 +404,7 @@ public class TestAllTypes {
     AllTypes allTypes = createAllTypes(50);
     byte[] data = adapter.encode(allTypes);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).decode(data);
+    AllTypes parsed = adapter.decode(data, extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -437,7 +438,7 @@ public class TestAllTypes {
     byte[] data = adapter.encode(allTypes);
 
     Source input = new SlowSource(new Buffer().write(data));
-    AllTypes parsed = wire.adapter(AllTypes.class).decode(Okio.buffer(input));
+    AllTypes parsed = adapter.decode(Okio.buffer(input), extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
@@ -460,14 +461,15 @@ public class TestAllTypes {
 
   @Test
   public void testReadNonPacked() throws IOException {
-    AllTypes parsed = adapter.decode(new Buffer().write(TestAllTypesData.nonPacked));
+    AllTypes parsed = adapter.decode(
+        new Buffer().write(TestAllTypesData.nonPacked), extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
   }
 
   @Test
   public void testToString() throws IOException {
     byte[] data = adapter.encode(allTypes);
-    AllTypes parsed = wire.adapter(AllTypes.class).decode(data);
+    AllTypes parsed = adapter.decode(data, extensionRegistry);
     assertThat(parsed.toString()).isEqualTo(TestAllTypesData.expectedToString);
   }
 
@@ -548,14 +550,14 @@ public class TestAllTypes {
     System.arraycopy(TestAllTypesData.expectedOutput.toByteArray(), 17, data, index,
         TestAllTypesData.expectedOutput.size() - 17);
 
-    AllTypes parsed = wire.adapter(AllTypes.class).decode(data);
+    AllTypes parsed = adapter.decode(data, extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
   }
 
   @Test
   public void testUnknownFields() {
     AllTypes.Builder builder = getBuilder();
-    builder.addVarint(10000, 1);
+    builder.setExtension(Extension.unknown(AllTypes.class, 10000, FieldEncoding.VARINT), 1L);
     AllTypes withUnknownField = builder.build();
     byte[] data = adapter.encode(withUnknownField);
     int count = TestAllTypesData.expectedOutput.size();
@@ -569,10 +571,10 @@ public class TestAllTypes {
   @Test @Ignore("we no longer enforce this constraint")
   public void testUnknownFieldsTypeMismatch() {
     AllTypes.Builder builder = getBuilder();
-    builder.addVarint(10000, 1);
+    builder.setExtension(Extension.unknown(AllTypes.class, 10000, FieldEncoding.VARINT), 1);
     try {
       // Don't allow heterogeneous types for the same tag
-      builder.addFixed32(10000, 2);
+      builder.setExtension(Extension.unknown(AllTypes.class, 10000, FieldEncoding.FIXED32), 2);
       fail();
     } catch (IllegalArgumentException expected) {
       assertThat(expected).hasMessage(

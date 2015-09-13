@@ -176,7 +176,7 @@ public class WireTest {
     assertThat(msg.optional_external_msg.getExtension(
         Ext_simple_message.nested_enum_ext)).isEqualTo(SimpleMessage.NestedEnum.BAZ);
 
-    Wire wire = new Wire(new ExtensionRegistry(Ext_simple_message.class));
+    Wire wire = new Wire();
     ProtoAdapter<SimpleMessage> adapter = wire.adapter(SimpleMessage.class);
 
     byte[] result = adapter.encode(msg);
@@ -201,16 +201,15 @@ public class WireTest {
 
     Wire wireNoExt = new Wire();
     ExtensionRegistry simpleMessageExtensions = new ExtensionRegistry(Ext_simple_message.class);
-    ProtoAdapter<SimpleMessage> adapterNoExt = wireNoExt.adapter(SimpleMessage.class);
-    ProtoAdapter<SimpleMessage> adapterExt = adapterNoExt.withExtensions(simpleMessageExtensions);
+    ProtoAdapter<SimpleMessage> adapter = wireNoExt.adapter(SimpleMessage.class);
 
-    byte[] data = adapterNoExt.encode(msg);
+    byte[] data = adapter.encode(msg);
 
     // Change BAZ enum to a value not known by this client.
     data[4] = 17;
 
     // Parse the altered message.
-    SimpleMessage newMsg = adapterExt.decode(data);
+    SimpleMessage newMsg = adapter.decode(data, simpleMessageExtensions);
 
     // Original value shows up as an extension.
     assertThat(msg.toString()).contains("squareup.protos.simple.nested_enum_ext=BAZ");
@@ -218,7 +217,7 @@ public class WireTest {
     assertThat(newMsg.toString()).contains("ExternalMessage{129=[17]}");
 
     // Serialized outputs are the same.
-    byte[] newData = adapterExt.encode(newMsg);
+    byte[] newData = adapter.encode(newMsg);
     assertThat(data).isEqualTo(newData);
   }
 
@@ -340,7 +339,7 @@ public class WireTest {
     // The value 17 will be stored as an unknown varint with tag number 2
     TagMap tagMap = ((Message) result.phone.get(0)).tagMap();
     assertThat(tagMap.size()).isEqualTo(1);
-    assertThat(tagMap.get(Extension.unknown(2, FieldEncoding.VARINT)))
+    assertThat(tagMap.get(Extension.unknown(PhoneNumber.class, 2, FieldEncoding.VARINT)))
         .isEqualTo(Arrays.asList(17L));
 
     // Serialize again, value is preserved

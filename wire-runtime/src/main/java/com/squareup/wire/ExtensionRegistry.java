@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class ExtensionRegistry {
+  static final ExtensionRegistry NO_EXTENSIONS = new ExtensionRegistry();
+
   private final Map<Class<? extends Message>, List<Extension<?, ?>>> messageToExtensions =
       new LinkedHashMap<>();
 
@@ -46,7 +48,7 @@ public final class ExtensionRegistry {
       for (Field field : extensionClass.getDeclaredFields()) {
         if (field.getType().equals(Extension.class)) {
           try {
-            registerExtension((Extension) field.get(null));
+            registerExtension((Extension<?, ?>) field.get(null));
           } catch (IllegalAccessException e) {
             throw new AssertionError(e);
           }
@@ -55,7 +57,7 @@ public final class ExtensionRegistry {
     }
   }
 
-  private <T extends Message<T>, E> void registerExtension(Extension<T, E> extension) {
+  private <T extends Message<T>> void registerExtension(Extension<T, ?> extension) {
     Class<? extends Message> messageClass = extension.getExtendedType();
     List<Extension<?, ?>> extensions = messageToExtensions.get(messageClass);
     if (extensions == null) {
@@ -66,8 +68,19 @@ public final class ExtensionRegistry {
   }
 
   @SuppressWarnings("unchecked")
-  public List<Extension<?, ?>> extensions(Class<? extends Message> messageClass) {
-    List<Extension<?, ?>> map = messageToExtensions.get(messageClass);
-    return map != null ? map : Collections.<Extension<?, ?>>emptyList();
+  public <T extends Message<T>> List<Extension<T, ?>> extensions(Class<T> messageClass) {
+    List<Extension<T, ?>> map = (List) messageToExtensions.get(messageClass);
+    return map != null ? map : Collections.<Extension<T, ?>>emptyList();
+  }
+
+  /**
+   * Returns the extension for {@code tag} on {@code messageType}, or null if no such extension is
+   * known.
+   */
+  public <T extends Message<T>> Extension<T, ?> get(Class<T> messageType, int tag) {
+    for (Extension<T, ?> extension : extensions(messageType)) {
+      if (extension.getTag() == tag) return extension;
+    }
+    return null;
   }
 }

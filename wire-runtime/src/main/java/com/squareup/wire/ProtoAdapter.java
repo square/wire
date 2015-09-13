@@ -53,21 +53,17 @@ public abstract class ProtoAdapter<E> {
     this.javaType = javaType;
   }
 
-  static ProtoAdapter<?> get(Wire wire, ProtoType type,
-      Class<? extends Message> messageType, Class<? extends WireEnum> enumType) {
-    ProtoAdapter<?> result = TYPE_TO_ADAPTER.get(type);
-    if (result != null) return result;
-    if (messageType != null) return wire.adapter(messageType);
-    if (enumType != null) return wire.enumAdapter(enumType);
-    throw new AssertionError("Unknown data type " + type);
-  }
-
-  /**
-   * Returns an adapter for the same type but with knowledge of the extensions in
-   * {@code extensionRegistry} when parsing. This only affects adapters for message types.
-   */
-  public ProtoAdapter<E> withExtensions(ExtensionRegistry extensionRegistry) {
-    return this;
+  static ProtoAdapter<?> get(ProtoType type, Class<?> javaType) {
+    ProtoAdapter<?> scalarAdapter = TYPE_TO_ADAPTER.get(type);
+    if (scalarAdapter != null) {
+      return scalarAdapter;
+    } else if (Message.class.isAssignableFrom(javaType)) {
+      return RuntimeMessageAdapter.create((Class<? extends Message>) javaType);
+    } else if (WireEnum.class.isAssignableFrom(javaType)) {
+      return new RuntimeEnumAdapter<>((Class<? extends WireEnum>) javaType);
+    } else {
+      throw new AssertionError("unknown data type: " + type);
+    }
   }
 
   /** Returns the redacted form of {@code value}. */
@@ -138,20 +134,35 @@ public abstract class ProtoAdapter<E> {
 
   /** Read an encoded message from {@code bytes}. */
   public final E decode(byte[] bytes) throws IOException {
+    return decode(bytes, ExtensionRegistry.NO_EXTENSIONS);
+  }
+
+  /** Read an encoded message from {@code bytes}. */
+  public final E decode(byte[] bytes, ExtensionRegistry extensionRegistry) throws IOException {
     checkNotNull(bytes, "bytes == null");
-    return decode(new Buffer().write(bytes));
+    return decode(new Buffer().write(bytes), extensionRegistry);
   }
 
   /** Read an encoded message from {@code stream}. */
   public final E decode(InputStream stream) throws IOException {
+    return decode(stream, ExtensionRegistry.NO_EXTENSIONS);
+  }
+
+  public final E decode(InputStream stream, ExtensionRegistry extensionRegistry)
+      throws IOException {
     checkNotNull(stream, "stream == null");
-    return decode(Okio.buffer(Okio.source(stream)));
+    return decode(Okio.buffer(Okio.source(stream)), extensionRegistry);
   }
 
   /** Read an encoded message from {@code source}. */
   public final E decode(BufferedSource source) throws IOException {
+    return decode(source, ExtensionRegistry.NO_EXTENSIONS);
+  }
+
+  public final E decode(BufferedSource source, ExtensionRegistry extensionRegistry)
+      throws IOException {
     checkNotNull(source, "source == null");
-    return decode(new ProtoReader(source));
+    return decode(new ProtoReader(source, extensionRegistry));
   }
 
   /** Returns a human-readable version of the given {@code value}. */

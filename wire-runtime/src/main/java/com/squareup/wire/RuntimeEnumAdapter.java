@@ -87,7 +87,7 @@ final class RuntimeEnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
   }
 
   static final class EnumConstantNotFoundException extends IllegalArgumentException {
-    final int value;
+    final long value;
 
     EnumConstantNotFoundException(int value, Class<?> type) {
       super("Unknown enum tag " + value + " for " + type.getCanonicalName());

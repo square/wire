@@ -130,7 +130,7 @@ public final class TagMap {
     int runEnd = runStart + 2;
     while (runEnd < array.length
         && ((Extension<?, ?>) array[runEnd]).getTag() == extension.getTag()
-        && ((Extension<?, ?>) array[runEnd]).getType().equals(extension.getType())) {
+        && ((Extension<?, ?>) array[runEnd]).getProtoType().equals(extension.getProtoType())) {
       runEnd += 2;
     }
     return runEnd;
@@ -169,7 +169,7 @@ public final class TagMap {
   static void transcode(List<Object> list, Extension<?, ?> sourceExtension,
       Object value, Extension<?, ?> targetExtension) {
     // If the adapter we're expecting has already been applied, we're done.
-    if (sourceExtension.getType().equals(targetExtension.getType())) {
+    if (sourceExtension.getProtoType().equals(targetExtension.getProtoType())) {
       list.add(value);
       return;
     }
@@ -196,6 +196,10 @@ public final class TagMap {
     }
   }
 
+  private static ProtoAdapter<Object> adapter(Extension<?, ?> sourceExtension) {
+    return (ProtoAdapter<Object>) sourceExtension.getAdapter();
+  }
+
   /**
    * Returns a set of the unique, known extensions in use by this map.
    *
@@ -210,12 +214,6 @@ public final class TagMap {
       }
     }
     return Collections.unmodifiableSet(result);
-  }
-
-  @SuppressWarnings("unchecked") // Caller beware! Assumes the extension and value match at runtime.
-  static ProtoAdapter<Object> adapter(Extension<?, ?> extension) {
-    return (ProtoAdapter<Object>) ProtoAdapter.get(Message.WIRE, extension.getType(),
-        extension.getMessageType(), extension.getEnumType());
   }
 
   @Override public boolean equals(Object o) {
@@ -242,11 +240,9 @@ public final class TagMap {
       this.limit = tagMap.array.length;
     }
 
-    public <T> Builder add(int tag, FieldEncoding fieldEncoding, T value) {
-      return add(Extension.unknown(tag, fieldEncoding), value);
-    }
-
     public Builder add(Extension<?, ?> extension, Object value) {
+      if (extension == null) throw new NullPointerException("extension == null");
+      if (value == null) throw new NullPointerException("value == null");
       if (limit == array.length) {
         int newLimit = Math.max(limit * 2, INITIAL_CAPACITY);
         Object[] newArray = new Object[newLimit];

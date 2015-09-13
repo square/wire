@@ -18,6 +18,7 @@ package com.squareup.wire;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,25 +49,47 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
   public final int tag;
   public final ProtoType type;
   public final boolean redacted;
-  public final ProtoAdapter<?> singleAdapter;
-  public final ProtoAdapter<?> adapter;
-
   private final Field messageField;
   private final Field builderField;
   private final Method builderMethod;
 
-  FieldBinding(WireField wireField, ProtoAdapter<?> singleAdapter,
-      Field messageField, Class<B> builderType) {
+  // Delegate adapters are created lazily; otherwise we could stack overflow!
+  private ProtoAdapter<Object> singleAdapter;
+  private ProtoAdapter<Object> adapter;
+
+  FieldBinding(WireField wireField, Field messageField, Class<B> builderType) {
     this.label = wireField.label();
     this.name = messageField.getName();
     this.tag = wireField.tag();
     this.type = ProtoType.get(wireField.type());
     this.redacted = wireField.redacted();
-    this.singleAdapter = singleAdapter;
-    this.adapter = singleAdapter.withLabel(label);
     this.messageField = messageField;
     this.builderField = getBuilderField(builderType, name);
     this.builderMethod = getBuilderMethod(builderType, name, messageField.getType());
+  }
+
+  ProtoAdapter<?> singleAdapter() {
+    ProtoAdapter<?> result = singleAdapter;
+    return result != null ? result : (singleAdapter = getSingleAdapter());
+  }
+
+  ProtoAdapter<Object> adapter() {
+    ProtoAdapter<Object> result = adapter;
+    return result != null
+        ? result
+        : (adapter = (ProtoAdapter<Object>) singleAdapter().withLabel(label));
+  }
+
+  @SuppressWarnings("unchecked")
+  private ProtoAdapter<Object> getSingleAdapter() {
+    // TODO(jwilson): attempt to pull this from a static ADAPTER field on the message class.
+    Class<?> singleType = messageField.getType();
+    if (List.class.isAssignableFrom(singleType)) {
+      ParameterizedType listType = (ParameterizedType) messageField.getGenericType();
+      singleType = (Class<?>) listType.getActualTypeArguments()[0];
+    }
+
+    return (ProtoAdapter<Object>) ProtoAdapter.get(type, singleType);
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
@@ -97,9 +120,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
       } else {
         builderField.set(builder, value);
       }
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    } catch (InvocationTargetException e) {
+    } catch (IllegalAccessException | InvocationTargetException e) {
       throw new AssertionError(e);
     }
   }
