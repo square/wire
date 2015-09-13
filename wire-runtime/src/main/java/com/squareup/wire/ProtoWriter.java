@@ -60,7 +60,7 @@ public final class ProtoWriter {
 
   /** Makes a tag value given a field number and wire type. */
   private static int makeTag(int fieldNumber, FieldEncoding fieldEncoding) {
-    return (fieldNumber << ProtoReader.TAG_FIELD_ENCODING_BITS) | fieldEncoding.value();
+    return (fieldNumber << ProtoReader.TAG_FIELD_ENCODING_BITS) | fieldEncoding.value;
   }
 
   /** Compute the number of bytes that would be needed to encode a tag. */

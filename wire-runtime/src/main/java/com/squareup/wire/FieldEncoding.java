@@ -22,7 +22,7 @@ import okio.ByteString;
 public enum FieldEncoding {
   VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), FIXED32(5);
 
-  private final int value;
+  final int value;
 
   FieldEncoding(int value) {
     this.value = value;
@@ -37,10 +37,6 @@ public enum FieldEncoding {
       default:
         throw new ProtocolException("Unexpected FieldEncoding: " + value);
     }
-  }
-
-  int value() {
-    return value;
   }
 
   ProtoType protoType() {
