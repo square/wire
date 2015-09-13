@@ -136,7 +136,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
           || fieldBinding.getFromBuilder(builder) instanceof WireEnum)) {
         continue;
       }
-      if (fieldBinding.redacted && fieldBinding.label == Message.Label.REQUIRED) {
+      if (fieldBinding.redacted && fieldBinding.label == WireField.Label.REQUIRED) {
         throw new IllegalArgumentException(String.format(
             "Field %s.%s is REQUIRED and cannot be redacted.",
             javaType.getName(), fieldBinding.name));

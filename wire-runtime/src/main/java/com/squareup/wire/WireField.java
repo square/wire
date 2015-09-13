@@ -20,8 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static com.squareup.wire.Message.Label;
-
 /**
  * Annotates generated {@link Message} fields with metadata for serialization and
  * deserialization.
@@ -55,4 +53,23 @@ public @interface WireField {
    * Redacted fields are omitted from toString() to protect sensitive data. Defaults to false.
    */
   boolean redacted() default false;
+
+  /** A protocol buffer label. */
+  enum Label {
+    REQUIRED, OPTIONAL, REPEATED, ONE_OF,
+    /** Implies {@link #REPEATED}. */
+    PACKED;
+
+    boolean isRepeated() {
+      return this == REPEATED || this == PACKED;
+    }
+
+    boolean isPacked() {
+      return this == PACKED;
+    }
+
+    boolean isOneOf() {
+      return this == ONE_OF;
+    }
+  }
 }

@@ -154,7 +154,7 @@ public final class FileOptions extends Message<FileOptions> {
   @WireField(
       tag = 999,
       type = "google.protobuf.UninterpretedOption",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;
 

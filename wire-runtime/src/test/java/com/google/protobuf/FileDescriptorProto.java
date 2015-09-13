@@ -47,7 +47,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   @WireField(
       tag = 3,
       type = "string",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<String> dependency;
 
@@ -57,28 +57,28 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   @WireField(
       tag = 4,
       type = "google.protobuf.DescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<DescriptorProto> message_type;
 
   @WireField(
       tag = 5,
       type = "google.protobuf.EnumDescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @WireField(
       tag = 6,
       type = "google.protobuf.ServiceDescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<ServiceDescriptorProto> service;
 
   @WireField(
       tag = 7,
       type = "google.protobuf.FieldDescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 

@@ -225,336 +225,336 @@ public final class AllTypes extends Message<AllTypes> {
   @WireField(
       tag = 101,
       type = "int32",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_int32;
 
   @WireField(
       tag = 102,
       type = "uint32",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_uint32;
 
   @WireField(
       tag = 103,
       type = "sint32",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_sint32;
 
   @WireField(
       tag = 104,
       type = "fixed32",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_fixed32;
 
   @WireField(
       tag = 105,
       type = "sfixed32",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Integer req_sfixed32;
 
   @WireField(
       tag = 106,
       type = "int64",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Long req_int64;
 
   @WireField(
       tag = 107,
       type = "uint64",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Long req_uint64;
 
   @WireField(
       tag = 108,
       type = "sint64",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Long req_sint64;
 
   @WireField(
       tag = 109,
       type = "fixed64",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Long req_fixed64;
 
   @WireField(
       tag = 110,
       type = "sfixed64",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Long req_sfixed64;
 
   @WireField(
       tag = 111,
       type = "bool",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Boolean req_bool;
 
   @WireField(
       tag = 112,
       type = "float",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Float req_float;
 
   @WireField(
       tag = 113,
       type = "double",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Double req_double;
 
   @WireField(
       tag = 114,
       type = "string",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final String req_string;
 
   @WireField(
       tag = 115,
       type = "bytes",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final ByteString req_bytes;
 
   @WireField(
       tag = 116,
       type = "squareup.protos.alltypes.AllTypes.NestedEnum",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final NestedEnum req_nested_enum;
 
   @WireField(
       tag = 117,
       type = "squareup.protos.alltypes.AllTypes.NestedMessage",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final NestedMessage req_nested_message;
 
   @WireField(
       tag = 201,
       type = "int32",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_int32;
 
   @WireField(
       tag = 202,
       type = "uint32",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_uint32;
 
   @WireField(
       tag = 203,
       type = "sint32",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_sint32;
 
   @WireField(
       tag = 204,
       type = "fixed32",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_fixed32;
 
   @WireField(
       tag = 205,
       type = "sfixed32",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_sfixed32;
 
   @WireField(
       tag = 206,
       type = "int64",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_int64;
 
   @WireField(
       tag = 207,
       type = "uint64",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_uint64;
 
   @WireField(
       tag = 208,
       type = "sint64",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_sint64;
 
   @WireField(
       tag = 209,
       type = "fixed64",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_fixed64;
 
   @WireField(
       tag = 210,
       type = "sfixed64",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Long> rep_sfixed64;
 
   @WireField(
       tag = 211,
       type = "bool",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Boolean> rep_bool;
 
   @WireField(
       tag = 212,
       type = "float",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Float> rep_float;
 
   @WireField(
       tag = 213,
       type = "double",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Double> rep_double;
 
   @WireField(
       tag = 214,
       type = "string",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<String> rep_string;
 
   @WireField(
       tag = 215,
       type = "bytes",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<ByteString> rep_bytes;
 
   @WireField(
       tag = 216,
       type = "squareup.protos.alltypes.AllTypes.NestedEnum",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<NestedEnum> rep_nested_enum;
 
   @WireField(
       tag = 217,
       type = "squareup.protos.alltypes.AllTypes.NestedMessage",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<NestedMessage> rep_nested_message;
 
   @WireField(
       tag = 301,
       type = "int32",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_int32;
 
   @WireField(
       tag = 302,
       type = "uint32",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_uint32;
 
   @WireField(
       tag = 303,
       type = "sint32",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_sint32;
 
   @WireField(
       tag = 304,
       type = "fixed32",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_fixed32;
 
   @WireField(
       tag = 305,
       type = "sfixed32",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_sfixed32;
 
   @WireField(
       tag = 306,
       type = "int64",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_int64;
 
   @WireField(
       tag = 307,
       type = "uint64",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_uint64;
 
   @WireField(
       tag = 308,
       type = "sint64",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_sint64;
 
   @WireField(
       tag = 309,
       type = "fixed64",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_fixed64;
 
   @WireField(
       tag = 310,
       type = "sfixed64",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Long> pack_sfixed64;
 
   @WireField(
       tag = 311,
       type = "bool",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Boolean> pack_bool;
 
   @WireField(
       tag = 312,
       type = "float",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Float> pack_float;
 
   @WireField(
       tag = 313,
       type = "double",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Double> pack_double;
 
   @WireField(
       tag = 316,
       type = "squareup.protos.alltypes.AllTypes.NestedEnum",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<NestedEnum> pack_nested_enum;
 

@@ -18,7 +18,7 @@ public final class Bars extends Message<Bars> {
   @WireField(
       tag = 1,
       type = "single_level.Bar",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Bar> bars;
 

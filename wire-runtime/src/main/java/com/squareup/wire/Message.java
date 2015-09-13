@@ -28,25 +28,6 @@ import java.util.Set;
 public abstract class Message<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
-  /** A protocol buffer label. */
-  public enum Label {
-    REQUIRED, OPTIONAL, REPEATED, ONE_OF,
-    /** Implies {@link #REPEATED}. */
-    PACKED;
-
-    boolean isRepeated() {
-      return this == REPEATED || this == PACKED;
-    }
-
-    boolean isPacked() {
-      return this == PACKED;
-    }
-
-    boolean isOneOf() {
-      return this == ONE_OF;
-    }
-  }
-
   /** Set to null until a field is added. */
   transient TagMap tagMap;
 

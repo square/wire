@@ -24,7 +24,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
   @WireField(
       tag = 1,
       type = "string",
-      label = Message.Label.REQUIRED,
+      label = WireField.Label.REQUIRED,
       redacted = true
   )
   public final String a;

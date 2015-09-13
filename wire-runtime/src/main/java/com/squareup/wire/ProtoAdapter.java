@@ -380,7 +380,7 @@ public abstract class ProtoAdapter<E> {
     TYPE_TO_ADAPTER = Collections.unmodifiableMap(map);
   }
 
-  ProtoAdapter<?> withLabel(Message.Label label) {
+  ProtoAdapter<?> withLabel(WireField.Label label) {
     if (label.isRepeated()) {
       return label.isPacked()
           ? createPacked(this)

@@ -18,7 +18,7 @@ package com.squareup.wire;
 import java.util.List;
 import okio.ByteString;
 
-import static com.squareup.wire.Message.Label;
+import static com.squareup.wire.WireField.Label;
 
 /**
  * An extended attribute of on a protocol buffer message. Extensions are used to

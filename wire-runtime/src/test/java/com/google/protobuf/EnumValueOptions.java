@@ -21,7 +21,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
   @WireField(
       tag = 999,
       type = "google.protobuf.UninterpretedOption",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;
 

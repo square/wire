@@ -35,7 +35,7 @@ import static com.squareup.wire.FieldEncoding.FIXED32;
 import static com.squareup.wire.FieldEncoding.FIXED64;
 import static com.squareup.wire.FieldEncoding.LENGTH_DELIMITED;
 import static com.squareup.wire.FieldEncoding.VARINT;
-import static com.squareup.wire.Message.Label;
+import static com.squareup.wire.WireField.Label;
 import static java.util.Collections.unmodifiableMap;
 
 class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>

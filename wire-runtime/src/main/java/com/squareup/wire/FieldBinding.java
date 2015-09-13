@@ -44,7 +44,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
     }
   }
 
-  public final Message.Label label;
+  public final WireField.Label label;
   public final String name;
   public final int tag;
   public final ProtoType type;
