@@ -42,35 +42,35 @@ public final class DescriptorProto extends Message<DescriptorProto> {
   @WireField(
       tag = 2,
       type = "google.protobuf.FieldDescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<FieldDescriptorProto> field;
 
   @WireField(
       tag = 6,
       type = "google.protobuf.FieldDescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 
   @WireField(
       tag = 3,
       type = "google.protobuf.DescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<DescriptorProto> nested_type;
 
   @WireField(
       tag = 4,
       type = "google.protobuf.EnumDescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @WireField(
       tag = 5,
       type = "google.protobuf.DescriptorProto.ExtensionRange",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<ExtensionRange> extension_range;
 

@@ -70,7 +70,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   @WireField(
       tag = 1,
       type = "google.protobuf.SourceCodeInfo.Location",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Location> location;
 
@@ -197,7 +197,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     @WireField(
         tag = 1,
         type = "int32",
-        label = Message.Label.PACKED
+        label = WireField.Label.PACKED
     )
     public final List<Integer> path;
 
@@ -211,7 +211,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     @WireField(
         tag = 2,
         type = "int32",
-        label = Message.Label.PACKED
+        label = WireField.Label.PACKED
     )
     public final List<Integer> span;
 

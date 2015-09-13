@@ -83,7 +83,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   @WireField(
       tag = 5,
       type = "int32",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Integer required_int32;
 
@@ -93,7 +93,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   @WireField(
       tag = 6,
       type = "double",
-      label = Message.Label.REPEATED,
+      label = WireField.Label.REPEATED,
       deprecated = true
   )
   @Deprecated

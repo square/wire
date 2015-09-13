@@ -24,7 +24,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   @WireField(
       tag = 1,
       type = "string",
-      label = Message.Label.REPEATED,
+      label = WireField.Label.REPEATED,
       redacted = true
   )
   public final List<String> a;

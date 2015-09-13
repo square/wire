@@ -41,7 +41,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
   @WireField(
       tag = 2,
       type = "google.protobuf.EnumValueDescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<EnumValueDescriptorProto> value;
 

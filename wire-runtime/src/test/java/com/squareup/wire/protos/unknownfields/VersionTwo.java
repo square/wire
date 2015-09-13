@@ -61,7 +61,7 @@ public final class VersionTwo extends Message<VersionTwo> {
   @WireField(
       tag = 6,
       type = "string",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<String> v2_rs;
 

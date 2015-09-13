@@ -32,7 +32,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   @WireField(
       tag = 2,
       type = "google.protobuf.MethodDescriptorProto",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<MethodDescriptorProto> method;
 

@@ -484,9 +484,9 @@ public final class JavaGenerator {
 
     if (!field.isOptional()) {
       if (field.isPacked()) {
-        result.addMember("label", "$T.PACKED", Message.Label.class);
+        result.addMember("label", "$T.PACKED", WireField.Label.class);
       } else if (field.label() != null) {
-        result.addMember("label", "$T.$L", Message.Label.class, field.label());
+        result.addMember("label", "$T.$L", WireField.Label.class, field.label());
       }
     }
 

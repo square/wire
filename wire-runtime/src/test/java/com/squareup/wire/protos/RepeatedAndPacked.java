@@ -19,14 +19,14 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   @WireField(
       tag = 201,
       type = "int32",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<Integer> rep_int32;
 
   @WireField(
       tag = 301,
       type = "int32",
-      label = Message.Label.PACKED
+      label = WireField.Label.PACKED
   )
   public final List<Integer> pack_int32;
 

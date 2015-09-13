@@ -30,7 +30,7 @@ public final class Person extends Message<Person> {
   @WireField(
       tag = 1,
       type = "string",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final String name;
 
@@ -40,7 +40,7 @@ public final class Person extends Message<Person> {
   @WireField(
       tag = 2,
       type = "int32",
-      label = Message.Label.REQUIRED
+      label = WireField.Label.REQUIRED
   )
   public final Integer id;
 
@@ -59,7 +59,7 @@ public final class Person extends Message<Person> {
   @WireField(
       tag = 4,
       type = "squareup.protos.person.Person.PhoneNumber",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<PhoneNumber> phone;
 
@@ -202,7 +202,7 @@ public final class Person extends Message<Person> {
     @WireField(
         tag = 1,
         type = "string",
-        label = Message.Label.REQUIRED
+        label = WireField.Label.REQUIRED
     )
     public final String number;
 

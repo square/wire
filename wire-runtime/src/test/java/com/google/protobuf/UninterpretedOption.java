@@ -43,7 +43,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
   @WireField(
       tag = 2,
       type = "google.protobuf.UninterpretedOption.NamePart",
-      label = Message.Label.REPEATED
+      label = WireField.Label.REPEATED
   )
   public final List<NamePart> name;
 
@@ -226,14 +226,14 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
     @WireField(
         tag = 1,
         type = "string",
-        label = Message.Label.REQUIRED
+        label = WireField.Label.REQUIRED
     )
     public final String name_part;
 
     @WireField(
         tag = 2,
         type = "bool",
-        label = Message.Label.REQUIRED
+        label = WireField.Label.REQUIRED
     )
     public final Boolean is_extension;
 
