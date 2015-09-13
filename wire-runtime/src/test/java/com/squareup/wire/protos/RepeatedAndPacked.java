@@ -3,6 +3,7 @@
 package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -11,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
+  public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = ProtoAdapter.forMessage(RepeatedAndPacked.class);
+
   private static final long serialVersionUID = 0L;
 
   @WireField(

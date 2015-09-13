@@ -29,8 +29,7 @@ public class OneOfTest {
   // (Tag #3 << 3 | LENGTH_DELIMITED) = 26, string length = 6.
   private static final byte[] BAR_BYTES = { 26, 6, 'b', 'a', 'r', 'b', 'a', 'r'};
 
-  private final Wire wire = new Wire();
-  private final ProtoAdapter<OneOfMessage> adapter = wire.adapter(OneOfMessage.class);
+  private final ProtoAdapter<OneOfMessage> adapter = OneOfMessage.ADAPTER;
 
   @Test
   public void testOneOf() throws Exception {

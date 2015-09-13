@@ -3,12 +3,15 @@
 package com.squareup.foobar.protos.bar;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
 public final class Bar extends Message<Bar> {
+  public static final ProtoAdapter<Bar> ADAPTER = ProtoAdapter.forMessage(Bar.class);
+
   private static final long serialVersionUID = 0L;
 
   public Bar() {
@@ -43,6 +46,8 @@ public final class Bar extends Message<Bar> {
   }
 
   public static final class Baz extends Message<Baz> {
+    public static final ProtoAdapter<Baz> ADAPTER = ProtoAdapter.forMessage(Baz.class);
+
     private static final long serialVersionUID = 0L;
 
     public Baz() {
@@ -77,6 +82,8 @@ public final class Bar extends Message<Bar> {
     }
 
     public static final class Moo extends Message<Moo> {
+      public static final ProtoAdapter<Moo> ADAPTER = ProtoAdapter.forMessage(Moo.class);
+
       private static final long serialVersionUID = 0L;
 
       public static final String DEFAULT_BOO = "";

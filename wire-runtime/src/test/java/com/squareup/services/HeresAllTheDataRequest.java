@@ -3,12 +3,15 @@
 package com.squareup.services;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
 
 public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest> {
+  public static final ProtoAdapter<HeresAllTheDataRequest> ADAPTER = ProtoAdapter.forMessage(HeresAllTheDataRequest.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final ByteString DEFAULT_DATA = ByteString.EMPTY;

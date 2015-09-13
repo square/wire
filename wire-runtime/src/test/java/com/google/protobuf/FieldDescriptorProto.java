@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
@@ -14,6 +15,8 @@ import java.lang.String;
  * Describes a field within a message.
  */
 public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
+  public static final ProtoAdapter<FieldDescriptorProto> ADAPTER = ProtoAdapter.forMessage(FieldDescriptorProto.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";
@@ -344,6 +347,8 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
      */
     TYPE_SINT64(18);
 
+    public static final ProtoAdapter<Type> ADAPTER = ProtoAdapter.forEnum(Type.class);
+
     private final int value;
 
     Type(int value) {
@@ -365,6 +370,8 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
     LABEL_REQUIRED(2),
 
     LABEL_REPEATED(3);
+
+    public static final ProtoAdapter<Label> ADAPTER = ProtoAdapter.forEnum(Label.class);
 
     private final int value;
 

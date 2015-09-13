@@ -20,7 +20,6 @@ import com.squareup.wire.ExtensionRegistry;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.Wire;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.io.ByteArrayInputStream;
@@ -138,7 +137,7 @@ public class TestAllTypes {
 
   private final AllTypes allTypes = createAllTypes();
   private final ExtensionRegistry extensionRegistry = new ExtensionRegistry(Ext_all_types.class);
-  private final ProtoAdapter<AllTypes> adapter = new Wire().adapter(AllTypes.class);
+  private final ProtoAdapter<AllTypes> adapter = AllTypes.ADAPTER;
 
   private AllTypes createAllTypes(int numRepeated) {
     return getBuilder(numRepeated).build();
@@ -455,7 +454,7 @@ public class TestAllTypes {
   @Test
   public void testReadNoExtension() throws IOException {
     byte[] data = adapter.encode(allTypes);
-    AllTypes parsed = new Wire().adapter(AllTypes.class).decode(data);
+    AllTypes parsed = AllTypes.ADAPTER.decode(data);
     assertThat(allTypes).isNotEqualTo(parsed);
   }
 

@@ -2,6 +2,7 @@
 // Source file: ../wire-runtime/src/test/proto/foreign.proto at 23:1
 package com.squareup.wire.protos.foreign;
 
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
@@ -9,6 +10,8 @@ public enum ForeignEnum implements WireEnum {
   BAV(0),
 
   BAX(1);
+
+  public static final ProtoAdapter<ForeignEnum> ADAPTER = ProtoAdapter.forEnum(ForeignEnum.class);
 
   private final int value;
 

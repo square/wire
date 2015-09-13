@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -23,6 +24,8 @@ import okio.ByteString;
  * in them.
  */
 public final class UninterpretedOption extends Message<UninterpretedOption> {
+  public static final ProtoAdapter<UninterpretedOption> ADAPTER = ProtoAdapter.forMessage(UninterpretedOption.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_IDENTIFIER_VALUE = "";
@@ -212,6 +215,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
    * "foo.(bar.baz).qux".
    */
   public static final class NamePart extends Message<NamePart> {
+    public static final ProtoAdapter<NamePart> ADAPTER = ProtoAdapter.forMessage(NamePart.class);
+
     private static final long serialVersionUID = 0L;
 
     public static final String DEFAULT_NAME_PART = "";

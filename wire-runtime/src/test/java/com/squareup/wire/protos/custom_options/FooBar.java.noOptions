@@ -3,6 +3,7 @@
 package com.squareup.wire.protos.custom_options;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Double;
@@ -16,6 +17,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class FooBar extends Message<FooBar> {
+  public static final ProtoAdapter<FooBar> ADAPTER = ProtoAdapter.forMessage(FooBar.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_FOO = 0;
@@ -189,6 +192,8 @@ public final class FooBar extends Message<FooBar> {
   }
 
   public static final class Nested extends Message<Nested> {
+    public static final ProtoAdapter<Nested> ADAPTER = ProtoAdapter.forMessage(Nested.class);
+
     private static final long serialVersionUID = 0L;
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
@@ -246,6 +251,8 @@ public final class FooBar extends Message<FooBar> {
   }
 
   public static final class More extends Message<More> {
+    public static final ProtoAdapter<More> ADAPTER = ProtoAdapter.forMessage(More.class);
+
     private static final long serialVersionUID = 0L;
 
     @WireField(
@@ -307,6 +314,8 @@ public final class FooBar extends Message<FooBar> {
     BAR(2, null),
 
     BAZ(3, 18);
+
+    public static final ProtoAdapter<FooBarBazEnum> ADAPTER = ProtoAdapter.forEnum(FooBarBazEnum.class);
 
     private final int value;
 

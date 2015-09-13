@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -13,6 +14,8 @@ import java.lang.String;
  * Describes a value within an enum.
  */
 public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorProto> {
+  public static final ProtoAdapter<EnumValueDescriptorProto> ADAPTER = ProtoAdapter.forMessage(EnumValueDescriptorProto.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_NAME = "";

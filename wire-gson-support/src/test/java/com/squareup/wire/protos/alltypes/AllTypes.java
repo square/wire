@@ -3,6 +3,7 @@
 package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
@@ -18,6 +19,8 @@ import java.util.List;
 import okio.ByteString;
 
 public final class AllTypes extends Message<AllTypes> {
+  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.forMessage(AllTypes.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
@@ -1621,6 +1624,8 @@ public final class AllTypes extends Message<AllTypes> {
   public enum NestedEnum implements WireEnum {
     A(1);
 
+    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.forEnum(NestedEnum.class);
+
     private final int value;
 
     NestedEnum(int value) {
@@ -1634,6 +1639,8 @@ public final class AllTypes extends Message<AllTypes> {
   }
 
   public static final class NestedMessage extends Message<NestedMessage> {
+    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.forMessage(NestedMessage.class);
+
     private static final long serialVersionUID = 0L;
 
     public static final Integer DEFAULT_A = 0;

@@ -31,6 +31,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoType;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -74,6 +75,7 @@ public final class JavaGenerator {
   static final ClassName STRING = ClassName.get(String.class);
   static final ClassName LIST = ClassName.get(List.class);
   static final ClassName MESSAGE = ClassName.get(Message.class);
+  static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
   static final ClassName EXTENSION = ClassName.get(Extension.class);
   static final TypeName MESSAGE_OPTIONS = ClassName.get("com.google.protobuf", "MessageOptions");
@@ -229,6 +231,10 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(JavaGenerator.MESSAGE, type);
   }
 
+  static TypeName adapterOf(TypeName messageType) {
+    return ParameterizedTypeName.get(ADAPTER, messageType);
+  }
+
   static TypeName builderOf(TypeName messageType, ClassName builderType) {
     return ParameterizedTypeName.get(BUILDER, messageType, builderType);
   }
@@ -251,9 +257,9 @@ public final class JavaGenerator {
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateEnum(EnumType type) {
-    ClassName typeName = (ClassName) typeName(type.name());
+    ClassName javaType = (ClassName) typeName(type.name());
 
-    TypeSpec.Builder builder = TypeSpec.enumBuilder(typeName.simpleName())
+    TypeSpec.Builder builder = TypeSpec.enumBuilder(javaType.simpleName())
         .addModifiers(PUBLIC)
         .addSuperinterface(WireEnum.class);
 
@@ -278,9 +284,9 @@ public final class JavaGenerator {
         }
 
         if (allOptionFieldsBuilder.add(optionField)) {
-          TypeName javaType = typeName(optionField.type());
-          builder.addField(javaType, optionField.name(), PUBLIC, FINAL);
-          constructorBuilder.addParameter(javaType, optionField.name());
+          TypeName optionJavaType = typeName(optionField.type());
+          builder.addField(optionJavaType, optionField.name(), PUBLIC, FINAL);
+          constructorBuilder.addParameter(optionJavaType, optionField.name());
           constructorBuilder.addStatement("this.$L = $L", optionField.name(), optionField.name());
         }
       }
@@ -307,6 +313,11 @@ public final class JavaGenerator {
 
       builder.addEnumConstant(constant.name(), constantBuilder.build());
     }
+
+    builder.addField(FieldSpec.builder(adapterOf(javaType), "ADAPTER")
+        .addModifiers(PUBLIC, STATIC, FINAL)
+        .initializer("$T.forEnum($T.class)", ProtoAdapter.class, javaType)
+        .build());
 
     // Enum type options.
     if (emitOptions) {
@@ -344,6 +355,11 @@ public final class JavaGenerator {
     }
 
     builder.superclass(messageOf(javaType));
+
+    builder.addField(FieldSpec.builder(adapterOf(javaType), "ADAPTER")
+        .addModifiers(PUBLIC, STATIC, FINAL)
+        .initializer("$T.forMessage($T.class)", ProtoAdapter.class, javaType)
+        .build());
 
     builder.addField(FieldSpec.builder(TypeName.LONG, "serialVersionUID")
         .addModifiers(PRIVATE, STATIC, FINAL)

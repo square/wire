@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -11,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class MessageOptions extends Message<MessageOptions> {
+  public static final ProtoAdapter<MessageOptions> ADAPTER = ProtoAdapter.forMessage(MessageOptions.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final Boolean DEFAULT_MESSAGE_SET_WIRE_FORMAT = false;

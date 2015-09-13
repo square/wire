@@ -3,12 +3,15 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 
 public final class Recursive extends Message<Recursive> {
+  public static final ProtoAdapter<Recursive> ADAPTER = ProtoAdapter.forMessage(Recursive.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_VALUE = 0;

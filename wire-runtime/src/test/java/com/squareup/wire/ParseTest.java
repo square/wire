@@ -29,13 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class ParseTest {
-  private final Wire wire = new Wire();
-
   @Test public void unknownTagIgnored() throws Exception {
     // tag 1 / type 0: 456
     // tag 2 / type 0: 789
     ByteString data = ByteString.decodeHex("08c803109506");
-    OneField oneField = wire.adapter(OneField.class).decode(data.toByteArray());
+    OneField oneField = OneField.ADAPTER.decode(data.toByteArray());
     assertThat(oneField).isEqualTo(new OneField.Builder().opt_int32(456).build());
   }
 
@@ -44,7 +42,7 @@ public final class ParseTest {
     // tag 2 / type 7: 789
     ByteString data = ByteString.decodeHex("08c803179506");
     try {
-      wire.adapter(OneField.class).decode(data.toByteArray());
+      OneField.ADAPTER.decode(data.toByteArray());
       fail();
     } catch (ProtocolException expected) {
       assertThat(expected).hasMessage("Unexpected field encoding: 7");
@@ -56,7 +54,7 @@ public final class ParseTest {
     // tag 1 / 3-byte length-delimited string: 0x109506
     // (0x109506 is a well-formed proto message that sets tag 2 to 456).
     ByteString data = ByteString.decodeHex("0a03109506");
-    OneField oneField = wire.adapter(OneField.class).decode(data.toByteArray());
+    OneField oneField = OneField.ADAPTER.decode(data.toByteArray());
     assertThat(oneField).isEqualTo(new OneField.Builder().opt_int32(3).build());
   }
 
@@ -64,7 +62,7 @@ public final class ParseTest {
     // tag 1 / 4-byte length delimited string: 0x000000 (3 bytes)
     ByteString data = ByteString.decodeHex("0a04000000");
     try {
-      wire.adapter(OneBytesField.class).decode(data.toByteArray());
+      OneBytesField.ADAPTER.decode(data.toByteArray());
       fail();
     } catch (EOFException expected) {
     }
@@ -76,7 +74,7 @@ public final class ParseTest {
     // tag 2 / type 0: 456
     ByteString data = ByteString.decodeHex("120300000010c803");
     try {
-      wire.adapter(OneField.class).decode(data.toByteArray());
+      OneField.ADAPTER.decode(data.toByteArray());
       fail();
     } catch (ProtocolException expected) {
       assertThat(expected).hasMessage(
@@ -88,7 +86,7 @@ public final class ParseTest {
     // tag 1 / type 0: 456
     // tag 1 / type 0: 789
     ByteString data = ByteString.decodeHex("08c803089506");
-    OneField oneField = wire.adapter(OneField.class).decode(data.toByteArray());
+    OneField oneField = OneField.ADAPTER.decode(data.toByteArray());
     assertThat(new OneField.Builder().opt_int32(789).build()).isEqualTo(oneField);
   }
 
@@ -99,8 +97,7 @@ public final class ParseTest {
         + "412621260125e125c125a12581256125412521250124e124c124a12481246124412421240123e123c123a123"
         + "81236123412321230122e122c122a12281226122412221220121e121c121a12181216121412121210120e120"
         + "c120a1208120612041202120008c803");
-    Recursive recursive =
-        wire.adapter(Recursive.class).decode(data.toByteArray());
+    Recursive recursive = Recursive.ADAPTER.decode(data.toByteArray());
     assertThat(recursive.value.intValue()).isEqualTo(456);
   }
 
@@ -112,7 +109,7 @@ public final class ParseTest {
         + "23a12381236123412321230122e122c122a12281226122412221220121e121c121a121812161214121212101"
         + "20e120c120a1208120612041202120008c803");
     try {
-      wire.adapter(Recursive.class).decode(data.toByteArray());
+      Recursive.ADAPTER.decode(data.toByteArray());
       fail();
     } catch (IOException expected) {
       assertThat(expected).hasMessage("Wire recursion limit exceeded");

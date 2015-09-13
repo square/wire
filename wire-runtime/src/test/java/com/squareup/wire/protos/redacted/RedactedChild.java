@@ -3,12 +3,15 @@
 package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 
 public final class RedactedChild extends Message<RedactedChild> {
+  public static final ProtoAdapter<RedactedChild> ADAPTER = ProtoAdapter.forMessage(RedactedChild.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_A = "";

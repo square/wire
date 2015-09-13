@@ -4,6 +4,7 @@ package com.squareup.wire.protos.custom_options;
 
 import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.protos.foreign.Ext_foreign;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.lang.Object;
@@ -11,6 +12,8 @@ import java.lang.Override;
 import java.util.Arrays;
 
 public final class MessageWithOptions extends Message<MessageWithOptions> {
+  public static final ProtoAdapter<MessageWithOptions> ADAPTER = ProtoAdapter.forMessage(MessageWithOptions.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final MessageOptions MESSAGE_OPTIONS = new MessageOptions.Builder()

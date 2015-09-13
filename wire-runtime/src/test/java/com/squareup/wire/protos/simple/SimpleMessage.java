@@ -3,6 +3,7 @@
 package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
@@ -19,6 +20,8 @@ import java.util.List;
  * A message for testing.
  */
 public final class SimpleMessage extends Message<SimpleMessage> {
+  public static final ProtoAdapter<SimpleMessage> ADAPTER = ProtoAdapter.forMessage(SimpleMessage.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPTIONAL_INT32 = 123;
@@ -360,6 +363,8 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   }
 
   public static final class NestedMessage extends Message<NestedMessage> {
+    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.forMessage(NestedMessage.class);
+
     private static final long serialVersionUID = 0L;
 
     public static final Integer DEFAULT_BB = 0;
@@ -428,6 +433,8 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     BAR(2),
 
     BAZ(3);
+
+    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.forEnum(NestedEnum.class);
 
     private final int value;
 

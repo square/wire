@@ -3,12 +3,15 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
 
 public final class OneBytesField extends Message<OneBytesField> {
+  public static final ProtoAdapter<OneBytesField> ADAPTER = ProtoAdapter.forMessage(OneBytesField.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;

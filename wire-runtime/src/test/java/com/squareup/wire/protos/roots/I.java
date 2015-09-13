@@ -3,12 +3,15 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 
 public final class I extends Message<I> {
+  public static final ProtoAdapter<I> ADAPTER = ProtoAdapter.forMessage(I.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;

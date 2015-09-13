@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -10,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class MethodOptions extends Message<MethodOptions> {
+  public static final ProtoAdapter<MethodOptions> ADAPTER = ProtoAdapter.forMessage(MethodOptions.class);
+
   private static final long serialVersionUID = 0L;
 
   /**

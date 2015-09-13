@@ -3,6 +3,7 @@
 package com.google.protobuf;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -14,6 +15,8 @@ import java.util.List;
  * files it parses.
  */
 public final class FileDescriptorSet extends Message<FileDescriptorSet> {
+  public static final ProtoAdapter<FileDescriptorSet> ADAPTER = ProtoAdapter.forMessage(FileDescriptorSet.class);
+
   private static final long serialVersionUID = 0L;
 
   @WireField(

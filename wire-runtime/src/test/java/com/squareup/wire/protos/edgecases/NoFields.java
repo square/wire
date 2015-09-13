@@ -3,10 +3,13 @@
 package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import java.lang.Object;
 import java.lang.Override;
 
 public final class NoFields extends Message<NoFields> {
+  public static final ProtoAdapter<NoFields> ADAPTER = ProtoAdapter.forMessage(NoFields.class);
+
   private static final long serialVersionUID = 0L;
 
   public NoFields() {

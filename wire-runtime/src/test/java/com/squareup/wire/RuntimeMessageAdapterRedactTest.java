@@ -32,8 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class RuntimeMessageAdapterRedactTest {
-  private final Wire wire = new Wire();
-
   @Test public void string() throws IOException {
     assertThat(new Redacted.Builder().a("a").b("b").c("c").build().toString())
         .isEqualTo("Redacted{a=██, b=b, c=c}");
@@ -42,12 +40,12 @@ public class RuntimeMessageAdapterRedactTest {
   @Test public void message() {
     Redacted message = new Redacted.Builder().a("a").b("b").c("c").build();
     Redacted expected = new Redacted.Builder(message).a(null).build();
-    assertThat(wire.adapter(Redacted.class).redact(message)).isEqualTo(expected);
+    assertThat(Redacted.ADAPTER.redact(message)).isEqualTo(expected);
   }
 
   @Test public void messageWithNoRedactions() {
     NotRedacted message = new NotRedacted.Builder().a("a").b("b").build();
-    assertThat(wire.adapter(NotRedacted.class).redact(message)).isEqualTo(message);
+    assertThat(NotRedacted.ADAPTER.redact(message)).isEqualTo(message);
   }
 
   @Test public void nestedRedactions() {
@@ -59,7 +57,7 @@ public class RuntimeMessageAdapterRedactTest {
     RedactedChild expected = new RedactedChild.Builder(message)
         .b(new Redacted.Builder(message.b).a(null).build())
         .build();
-    assertThat(wire.adapter(RedactedChild.class).redact(message)).isEqualTo(expected);
+    assertThat(RedactedChild.ADAPTER.redact(message)).isEqualTo(expected);
   }
 
   @Test public void redactedExtensions() {
@@ -74,22 +72,22 @@ public class RuntimeMessageAdapterRedactTest {
             .e("e")
             .build())
         .build();
-    assertThat(wire.adapter(Redacted.class).redact(message)).isEqualTo(expected);
+    assertThat(Redacted.ADAPTER.redact(message)).isEqualTo(expected);
   }
 
   @Test public void messageCycle() {
     RedactedCycleA message = new RedactedCycleA.Builder().build();
-    assertThat(wire.adapter(RedactedCycleA.class).redact(message)).isEqualTo(message);
+    assertThat(RedactedCycleA.ADAPTER.redact(message)).isEqualTo(message);
   }
 
   @Test public void repeatedField() {
     RedactedRepeated message = new RedactedRepeated(Arrays.asList("a", "b"));
     RedactedRepeated expected = new RedactedRepeated(Collections.<String>emptyList());
-    assertThat(wire.adapter(RedactedRepeated.class).redact(message)).isEqualTo(expected);
+    assertThat(RedactedRepeated.ADAPTER.redact(message)).isEqualTo(expected);
   }
 
   @Test public void requiredRedactedFieldThrowsRedacting() {
-    ProtoAdapter<RedactedRequired> adapter = wire.adapter(RedactedRequired.class);
+    ProtoAdapter<RedactedRequired> adapter = RedactedRequired.ADAPTER;
     try {
       adapter.redact(new RedactedRequired("a"));
       fail();
@@ -100,7 +98,7 @@ public class RuntimeMessageAdapterRedactTest {
   }
 
   @Test public void requiredRedactedFieldToString() {
-    ProtoAdapter<RedactedRequired> adapter = wire.adapter(RedactedRequired.class);
+    ProtoAdapter<RedactedRequired> adapter = RedactedRequired.ADAPTER;
     assertThat(adapter.toString(new RedactedRequired("a"))).isEqualTo("RedactedRequired{a=██}");
   }
 }

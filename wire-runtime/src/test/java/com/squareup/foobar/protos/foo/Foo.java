@@ -4,11 +4,14 @@ package com.squareup.foobar.protos.foo;
 
 import com.squareup.foobar.protos.bar.Bar;
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 
 public final class Foo extends Message<Foo> {
+  public static final ProtoAdapter<Foo> ADAPTER = ProtoAdapter.forMessage(Foo.class);
+
   private static final long serialVersionUID = 0L;
 
   @WireField(

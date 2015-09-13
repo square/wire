@@ -3,12 +3,15 @@
 package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.lang.Object;
 import java.lang.Override;
 
 public final class ChildPackage extends Message<ChildPackage> {
+  public static final ProtoAdapter<ChildPackage> ADAPTER = ProtoAdapter.forMessage(ChildPackage.class);
+
   private static final long serialVersionUID = 0L;
 
   public static final ForeignEnum DEFAULT_INNER_FOREIGN_ENUM = ForeignEnum.BAV;
