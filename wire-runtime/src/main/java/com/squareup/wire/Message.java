@@ -21,16 +21,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import okio.ByteString;
 
 /**
  * Superclass for protocol buffer messages.
  */
 public abstract class Message<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
-
-  // Hidden Wire instance that can perform work that does not require knowledge of extensions.
-  static final Wire WIRE = new Wire();
 
   /** A protocol buffer label. */
   public enum Label {
@@ -104,7 +100,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    * @param <E> the enum class type
    */
   public static <E extends Enum & WireEnum> E enumFromInt(Class<E> enumClass, int value) {
-    RuntimeEnumAdapter<E> adapter = WIRE.enumAdapter(enumClass);
+    RuntimeEnumAdapter<E> adapter = new RuntimeEnumAdapter<>(enumClass);
     return adapter.fromInt(value);
   }
 
@@ -152,7 +148,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
 
   @SuppressWarnings("unchecked")
   @Override public String toString() {
-    return WIRE.adapter((Class<Message>) getClass()).toString(this);
+    return RuntimeMessageAdapter.create((Class<Message>) getClass()).toString(this);
   }
 
   private Object writeReplace() throws ObjectStreamException {
@@ -180,34 +176,6 @@ public abstract class Message<T extends Message<T>> implements Serializable {
       if (message != null && message.tagMap != null) {
         this.tagMapBuilder = new TagMap.Builder(message.tagMap);
       }
-    }
-
-    /**
-     * Adds a {@code varint} value to the unknown field set with the given tag number.
-     */
-    public void addVarint(int tag, long value) {
-      ensureTagMap().add(tag, FieldEncoding.VARINT, value);
-    }
-
-    /**
-     * Adds a {@code fixed32} value to the unknown field set with the given tag number.
-     */
-    public void addFixed32(int tag, int value) {
-      ensureTagMap().add(tag, FieldEncoding.FIXED32, value);
-    }
-
-    /**
-     * Adds a {@code fixed64} value to the unknown field set with the given tag number.
-     */
-    public void addFixed64(int tag, long value) {
-      ensureTagMap().add(tag, FieldEncoding.FIXED64, value);
-    }
-
-    /**
-     * Adds a length delimited value to the unknown field set with the given tag number.
-     */
-    public void addLengthDelimited(int tag, ByteString value) {
-      ensureTagMap().add(tag, FieldEncoding.LENGTH_DELIMITED, value);
     }
 
     TagMap.Builder ensureTagMap() {

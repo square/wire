@@ -31,11 +31,17 @@ import java.util.List;
 import java.util.Map;
 import okio.ByteString;
 
+import static com.squareup.wire.FieldEncoding.FIXED32;
+import static com.squareup.wire.FieldEncoding.FIXED64;
+import static com.squareup.wire.FieldEncoding.LENGTH_DELIMITED;
+import static com.squareup.wire.FieldEncoding.VARINT;
 import static com.squareup.wire.Message.Label;
 import static java.util.Collections.unmodifiableMap;
 
 class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
     extends TypeAdapter<M> {
+
+  private final Class<M> messageType;
 
   enum UnknownFieldType {
     VARINT, FIXED32, FIXED64, LENGTH_DELIMITED;
@@ -55,12 +61,13 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
   private final Gson gson;
   private final RuntimeMessageAdapter<M, B> messageAdapter;
   private final Map<String, FieldBinding<M, B>> fieldBindings;
-  private final Map<String, RegisteredExtension> extensions;
+  private final Map<String, Extension<?, ?>> extensions;
 
   @SuppressWarnings("unchecked")
-  public MessageTypeAdapter(Wire wire, Gson gson, TypeToken<M> type) {
+  public MessageTypeAdapter(ExtensionRegistry extensionRegistry, Gson gson, TypeToken<M> type) {
     this.gson = gson;
-    this.messageAdapter = wire.messageAdapter((Class<M>) type.getRawType());
+    this.messageType = (Class<M>) type.getRawType();
+    this.messageAdapter = RuntimeMessageAdapter.create(messageType);
 
     Map<String, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<>();
     for (FieldBinding<M, B> binding : messageAdapter.fieldBindings().values()) {
@@ -68,9 +75,9 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
     }
     this.fieldBindings = unmodifiableMap(fieldBindings);
 
-    Map<String, RegisteredExtension> extensions = new LinkedHashMap<>();
-    for (RegisteredExtension extension : messageAdapter.extensions().values()) {
-      extensions.put(extension.name, extension);
+    Map<String, Extension<?, ?>> extensions = new LinkedHashMap<>();
+    for (Extension<?, ?> extension : extensionRegistry.extensions(messageType)) {
+      extensions.put(extension.getName(), extension);
     }
     this.extensions = extensions;
   }
@@ -101,34 +108,34 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
 
           out.name(Integer.toString(extension.getTag()));
           out.beginArray();
-          if (extension.getType() == ProtoType.UINT64) {
+          if (extension.getProtoType() == ProtoType.UINT64) {
             out.value("varint");
             for (Object o : values) {
               out.value((Long) o);
             }
-          } else if (extension.getType() == ProtoType.FIXED32) {
+          } else if (extension.getProtoType() == ProtoType.FIXED32) {
             out.value("fixed32");
             for (Object o : values) {
               out.value((Integer) o);
             }
-          } else if (extension.getType() == ProtoType.FIXED64) {
+          } else if (extension.getProtoType() == ProtoType.FIXED64) {
             out.value("fixed64");
             for (Object o : values) {
               out.value((Long) o);
             }
-          } else if (extension.getType() == ProtoType.BYTES) {
+          } else if (extension.getProtoType() == ProtoType.BYTES) {
             out.value("length-delimited");
             for (Object o : values) {
               out.value(((ByteString) o).base64());
             }
           } else {
-            throw new AssertionError("Unknown wire type " + extension.getType());
+            throw new AssertionError("Unknown wire type " + extension.getProtoType());
           }
           out.endArray();
         } else {
           Object value = tagMap.get(extension);
           out.name(extension.getName());
-          emitJson(out, value, extension.getType(), extension.getLabel());
+          emitJson(out, value, extension.getProtoType(), extension.getLabel());
         }
       }
     }
@@ -184,11 +191,10 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
         continue;
       }
 
-      RegisteredExtension registeredExtension = extensions.get(name);
-      if (registeredExtension != null) {
-        Object value = parseValue(registeredExtension.extension.getLabel(),
-            registeredExtension.adapter.javaType, parse(in));
-        builder.setExtension((Extension) registeredExtension.extension, value);
+      Extension<?, ?> extension = extensions.get(name);
+      if (extension != null) {
+        Object value = parseValue(extension.getLabel(), extension.getJavaType(), parse(in));
+        builder.setExtension((Extension) extension, value);
         continue;
       }
 
@@ -221,16 +227,20 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
     while (in.peek() != JsonToken.END_ARRAY) {
       switch (type) {
         case VARINT:
-          builder.addVarint(tag, in.nextInt());
+          long varint = in.nextLong();
+          builder.setExtension(Extension.unknown(messageType, tag, VARINT), varint);
           break;
         case FIXED32:
-          builder.addFixed32(tag, in.nextInt());
+          int fixed32 = in.nextInt();
+          builder.setExtension(Extension.unknown(messageType, tag, FIXED32), fixed32);
           break;
         case FIXED64:
-          builder.addFixed64(tag, in.nextInt());
+          long fixed64 = in.nextLong();
+          builder.setExtension(Extension.unknown(messageType, tag, FIXED64), fixed64);
           break;
         case LENGTH_DELIMITED:
-          builder.addLengthDelimited(tag, ByteString.decodeBase64(in.nextString()));
+          ByteString byteString = ByteString.decodeBase64(in.nextString());
+          builder.setExtension(Extension.unknown(messageType, tag, LENGTH_DELIMITED), byteString);
           break;
         default:
           throw new AssertionError("Unknown field type " + type);
@@ -244,6 +254,6 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
   }
 
   private Type singleType(FieldBinding<M, B> tagBinding) {
-    return tagBinding.singleAdapter.javaType;
+    return tagBinding.singleAdapter().javaType;
   }
 }

@@ -56,26 +56,19 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
 
   public static final class Builder<T extends Message<T>, E> {
     private final Class<T> extendedType;
-    private final Class<? extends Message> messageType;
-    private final Class<? extends WireEnum> enumType;
-    private final ProtoType type;
+    private final Class<?> javaType;
+    private final ProtoType protoType;
     private String name = null;
     private int tag = -1;
     private Label label = null;
 
-    private Builder(Class<T> extendedType, ProtoType type) {
+    private Builder(Class<T> extendedType, Class<?> javaType, ProtoType protoType) {
+      if (extendedType == null) throw new IllegalArgumentException("extendedType == null");
+      if (javaType == null) throw new IllegalArgumentException("javaType == null");
+      if (protoType == null) throw new IllegalArgumentException("type == null");
       this.extendedType = extendedType;
-      this.messageType = null;
-      this.enumType = null;
-      this.type = type;
-    }
-
-    private Builder(Class<T> extendedType, Class<? extends Message> messageType,
-        Class<? extends WireEnum> enumType, ProtoType type) {
-      this.extendedType = extendedType;
-      this.messageType = messageType;
-      this.enumType = enumType;
-      this.type = type;
+      this.javaType = javaType;
+      this.protoType = protoType;
     }
 
     public Builder<T, E> setName(String name) {
@@ -91,30 +84,24 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
     public Extension<T, E> buildOptional() {
       this.label = Label.OPTIONAL;
       validate();
-      return new Extension<>(extendedType, messageType, enumType, name, tag, label, type);
+      return new Extension<>(extendedType, javaType, protoType, name, tag, label);
     }
 
     public Extension<T, List<E>> buildRepeated() {
       this.label = Label.REPEATED;
       validate();
-      return new Extension<>(extendedType, messageType, enumType, name, tag, label, type);
+      return new Extension<>(extendedType, javaType, protoType, name, tag, label);
     }
 
     public Extension<T, List<E>> buildPacked() {
       this.label = Label.PACKED;
       validate();
-      return new Extension<>(extendedType, messageType, enumType, name, tag, label, type);
+      return new Extension<>(extendedType, javaType, protoType, name, tag, label);
     }
 
     private void validate() {
-      if (extendedType == null) {
-        throw new IllegalArgumentException("extendedType == null");
-      }
       if (name == null) {
         throw new IllegalArgumentException("name == null");
-      }
-      if (type == null) {
-        throw new IllegalArgumentException("type == null");
       }
       if (label == null) {
         throw new IllegalArgumentException("label == null");
@@ -122,127 +109,127 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
       if (tag <= 0) {
         throw new IllegalArgumentException("tag == " + tag);
       }
-      if (!(type.isScalar() ^ messageType != null ^ enumType != null)) {
-        throw new IllegalStateException("type must be a scalar, enum, or message");
-      }
     }
   }
 
   public static <T extends Message<T>> Builder<T, Integer> int32Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.INT32);
+    return new Builder<>(extendedType, Integer.class, ProtoType.INT32);
   }
 
   public static <T extends Message<T>> Builder<T, Integer> sint32Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.SINT32);
+    return new Builder<>(extendedType, Integer.class, ProtoType.SINT32);
   }
 
   public static <T extends Message<T>> Builder<T, Integer> uint32Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.UINT32);
+    return new Builder<>(extendedType, Integer.class, ProtoType.UINT32);
   }
 
   public static <T extends Message<T>> Builder<T, Integer> fixed32Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.FIXED32);
+    return new Builder<>(extendedType, Integer.class, ProtoType.FIXED32);
   }
 
   public static <T extends Message<T>> Builder<T, Integer> sfixed32Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.SFIXED32);
+    return new Builder<>(extendedType, Integer.class, ProtoType.SFIXED32);
   }
 
   public static <T extends Message<T>> Builder<T, Long> int64Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.INT64);
+    return new Builder<>(extendedType, Long.class, ProtoType.INT64);
   }
 
   public static <T extends Message<T>> Builder<T, Long> sint64Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.SINT64);
+    return new Builder<>(extendedType, Long.class, ProtoType.SINT64);
   }
 
   public static <T extends Message<T>> Builder<T, Long> uint64Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.UINT64);
+    return new Builder<>(extendedType, Long.class, ProtoType.UINT64);
   }
 
   public static <T extends Message<T>> Builder<T, Long> fixed64Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.FIXED64);
+    return new Builder<>(extendedType, Long.class, ProtoType.FIXED64);
   }
 
   public static <T extends Message<T>> Builder<T, Long> sfixed64Extending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.SFIXED64);
+    return new Builder<>(extendedType, Long.class, ProtoType.SFIXED64);
   }
 
   public static <T extends Message<T>> Builder<T, Boolean> boolExtending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.BOOL);
+    return new Builder<>(extendedType, Boolean.class, ProtoType.BOOL);
   }
 
   public static <T extends Message<T>> Builder<T, String> stringExtending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.STRING);
+    return new Builder<>(extendedType, String.class, ProtoType.STRING);
   }
 
   public static <T extends Message<T>> Builder<T, ByteString> bytesExtending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.BYTES);
+    return new Builder<>(extendedType, ByteString.class, ProtoType.BYTES);
   }
 
   public static <T extends Message<T>> Builder<T, Float> floatExtending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.FLOAT);
+    return new Builder<>(extendedType, Float.class, ProtoType.FLOAT);
   }
 
   public static <T extends Message<T>> Builder<T, Double> doubleExtending(
       Class<T> extendedType) {
-    return new Builder<>(extendedType, ProtoType.DOUBLE);
+    return new Builder<>(extendedType, Double.class, ProtoType.DOUBLE);
   }
 
   public static <T extends Message<T>, E extends Enum & WireEnum> Builder<T, E> //
   enumExtending(String type, Class<E> enumType, Class<T> extendedType) {
-    return new Builder<>(extendedType, null, enumType, ProtoType.get(type));
+    return new Builder<>(extendedType, enumType, ProtoType.get(type));
   }
 
   public static <T extends Message<T>, M extends Message> Builder<T, M> messageExtending(
       String type, Class<M> messageType, Class<T> extendedType) {
-    return new Builder<>(extendedType, messageType, null, ProtoType.get(type));
+    return new Builder<>(extendedType, messageType, ProtoType.get(type));
   }
 
   private final Class<T> extendedType;
-  private final Class<? extends Message> messageType;
-  private final Class<? extends WireEnum> enumType;
+  private final Class<?> javaType;
+  private final ProtoType protoType;
   private final String name;
   private final int tag;
-  private final ProtoType type;
   private final Label label;
 
-  private Extension(Class<T> extendedType, Class<? extends Message> messageType,
-      Class<? extends WireEnum> enumType, String name, int tag, Label label, ProtoType type) {
+  private Extension(Class<T> extendedType, Class<?> javaType, ProtoType protoType,
+      String name, int tag, Label label) {
     this.extendedType = extendedType;
+    this.javaType = javaType;
     this.name = name;
     this.tag = tag;
-    this.type = type;
+    this.protoType = protoType;
     this.label = label;
-    this.messageType = messageType;
-    this.enumType = enumType;
   }
 
   /**
    * Returns an extension that represents an unknown value. This occurs when the decoder was
    * prepared with an older schema (if a field was added), or if an extension is not registered.
    */
-  public static <T> Extension<?, T> unknown(int tag, FieldEncoding fieldEncoding) {
-    return new Extension<>(Message.class, null, null, null, tag, Label.REPEATED,
-        fieldEncoding.protoType());
+  public static <T extends Message<T>, E> Extension<T, E> unknown(
+      Class<T> messageType, int tag, FieldEncoding fieldEncoding) {
+    return new Extension<>(messageType, fieldEncoding.javaType(), fieldEncoding.protoType(),
+        null, tag, Label.REPEATED);
   }
 
   public boolean isUnknown() {
-    return extendedType == (Class<?>) Message.class;
+    return name == null;
+  }
+
+  public ProtoAdapter<?> getAdapter() {
+    return ProtoAdapter.get(protoType, javaType);
   }
 
   /**
@@ -258,30 +245,20 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
 
   @Override public int hashCode() {
     int hash = tag;
-    hash = hash * 37 + type.hashCode();
+    hash = hash * 37 + protoType.hashCode();
     hash = hash * 37 + label.hashCode();
     hash = hash * 37 + extendedType.hashCode();
-    hash = hash * 37 + (messageType != null ? messageType.hashCode() : 0);
-    hash = hash * 37 + (enumType != null ? enumType.hashCode() : 0);
     return hash;
   }
 
   @Override public String toString() {
     return isUnknown()
-        ? String.format("[UNKNOWN %s = %d]", type, tag)
-        : String.format("[%s %s %s = %d]", label, type, name, tag);
+        ? String.format("[UNKNOWN %s = %d]", protoType, tag)
+        : String.format("[%s %s %s = %d]", label, protoType, name, tag);
   }
 
   public Class<T> getExtendedType() {
     return extendedType;
-  }
-
-  public Class<? extends Message> getMessageType() {
-    return messageType;
-  }
-
-  public Class<? extends WireEnum> getEnumType() {
-    return enumType;
   }
 
   public String getName() {
@@ -292,8 +269,12 @@ public final class Extension<T extends Message<T>, E> implements Comparable<Exte
     return tag;
   }
 
-  public ProtoType getType() {
-    return type;
+  public ProtoType getProtoType() {
+    return protoType;
+  }
+
+  public Class<?> getJavaType() {
+    return javaType;
   }
 
   public Label getLabel() {

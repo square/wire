@@ -27,16 +27,22 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class TagMapTest {
+  final Extension<FileOptions, Object> unknownA
+      = Extension.unknown(FileOptions.class, 1, FieldEncoding.FIXED64);
   final Extension<FileOptions, Double> extensionA
       = Extension.doubleExtending(FileOptions.class)
       .setName("a")
       .setTag(1)
       .buildOptional();
+  final Extension<FileOptions, Object> unknownB
+      = Extension.unknown(FileOptions.class, 2, FieldEncoding.LENGTH_DELIMITED);
   final Extension<FileOptions, String> extensionB
       = Extension.stringExtending(FileOptions.class)
       .setName("b")
       .setTag(2)
       .buildOptional();
+  final Extension<FileOptions, Object> unknownC
+      = Extension.unknown(FileOptions.class, 3, FieldEncoding.VARINT);
   final Extension<FileOptions, Type> extensionC
       = Extension.enumExtending("google.protobuf.FileOptions", Type.class, FileOptions.class)
       .setName("c")
@@ -139,30 +145,30 @@ public final class TagMapTest {
 
   @Test public void rawToExtensionConversionForDouble() throws Exception {
     TagMap tagMap = new TagMap.Builder()
-        .add(1, FieldEncoding.FIXED64, 4614256650576692846L)
+        .add(unknownA, 4614256650576692846L)
         .build();
     assertThat(tagMap.get(extensionA)).isEqualTo(3.14159);
   }
 
   @Test public void rawToExtensionConversionForString() throws Exception {
     TagMap tagMap = new TagMap.Builder()
-        .add(2, FieldEncoding.LENGTH_DELIMITED, ByteString.encodeUtf8("hello"))
+        .add(unknownB, ByteString.encodeUtf8("hello"))
         .build();
     assertThat(tagMap.get(extensionB)).isEqualTo("hello");
   }
 
   @Test public void rawToExtensionConversionForEnum() throws Exception {
     TagMap tagMap = new TagMap.Builder()
-        .add(3, FieldEncoding.VARINT, 18L)
+        .add(unknownC, 18L)
         .build();
     assertThat(tagMap.get(extensionC)).isEqualTo(Type.TYPE_SINT64);
   }
 
   @Test public void rawToExtensionConversionForUnknownEnum() throws Exception {
     TagMap tagMap = new TagMap.Builder()
-        .add(3, FieldEncoding.VARINT, 2828L)
+        .add(unknownC, 2828L)
         .build();
-    assertThat(tagMap.get(extensionC)).isEqualTo(2828);
+    assertThat(tagMap.get(extensionC)).isEqualTo(2828L);
   }
 
   @Test public void copyConstructor() throws Exception {
@@ -301,9 +307,11 @@ public final class TagMapTest {
   }
 
   @Test public void encodeUnknownEncodesAsRepeated() throws IOException {
+    Extension<FileOptions, Object> unknown
+        = Extension.unknown(FileOptions.class, 90, FieldEncoding.VARINT);
     TagMap map = new TagMap.Builder()
-        .add(90, FieldEncoding.VARINT, 601L)
-        .add(90, FieldEncoding.VARINT, 701L)
+        .add(unknown, 601L)
+        .add(unknown, 701L)
         .build();
 
     Buffer buffer = new Buffer();
@@ -323,11 +331,13 @@ public final class TagMapTest {
         .setTag(90)
         .buildPacked();
 
+    Extension<FileOptions, Object> unknown
+        = Extension.unknown(FileOptions.class, 90, FieldEncoding.VARINT);
     TagMap map = new TagMap.Builder()
         .add(extension, 601)
         .add(extension, 602)
-        .add(90, FieldEncoding.VARINT, 701L)
-        .add(90, FieldEncoding.VARINT, 702L)
+        .add(unknown, 701L)
+        .add(unknown, 702L)
         .build();
 
     Buffer buffer = new Buffer();
@@ -344,8 +354,10 @@ public final class TagMapTest {
         .setTag(90)
         .buildPacked();
 
+    Extension<FileOptions, Object> unknown
+        = Extension.unknown(FileOptions.class, 90, FieldEncoding.LENGTH_DELIMITED);
     TagMap map = new TagMap.Builder()
-        .add(90, FieldEncoding.LENGTH_DELIMITED, ByteString.decodeHex("d904da04"))
+        .add(unknown, ByteString.decodeHex("d904da04"))
         .build();
 
     assertThat(map.get(extension)).isEqualTo(Arrays.asList(601, 602));

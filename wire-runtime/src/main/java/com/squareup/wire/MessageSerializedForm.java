@@ -28,12 +28,12 @@ final class MessageSerializedForm implements Serializable {
 
   public MessageSerializedForm(Message message, Class<? extends Message> messageClass) {
     //noinspection unchecked
-    this.bytes = Message.WIRE.adapter((Class<Message>) messageClass).encode(message);
+    this.bytes = new Wire().adapter((Class<Message>) messageClass).encode(message);
     this.messageClass = messageClass;
   }
 
   Object readResolve() throws ObjectStreamException {
-    ProtoAdapter<? extends Message> adapter = Message.WIRE.adapter(messageClass);
+    ProtoAdapter<? extends Message> adapter = new Wire().adapter(messageClass);
     try {
       // Extensions will be decoded as unknown values.
       return adapter.decode(bytes);
