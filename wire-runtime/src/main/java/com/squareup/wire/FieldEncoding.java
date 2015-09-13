@@ -17,7 +17,6 @@ package com.squareup.wire;
 
 import java.io.IOException;
 import java.net.ProtocolException;
-import okio.ByteString;
 
 public enum FieldEncoding {
   VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), FIXED32(5);
@@ -36,36 +35,6 @@ public enum FieldEncoding {
       case 5: return FIXED32;
       default:
         throw new ProtocolException("Unexpected FieldEncoding: " + value);
-    }
-  }
-
-  ProtoType protoType() {
-    switch (this) {
-      case VARINT:
-        return ProtoType.UINT64;
-      case FIXED32:
-        return ProtoType.FIXED32;
-      case FIXED64:
-        return ProtoType.FIXED64;
-      case LENGTH_DELIMITED:
-        return ProtoType.BYTES;
-      default:
-        throw new AssertionError();
-    }
-  }
-
-  Class<?> javaType() {
-    switch (this) {
-      case VARINT:
-        return Long.class;
-      case FIXED32:
-        return Integer.class;
-      case FIXED64:
-        return Long.class;
-      case LENGTH_DELIMITED:
-        return ByteString.class;
-      default:
-        throw new AssertionError();
     }
   }
 

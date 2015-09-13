@@ -481,10 +481,7 @@ public final class JavaGenerator {
 
     int tag = field.tag();
     result.addMember("tag", String.valueOf(tag));
-    String adapter = field.type().isScalar()
-        ? ProtoAdapter.class.getName() + '#' + field.type().toString().toUpperCase(Locale.US)
-        : reflectionName((ClassName) typeName(field.type())) + "#ADAPTER";
-    result.addMember("adapter", "$S", adapter);
+    result.addMember("adapter", "$S", adapterString(field.type()));
 
     if (!field.isOptional()) {
       if (field.isPacked()) {
@@ -504,6 +501,12 @@ public final class JavaGenerator {
     }
 
     return result.build();
+  }
+
+  private String adapterString(ProtoType type) {
+    return type.isScalar()
+          ? ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US)
+          : reflectionName((ClassName) typeName(type)) + "#ADAPTER";
   }
 
   private String reflectionName(ClassName className) {
@@ -958,43 +961,29 @@ public final class JavaGenerator {
       ProtoFile protoFile, TypeName extendType, Field field) {
     TypeName fieldType = typeName(field.type());
 
-    CodeBlock.Builder initializer = CodeBlock.builder();
-    initializer.add("$[Extension\n");
-
-    if (field.type().isScalar()) {
-      initializer.add(".$LExtending($T.class)\n", field.type(), extendType);
-    } else if (isEnum(field.type())) {
-      initializer.add(".enumExtending($S, $T.class, $T.class)\n",
-          field.type(), fieldType, extendType);
-    } else {
-      initializer.add(".messageExtending($S, $T.class, $T.class)\n",
-          field.type(), fieldType, extendType);
-    }
-
-    initializer.add(".setName($S)\n", protoFile.packageName() + "." + field.name());
-    initializer.add(".setTag($L)\n", field.tag());
-    initializer.add(".build$L()$]", extensionLabel(field));
-
     if (field.isRepeated()) {
       fieldType = listOf(fieldType);
     }
 
     return FieldSpec.builder(extensionOf(extendType, fieldType), field.name())
         .addModifiers(PUBLIC, STATIC, FINAL)
-        .initializer(initializer.build())
+        .initializer("$[$T.get($T.class,\n$T.$L,\n$S,\n$L,\n$S)$]", Extension.class, extendType,
+            WireField.Label.class, extensionLabel(field),
+            protoFile.packageName() + "." + field.name(),
+            field.tag(), adapterString(field.type()))
         .build();
   }
 
   private String extensionLabel(Field field) {
     switch (field.label()) {
       case OPTIONAL:
-        return "Optional";
+        return "OPTIONAL";
 
       case REQUIRED:
-        return "Required";
+        return "REQUIRED";
 
       case REPEATED:
-        return field.isPacked() ? "Packed" : "Repeated";
+        return field.isPacked() ? "PACKED" : "REPEATED";
 
       default:
         throw new AssertionError("Unexpected extension label \"" + field.label() + "\"");

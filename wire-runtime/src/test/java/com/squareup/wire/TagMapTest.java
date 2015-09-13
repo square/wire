@@ -27,37 +27,27 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class TagMapTest {
-  final Extension<FileOptions, Object> unknownA
-      = Extension.unknown(FileOptions.class, 1, FieldEncoding.FIXED64);
-  final Extension<FileOptions, Double> extensionA
-      = Extension.doubleExtending(FileOptions.class)
-      .setName("a")
-      .setTag(1)
-      .buildOptional();
-  final Extension<FileOptions, Object> unknownB
-      = Extension.unknown(FileOptions.class, 2, FieldEncoding.LENGTH_DELIMITED);
-  final Extension<FileOptions, String> extensionB
-      = Extension.stringExtending(FileOptions.class)
-      .setName("b")
-      .setTag(2)
-      .buildOptional();
-  final Extension<FileOptions, Object> unknownC
-      = Extension.unknown(FileOptions.class, 3, FieldEncoding.VARINT);
-  final Extension<FileOptions, Type> extensionC
-      = Extension.enumExtending("google.protobuf.FileOptions", Type.class, FileOptions.class)
-      .setName("c")
-      .setTag(3)
-      .buildOptional();
-  final Extension<FileOptions, List<Double>> extensionD
-      = Extension.doubleExtending(FileOptions.class)
-      .setName("d")
-      .setTag(4)
-      .buildPacked();
-  final Extension<FileOptions, List<String>> extensionE
-      = Extension.stringExtending(FileOptions.class)
-      .setName("e")
-      .setTag(5)
-      .buildRepeated();
+  final Extension<FileOptions, Object> unknownA = Extension.unknown(
+      FileOptions.class, 1, FieldEncoding.FIXED64);
+  final Extension<FileOptions, Double> extensionA = Extension.get(FileOptions.class,
+      WireField.Label.OPTIONAL, "a", 1,
+      "com.squareup.wire.ProtoAdapter#DOUBLE");
+  final Extension<FileOptions, Object> unknownB = Extension.unknown(
+      FileOptions.class, 2, FieldEncoding.LENGTH_DELIMITED);
+  final Extension<FileOptions, String> extensionB = Extension.get(FileOptions.class,
+      WireField.Label.OPTIONAL, "b", 2,
+      "com.squareup.wire.ProtoAdapter#STRING");
+  final Extension<FileOptions, Object> unknownC = Extension.unknown(
+      FileOptions.class, 3, FieldEncoding.VARINT);
+  final Extension<FileOptions, Type> extensionC = Extension.get(FileOptions.class,
+      WireField.Label.OPTIONAL, "c", 3,
+      "com.google.protobuf.FieldDescriptorProto$Type#ADAPTER");
+  final Extension<FileOptions, List<Double>> extensionD = Extension.get(FileOptions.class,
+      WireField.Label.PACKED, "d", 4,
+      "com.squareup.wire.ProtoAdapter#DOUBLE");
+  final Extension<FileOptions, List<String>> extensionE = Extension.get(FileOptions.class,
+      WireField.Label.REPEATED, "e", 5,
+      "com.squareup.wire.ProtoAdapter#STRING");
 
   @Test public void putAndGetExtensionValues() throws Exception {
     TagMap.Builder tagMap = new TagMap.Builder();
@@ -271,11 +261,9 @@ public final class TagMapTest {
   }
 
   @Test public void encodeRepeatedExtension() throws IOException {
-    Extension<FileOptions, List<Integer>> extension
-        = Extension.int32Extending(FileOptions.class)
-        .setName("a")
-        .setTag(90)
-        .buildRepeated();
+    Extension<FileOptions, List<Integer>> extension = Extension.get(FileOptions.class,
+        WireField.Label.REPEATED, "a", 90,
+        "com.squareup.wire.ProtoAdapter#INT32");
 
     TagMap map = new TagMap.Builder()
         .add(extension, 601)
@@ -289,11 +277,9 @@ public final class TagMapTest {
   }
 
   @Test public void encodePackedExtension() throws IOException {
-    Extension<FileOptions, List<Integer>> extension
-        = Extension.int32Extending(FileOptions.class)
-        .setName("a")
-        .setTag(90)
-        .buildPacked();
+    Extension<FileOptions, List<Integer>> extension = Extension.get(FileOptions.class,
+        WireField.Label.PACKED, "a", 90,
+        "com.squareup.wire.ProtoAdapter#INT32");
 
     TagMap map = new TagMap.Builder()
         .add(extension, 601)
@@ -325,14 +311,12 @@ public final class TagMapTest {
    * unknown values with the same tag!
    */
   @Test public void encodeMixOfPackedAndUnknown() throws IOException {
-    Extension<FileOptions, List<Integer>> extension
-        = Extension.int32Extending(FileOptions.class)
-        .setName("a")
-        .setTag(90)
-        .buildPacked();
+    Extension<FileOptions, List<Integer>> extension = Extension.get(FileOptions.class,
+        WireField.Label.PACKED, "a", 90,
+        "com.squareup.wire.ProtoAdapter#INT32");
+    Extension<FileOptions, Object> unknown = Extension.unknown(FileOptions.class,
+        90, FieldEncoding.VARINT);
 
-    Extension<FileOptions, Object> unknown
-        = Extension.unknown(FileOptions.class, 90, FieldEncoding.VARINT);
     TagMap map = new TagMap.Builder()
         .add(extension, 601)
         .add(extension, 602)
@@ -348,14 +332,12 @@ public final class TagMapTest {
   }
 
   @Test public void transcodeUnknownValueToPackedList() throws Exception {
-    Extension<FileOptions, List<Integer>> extension
-        = Extension.int32Extending(FileOptions.class)
-        .setName("a")
-        .setTag(90)
-        .buildPacked();
+    Extension<FileOptions, List<Integer>> extension = Extension.get(FileOptions.class,
+        WireField.Label.PACKED, "a", 90,
+        "com.squareup.wire.ProtoAdapter#INT32");
+    Extension<FileOptions, Object> unknown = Extension.unknown(
+        FileOptions.class, 90, FieldEncoding.LENGTH_DELIMITED);
 
-    Extension<FileOptions, Object> unknown
-        = Extension.unknown(FileOptions.class, 90, FieldEncoding.LENGTH_DELIMITED);
     TagMap map = new TagMap.Builder()
         .add(unknown, ByteString.decodeHex("d904da04"))
         .build();
