@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.FieldEncoding;
+import com.squareup.wire.ProtoEncoding;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.ProtoAdapter;
@@ -94,7 +94,7 @@ final class SchemaProtoAdapterFactory {
     final EnumType enumType;
 
     public EnumAdapter(EnumType enumType) {
-      super(FieldEncoding.VARINT, Object.class);
+      super(ProtoEncoding.VARINT, Object.class);
       this.enumType = enumType;
     }
 
@@ -126,7 +126,7 @@ final class SchemaProtoAdapterFactory {
     final boolean includeUnknown;
 
     public MessageAdapter(boolean includeUnknown) {
-      super(FieldEncoding.LENGTH_DELIMITED, Map.class);
+      super(ProtoEncoding.LENGTH_DELIMITED, Map.class);
       this.includeUnknown = includeUnknown;
     }
 
@@ -177,7 +177,7 @@ final class SchemaProtoAdapterFactory {
         if (field == null) {
           if (includeUnknown) {
             String name = Integer.toString(tag);
-            field = new Field(name, tag, true, reader.peekFieldEncoding().rawProtoAdapter());
+            field = new Field(name, tag, true, reader.peekEncoding().rawProtoAdapter());
           } else {
             reader.skip();
             continue;

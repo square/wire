@@ -17,7 +17,7 @@ package com.squareup.wire.protobuf;
 
 import com.squareup.wire.Extension;
 import com.squareup.wire.ExtensionRegistry;
-import com.squareup.wire.FieldEncoding;
+import com.squareup.wire.ProtoEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.protos.alltypes.AllTypes;
@@ -556,7 +556,7 @@ public class TestAllTypes {
   @Test
   public void testUnknownFields() {
     AllTypes.Builder builder = getBuilder();
-    builder.setExtension(Extension.unknown(AllTypes.class, 10000, FieldEncoding.VARINT), 1L);
+    builder.setExtension(Extension.unknown(AllTypes.class, 10000, ProtoEncoding.VARINT), 1L);
     AllTypes withUnknownField = builder.build();
     byte[] data = adapter.encode(withUnknownField);
     int count = TestAllTypesData.expectedOutput.size();
@@ -570,10 +570,10 @@ public class TestAllTypes {
   @Test @Ignore("we no longer enforce this constraint")
   public void testUnknownFieldsTypeMismatch() {
     AllTypes.Builder builder = getBuilder();
-    builder.setExtension(Extension.unknown(AllTypes.class, 10000, FieldEncoding.VARINT), 1);
+    builder.setExtension(Extension.unknown(AllTypes.class, 10000, ProtoEncoding.VARINT), 1);
     try {
       // Don't allow heterogeneous types for the same tag
-      builder.setExtension(Extension.unknown(AllTypes.class, 10000, FieldEncoding.FIXED32), 2);
+      builder.setExtension(Extension.unknown(AllTypes.class, 10000, ProtoEncoding.FIXED32), 2);
       fail();
     } catch (IllegalArgumentException expected) {
       assertThat(expected).hasMessage(

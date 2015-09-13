@@ -53,7 +53,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
 
   RuntimeMessageAdapter(Class<M> messageType, Class<B> builderType,
       Constructor<B> builderCopyConstructor, Map<Integer, FieldBinding<M, B>> fieldBindings) {
-    super(FieldEncoding.LENGTH_DELIMITED, messageType);
+    super(ProtoEncoding.LENGTH_DELIMITED, messageType);
     this.messageType = messageType;
     this.builderType = builderType;
     this.builderCopyConstructor = builderCopyConstructor;
@@ -211,7 +211,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
         }
       } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
         // An unknown Enum value was encountered, store it as an unknown field
-        builder.setExtension(Extension.unknown(messageType, tag, FieldEncoding.VARINT), e.value);
+        builder.setExtension(Extension.unknown(messageType, tag, ProtoEncoding.VARINT), e.value);
       }
     }
     reader.endMessage(token);

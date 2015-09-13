@@ -75,7 +75,7 @@ public final class ProtoReader {
   /** Limit once we complete the current length-delimited value. */
   private long pushedLimit = -1;
   /** The encoding of the next value to be read. */
-  private FieldEncoding nextFieldEncoding;
+  private ProtoEncoding nextEncoding;
 
   public ProtoReader(BufferedSource source, ExtensionRegistry extensionRegistry) {
     this.source = source;
@@ -127,7 +127,7 @@ public final class ProtoReader {
 
   /**
    * Reads and returns the next tag of the message, or -1 if there are no further tags. Use {@link
-   * #peekFieldEncoding()} after calling this method to query its encoding. This silently skips
+   * #peekEncoding()} after calling this method to query its encoding. This silently skips
    * groups.
    */
   public int nextTag() throws IOException {
@@ -153,7 +153,7 @@ public final class ProtoReader {
           throw new ProtocolException("Unexpected end group");
 
         case STATE_LENGTH_DELIMITED:
-          nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED;
+          nextEncoding = ProtoEncoding.LENGTH_DELIMITED;
           state = STATE_LENGTH_DELIMITED;
           int length = internalReadVarint32();
           if (length < 0) throw new ProtocolException("Negative length: " + length);
@@ -165,17 +165,17 @@ public final class ProtoReader {
           return tag;
 
         case STATE_VARINT:
-          nextFieldEncoding = FieldEncoding.VARINT;
+          nextEncoding = ProtoEncoding.VARINT;
           state = STATE_VARINT;
           return tag;
 
         case STATE_FIXED64:
-          nextFieldEncoding = FieldEncoding.FIXED64;
+          nextEncoding = ProtoEncoding.FIXED64;
           state = STATE_FIXED64;
           return tag;
 
         case STATE_FIXED32:
-          nextFieldEncoding = FieldEncoding.FIXED32;
+          nextEncoding = ProtoEncoding.FIXED32;
           state = STATE_FIXED32;
           return tag;
 
@@ -191,15 +191,15 @@ public final class ProtoReader {
     Extension<T, ?> extension = extensionRegistry.get(messageType, tag);
     return extension != null
         ? extension
-        : Extension.unknown(messageType, tag, peekFieldEncoding());
+        : Extension.unknown(messageType, tag, peekEncoding());
   }
 
   /**
    * Returns the encoding of the next field value. {@link #nextTag()} must be called before
    * this method.
    */
-  public FieldEncoding peekFieldEncoding() throws IOException {
-    return nextFieldEncoding;
+  public ProtoEncoding peekEncoding() throws IOException {
+    return nextEncoding;
   }
 
   /**

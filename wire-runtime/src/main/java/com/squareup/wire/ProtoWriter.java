@@ -59,13 +59,13 @@ import okio.ByteString;
 public final class ProtoWriter {
 
   /** Makes a tag value given a field number and wire type. */
-  private static int makeTag(int fieldNumber, FieldEncoding fieldEncoding) {
-    return (fieldNumber << ProtoReader.TAG_FIELD_ENCODING_BITS) | fieldEncoding.value;
+  private static int makeTag(int fieldNumber, ProtoEncoding protoEncoding) {
+    return (fieldNumber << ProtoReader.TAG_FIELD_ENCODING_BITS) | protoEncoding.value;
   }
 
   /** Compute the number of bytes that would be needed to encode a tag. */
   static int tagSize(int tag) {
-    return varint32Size(makeTag(tag, FieldEncoding.VARINT));
+    return varint32Size(makeTag(tag, ProtoEncoding.VARINT));
   }
 
   static int utf8Length(String s) {
@@ -199,8 +199,8 @@ public final class ProtoWriter {
   }
 
   /** Encode and write a tag. */
-  public void writeTag(int fieldNumber, FieldEncoding fieldEncoding) throws IOException {
-    writeVarint32(makeTag(fieldNumber, fieldEncoding));
+  public void writeTag(int fieldNumber, ProtoEncoding protoEncoding) throws IOException {
+    writeVarint32(makeTag(fieldNumber, protoEncoding));
   }
 
   /** Write an {@code int32} field to the stream. */

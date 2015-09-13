@@ -45,11 +45,11 @@ public abstract class ProtoAdapter<E> {
   static final int FIXED_32_SIZE = 4;
   static final int FIXED_64_SIZE = 8;
 
-  final FieldEncoding fieldEncoding;
+  final ProtoEncoding protoEncoding;
   final Class<?> javaType;
 
-  public ProtoAdapter(FieldEncoding fieldEncoding, Class<?> javaType) {
-    this.fieldEncoding = fieldEncoding;
+  public ProtoAdapter(ProtoEncoding protoEncoding, Class<?> javaType) {
+    this.protoEncoding = protoEncoding;
     this.javaType = javaType;
   }
 
@@ -97,7 +97,7 @@ public abstract class ProtoAdapter<E> {
    */
   public int encodedSize(int tag, E value) {
     int size = encodedSize(value);
-    if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
+    if (protoEncoding == ProtoEncoding.LENGTH_DELIMITED) {
       size += varint32Size(size);
     }
     return size + ProtoWriter.tagSize(tag);
@@ -108,8 +108,8 @@ public abstract class ProtoAdapter<E> {
 
   /** Write {@code tag} and non-null {@code value} to {@code writer}. */
   public void encodeTagged(ProtoWriter writer, int tag, E value) throws IOException {
-    writer.writeTag(tag, fieldEncoding);
-    if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
+    writer.writeTag(tag, protoEncoding);
+    if (protoEncoding == ProtoEncoding.LENGTH_DELIMITED) {
       writer.writeVarint32(encodedSize(value));
     }
     encode(writer, value);
@@ -185,7 +185,7 @@ public abstract class ProtoAdapter<E> {
   }
 
   public static final ProtoAdapter<Boolean> BOOL = new ProtoAdapter<Boolean>(
-      FieldEncoding.VARINT, Boolean.class) {
+      ProtoEncoding.VARINT, Boolean.class) {
     @Override public int encodedSize(Boolean value) {
       return FIXED_BOOL_SIZE;
     }
@@ -202,7 +202,7 @@ public abstract class ProtoAdapter<E> {
     }
   };
   public static final ProtoAdapter<Integer> INT32 = new ProtoAdapter<Integer>(
-      FieldEncoding.VARINT, Integer.class) {
+      ProtoEncoding.VARINT, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return int32Size(value);
     }
@@ -216,7 +216,7 @@ public abstract class ProtoAdapter<E> {
     }
   };
   public static final ProtoAdapter<Integer> UINT32 = new ProtoAdapter<Integer>(
-      FieldEncoding.VARINT, Integer.class) {
+      ProtoEncoding.VARINT, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return varint32Size(value);
     }
@@ -230,7 +230,7 @@ public abstract class ProtoAdapter<E> {
     }
   };
   public static final ProtoAdapter<Integer> SINT32 = new ProtoAdapter<Integer>(
-      FieldEncoding.VARINT, Integer.class) {
+      ProtoEncoding.VARINT, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return varint32Size(encodeZigZag32(value));
     }
@@ -244,7 +244,7 @@ public abstract class ProtoAdapter<E> {
     }
   };
   public static final ProtoAdapter<Integer> FIXED32 = new ProtoAdapter<Integer>(
-      FieldEncoding.FIXED32, Integer.class) {
+      ProtoEncoding.FIXED32, Integer.class) {
     @Override public int encodedSize(Integer value) {
       return FIXED_32_SIZE;
     }
@@ -259,7 +259,7 @@ public abstract class ProtoAdapter<E> {
   };
   public static final ProtoAdapter<Integer> SFIXED32 = FIXED32;
   public static final ProtoAdapter<Long> INT64 = new ProtoAdapter<Long>(
-      FieldEncoding.VARINT, Long.class) {
+      ProtoEncoding.VARINT, Long.class) {
     @Override public int encodedSize(Long value) {
       return varint64Size(value);
     }
@@ -274,7 +274,7 @@ public abstract class ProtoAdapter<E> {
   };
   public static final ProtoAdapter<Long> UINT64 = INT64;
   public static final ProtoAdapter<Long> SINT64 = new ProtoAdapter<Long>(
-      FieldEncoding.VARINT, Long.class) {
+      ProtoEncoding.VARINT, Long.class) {
     @Override public int encodedSize(Long value) {
       return varint64Size(encodeZigZag64(value));
     }
@@ -288,7 +288,7 @@ public abstract class ProtoAdapter<E> {
     }
   };
   public static final ProtoAdapter<Long> FIXED64 = new ProtoAdapter<Long>(
-      FieldEncoding.FIXED64, Long.class) {
+      ProtoEncoding.FIXED64, Long.class) {
     @Override public int encodedSize(Long value) {
       return FIXED_64_SIZE;
     }
@@ -303,7 +303,7 @@ public abstract class ProtoAdapter<E> {
   };
   public static final ProtoAdapter<Long> SFIXED64 = FIXED64;
   public static final ProtoAdapter<Float> FLOAT = new ProtoAdapter<Float>(
-      FieldEncoding.FIXED32, Float.class) {
+      ProtoEncoding.FIXED32, Float.class) {
     @Override public int encodedSize(Float value) {
       return FIXED_32_SIZE;
     }
@@ -317,7 +317,7 @@ public abstract class ProtoAdapter<E> {
     }
   };
   public static final ProtoAdapter<Double> DOUBLE = new ProtoAdapter<Double>(
-      FieldEncoding.FIXED64, Double.class) {
+      ProtoEncoding.FIXED64, Double.class) {
     @Override public int encodedSize(Double value) {
       return FIXED_64_SIZE;
     }
@@ -331,7 +331,7 @@ public abstract class ProtoAdapter<E> {
     }
   };
   public static final ProtoAdapter<String> STRING = new ProtoAdapter<String>(
-      FieldEncoding.LENGTH_DELIMITED, String.class) {
+      ProtoEncoding.LENGTH_DELIMITED, String.class) {
     @Override public int encodedSize(String value) {
       return utf8Length(value);
     }
@@ -345,7 +345,7 @@ public abstract class ProtoAdapter<E> {
     }
   };
   public static final ProtoAdapter<ByteString> BYTES = new ProtoAdapter<ByteString>(
-      FieldEncoding.LENGTH_DELIMITED, ByteString.class) {
+      ProtoEncoding.LENGTH_DELIMITED, ByteString.class) {
     @Override public int encodedSize(ByteString value) {
       return value.size();
     }
@@ -390,10 +390,10 @@ public abstract class ProtoAdapter<E> {
   }
 
   private static <T> ProtoAdapter<List<T>> createPacked(final ProtoAdapter<T> adapter) {
-    if (adapter.fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
+    if (adapter.protoEncoding == ProtoEncoding.LENGTH_DELIMITED) {
       throw new IllegalArgumentException("Unable to pack a length-delimited type.");
     }
-    return new ProtoAdapter<List<T>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
+    return new ProtoAdapter<List<T>>(ProtoEncoding.LENGTH_DELIMITED, List.class) {
       @Override public int encodedSize(List<T> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
@@ -419,7 +419,7 @@ public abstract class ProtoAdapter<E> {
   }
 
   private static <T> ProtoAdapter<List<T>> createRepeated(final ProtoAdapter<T> adapter) {
-    return new ProtoAdapter<List<T>>(adapter.fieldEncoding, List.class) {
+    return new ProtoAdapter<List<T>>(adapter.protoEncoding, List.class) {
       @Override public int encodedSize(List<T> value) {
         throw new UnsupportedOperationException();
       }

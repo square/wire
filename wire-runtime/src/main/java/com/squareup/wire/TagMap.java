@@ -108,7 +108,7 @@ public final class TagMap {
         for (int j = i; j < runEnd; j += 2) {
           runSize += adapter.encodedSize(array[j + 1]);
         }
-        writer.writeTag(extension.getTag(), FieldEncoding.LENGTH_DELIMITED);
+        writer.writeTag(extension.getTag(), ProtoEncoding.LENGTH_DELIMITED);
         writer.writeVarint32(runSize);
         for (int j = i; j < runEnd; j += 2) {
           adapter.encode(writer, array[j + 1]);
