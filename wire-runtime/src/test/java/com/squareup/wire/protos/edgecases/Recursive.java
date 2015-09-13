@@ -18,13 +18,13 @@ public final class Recursive extends Message<Recursive> {
 
   @WireField(
       tag = 1,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer value;
 
   @WireField(
       tag = 2,
-      type = "squareup.protos.edgecases.Recursive"
+      adapter = "com.squareup.wire.protos.edgecases.Recursive#ADAPTER"
   )
   public final Recursive recursive;
 

@@ -18,7 +18,7 @@ public final class ChildPackage extends Message<ChildPackage> {
 
   @WireField(
       tag = 1,
-      type = "squareup.protos.foreign.ForeignEnum"
+      adapter = "com.squareup.wire.protos.foreign.ForeignEnum#ADAPTER"
   )
   public final ForeignEnum inner_foreign_enum;
 

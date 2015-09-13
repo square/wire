@@ -18,7 +18,7 @@ public final class OneBytesField extends Message<OneBytesField> {
 
   @WireField(
       tag = 1,
-      type = "bytes"
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   public final ByteString opt_bytes;
 

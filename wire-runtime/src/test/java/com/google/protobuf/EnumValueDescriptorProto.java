@@ -26,7 +26,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String name;
 
@@ -35,19 +35,19 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
    */
   @WireField(
       tag = 4,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String doc;
 
   @WireField(
       tag = 2,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer number;
 
   @WireField(
       tag = 3,
-      type = "google.protobuf.EnumValueOptions"
+      adapter = "com.google.protobuf.EnumValueOptions#ADAPTER"
   )
   public final EnumValueOptions options;
 

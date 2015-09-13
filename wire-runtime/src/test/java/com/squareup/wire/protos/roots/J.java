@@ -15,7 +15,7 @@ public final class J extends Message<J> {
 
   @WireField(
       tag = 1,
-      type = "squareup.protos.roots.K"
+      adapter = "com.squareup.wire.protos.roots.K#ADAPTER"
   )
   public final K k;
 

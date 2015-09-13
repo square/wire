@@ -31,20 +31,20 @@ public final class Redacted extends Message<Redacted> {
 
   @WireField(
       tag = 1,
-      type = "string",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
       redacted = true
   )
   public final String a;
 
   @WireField(
       tag = 2,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String b;
 
   @WireField(
       tag = 3,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String c;
 

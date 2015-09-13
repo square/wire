@@ -29,7 +29,7 @@ public final class Person extends Message<Person> {
    */
   @WireField(
       tag = 1,
-      type = "string",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REQUIRED
   )
   public final String name;
@@ -39,7 +39,7 @@ public final class Person extends Message<Person> {
    */
   @WireField(
       tag = 2,
-      type = "int32",
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.REQUIRED
   )
   public final Integer id;
@@ -49,7 +49,7 @@ public final class Person extends Message<Person> {
    */
   @WireField(
       tag = 3,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String email;
 
@@ -58,7 +58,7 @@ public final class Person extends Message<Person> {
    */
   @WireField(
       tag = 4,
-      type = "squareup.protos.person.Person.PhoneNumber",
+      adapter = "com.squareup.wire.protos.person.Person$PhoneNumber#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<PhoneNumber> phone;
@@ -201,7 +201,7 @@ public final class Person extends Message<Person> {
      */
     @WireField(
         tag = 1,
-        type = "string",
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
         label = WireField.Label.REQUIRED
     )
     public final String number;
@@ -211,7 +211,7 @@ public final class Person extends Message<Person> {
      */
     @WireField(
         tag = 2,
-        type = "squareup.protos.person.Person.PhoneType"
+        adapter = "com.squareup.wire.protos.person.Person$PhoneType#ADAPTER"
     )
     public final PhoneType type;
 

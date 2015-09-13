@@ -25,7 +25,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
 
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String name;
 
@@ -34,20 +34,20 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
    */
   @WireField(
       tag = 4,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String doc;
 
   @WireField(
       tag = 2,
-      type = "google.protobuf.EnumValueDescriptorProto",
+      adapter = "com.google.protobuf.EnumValueDescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<EnumValueDescriptorProto> value;
 
   @WireField(
       tag = 3,
-      type = "google.protobuf.EnumOptions"
+      adapter = "com.google.protobuf.EnumOptions#ADAPTER"
   )
   public final EnumOptions options;
 

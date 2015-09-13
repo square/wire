@@ -23,7 +23,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
 
   @WireField(
       tag = 1,
-      type = "string",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REQUIRED,
       redacted = true
   )

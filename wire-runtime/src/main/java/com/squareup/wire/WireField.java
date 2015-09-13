@@ -31,11 +31,11 @@ public @interface WireField {
   int tag();
 
   /**
-   * The field's protocol buffer data type. This is either a scalar (like {@code int32} or {@code
-   * string}), a message type (like {@code squareup.protos.Person}), or an enum type (like {@code
-   * squareup.protos.CurrencyCode}).
+   * Reference to the static field that holds a {@link ProtoAdapter} that can encode and decode this
+   * field. The reference is a string like {@code com.squareup.wire.protos.person.Person#ADAPTER}
+   * and contains a fully-qualified class name followed by a hash symbol and a field name.
    */
-  String type();
+  String adapter();
 
   /**
    * The field's protocol buffer label, one of {@link Label#OPTIONAL},

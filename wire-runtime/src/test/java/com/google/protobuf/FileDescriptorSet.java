@@ -21,7 +21,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
 
   @WireField(
       tag = 1,
-      type = "google.protobuf.FileDescriptorProto",
+      adapter = "com.google.protobuf.FileDescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<FileDescriptorProto> file;

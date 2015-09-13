@@ -272,7 +272,24 @@ public abstract class ProtoAdapter<E> {
       return reader.readVarint64();
     }
   };
-  public static final ProtoAdapter<Long> UINT64 = INT64;
+  /**
+   * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
+   * in JSON.
+   */
+  public static final ProtoAdapter<Long> UINT64 = new ProtoAdapter<Long>(
+      FieldEncoding.VARINT, Long.class) {
+    @Override public int encodedSize(Long value) {
+      return varint64Size(value);
+    }
+
+    @Override public void encode(ProtoWriter writer, Long value) throws IOException {
+      writer.writeVarint64(value);
+    }
+
+    @Override public Long decode(ProtoReader reader) throws IOException {
+      return reader.readVarint64();
+    }
+  };
   public static final ProtoAdapter<Long> SINT64 = new ProtoAdapter<Long>(
       FieldEncoding.VARINT, Long.class) {
     @Override public int encodedSize(Long value) {

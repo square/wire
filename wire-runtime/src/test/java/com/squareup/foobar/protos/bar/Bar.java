@@ -90,7 +90,7 @@ public final class Bar extends Message<Bar> {
 
       @WireField(
           tag = 1,
-          type = "string"
+          adapter = "com.squareup.wire.ProtoAdapter#STRING"
       )
       public final String boo;
 

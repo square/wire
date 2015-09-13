@@ -34,7 +34,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @WireField(
       tag = 1,
-      type = "google.protobuf.FieldOptions.CType"
+      adapter = "com.google.protobuf.FieldOptions$CType#ADAPTER"
   )
   public final CType ctype;
 
@@ -46,7 +46,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @WireField(
       tag = 2,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean packed;
 
@@ -58,7 +58,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @WireField(
       tag = 3,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean deprecated;
 
@@ -78,7 +78,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @WireField(
       tag = 9,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String experimental_map_key;
 
@@ -87,7 +87,7 @@ public final class FieldOptions extends Message<FieldOptions> {
    */
   @WireField(
       tag = 999,
-      type = "google.protobuf.UninterpretedOption",
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;

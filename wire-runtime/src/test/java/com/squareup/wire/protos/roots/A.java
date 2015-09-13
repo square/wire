@@ -30,13 +30,13 @@ public final class A extends Message<A> {
 
   @WireField(
       tag = 1,
-      type = "squareup.protos.roots.B"
+      adapter = "com.squareup.wire.protos.roots.B#ADAPTER"
   )
   public final B c;
 
   @WireField(
       tag = 2,
-      type = "squareup.protos.roots.D"
+      adapter = "com.squareup.wire.protos.roots.D#ADAPTER"
   )
   public final D d;
 

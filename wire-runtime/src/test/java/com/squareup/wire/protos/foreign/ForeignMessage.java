@@ -18,7 +18,7 @@ public final class ForeignMessage extends Message<ForeignMessage> {
 
   @WireField(
       tag = 1,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer i;
 

@@ -47,7 +47,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 1,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer optional_int32;
 
@@ -56,7 +56,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 2,
-      type = "squareup.protos.simple.SimpleMessage.NestedMessage",
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedMessage#ADAPTER",
       deprecated = true
   )
   @Deprecated
@@ -67,13 +67,13 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 3,
-      type = "squareup.protos.simple.ExternalMessage"
+      adapter = "com.squareup.wire.protos.simple.ExternalMessage#ADAPTER"
   )
   public final ExternalMessage optional_external_msg;
 
   @WireField(
       tag = 4,
-      type = "squareup.protos.simple.SimpleMessage.NestedEnum"
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedEnum#ADAPTER"
   )
   public final NestedEnum default_nested_enum;
 
@@ -82,7 +82,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 5,
-      type = "int32",
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.REQUIRED
   )
   public final Integer required_int32;
@@ -92,7 +92,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 6,
-      type = "double",
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
       label = WireField.Label.REPEATED,
       deprecated = true
   )
@@ -104,7 +104,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 7,
-      type = "squareup.protos.foreign.ForeignEnum"
+      adapter = "com.squareup.wire.protos.foreign.ForeignEnum#ADAPTER"
   )
   public final ForeignEnum default_foreign_enum;
 
@@ -113,7 +113,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 8,
-      type = "squareup.protos.foreign.ForeignEnum"
+      adapter = "com.squareup.wire.protos.foreign.ForeignEnum#ADAPTER"
   )
   public final ForeignEnum no_default_foreign_enum;
 
@@ -122,7 +122,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 9,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String _package;
 
@@ -131,7 +131,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 10,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String result;
 
@@ -140,7 +140,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 11,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String other;
 
@@ -149,7 +149,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
    */
   @WireField(
       tag = 12,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String o;
 
@@ -374,7 +374,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
      */
     @WireField(
         tag = 1,
-        type = "int32"
+        adapter = "com.squareup.wire.ProtoAdapter#INT32"
     )
     public final Integer bb;
 

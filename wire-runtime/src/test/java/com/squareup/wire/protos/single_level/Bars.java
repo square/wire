@@ -17,7 +17,7 @@ public final class Bars extends Message<Bars> {
 
   @WireField(
       tag = 1,
-      type = "single_level.Bar",
+      adapter = "com.squareup.wire.protos.single_level.Bar#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<Bar> bars;

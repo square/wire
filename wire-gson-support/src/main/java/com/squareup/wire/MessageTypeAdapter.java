@@ -96,7 +96,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
         continue;
       }
       out.name(tagBinding.name);
-      emitJson(out, value, tagBinding.type, tagBinding.label);
+      emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label);
     }
 
     TagMap tagMap = message.tagMap;
@@ -135,7 +135,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
         } else {
           Object value = tagMap.get(extension);
           out.name(extension.getName());
-          emitJson(out, value, extension.getProtoType(), extension.getLabel());
+          emitJson(out, value, extension.getAdapter(), extension.getLabel());
         }
       }
     }
@@ -144,9 +144,9 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
   }
 
   @SuppressWarnings("unchecked")
-  private void emitJson(JsonWriter out, Object value, ProtoType type, Label label)
+  private void emitJson(JsonWriter out, Object value, ProtoAdapter<?> adapter, Label label)
       throws IOException {
-    if (type == ProtoType.UINT64) {
+    if (adapter == ProtoAdapter.UINT64) {
       if (label.isRepeated()) {
         List<Long> longs = (List<Long>) value;
         out.beginArray();

@@ -15,7 +15,7 @@ public final class RedactedCycleA extends Message<RedactedCycleA> {
 
   @WireField(
       tag = 1,
-      type = "squareup.protos.redacted_test.RedactedCycleB"
+      adapter = "com.squareup.wire.protos.redacted.RedactedCycleB#ADAPTER"
   )
   public final RedactedCycleB b;
 

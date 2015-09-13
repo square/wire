@@ -24,7 +24,7 @@ public final class ServiceOptions extends Message<ServiceOptions> {
    */
   @WireField(
       tag = 999,
-      type = "google.protobuf.UninterpretedOption",
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;

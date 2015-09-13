@@ -69,7 +69,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
    */
   @WireField(
       tag = 1,
-      type = "google.protobuf.SourceCodeInfo.Location",
+      adapter = "com.google.protobuf.SourceCodeInfo$Location#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<Location> location;
@@ -196,7 +196,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
      */
     @WireField(
         tag = 1,
-        type = "int32",
+        adapter = "com.squareup.wire.ProtoAdapter#INT32",
         label = WireField.Label.PACKED
     )
     public final List<Integer> path;
@@ -210,7 +210,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
      */
     @WireField(
         tag = 2,
-        type = "int32",
+        adapter = "com.squareup.wire.ProtoAdapter#INT32",
         label = WireField.Label.PACKED
     )
     public final List<Integer> span;

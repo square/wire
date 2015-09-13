@@ -20,7 +20,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
    */
   @WireField(
       tag = 999,
-      type = "google.protobuf.UninterpretedOption",
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;

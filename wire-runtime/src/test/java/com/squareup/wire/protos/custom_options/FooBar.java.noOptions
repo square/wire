@@ -31,44 +31,44 @@ public final class FooBar extends Message<FooBar> {
 
   @WireField(
       tag = 1,
-      type = "int32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer foo;
 
   @WireField(
       tag = 2,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String bar;
 
   @WireField(
       tag = 3,
-      type = "squareup.protos.custom_options.FooBar.Nested"
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$Nested#ADAPTER"
   )
   public final Nested baz;
 
   @WireField(
       tag = 4,
-      type = "uint64"
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   public final Long qux;
 
   @WireField(
       tag = 5,
-      type = "float",
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
       label = WireField.Label.REPEATED
   )
   public final List<Float> fred;
 
   @WireField(
       tag = 6,
-      type = "double"
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   public final Double daisy;
 
   @WireField(
       tag = 7,
-      type = "squareup.protos.custom_options.FooBar",
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<FooBar> nested;
@@ -200,7 +200,7 @@ public final class FooBar extends Message<FooBar> {
 
     @WireField(
         tag = 1,
-        type = "squareup.protos.custom_options.FooBar.FooBarBazEnum"
+        adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
     )
     public final FooBarBazEnum value;
 
@@ -257,7 +257,7 @@ public final class FooBar extends Message<FooBar> {
 
     @WireField(
         tag = 1,
-        type = "int32",
+        adapter = "com.squareup.wire.ProtoAdapter#INT32",
         label = WireField.Label.REPEATED
     )
     public final List<Integer> serial;

@@ -28,7 +28,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String name;
 
@@ -37,7 +37,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @WireField(
       tag = 2,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String _package;
 
@@ -46,7 +46,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @WireField(
       tag = 3,
-      type = "string",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REPEATED
   )
   public final List<String> dependency;
@@ -56,35 +56,35 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @WireField(
       tag = 4,
-      type = "google.protobuf.DescriptorProto",
+      adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<DescriptorProto> message_type;
 
   @WireField(
       tag = 5,
-      type = "google.protobuf.EnumDescriptorProto",
+      adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @WireField(
       tag = 6,
-      type = "google.protobuf.ServiceDescriptorProto",
+      adapter = "com.google.protobuf.ServiceDescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<ServiceDescriptorProto> service;
 
   @WireField(
       tag = 7,
-      type = "google.protobuf.FieldDescriptorProto",
+      adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 
   @WireField(
       tag = 8,
-      type = "google.protobuf.FileOptions"
+      adapter = "com.google.protobuf.FileOptions#ADAPTER"
   )
   public final FileOptions options;
 
@@ -96,7 +96,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
    */
   @WireField(
       tag = 9,
-      type = "google.protobuf.SourceCodeInfo"
+      adapter = "com.google.protobuf.SourceCodeInfo#ADAPTER"
   )
   public final SourceCodeInfo source_code_info;
 

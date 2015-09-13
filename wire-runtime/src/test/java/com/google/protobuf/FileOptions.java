@@ -69,7 +69,7 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @WireField(
       tag = 1,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String java_package;
 
@@ -82,7 +82,7 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @WireField(
       tag = 8,
-      type = "string"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String java_outer_classname;
 
@@ -96,7 +96,7 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @WireField(
       tag = 10,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean java_multiple_files;
 
@@ -108,13 +108,13 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @WireField(
       tag = 20,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean java_generate_equals_and_hash;
 
   @WireField(
       tag = 9,
-      type = "google.protobuf.FileOptions.OptimizeMode"
+      adapter = "com.google.protobuf.FileOptions$OptimizeMode#ADAPTER"
   )
   public final OptimizeMode optimize_for;
 
@@ -132,19 +132,19 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @WireField(
       tag = 16,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean cc_generic_services;
 
   @WireField(
       tag = 17,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean java_generic_services;
 
   @WireField(
       tag = 18,
-      type = "bool"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   public final Boolean py_generic_services;
 
@@ -153,7 +153,7 @@ public final class FileOptions extends Message<FileOptions> {
    */
   @WireField(
       tag = 999,
-      type = "google.protobuf.UninterpretedOption",
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
       label = WireField.Label.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;

@@ -18,7 +18,6 @@ package com.squareup.wire;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,7 +46,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
   public final WireField.Label label;
   public final String name;
   public final int tag;
-  public final ProtoType type;
+  public final String adapterString;
   public final boolean redacted;
   private final Field messageField;
   private final Field builderField;
@@ -61,7 +60,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
     this.label = wireField.label();
     this.name = messageField.getName();
     this.tag = wireField.tag();
-    this.type = ProtoType.get(wireField.type());
+    this.adapterString = wireField.adapter();
     this.redacted = wireField.redacted();
     this.messageField = messageField;
     this.builderField = getBuilderField(builderType, name);
@@ -82,13 +81,14 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
 
   @SuppressWarnings("unchecked")
   private ProtoAdapter<Object> getSingleAdapter() {
-    Class<?> singleType = messageField.getType();
-    if (List.class.isAssignableFrom(singleType)) {
-      ParameterizedType listType = (ParameterizedType) messageField.getGenericType();
-      singleType = (Class<?>) listType.getActualTypeArguments()[0];
+    try {
+      int hash = adapterString.indexOf('#');
+      String className = adapterString.substring(0, hash);
+      String fieldName = adapterString.substring(hash + 1);
+      return (ProtoAdapter<Object>) Class.forName(className).getField(fieldName).get(null);
+    } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
+      throw new IllegalStateException("failed to access " + adapterString, e);
     }
-
-    return (ProtoAdapter<Object>) ProtoAdapter.get(type, singleType);
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */

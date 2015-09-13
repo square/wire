@@ -18,7 +18,7 @@ public final class LetsDataResponse extends Message<LetsDataResponse> {
 
   @WireField(
       tag = 1,
-      type = "bytes"
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   public final ByteString data;
 

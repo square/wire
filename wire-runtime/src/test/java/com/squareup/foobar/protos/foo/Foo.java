@@ -16,7 +16,7 @@ public final class Foo extends Message<Foo> {
 
   @WireField(
       tag = 1,
-      type = "squareup.foobar.Bar.Baz.Moo"
+      adapter = "com.squareup.foobar.protos.bar.Bar$Baz$Moo#ADAPTER"
   )
   public final Bar.Baz.Moo moo;
 

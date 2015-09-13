@@ -15,7 +15,7 @@ public final class B extends Message<B> {
 
   @WireField(
       tag = 1,
-      type = "squareup.protos.roots.C",
+      adapter = "com.squareup.wire.protos.roots.C#ADAPTER",
       label = WireField.Label.REQUIRED
   )
   public final C c;

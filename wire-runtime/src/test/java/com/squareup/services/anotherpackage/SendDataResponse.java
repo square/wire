@@ -18,7 +18,7 @@ public final class SendDataResponse extends Message<SendDataResponse> {
 
   @WireField(
       tag = 1,
-      type = "bytes"
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   public final ByteString data;
 
