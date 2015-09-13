@@ -99,7 +99,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
       emitJson(out, value, tagBinding.type, tagBinding.label);
     }
 
-    TagMap tagMap = message.tagMap();
+    TagMap tagMap = message.tagMap;
     if (tagMap != null) {
       for (Extension<?, ?> extension : tagMap.extensions(true)) {
         if (extension.isUnknown()) {

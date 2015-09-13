@@ -68,11 +68,6 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     }
   }
 
-  // Increase visibility for testing
-  TagMap tagMap() {
-    return tagMap;
-  }
-
   /** Utility method to return a mutable copy of a given List. Used by generated code. */
   protected static <T> List<T> copyOf(List<T> list) {
     if (list == null) {

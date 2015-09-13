@@ -337,7 +337,7 @@ public class WireTest {
     assertThat(result.phone.get(0).type).isNull();
 
     // The value 17 will be stored as an unknown varint with tag number 2
-    TagMap tagMap = ((Message) result.phone.get(0)).tagMap();
+    TagMap tagMap = ((Message) result.phone.get(0)).tagMap;
     assertThat(tagMap.size()).isEqualTo(1);
     assertThat(tagMap.get(Extension.unknown(PhoneNumber.class, 2, FieldEncoding.VARINT)))
         .isEqualTo(Arrays.asList(17L));
