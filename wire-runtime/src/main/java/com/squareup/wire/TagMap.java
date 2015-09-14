@@ -130,7 +130,7 @@ final class TagMap {
     int runEnd = runStart + 2;
     while (runEnd < array.length
         && ((Extension<?, ?>) array[runEnd]).getTag() == extension.getTag()
-        && ((Extension<?, ?>) array[runEnd]).getProtoType().equals(extension.getProtoType())) {
+        && ((Extension<?, ?>) array[runEnd]).getAdapter().equals(extension.getAdapter())) {
       runEnd += 2;
     }
     return runEnd;
@@ -169,7 +169,7 @@ final class TagMap {
   static void transcode(List<Object> list, Extension<?, ?> sourceExtension,
       Object value, Extension<?, ?> targetExtension) {
     // If the adapter we're expecting has already been applied, we're done.
-    if (sourceExtension.getProtoType().equals(targetExtension.getProtoType())) {
+    if (sourceExtension.getAdapter().equals(targetExtension.getAdapter())) {
       list.add(value);
       return;
     }

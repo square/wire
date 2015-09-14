@@ -19,9 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -63,20 +61,15 @@ public abstract class ProtoAdapter<E> {
     return new RuntimeEnumAdapter<>(type);
   }
 
-  /** Retrieves the constant wire adapter for {@code type}, decoded to {@code javaType}. */
-  static ProtoAdapter<?> get(ProtoType type, Class<?> javaType) {
-    ProtoAdapter<?> scalarAdapter = TYPE_TO_ADAPTER.get(type);
-    if (scalarAdapter != null) {
-      return scalarAdapter;
-    } else if (Message.class.isAssignableFrom(javaType)
-        || WireEnum.class.isAssignableFrom(javaType)) {
-      try {
-        return (ProtoAdapter<?>) javaType.getField("ADAPTER").get(null);
-      } catch (IllegalAccessException | NoSuchFieldException e) {
-        throw new AssertionError("unexpected exception: " + e);
-      }
-    } else {
-      throw new AssertionError("unknown data type: " + type);
+  @SuppressWarnings("unchecked")
+  static ProtoAdapter<?> get(String adapterString) {
+    try {
+      int hash = adapterString.indexOf('#');
+      String className = adapterString.substring(0, hash);
+      String fieldName = adapterString.substring(hash + 1);
+      return (ProtoAdapter<Object>) Class.forName(className).getField(fieldName).get(null);
+    } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
+      throw new IllegalStateException("failed to access " + adapterString, e);
     }
   }
 
@@ -375,27 +368,6 @@ public abstract class ProtoAdapter<E> {
       return reader.readBytes();
     }
   };
-
-  private static final Map<ProtoType, ProtoAdapter<?>> TYPE_TO_ADAPTER;
-  static {
-    Map<ProtoType, ProtoAdapter<?>> map = new LinkedHashMap<>();
-    map.put(ProtoType.BOOL, ProtoAdapter.BOOL);
-    map.put(ProtoType.BYTES, ProtoAdapter.BYTES);
-    map.put(ProtoType.DOUBLE, ProtoAdapter.DOUBLE);
-    map.put(ProtoType.FIXED32, ProtoAdapter.FIXED32);
-    map.put(ProtoType.FIXED64, ProtoAdapter.FIXED64);
-    map.put(ProtoType.FLOAT, ProtoAdapter.FLOAT);
-    map.put(ProtoType.INT32, ProtoAdapter.INT32);
-    map.put(ProtoType.INT64, ProtoAdapter.INT64);
-    map.put(ProtoType.SFIXED32, ProtoAdapter.SFIXED32);
-    map.put(ProtoType.SFIXED64, ProtoAdapter.SFIXED64);
-    map.put(ProtoType.SINT32, ProtoAdapter.SINT32);
-    map.put(ProtoType.SINT64, ProtoAdapter.SINT64);
-    map.put(ProtoType.STRING, ProtoAdapter.STRING);
-    map.put(ProtoType.UINT32, ProtoAdapter.UINT32);
-    map.put(ProtoType.UINT64, ProtoAdapter.UINT64);
-    TYPE_TO_ADAPTER = Collections.unmodifiableMap(map);
-  }
 
   ProtoAdapter<?> withLabel(WireField.Label label) {
     if (label.isRepeated()) {

@@ -108,28 +108,28 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
 
           out.name(Integer.toString(extension.getTag()));
           out.beginArray();
-          if (extension.getProtoType() == ProtoType.UINT64) {
+          if (extension.getAdapter() == ProtoAdapter.UINT64) {
             out.value("varint");
             for (Object o : values) {
               out.value((Long) o);
             }
-          } else if (extension.getProtoType() == ProtoType.FIXED32) {
+          } else if (extension.getAdapter() == ProtoAdapter.FIXED32) {
             out.value("fixed32");
             for (Object o : values) {
               out.value((Integer) o);
             }
-          } else if (extension.getProtoType() == ProtoType.FIXED64) {
+          } else if (extension.getAdapter() == ProtoAdapter.FIXED64) {
             out.value("fixed64");
             for (Object o : values) {
               out.value((Long) o);
             }
-          } else if (extension.getProtoType() == ProtoType.BYTES) {
+          } else if (extension.getAdapter() == ProtoAdapter.BYTES) {
             out.value("length-delimited");
             for (Object o : values) {
               out.value(((ByteString) o).base64());
             }
           } else {
-            throw new AssertionError("Unknown wire type " + extension.getProtoType());
+            throw new AssertionError("Unknown wire type " + extension);
           }
           out.endArray();
         } else {
@@ -193,7 +193,7 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
 
       Extension<?, ?> extension = extensions.get(name);
       if (extension != null) {
-        Object value = parseValue(extension.getLabel(), extension.getJavaType(), parse(in));
+        Object value = parseValue(extension.getLabel(), extension.getAdapter().javaType, parse(in));
         builder.setExtension((Extension) extension, value);
         continue;
       }

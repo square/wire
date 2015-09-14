@@ -7,101 +7,102 @@ import com.google.protobuf.EnumValueOptions;
 import com.google.protobuf.FieldOptions;
 import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Extension;
+import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Float;
 import java.lang.Integer;
 import java.util.List;
 
 public final class Ext_custom_options {
-  public static final Extension<MessageOptions, FooBar> my_message_option_one = Extension
-      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_one")
-      .setTag(50001)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar> my_message_option_one = Extension.get(MessageOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_message_option_one",
+      50001,
+      "com.squareup.wire.protos.custom_options.FooBar#ADAPTER");
 
-  public static final Extension<MessageOptions, Float> my_message_option_two = Extension
-      .floatExtending(MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_two")
-      .setTag(50002)
-      .buildOptional();
+  public static final Extension<MessageOptions, Float> my_message_option_two = Extension.get(MessageOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_message_option_two",
+      50002,
+      "com.squareup.wire.ProtoAdapter#FLOAT");
 
-  public static final Extension<MessageOptions, FooBar> my_message_option_three = Extension
-      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_three")
-      .setTag(50003)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar> my_message_option_three = Extension.get(MessageOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_message_option_three",
+      50003,
+      "com.squareup.wire.protos.custom_options.FooBar#ADAPTER");
 
-  public static final Extension<MessageOptions, FooBar.FooBarBazEnum> my_message_option_four = Extension
-      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_four")
-      .setTag(50004)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar.FooBarBazEnum> my_message_option_four = Extension.get(MessageOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_message_option_four",
+      50004,
+      "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER");
 
-  public static final Extension<MessageOptions, FooBar> my_message_option_five = Extension
-      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_five")
-      .setTag(50005)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar> my_message_option_five = Extension.get(MessageOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_message_option_five",
+      50005,
+      "com.squareup.wire.protos.custom_options.FooBar#ADAPTER");
 
-  public static final Extension<MessageOptions, FooBar> my_message_option_six = Extension
-      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, MessageOptions.class)
-      .setName("squareup.protos.custom_options.my_message_option_six")
-      .setTag(50006)
-      .buildOptional();
+  public static final Extension<MessageOptions, FooBar> my_message_option_six = Extension.get(MessageOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_message_option_six",
+      50006,
+      "com.squareup.wire.protos.custom_options.FooBar#ADAPTER");
 
-  public static final Extension<FieldOptions, Integer> my_field_option_one = Extension
-      .int32Extending(FieldOptions.class)
-      .setName("squareup.protos.custom_options.my_field_option_one")
-      .setTag(60001)
-      .buildOptional();
+  public static final Extension<FieldOptions, Integer> my_field_option_one = Extension.get(FieldOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_field_option_one",
+      60001,
+      "com.squareup.wire.ProtoAdapter#INT32");
 
-  public static final Extension<FieldOptions, Float> my_field_option_two = Extension
-      .floatExtending(FieldOptions.class)
-      .setName("squareup.protos.custom_options.my_field_option_two")
-      .setTag(60002)
-      .buildOptional();
+  public static final Extension<FieldOptions, Float> my_field_option_two = Extension.get(FieldOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_field_option_two",
+      60002,
+      "com.squareup.wire.ProtoAdapter#FLOAT");
 
-  public static final Extension<FieldOptions, FooBar.FooBarBazEnum> my_field_option_three = Extension
-      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, FieldOptions.class)
-      .setName("squareup.protos.custom_options.my_field_option_three")
-      .setTag(60003)
-      .buildOptional();
+  public static final Extension<FieldOptions, FooBar.FooBarBazEnum> my_field_option_three = Extension.get(FieldOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_field_option_three",
+      60003,
+      "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER");
 
-  public static final Extension<FieldOptions, FooBar> my_field_option_four = Extension
-      .messageExtending("squareup.protos.custom_options.FooBar", FooBar.class, FieldOptions.class)
-      .setName("squareup.protos.custom_options.my_field_option_four")
-      .setTag(60004)
-      .buildOptional();
+  public static final Extension<FieldOptions, FooBar> my_field_option_four = Extension.get(FieldOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.my_field_option_four",
+      60004,
+      "com.squareup.wire.protos.custom_options.FooBar#ADAPTER");
 
-  public static final Extension<EnumValueOptions, Integer> enum_value_option = Extension
-      .int32Extending(EnumValueOptions.class)
-      .setName("squareup.protos.custom_options.enum_value_option")
-      .setTag(70000)
-      .buildOptional();
+  public static final Extension<EnumValueOptions, Integer> enum_value_option = Extension.get(EnumValueOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.enum_value_option",
+      70000,
+      "com.squareup.wire.ProtoAdapter#INT32");
 
-  public static final Extension<EnumValueOptions, FooBar.More> complex_enum_value_option = Extension
-      .messageExtending("squareup.protos.custom_options.FooBar.More", FooBar.More.class, EnumValueOptions.class)
-      .setName("squareup.protos.custom_options.complex_enum_value_option")
-      .setTag(70001)
-      .buildOptional();
+  public static final Extension<EnumValueOptions, FooBar.More> complex_enum_value_option = Extension.get(EnumValueOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.complex_enum_value_option",
+      70001,
+      "com.squareup.wire.protos.custom_options.FooBar$More#ADAPTER");
 
-  public static final Extension<EnumOptions, Boolean> enum_option = Extension
-      .boolExtending(EnumOptions.class)
-      .setName("squareup.protos.custom_options.enum_option")
-      .setTag(71000)
-      .buildOptional();
+  public static final Extension<EnumOptions, Boolean> enum_option = Extension.get(EnumOptions.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.enum_option",
+      71000,
+      "com.squareup.wire.ProtoAdapter#BOOL");
 
-  public static final Extension<FooBar, FooBar.FooBarBazEnum> ext = Extension
-      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, FooBar.class)
-      .setName("squareup.protos.custom_options.ext")
-      .setTag(101)
-      .buildOptional();
+  public static final Extension<FooBar, FooBar.FooBarBazEnum> ext = Extension.get(FooBar.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.custom_options.ext",
+      101,
+      "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER");
 
-  public static final Extension<FooBar, List<FooBar.FooBarBazEnum>> rep = Extension
-      .enumExtending("squareup.protos.custom_options.FooBar.FooBarBazEnum", FooBar.FooBarBazEnum.class, FooBar.class)
-      .setName("squareup.protos.custom_options.rep")
-      .setTag(102)
-      .buildRepeated();
+  public static final Extension<FooBar, List<FooBar.FooBarBazEnum>> rep = Extension.get(FooBar.class,
+      WireField.Label.REPEATED,
+      "squareup.protos.custom_options.rep",
+      102,
+      "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER");
 
   private Ext_custom_options() {
   }

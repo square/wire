@@ -53,7 +53,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
   private final Method builderMethod;
 
   // Delegate adapters are created lazily; otherwise we could stack overflow!
-  private ProtoAdapter<Object> singleAdapter;
+  private ProtoAdapter<?> singleAdapter;
   private ProtoAdapter<Object> adapter;
 
   FieldBinding(WireField wireField, Field messageField, Class<B> builderType) {
@@ -69,7 +69,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
 
   ProtoAdapter<?> singleAdapter() {
     ProtoAdapter<?> result = singleAdapter;
-    return result != null ? result : (singleAdapter = getSingleAdapter());
+    return result != null ? result : (singleAdapter = ProtoAdapter.get(adapterString));
   }
 
   ProtoAdapter<Object> adapter() {
@@ -77,18 +77,6 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
     return result != null
         ? result
         : (adapter = (ProtoAdapter<Object>) singleAdapter().withLabel(label));
-  }
-
-  @SuppressWarnings("unchecked")
-  private ProtoAdapter<Object> getSingleAdapter() {
-    try {
-      int hash = adapterString.indexOf('#');
-      String className = adapterString.substring(0, hash);
-      String fieldName = adapterString.substring(hash + 1);
-      return (ProtoAdapter<Object>) Class.forName(className).getField(fieldName).get(null);
-    } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
-      throw new IllegalStateException("failed to access " + adapterString, e);
-    }
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */

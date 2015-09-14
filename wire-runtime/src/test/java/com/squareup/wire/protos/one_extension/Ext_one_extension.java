@@ -3,13 +3,14 @@
 package com.squareup.wire.protos.one_extension;
 
 import com.squareup.wire.Extension;
+import com.squareup.wire.WireField;
 
 public final class Ext_one_extension {
-  public static final Extension<OneExtension, Foo> foo = Extension
-      .messageExtending("squareup.protos.one_extension.Foo", Foo.class, OneExtension.class)
-      .setName("squareup.protos.one_extension.foo")
-      .setTag(1000)
-      .buildOptional();
+  public static final Extension<OneExtension, Foo> foo = Extension.get(OneExtension.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.one_extension.foo",
+      1000,
+      "com.squareup.wire.protos.one_extension.Foo#ADAPTER");
 
   private Ext_one_extension() {
   }

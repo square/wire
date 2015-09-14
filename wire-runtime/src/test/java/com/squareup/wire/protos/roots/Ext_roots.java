@@ -3,13 +3,14 @@
 package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Extension;
+import com.squareup.wire.WireField;
 
 public final class Ext_roots {
-  public static final Extension<I, J> j = Extension
-      .messageExtending("squareup.protos.roots.J", J.class, I.class)
-      .setName("squareup.protos.roots.j")
-      .setTag(1000)
-      .buildOptional();
+  public static final Extension<I, J> j = Extension.get(I.class,
+      WireField.Label.OPTIONAL,
+      "squareup.protos.roots.j",
+      1000,
+      "com.squareup.wire.protos.roots.J#ADAPTER");
 
   private Ext_roots() {
   }
