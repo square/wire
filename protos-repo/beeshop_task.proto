@@ -1,0 +1,47 @@
+package PBData.beeshop.task;
+option java_package = "com.shopee.protocol.shop";
+
+message UserStats
+{
+	optional int32 userid = 1;
+	optional int32 field1 = 2;
+	optional int32 field2 = 3;
+	optional int32 field3 = 4;
+	optional int32 field4 = 5;
+	optional int32 field5 = 6;
+	optional int32 field6 = 7;
+	optional int32 field7 = 8;
+	optional int32 field8 = 9;
+	optional int32 field9 = 10;
+	optional int32 field10 = 11;
+	optional int32 field11 = 12;
+	optional int32 field12 = 13;
+	optional int32 field13 = 14;
+	optional int32 field14 = 15;
+	optional int32 field15 = 16;
+	optional int32 field16 = 17;
+	optional int32 field17 = 18;
+	optional int32 field18 = 19;
+	optional int32 field19 = 20;
+	optional int32 field20 = 21;
+	optional int32 field21 = 22;
+	optional int32 field22 = 23;
+	optional int32 field23 = 24;
+	optional int32 field24 = 25;
+	optional int32 field25 = 26;
+	optional int32 field26 = 27;
+	optional int32 field27 = 28;
+	optional int32 field28 = 29;
+	optional int32 field29 = 30;
+	optional int32 field30 = 31;
+	optional int32 field31 = 32;
+	optional int32 field32 = 33;
+	optional int32 field33 = 34;
+	optional int32 field34 = 35;
+	optional int32 field35 = 36;
+	optional int32 field36 = 37;
+	optional int32 field37 = 38;
+	optional int32 field38 = 39;
+	optional int32 field39 = 40;
+	optional int32 field40 = 41;
+}

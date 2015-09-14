@@ -1,0 +1,36 @@
+import "beeshop_cmd.proto";
+package beeshop.mq;
+
+enum JobType
+{
+    FOLLOW_CHANGE    	   = 1;
+    ITEM_CHANGE  	   = 2;
+    ADDRESS_CHANGE  	   = 3;
+    REMOVE_PROMOTION       = 4;
+    FEED_NEW_ITEM          = 5;
+    FEED_ITEM_UPDATE       = 6;
+    FEED_ITEM_LIKE         = 7;
+    FEED_ITEM_COMMENT      = 8;
+    SEND_NOTIFY            = 9;
+    ACCOUNT_CHANGE	       = 10;
+    FEED_ITEM_PROMOTE      = 11;
+    FEED_LIKED_ITEM_REVIEW = 12;
+    SHOP_VISIBLE           = 13;
+    SHOP_INVISIBLE         = 14;
+    CMT_DELETE             = 15;
+}
+
+message Job
+{
+    optional int32  type   = 1;
+    optional int32  userid = 2;
+    optional int32  shopid = 3;
+    optional int64  orderid = 4;
+    optional int64  itemid = 5;
+    optional int32  addressid = 6;
+    optional int64  promotionid = 7;
+    optional int32  cmtid = 8;
+    optional beeshop.cmd.Notification noti = 9;
+    optional int32  ctime = 10;
+    optional int64  price = 11;
+}

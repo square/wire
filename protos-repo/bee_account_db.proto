@@ -1,0 +1,48 @@
+package PBData.bee_account_db;
+
+message AccountEx
+{
+	optional int32 userid = 1;
+	optional bytes account = 2;
+	optional bytes password = 3;
+	optional bytes deviceid = 4;
+	optional bytes ip = 5;
+	optional int32 createdate = 6;
+	optional int32 status = 7;
+}
+
+message UserInfo
+{
+	optional int32 userid = 1;
+	optional bytes nickname = 2;
+	optional int32 exp = 3;
+	optional uint64 icon = 4;
+	optional int32 gender = 5;
+	optional int32 birthday = 6;
+	optional int32 usertype = 7;
+	optional int32 ver = 8;
+	optional int32 createdate = 9;
+	optional int32 option = 10;
+	optional bytes description = 11;
+	optional bytes devicesign = 12;
+	optional uint64 cover = 13;
+}
+
+message UserBuddy
+{
+	optional int32 userid = 1;
+	optional int32 buddyid = 2;
+	optional int32 cateid = 3;
+	optional int32 relation = 4;
+	optional int32 status = 5;
+	optional uint64 opt = 6;
+	optional int32 timestamp = 7;
+	optional bytes nickname = 8;
+}
+
+message UserUniqueid
+{
+	optional int32 user_id = 1;
+	optional bytes unique_id = 2;
+	optional int32 status = 3;
+}
