@@ -15,7 +15,7 @@ import java.util.List;
  * Describes an enum type.
  */
 public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
-  public static final ProtoAdapter<EnumDescriptorProto> ADAPTER = ProtoAdapter.forMessage(EnumDescriptorProto.class);
+  public static final ProtoAdapter<EnumDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(EnumDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;
 

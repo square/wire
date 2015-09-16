@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class FooBar extends Message<FooBar> {
-  public static final ProtoAdapter<FooBar> ADAPTER = ProtoAdapter.forMessage(FooBar.class);
+  public static final ProtoAdapter<FooBar> ADAPTER = ProtoAdapter.newMessageAdapter(FooBar.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -242,7 +242,7 @@ public final class FooBar extends Message<FooBar> {
   }
 
   public static final class Nested extends Message<Nested> {
-    public static final ProtoAdapter<Nested> ADAPTER = ProtoAdapter.forMessage(Nested.class);
+    public static final ProtoAdapter<Nested> ADAPTER = ProtoAdapter.newMessageAdapter(Nested.class);
 
     private static final long serialVersionUID = 0L;
 
@@ -301,7 +301,7 @@ public final class FooBar extends Message<FooBar> {
   }
 
   public static final class More extends Message<More> {
-    public static final ProtoAdapter<More> ADAPTER = ProtoAdapter.forMessage(More.class);
+    public static final ProtoAdapter<More> ADAPTER = ProtoAdapter.newMessageAdapter(More.class);
 
     private static final long serialVersionUID = 0L;
 
@@ -369,7 +369,7 @@ public final class FooBar extends Message<FooBar> {
 
     BAZ(3, 18, null, false);
 
-    public static final ProtoAdapter<FooBarBazEnum> ADAPTER = ProtoAdapter.forEnum(FooBarBazEnum.class);
+    public static final ProtoAdapter<FooBarBazEnum> ADAPTER = ProtoAdapter.newEnumAdapter(FooBarBazEnum.class);
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .setExtension(Ext_custom_options.enum_option, true)

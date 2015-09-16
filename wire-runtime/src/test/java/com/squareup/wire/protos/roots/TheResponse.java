@@ -8,7 +8,7 @@ import java.lang.Object;
 import java.lang.Override;
 
 public final class TheResponse extends Message<TheResponse> {
-  public static final ProtoAdapter<TheResponse> ADAPTER = ProtoAdapter.forMessage(TheResponse.class);
+  public static final ProtoAdapter<TheResponse> ADAPTER = ProtoAdapter.newMessageAdapter(TheResponse.class);
 
   private static final long serialVersionUID = 0L;
 

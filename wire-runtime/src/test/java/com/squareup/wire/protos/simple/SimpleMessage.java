@@ -20,7 +20,7 @@ import java.util.List;
  * A message for testing.
  */
 public final class SimpleMessage extends Message<SimpleMessage> {
-  public static final ProtoAdapter<SimpleMessage> ADAPTER = ProtoAdapter.forMessage(SimpleMessage.class);
+  public static final ProtoAdapter<SimpleMessage> ADAPTER = ProtoAdapter.newMessageAdapter(SimpleMessage.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -363,7 +363,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   }
 
   public static final class NestedMessage extends Message<NestedMessage> {
-    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.forMessage(NestedMessage.class);
+    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class);
 
     private static final long serialVersionUID = 0L;
 
@@ -434,7 +434,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
 
     BAZ(3);
 
-    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.forEnum(NestedEnum.class);
+    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);
 
     private final int value;
 

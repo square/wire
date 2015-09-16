@@ -24,7 +24,7 @@ import okio.ByteString;
  * in them.
  */
 public final class UninterpretedOption extends Message<UninterpretedOption> {
-  public static final ProtoAdapter<UninterpretedOption> ADAPTER = ProtoAdapter.forMessage(UninterpretedOption.class);
+  public static final ProtoAdapter<UninterpretedOption> ADAPTER = ProtoAdapter.newMessageAdapter(UninterpretedOption.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -215,7 +215,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
    * "foo.(bar.baz).qux".
    */
   public static final class NamePart extends Message<NamePart> {
-    public static final ProtoAdapter<NamePart> ADAPTER = ProtoAdapter.forMessage(NamePart.class);
+    public static final ProtoAdapter<NamePart> ADAPTER = ProtoAdapter.newMessageAdapter(NamePart.class);
 
     private static final long serialVersionUID = 0L;
 

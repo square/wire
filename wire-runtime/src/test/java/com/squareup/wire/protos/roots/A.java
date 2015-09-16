@@ -24,7 +24,7 @@ import java.lang.Override;
  * I -> nothing
  */
 public final class A extends Message<A> {
-  public static final ProtoAdapter<A> ADAPTER = ProtoAdapter.forMessage(A.class);
+  public static final ProtoAdapter<A> ADAPTER = ProtoAdapter.newMessageAdapter(A.class);
 
   private static final long serialVersionUID = 0L;
 

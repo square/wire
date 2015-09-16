@@ -10,7 +10,7 @@ import java.lang.Object;
 import java.lang.Override;
 
 public final class OneField extends Message<OneField> {
-  public static final ProtoAdapter<OneField> ADAPTER = ProtoAdapter.forMessage(OneField.class);
+  public static final ProtoAdapter<OneField> ADAPTER = ProtoAdapter.newMessageAdapter(OneField.class);
 
   private static final long serialVersionUID = 0L;
 

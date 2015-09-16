@@ -19,7 +19,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class AllTypes extends Message<AllTypes> {
-  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.forMessage(AllTypes.class);
+  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.newMessageAdapter(AllTypes.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -1624,7 +1624,7 @@ public final class AllTypes extends Message<AllTypes> {
   public enum NestedEnum implements WireEnum {
     A(1);
 
-    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.forEnum(NestedEnum.class);
+    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);
 
     private final int value;
 
@@ -1639,7 +1639,7 @@ public final class AllTypes extends Message<AllTypes> {
   }
 
   public static final class NestedMessage extends Message<NestedMessage> {
-    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.forMessage(NestedMessage.class);
+    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class);
 
     private static final long serialVersionUID = 0L;
 

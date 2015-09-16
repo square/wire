@@ -41,7 +41,7 @@ import java.util.List;
  *   to automatically assign option numbers.
  */
 public final class FileOptions extends Message<FileOptions> {
-  public static final ProtoAdapter<FileOptions> ADAPTER = ProtoAdapter.forMessage(FileOptions.class);
+  public static final ProtoAdapter<FileOptions> ADAPTER = ProtoAdapter.newMessageAdapter(FileOptions.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -360,7 +360,7 @@ public final class FileOptions extends Message<FileOptions> {
      */
     LITE_RUNTIME(3);
 
-    public static final ProtoAdapter<OptimizeMode> ADAPTER = ProtoAdapter.forEnum(OptimizeMode.class);
+    public static final ProtoAdapter<OptimizeMode> ADAPTER = ProtoAdapter.newEnumAdapter(OptimizeMode.class);
 
     private final int value;
 

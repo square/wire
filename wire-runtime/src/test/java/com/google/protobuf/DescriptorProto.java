@@ -16,7 +16,7 @@ import java.util.List;
  * Describes a message type.
  */
 public final class DescriptorProto extends Message<DescriptorProto> {
-  public static final ProtoAdapter<DescriptorProto> ADAPTER = ProtoAdapter.forMessage(DescriptorProto.class);
+  public static final ProtoAdapter<DescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(DescriptorProto.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -211,7 +211,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
   }
 
   public static final class ExtensionRange extends Message<ExtensionRange> {
-    public static final ProtoAdapter<ExtensionRange> ADAPTER = ProtoAdapter.forMessage(ExtensionRange.class);
+    public static final ProtoAdapter<ExtensionRange> ADAPTER = ProtoAdapter.newMessageAdapter(ExtensionRange.class);
 
     private static final long serialVersionUID = 0L;
 

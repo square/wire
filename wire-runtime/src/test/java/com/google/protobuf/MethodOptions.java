@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class MethodOptions extends Message<MethodOptions> {
-  public static final ProtoAdapter<MethodOptions> ADAPTER = ProtoAdapter.forMessage(MethodOptions.class);
+  public static final ProtoAdapter<MethodOptions> ADAPTER = ProtoAdapter.newMessageAdapter(MethodOptions.class);
 
   private static final long serialVersionUID = 0L;
 

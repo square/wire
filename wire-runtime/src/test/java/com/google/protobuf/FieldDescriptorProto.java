@@ -15,7 +15,7 @@ import java.lang.String;
  * Describes a field within a message.
  */
 public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
-  public static final ProtoAdapter<FieldDescriptorProto> ADAPTER = ProtoAdapter.forMessage(FieldDescriptorProto.class);
+  public static final ProtoAdapter<FieldDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(FieldDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -347,7 +347,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
      */
     TYPE_SINT64(18);
 
-    public static final ProtoAdapter<Type> ADAPTER = ProtoAdapter.forEnum(Type.class);
+    public static final ProtoAdapter<Type> ADAPTER = ProtoAdapter.newEnumAdapter(Type.class);
 
     private final int value;
 
@@ -371,7 +371,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
 
     LABEL_REPEATED(3);
 
-    public static final ProtoAdapter<Label> ADAPTER = ProtoAdapter.forEnum(Label.class);
+    public static final ProtoAdapter<Label> ADAPTER = ProtoAdapter.newEnumAdapter(Label.class);
 
     private final int value;
 
