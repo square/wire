@@ -12,7 +12,7 @@ import java.lang.Override;
 import java.util.Arrays;
 
 public final class MessageWithOptions extends Message<MessageWithOptions> {
-  public static final ProtoAdapter<MessageWithOptions> ADAPTER = ProtoAdapter.forMessage(MessageWithOptions.class);
+  public static final ProtoAdapter<MessageWithOptions> ADAPTER = ProtoAdapter.newMessageAdapter(MessageWithOptions.class);
 
   private static final long serialVersionUID = 0L;
 

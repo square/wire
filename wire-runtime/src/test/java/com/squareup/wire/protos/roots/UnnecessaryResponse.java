@@ -8,7 +8,7 @@ import java.lang.Object;
 import java.lang.Override;
 
 public final class UnnecessaryResponse extends Message<UnnecessaryResponse> {
-  public static final ProtoAdapter<UnnecessaryResponse> ADAPTER = ProtoAdapter.forMessage(UnnecessaryResponse.class);
+  public static final ProtoAdapter<UnnecessaryResponse> ADAPTER = ProtoAdapter.newMessageAdapter(UnnecessaryResponse.class);
 
   private static final long serialVersionUID = 0L;
 

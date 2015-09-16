@@ -11,7 +11,7 @@ import java.lang.Override;
 import java.lang.String;
 
 public final class OneOfMessage extends Message<OneOfMessage> {
-  public static final ProtoAdapter<OneOfMessage> ADAPTER = ProtoAdapter.forMessage(OneOfMessage.class);
+  public static final ProtoAdapter<OneOfMessage> ADAPTER = ProtoAdapter.newMessageAdapter(OneOfMessage.class);
 
   private static final long serialVersionUID = 0L;
 

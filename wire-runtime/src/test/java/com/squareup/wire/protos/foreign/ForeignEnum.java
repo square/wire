@@ -11,7 +11,7 @@ public enum ForeignEnum implements WireEnum {
 
   BAX(1);
 
-  public static final ProtoAdapter<ForeignEnum> ADAPTER = ProtoAdapter.forEnum(ForeignEnum.class);
+  public static final ProtoAdapter<ForeignEnum> ADAPTER = ProtoAdapter.newEnumAdapter(ForeignEnum.class);
 
   private final int value;
 

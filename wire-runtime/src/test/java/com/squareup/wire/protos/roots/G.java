@@ -11,7 +11,7 @@ public enum G implements WireEnum {
 
   BAR(2);
 
-  public static final ProtoAdapter<G> ADAPTER = ProtoAdapter.forEnum(G.class);
+  public static final ProtoAdapter<G> ADAPTER = ProtoAdapter.newEnumAdapter(G.class);
 
   private final int value;
 

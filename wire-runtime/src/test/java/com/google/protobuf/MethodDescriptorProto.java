@@ -13,7 +13,7 @@ import java.lang.String;
  * Describes a method of a service.
  */
 public final class MethodDescriptorProto extends Message<MethodDescriptorProto> {
-  public static final ProtoAdapter<MethodDescriptorProto> ADAPTER = ProtoAdapter.forMessage(MethodDescriptorProto.class);
+  public static final ProtoAdapter<MethodDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(MethodDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;
 

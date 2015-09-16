@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class EnumOptions extends Message<EnumOptions> {
-  public static final ProtoAdapter<EnumOptions> ADAPTER = ProtoAdapter.forMessage(EnumOptions.class);
+  public static final ProtoAdapter<EnumOptions> ADAPTER = ProtoAdapter.newMessageAdapter(EnumOptions.class);
 
   private static final long serialVersionUID = 0L;
 

@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class Foos extends Message<Foos> {
-  public static final ProtoAdapter<Foos> ADAPTER = ProtoAdapter.forMessage(Foos.class);
+  public static final ProtoAdapter<Foos> ADAPTER = ProtoAdapter.newMessageAdapter(Foos.class);
 
   private static final long serialVersionUID = 0L;
 

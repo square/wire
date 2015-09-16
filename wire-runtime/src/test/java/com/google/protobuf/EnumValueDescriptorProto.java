@@ -14,7 +14,7 @@ import java.lang.String;
  * Describes a value within an enum.
  */
 public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorProto> {
-  public static final ProtoAdapter<EnumValueDescriptorProto> ADAPTER = ProtoAdapter.forMessage(EnumValueDescriptorProto.class);
+  public static final ProtoAdapter<EnumValueDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(EnumValueDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;
 

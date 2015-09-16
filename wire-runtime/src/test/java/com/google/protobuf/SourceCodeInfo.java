@@ -18,7 +18,7 @@ import java.util.List;
  * FileDescriptorProto was generated.
  */
 public final class SourceCodeInfo extends Message<SourceCodeInfo> {
-  public static final ProtoAdapter<SourceCodeInfo> ADAPTER = ProtoAdapter.forMessage(SourceCodeInfo.class);
+  public static final ProtoAdapter<SourceCodeInfo> ADAPTER = ProtoAdapter.newMessageAdapter(SourceCodeInfo.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -165,7 +165,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   }
 
   public static final class Location extends Message<Location> {
-    public static final ProtoAdapter<Location> ADAPTER = ProtoAdapter.forMessage(Location.class);
+    public static final ProtoAdapter<Location> ADAPTER = ProtoAdapter.newMessageAdapter(Location.class);
 
     private static final long serialVersionUID = 0L;
 

@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
-  public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = ProtoAdapter.forMessage(RepeatedAndPacked.class);
+  public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = ProtoAdapter.newMessageAdapter(RepeatedAndPacked.class);
 
   private static final long serialVersionUID = 0L;
 

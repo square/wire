@@ -10,7 +10,7 @@ import java.lang.Object;
 import java.lang.Override;
 
 public final class Recursive extends Message<Recursive> {
-  public static final ProtoAdapter<Recursive> ADAPTER = ProtoAdapter.forMessage(Recursive.class);
+  public static final ProtoAdapter<Recursive> ADAPTER = ProtoAdapter.newMessageAdapter(Recursive.class);
 
   private static final long serialVersionUID = 0L;
 

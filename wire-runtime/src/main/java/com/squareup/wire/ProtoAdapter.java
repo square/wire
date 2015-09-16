@@ -51,14 +51,23 @@ public abstract class ProtoAdapter<E> {
     this.javaType = javaType;
   }
 
-  /** Creates a new wire adapter for {@code type}. */
-  public static <M extends Message<M>> ProtoAdapter<M> forMessage(Class<M> type) {
+  /** Creates a new proto adapter for {@code type}. */
+  public static <M extends Message<M>> ProtoAdapter<M> newMessageAdapter(Class<M> type) {
     return RuntimeMessageAdapter.create(type);
   }
 
-  /** Creates a new wire adapter for {@code type}. */
-  public static <E extends WireEnum> RuntimeEnumAdapter<E> forEnum(Class<E> type) {
+  /** Creates a new proto adapter for {@code type}. */
+  public static <E extends WireEnum> RuntimeEnumAdapter<E> newEnumAdapter(Class<E> type) {
     return new RuntimeEnumAdapter<>(type);
+  }
+
+  /** Returns the default adapter for {@code type}. */
+  public static <M extends Message<M>> ProtoAdapter<M> get(Class<M> type) {
+    try {
+      return (ProtoAdapter<M>) type.getField("ADAPTER").get(null);
+    } catch (IllegalAccessException | NoSuchFieldException e) {
+      throw new IllegalArgumentException("failed to access " + type.getName() + "#ADAPTER", e);
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -69,7 +78,7 @@ public abstract class ProtoAdapter<E> {
       String fieldName = adapterString.substring(hash + 1);
       return (ProtoAdapter<Object>) Class.forName(className).getField(fieldName).get(null);
     } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
-      throw new IllegalStateException("failed to access " + adapterString, e);
+      throw new IllegalArgumentException("failed to access " + adapterString, e);
     }
   }
 

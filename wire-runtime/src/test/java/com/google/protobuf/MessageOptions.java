@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class MessageOptions extends Message<MessageOptions> {
-  public static final ProtoAdapter<MessageOptions> ADAPTER = ProtoAdapter.forMessage(MessageOptions.class);
+  public static final ProtoAdapter<MessageOptions> ADAPTER = ProtoAdapter.newMessageAdapter(MessageOptions.class);
 
   private static final long serialVersionUID = 0L;
 

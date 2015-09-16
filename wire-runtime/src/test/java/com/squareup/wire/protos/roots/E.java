@@ -10,7 +10,7 @@ import java.lang.Object;
 import java.lang.Override;
 
 public final class E extends Message<E> {
-  public static final ProtoAdapter<E> ADAPTER = ProtoAdapter.forMessage(E.class);
+  public static final ProtoAdapter<E> ADAPTER = ProtoAdapter.newMessageAdapter(E.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -90,7 +90,7 @@ public final class E extends Message<E> {
   }
 
   public static final class F extends Message<F> {
-    public static final ProtoAdapter<F> ADAPTER = ProtoAdapter.forMessage(F.class);
+    public static final ProtoAdapter<F> ADAPTER = ProtoAdapter.newMessageAdapter(F.class);
 
     private static final long serialVersionUID = 0L;
 

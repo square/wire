@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class RedactedRepeated extends Message<RedactedRepeated> {
-  public static final ProtoAdapter<RedactedRepeated> ADAPTER = ProtoAdapter.forMessage(RedactedRepeated.class);
+  public static final ProtoAdapter<RedactedRepeated> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedRepeated.class);
 
   private static final long serialVersionUID = 0L;
 

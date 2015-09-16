@@ -9,7 +9,7 @@ import java.lang.Object;
 import java.lang.Override;
 
 public final class RedactedCycleA extends Message<RedactedCycleA> {
-  public static final ProtoAdapter<RedactedCycleA> ADAPTER = ProtoAdapter.forMessage(RedactedCycleA.class);
+  public static final ProtoAdapter<RedactedCycleA> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedCycleA.class);
 
   private static final long serialVersionUID = 0L;
 

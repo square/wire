@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class FieldOptions extends Message<FieldOptions> {
-  public static final ProtoAdapter<FieldOptions> ADAPTER = ProtoAdapter.forMessage(FieldOptions.class);
+  public static final ProtoAdapter<FieldOptions> ADAPTER = ProtoAdapter.newMessageAdapter(FieldOptions.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -233,7 +233,7 @@ public final class FieldOptions extends Message<FieldOptions> {
 
     STRING_PIECE(2);
 
-    public static final ProtoAdapter<CType> ADAPTER = ProtoAdapter.forEnum(CType.class);
+    public static final ProtoAdapter<CType> ADAPTER = ProtoAdapter.newEnumAdapter(CType.class);
 
     private final int value;
 

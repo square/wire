@@ -15,7 +15,7 @@ import java.util.List;
  * files it parses.
  */
 public final class FileDescriptorSet extends Message<FileDescriptorSet> {
-  public static final ProtoAdapter<FileDescriptorSet> ADAPTER = ProtoAdapter.forMessage(FileDescriptorSet.class);
+  public static final ProtoAdapter<FileDescriptorSet> ADAPTER = ProtoAdapter.newMessageAdapter(FileDescriptorSet.class);
 
   private static final long serialVersionUID = 0L;
 

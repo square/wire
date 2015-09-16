@@ -15,7 +15,7 @@ import java.util.List;
  * Describes a service.
  */
 public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto> {
-  public static final ProtoAdapter<ServiceDescriptorProto> ADAPTER = ProtoAdapter.forMessage(ServiceDescriptorProto.class);
+  public static final ProtoAdapter<ServiceDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(ServiceDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;
 

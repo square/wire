@@ -317,7 +317,7 @@ public final class JavaGenerator {
 
     builder.addField(FieldSpec.builder(adapterOf(javaType), "ADAPTER")
         .addModifiers(PUBLIC, STATIC, FINAL)
-        .initializer("$T.forEnum($T.class)", ProtoAdapter.class, javaType)
+        .initializer("$T.newEnumAdapter($T.class)", ProtoAdapter.class, javaType)
         .build());
 
     // Enum type options.
@@ -359,7 +359,7 @@ public final class JavaGenerator {
 
     builder.addField(FieldSpec.builder(adapterOf(javaType), "ADAPTER")
         .addModifiers(PUBLIC, STATIC, FINAL)
-        .initializer("$T.forMessage($T.class)", ProtoAdapter.class, javaType)
+        .initializer("$T.newMessageAdapter($T.class)", ProtoAdapter.class, javaType)
         .build());
 
     builder.addField(FieldSpec.builder(TypeName.LONG, "serialVersionUID")

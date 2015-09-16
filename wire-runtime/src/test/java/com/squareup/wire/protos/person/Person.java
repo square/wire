@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class Person extends Message<Person> {
-  public static final ProtoAdapter<Person> ADAPTER = ProtoAdapter.forMessage(Person.class);
+  public static final ProtoAdapter<Person> ADAPTER = ProtoAdapter.newMessageAdapter(Person.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -173,7 +173,7 @@ public final class Person extends Message<Person> {
      */
     WORK(2);
 
-    public static final ProtoAdapter<PhoneType> ADAPTER = ProtoAdapter.forEnum(PhoneType.class);
+    public static final ProtoAdapter<PhoneType> ADAPTER = ProtoAdapter.newEnumAdapter(PhoneType.class);
 
     private final int value;
 
@@ -188,7 +188,7 @@ public final class Person extends Message<Person> {
   }
 
   public static final class PhoneNumber extends Message<PhoneNumber> {
-    public static final ProtoAdapter<PhoneNumber> ADAPTER = ProtoAdapter.forMessage(PhoneNumber.class);
+    public static final ProtoAdapter<PhoneNumber> ADAPTER = ProtoAdapter.newMessageAdapter(PhoneNumber.class);
 
     private static final long serialVersionUID = 0L;
 
