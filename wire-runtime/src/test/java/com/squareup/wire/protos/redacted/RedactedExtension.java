@@ -5,6 +5,7 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -37,13 +38,13 @@ public final class RedactedExtension extends Message<RedactedExtension> {
   public final String e;
 
   public RedactedExtension(String d, String e) {
-    this.d = d;
-    this.e = e;
+    this(d, e, null);
   }
 
-  private RedactedExtension(Builder builder) {
-    this(builder.d, builder.e);
-    setBuilder(builder);
+  public RedactedExtension(String d, String e, TagMap tagMap) {
+    super(tagMap);
+    this.d = d;
+    this.e = e;
   }
 
   @Override
@@ -51,7 +52,8 @@ public final class RedactedExtension extends Message<RedactedExtension> {
     if (other == this) return true;
     if (!(other instanceof RedactedExtension)) return false;
     RedactedExtension o = (RedactedExtension) other;
-    return equals(d, o.d)
+    return equals(tagMap(), o.tagMap())
+        && equals(d, o.d)
         && equals(e, o.e);
   }
 
@@ -59,7 +61,8 @@ public final class RedactedExtension extends Message<RedactedExtension> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = d != null ? d.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (d != null ? d.hashCode() : 0);
       result = result * 37 + (e != null ? e.hashCode() : 0);
       hashCode = result;
     }
@@ -93,7 +96,7 @@ public final class RedactedExtension extends Message<RedactedExtension> {
 
     @Override
     public RedactedExtension build() {
-      return new RedactedExtension(this);
+      return new RedactedExtension(d, e, buildTagMap());
     }
   }
 }

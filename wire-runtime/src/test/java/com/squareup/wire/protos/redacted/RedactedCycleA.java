@@ -4,6 +4,7 @@ package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -20,25 +21,32 @@ public final class RedactedCycleA extends Message<RedactedCycleA> {
   public final RedactedCycleB b;
 
   public RedactedCycleA(RedactedCycleB b) {
-    this.b = b;
+    this(b, null);
   }
 
-  private RedactedCycleA(Builder builder) {
-    this(builder.b);
-    setBuilder(builder);
+  public RedactedCycleA(RedactedCycleB b, TagMap tagMap) {
+    super(tagMap);
+    this.b = b;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof RedactedCycleA)) return false;
-    return equals(b, ((RedactedCycleA) other).b);
+    RedactedCycleA o = (RedactedCycleA) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(b, o.b);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = b != null ? b.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (b != null ? b.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedCycleA, Builder> {
@@ -60,7 +68,7 @@ public final class RedactedCycleA extends Message<RedactedCycleA> {
 
     @Override
     public RedactedCycleA build() {
-      return new RedactedCycleA(this);
+      return new RedactedCycleA(b, buildTagMap());
     }
   }
 }

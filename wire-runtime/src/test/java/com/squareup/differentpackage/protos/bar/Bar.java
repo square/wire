@@ -4,6 +4,7 @@ package com.squareup.differentpackage.protos.bar;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -15,10 +16,11 @@ public final class Bar extends Message<Bar> {
   private static final long serialVersionUID = 0L;
 
   public Bar() {
+    this(null);
   }
 
-  private Bar(Builder builder) {
-    setBuilder(builder);
+  public Bar(TagMap tagMap) {
+    super(tagMap);
   }
 
   @Override
@@ -28,7 +30,7 @@ public final class Bar extends Message<Bar> {
 
   @Override
   public int hashCode() {
-    return 0;
+    return tagMap() != null ? tagMap().hashCode() : 0;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Bar, Builder> {
@@ -41,7 +43,7 @@ public final class Bar extends Message<Bar> {
 
     @Override
     public Bar build() {
-      return new Bar(this);
+      return new Bar(buildTagMap());
     }
   }
 
@@ -51,10 +53,11 @@ public final class Bar extends Message<Bar> {
     private static final long serialVersionUID = 0L;
 
     public Baz() {
+      this(null);
     }
 
-    private Baz(Builder builder) {
-      setBuilder(builder);
+    public Baz(TagMap tagMap) {
+      super(tagMap);
     }
 
     @Override
@@ -64,7 +67,7 @@ public final class Bar extends Message<Bar> {
 
     @Override
     public int hashCode() {
-      return 0;
+      return tagMap() != null ? tagMap().hashCode() : 0;
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Baz, Builder> {
@@ -77,7 +80,7 @@ public final class Bar extends Message<Bar> {
 
       @Override
       public Baz build() {
-        return new Baz(this);
+        return new Baz(buildTagMap());
       }
     }
 
@@ -95,25 +98,32 @@ public final class Bar extends Message<Bar> {
       public final String boo;
 
       public Moo(String boo) {
-        this.boo = boo;
+        this(boo, null);
       }
 
-      private Moo(Builder builder) {
-        this(builder.boo);
-        setBuilder(builder);
+      public Moo(String boo, TagMap tagMap) {
+        super(tagMap);
+        this.boo = boo;
       }
 
       @Override
       public boolean equals(Object other) {
         if (other == this) return true;
         if (!(other instanceof Moo)) return false;
-        return equals(boo, ((Moo) other).boo);
+        Moo o = (Moo) other;
+        return equals(tagMap(), o.tagMap())
+            && equals(boo, o.boo);
       }
 
       @Override
       public int hashCode() {
         int result = hashCode;
-        return result != 0 ? result : (hashCode = boo != null ? boo.hashCode() : 0);
+        if (result == 0) {
+          result = tagMap() != null ? tagMap().hashCode() : 0;
+          result = result * 37 + (boo != null ? boo.hashCode() : 0);
+          hashCode = result;
+        }
+        return result;
       }
 
       public static final class Builder extends com.squareup.wire.Message.Builder<Moo, Builder> {
@@ -135,7 +145,7 @@ public final class Bar extends Message<Bar> {
 
         @Override
         public Moo build() {
-          return new Moo(this);
+          return new Moo(boo, buildTagMap());
         }
       }
     }

@@ -4,6 +4,7 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -23,25 +24,32 @@ public final class OneBytesField extends Message<OneBytesField> {
   public final ByteString opt_bytes;
 
   public OneBytesField(ByteString opt_bytes) {
-    this.opt_bytes = opt_bytes;
+    this(opt_bytes, null);
   }
 
-  private OneBytesField(Builder builder) {
-    this(builder.opt_bytes);
-    setBuilder(builder);
+  public OneBytesField(ByteString opt_bytes, TagMap tagMap) {
+    super(tagMap);
+    this.opt_bytes = opt_bytes;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof OneBytesField)) return false;
-    return equals(opt_bytes, ((OneBytesField) other).opt_bytes);
+    OneBytesField o = (OneBytesField) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(opt_bytes, o.opt_bytes);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = opt_bytes != null ? opt_bytes.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<OneBytesField, Builder> {
@@ -63,7 +71,7 @@ public final class OneBytesField extends Message<OneBytesField> {
 
     @Override
     public OneBytesField build() {
-      return new OneBytesField(this);
+      return new OneBytesField(opt_bytes, buildTagMap());
     }
   }
 }

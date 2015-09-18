@@ -4,6 +4,7 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -20,25 +21,32 @@ public final class J extends Message<J> {
   public final K k;
 
   public J(K k) {
-    this.k = k;
+    this(k, null);
   }
 
-  private J(Builder builder) {
-    this(builder.k);
-    setBuilder(builder);
+  public J(K k, TagMap tagMap) {
+    super(tagMap);
+    this.k = k;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof J)) return false;
-    return equals(k, ((J) other).k);
+    J o = (J) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(k, o.k);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = k != null ? k.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (k != null ? k.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<J, Builder> {
@@ -60,7 +68,7 @@ public final class J extends Message<J> {
 
     @Override
     public J build() {
-      return new J(this);
+      return new J(k, buildTagMap());
     }
   }
 }

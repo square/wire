@@ -5,6 +5,7 @@ package com.squareup.differentpackage.protos.foo;
 import com.squareup.differentpackage.protos.bar.Bar;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -21,25 +22,32 @@ public final class Foo extends Message<Foo> {
   public final Bar.Baz.Moo moo;
 
   public Foo(Bar.Baz.Moo moo) {
-    this.moo = moo;
+    this(moo, null);
   }
 
-  private Foo(Builder builder) {
-    this(builder.moo);
-    setBuilder(builder);
+  public Foo(Bar.Baz.Moo moo, TagMap tagMap) {
+    super(tagMap);
+    this.moo = moo;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof Foo)) return false;
-    return equals(moo, ((Foo) other).moo);
+    Foo o = (Foo) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(moo, o.moo);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = moo != null ? moo.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (moo != null ? moo.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Foo, Builder> {
@@ -61,7 +69,7 @@ public final class Foo extends Message<Foo> {
 
     @Override
     public Foo build() {
-      return new Foo(this);
+      return new Foo(moo, buildTagMap());
     }
   }
 }

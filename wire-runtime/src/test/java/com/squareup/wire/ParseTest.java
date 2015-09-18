@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class ParseTest {
+  @Ignore("https://github.com/square/wire/issues/398")
   @Test public void unknownTagIgnored() throws Exception {
     // tag 1 / type 0: 456
     // tag 2 / type 0: 789

@@ -4,6 +4,7 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -29,13 +30,13 @@ public final class E extends Message<E> {
   public final G g;
 
   public E(F f, G g) {
-    this.f = f;
-    this.g = g;
+    this(f, g, null);
   }
 
-  private E(Builder builder) {
-    this(builder.f, builder.g);
-    setBuilder(builder);
+  public E(F f, G g, TagMap tagMap) {
+    super(tagMap);
+    this.f = f;
+    this.g = g;
   }
 
   @Override
@@ -43,7 +44,8 @@ public final class E extends Message<E> {
     if (other == this) return true;
     if (!(other instanceof E)) return false;
     E o = (E) other;
-    return equals(f, o.f)
+    return equals(tagMap(), o.tagMap())
+        && equals(f, o.f)
         && equals(g, o.g);
   }
 
@@ -51,7 +53,8 @@ public final class E extends Message<E> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = f != null ? f.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (f != null ? f.hashCode() : 0);
       result = result * 37 + (g != null ? g.hashCode() : 0);
       hashCode = result;
     }
@@ -85,7 +88,7 @@ public final class E extends Message<E> {
 
     @Override
     public E build() {
-      return new E(this);
+      return new E(f, g, buildTagMap());
     }
   }
 
@@ -103,25 +106,32 @@ public final class E extends Message<E> {
     public final Integer i;
 
     public F(Integer i) {
-      this.i = i;
+      this(i, null);
     }
 
-    private F(Builder builder) {
-      this(builder.i);
-      setBuilder(builder);
+    public F(Integer i, TagMap tagMap) {
+      super(tagMap);
+      this.i = i;
     }
 
     @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof F)) return false;
-      return equals(i, ((F) other).i);
+      F o = (F) other;
+      return equals(tagMap(), o.tagMap())
+          && equals(i, o.i);
     }
 
     @Override
     public int hashCode() {
       int result = hashCode;
-      return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
+      if (result == 0) {
+        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = result * 37 + (i != null ? i.hashCode() : 0);
+        hashCode = result;
+      }
+      return result;
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<F, Builder> {
@@ -143,7 +153,7 @@ public final class E extends Message<E> {
 
       @Override
       public F build() {
-        return new F(this);
+        return new F(i, buildTagMap());
       }
     }
   }

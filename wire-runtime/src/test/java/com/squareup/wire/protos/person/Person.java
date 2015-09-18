@@ -4,6 +4,7 @@ package com.squareup.wire.protos.person;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
@@ -64,15 +65,15 @@ public final class Person extends Message<Person> {
   public final List<PhoneNumber> phone;
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
+    this(name, id, email, phone, null);
+  }
+
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone, TagMap tagMap) {
+    super(tagMap);
     this.name = name;
     this.id = id;
     this.email = email;
     this.phone = immutableCopyOf(phone);
-  }
-
-  private Person(Builder builder) {
-    this(builder.name, builder.id, builder.email, builder.phone);
-    setBuilder(builder);
   }
 
   @Override
@@ -80,7 +81,8 @@ public final class Person extends Message<Person> {
     if (other == this) return true;
     if (!(other instanceof Person)) return false;
     Person o = (Person) other;
-    return equals(name, o.name)
+    return equals(tagMap(), o.tagMap())
+        && equals(name, o.name)
         && equals(id, o.id)
         && equals(email, o.email)
         && equals(phone, o.phone);
@@ -90,7 +92,8 @@ public final class Person extends Message<Person> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (id != null ? id.hashCode() : 0);
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + (phone != null ? phone.hashCode() : 1);
@@ -159,7 +162,7 @@ public final class Person extends Message<Person> {
         throw missingRequiredFields(name, "name",
             id, "id");
       }
-      return new Person(this);
+      return new Person(name, id, email, phone, buildTagMap());
     }
   }
 
@@ -216,13 +219,13 @@ public final class Person extends Message<Person> {
     public final PhoneType type;
 
     public PhoneNumber(String number, PhoneType type) {
-      this.number = number;
-      this.type = type;
+      this(number, type, null);
     }
 
-    private PhoneNumber(Builder builder) {
-      this(builder.number, builder.type);
-      setBuilder(builder);
+    public PhoneNumber(String number, PhoneType type, TagMap tagMap) {
+      super(tagMap);
+      this.number = number;
+      this.type = type;
     }
 
     @Override
@@ -230,7 +233,8 @@ public final class Person extends Message<Person> {
       if (other == this) return true;
       if (!(other instanceof PhoneNumber)) return false;
       PhoneNumber o = (PhoneNumber) other;
-      return equals(number, o.number)
+      return equals(tagMap(), o.tagMap())
+          && equals(number, o.number)
           && equals(type, o.type);
     }
 
@@ -238,7 +242,8 @@ public final class Person extends Message<Person> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = number != null ? number.hashCode() : 0;
+        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = result * 37 + (number != null ? number.hashCode() : 0);
         result = result * 37 + (type != null ? type.hashCode() : 0);
         hashCode = result;
       }
@@ -281,7 +286,7 @@ public final class Person extends Message<Person> {
         if (number == null) {
           throw missingRequiredFields(number, "number");
         }
-        return new PhoneNumber(this);
+        return new PhoneNumber(number, type, buildTagMap());
       }
     }
   }

@@ -4,6 +4,7 @@ package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -23,25 +24,32 @@ public final class VersionOne extends Message<VersionOne> {
   public final Integer i;
 
   public VersionOne(Integer i) {
-    this.i = i;
+    this(i, null);
   }
 
-  private VersionOne(Builder builder) {
-    this(builder.i);
-    setBuilder(builder);
+  public VersionOne(Integer i, TagMap tagMap) {
+    super(tagMap);
+    this.i = i;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof VersionOne)) return false;
-    return equals(i, ((VersionOne) other).i);
+    VersionOne o = (VersionOne) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(i, o.i);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = i != null ? i.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (i != null ? i.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<VersionOne, Builder> {
@@ -63,7 +71,7 @@ public final class VersionOne extends Message<VersionOne> {
 
     @Override
     public VersionOne build() {
-      return new VersionOne(this);
+      return new VersionOne(i, buildTagMap());
     }
   }
 }

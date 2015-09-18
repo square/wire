@@ -19,6 +19,7 @@ import com.squareup.wire.protos.unknownfields.VersionOne;
 import com.squareup.wire.protos.unknownfields.VersionTwo;
 import java.io.IOException;
 import java.util.Arrays;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +29,7 @@ public class UnknownFieldsTest {
   private final ProtoAdapter<VersionOne> v1Adapter = VersionOne.ADAPTER;
   private final ProtoAdapter<VersionTwo> v2Adapter = VersionTwo.ADAPTER;
 
+  @Ignore("https://github.com/square/wire/issues/398")
   @Test
   public void testUnknownFields() throws IOException {
     VersionTwo v2 = new VersionTwo.Builder()

@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -75,25 +76,32 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   public final List<Location> location;
 
   public SourceCodeInfo(List<Location> location) {
-    this.location = immutableCopyOf(location);
+    this(location, null);
   }
 
-  private SourceCodeInfo(Builder builder) {
-    this(builder.location);
-    setBuilder(builder);
+  public SourceCodeInfo(List<Location> location, TagMap tagMap) {
+    super(tagMap);
+    this.location = immutableCopyOf(location);
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof SourceCodeInfo)) return false;
-    return equals(location, ((SourceCodeInfo) other).location);
+    SourceCodeInfo o = (SourceCodeInfo) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(location, o.location);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = location != null ? location.hashCode() : 1);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (location != null ? location.hashCode() : 1);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<SourceCodeInfo, Builder> {
@@ -160,7 +168,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
 
     @Override
     public SourceCodeInfo build() {
-      return new SourceCodeInfo(this);
+      return new SourceCodeInfo(location, buildTagMap());
     }
   }
 
@@ -216,13 +224,13 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     public final List<Integer> span;
 
     public Location(List<Integer> path, List<Integer> span) {
-      this.path = immutableCopyOf(path);
-      this.span = immutableCopyOf(span);
+      this(path, span, null);
     }
 
-    private Location(Builder builder) {
-      this(builder.path, builder.span);
-      setBuilder(builder);
+    public Location(List<Integer> path, List<Integer> span, TagMap tagMap) {
+      super(tagMap);
+      this.path = immutableCopyOf(path);
+      this.span = immutableCopyOf(span);
     }
 
     @Override
@@ -230,7 +238,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
       if (other == this) return true;
       if (!(other instanceof Location)) return false;
       Location o = (Location) other;
-      return equals(path, o.path)
+      return equals(tagMap(), o.tagMap())
+          && equals(path, o.path)
           && equals(span, o.span);
     }
 
@@ -238,7 +247,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = path != null ? path.hashCode() : 1;
+        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = result * 37 + (path != null ? path.hashCode() : 1);
         result = result * 37 + (span != null ? span.hashCode() : 1);
         hashCode = result;
       }
@@ -304,7 +314,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
 
       @Override
       public Location build() {
-        return new Location(this);
+        return new Location(path, span, buildTagMap());
       }
     }
   }

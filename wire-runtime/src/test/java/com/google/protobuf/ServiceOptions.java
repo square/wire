@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -30,12 +31,12 @@ public final class ServiceOptions extends Message<ServiceOptions> {
   public final List<UninterpretedOption> uninterpreted_option;
 
   public ServiceOptions(List<UninterpretedOption> uninterpreted_option) {
-    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this(uninterpreted_option, null);
   }
 
-  private ServiceOptions(Builder builder) {
-    this(builder.uninterpreted_option);
-    setBuilder(builder);
+  public ServiceOptions(List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
+    super(tagMap);
+    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
   }
 
   @Override
@@ -43,15 +44,15 @@ public final class ServiceOptions extends Message<ServiceOptions> {
     if (other == this) return true;
     if (!(other instanceof ServiceOptions)) return false;
     ServiceOptions o = (ServiceOptions) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(uninterpreted_option, o.uninterpreted_option);
+    return equals(tagMap(), o.tagMap())
+        && equals(uninterpreted_option, o.uninterpreted_option);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = extensionsHashCode();
+      result = tagMap() != null ? tagMap().hashCode() : 0;
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
       hashCode = result;
     }
@@ -84,7 +85,7 @@ public final class ServiceOptions extends Message<ServiceOptions> {
 
     @Override
     public ServiceOptions build() {
-      return new ServiceOptions(this);
+      return new ServiceOptions(uninterpreted_option, buildTagMap());
     }
   }
 }

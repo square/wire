@@ -100,8 +100,6 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     }
   }
 
-  // Writing
-
   @Override public int encodedSize(M message) {
     int cachedSerializedSize = message.cachedSerializedSize;
     if (cachedSerializedSize != 0) return cachedSerializedSize;
@@ -112,8 +110,10 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       if (value == null) continue;
       size += fieldBinding.adapter().encodedSize(fieldBinding.tag, value);
     }
+    if (message.tagMap != null) {
+      size += message.tagMap.encodedSize();
+    }
 
-    size += message.tagMapEncodedSize();
     message.cachedSerializedSize = size;
     return size;
   }
@@ -207,7 +207,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
         } else {
           Extension<?, ?> extension = reader.getExtension(messageType, tag);
           Object value = extension.getAdapter().decode(reader);
-          builder.ensureTagMap().add(extension, value);
+          builder.tagMap().add(extension, value);
         }
       } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
         // An unknown Enum value was encountered, store it as an unknown field

@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -68,14 +69,14 @@ public final class MessageOptions extends Message<MessageOptions> {
   public final List<UninterpretedOption> uninterpreted_option;
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option) {
+    this(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, null);
+  }
+
+  public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
+    super(tagMap);
     this.message_set_wire_format = message_set_wire_format;
     this.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
-  }
-
-  private MessageOptions(Builder builder) {
-    this(builder.message_set_wire_format, builder.no_standard_descriptor_accessor, builder.uninterpreted_option);
-    setBuilder(builder);
   }
 
   @Override
@@ -83,8 +84,8 @@ public final class MessageOptions extends Message<MessageOptions> {
     if (other == this) return true;
     if (!(other instanceof MessageOptions)) return false;
     MessageOptions o = (MessageOptions) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(message_set_wire_format, o.message_set_wire_format)
+    return equals(tagMap(), o.tagMap())
+        && equals(message_set_wire_format, o.message_set_wire_format)
         && equals(no_standard_descriptor_accessor, o.no_standard_descriptor_accessor)
         && equals(uninterpreted_option, o.uninterpreted_option);
   }
@@ -93,7 +94,7 @@ public final class MessageOptions extends Message<MessageOptions> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = extensionsHashCode();
+      result = tagMap() != null ? tagMap().hashCode() : 0;
       result = result * 37 + (message_set_wire_format != null ? message_set_wire_format.hashCode() : 0);
       result = result * 37 + (no_standard_descriptor_accessor != null ? no_standard_descriptor_accessor.hashCode() : 0);
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
@@ -165,7 +166,7 @@ public final class MessageOptions extends Message<MessageOptions> {
 
     @Override
     public MessageOptions build() {
-      return new MessageOptions(this);
+      return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, buildTagMap());
     }
   }
 }

@@ -4,6 +4,7 @@ package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -31,13 +32,13 @@ public final class NotRedacted extends Message<NotRedacted> {
   public final String b;
 
   public NotRedacted(String a, String b) {
-    this.a = a;
-    this.b = b;
+    this(a, b, null);
   }
 
-  private NotRedacted(Builder builder) {
-    this(builder.a, builder.b);
-    setBuilder(builder);
+  public NotRedacted(String a, String b, TagMap tagMap) {
+    super(tagMap);
+    this.a = a;
+    this.b = b;
   }
 
   @Override
@@ -45,7 +46,8 @@ public final class NotRedacted extends Message<NotRedacted> {
     if (other == this) return true;
     if (!(other instanceof NotRedacted)) return false;
     NotRedacted o = (NotRedacted) other;
-    return equals(a, o.a)
+    return equals(tagMap(), o.tagMap())
+        && equals(a, o.a)
         && equals(b, o.b);
   }
 
@@ -53,7 +55,8 @@ public final class NotRedacted extends Message<NotRedacted> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = a != null ? a.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       hashCode = result;
     }
@@ -87,7 +90,7 @@ public final class NotRedacted extends Message<NotRedacted> {
 
     @Override
     public NotRedacted build() {
-      return new NotRedacted(this);
+      return new NotRedacted(a, b, buildTagMap());
     }
   }
 }

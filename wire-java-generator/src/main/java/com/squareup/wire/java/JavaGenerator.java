@@ -34,6 +34,7 @@ import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoType;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.schema.EnumConstant;
@@ -79,6 +80,7 @@ public final class JavaGenerator {
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
   static final ClassName EXTENSION = ClassName.get(Extension.class);
+  static final ClassName TAGMAP = ClassName.get(TagMap.class);
   static final TypeName MESSAGE_OPTIONS = ClassName.get("com.google.protobuf", "MessageOptions");
   static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
   static final TypeName ENUM_OPTIONS = ClassName.get("com.google.protobuf", "EnumOptions");
@@ -404,7 +406,7 @@ public final class JavaGenerator {
     }
 
     builder.addMethod(messageFieldsConstructor(type));
-    builder.addMethod(messageBuilderConstructor(type, builderJavaType));
+    builder.addMethod(messageFieldsAndTagMapConstructor(type));
     builder.addMethod(messageEquals(type));
     builder.addMethod(messageHashCode(type));
     builder.addType(builder(type, javaType, builderJavaType));
@@ -516,13 +518,36 @@ public final class JavaGenerator {
   // Example:
   //
   // public SimpleMessage(int optional_int32, long optional_int64) {
-  //   this.optional_int32 = optional_int32;
-  //   this.optional_int64 = optional_int64;
+  //   this(builder.optional_int32, builder.optional_int64, null);
   // }
   //
   private MethodSpec messageFieldsConstructor(MessageType type) {
     MethodSpec.Builder result = MethodSpec.constructorBuilder();
     result.addModifiers(PUBLIC);
+    result.addCode("this(");
+    for (Field field : type.fieldsAndOneOfFields()) {
+      TypeName javaType = fieldType(field);
+      String sanitizedName = sanitize(field.name());
+      result.addParameter(javaType, sanitizedName);
+      result.addCode("$L, ", sanitize(field.name()));
+    }
+    result.addCode("null);\n");
+    return result.build();
+  }
+
+  // Example:
+  //
+  // public SimpleMessage(int optional_int32, long optional_int64, TagMap tagMap) {
+  //   super(tagMap);
+  //   this.optional_int32 = optional_int32;
+  //   this.optional_int64 = optional_int64;
+  // }
+  //
+  private MethodSpec messageFieldsAndTagMapConstructor(MessageType type) {
+    MethodSpec.Builder result = MethodSpec.constructorBuilder()
+        .addModifiers(PUBLIC)
+        .addStatement("super(tagMap)");
+
     for (Field field : type.fieldsAndOneOfFields()) {
       TypeName javaType = fieldType(field);
       String sanitizedName = sanitize(field.name());
@@ -533,32 +558,9 @@ public final class JavaGenerator {
         result.addStatement("this.$L = $L", sanitizedName, sanitizedName);
       }
     }
-    return result.build();
-  }
 
-  // Example:
-  //
-  // private SimpleMessage(Builder builder) {
-  //   this(builder.optional_int32, builder.optional_int64);
-  //   setBuilder(builder);
-  // }
-  //
-  private MethodSpec messageBuilderConstructor(MessageType type, ClassName builderJavaType) {
-    MethodSpec.Builder result = MethodSpec.constructorBuilder()
-        .addModifiers(PRIVATE)
-        .addParameter(builderJavaType, "builder");
+    result.addParameter(TAGMAP, "tagMap");
 
-    List<Field> fields = type.fieldsAndOneOfFields();
-    if (fields.size() > 0) {
-      result.addCode("this(");
-      for (int i = 0; i < fields.size(); i++) {
-        if (i > 0) result.addCode(", ");
-        Field field = fields.get(i);
-        result.addCode("builder.$L", sanitize(field.name()));
-      }
-      result.addCode(");\n");
-    }
-    result.addStatement("setBuilder(builder)");
     return result.build();
   }
 
@@ -569,8 +571,8 @@ public final class JavaGenerator {
   //   if (other == this) return true;
   //   if (!(other instanceof SimpleMessage)) return false;
   //   SimpleMessage o = (SimpleMessage) other;
-  //   if (!Wire.equals(optional_int32, o.optional_int32)) return false;
-  //   return true;
+  //   return equals(tagMap(), o.tagMap())
+  //       && equals(optional_int32, o.optional_int32);
   //
   private MethodSpec messageEquals(MessageType type) {
     TypeName javaType = typeName(type.name());
@@ -589,23 +591,11 @@ public final class JavaGenerator {
     result.addStatement("if (other == this) return true");
     result.addStatement("if (!(other instanceof $T)) return false", javaType);
 
-    if (fields.size() == 1 && type.extensions().isEmpty()) {
-      String name = sanitize(fields.get(0).name());
-      result.addStatement("return equals($L, (($T) other).$L)",
-          addThisIfOneOf(name, "other", "o"), javaType, name);
-      return result.build();
-    }
-
     result.addStatement("$T o = ($T) other", javaType, javaType);
-    if (!type.extensions().isEmpty()) {
-      result.addStatement("if (!extensionsEqual(o)) return false");
-    }
-    result.addCode("$[return ");
-    for (int i = 0; i < fields.size(); i++) {
-      if (i > 0) result.addCode("\n&& ");
-      Field field = fields.get(i);
+    result.addCode("$[return equals(tagMap(), o.tagMap())");
+    for (Field field : fields) {
       String name = sanitize(field.name());
-      result.addCode("equals($L, o.$L)", addThisIfOneOf(name, "other", "o"), name);
+      result.addCode("\n&& equals($L, o.$L)", addThisIfOneOf(name, "other", "o"), name);
     }
     result.addCode(";\n$]");
 
@@ -616,12 +606,13 @@ public final class JavaGenerator {
   //
   // @Override
   // public int hashCode() {
-  //   if (hashCode == 0) {
-  //     int result = super.extensionsHashCode();
+  //   int result = hashCode;
+  //   if (result == 0) {
+  //     result = tagMap() != null ? tagMap().hashCode() : 0
   //     result = result * 37 + (f != null ? f.hashCode() : 0);
   //     hashCode = result;
   //   }
-  //   return hashCode;
+  //   return result;
   // }
   //
   // For repeated fields, the final "0" in the example above changes to a "1"
@@ -634,39 +625,19 @@ public final class JavaGenerator {
         .returns(int.class);
 
     List<Field> fields = type.fieldsAndOneOfFields();
-    if (fields.isEmpty() && type.extensions().isEmpty()) {
-      result.addStatement("return 0");
-      return result.build();
-    }
-
-    if (fields.size() == 1 && type.extensions().isEmpty()) {
-      Field field = fields.get(0);
-      String name = sanitize(field.name());
-      result.addStatement("int result = hashCode");
-      result.addStatement(
-          "return result != 0 ? result : (hashCode = $L != null ? $L.hashCode() : $L)",
-          addThisIfOneOf(name, "result"), addThisIfOneOf(name, "result"), nullHashValue(field));
+    if (fields.isEmpty()) {
+      result.addStatement("return tagMap() != null ? tagMap().hashCode() : 0");
       return result.build();
     }
 
     result.addStatement("int result = hashCode");
     result.beginControlFlow("if (result == 0)");
-    boolean afterFirstAssignment = false;
-    if (!type.extensions().isEmpty()) {
-      result.addStatement("result = extensionsHashCode()");
-      afterFirstAssignment = true;
-    }
+    result.addStatement("result = tagMap() != null ? tagMap().hashCode() : 0");
     for (Field field : fields) {
       String name = sanitize(field.name());
       name = addThisIfOneOf(name, "result");
-      if (afterFirstAssignment) {
-        result.addStatement("result = result * 37 + ($L != null ? $L.hashCode() : $L)",
-            name, name, nullHashValue(field));
-      } else {
-        result.addStatement("result = $L != null ? $L.hashCode() : $L",
-            name, name, nullHashValue(field));
-        afterFirstAssignment = true;
-      }
+      result.addStatement("result = result * 37 + ($L != null ? $L.hashCode() : $L)",
+          name, name, nullHashValue(field));
     }
     result.addStatement("hashCode = result");
     result.endControlFlow();
@@ -822,7 +793,11 @@ public final class JavaGenerator {
           .endControlFlow();
     }
 
-    result.addStatement("return new $T(this)", javaType);
+    result.addCode("return new $T(", javaType);
+    for (Field field : message.fieldsAndOneOfFields()) {
+      result.addCode("$L, ", sanitize(field.name()));
+    }
+    result.addCode("buildTagMap());\n");
     return result.build();
   }
 

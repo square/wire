@@ -4,6 +4,7 @@ package com.squareup.wire.protos.single_level;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -23,25 +24,32 @@ public final class Bar extends Message<Bar> {
   public final Integer baz;
 
   public Bar(Integer baz) {
-    this.baz = baz;
+    this(baz, null);
   }
 
-  private Bar(Builder builder) {
-    this(builder.baz);
-    setBuilder(builder);
+  public Bar(Integer baz, TagMap tagMap) {
+    super(tagMap);
+    this.baz = baz;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof Bar)) return false;
-    return equals(baz, ((Bar) other).baz);
+    Bar o = (Bar) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(baz, o.baz);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = baz != null ? baz.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (baz != null ? baz.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Bar, Builder> {
@@ -63,7 +71,7 @@ public final class Bar extends Message<Bar> {
 
     @Override
     public Bar build() {
-      return new Bar(this);
+      return new Bar(baz, buildTagMap());
     }
   }
 }

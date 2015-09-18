@@ -4,6 +4,7 @@ package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -31,13 +32,13 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   public final List<Integer> pack_int32;
 
   public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32) {
-    this.rep_int32 = immutableCopyOf(rep_int32);
-    this.pack_int32 = immutableCopyOf(pack_int32);
+    this(rep_int32, pack_int32, null);
   }
 
-  private RepeatedAndPacked(Builder builder) {
-    this(builder.rep_int32, builder.pack_int32);
-    setBuilder(builder);
+  public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32, TagMap tagMap) {
+    super(tagMap);
+    this.rep_int32 = immutableCopyOf(rep_int32);
+    this.pack_int32 = immutableCopyOf(pack_int32);
   }
 
   @Override
@@ -45,7 +46,8 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
     if (other == this) return true;
     if (!(other instanceof RepeatedAndPacked)) return false;
     RepeatedAndPacked o = (RepeatedAndPacked) other;
-    return equals(rep_int32, o.rep_int32)
+    return equals(tagMap(), o.tagMap())
+        && equals(rep_int32, o.rep_int32)
         && equals(pack_int32, o.pack_int32);
   }
 
@@ -53,7 +55,8 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = rep_int32 != null ? rep_int32.hashCode() : 1;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 1);
       result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
       hashCode = result;
     }
@@ -87,7 +90,7 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
 
     @Override
     public RepeatedAndPacked build() {
-      return new RepeatedAndPacked(this);
+      return new RepeatedAndPacked(rep_int32, pack_int32, buildTagMap());
     }
   }
 }

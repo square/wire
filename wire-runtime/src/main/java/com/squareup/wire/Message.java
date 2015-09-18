@@ -28,8 +28,7 @@ import java.util.Set;
 public abstract class Message<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
-  /** Set to null until a field is added. */
-  transient TagMap tagMap;
+  final transient TagMap tagMap;
 
   /** If not {@code 0} then the serialized size of this message. */
   transient int cachedSerializedSize = 0;
@@ -37,16 +36,12 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected transient int hashCode = 0;
 
-  protected Message() {
+  protected Message(TagMap tagMap) {
+    this.tagMap = tagMap;
   }
 
-  /**
-   * Initializes any unknown field data to that stored in the given {@code Builder}.
-   */
-  protected final void setBuilder(Builder builder) {
-    if (builder.tagMapBuilder != null) {
-      tagMap = builder.tagMapBuilder.build();
-    }
+  public final TagMap tagMap() {
+    return tagMap;
   }
 
   /** Utility method to return a mutable copy of a given List. Used by generated code. */
@@ -80,10 +75,6 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     return adapter.fromInt(value);
   }
 
-  int tagMapEncodedSize() {
-    return tagMap == null ? 0 : tagMap.encodedSize();
-  }
-
   protected static boolean equals(Object a, Object b) {
     return a == b || (a != null && a.equals(b));
   }
@@ -103,23 +94,6 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    */
   public final <E> E getExtension(Extension<T, E> extension) {
     return tagMap != null ? (E) tagMap.get(extension) : null;
-  }
-
-  /**
-   * Returns true if the extensions on this message equals the extensions of
-   * {@code other}.
-   */
-  protected final boolean extensionsEqual(Message<T> other) {
-    return tagMap != null
-        ? tagMap.equals(other.tagMap)
-        : other.tagMap == null;
-  }
-
-  /**
-   * Returns a hash code for the extensions on this message.
-   */
-  protected final int extensionsHashCode() {
-    return tagMap != null ? tagMap.hashCode() : 0;
   }
 
   @SuppressWarnings("unchecked")
@@ -154,7 +128,8 @@ public abstract class Message<T extends Message<T>> implements Serializable {
       }
     }
 
-    TagMap.Builder ensureTagMap() {
+    /** The {@link TagMap} builder in which unknown fields and extensions are stored. */
+    public TagMap.Builder tagMap() {
       if (tagMapBuilder == null) {
         tagMapBuilder = new TagMap.Builder();
       }
@@ -226,9 +201,14 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     }
 
     /**
-     * Returns an immutable {@link com.squareup.wire.Message} based on the fields that have been set
-     * in this builder.
+     * Returns an immutable {@link TagMap} based on the unknown fields and extensions set in this
+     * builder, or null.
      */
+    public TagMap buildTagMap() {
+      return tagMapBuilder != null ? tagMapBuilder.build() : null;
+    }
+
+    /** Returns an immutable {@link Message} based on the fields that set in this builder. */
     public abstract T build();
   }
 }
