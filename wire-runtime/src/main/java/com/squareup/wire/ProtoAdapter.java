@@ -381,71 +381,75 @@ public abstract class ProtoAdapter<E> {
   ProtoAdapter<?> withLabel(WireField.Label label) {
     if (label.isRepeated()) {
       return label.isPacked()
-          ? createPacked(this)
-          : createRepeated(this);
+          ? asPacked()
+          : asRepeated();
     }
     return this;
   }
 
-  private static <T> ProtoAdapter<List<T>> createPacked(final ProtoAdapter<T> adapter) {
-    if (adapter.fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
+  /** Returns an adapter for {@link E} but as a packed, repeated value. */
+  public ProtoAdapter<List<E>> asPacked() {
+    if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       throw new IllegalArgumentException("Unable to pack a length-delimited type.");
     }
-    return new ProtoAdapter<List<T>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
-      @Override public int encodedSize(List<T> value) {
+    return new ProtoAdapter<List<E>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
+      @Override public int encodedSize(List<E> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
-          size += adapter.encodedSize(value.get(i));
+          size += ProtoAdapter.this.encodedSize(value.get(i));
         }
         return size;
       }
 
-      @Override public void encode(ProtoWriter writer, List<T> value) throws IOException {
+      @Override public void encode(ProtoWriter writer, List<E> value) throws IOException {
         for (int i = 0, count = value.size(); i < count; i++) {
-          adapter.encode(writer, value.get(i));
+          ProtoAdapter.this.encode(writer, value.get(i));
         }
       }
 
-      @Override public List<T> decode(ProtoReader reader) throws IOException {
-        throw new UnsupportedOperationException();
+      @Override public List<E> decode(ProtoReader reader) throws IOException {
+        E value = ProtoAdapter.this.decode(reader);
+        return Collections.singletonList(value);
       }
 
-      @Override public List<T> redact(List<T> value) {
+      @Override public List<E> redact(List<E> value) {
         return Collections.emptyList();
       }
     };
   }
 
-  private static <T> ProtoAdapter<List<T>> createRepeated(final ProtoAdapter<T> adapter) {
-    return new ProtoAdapter<List<T>>(adapter.fieldEncoding, List.class) {
-      @Override public int encodedSize(List<T> value) {
-        throw new UnsupportedOperationException();
+  /** Returns an adapter for {@link E} but as a repeated value. */
+  public ProtoAdapter<List<E>> asRepeated() {
+    return new ProtoAdapter<List<E>>(fieldEncoding, List.class) {
+      @Override public int encodedSize(List<E> value) {
+        throw new UnsupportedOperationException("Repeated values can only be sized with a tag.");
       }
 
-      @Override public int encodedSize(int tag, List<T> value) {
+      @Override public int encodedSize(int tag, List<E> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
-          size += adapter.encodedSize(tag, value.get(i));
+          size += ProtoAdapter.this.encodedSize(tag, value.get(i));
         }
         return size;
       }
 
-      @Override public void encode(ProtoWriter writer, List<T> value) throws IOException {
-        throw new UnsupportedOperationException();
+      @Override public void encode(ProtoWriter writer, List<E> value) throws IOException {
+        throw new UnsupportedOperationException("Repeated values can only be encoded with a tag.");
       }
 
-      @Override public void encodeTagged(ProtoWriter writer, int tag, List<T> value)
+      @Override public void encodeTagged(ProtoWriter writer, int tag, List<E> value)
           throws IOException {
         for (int i = 0, count = value.size(); i < count; i++) {
-          adapter.encodeTagged(writer, tag, value.get(i));
+          ProtoAdapter.this.encodeTagged(writer, tag, value.get(i));
         }
       }
 
-      @Override public List<T> decode(ProtoReader reader) throws IOException {
-        throw new UnsupportedOperationException();
+      @Override public List<E> decode(ProtoReader reader) throws IOException {
+        E value = ProtoAdapter.this.decode(reader);
+        return Collections.singletonList(value);
       }
 
-      @Override public List<T> redact(List<T> value) {
+      @Override public List<E> redact(List<E> value) {
         return Collections.emptyList();
       }
     };
