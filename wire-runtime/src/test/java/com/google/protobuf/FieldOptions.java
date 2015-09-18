@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
@@ -93,6 +94,11 @@ public final class FieldOptions extends Message<FieldOptions> {
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option) {
+    this(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, null);
+  }
+
+  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
+    super(tagMap);
     this.ctype = ctype;
     this.packed = packed;
     this.deprecated = deprecated;
@@ -100,18 +106,13 @@ public final class FieldOptions extends Message<FieldOptions> {
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
   }
 
-  private FieldOptions(Builder builder) {
-    this(builder.ctype, builder.packed, builder.deprecated, builder.experimental_map_key, builder.uninterpreted_option);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FieldOptions)) return false;
     FieldOptions o = (FieldOptions) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(ctype, o.ctype)
+    return equals(tagMap(), o.tagMap())
+        && equals(ctype, o.ctype)
         && equals(packed, o.packed)
         && equals(deprecated, o.deprecated)
         && equals(experimental_map_key, o.experimental_map_key)
@@ -122,7 +123,7 @@ public final class FieldOptions extends Message<FieldOptions> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = extensionsHashCode();
+      result = tagMap() != null ? tagMap().hashCode() : 0;
       result = result * 37 + (ctype != null ? ctype.hashCode() : 0);
       result = result * 37 + (packed != null ? packed.hashCode() : 0);
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
@@ -219,7 +220,7 @@ public final class FieldOptions extends Message<FieldOptions> {
 
     @Override
     public FieldOptions build() {
-      return new FieldOptions(this);
+      return new FieldOptions(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, buildTagMap());
     }
   }
 

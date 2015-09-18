@@ -5,6 +5,7 @@ package com.squareup.wire.protos.custom_options;
 import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.protos.foreign.Ext_foreign;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.lang.Object;
@@ -73,10 +74,11 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
       .build();
 
   public MessageWithOptions() {
+    this(null);
   }
 
-  private MessageWithOptions(Builder builder) {
-    setBuilder(builder);
+  public MessageWithOptions(TagMap tagMap) {
+    super(tagMap);
   }
 
   @Override
@@ -86,7 +88,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
 
   @Override
   public int hashCode() {
-    return 0;
+    return tagMap() != null ? tagMap().hashCode() : 0;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions, Builder> {
@@ -99,7 +101,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
 
     @Override
     public MessageWithOptions build() {
-      return new MessageWithOptions(this);
+      return new MessageWithOptions(buildTagMap());
     }
   }
 }

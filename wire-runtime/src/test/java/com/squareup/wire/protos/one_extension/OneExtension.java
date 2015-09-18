@@ -4,6 +4,7 @@ package com.squareup.wire.protos.one_extension;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -23,12 +24,12 @@ public final class OneExtension extends Message<OneExtension> {
   public final String id;
 
   public OneExtension(String id) {
-    this.id = id;
+    this(id, null);
   }
 
-  private OneExtension(Builder builder) {
-    this(builder.id);
-    setBuilder(builder);
+  public OneExtension(String id, TagMap tagMap) {
+    super(tagMap);
+    this.id = id;
   }
 
   @Override
@@ -36,15 +37,15 @@ public final class OneExtension extends Message<OneExtension> {
     if (other == this) return true;
     if (!(other instanceof OneExtension)) return false;
     OneExtension o = (OneExtension) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(id, o.id);
+    return equals(tagMap(), o.tagMap())
+        && equals(id, o.id);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = extensionsHashCode();
+      result = tagMap() != null ? tagMap().hashCode() : 0;
       result = result * 37 + (id != null ? id.hashCode() : 0);
       hashCode = result;
     }
@@ -70,7 +71,7 @@ public final class OneExtension extends Message<OneExtension> {
 
     @Override
     public OneExtension build() {
-      return new OneExtension(this);
+      return new OneExtension(id, buildTagMap());
     }
   }
 }

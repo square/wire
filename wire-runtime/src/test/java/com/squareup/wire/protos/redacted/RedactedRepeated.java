@@ -5,6 +5,7 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -30,25 +31,32 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   public final List<String> a;
 
   public RedactedRepeated(List<String> a) {
-    this.a = immutableCopyOf(a);
+    this(a, null);
   }
 
-  private RedactedRepeated(Builder builder) {
-    this(builder.a);
-    setBuilder(builder);
+  public RedactedRepeated(List<String> a, TagMap tagMap) {
+    super(tagMap);
+    this.a = immutableCopyOf(a);
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof RedactedRepeated)) return false;
-    return equals(a, ((RedactedRepeated) other).a);
+    RedactedRepeated o = (RedactedRepeated) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(a, o.a);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 1);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (a != null ? a.hashCode() : 1);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRepeated, Builder> {
@@ -70,7 +78,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
 
     @Override
     public RedactedRepeated build() {
-      return new RedactedRepeated(this);
+      return new RedactedRepeated(a, buildTagMap());
     }
   }
 }

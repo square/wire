@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -88,6 +89,11 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
   public final String aggregate_value;
 
   public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value) {
+    this(name, identifier_value, positive_int_value, negative_int_value, double_value, string_value, aggregate_value, null);
+  }
+
+  public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value, TagMap tagMap) {
+    super(tagMap);
     this.name = immutableCopyOf(name);
     this.identifier_value = identifier_value;
     this.positive_int_value = positive_int_value;
@@ -97,17 +103,13 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
     this.aggregate_value = aggregate_value;
   }
 
-  private UninterpretedOption(Builder builder) {
-    this(builder.name, builder.identifier_value, builder.positive_int_value, builder.negative_int_value, builder.double_value, builder.string_value, builder.aggregate_value);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof UninterpretedOption)) return false;
     UninterpretedOption o = (UninterpretedOption) other;
-    return equals(name, o.name)
+    return equals(tagMap(), o.tagMap())
+        && equals(name, o.name)
         && equals(identifier_value, o.identifier_value)
         && equals(positive_int_value, o.positive_int_value)
         && equals(negative_int_value, o.negative_int_value)
@@ -120,7 +122,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = name != null ? name.hashCode() : 1;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (name != null ? name.hashCode() : 1);
       result = result * 37 + (identifier_value != null ? identifier_value.hashCode() : 0);
       result = result * 37 + (positive_int_value != null ? positive_int_value.hashCode() : 0);
       result = result * 37 + (negative_int_value != null ? negative_int_value.hashCode() : 0);
@@ -203,7 +206,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
     @Override
     public UninterpretedOption build() {
-      return new UninterpretedOption(this);
+      return new UninterpretedOption(name, identifier_value, positive_int_value, negative_int_value, double_value, string_value, aggregate_value, buildTagMap());
     }
   }
 
@@ -238,13 +241,13 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
     public final Boolean is_extension;
 
     public NamePart(String name_part, Boolean is_extension) {
-      this.name_part = name_part;
-      this.is_extension = is_extension;
+      this(name_part, is_extension, null);
     }
 
-    private NamePart(Builder builder) {
-      this(builder.name_part, builder.is_extension);
-      setBuilder(builder);
+    public NamePart(String name_part, Boolean is_extension, TagMap tagMap) {
+      super(tagMap);
+      this.name_part = name_part;
+      this.is_extension = is_extension;
     }
 
     @Override
@@ -252,7 +255,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
       if (other == this) return true;
       if (!(other instanceof NamePart)) return false;
       NamePart o = (NamePart) other;
-      return equals(name_part, o.name_part)
+      return equals(tagMap(), o.tagMap())
+          && equals(name_part, o.name_part)
           && equals(is_extension, o.is_extension);
     }
 
@@ -260,7 +264,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = name_part != null ? name_part.hashCode() : 0;
+        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = result * 37 + (name_part != null ? name_part.hashCode() : 0);
         result = result * 37 + (is_extension != null ? is_extension.hashCode() : 0);
         hashCode = result;
       }
@@ -299,7 +304,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
           throw missingRequiredFields(name_part, "name_part",
               is_extension, "is_extension");
         }
-        return new NamePart(this);
+        return new NamePart(name_part, is_extension, buildTagMap());
       }
     }
   }

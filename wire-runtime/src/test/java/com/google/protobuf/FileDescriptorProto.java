@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -101,6 +102,11 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   public final SourceCodeInfo source_code_info;
 
   public FileDescriptorProto(String name, String _package, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info) {
+    this(name, _package, dependency, message_type, enum_type, service, extension, options, source_code_info, null);
+  }
+
+  public FileDescriptorProto(String name, String _package, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info, TagMap tagMap) {
+    super(tagMap);
     this.name = name;
     this._package = _package;
     this.dependency = immutableCopyOf(dependency);
@@ -112,17 +118,13 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
     this.source_code_info = source_code_info;
   }
 
-  private FileDescriptorProto(Builder builder) {
-    this(builder.name, builder._package, builder.dependency, builder.message_type, builder.enum_type, builder.service, builder.extension, builder.options, builder.source_code_info);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FileDescriptorProto)) return false;
     FileDescriptorProto o = (FileDescriptorProto) other;
-    return equals(name, o.name)
+    return equals(tagMap(), o.tagMap())
+        && equals(name, o.name)
         && equals(_package, o._package)
         && equals(dependency, o.dependency)
         && equals(message_type, o.message_type)
@@ -137,7 +139,8 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (_package != null ? _package.hashCode() : 0);
       result = result * 37 + (dependency != null ? dependency.hashCode() : 1);
       result = result * 37 + (message_type != null ? message_type.hashCode() : 1);
@@ -252,7 +255,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
 
     @Override
     public FileDescriptorProto build() {
-      return new FileDescriptorProto(this);
+      return new FileDescriptorProto(name, _package, dependency, message_type, enum_type, service, extension, options, source_code_info, buildTagMap());
     }
   }
 }

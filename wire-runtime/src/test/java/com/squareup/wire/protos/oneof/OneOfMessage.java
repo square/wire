@@ -4,6 +4,7 @@ package com.squareup.wire.protos.oneof;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -38,13 +39,13 @@ public final class OneOfMessage extends Message<OneOfMessage> {
   public final String bar;
 
   public OneOfMessage(Integer foo, String bar) {
-    this.foo = foo;
-    this.bar = bar;
+    this(foo, bar, null);
   }
 
-  private OneOfMessage(Builder builder) {
-    this(builder.foo, builder.bar);
-    setBuilder(builder);
+  public OneOfMessage(Integer foo, String bar, TagMap tagMap) {
+    super(tagMap);
+    this.foo = foo;
+    this.bar = bar;
   }
 
   @Override
@@ -52,7 +53,8 @@ public final class OneOfMessage extends Message<OneOfMessage> {
     if (other == this) return true;
     if (!(other instanceof OneOfMessage)) return false;
     OneOfMessage o = (OneOfMessage) other;
-    return equals(foo, o.foo)
+    return equals(tagMap(), o.tagMap())
+        && equals(foo, o.foo)
         && equals(bar, o.bar);
   }
 
@@ -60,7 +62,8 @@ public final class OneOfMessage extends Message<OneOfMessage> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = foo != null ? foo.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (foo != null ? foo.hashCode() : 0);
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
       hashCode = result;
     }
@@ -102,7 +105,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
 
     @Override
     public OneOfMessage build() {
-      return new OneOfMessage(this);
+      return new OneOfMessage(foo, bar, buildTagMap());
     }
   }
 }

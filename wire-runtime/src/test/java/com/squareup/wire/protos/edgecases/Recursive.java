@@ -4,6 +4,7 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -29,13 +30,13 @@ public final class Recursive extends Message<Recursive> {
   public final Recursive recursive;
 
   public Recursive(Integer value, Recursive recursive) {
-    this.value = value;
-    this.recursive = recursive;
+    this(value, recursive, null);
   }
 
-  private Recursive(Builder builder) {
-    this(builder.value, builder.recursive);
-    setBuilder(builder);
+  public Recursive(Integer value, Recursive recursive, TagMap tagMap) {
+    super(tagMap);
+    this.value = value;
+    this.recursive = recursive;
   }
 
   @Override
@@ -43,7 +44,8 @@ public final class Recursive extends Message<Recursive> {
     if (other == this) return true;
     if (!(other instanceof Recursive)) return false;
     Recursive o = (Recursive) other;
-    return equals(value, o.value)
+    return equals(tagMap(), o.tagMap())
+        && equals(value, o.value)
         && equals(recursive, o.recursive);
   }
 
@@ -51,7 +53,8 @@ public final class Recursive extends Message<Recursive> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = value != null ? value.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (value != null ? value.hashCode() : 0);
       result = result * 37 + (recursive != null ? recursive.hashCode() : 0);
       hashCode = result;
     }
@@ -85,7 +88,7 @@ public final class Recursive extends Message<Recursive> {
 
     @Override
     public Recursive build() {
-      return new Recursive(this);
+      return new Recursive(value, recursive, buildTagMap());
     }
   }
 }

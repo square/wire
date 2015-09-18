@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
@@ -115,6 +116,11 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
   public final FieldOptions options;
 
   public FieldDescriptorProto(String name, String doc, Integer number, Label label, Type type, String type_name, String extendee, String default_value, FieldOptions options) {
+    this(name, doc, number, label, type, type_name, extendee, default_value, options, null);
+  }
+
+  public FieldDescriptorProto(String name, String doc, Integer number, Label label, Type type, String type_name, String extendee, String default_value, FieldOptions options, TagMap tagMap) {
+    super(tagMap);
     this.name = name;
     this.doc = doc;
     this.number = number;
@@ -126,17 +132,13 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
     this.options = options;
   }
 
-  private FieldDescriptorProto(Builder builder) {
-    this(builder.name, builder.doc, builder.number, builder.label, builder.type, builder.type_name, builder.extendee, builder.default_value, builder.options);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FieldDescriptorProto)) return false;
     FieldDescriptorProto o = (FieldDescriptorProto) other;
-    return equals(name, o.name)
+    return equals(tagMap(), o.tagMap())
+        && equals(name, o.name)
         && equals(doc, o.doc)
         && equals(number, o.number)
         && equals(label, o.label)
@@ -151,7 +153,8 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (number != null ? number.hashCode() : 0);
       result = result * 37 + (label != null ? label.hashCode() : 0);
@@ -273,7 +276,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
 
     @Override
     public FieldDescriptorProto build() {
-      return new FieldDescriptorProto(this);
+      return new FieldDescriptorProto(name, doc, number, label, type, type_name, extendee, default_value, options, buildTagMap());
     }
   }
 

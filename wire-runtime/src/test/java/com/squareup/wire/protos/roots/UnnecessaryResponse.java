@@ -4,6 +4,7 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import java.lang.Object;
 import java.lang.Override;
 
@@ -13,10 +14,11 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse> {
   private static final long serialVersionUID = 0L;
 
   public UnnecessaryResponse() {
+    this(null);
   }
 
-  private UnnecessaryResponse(Builder builder) {
-    setBuilder(builder);
+  public UnnecessaryResponse(TagMap tagMap) {
+    super(tagMap);
   }
 
   @Override
@@ -26,7 +28,7 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse> {
 
   @Override
   public int hashCode() {
-    return 0;
+    return tagMap() != null ? tagMap().hashCode() : 0;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<UnnecessaryResponse, Builder> {
@@ -39,7 +41,7 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse> {
 
     @Override
     public UnnecessaryResponse build() {
-      return new UnnecessaryResponse(this);
+      return new UnnecessaryResponse(buildTagMap());
     }
   }
 }

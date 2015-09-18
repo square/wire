@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -63,6 +64,11 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
   public final MethodOptions options;
 
   public MethodDescriptorProto(String name, String doc, String input_type, String output_type, MethodOptions options) {
+    this(name, doc, input_type, output_type, options, null);
+  }
+
+  public MethodDescriptorProto(String name, String doc, String input_type, String output_type, MethodOptions options, TagMap tagMap) {
+    super(tagMap);
     this.name = name;
     this.doc = doc;
     this.input_type = input_type;
@@ -70,17 +76,13 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
     this.options = options;
   }
 
-  private MethodDescriptorProto(Builder builder) {
-    this(builder.name, builder.doc, builder.input_type, builder.output_type, builder.options);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof MethodDescriptorProto)) return false;
     MethodDescriptorProto o = (MethodDescriptorProto) other;
-    return equals(name, o.name)
+    return equals(tagMap(), o.tagMap())
+        && equals(name, o.name)
         && equals(doc, o.doc)
         && equals(input_type, o.input_type)
         && equals(output_type, o.output_type)
@@ -91,7 +93,8 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (input_type != null ? input_type.hashCode() : 0);
       result = result * 37 + (output_type != null ? output_type.hashCode() : 0);
@@ -159,7 +162,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
 
     @Override
     public MethodDescriptorProto build() {
-      return new MethodDescriptorProto(this);
+      return new MethodDescriptorProto(name, doc, input_type, output_type, options, buildTagMap());
     }
   }
 }

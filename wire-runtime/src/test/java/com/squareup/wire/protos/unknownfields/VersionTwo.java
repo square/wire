@@ -4,6 +4,7 @@ package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Long;
@@ -66,6 +67,11 @@ public final class VersionTwo extends Message<VersionTwo> {
   public final List<String> v2_rs;
 
   public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs) {
+    this(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, null);
+  }
+
+  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs, TagMap tagMap) {
+    super(tagMap);
     this.i = i;
     this.v2_i = v2_i;
     this.v2_s = v2_s;
@@ -74,17 +80,13 @@ public final class VersionTwo extends Message<VersionTwo> {
     this.v2_rs = immutableCopyOf(v2_rs);
   }
 
-  private VersionTwo(Builder builder) {
-    this(builder.i, builder.v2_i, builder.v2_s, builder.v2_f32, builder.v2_f64, builder.v2_rs);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof VersionTwo)) return false;
     VersionTwo o = (VersionTwo) other;
-    return equals(i, o.i)
+    return equals(tagMap(), o.tagMap())
+        && equals(i, o.i)
         && equals(v2_i, o.v2_i)
         && equals(v2_s, o.v2_s)
         && equals(v2_f32, o.v2_f32)
@@ -96,7 +98,8 @@ public final class VersionTwo extends Message<VersionTwo> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = i != null ? i.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (i != null ? i.hashCode() : 0);
       result = result * 37 + (v2_i != null ? v2_i.hashCode() : 0);
       result = result * 37 + (v2_s != null ? v2_s.hashCode() : 0);
       result = result * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
@@ -166,7 +169,7 @@ public final class VersionTwo extends Message<VersionTwo> {
 
     @Override
     public VersionTwo build() {
-      return new VersionTwo(this);
+      return new VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, buildTagMap());
     }
   }
 }

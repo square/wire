@@ -4,6 +4,7 @@ package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
@@ -154,6 +155,11 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   public final String o;
 
   public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String _package, String result, String other, String o) {
+    this(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, _package, result, other, o, null);
+  }
+
+  public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String _package, String result, String other, String o, TagMap tagMap) {
+    super(tagMap);
     this.optional_int32 = optional_int32;
     this.optional_nested_msg = optional_nested_msg;
     this.optional_external_msg = optional_external_msg;
@@ -168,17 +174,13 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     this.o = o;
   }
 
-  private SimpleMessage(Builder builder) {
-    this(builder.optional_int32, builder.optional_nested_msg, builder.optional_external_msg, builder.default_nested_enum, builder.required_int32, builder.repeated_double, builder.default_foreign_enum, builder.no_default_foreign_enum, builder._package, builder.result, builder.other, builder.o);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof SimpleMessage)) return false;
     SimpleMessage o = (SimpleMessage) other;
-    return equals(optional_int32, o.optional_int32)
+    return equals(tagMap(), o.tagMap())
+        && equals(optional_int32, o.optional_int32)
         && equals(optional_nested_msg, o.optional_nested_msg)
         && equals(optional_external_msg, o.optional_external_msg)
         && equals(default_nested_enum, o.default_nested_enum)
@@ -196,7 +198,8 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = optional_int32 != null ? optional_int32.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (optional_int32 != null ? optional_int32.hashCode() : 0);
       result = result * 37 + (optional_nested_msg != null ? optional_nested_msg.hashCode() : 0);
       result = result * 37 + (optional_external_msg != null ? optional_external_msg.hashCode() : 0);
       result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
@@ -358,7 +361,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
       if (required_int32 == null) {
         throw missingRequiredFields(required_int32, "required_int32");
       }
-      return new SimpleMessage(this);
+      return new SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, _package, result, other, o, buildTagMap());
     }
   }
 
@@ -379,25 +382,32 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     public final Integer bb;
 
     public NestedMessage(Integer bb) {
-      this.bb = bb;
+      this(bb, null);
     }
 
-    private NestedMessage(Builder builder) {
-      this(builder.bb);
-      setBuilder(builder);
+    public NestedMessage(Integer bb, TagMap tagMap) {
+      super(tagMap);
+      this.bb = bb;
     }
 
     @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
-      return equals(bb, ((NestedMessage) other).bb);
+      NestedMessage o = (NestedMessage) other;
+      return equals(tagMap(), o.tagMap())
+          && equals(bb, o.bb);
     }
 
     @Override
     public int hashCode() {
       int result = hashCode;
-      return result != 0 ? result : (hashCode = bb != null ? bb.hashCode() : 0);
+      if (result == 0) {
+        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = result * 37 + (bb != null ? bb.hashCode() : 0);
+        hashCode = result;
+      }
+      return result;
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, Builder> {
@@ -422,7 +432,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
 
       @Override
       public NestedMessage build() {
-        return new NestedMessage(this);
+        return new NestedMessage(bb, buildTagMap());
       }
     }
   }

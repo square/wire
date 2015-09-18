@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -81,6 +82,11 @@ public final class DescriptorProto extends Message<DescriptorProto> {
   public final MessageOptions options;
 
   public DescriptorProto(String name, String doc, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, MessageOptions options) {
+    this(name, doc, field, extension, nested_type, enum_type, extension_range, options, null);
+  }
+
+  public DescriptorProto(String name, String doc, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, MessageOptions options, TagMap tagMap) {
+    super(tagMap);
     this.name = name;
     this.doc = doc;
     this.field = immutableCopyOf(field);
@@ -91,17 +97,13 @@ public final class DescriptorProto extends Message<DescriptorProto> {
     this.options = options;
   }
 
-  private DescriptorProto(Builder builder) {
-    this(builder.name, builder.doc, builder.field, builder.extension, builder.nested_type, builder.enum_type, builder.extension_range, builder.options);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof DescriptorProto)) return false;
     DescriptorProto o = (DescriptorProto) other;
-    return equals(name, o.name)
+    return equals(tagMap(), o.tagMap())
+        && equals(name, o.name)
         && equals(doc, o.doc)
         && equals(field, o.field)
         && equals(extension, o.extension)
@@ -115,7 +117,8 @@ public final class DescriptorProto extends Message<DescriptorProto> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (field != null ? field.hashCode() : 1);
       result = result * 37 + (extension != null ? extension.hashCode() : 1);
@@ -206,7 +209,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
     @Override
     public DescriptorProto build() {
-      return new DescriptorProto(this);
+      return new DescriptorProto(name, doc, field, extension, nested_type, enum_type, extension_range, options, buildTagMap());
     }
   }
 
@@ -232,13 +235,13 @@ public final class DescriptorProto extends Message<DescriptorProto> {
     public final Integer end;
 
     public ExtensionRange(Integer start, Integer end) {
-      this.start = start;
-      this.end = end;
+      this(start, end, null);
     }
 
-    private ExtensionRange(Builder builder) {
-      this(builder.start, builder.end);
-      setBuilder(builder);
+    public ExtensionRange(Integer start, Integer end, TagMap tagMap) {
+      super(tagMap);
+      this.start = start;
+      this.end = end;
     }
 
     @Override
@@ -246,7 +249,8 @@ public final class DescriptorProto extends Message<DescriptorProto> {
       if (other == this) return true;
       if (!(other instanceof ExtensionRange)) return false;
       ExtensionRange o = (ExtensionRange) other;
-      return equals(start, o.start)
+      return equals(tagMap(), o.tagMap())
+          && equals(start, o.start)
           && equals(end, o.end);
     }
 
@@ -254,7 +258,8 @@ public final class DescriptorProto extends Message<DescriptorProto> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = start != null ? start.hashCode() : 0;
+        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = result * 37 + (start != null ? start.hashCode() : 0);
         result = result * 37 + (end != null ? end.hashCode() : 0);
         hashCode = result;
       }
@@ -288,7 +293,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
       @Override
       public ExtensionRange build() {
-        return new ExtensionRange(this);
+        return new ExtensionRange(start, end, buildTagMap());
       }
     }
   }

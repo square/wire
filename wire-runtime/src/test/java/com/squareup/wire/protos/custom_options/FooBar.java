@@ -6,6 +6,7 @@ import com.google.protobuf.EnumOptions;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
@@ -124,6 +125,11 @@ public final class FooBar extends Message<FooBar> {
   public final List<FooBar> nested;
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested) {
+    this(foo, bar, baz, qux, fred, daisy, nested, null);
+  }
+
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, TagMap tagMap) {
+    super(tagMap);
     this.foo = foo;
     this.bar = bar;
     this.baz = baz;
@@ -133,18 +139,13 @@ public final class FooBar extends Message<FooBar> {
     this.nested = immutableCopyOf(nested);
   }
 
-  private FooBar(Builder builder) {
-    this(builder.foo, builder.bar, builder.baz, builder.qux, builder.fred, builder.daisy, builder.nested);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FooBar)) return false;
     FooBar o = (FooBar) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(foo, o.foo)
+    return equals(tagMap(), o.tagMap())
+        && equals(foo, o.foo)
         && equals(bar, o.bar)
         && equals(baz, o.baz)
         && equals(qux, o.qux)
@@ -157,7 +158,7 @@ public final class FooBar extends Message<FooBar> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = extensionsHashCode();
+      result = tagMap() != null ? tagMap().hashCode() : 0;
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
       result = result * 37 + (baz != null ? baz.hashCode() : 0);
@@ -237,7 +238,7 @@ public final class FooBar extends Message<FooBar> {
 
     @Override
     public FooBar build() {
-      return new FooBar(this);
+      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, buildTagMap());
     }
   }
 
@@ -255,25 +256,32 @@ public final class FooBar extends Message<FooBar> {
     public final FooBarBazEnum value;
 
     public Nested(FooBarBazEnum value) {
-      this.value = value;
+      this(value, null);
     }
 
-    private Nested(Builder builder) {
-      this(builder.value);
-      setBuilder(builder);
+    public Nested(FooBarBazEnum value, TagMap tagMap) {
+      super(tagMap);
+      this.value = value;
     }
 
     @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof Nested)) return false;
-      return equals(value, ((Nested) other).value);
+      Nested o = (Nested) other;
+      return equals(tagMap(), o.tagMap())
+          && equals(value, o.value);
     }
 
     @Override
     public int hashCode() {
       int result = hashCode;
-      return result != 0 ? result : (hashCode = value != null ? value.hashCode() : 0);
+      if (result == 0) {
+        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = result * 37 + (value != null ? value.hashCode() : 0);
+        hashCode = result;
+      }
+      return result;
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Nested, Builder> {
@@ -295,7 +303,7 @@ public final class FooBar extends Message<FooBar> {
 
       @Override
       public Nested build() {
-        return new Nested(this);
+        return new Nested(value, buildTagMap());
       }
     }
   }
@@ -313,25 +321,32 @@ public final class FooBar extends Message<FooBar> {
     public final List<Integer> serial;
 
     public More(List<Integer> serial) {
-      this.serial = immutableCopyOf(serial);
+      this(serial, null);
     }
 
-    private More(Builder builder) {
-      this(builder.serial);
-      setBuilder(builder);
+    public More(List<Integer> serial, TagMap tagMap) {
+      super(tagMap);
+      this.serial = immutableCopyOf(serial);
     }
 
     @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof More)) return false;
-      return equals(serial, ((More) other).serial);
+      More o = (More) other;
+      return equals(tagMap(), o.tagMap())
+          && equals(serial, o.serial);
     }
 
     @Override
     public int hashCode() {
       int result = hashCode;
-      return result != 0 ? result : (hashCode = serial != null ? serial.hashCode() : 1);
+      if (result == 0) {
+        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = result * 37 + (serial != null ? serial.hashCode() : 1);
+        hashCode = result;
+      }
+      return result;
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<More, Builder> {
@@ -353,7 +368,7 @@ public final class FooBar extends Message<FooBar> {
 
       @Override
       public More build() {
-        return new More(this);
+        return new More(serial, buildTagMap());
       }
     }
   }

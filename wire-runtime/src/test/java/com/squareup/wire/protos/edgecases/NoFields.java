@@ -4,6 +4,7 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import java.lang.Object;
 import java.lang.Override;
 
@@ -13,10 +14,11 @@ public final class NoFields extends Message<NoFields> {
   private static final long serialVersionUID = 0L;
 
   public NoFields() {
+    this(null);
   }
 
-  private NoFields(Builder builder) {
-    setBuilder(builder);
+  public NoFields(TagMap tagMap) {
+    super(tagMap);
   }
 
   @Override
@@ -26,7 +28,7 @@ public final class NoFields extends Message<NoFields> {
 
   @Override
   public int hashCode() {
-    return 0;
+    return tagMap() != null ? tagMap().hashCode() : 0;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<NoFields, Builder> {
@@ -39,7 +41,7 @@ public final class NoFields extends Message<NoFields> {
 
     @Override
     public NoFields build() {
-      return new NoFields(this);
+      return new NoFields(buildTagMap());
     }
   }
 }

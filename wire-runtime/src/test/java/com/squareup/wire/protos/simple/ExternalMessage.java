@@ -4,6 +4,7 @@ package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Float;
 import java.lang.Object;
@@ -23,12 +24,12 @@ public final class ExternalMessage extends Message<ExternalMessage> {
   public final Float f;
 
   public ExternalMessage(Float f) {
-    this.f = f;
+    this(f, null);
   }
 
-  private ExternalMessage(Builder builder) {
-    this(builder.f);
-    setBuilder(builder);
+  public ExternalMessage(Float f, TagMap tagMap) {
+    super(tagMap);
+    this.f = f;
   }
 
   @Override
@@ -36,15 +37,15 @@ public final class ExternalMessage extends Message<ExternalMessage> {
     if (other == this) return true;
     if (!(other instanceof ExternalMessage)) return false;
     ExternalMessage o = (ExternalMessage) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(f, o.f);
+    return equals(tagMap(), o.tagMap())
+        && equals(f, o.f);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = extensionsHashCode();
+      result = tagMap() != null ? tagMap().hashCode() : 0;
       result = result * 37 + (f != null ? f.hashCode() : 0);
       hashCode = result;
     }
@@ -70,7 +71,7 @@ public final class ExternalMessage extends Message<ExternalMessage> {
 
     @Override
     public ExternalMessage build() {
-      return new ExternalMessage(this);
+      return new ExternalMessage(f, buildTagMap());
     }
   }
 }

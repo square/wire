@@ -4,6 +4,7 @@ package com.squareup.services.anotherpackage;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -23,25 +24,32 @@ public final class SendDataRequest extends Message<SendDataRequest> {
   public final ByteString data;
 
   public SendDataRequest(ByteString data) {
-    this.data = data;
+    this(data, null);
   }
 
-  private SendDataRequest(Builder builder) {
-    this(builder.data);
-    setBuilder(builder);
+  public SendDataRequest(ByteString data, TagMap tagMap) {
+    super(tagMap);
+    this.data = data;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof SendDataRequest)) return false;
-    return equals(data, ((SendDataRequest) other).data);
+    SendDataRequest o = (SendDataRequest) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(data, o.data);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = data != null ? data.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (data != null ? data.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<SendDataRequest, Builder> {
@@ -63,7 +71,7 @@ public final class SendDataRequest extends Message<SendDataRequest> {
 
     @Override
     public SendDataRequest build() {
-      return new SendDataRequest(this);
+      return new SendDataRequest(data, buildTagMap());
     }
   }
 }

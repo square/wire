@@ -4,6 +4,7 @@ package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
@@ -655,6 +656,11 @@ public final class AllTypes extends Message<AllTypes> {
   public final NestedEnum default_nested_enum;
 
   public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum) {
+    this(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, null);
+  }
+
+  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum, TagMap tagMap) {
+    super(tagMap);
     this.opt_int32 = opt_int32;
     this.opt_uint32 = opt_uint32;
     this.opt_sint32 = opt_sint32;
@@ -738,18 +744,13 @@ public final class AllTypes extends Message<AllTypes> {
     this.default_nested_enum = default_nested_enum;
   }
 
-  private AllTypes(Builder builder) {
-    this(builder.opt_int32, builder.opt_uint32, builder.opt_sint32, builder.opt_fixed32, builder.opt_sfixed32, builder.opt_int64, builder.opt_uint64, builder.opt_sint64, builder.opt_fixed64, builder.opt_sfixed64, builder.opt_bool, builder.opt_float, builder.opt_double, builder.opt_string, builder.opt_bytes, builder.opt_nested_enum, builder.opt_nested_message, builder.req_int32, builder.req_uint32, builder.req_sint32, builder.req_fixed32, builder.req_sfixed32, builder.req_int64, builder.req_uint64, builder.req_sint64, builder.req_fixed64, builder.req_sfixed64, builder.req_bool, builder.req_float, builder.req_double, builder.req_string, builder.req_bytes, builder.req_nested_enum, builder.req_nested_message, builder.rep_int32, builder.rep_uint32, builder.rep_sint32, builder.rep_fixed32, builder.rep_sfixed32, builder.rep_int64, builder.rep_uint64, builder.rep_sint64, builder.rep_fixed64, builder.rep_sfixed64, builder.rep_bool, builder.rep_float, builder.rep_double, builder.rep_string, builder.rep_bytes, builder.rep_nested_enum, builder.rep_nested_message, builder.pack_int32, builder.pack_uint32, builder.pack_sint32, builder.pack_fixed32, builder.pack_sfixed32, builder.pack_int64, builder.pack_uint64, builder.pack_sint64, builder.pack_fixed64, builder.pack_sfixed64, builder.pack_bool, builder.pack_float, builder.pack_double, builder.pack_nested_enum, builder.default_int32, builder.default_uint32, builder.default_sint32, builder.default_fixed32, builder.default_sfixed32, builder.default_int64, builder.default_uint64, builder.default_sint64, builder.default_fixed64, builder.default_sfixed64, builder.default_bool, builder.default_float, builder.default_double, builder.default_string, builder.default_bytes, builder.default_nested_enum);
-    setBuilder(builder);
-  }
-
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof AllTypes)) return false;
     AllTypes o = (AllTypes) other;
-    if (!extensionsEqual(o)) return false;
-    return equals(opt_int32, o.opt_int32)
+    return equals(tagMap(), o.tagMap())
+        && equals(opt_int32, o.opt_int32)
         && equals(opt_uint32, o.opt_uint32)
         && equals(opt_sint32, o.opt_sint32)
         && equals(opt_fixed32, o.opt_fixed32)
@@ -836,7 +837,7 @@ public final class AllTypes extends Message<AllTypes> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = extensionsHashCode();
+      result = tagMap() != null ? tagMap().hashCode() : 0;
       result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
       result = result * 37 + (opt_uint32 != null ? opt_uint32.hashCode() : 0);
       result = result * 37 + (opt_sint32 != null ? opt_sint32.hashCode() : 0);
@@ -1617,7 +1618,7 @@ public final class AllTypes extends Message<AllTypes> {
             req_nested_enum, "req_nested_enum",
             req_nested_message, "req_nested_message");
       }
-      return new AllTypes(this);
+      return new AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, buildTagMap());
     }
   }
 
@@ -1652,25 +1653,32 @@ public final class AllTypes extends Message<AllTypes> {
     public final Integer a;
 
     public NestedMessage(Integer a) {
-      this.a = a;
+      this(a, null);
     }
 
-    private NestedMessage(Builder builder) {
-      this(builder.a);
-      setBuilder(builder);
+    public NestedMessage(Integer a, TagMap tagMap) {
+      super(tagMap);
+      this.a = a;
     }
 
     @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
-      return equals(a, ((NestedMessage) other).a);
+      NestedMessage o = (NestedMessage) other;
+      return equals(tagMap(), o.tagMap())
+          && equals(a, o.a);
     }
 
     @Override
     public int hashCode() {
       int result = hashCode;
-      return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
+      if (result == 0) {
+        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = result * 37 + (a != null ? a.hashCode() : 0);
+        hashCode = result;
+      }
+      return result;
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, Builder> {
@@ -1692,7 +1700,7 @@ public final class AllTypes extends Message<AllTypes> {
 
       @Override
       public NestedMessage build() {
-        return new NestedMessage(this);
+        return new NestedMessage(a, buildTagMap());
       }
     }
   }

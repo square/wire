@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -52,15 +53,15 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
   public final EnumOptions options;
 
   public EnumDescriptorProto(String name, String doc, List<EnumValueDescriptorProto> value, EnumOptions options) {
+    this(name, doc, value, options, null);
+  }
+
+  public EnumDescriptorProto(String name, String doc, List<EnumValueDescriptorProto> value, EnumOptions options, TagMap tagMap) {
+    super(tagMap);
     this.name = name;
     this.doc = doc;
     this.value = immutableCopyOf(value);
     this.options = options;
-  }
-
-  private EnumDescriptorProto(Builder builder) {
-    this(builder.name, builder.doc, builder.value, builder.options);
-    setBuilder(builder);
   }
 
   @Override
@@ -68,7 +69,8 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
     if (other == this) return true;
     if (!(other instanceof EnumDescriptorProto)) return false;
     EnumDescriptorProto o = (EnumDescriptorProto) other;
-    return equals(name, o.name)
+    return equals(tagMap(), o.tagMap())
+        && equals(name, o.name)
         && equals(doc, o.doc)
         && equals(value, o.value)
         && equals(options, o.options);
@@ -78,7 +80,8 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (value != null ? value.hashCode() : 1);
       result = result * 37 + (options != null ? options.hashCode() : 0);
@@ -133,7 +136,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
 
     @Override
     public EnumDescriptorProto build() {
-      return new EnumDescriptorProto(this);
+      return new EnumDescriptorProto(name, doc, value, options, buildTagMap());
     }
   }
 }

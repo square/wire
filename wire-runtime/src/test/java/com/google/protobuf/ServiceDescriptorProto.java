@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -52,15 +53,15 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public final ServiceOptions options;
 
   public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, String doc, ServiceOptions options) {
+    this(name, method, doc, options, null);
+  }
+
+  public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, String doc, ServiceOptions options, TagMap tagMap) {
+    super(tagMap);
     this.name = name;
     this.method = immutableCopyOf(method);
     this.doc = doc;
     this.options = options;
-  }
-
-  private ServiceDescriptorProto(Builder builder) {
-    this(builder.name, builder.method, builder.doc, builder.options);
-    setBuilder(builder);
   }
 
   @Override
@@ -68,7 +69,8 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     if (other == this) return true;
     if (!(other instanceof ServiceDescriptorProto)) return false;
     ServiceDescriptorProto o = (ServiceDescriptorProto) other;
-    return equals(name, o.name)
+    return equals(tagMap(), o.tagMap())
+        && equals(name, o.name)
         && equals(method, o.method)
         && equals(doc, o.doc)
         && equals(options, o.options);
@@ -78,7 +80,8 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = name != null ? name.hashCode() : 0;
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (method != null ? method.hashCode() : 1);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (options != null ? options.hashCode() : 0);
@@ -133,7 +136,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
     @Override
     public ServiceDescriptorProto build() {
-      return new ServiceDescriptorProto(this);
+      return new ServiceDescriptorProto(name, method, doc, options, buildTagMap());
     }
   }
 }

@@ -4,6 +4,7 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import java.lang.Object;
 import java.lang.Override;
 
@@ -13,10 +14,11 @@ public final class TheRequest extends Message<TheRequest> {
   private static final long serialVersionUID = 0L;
 
   public TheRequest() {
+    this(null);
   }
 
-  private TheRequest(Builder builder) {
-    setBuilder(builder);
+  public TheRequest(TagMap tagMap) {
+    super(tagMap);
   }
 
   @Override
@@ -26,7 +28,7 @@ public final class TheRequest extends Message<TheRequest> {
 
   @Override
   public int hashCode() {
-    return 0;
+    return tagMap() != null ? tagMap().hashCode() : 0;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<TheRequest, Builder> {
@@ -39,7 +41,7 @@ public final class TheRequest extends Message<TheRequest> {
 
     @Override
     public TheRequest build() {
-      return new TheRequest(this);
+      return new TheRequest(buildTagMap());
     }
   }
 }

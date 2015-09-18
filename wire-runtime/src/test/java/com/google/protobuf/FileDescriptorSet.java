@@ -4,6 +4,7 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -27,25 +28,32 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
   public final List<FileDescriptorProto> file;
 
   public FileDescriptorSet(List<FileDescriptorProto> file) {
-    this.file = immutableCopyOf(file);
+    this(file, null);
   }
 
-  private FileDescriptorSet(Builder builder) {
-    this(builder.file);
-    setBuilder(builder);
+  public FileDescriptorSet(List<FileDescriptorProto> file, TagMap tagMap) {
+    super(tagMap);
+    this.file = immutableCopyOf(file);
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FileDescriptorSet)) return false;
-    return equals(file, ((FileDescriptorSet) other).file);
+    FileDescriptorSet o = (FileDescriptorSet) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(file, o.file);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = file != null ? file.hashCode() : 1);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (file != null ? file.hashCode() : 1);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorSet, Builder> {
@@ -67,7 +75,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
 
     @Override
     public FileDescriptorSet build() {
-      return new FileDescriptorSet(this);
+      return new FileDescriptorSet(file, buildTagMap());
     }
   }
 }

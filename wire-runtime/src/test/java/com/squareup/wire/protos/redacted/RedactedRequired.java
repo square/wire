@@ -5,6 +5,7 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -30,25 +31,32 @@ public final class RedactedRequired extends Message<RedactedRequired> {
   public final String a;
 
   public RedactedRequired(String a) {
-    this.a = a;
+    this(a, null);
   }
 
-  private RedactedRequired(Builder builder) {
-    this(builder.a);
-    setBuilder(builder);
+  public RedactedRequired(String a, TagMap tagMap) {
+    super(tagMap);
+    this.a = a;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof RedactedRequired)) return false;
-    return equals(a, ((RedactedRequired) other).a);
+    RedactedRequired o = (RedactedRequired) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(a, o.a);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = a != null ? a.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (a != null ? a.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRequired, Builder> {
@@ -73,7 +81,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
       if (a == null) {
         throw missingRequiredFields(a, "a");
       }
-      return new RedactedRequired(this);
+      return new RedactedRequired(a, buildTagMap());
     }
   }
 }

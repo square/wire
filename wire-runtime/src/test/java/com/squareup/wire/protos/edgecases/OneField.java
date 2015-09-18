@@ -4,6 +4,7 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
@@ -23,25 +24,32 @@ public final class OneField extends Message<OneField> {
   public final Integer opt_int32;
 
   public OneField(Integer opt_int32) {
-    this.opt_int32 = opt_int32;
+    this(opt_int32, null);
   }
 
-  private OneField(Builder builder) {
-    this(builder.opt_int32);
-    setBuilder(builder);
+  public OneField(Integer opt_int32, TagMap tagMap) {
+    super(tagMap);
+    this.opt_int32 = opt_int32;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof OneField)) return false;
-    return equals(opt_int32, ((OneField) other).opt_int32);
+    OneField o = (OneField) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(opt_int32, o.opt_int32);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = opt_int32 != null ? opt_int32.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<OneField, Builder> {
@@ -63,7 +71,7 @@ public final class OneField extends Message<OneField> {
 
     @Override
     public OneField build() {
-      return new OneField(this);
+      return new OneField(opt_int32, buildTagMap());
     }
   }
 }

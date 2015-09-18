@@ -4,6 +4,7 @@ package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.lang.Object;
@@ -23,25 +24,32 @@ public final class ChildPackage extends Message<ChildPackage> {
   public final ForeignEnum inner_foreign_enum;
 
   public ChildPackage(ForeignEnum inner_foreign_enum) {
-    this.inner_foreign_enum = inner_foreign_enum;
+    this(inner_foreign_enum, null);
   }
 
-  private ChildPackage(Builder builder) {
-    this(builder.inner_foreign_enum);
-    setBuilder(builder);
+  public ChildPackage(ForeignEnum inner_foreign_enum, TagMap tagMap) {
+    super(tagMap);
+    this.inner_foreign_enum = inner_foreign_enum;
   }
 
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof ChildPackage)) return false;
-    return equals(inner_foreign_enum, ((ChildPackage) other).inner_foreign_enum);
+    ChildPackage o = (ChildPackage) other;
+    return equals(tagMap(), o.tagMap())
+        && equals(inner_foreign_enum, o.inner_foreign_enum);
   }
 
   @Override
   public int hashCode() {
     int result = hashCode;
-    return result != 0 ? result : (hashCode = inner_foreign_enum != null ? inner_foreign_enum.hashCode() : 0);
+    if (result == 0) {
+      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = result * 37 + (inner_foreign_enum != null ? inner_foreign_enum.hashCode() : 0);
+      hashCode = result;
+    }
+    return result;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<ChildPackage, Builder> {
@@ -63,7 +71,7 @@ public final class ChildPackage extends Message<ChildPackage> {
 
     @Override
     public ChildPackage build() {
-      return new ChildPackage(this);
+      return new ChildPackage(inner_foreign_enum, buildTagMap());
     }
   }
 }
