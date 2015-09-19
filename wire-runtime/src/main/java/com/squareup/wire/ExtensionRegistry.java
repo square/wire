@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,28 +30,23 @@ public final class ExtensionRegistry {
 
   /**
    * Creates a new instance that can encode and decode the extensions specified in
-   * {@code extensionClasses}. Typically the classes in this list are generated and start with the
-   * "Ext_" prefix.
+   * {@code extensionLists}. Typically the lists are generated as an {@code EXTENSIONS} field on
+   * the "Ext_" prefixed classes.
    */
-  public ExtensionRegistry(Class<?>... extensionClasses) {
-    this(Arrays.asList(extensionClasses));
+  @SafeVarargs
+  public ExtensionRegistry(Iterable<Extension<?, ?>>... extensionLists) {
+    this(Arrays.asList(extensionLists));
   }
 
   /**
    * Creates a new instance that can encode and decode the extensions specified in
-   * {@code extensionClasses}. Typically the classes in this list are generated and start with the
-   * "Ext_" prefix.
+   * {@code extensionLists}. Typically the lists are generated as an {@code EXTENSIONS} field on
+   * the "Ext_" prefixed classes.
    */
-  public ExtensionRegistry(List<Class<?>> extensionClasses) {
-    for (Class<?> extensionClass : extensionClasses) {
-      for (Field field : extensionClass.getDeclaredFields()) {
-        if (field.getType().equals(Extension.class)) {
-          try {
-            registerExtension((Extension<?, ?>) field.get(null));
-          } catch (IllegalAccessException e) {
-            throw new AssertionError(e);
-          }
-        }
+  public ExtensionRegistry(Iterable<? extends Iterable<Extension<?, ?>>> extensionLists) {
+    for (Iterable<Extension<?, ?>> extensionList : extensionLists) {
+      for (Extension<?, ?> extension : extensionList) {
+        registerExtension(extension);
       }
     }
   }

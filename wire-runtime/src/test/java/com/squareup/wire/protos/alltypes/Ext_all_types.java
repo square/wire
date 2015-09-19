@@ -10,6 +10,7 @@ import java.lang.Float;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.String;
+import java.util.Arrays;
 import java.util.List;
 import okio.ByteString;
 
@@ -301,6 +302,56 @@ public final class Ext_all_types {
       "squareup.protos.alltypes.ext_pack_nested_enum",
       1216,
       "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER");
+
+  public static final List<Extension<?, ?>> EXTENSIONS = Arrays.<Extension<?, ?>>asList(
+      ext_opt_int32,
+      ext_opt_uint32,
+      ext_opt_sint32,
+      ext_opt_fixed32,
+      ext_opt_sfixed32,
+      ext_opt_int64,
+      ext_opt_uint64,
+      ext_opt_sint64,
+      ext_opt_fixed64,
+      ext_opt_sfixed64,
+      ext_opt_bool,
+      ext_opt_float,
+      ext_opt_double,
+      ext_opt_string,
+      ext_opt_bytes,
+      ext_opt_nested_enum,
+      ext_opt_nested_message,
+      ext_rep_int32,
+      ext_rep_uint32,
+      ext_rep_sint32,
+      ext_rep_fixed32,
+      ext_rep_sfixed32,
+      ext_rep_int64,
+      ext_rep_uint64,
+      ext_rep_sint64,
+      ext_rep_fixed64,
+      ext_rep_sfixed64,
+      ext_rep_bool,
+      ext_rep_float,
+      ext_rep_double,
+      ext_rep_string,
+      ext_rep_bytes,
+      ext_rep_nested_enum,
+      ext_rep_nested_message,
+      ext_pack_int32,
+      ext_pack_uint32,
+      ext_pack_sint32,
+      ext_pack_fixed32,
+      ext_pack_sfixed32,
+      ext_pack_int64,
+      ext_pack_uint64,
+      ext_pack_sint64,
+      ext_pack_fixed64,
+      ext_pack_sfixed64,
+      ext_pack_bool,
+      ext_pack_float,
+      ext_pack_double,
+      ext_pack_nested_enum);
 
   private Ext_all_types() {
   }

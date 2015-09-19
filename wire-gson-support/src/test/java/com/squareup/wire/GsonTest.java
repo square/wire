@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
 
-  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry(Ext_all_types.class);
+  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry(Ext_all_types.EXTENSIONS);
 
   private static final String JSON_BASE = "\"opt_int32\":111,"
       + "\"opt_uint32\":112,"

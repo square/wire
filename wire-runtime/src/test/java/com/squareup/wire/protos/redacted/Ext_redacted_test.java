@@ -6,6 +6,8 @@ import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Extension;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
+import java.util.Arrays;
+import java.util.List;
 
 public final class Ext_redacted_test {
   public static final Extension<FieldOptions, Boolean> redacted = Extension.get(FieldOptions.class,
@@ -19,6 +21,10 @@ public final class Ext_redacted_test {
       "squareup.protos.redacted_test.extension",
       10,
       "com.squareup.wire.protos.redacted.RedactedExtension#ADAPTER");
+
+  public static final List<Extension<?, ?>> EXTENSIONS = Arrays.<Extension<?, ?>>asList(
+      redacted,
+      extension);
 
   private Ext_redacted_test() {
   }

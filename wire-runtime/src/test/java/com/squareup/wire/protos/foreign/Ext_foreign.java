@@ -7,6 +7,8 @@ import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Extension;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
+import java.util.Arrays;
+import java.util.List;
 
 public final class Ext_foreign {
   public static final Extension<MessageOptions, ForeignMessage> foreign_message_option = Extension.get(MessageOptions.class,
@@ -20,6 +22,10 @@ public final class Ext_foreign {
       "squareup.protos.foreign.foreign_enum_value_option",
       70002,
       "com.squareup.wire.ProtoAdapter#BOOL");
+
+  public static final List<Extension<?, ?>> EXTENSIONS = Arrays.<Extension<?, ?>>asList(
+      foreign_message_option,
+      foreign_enum_value_option);
 
   private Ext_foreign() {
   }
