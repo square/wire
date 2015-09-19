@@ -160,7 +160,7 @@ public final class FileOptions extends Message<FileOptions> {
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, OptimizeMode optimize_for, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, List<UninterpretedOption> uninterpreted_option) {
-    this(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, optimize_for, cc_generic_services, java_generic_services, py_generic_services, uninterpreted_option, null);
+    this(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, optimize_for, cc_generic_services, java_generic_services, py_generic_services, uninterpreted_option, TagMap.EMPTY);
   }
 
   public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, OptimizeMode optimize_for, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
@@ -197,7 +197,7 @@ public final class FileOptions extends Message<FileOptions> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (java_package != null ? java_package.hashCode() : 0);
       result = result * 37 + (java_outer_classname != null ? java_outer_classname.hashCode() : 0);
       result = result * 37 + (java_multiple_files != null ? java_multiple_files.hashCode() : 0);

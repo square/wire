@@ -31,7 +31,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
   public final String a;
 
   public RedactedRequired(String a) {
-    this(a, null);
+    this(a, TagMap.EMPTY);
   }
 
   public RedactedRequired(String a, TagMap tagMap) {
@@ -52,7 +52,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       hashCode = result;
     }

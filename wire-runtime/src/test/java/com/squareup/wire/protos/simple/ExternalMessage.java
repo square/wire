@@ -24,7 +24,7 @@ public final class ExternalMessage extends Message<ExternalMessage> {
   public final Float f;
 
   public ExternalMessage(Float f) {
-    this(f, null);
+    this(f, TagMap.EMPTY);
   }
 
   public ExternalMessage(Float f, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class ExternalMessage extends Message<ExternalMessage> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (f != null ? f.hashCode() : 0);
       hashCode = result;
     }

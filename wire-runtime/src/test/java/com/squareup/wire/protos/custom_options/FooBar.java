@@ -125,7 +125,7 @@ public final class FooBar extends Message<FooBar> {
   public final List<FooBar> nested;
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested) {
-    this(foo, bar, baz, qux, fred, daisy, nested, null);
+    this(foo, bar, baz, qux, fred, daisy, nested, TagMap.EMPTY);
   }
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, TagMap tagMap) {
@@ -158,7 +158,7 @@ public final class FooBar extends Message<FooBar> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
       result = result * 37 + (baz != null ? baz.hashCode() : 0);
@@ -256,7 +256,7 @@ public final class FooBar extends Message<FooBar> {
     public final FooBarBazEnum value;
 
     public Nested(FooBarBazEnum value) {
-      this(value, null);
+      this(value, TagMap.EMPTY);
     }
 
     public Nested(FooBarBazEnum value, TagMap tagMap) {
@@ -277,7 +277,7 @@ public final class FooBar extends Message<FooBar> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = tagMap().hashCode();
         result = result * 37 + (value != null ? value.hashCode() : 0);
         hashCode = result;
       }
@@ -321,7 +321,7 @@ public final class FooBar extends Message<FooBar> {
     public final List<Integer> serial;
 
     public More(List<Integer> serial) {
-      this(serial, null);
+      this(serial, TagMap.EMPTY);
     }
 
     public More(List<Integer> serial, TagMap tagMap) {
@@ -342,7 +342,7 @@ public final class FooBar extends Message<FooBar> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = tagMap().hashCode();
         result = result * 37 + (serial != null ? serial.hashCode() : 1);
         hashCode = result;
       }

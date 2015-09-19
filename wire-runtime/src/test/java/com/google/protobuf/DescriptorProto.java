@@ -82,7 +82,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
   public final MessageOptions options;
 
   public DescriptorProto(String name, String doc, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, MessageOptions options) {
-    this(name, doc, field, extension, nested_type, enum_type, extension_range, options, null);
+    this(name, doc, field, extension, nested_type, enum_type, extension_range, options, TagMap.EMPTY);
   }
 
   public DescriptorProto(String name, String doc, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, MessageOptions options, TagMap tagMap) {
@@ -117,7 +117,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (field != null ? field.hashCode() : 1);
@@ -235,7 +235,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
     public final Integer end;
 
     public ExtensionRange(Integer start, Integer end) {
-      this(start, end, null);
+      this(start, end, TagMap.EMPTY);
     }
 
     public ExtensionRange(Integer start, Integer end, TagMap tagMap) {
@@ -258,7 +258,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = tagMap().hashCode();
         result = result * 37 + (start != null ? start.hashCode() : 0);
         result = result * 37 + (end != null ? end.hashCode() : 0);
         hashCode = result;

@@ -37,6 +37,9 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   protected transient int hashCode = 0;
 
   protected Message(TagMap tagMap) {
+    if (tagMap == null) {
+      throw new NullPointerException("tagMap == null");
+    }
     this.tagMap = tagMap;
   }
 
@@ -83,9 +86,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    * Returns an immutable list of the extensions on this message in tag order.
    */
   public final Set<Extension<?, ?>> getExtensions() {
-    return tagMap != null
-        ? tagMap.extensions(false)
-        : Collections.<Extension<?, ?>>emptySet();
+    return tagMap.extensions(false);
   }
 
   /**
@@ -93,7 +94,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    * value is set.
    */
   public final <E> E getExtension(Extension<T, E> extension) {
-    return tagMap != null ? (E) tagMap.get(extension) : null;
+    return (E) tagMap.get(extension);
   }
 
   @SuppressWarnings("unchecked")
@@ -101,8 +102,8 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     return ProtoAdapter.newMessageAdapter((Class<Message>) getClass()).toString(this);
   }
 
-  private Object writeReplace() throws ObjectStreamException {
-    return new MessageSerializedForm(this, getClass());
+  protected final Object writeReplace() throws ObjectStreamException {
+    return new MessageSerializedForm<>(this, (Class<Message>) getClass());
   }
 
   /**
@@ -123,7 +124,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
      * field data in the given {@link Message}.
      */
     public Builder(Message message) {
-      if (message != null && message.tagMap != null) {
+      if (message != null && message.tagMap != TagMap.EMPTY) {
         this.tagMapBuilder = new TagMap.Builder(message.tagMap);
       }
     }
@@ -205,7 +206,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
      * builder, or null.
      */
     public TagMap buildTagMap() {
-      return tagMapBuilder != null ? tagMapBuilder.build() : null;
+      return tagMapBuilder != null ? tagMapBuilder.build() : TagMap.EMPTY;
     }
 
     /** Returns an immutable {@link Message} based on the fields that set in this builder. */

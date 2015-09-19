@@ -116,7 +116,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
   public final FieldOptions options;
 
   public FieldDescriptorProto(String name, String doc, Integer number, Label label, Type type, String type_name, String extendee, String default_value, FieldOptions options) {
-    this(name, doc, number, label, type, type_name, extendee, default_value, options, null);
+    this(name, doc, number, label, type, type_name, extendee, default_value, options, TagMap.EMPTY);
   }
 
   public FieldDescriptorProto(String name, String doc, Integer number, Label label, Type type, String type_name, String extendee, String default_value, FieldOptions options, TagMap tagMap) {
@@ -153,7 +153,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (number != null ? number.hashCode() : 0);

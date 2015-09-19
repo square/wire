@@ -31,7 +31,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   public final List<String> a;
 
   public RedactedRepeated(List<String> a) {
-    this(a, null);
+    this(a, TagMap.EMPTY);
   }
 
   public RedactedRepeated(List<String> a, TagMap tagMap) {
@@ -52,7 +52,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 1);
       hashCode = result;
     }

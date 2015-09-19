@@ -22,7 +22,7 @@ public final class B extends Message<B> {
   public final C c;
 
   public B(C c) {
-    this(c, null);
+    this(c, TagMap.EMPTY);
   }
 
   public B(C c, TagMap tagMap) {
@@ -43,7 +43,7 @@ public final class B extends Message<B> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (c != null ? c.hashCode() : 0);
       hashCode = result;
     }

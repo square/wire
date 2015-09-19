@@ -32,7 +32,7 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   public final List<Integer> pack_int32;
 
   public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32) {
-    this(rep_int32, pack_int32, null);
+    this(rep_int32, pack_int32, TagMap.EMPTY);
   }
 
   public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32, TagMap tagMap) {
@@ -55,7 +55,7 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 1);
       result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
       hashCode = result;

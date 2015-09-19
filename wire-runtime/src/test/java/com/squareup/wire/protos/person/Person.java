@@ -65,7 +65,7 @@ public final class Person extends Message<Person> {
   public final List<PhoneNumber> phone;
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
-    this(name, id, email, phone, null);
+    this(name, id, email, phone, TagMap.EMPTY);
   }
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone, TagMap tagMap) {
@@ -92,7 +92,7 @@ public final class Person extends Message<Person> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (id != null ? id.hashCode() : 0);
       result = result * 37 + (email != null ? email.hashCode() : 0);
@@ -219,7 +219,7 @@ public final class Person extends Message<Person> {
     public final PhoneType type;
 
     public PhoneNumber(String number, PhoneType type) {
-      this(number, type, null);
+      this(number, type, TagMap.EMPTY);
     }
 
     public PhoneNumber(String number, PhoneType type, TagMap tagMap) {
@@ -242,7 +242,7 @@ public final class Person extends Message<Person> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = tagMap().hashCode();
         result = result * 37 + (number != null ? number.hashCode() : 0);
         result = result * 37 + (type != null ? type.hashCode() : 0);
         hashCode = result;

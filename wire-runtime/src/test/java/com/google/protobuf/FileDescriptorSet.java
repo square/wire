@@ -28,7 +28,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
   public final List<FileDescriptorProto> file;
 
   public FileDescriptorSet(List<FileDescriptorProto> file) {
-    this(file, null);
+    this(file, TagMap.EMPTY);
   }
 
   public FileDescriptorSet(List<FileDescriptorProto> file, TagMap tagMap) {
@@ -49,7 +49,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (file != null ? file.hashCode() : 1);
       hashCode = result;
     }

@@ -39,7 +39,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
   public final String bar;
 
   public OneOfMessage(Integer foo, String bar) {
-    this(foo, bar, null);
+    this(foo, bar, TagMap.EMPTY);
   }
 
   public OneOfMessage(Integer foo, String bar, TagMap tagMap) {
@@ -62,7 +62,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
       hashCode = result;

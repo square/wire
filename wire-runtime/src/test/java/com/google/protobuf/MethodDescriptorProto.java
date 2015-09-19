@@ -64,7 +64,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
   public final MethodOptions options;
 
   public MethodDescriptorProto(String name, String doc, String input_type, String output_type, MethodOptions options) {
-    this(name, doc, input_type, output_type, options, null);
+    this(name, doc, input_type, output_type, options, TagMap.EMPTY);
   }
 
   public MethodDescriptorProto(String name, String doc, String input_type, String output_type, MethodOptions options, TagMap tagMap) {
@@ -93,7 +93,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (input_type != null ? input_type.hashCode() : 0);

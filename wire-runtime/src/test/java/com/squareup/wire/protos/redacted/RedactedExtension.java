@@ -38,7 +38,7 @@ public final class RedactedExtension extends Message<RedactedExtension> {
   public final String e;
 
   public RedactedExtension(String d, String e) {
-    this(d, e, null);
+    this(d, e, TagMap.EMPTY);
   }
 
   public RedactedExtension(String d, String e, TagMap tagMap) {
@@ -61,7 +61,7 @@ public final class RedactedExtension extends Message<RedactedExtension> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (d != null ? d.hashCode() : 0);
       result = result * 37 + (e != null ? e.hashCode() : 0);
       hashCode = result;

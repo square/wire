@@ -14,7 +14,7 @@ public final class TheResponse extends Message<TheResponse> {
   private static final long serialVersionUID = 0L;
 
   public TheResponse() {
-    this(null);
+    this(TagMap.EMPTY);
   }
 
   public TheResponse(TagMap tagMap) {
@@ -28,7 +28,7 @@ public final class TheResponse extends Message<TheResponse> {
 
   @Override
   public int hashCode() {
-    return tagMap() != null ? tagMap().hashCode() : 0;
+    return tagMap().hashCode();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<TheResponse, Builder> {

@@ -30,7 +30,7 @@ public final class E extends Message<E> {
   public final G g;
 
   public E(F f, G g) {
-    this(f, g, null);
+    this(f, g, TagMap.EMPTY);
   }
 
   public E(F f, G g, TagMap tagMap) {
@@ -53,7 +53,7 @@ public final class E extends Message<E> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (f != null ? f.hashCode() : 0);
       result = result * 37 + (g != null ? g.hashCode() : 0);
       hashCode = result;
@@ -106,7 +106,7 @@ public final class E extends Message<E> {
     public final Integer i;
 
     public F(Integer i) {
-      this(i, null);
+      this(i, TagMap.EMPTY);
     }
 
     public F(Integer i, TagMap tagMap) {
@@ -127,7 +127,7 @@ public final class E extends Message<E> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = tagMap().hashCode();
         result = result * 37 + (i != null ? i.hashCode() : 0);
         hashCode = result;
       }

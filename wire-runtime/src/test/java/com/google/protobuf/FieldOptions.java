@@ -94,7 +94,7 @@ public final class FieldOptions extends Message<FieldOptions> {
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option) {
-    this(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, null);
+    this(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, TagMap.EMPTY);
   }
 
   public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
@@ -123,7 +123,7 @@ public final class FieldOptions extends Message<FieldOptions> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (ctype != null ? ctype.hashCode() : 0);
       result = result * 37 + (packed != null ? packed.hashCode() : 0);
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);

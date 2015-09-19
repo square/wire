@@ -24,7 +24,7 @@ public final class C extends Message<C> {
   public final Integer i;
 
   public C(Integer i) {
-    this(i, null);
+    this(i, TagMap.EMPTY);
   }
 
   public C(Integer i, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class C extends Message<C> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
       hashCode = result;
     }

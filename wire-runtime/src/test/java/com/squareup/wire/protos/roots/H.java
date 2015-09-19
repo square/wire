@@ -21,7 +21,7 @@ public final class H extends Message<H> {
   public final E.F ef;
 
   public H(E.F ef) {
-    this(ef, null);
+    this(ef, TagMap.EMPTY);
   }
 
   public H(E.F ef, TagMap tagMap) {
@@ -42,7 +42,7 @@ public final class H extends Message<H> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (ef != null ? ef.hashCode() : 0);
       hashCode = result;
     }

@@ -53,15 +53,17 @@ import static com.squareup.wire.ProtoWriter.varint32Size;
  * <p>Instances of this class are immutable.
  */
 public final class TagMap {
+  /** A tag map with no values. */
+  public static final TagMap EMPTY = new TagMap(Builder.EMPTY_ARRAY);
+
   /**
    * Alternating extensions and values. Extensions are both known and unknown extensions. Values
    * are single elements. Extensions with multiple elements occur multiple times in this array.
    */
   private final Object[] array;
 
-  private TagMap(Builder builder) {
-    this.array = new Object[builder.limit];
-    System.arraycopy(builder.array, 0, array, 0, builder.limit);
+  private TagMap(Object[] array) {
+    this.array = array;
   }
 
   /**
@@ -227,12 +229,14 @@ public final class TagMap {
 
   public static final class Builder {
     static final int INITIAL_CAPACITY = 8;
+    static final Object[] EMPTY_ARRAY = new Object[0];
 
     private Object[] array;
-    private int limit = 0;
+    private int limit;
 
     public Builder() {
-      array = new Object[INITIAL_CAPACITY];
+      this.array = EMPTY_ARRAY;
+      this.limit = 0;
     }
 
     public Builder(TagMap tagMap) {
@@ -300,7 +304,10 @@ public final class TagMap {
     }
 
     public TagMap build() {
-      return new TagMap(this);
+      if (limit == 0) return EMPTY;
+      Object[] resultArray = new Object[limit];
+      System.arraycopy(array, 0, resultArray, 0, limit);
+      return new TagMap(resultArray);
     }
   }
 }

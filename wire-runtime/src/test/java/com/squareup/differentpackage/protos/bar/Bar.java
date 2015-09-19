@@ -16,7 +16,7 @@ public final class Bar extends Message<Bar> {
   private static final long serialVersionUID = 0L;
 
   public Bar() {
-    this(null);
+    this(TagMap.EMPTY);
   }
 
   public Bar(TagMap tagMap) {
@@ -30,7 +30,7 @@ public final class Bar extends Message<Bar> {
 
   @Override
   public int hashCode() {
-    return tagMap() != null ? tagMap().hashCode() : 0;
+    return tagMap().hashCode();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Bar, Builder> {
@@ -53,7 +53,7 @@ public final class Bar extends Message<Bar> {
     private static final long serialVersionUID = 0L;
 
     public Baz() {
-      this(null);
+      this(TagMap.EMPTY);
     }
 
     public Baz(TagMap tagMap) {
@@ -67,7 +67,7 @@ public final class Bar extends Message<Bar> {
 
     @Override
     public int hashCode() {
-      return tagMap() != null ? tagMap().hashCode() : 0;
+      return tagMap().hashCode();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Baz, Builder> {
@@ -98,7 +98,7 @@ public final class Bar extends Message<Bar> {
       public final String boo;
 
       public Moo(String boo) {
-        this(boo, null);
+        this(boo, TagMap.EMPTY);
       }
 
       public Moo(String boo, TagMap tagMap) {
@@ -119,7 +119,7 @@ public final class Bar extends Message<Bar> {
       public int hashCode() {
         int result = hashCode;
         if (result == 0) {
-          result = tagMap() != null ? tagMap().hashCode() : 0;
+          result = tagMap().hashCode();
           result = result * 37 + (boo != null ? boo.hashCode() : 0);
           hashCode = result;
         }

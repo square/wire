@@ -32,7 +32,7 @@ public final class NotRedacted extends Message<NotRedacted> {
   public final String b;
 
   public NotRedacted(String a, String b) {
-    this(a, b, null);
+    this(a, b, TagMap.EMPTY);
   }
 
   public NotRedacted(String a, String b, TagMap tagMap) {
@@ -55,7 +55,7 @@ public final class NotRedacted extends Message<NotRedacted> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       hashCode = result;

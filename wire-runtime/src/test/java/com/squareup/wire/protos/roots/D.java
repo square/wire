@@ -24,7 +24,7 @@ public final class D extends Message<D> {
   public final Integer i;
 
   public D(Integer i) {
-    this(i, null);
+    this(i, TagMap.EMPTY);
   }
 
   public D(Integer i, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class D extends Message<D> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
       hashCode = result;
     }

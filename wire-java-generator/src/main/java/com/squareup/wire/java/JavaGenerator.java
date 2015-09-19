@@ -531,7 +531,7 @@ public final class JavaGenerator {
       result.addParameter(javaType, sanitizedName);
       result.addCode("$L, ", sanitize(field.name()));
     }
-    result.addCode("null);\n");
+    result.addCode("$T.EMPTY);\n", TAGMAP);
     return result.build();
   }
 
@@ -608,7 +608,7 @@ public final class JavaGenerator {
   // public int hashCode() {
   //   int result = hashCode;
   //   if (result == 0) {
-  //     result = tagMap() != null ? tagMap().hashCode() : 0
+  //     result = tagMap().hashCode();
   //     result = result * 37 + (f != null ? f.hashCode() : 0);
   //     hashCode = result;
   //   }
@@ -626,13 +626,13 @@ public final class JavaGenerator {
 
     List<Field> fields = type.fieldsAndOneOfFields();
     if (fields.isEmpty()) {
-      result.addStatement("return tagMap() != null ? tagMap().hashCode() : 0");
+      result.addStatement("return tagMap().hashCode()");
       return result.build();
     }
 
     result.addStatement("int result = hashCode");
     result.beginControlFlow("if (result == 0)");
-    result.addStatement("result = tagMap() != null ? tagMap().hashCode() : 0");
+    result.addStatement("result = tagMap().hashCode()");
     for (Field field : fields) {
       String name = sanitize(field.name());
       name = addThisIfOneOf(name, "result");

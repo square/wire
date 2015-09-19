@@ -24,7 +24,7 @@ public final class Bar extends Message<Bar> {
   public final Integer baz;
 
   public Bar(Integer baz) {
-    this(baz, null);
+    this(baz, TagMap.EMPTY);
   }
 
   public Bar(Integer baz, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class Bar extends Message<Bar> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (baz != null ? baz.hashCode() : 0);
       hashCode = result;
     }

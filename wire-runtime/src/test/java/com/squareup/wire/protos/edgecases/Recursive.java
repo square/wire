@@ -30,7 +30,7 @@ public final class Recursive extends Message<Recursive> {
   public final Recursive recursive;
 
   public Recursive(Integer value, Recursive recursive) {
-    this(value, recursive, null);
+    this(value, recursive, TagMap.EMPTY);
   }
 
   public Recursive(Integer value, Recursive recursive, TagMap tagMap) {
@@ -53,7 +53,7 @@ public final class Recursive extends Message<Recursive> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (value != null ? value.hashCode() : 0);
       result = result * 37 + (recursive != null ? recursive.hashCode() : 0);
       hashCode = result;

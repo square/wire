@@ -74,7 +74,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
       .build();
 
   public MessageWithOptions() {
-    this(null);
+    this(TagMap.EMPTY);
   }
 
   public MessageWithOptions(TagMap tagMap) {
@@ -88,7 +88,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
 
   @Override
   public int hashCode() {
-    return tagMap() != null ? tagMap().hashCode() : 0;
+    return tagMap().hashCode();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions, Builder> {

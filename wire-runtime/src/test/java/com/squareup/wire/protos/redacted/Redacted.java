@@ -50,7 +50,7 @@ public final class Redacted extends Message<Redacted> {
   public final String c;
 
   public Redacted(String a, String b, String c) {
-    this(a, b, c, null);
+    this(a, b, c, TagMap.EMPTY);
   }
 
   public Redacted(String a, String b, String c, TagMap tagMap) {
@@ -75,7 +75,7 @@ public final class Redacted extends Message<Redacted> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);

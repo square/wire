@@ -24,7 +24,7 @@ public final class OneExtension extends Message<OneExtension> {
   public final String id;
 
   public OneExtension(String id) {
-    this(id, null);
+    this(id, TagMap.EMPTY);
   }
 
   public OneExtension(String id, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class OneExtension extends Message<OneExtension> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (id != null ? id.hashCode() : 0);
       hashCode = result;
     }

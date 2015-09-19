@@ -24,7 +24,7 @@ public final class Foos extends Message<Foos> {
   public final List<Foo> foos;
 
   public Foos(List<Foo> foos) {
-    this(foos, null);
+    this(foos, TagMap.EMPTY);
   }
 
   public Foos(List<Foo> foos, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class Foos extends Message<Foos> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (foos != null ? foos.hashCode() : 1);
       hashCode = result;
     }
