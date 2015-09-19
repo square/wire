@@ -61,6 +61,16 @@ public final class Field {
     return element.name();
   }
 
+  /**
+   * Returns this field's name, prefixed with its package name. Uniquely identifies extension
+   * fields, such as in options.
+   */
+  String qualifiedName() {
+    return packageName != null
+        ? packageName + '.' + element.name()
+        : element.name();
+  }
+
   public int tag() {
     return element.tag();
   }
