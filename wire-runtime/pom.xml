@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>wire-runtime</artifactId>
-  <name>Wire Protocol Buffer Runtime</name>
 
   <dependencies>
     <dependency>
