@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.Util;
 import org.junit.Test;
 

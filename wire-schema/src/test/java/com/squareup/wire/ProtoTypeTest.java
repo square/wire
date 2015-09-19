@@ -15,6 +15,7 @@
  */
 package com.squareup.wire;
 
+import com.squareup.wire.schema.ProtoType;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

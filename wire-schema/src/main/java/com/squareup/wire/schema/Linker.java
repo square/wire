@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.Util;
 import java.util.ArrayList;
 import java.util.Collection;
