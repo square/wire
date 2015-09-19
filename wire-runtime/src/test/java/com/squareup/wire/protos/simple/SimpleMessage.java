@@ -8,6 +8,7 @@ import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
+import java.io.ObjectStreamException;
 import java.lang.Deprecated;
 import java.lang.Double;
 import java.lang.Integer;
@@ -216,6 +217,10 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     return result;
   }
 
+  private Object writeReplace() throws ObjectStreamException {
+    return super.createSerializedForm();
+  }
+
   public static final class Builder extends com.squareup.wire.Message.Builder<SimpleMessage, Builder> {
     public Integer optional_int32;
 
@@ -408,6 +413,10 @@ public final class SimpleMessage extends Message<SimpleMessage> {
         hashCode = result;
       }
       return result;
+    }
+
+    private Object writeReplace() throws ObjectStreamException {
+      return super.createSerializedForm();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, Builder> {

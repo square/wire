@@ -6,6 +6,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
+import java.io.ObjectStreamException;
 import java.lang.Object;
 import java.lang.Override;
 
@@ -47,6 +48,10 @@ public final class H extends Message<H> {
       hashCode = result;
     }
     return result;
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return super.createSerializedForm();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<H, Builder> {

@@ -48,6 +48,7 @@ import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
+import java.io.ObjectStreamException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
@@ -409,6 +410,7 @@ public final class JavaGenerator {
     builder.addMethod(messageFieldsAndTagMapConstructor(type));
     builder.addMethod(messageEquals(type));
     builder.addMethod(messageHashCode(type));
+    builder.addMethod(messageWriteReplace(type));
     builder.addType(builder(type, javaType, builderJavaType));
 
     for (Type nestedType : type.nestedTypes()) {
@@ -421,6 +423,20 @@ public final class JavaGenerator {
     return builder.build();
   }
 
+  // Example:
+  //
+  // private Object writeReplace() throws ObjectStreamException {
+  //   return super.createSerializedForm();
+  // }
+  //
+  private MethodSpec messageWriteReplace(MessageType type) {
+    return MethodSpec.methodBuilder("writeReplace")
+        .addModifiers(PRIVATE)
+        .returns(Object.class)
+        .addException(ObjectStreamException.class)
+        .addStatement("return super.createSerializedForm()")
+        .build();
+  }
 
   // Example:
   //

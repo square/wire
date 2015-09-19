@@ -28,13 +28,13 @@ import java.util.Set;
 public abstract class Message<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
-  final transient TagMap tagMap;
+  final TagMap tagMap;
 
   /** If not {@code 0} then the serialized size of this message. */
-  transient int cachedSerializedSize = 0;
+  int cachedSerializedSize = 0;
 
   /** If non-zero, the hash code of this message. Accessed by generated code. */
-  protected transient int hashCode = 0;
+  protected int hashCode = 0;
 
   protected Message(TagMap tagMap) {
     this.tagMap = tagMap;
@@ -101,7 +101,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     return ProtoAdapter.newMessageAdapter((Class<Message>) getClass()).toString(this);
   }
 
-  private Object writeReplace() throws ObjectStreamException {
+  protected final Object createSerializedForm() throws ObjectStreamException {
     return new MessageSerializedForm(this, getClass());
   }
 

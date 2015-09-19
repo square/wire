@@ -5,6 +5,7 @@ package com.squareup.wire.protos.roots;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
+import java.io.ObjectStreamException;
 import java.lang.Object;
 import java.lang.Override;
 
@@ -29,6 +30,10 @@ public final class TheRequest extends Message<TheRequest> {
   @Override
   public int hashCode() {
     return tagMap() != null ? tagMap().hashCode() : 0;
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return super.createSerializedForm();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<TheRequest, Builder> {

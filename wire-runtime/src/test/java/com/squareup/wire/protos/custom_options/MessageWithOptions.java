@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.protos.foreign.Ext_foreign;
 import com.squareup.wire.protos.foreign.ForeignMessage;
+import java.io.ObjectStreamException;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.Arrays;
@@ -89,6 +90,10 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
   @Override
   public int hashCode() {
     return tagMap() != null ? tagMap().hashCode() : 0;
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return super.createSerializedForm();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions, Builder> {
