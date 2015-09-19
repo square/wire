@@ -162,10 +162,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     return messageType.hashCode();
   }
 
-  /**
-   * Returns a human-readable version of the given {@link Message}.
-   */
-  public String toString(M message) {
+  @Override public String toString(M message) {
     StringBuilder sb = new StringBuilder();
     sb.append(messageType.getSimpleName());
     sb.append('{');

@@ -87,7 +87,7 @@ public abstract class Message<T extends Message<T>> implements Serializable {
 
   @SuppressWarnings("unchecked")
   @Override public String toString() {
-    return ProtoAdapter.newMessageAdapter((Class<Message>) getClass()).toString(this);
+    return ProtoAdapter.get((Class<Message>) getClass()).toString(this);
   }
 
   protected final Object writeReplace() throws ObjectStreamException {
