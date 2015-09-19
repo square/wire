@@ -7,6 +7,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
+import java.io.ObjectStreamException;
 import java.lang.Object;
 import java.lang.Override;
 
@@ -50,6 +51,10 @@ public final class ChildPackage extends Message<ChildPackage> {
       hashCode = result;
     }
     return result;
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return super.createSerializedForm();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<ChildPackage, Builder> {

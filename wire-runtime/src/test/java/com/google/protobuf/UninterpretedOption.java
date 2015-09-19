@@ -6,6 +6,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
+import java.io.ObjectStreamException;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Long;
@@ -133,6 +134,10 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
       hashCode = result;
     }
     return result;
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return super.createSerializedForm();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<UninterpretedOption, Builder> {
@@ -270,6 +275,10 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
         hashCode = result;
       }
       return result;
+    }
+
+    private Object writeReplace() throws ObjectStreamException {
+      return super.createSerializedForm();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<NamePart, Builder> {

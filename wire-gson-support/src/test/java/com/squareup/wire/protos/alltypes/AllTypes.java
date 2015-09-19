@@ -7,6 +7,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
+import java.io.ObjectStreamException;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Float;
@@ -924,6 +925,10 @@ public final class AllTypes extends Message<AllTypes> {
     return result;
   }
 
+  private Object writeReplace() throws ObjectStreamException {
+    return super.createSerializedForm();
+  }
+
   public static final class Builder extends com.squareup.wire.Message.Builder<AllTypes, Builder> {
     public Integer opt_int32;
 
@@ -1679,6 +1684,10 @@ public final class AllTypes extends Message<AllTypes> {
         hashCode = result;
       }
       return result;
+    }
+
+    private Object writeReplace() throws ObjectStreamException {
+      return super.createSerializedForm();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, Builder> {
