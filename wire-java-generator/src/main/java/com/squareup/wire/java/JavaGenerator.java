@@ -33,7 +33,7 @@ import com.squareup.javapoet.WildcardTypeName;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.ProtoType;
+import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;

@@ -16,7 +16,6 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.MessageElement;
 import java.util.NavigableSet;
 
