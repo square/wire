@@ -35,17 +35,18 @@ class SchemaBuilder {
   final SchemaLoader schemaLoader = new SchemaLoader().addDirectory(root);
 
   public SchemaBuilder add(String name, String protoFile) {
-    Path path = root.resolve(name);
+    Path relativePath = fs.getPath(name);
     try {
-      Path parent = path.getParent();
+      Path resolvedPath = root.resolve(relativePath);
+      Path parent = resolvedPath.getParent();
       if (parent != null) {
         Files.createDirectories(parent);
       }
-      Files.write(path, protoFile.getBytes(UTF_8));
+      Files.write(resolvedPath, protoFile.getBytes(UTF_8));
     } catch (IOException e) {
       throw new AssertionError(e);
     }
-    schemaLoader.addProto(path);
+    schemaLoader.addProto(relativePath);
     return this;
   }
 

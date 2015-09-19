@@ -137,6 +137,10 @@ public final class ProtoFile {
         element, retainedTypes.build(), retainedServices.build(), extendList, options);
   }
 
+  @Override public String toString() {
+    return location().path();
+  }
+
   /** Syntax version. */
   public enum Syntax {
     PROTO_2("proto2"),

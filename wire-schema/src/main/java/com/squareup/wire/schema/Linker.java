@@ -80,7 +80,7 @@ final class Linker {
           extensionsMap.put(extend.type(), map);
         }
         for (Field field : extend.fields()) {
-          map.put(field.packageName() + "." + field.name(), field);
+          map.put(field.qualifiedName(), field);
         }
       }
     }
@@ -177,28 +177,34 @@ final class Linker {
       return scalar;
     }
 
+    Type resolved = resolve(name, protoTypeNames);
+    if (resolved != null) return resolved.name();
+
+    addError("unable to resolve %s", name);
+    return ProtoType.BYTES; // Just return any placeholder.
+  }
+
+  <T> T resolve(String name, Map<String, T> map) {
     if (name.startsWith(".")) {
       // If name starts with a '.', the rest of it is fully qualified.
-      Type type = protoTypeNames.get(name.substring(1));
-      if (type != null) return type.name();
+      T result = map.get(name.substring(1));
+      if (result != null) return result;
     } else {
       // We've got a name suffix, like 'Person' or 'protos.Person'. Start the search from with the
       // longest prefix like foo.bar.Baz.Quux, shortening the prefix until we find a match.
       String prefix = resolveContext();
       while (!prefix.isEmpty()) {
-        Type type = protoTypeNames.get(prefix + '.' + name);
-        if (type != null) return type.name();
+        T result = map.get(prefix + '.' + name);
+        if (result != null) return result;
 
         // Strip the last nested class name or package name from the end and try again.
         int dot = prefix.lastIndexOf('.');
         prefix = dot != -1 ? prefix.substring(0, dot) : "";
       }
-      Type type = protoTypeNames.get(name);
-      if (type != null) return type.name();
+      T result = map.get(name);
+      if (result != null) return result;
     }
-
-    addError("unable to resolve %s", name);
-    return ProtoType.BYTES; // Just return any placeholder.
+    return null;
   }
 
   private String resolveContext() {
@@ -235,7 +241,6 @@ final class Linker {
 
   /** Returns the field named {@code field} on the message type of {@code self}. */
   Field dereference(Field self, String field) {
-    String packageName = packageName();
     if (field.startsWith("[") && field.endsWith("]")) {
       field = field.substring(1, field.length() - 1);
     }
@@ -248,14 +253,9 @@ final class Linker {
       }
 
       Map<String, Field> typeExtensions = extensionsMap.get(self.type());
-      Field extensionField = typeExtensions.get(field);
+      Field extensionField = resolve(field, typeExtensions);
       if (extensionField != null) {
         return extensionField;
-      }
-
-      Field fullyQualifiedExtensionField = typeExtensions.get(packageName + "." + field);
-      if (fullyQualifiedExtensionField != null) {
-        return fullyQualifiedExtensionField;
       }
     }
 
