@@ -4,6 +4,8 @@ package com.squareup.wire.protos.one_extension;
 
 import com.squareup.wire.Extension;
 import com.squareup.wire.WireField;
+import java.util.Arrays;
+import java.util.List;
 
 public final class Ext_one_extension {
   public static final Extension<OneExtension, Foo> foo = Extension.get(OneExtension.class,
@@ -11,6 +13,9 @@ public final class Ext_one_extension {
       "squareup.protos.one_extension.foo",
       1000,
       "com.squareup.wire.protos.one_extension.Foo#ADAPTER");
+
+  public static final List<Extension<?, ?>> EXTENSIONS = Arrays.<Extension<?, ?>>asList(
+      foo);
 
   private Ext_one_extension() {
   }

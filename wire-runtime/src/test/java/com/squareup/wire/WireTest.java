@@ -196,7 +196,7 @@ public class WireTest {
         .required_int32(456)
         .build();
 
-    ExtensionRegistry simpleMessageExtensions = new ExtensionRegistry(Ext_simple_message.class);
+    ExtensionRegistry simpleMessageExtensions = new ExtensionRegistry(Ext_simple_message.EXTENSIONS);
     ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
 
     byte[] data = adapter.encode(msg);

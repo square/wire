@@ -6,6 +6,7 @@ import com.squareup.wire.Extension;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.lang.Integer;
+import java.util.Arrays;
 import java.util.List;
 
 public final class Ext_simple_message {
@@ -44,6 +45,14 @@ public final class Ext_simple_message {
       "squareup.protos.simple.j",
       100,
       "com.squareup.wire.ProtoAdapter#INT32");
+
+  public static final List<Extension<?, ?>> EXTENSIONS = Arrays.<Extension<?, ?>>asList(
+      fooext,
+      barext,
+      bazext,
+      nested_message_ext,
+      nested_enum_ext,
+      j);
 
   private Ext_simple_message() {
   }

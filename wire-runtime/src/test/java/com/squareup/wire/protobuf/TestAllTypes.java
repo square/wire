@@ -136,7 +136,7 @@ public class TestAllTypes {
   }
 
   private final AllTypes allTypes = createAllTypes();
-  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry(Ext_all_types.class);
+  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry(Ext_all_types.EXTENSIONS);
   private final ProtoAdapter<AllTypes> adapter = AllTypes.ADAPTER;
 
   private AllTypes createAllTypes(int numRepeated) {

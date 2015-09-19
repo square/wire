@@ -11,6 +11,7 @@ import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Float;
 import java.lang.Integer;
+import java.util.Arrays;
 import java.util.List;
 
 public final class Ext_custom_options {
@@ -103,6 +104,23 @@ public final class Ext_custom_options {
       "squareup.protos.custom_options.rep",
       102,
       "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER");
+
+  public static final List<Extension<?, ?>> EXTENSIONS = Arrays.<Extension<?, ?>>asList(
+      my_message_option_one,
+      my_message_option_two,
+      my_message_option_three,
+      my_message_option_four,
+      my_message_option_five,
+      my_message_option_six,
+      my_field_option_one,
+      my_field_option_two,
+      my_field_option_three,
+      my_field_option_four,
+      enum_value_option,
+      complex_enum_value_option,
+      enum_option,
+      ext,
+      rep);
 
   private Ext_custom_options() {
   }

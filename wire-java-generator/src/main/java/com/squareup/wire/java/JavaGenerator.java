@@ -33,7 +33,6 @@ import com.squareup.javapoet.WildcardTypeName;
 import com.squareup.wire.Extension;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -45,10 +44,12 @@ import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
 import com.squareup.wire.schema.Options;
 import com.squareup.wire.schema.ProtoFile;
+import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -915,6 +916,7 @@ public final class JavaGenerator {
         .addModifiers(PRIVATE)
         .build());
 
+    List<String> names = new ArrayList<>();
     for (Extend extend : protoFile.extendList()) {
       ProtoType extendType = extend.type();
       TypeName javaType = typeName(extendType);
@@ -925,9 +927,19 @@ public final class JavaGenerator {
       }
 
       for (Field field : extend.fields()) {
-        builder.addField(extensionField(protoFile, javaType, field));
+        FieldSpec fieldSpec = extensionField(protoFile, javaType, field);
+        names.add(fieldSpec.name);
+        builder.addField(fieldSpec);
       }
     }
+
+    WildcardTypeName wildcard = WildcardTypeName.subtypeOf(Object.class);
+    TypeName extensionType = ParameterizedTypeName.get(EXTENSION, wildcard, wildcard);
+    TypeName listOfExtensionsType = ParameterizedTypeName.get(LIST, extensionType);
+    builder.addField(FieldSpec.builder(listOfExtensionsType, "EXTENSIONS", PUBLIC, STATIC, FINAL)
+        .initializer("$[$T.<$T>asList(\n$L)$]", Arrays.class, extensionType,
+            Joiner.on(",\n").join(names))
+        .build());
 
     return builder.build();
   }
