@@ -205,9 +205,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
           Object value = fieldBinding.singleAdapter().decode(reader);
           fieldBinding.value(builder, value);
         } else {
-          Extension<?, ?> extension = reader.getExtension(messageType, tag);
-          Object value = extension.getAdapter().decode(reader);
-          builder.tagMap().add(extension, value);
+          builder.tagMap().decodeUnknown(reader, tag, messageType);
         }
       } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
         // An unknown Enum value was encountered, store it as an unknown field

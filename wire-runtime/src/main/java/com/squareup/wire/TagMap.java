@@ -244,6 +244,14 @@ public final class TagMap {
       this.limit = tagMap.array.length;
     }
 
+    /** Decode a value for an unknown {@code tag} in {@code messageType}. */
+    public Builder decodeUnknown(ProtoReader reader, int tag,
+        Class<? extends Message> messageType) throws IOException {
+      Extension<?, ?> extension = reader.getExtension(messageType, tag);
+      Object value = extension.getAdapter().decode(reader);
+      return add(extension, value);
+    }
+
     public Builder add(Extension<?, ?> extension, Object value) {
       if (extension == null) throw new NullPointerException("extension == null");
       if (value == null) throw new NullPointerException("value == null");
