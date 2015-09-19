@@ -18,8 +18,8 @@ package com.squareup.wire.protobuf;
 import com.squareup.wire.Extension;
 import com.squareup.wire.ExtensionRegistry;
 import com.squareup.wire.FieldEncoding;
-import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.Wire;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.io.ByteArrayInputStream;
@@ -509,7 +509,7 @@ public class TestAllTypes {
 
   @Test
   public void testEnums() {
-    assertThat(Message.enumFromInt(AllTypes.NestedEnum.class, 1)).isEqualTo(A);
+    assertThat(Wire.enumFromInt(AllTypes.NestedEnum.class, 1)).isEqualTo(A);
     assertThat(A.getValue()).isEqualTo(1);
   }
 
