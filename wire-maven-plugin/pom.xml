@@ -9,7 +9,6 @@
   </parent>
 
   <artifactId>wire-maven-plugin</artifactId>
-  <name>Wire Protocol Buffer Maven Plugin</name>
   <packaging>maven-plugin</packaging>
 
   <dependencies>
