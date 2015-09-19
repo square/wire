@@ -28,13 +28,13 @@ import java.util.Set;
 public abstract class Message<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
-  final TagMap tagMap;
+  final transient TagMap tagMap;
 
   /** If not {@code 0} then the serialized size of this message. */
-  int cachedSerializedSize = 0;
+  transient int cachedSerializedSize = 0;
 
   /** If non-zero, the hash code of this message. Accessed by generated code. */
-  protected int hashCode = 0;
+  protected transient int hashCode = 0;
 
   protected Message(TagMap tagMap) {
     if (tagMap == null) {
