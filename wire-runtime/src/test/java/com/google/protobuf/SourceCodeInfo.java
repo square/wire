@@ -76,7 +76,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   public final List<Location> location;
 
   public SourceCodeInfo(List<Location> location) {
-    this(location, null);
+    this(location, TagMap.EMPTY);
   }
 
   public SourceCodeInfo(List<Location> location, TagMap tagMap) {
@@ -97,7 +97,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (location != null ? location.hashCode() : 1);
       hashCode = result;
     }
@@ -224,7 +224,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     public final List<Integer> span;
 
     public Location(List<Integer> path, List<Integer> span) {
-      this(path, span, null);
+      this(path, span, TagMap.EMPTY);
     }
 
     public Location(List<Integer> path, List<Integer> span, TagMap tagMap) {
@@ -247,7 +247,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = tagMap().hashCode();
         result = result * 37 + (path != null ? path.hashCode() : 1);
         result = result * 37 + (span != null ? span.hashCode() : 1);
         hashCode = result;

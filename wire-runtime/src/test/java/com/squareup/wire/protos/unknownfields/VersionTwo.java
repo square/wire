@@ -67,7 +67,7 @@ public final class VersionTwo extends Message<VersionTwo> {
   public final List<String> v2_rs;
 
   public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs) {
-    this(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, null);
+    this(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, TagMap.EMPTY);
   }
 
   public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs, TagMap tagMap) {
@@ -98,7 +98,7 @@ public final class VersionTwo extends Message<VersionTwo> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
       result = result * 37 + (v2_i != null ? v2_i.hashCode() : 0);
       result = result * 37 + (v2_s != null ? v2_s.hashCode() : 0);

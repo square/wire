@@ -24,7 +24,7 @@ public final class OneField extends Message<OneField> {
   public final Integer opt_int32;
 
   public OneField(Integer opt_int32) {
-    this(opt_int32, null);
+    this(opt_int32, TagMap.EMPTY);
   }
 
   public OneField(Integer opt_int32, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class OneField extends Message<OneField> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
       hashCode = result;
     }

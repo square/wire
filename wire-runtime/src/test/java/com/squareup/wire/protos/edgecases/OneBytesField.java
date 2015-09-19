@@ -24,7 +24,7 @@ public final class OneBytesField extends Message<OneBytesField> {
   public final ByteString opt_bytes;
 
   public OneBytesField(ByteString opt_bytes) {
-    this(opt_bytes, null);
+    this(opt_bytes, TagMap.EMPTY);
   }
 
   public OneBytesField(ByteString opt_bytes, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class OneBytesField extends Message<OneBytesField> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
       hashCode = result;
     }

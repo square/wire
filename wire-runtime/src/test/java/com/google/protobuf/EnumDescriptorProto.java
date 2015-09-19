@@ -53,7 +53,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
   public final EnumOptions options;
 
   public EnumDescriptorProto(String name, String doc, List<EnumValueDescriptorProto> value, EnumOptions options) {
-    this(name, doc, value, options, null);
+    this(name, doc, value, options, TagMap.EMPTY);
   }
 
   public EnumDescriptorProto(String name, String doc, List<EnumValueDescriptorProto> value, EnumOptions options, TagMap tagMap) {
@@ -80,7 +80,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (value != null ? value.hashCode() : 1);

@@ -14,7 +14,7 @@ public final class NoFields extends Message<NoFields> {
   private static final long serialVersionUID = 0L;
 
   public NoFields() {
-    this(null);
+    this(TagMap.EMPTY);
   }
 
   public NoFields(TagMap tagMap) {
@@ -28,7 +28,7 @@ public final class NoFields extends Message<NoFields> {
 
   @Override
   public int hashCode() {
-    return tagMap() != null ? tagMap().hashCode() : 0;
+    return tagMap().hashCode();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<NoFields, Builder> {

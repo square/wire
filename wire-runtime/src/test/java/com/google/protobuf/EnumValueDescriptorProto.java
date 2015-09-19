@@ -53,7 +53,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   public final EnumValueOptions options;
 
   public EnumValueDescriptorProto(String name, String doc, Integer number, EnumValueOptions options) {
-    this(name, doc, number, options, null);
+    this(name, doc, number, options, TagMap.EMPTY);
   }
 
   public EnumValueDescriptorProto(String name, String doc, Integer number, EnumValueOptions options, TagMap tagMap) {
@@ -80,7 +80,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (number != null ? number.hashCode() : 0);

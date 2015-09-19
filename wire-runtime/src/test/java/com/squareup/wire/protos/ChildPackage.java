@@ -24,7 +24,7 @@ public final class ChildPackage extends Message<ChildPackage> {
   public final ForeignEnum inner_foreign_enum;
 
   public ChildPackage(ForeignEnum inner_foreign_enum) {
-    this(inner_foreign_enum, null);
+    this(inner_foreign_enum, TagMap.EMPTY);
   }
 
   public ChildPackage(ForeignEnum inner_foreign_enum, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class ChildPackage extends Message<ChildPackage> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (inner_foreign_enum != null ? inner_foreign_enum.hashCode() : 0);
       hashCode = result;
     }

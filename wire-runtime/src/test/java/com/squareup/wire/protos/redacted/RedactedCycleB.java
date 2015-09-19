@@ -21,7 +21,7 @@ public final class RedactedCycleB extends Message<RedactedCycleB> {
   public final RedactedCycleA a;
 
   public RedactedCycleB(RedactedCycleA a) {
-    this(a, null);
+    this(a, TagMap.EMPTY);
   }
 
   public RedactedCycleB(RedactedCycleA a, TagMap tagMap) {
@@ -42,7 +42,7 @@ public final class RedactedCycleB extends Message<RedactedCycleB> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       hashCode = result;
     }

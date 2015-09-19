@@ -24,7 +24,7 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
   public final ByteString data;
 
   public HeresAllTheDataResponse(ByteString data) {
-    this(data, null);
+    this(data, TagMap.EMPTY);
   }
 
   public HeresAllTheDataResponse(ByteString data, TagMap tagMap) {
@@ -45,7 +45,7 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (data != null ? data.hashCode() : 0);
       hashCode = result;
     }

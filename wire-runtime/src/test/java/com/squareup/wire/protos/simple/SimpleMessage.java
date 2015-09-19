@@ -155,7 +155,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   public final String o;
 
   public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String _package, String result, String other, String o) {
-    this(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, _package, result, other, o, null);
+    this(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, _package, result, other, o, TagMap.EMPTY);
   }
 
   public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String _package, String result, String other, String o, TagMap tagMap) {
@@ -198,7 +198,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (optional_int32 != null ? optional_int32.hashCode() : 0);
       result = result * 37 + (optional_nested_msg != null ? optional_nested_msg.hashCode() : 0);
       result = result * 37 + (optional_external_msg != null ? optional_external_msg.hashCode() : 0);
@@ -382,7 +382,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     public final Integer bb;
 
     public NestedMessage(Integer bb) {
-      this(bb, null);
+      this(bb, TagMap.EMPTY);
     }
 
     public NestedMessage(Integer bb, TagMap tagMap) {
@@ -403,7 +403,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     public int hashCode() {
       int result = hashCode;
       if (result == 0) {
-        result = tagMap() != null ? tagMap().hashCode() : 0;
+        result = tagMap().hashCode();
         result = result * 37 + (bb != null ? bb.hashCode() : 0);
         hashCode = result;
       }

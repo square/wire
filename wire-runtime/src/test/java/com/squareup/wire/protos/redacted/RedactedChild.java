@@ -36,7 +36,7 @@ public final class RedactedChild extends Message<RedactedChild> {
   public final NotRedacted c;
 
   public RedactedChild(String a, Redacted b, NotRedacted c) {
-    this(a, b, c, null);
+    this(a, b, c, TagMap.EMPTY);
   }
 
   public RedactedChild(String a, Redacted b, NotRedacted c, TagMap tagMap) {
@@ -61,7 +61,7 @@ public final class RedactedChild extends Message<RedactedChild> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);

@@ -22,7 +22,7 @@ public final class Foo extends Message<Foo> {
   public final Bar.Baz.Moo moo;
 
   public Foo(Bar.Baz.Moo moo) {
-    this(moo, null);
+    this(moo, TagMap.EMPTY);
   }
 
   public Foo(Bar.Baz.Moo moo, TagMap tagMap) {
@@ -43,7 +43,7 @@ public final class Foo extends Message<Foo> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (moo != null ? moo.hashCode() : 0);
       hashCode = result;
     }

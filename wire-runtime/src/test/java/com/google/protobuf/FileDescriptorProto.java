@@ -102,7 +102,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   public final SourceCodeInfo source_code_info;
 
   public FileDescriptorProto(String name, String _package, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info) {
-    this(name, _package, dependency, message_type, enum_type, service, extension, options, source_code_info, null);
+    this(name, _package, dependency, message_type, enum_type, service, extension, options, source_code_info, TagMap.EMPTY);
   }
 
   public FileDescriptorProto(String name, String _package, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info, TagMap tagMap) {
@@ -139,7 +139,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (_package != null ? _package.hashCode() : 0);
       result = result * 37 + (dependency != null ? dependency.hashCode() : 1);

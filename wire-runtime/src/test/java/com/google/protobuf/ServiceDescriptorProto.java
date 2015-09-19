@@ -53,7 +53,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public final ServiceOptions options;
 
   public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, String doc, ServiceOptions options) {
-    this(name, method, doc, options, null);
+    this(name, method, doc, options, TagMap.EMPTY);
   }
 
   public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, String doc, ServiceOptions options, TagMap tagMap) {
@@ -80,7 +80,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (method != null ? method.hashCode() : 1);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);

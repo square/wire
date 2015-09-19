@@ -31,7 +31,7 @@ public final class ServiceOptions extends Message<ServiceOptions> {
   public final List<UninterpretedOption> uninterpreted_option;
 
   public ServiceOptions(List<UninterpretedOption> uninterpreted_option) {
-    this(uninterpreted_option, null);
+    this(uninterpreted_option, TagMap.EMPTY);
   }
 
   public ServiceOptions(List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
@@ -52,7 +52,7 @@ public final class ServiceOptions extends Message<ServiceOptions> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
       hashCode = result;
     }

@@ -69,7 +69,7 @@ public final class MessageOptions extends Message<MessageOptions> {
   public final List<UninterpretedOption> uninterpreted_option;
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option) {
-    this(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, null);
+    this(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, TagMap.EMPTY);
   }
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
@@ -94,7 +94,7 @@ public final class MessageOptions extends Message<MessageOptions> {
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {
-      result = tagMap() != null ? tagMap().hashCode() : 0;
+      result = tagMap().hashCode();
       result = result * 37 + (message_set_wire_format != null ? message_set_wire_format.hashCode() : 0);
       result = result * 37 + (no_standard_descriptor_accessor != null ? no_standard_descriptor_accessor.hashCode() : 0);
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
