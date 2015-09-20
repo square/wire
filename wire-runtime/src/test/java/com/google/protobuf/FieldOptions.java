@@ -243,6 +243,18 @@ public final class FieldOptions extends Message<FieldOptions> {
       this.value = value;
     }
 
+    /**
+     * Return the constant for {@code value} or null.
+     */
+    public static CType fromValue(int value) {
+      switch (value) {
+        case 0: return STRING;
+        case 1: return CORD;
+        case 2: return STRING_PIECE;
+        default: return null;
+      }
+    }
+
     @Override
     public int getValue() {
       return value;

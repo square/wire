@@ -19,7 +19,6 @@ import com.squareup.wire.Extension;
 import com.squareup.wire.ExtensionRegistry;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.Wire;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.io.ByteArrayInputStream;
@@ -509,7 +508,8 @@ public class TestAllTypes {
 
   @Test
   public void testEnums() {
-    assertThat(Wire.enumFromInt(AllTypes.NestedEnum.class, 1)).isEqualTo(A);
+    assertThat(AllTypes.NestedEnum.fromValue(1)).isEqualTo(A);
+    assertThat(AllTypes.NestedEnum.fromValue(10)).isNull();
     assertThat(A.getValue()).isEqualTo(1);
   }
 

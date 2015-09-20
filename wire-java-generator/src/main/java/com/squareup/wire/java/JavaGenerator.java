@@ -292,6 +292,13 @@ public final class JavaGenerator {
     String enumArgsFormat = "$L" + Strings.repeat(", $L", allOptionFields.size());
     builder.addMethod(constructorBuilder.build());
 
+    MethodSpec.Builder fromValueBuilder = MethodSpec.methodBuilder("fromValue")
+        .addJavadoc("Return the constant for {@code value} or null.\n")
+        .addModifiers(PUBLIC, STATIC)
+        .returns(javaType)
+        .addParameter(int.class, "value")
+        .beginControlFlow("switch (value)");
+
     for (EnumConstant constant : type.constants()) {
       Object[] enumArgs = new Object[allOptionFields.size() + 1];
       enumArgs[0] = constant.tag();
@@ -309,7 +316,13 @@ public final class JavaGenerator {
       }
 
       builder.addEnumConstant(constant.name(), constantBuilder.build());
+
+      fromValueBuilder.addStatement("case $L: return $L", constant.tag(), constant.name());
     }
+
+    builder.addMethod(fromValueBuilder.addStatement("default: return null")
+        .endControlFlow()
+        .build());
 
     builder.addField(FieldSpec.builder(adapterOf(javaType), "ADAPTER")
         .addModifiers(PUBLIC, STATIC, FINAL)

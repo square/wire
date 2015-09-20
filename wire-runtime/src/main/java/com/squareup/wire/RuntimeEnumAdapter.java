@@ -16,52 +16,24 @@
 package com.squareup.wire;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Converts values of an enum to and from integers.
  */
 final class RuntimeEnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
-  private static final Comparator<WireEnum> COMPARATOR = new Comparator<WireEnum>() {
-    @Override public int compare(WireEnum o1, WireEnum o2) {
-      return o1.getValue() - o2.getValue();
-    }
-  };
-
   private final Class<E> type;
-
-  private final int[] values;
-  private final E[] constants;
-  private final boolean isDense;
+  private final Method fromValueMethod;
 
   RuntimeEnumAdapter(Class<E> type) {
     super(FieldEncoding.VARINT, type);
     this.type = type;
 
-    constants = type.getEnumConstants();
-    Arrays.sort(constants, COMPARATOR);
-
-    int length = constants.length;
-    if (constants[0].getValue() == 1 && constants[length - 1].getValue() == length) {
-      // Values completely fill the range from 1..length
-      isDense = true;
-      values = null;
-    } else {
-      isDense = false;
-      values = new int[length];
-      for (int i = 0; i < length; i++) {
-        values[i] = constants[i].getValue();
-      }
-    }
-  }
-
-  public E fromInt(int value) {
-    int index = isDense ? value - 1 : Arrays.binarySearch(values, value);
     try {
-      return constants[index];
-    } catch (IndexOutOfBoundsException e) {
-      throw new EnumConstantNotFoundException(value, type);
+      fromValueMethod = type.getDeclaredMethod("fromValue", int.class);
+    } catch (NoSuchMethodException e) {
+      throw new AssertionError(e);
     }
   }
 
@@ -74,7 +46,18 @@ final class RuntimeEnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
   }
 
   @Override public E decode(ProtoReader reader) throws IOException {
-    return fromInt(reader.readVarint32());
+    int value = reader.readVarint32();
+    E constant;
+    try {
+      //noinspection unchecked
+      constant = (E) fromValueMethod.invoke(null, value);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new AssertionError(e);
+    }
+    if (constant == null) {
+      throw new EnumConstantNotFoundException(value, type);
+    }
+    return constant;
   }
 
   @Override public boolean equals(Object o) {
