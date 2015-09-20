@@ -110,9 +110,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       if (value == null) continue;
       size += fieldBinding.adapter().encodedSize(fieldBinding.tag, value);
     }
-    if (message.tagMap != null) {
-      size += message.tagMap.encodedSize();
-    }
+    size += message.tagMap.encodedSize();
 
     message.cachedSerializedSize = size;
     return size;
@@ -124,9 +122,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       if (value == null) continue;
       fieldBinding.adapter().encodeTagged(writer, fieldBinding.tag, value);
     }
-    if (message.tagMap != null) {
-      message.tagMap.encode(writer);
-    }
+    message.tagMap.encode(writer);
   }
 
   @Override public M redact(M message) {
@@ -176,17 +172,15 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
           .append(fieldBinding.redacted ? "██" : value);
       seenValue = true;
     }
-    if (message.tagMap != null) {
-      for (Extension<?, ?> extension : message.tagMap.extensions(true)) {
-        if (seenValue) sb.append(", ");
-        if (extension.isUnknown()) {
-          sb.append(extension.getTag());
-        } else {
-          sb.append(extension.getName());
-        }
-        sb.append('=').append(message.tagMap.get(extension));
-        seenValue = true;
+    for (Extension<?, ?> extension : message.tagMap.extensions(true)) {
+      if (seenValue) sb.append(", ");
+      if (extension.isUnknown()) {
+        sb.append(extension.getTag());
+      } else {
+        sb.append(extension.getName());
       }
+      sb.append('=').append(message.tagMap.get(extension));
+      seenValue = true;
     }
     sb.append('}');
     return sb.toString();
