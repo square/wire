@@ -33,8 +33,12 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
 import com.squareup.wire.Extension;
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoAdapter.EnumConstantNotFoundException;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -50,6 +54,7 @@ import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,26 +123,33 @@ public final class JavaGenerator {
   private final boolean emitOptions;
   private final ImmutableSet<String> enumOptions;
   private final boolean emitAndroid;
+  private final boolean emitFull;
 
   private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToJavaName,
       ImmutableMap<Field, ProtoFile> extensionFieldToFile, boolean emitOptions,
-      ImmutableSet<String> enumOptions, boolean emitAndroid) {
+      ImmutableSet<String> enumOptions, boolean emitAndroid, boolean emitFull) {
     this.schema = schema;
     this.nameToJavaName = nameToJavaName;
     this.extensionFieldToFile = extensionFieldToFile;
     this.emitOptions = emitOptions;
     this.enumOptions = enumOptions;
     this.emitAndroid = emitAndroid;
+    this.emitFull = emitFull;
   }
 
   public JavaGenerator withOptions(boolean emitOptions, Collection<String> enumOptions) {
     return new JavaGenerator(schema, nameToJavaName, extensionFieldToFile, emitOptions,
-        ImmutableSet.copyOf(enumOptions), emitAndroid);
+        ImmutableSet.copyOf(enumOptions), emitAndroid, emitFull);
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
     return new JavaGenerator(schema, nameToJavaName, extensionFieldToFile, emitOptions, enumOptions,
-        emitAndroid);
+        emitAndroid, emitFull);
+  }
+
+  public JavaGenerator withFull(boolean fullGeneration) {
+    return new JavaGenerator(schema, nameToJavaName, extensionFieldToFile, emitOptions, enumOptions,
+        emitAndroid, fullGeneration);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -161,7 +173,7 @@ public final class JavaGenerator {
     }
 
     return new JavaGenerator(schema, nameToJavaName.build(), extensionFieldToFile.build(), false,
-        ImmutableSet.<String>of(), false);
+        ImmutableSet.<String>of(), false, false);
   }
 
   private static void putAll(ImmutableMap.Builder<ProtoType, TypeName> wireToJava,
@@ -208,6 +220,27 @@ public final class JavaGenerator {
     return candidate;
   }
 
+  private CodeBlock singleAdapterFor(Field field) {
+    ProtoType type = field.type();
+    CodeBlock.Builder result = CodeBlock.builder();
+    if (type.isScalar()) {
+      result.add("$T.$L", ADAPTER, type.simpleName().toUpperCase(Locale.US));
+    } else {
+      result.add("$T.ADAPTER", typeName(type));
+    }
+    return result.build();
+  }
+
+  private CodeBlock adapterFor(Field field) {
+    CodeBlock.Builder result = singleAdapterFor(field).toBuilder();
+    if (field.isPacked()) {
+      result.add(".asPacked()");
+    } else if (field.isRepeated()) {
+      result.add(".asRepeated()");
+    }
+    return result.build();
+  }
+
   private static String javaPackage(ProtoFile protoFile) {
     Object javaPackageOption = protoFile.options().get("java_package");
     if (javaPackageOption != null) {
@@ -233,7 +266,7 @@ public final class JavaGenerator {
   }
 
   static TypeName messageOf(TypeName type) {
-    return ParameterizedTypeName.get(JavaGenerator.MESSAGE, type);
+    return ParameterizedTypeName.get(MESSAGE, type);
   }
 
   static TypeName adapterOf(TypeName messageType) {
@@ -252,6 +285,10 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(CREATOR, messageType);
   }
 
+  private static boolean isRedacted(Field field) {
+    return field.options().optionMatches(".*\\.redacted", "true");
+  }
+
   /** A grab-bag of fixes for things that can go wrong when converting to javadoc. */
   static String sanitizeJavadoc(String documentation) {
     // Remove trailing whitespace on each line.
@@ -262,7 +299,6 @@ public final class JavaGenerator {
         "@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
     return documentation;
   }
-
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateEnum(EnumType type) {
@@ -380,6 +416,7 @@ public final class JavaGenerator {
     nameAllocator.newName("message", "message");
     nameAllocator.newName("other", "other");
     nameAllocator.newName("o", "o");
+    nameAllocator.newName("builder", "builder");
 
     ClassName javaType = (ClassName) typeName(type.name());
     ClassName builderJavaType = javaType.nestedClass("Builder");
@@ -397,11 +434,7 @@ public final class JavaGenerator {
 
     builder.superclass(messageOf(javaType));
 
-    String adapterName = nameAllocator.get("ADAPTER");
-    builder.addField(FieldSpec.builder(adapterOf(javaType), adapterName)
-        .addModifiers(PUBLIC, STATIC, FINAL)
-        .initializer("$T.newMessageAdapter($T.class)", ProtoAdapter.class, javaType)
-        .build());
+    builder.addField(messageAdapter(nameAllocator, type, javaType, builderJavaType));
 
     builder.addField(FieldSpec.builder(TypeName.LONG, nameAllocator.get("serialVersionUID"))
         .addModifiers(PRIVATE, STATIC, FINAL)
@@ -436,7 +469,9 @@ public final class JavaGenerator {
 
       String fieldName = nameAllocator.get(field);
       FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldJavaType, fieldName, PUBLIC, FINAL);
-      fieldBuilder.addAnnotation(wireFieldAnnotation(field));
+      if (!emitFull) {
+        fieldBuilder.addAnnotation(wireFieldAnnotation(field));
+      }
       if (!field.documentation().isEmpty()) {
         fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(field.documentation()));
       }
@@ -452,6 +487,8 @@ public final class JavaGenerator {
     builder.addMethod(messageHashCode(nameAllocator, type));
 
     if (emitAndroid) {
+      String adapterName = nameAllocator.get("ADAPTER");
+
       builder.addSuperinterface(PARCELABLE);
 
       builder.addMethod(MethodSpec.methodBuilder("writeToParcel")
@@ -492,6 +529,10 @@ public final class JavaGenerator {
               .build());
     }
 
+    if (emitFull) {
+      builder.addMethod(messageToString(nameAllocator, type));
+    }
+
     builder.addType(builder(nameAllocator, type, javaType, builderJavaType));
 
     for (Type nestedType : type.nestedTypes()) {
@@ -504,6 +545,193 @@ public final class JavaGenerator {
     return builder.build();
   }
 
+  private FieldSpec messageAdapter(NameAllocator nameAllocator, MessageType type,
+      ClassName javaType, ClassName builderJavaType) {
+    FieldSpec.Builder result = FieldSpec.builder(adapterOf(javaType), nameAllocator.get("ADAPTER"))
+        .addModifiers(PUBLIC, STATIC, FINAL);
+    if (!emitFull) {
+      result.initializer("$T.newMessageAdapter($T.class)", ProtoAdapter.class, javaType);
+    } else {
+      TypeSpec.Builder adapter =
+          TypeSpec.anonymousClassBuilder("$T.LENGTH_DELIMITED, $T.class", FieldEncoding.class,
+              javaType).superclass(adapterOf(javaType));
+
+      adapter.addMethod(messageAdapterEncodedSize(nameAllocator, type, javaType));
+      adapter.addMethod(messageAdapterEncode(nameAllocator, type, javaType));
+      adapter.addMethod(messageAdapterDecode(nameAllocator, type, javaType, builderJavaType));
+      adapter.addMethod(messageAdapterRedact(nameAllocator, type, javaType, builderJavaType));
+
+      result.initializer("$L", adapter.build());
+    }
+    return result.build();
+  }
+
+  private MethodSpec messageAdapterEncodedSize(NameAllocator nameAllocator, MessageType type,
+      TypeName javaType) {
+    MethodSpec.Builder result = MethodSpec.methodBuilder("encodedSize")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(int.class)
+        .addParameter(javaType, "value");
+
+    result.addCode("$[");
+    String leading = "return";
+    for (Field field : type.fieldsAndOneOfFields()) {
+      int fieldTag = field.tag();
+      String fieldName = nameAllocator.get(field);
+      CodeBlock adapter = adapterFor(field);
+      if (field.isRequired() || field.isRepeated()) {
+        result.addCode("$L $L.encodedSize($L, value.$L)", leading, adapter, fieldTag, fieldName);
+      } else {
+        result.addCode("$1L (value.$4L != null ? $2L.encodedSize($3L, value.$4L) : 0)", leading,
+            adapter, fieldTag, fieldName);
+      }
+      leading = "\n+";
+    }
+    result.addCode("$L value.tagMap().encodedSize();$]\n", leading);
+
+    return result.build();
+  }
+
+  private MethodSpec messageAdapterEncode(NameAllocator nameAllocator, MessageType type,
+      TypeName javaType) {
+    MethodSpec.Builder result = MethodSpec.methodBuilder("encode")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .addParameter(ProtoWriter.class, "writer")
+        .addParameter(javaType, "value")
+        .addException(IOException.class);
+
+    for (Field field : type.fieldsAndOneOfFields()) {
+      int fieldTag = field.tag();
+      String fieldName = nameAllocator.get(field);
+      CodeBlock adapter = adapterFor(field);
+      if (field.isRequired()) {
+        result.addStatement("$L.encodeTagged(writer, $L, value.$L)", adapter, fieldTag, fieldName);
+      } else {
+        result.addStatement("if (value.$3L != null) $1L.encodeTagged(writer, $2L, value.$3L)",
+            adapter, fieldTag, fieldName);
+      }
+    }
+    result.addStatement("value.tagMap().encode(writer)");
+
+    return result.build();
+  }
+
+  private MethodSpec messageAdapterDecode(NameAllocator nameAllocator, MessageType type,
+      TypeName javaType, ClassName builderJavaType) {
+    MethodSpec.Builder result = MethodSpec.methodBuilder("decode")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(javaType)
+        .addParameter(ProtoReader.class, "reader")
+        .addException(IOException.class);
+
+    result.addStatement("$1T builder = new $1T()", builderJavaType);
+    result.addStatement("long token = reader.beginMessage()");
+    result.beginControlFlow("for (int tag; (tag = reader.nextTag()) != -1;)");
+    result.beginControlFlow("switch (tag)");
+
+    for (Field field : type.fieldsAndOneOfFields()) {
+      int fieldTag = field.tag();
+      String fieldName = nameAllocator.get(field);
+      CodeBlock adapter = singleAdapterFor(field);
+
+      if (isEnum(field.type())) {
+        result.beginControlFlow("case $L:", fieldTag);
+        result.beginControlFlow("try");
+        if (field.isRepeated()) {
+          result.addStatement("builder.$L.add($L.decode(reader))", fieldName, adapter);
+        } else {
+          result.addStatement("builder.$L($L.decode(reader))", fieldName, adapter);
+        }
+        result.nextControlFlow("catch ($T e)", EnumConstantNotFoundException.class);
+        result.addStatement("$T unknown = $T.unknown($T.class, tag, $T.VARINT)",
+            extensionOf(javaType, TypeName.LONG.box()), EXTENSION, javaType, FieldEncoding.class);
+        result.addStatement("builder.tagMap().add(unknown, (long) e.value)");
+        result.endControlFlow(); // try/catch
+        result.addStatement("break");
+        result.endControlFlow(); // case
+      } else {
+        if (field.isRepeated()) {
+          result.addStatement("case $L: builder.$L.add($L.decode(reader)); break", fieldTag,
+              fieldName, adapter);
+        } else {
+          result.addStatement("case $L: builder.$L($L.decode(reader)); break", fieldTag, fieldName,
+              adapter);
+        }
+      }
+    }
+
+    result.beginControlFlow("default:");
+    result.beginControlFlow("try");
+    WildcardTypeName wildcard = WildcardTypeName.subtypeOf(Object.class);
+    result.addStatement("$T extension = reader.getExtension($T.class, tag)",
+        extensionOf(javaType, wildcard), javaType);
+    result.addStatement("builder.tagMap().add(extension, extension.getAdapter().decode(reader))");
+    result.nextControlFlow("catch ($T e)", EnumConstantNotFoundException.class);
+    result.addStatement("$T unknown = $T.unknown($T.class, tag, $T.VARINT)",
+        extensionOf(javaType, TypeName.LONG.box()), EXTENSION, javaType, FieldEncoding.class);
+    result.addStatement("builder.tagMap().add(unknown, (long) e.value)");
+    result.endControlFlow(); // try/catch
+    result.endControlFlow(); // default
+
+    result.endControlFlow(); // switch
+    result.endControlFlow(); // for
+    result.addStatement("reader.endMessage(token)");
+    result.addStatement("return builder.build()");
+    return result.build();
+  }
+
+  private MethodSpec messageAdapterRedact(NameAllocator nameAllocator, MessageType type,
+      ClassName javaType, ClassName builderJavaType) {
+    MethodSpec.Builder result = MethodSpec.methodBuilder("redact")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(javaType)
+        .addParameter(javaType, "value");
+
+    List<String> requiredRedacted = new ArrayList<>();
+    for (Field field : type.fieldsAndOneOfFields()) {
+      if (field.isRequired() && isRedacted(field)) {
+        requiredRedacted.add(nameAllocator.get(field));
+      }
+    }
+    if (!requiredRedacted.isEmpty()) {
+      boolean isPlural = requiredRedacted.size() != 1;
+      result.addStatement("throw new $T($S)", UnsupportedOperationException.class,
+          (isPlural ? "Fields" : "Field") + " '" + Joiner.on("', '").join(requiredRedacted) + "' "
+              + (isPlural ? "are" : "is") + " required and cannot be redacted.");
+      return result.build();
+    }
+
+    result.addStatement("$1T builder = new $1T(value)", builderJavaType);
+
+    for (Field field : type.fieldsAndOneOfFields()) {
+      String fieldName = nameAllocator.get(field);
+      if (isRedacted(field)) {
+        if (field.isRepeated()) {
+          result.addStatement("builder.$N = $T.emptyList()", fieldName, Collections.class);
+        } else {
+          result.addStatement("builder.$N = null", fieldName);
+        }
+      } else if (!field.type().isScalar() && !isEnum(field.type())) {
+        if (field.isRepeated()) {
+          CodeBlock adapter = singleAdapterFor(field);
+          result.addStatement("redactElements(builder.$N, $L)", fieldName, adapter);
+        } else {
+          CodeBlock adapter = adapterFor(field);
+          result.addStatement("if (builder.$1N != null) builder.$1N = $2L.redact(builder.$1N)",
+              fieldName, adapter);
+        }
+      }
+    }
+
+    result.addStatement("builder.tagMap().redact()");
+
+    result.addStatement("return builder.build()");
+    return result.build();
+  }
 
   // Example:
   //
@@ -581,7 +809,7 @@ public final class JavaGenerator {
     }
 
     // We allow any package name to be used as long as it ends with '.redacted'.
-    if (field.options().optionMatches(".*\\.redacted", "true")) {
+    if (isRedacted(field)) {
       result.addMember("redacted", "true");
     }
 
@@ -730,6 +958,33 @@ public final class JavaGenerator {
     result.addStatement("super.hashCode = $N", resultName);
     result.endControlFlow();
     result.addStatement("return $N", resultName);
+    return result.build();
+  }
+
+  private MethodSpec messageToString(NameAllocator nameAllocator, MessageType type) {
+    String builderName = nameAllocator.get("builder");
+    MethodSpec.Builder result = MethodSpec.methodBuilder("toString")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(String.class);
+
+    result.addStatement("$1T $2N = new $1T()", StringBuilder.class, builderName);
+
+    for (Field field : type.fieldsAndOneOfFields()) {
+      String fieldName = nameAllocator.get(field);
+      if (isRedacted(field)) {
+        result.addStatement("if ($L != null) $N.append(\", $N=██\")", fieldName, builderName,
+            field.name());
+      } else {
+        result.addStatement("if ($1L != null) $2N.append(\", $3N=\").append($1L)", fieldName,
+            builderName, field.name());
+      }
+    }
+
+    result.addStatement("tagMap().appendToString($N)", builderName);
+    result.addStatement("return builder.replace(0, 2, \"$L{\").append('}').toString()",
+        type.name().simpleName());
+
     return result.build();
   }
 

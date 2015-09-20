@@ -132,9 +132,9 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     B builder = newBuilder(message);
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
       if (fieldBinding.redacted && fieldBinding.label == WireField.Label.REQUIRED) {
-        throw new IllegalArgumentException(String.format(
-            "Field %s.%s is REQUIRED and cannot be redacted.",
-            javaType.getName(), fieldBinding.name));
+        throw new UnsupportedOperationException(String.format(
+            "Field '%s' in %s is required and cannot be redacted.",
+            fieldBinding.name, javaType.getName()));
       }
       boolean isMessage = Message.class.isAssignableFrom(fieldBinding.singleAdapter().javaType);
       if (fieldBinding.redacted || (isMessage && !fieldBinding.label.isRepeated())) {
@@ -198,9 +198,10 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
           Object value = extension.getAdapter().decode(reader);
           builder.tagMap().add(extension, value);
         }
-      } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
-        // An unknown Enum value was encountered, store it as an unknown field
-        builder.setExtension(Extension.unknown(messageType, tag, FieldEncoding.VARINT), e.value);
+      } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+        // An unknown Enum value was encountered, store it as an unknown field.
+        Extension<M, Long> unknown = Extension.unknown(messageType, tag, FieldEncoding.VARINT);
+        builder.setExtension(unknown, (long) e.value);
       }
     }
     reader.endMessage(token);

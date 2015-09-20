@@ -35,6 +35,7 @@ final class CommandLineOptions {
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
   public static final String ANDROID = "--android";
+  public static final String FULL = "--full";
 
   final List<String> protoPaths;
   final String javaOut;
@@ -46,10 +47,12 @@ final class CommandLineOptions {
   final boolean quiet;
   final boolean dryRun;
   final boolean emitAndroid;
+  final boolean emitFull;
 
   CommandLineOptions(String protoPath, String javaOut, List<String> sourceFileNames,
       List<String> roots, String registryClass, boolean emitOptions, Set<String> enumOptions,
-      boolean quiet, boolean dryRun, boolean emitAndroid) {
+      boolean quiet, boolean dryRun, boolean emitAndroid, boolean emitFull) {
+    this.emitFull = emitFull;
     this.protoPaths = Arrays.asList(protoPath);
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
@@ -72,7 +75,7 @@ final class CommandLineOptions {
    *     [--enum_options=&lt;option_name&gt;[,&lt;option_name&gt;...]]
    *     [--service_factory=&lt;class_name&gt;]
    *     [--service_factory_opt=&lt;value&gt;] [--service_factory_opt=&lt;value&gt;]...]
-   *     [--quiet] [--dry_run] [--android]
+   *     [--quiet] [--dry_run] [--android] [--full]
    *     [file [file...]]
    * </pre>
    *
@@ -105,6 +108,9 @@ final class CommandLineOptions {
    * <p>
    * The {@code --android} flag will cause all messages to implement the {@code Parcelable}
    * interface.
+   * <p>
+   * The {@code --full} flag will emit implementations of reading, writing, and toString methods
+   * which are normally implemented with reflection.
    */
   CommandLineOptions(String... args) throws WireException {
     List<String> sourceFileNames = new ArrayList<>();
@@ -117,6 +123,7 @@ final class CommandLineOptions {
     boolean quiet = false;
     boolean dryRun = false;
     boolean emitAndroid = false;
+    boolean emitFull = false;
 
     for (String arg : args) {
       if (arg.startsWith(PROTO_PATH_FLAG)) {
@@ -146,6 +153,8 @@ final class CommandLineOptions {
         dryRun = true;
       } else if (arg.equals(ANDROID)) {
         emitAndroid = true;
+      } else if (arg.equals(FULL)) {
+        emitFull = true;
       } else {
         sourceFileNames.add(arg);
       }
@@ -161,6 +170,7 @@ final class CommandLineOptions {
     this.quiet = quiet;
     this.dryRun = dryRun;
     this.emitAndroid = emitAndroid;
+    this.emitFull = emitFull;
   }
 
   private static List<String> splitArg(String arg, int flagLength) {

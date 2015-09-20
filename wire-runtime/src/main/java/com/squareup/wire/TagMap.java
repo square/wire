@@ -188,7 +188,7 @@ public final class TagMap {
         try {
           list.add(adapter(targetExtension).decode(reader));
         } catch (RuntimeEnumAdapter.EnumConstantNotFoundException e) {
-          list.add(e.value);
+          list.add((long) e.value);
         }
       }
       reader.endMessage(token);

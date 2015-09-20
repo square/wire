@@ -15,7 +15,7 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
 
 # GSON
 
-cp src/test/proto-java/com/squareup/wire/protos/alltypes/* ../wire-gson-support/src/test/java/com/squareup/wire/protos/alltypes/
+cp src/test/proto-java/com/squareup/wire/protos/alltypes/*.java ../wire-gson-support/src/test/java/com/squareup/wire/protos/alltypes/
 
 # NO OPTIONS
 
@@ -67,3 +67,18 @@ cp src/test/proto-java.android/com/squareup/wire/protos/person/Person.java \
    src/test/proto-java/com/squareup/wire/protos/person/Person.java.android
 
 rm -r src/test/proto-java.android
+
+# FULL
+
+java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+  --proto_path=../wire-runtime/src/test/proto \
+  --java_out=../wire-runtime/src/test/proto-java.full \
+  --full \
+  all_types.proto
+
+cp src/test/proto-java.full/com/squareup/wire/protos/alltypes/AllTypes.java \
+   src/test/proto-java/com/squareup/wire/protos/alltypes/AllTypes.java.full
+cp src/test/proto-java.full/com/squareup/wire/protos/alltypes/Ext_all_types.java \
+   src/test/proto-java/com/squareup/wire/protos/alltypes/Ext_all_types.java.full
+
+rm -r src/test/proto-java.full
