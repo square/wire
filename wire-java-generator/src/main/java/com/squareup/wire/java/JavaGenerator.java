@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import javax.lang.model.SourceVersion;
 import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -85,14 +86,6 @@ public final class JavaGenerator {
   static final TypeName MESSAGE_OPTIONS = ClassName.get("com.google.protobuf", "MessageOptions");
   static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
   static final TypeName ENUM_OPTIONS = ClassName.get("com.google.protobuf", "EnumOptions");
-
-  private static final ImmutableSet<String> JAVA_KEYWORDS = ImmutableSet.of(
-      "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
-      "class", "const", "continue", "default", "do", "double", "else", "enum", "extends",
-      "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof",
-      "int", "interface", "long", "native", "new", "package", "private", "protected", "public",
-      "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this",
-      "throw", "throws", "transient", "try", "void", "volatile", "while");
 
   private static final Map<ProtoType, TypeName> SCALAR_TYPES_MAP =
       ImmutableMap.<ProtoType, TypeName>builder()
@@ -896,7 +889,7 @@ public final class JavaGenerator {
   }
 
   private static String sanitize(String name) {
-    return JAVA_KEYWORDS.contains(name) ? "_" + name : name;
+    return SourceVersion.isKeyword(name) ? "_" + name : name;
   }
 
   private static CodeBlock codeBlock(String format, Object... args) {
