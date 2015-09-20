@@ -75,7 +75,7 @@ encoding uses numeric tags from the schema, like the `5` for `period` above.
 
 For example, let's encode this dinosaur:
 
-```json
+```
 {
   name: "Stegosaurus",
   period: JURASSIC
@@ -121,9 +121,9 @@ That said, there are some interesting design decisions in Wire:
 
  * Wire avoids case mapping. A field declared as `picture_urls` in a schema yields a Java field
    `picture_urls` and not the conventional `pictureUrls` camel case. Though the name feels awkward
-   at first, it's fantastic whenever use `grep` or more sophisticated search tools. No more mapping
-   when navigating between schema, Java source code, and data. It's also provides a gentle reminder
-   in the calling code that proto messages are a bit special.
+   at first, it's fantastic whenever you use `grep` or more sophisticated search tools. No more
+   mapping when navigating between schema, Java source code, and data. It also provides a gentle
+   reminder to calling code that proto messages are a bit special.
 
  * Primitive types are always boxed. If a field is absent, its value is `null`. This is used for
    naturally optional fields, such as a dinosaur whose period is unknown. A field may also be null
@@ -269,7 +269,7 @@ Dinosaur stegosaurus = new Dinosaur.Builder()
     .period(Period.JURASSIC)
     .build();
 
-System.out.println("My favorite dinosaur exited in the " + stegosaurus.period + " period.");
+System.out.println("My favorite dinosaur existed in the " + stegosaurus.period + " period.");
 ```
 
 Each type has a corresponding `ProtoAdapter` that can encode a message to bytes and decode bytes
@@ -277,7 +277,7 @@ back into a message.
 
 ```java
 Dinosaur stegosaurus = ...
-byte[] stegosaurusEncoded = Dinosaur.ADAPTER.encode(stegosaurus);
+byte[] stegosaurusBytes = Dinosaur.ADAPTER.encode(stegosaurus);
 
 byte[] tyrannosaurusBytes = ...
 Dinosaur tyrannosaurus = Dinosaur.ADAPTER.decode(tyrannosaurusBytes);
@@ -335,8 +335,8 @@ The compiler can optionally prune your schema to a subset of root types and thei
 dependencies. This is useful when sharing a schema between projects: a Java service and Android app
 may each use a subset of a larger shared schema.
 
-If you don't have Maven, the compiler is also has a command line interface. Just substitute
-`wire-compiler-VERSION-jar-with-dependencies.jar` with the path to your Wire jar.
+If you don't use Maven, the compiler also has a command line interface. Just substitute
+`wire-compiler-VERSION-jar-with-dependencies.jar` with the path to your jar.
 
     % java -jar wire-compiler-VERSION-jar-with-dependencies.jar \
         --proto_path=src/main/proto \
