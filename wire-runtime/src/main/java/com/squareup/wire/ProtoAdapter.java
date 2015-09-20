@@ -46,6 +46,9 @@ public abstract class ProtoAdapter<E> {
   final FieldEncoding fieldEncoding;
   final Class<?> javaType;
 
+  ProtoAdapter<List<E>> packedAdapter;
+  ProtoAdapter<List<E>> repeatedAdapter;
+
   public ProtoAdapter(FieldEncoding fieldEncoding, Class<?> javaType) {
     this.fieldEncoding = fieldEncoding;
     this.javaType = javaType;
@@ -388,7 +391,18 @@ public abstract class ProtoAdapter<E> {
   }
 
   /** Returns an adapter for {@link E} but as a packed, repeated value. */
-  public ProtoAdapter<List<E>> asPacked() {
+  public final ProtoAdapter<List<E>> asPacked() {
+    ProtoAdapter<List<E>> adapter = packedAdapter;
+    return adapter != null ? adapter : (packedAdapter = createPacked());
+  }
+
+  /** Returns an adapter for {@link E} but as a repeated value. */
+  public final ProtoAdapter<List<E>> asRepeated() {
+    ProtoAdapter<List<E>> adapter = repeatedAdapter;
+    return adapter != null ? adapter : (repeatedAdapter = createRepeated());
+  }
+
+  private ProtoAdapter<List<E>> createPacked() {
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       throw new IllegalArgumentException("Unable to pack a length-delimited type.");
     }
@@ -418,8 +432,7 @@ public abstract class ProtoAdapter<E> {
     };
   }
 
-  /** Returns an adapter for {@link E} but as a repeated value. */
-  public ProtoAdapter<List<E>> asRepeated() {
+  private ProtoAdapter<List<E>> createRepeated() {
     return new ProtoAdapter<List<E>>(fieldEncoding, List.class) {
       @Override public int encodedSize(List<E> value) {
         throw new UnsupportedOperationException("Repeated values can only be sized with a tag.");
