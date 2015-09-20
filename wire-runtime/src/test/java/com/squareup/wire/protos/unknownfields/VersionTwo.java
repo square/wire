@@ -121,9 +121,10 @@ public final class VersionTwo extends Message<VersionTwo> {
 
     public Long v2_f64;
 
-    public List<String> v2_rs = Collections.emptyList();
+    public List<String> v2_rs;
 
     public Builder() {
+      v2_rs = Collections.emptyList();
     }
 
     public Builder(VersionTwo message) {

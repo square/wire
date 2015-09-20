@@ -95,11 +95,12 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
 
     public String doc;
 
-    public List<EnumValueDescriptorProto> value = Collections.emptyList();
+    public List<EnumValueDescriptorProto> value;
 
     public EnumOptions options;
 
     public Builder() {
+      value = Collections.emptyList();
     }
 
     public Builder(EnumDescriptorProto message) {

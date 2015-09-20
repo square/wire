@@ -993,67 +993,67 @@ public final class AllTypes extends Message<AllTypes> {
 
     public NestedMessage req_nested_message;
 
-    public List<Integer> rep_int32 = Collections.emptyList();
+    public List<Integer> rep_int32;
 
-    public List<Integer> rep_uint32 = Collections.emptyList();
+    public List<Integer> rep_uint32;
 
-    public List<Integer> rep_sint32 = Collections.emptyList();
+    public List<Integer> rep_sint32;
 
-    public List<Integer> rep_fixed32 = Collections.emptyList();
+    public List<Integer> rep_fixed32;
 
-    public List<Integer> rep_sfixed32 = Collections.emptyList();
+    public List<Integer> rep_sfixed32;
 
-    public List<Long> rep_int64 = Collections.emptyList();
+    public List<Long> rep_int64;
 
-    public List<Long> rep_uint64 = Collections.emptyList();
+    public List<Long> rep_uint64;
 
-    public List<Long> rep_sint64 = Collections.emptyList();
+    public List<Long> rep_sint64;
 
-    public List<Long> rep_fixed64 = Collections.emptyList();
+    public List<Long> rep_fixed64;
 
-    public List<Long> rep_sfixed64 = Collections.emptyList();
+    public List<Long> rep_sfixed64;
 
-    public List<Boolean> rep_bool = Collections.emptyList();
+    public List<Boolean> rep_bool;
 
-    public List<Float> rep_float = Collections.emptyList();
+    public List<Float> rep_float;
 
-    public List<Double> rep_double = Collections.emptyList();
+    public List<Double> rep_double;
 
-    public List<String> rep_string = Collections.emptyList();
+    public List<String> rep_string;
 
-    public List<ByteString> rep_bytes = Collections.emptyList();
+    public List<ByteString> rep_bytes;
 
-    public List<NestedEnum> rep_nested_enum = Collections.emptyList();
+    public List<NestedEnum> rep_nested_enum;
 
-    public List<NestedMessage> rep_nested_message = Collections.emptyList();
+    public List<NestedMessage> rep_nested_message;
 
-    public List<Integer> pack_int32 = Collections.emptyList();
+    public List<Integer> pack_int32;
 
-    public List<Integer> pack_uint32 = Collections.emptyList();
+    public List<Integer> pack_uint32;
 
-    public List<Integer> pack_sint32 = Collections.emptyList();
+    public List<Integer> pack_sint32;
 
-    public List<Integer> pack_fixed32 = Collections.emptyList();
+    public List<Integer> pack_fixed32;
 
-    public List<Integer> pack_sfixed32 = Collections.emptyList();
+    public List<Integer> pack_sfixed32;
 
-    public List<Long> pack_int64 = Collections.emptyList();
+    public List<Long> pack_int64;
 
-    public List<Long> pack_uint64 = Collections.emptyList();
+    public List<Long> pack_uint64;
 
-    public List<Long> pack_sint64 = Collections.emptyList();
+    public List<Long> pack_sint64;
 
-    public List<Long> pack_fixed64 = Collections.emptyList();
+    public List<Long> pack_fixed64;
 
-    public List<Long> pack_sfixed64 = Collections.emptyList();
+    public List<Long> pack_sfixed64;
 
-    public List<Boolean> pack_bool = Collections.emptyList();
+    public List<Boolean> pack_bool;
 
-    public List<Float> pack_float = Collections.emptyList();
+    public List<Float> pack_float;
 
-    public List<Double> pack_double = Collections.emptyList();
+    public List<Double> pack_double;
 
-    public List<NestedEnum> pack_nested_enum = Collections.emptyList();
+    public List<NestedEnum> pack_nested_enum;
 
     public Integer default_int32;
 
@@ -1088,6 +1088,37 @@ public final class AllTypes extends Message<AllTypes> {
     public NestedEnum default_nested_enum;
 
     public Builder() {
+      rep_int32 = Collections.emptyList();
+      rep_uint32 = Collections.emptyList();
+      rep_sint32 = Collections.emptyList();
+      rep_fixed32 = Collections.emptyList();
+      rep_sfixed32 = Collections.emptyList();
+      rep_int64 = Collections.emptyList();
+      rep_uint64 = Collections.emptyList();
+      rep_sint64 = Collections.emptyList();
+      rep_fixed64 = Collections.emptyList();
+      rep_sfixed64 = Collections.emptyList();
+      rep_bool = Collections.emptyList();
+      rep_float = Collections.emptyList();
+      rep_double = Collections.emptyList();
+      rep_string = Collections.emptyList();
+      rep_bytes = Collections.emptyList();
+      rep_nested_enum = Collections.emptyList();
+      rep_nested_message = Collections.emptyList();
+      pack_int32 = Collections.emptyList();
+      pack_uint32 = Collections.emptyList();
+      pack_sint32 = Collections.emptyList();
+      pack_fixed32 = Collections.emptyList();
+      pack_sfixed32 = Collections.emptyList();
+      pack_int64 = Collections.emptyList();
+      pack_uint64 = Collections.emptyList();
+      pack_sint64 = Collections.emptyList();
+      pack_fixed64 = Collections.emptyList();
+      pack_sfixed64 = Collections.emptyList();
+      pack_bool = Collections.emptyList();
+      pack_float = Collections.emptyList();
+      pack_double = Collections.emptyList();
+      pack_nested_enum = Collections.emptyList();
     }
 
     public Builder(AllTypes message) {

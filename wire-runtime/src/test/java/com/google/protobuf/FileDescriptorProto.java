@@ -159,21 +159,26 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
 
     public String _package;
 
-    public List<String> dependency = Collections.emptyList();
+    public List<String> dependency;
 
-    public List<DescriptorProto> message_type = Collections.emptyList();
+    public List<DescriptorProto> message_type;
 
-    public List<EnumDescriptorProto> enum_type = Collections.emptyList();
+    public List<EnumDescriptorProto> enum_type;
 
-    public List<ServiceDescriptorProto> service = Collections.emptyList();
+    public List<ServiceDescriptorProto> service;
 
-    public List<FieldDescriptorProto> extension = Collections.emptyList();
+    public List<FieldDescriptorProto> extension;
 
     public FileOptions options;
 
     public SourceCodeInfo source_code_info;
 
     public Builder() {
+      dependency = Collections.emptyList();
+      message_type = Collections.emptyList();
+      enum_type = Collections.emptyList();
+      service = Collections.emptyList();
+      extension = Collections.emptyList();
     }
 
     public Builder(FileDescriptorProto message) {

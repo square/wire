@@ -136,19 +136,24 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
     public String doc;
 
-    public List<FieldDescriptorProto> field = Collections.emptyList();
+    public List<FieldDescriptorProto> field;
 
-    public List<FieldDescriptorProto> extension = Collections.emptyList();
+    public List<FieldDescriptorProto> extension;
 
-    public List<DescriptorProto> nested_type = Collections.emptyList();
+    public List<DescriptorProto> nested_type;
 
-    public List<EnumDescriptorProto> enum_type = Collections.emptyList();
+    public List<EnumDescriptorProto> enum_type;
 
-    public List<ExtensionRange> extension_range = Collections.emptyList();
+    public List<ExtensionRange> extension_range;
 
     public MessageOptions options;
 
     public Builder() {
+      field = Collections.emptyList();
+      extension = Collections.emptyList();
+      nested_type = Collections.emptyList();
+      enum_type = Collections.emptyList();
+      extension_range = Collections.emptyList();
     }
 
     public Builder(DescriptorProto message) {

@@ -53,9 +53,10 @@ public final class Bars extends Message<Bars> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Bars, Builder> {
-    public List<Bar> bars = Collections.emptyList();
+    public List<Bar> bars;
 
     public Builder() {
+      bars = Collections.emptyList();
     }
 
     public Builder(Bars message) {

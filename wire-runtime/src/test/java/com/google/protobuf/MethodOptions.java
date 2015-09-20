@@ -60,9 +60,10 @@ public final class MethodOptions extends Message<MethodOptions> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<MethodOptions, Builder> {
-    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
+    public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
+      uninterpreted_option = Collections.emptyList();
     }
 
     public Builder(MethodOptions message) {

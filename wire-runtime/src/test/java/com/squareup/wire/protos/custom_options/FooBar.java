@@ -180,13 +180,15 @@ public final class FooBar extends Message<FooBar> {
 
     public Long qux;
 
-    public List<Float> fred = Collections.emptyList();
+    public List<Float> fred;
 
     public Double daisy;
 
-    public List<FooBar> nested = Collections.emptyList();
+    public List<FooBar> nested;
 
     public Builder() {
+      fred = Collections.emptyList();
+      nested = Collections.emptyList();
     }
 
     public Builder(FooBar message) {
@@ -350,9 +352,10 @@ public final class FooBar extends Message<FooBar> {
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<More, Builder> {
-      public List<Integer> serial = Collections.emptyList();
+      public List<Integer> serial;
 
       public Builder() {
+        serial = Collections.emptyList();
       }
 
       public Builder(More message) {

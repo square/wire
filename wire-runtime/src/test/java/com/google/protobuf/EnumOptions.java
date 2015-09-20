@@ -56,9 +56,10 @@ public final class EnumOptions extends Message<EnumOptions> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<EnumOptions, Builder> {
-    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
+    public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
+      uninterpreted_option = Collections.emptyList();
     }
 
     public Builder(EnumOptions message) {

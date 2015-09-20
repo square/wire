@@ -57,9 +57,10 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorSet, Builder> {
-    public List<FileDescriptorProto> file = Collections.emptyList();
+    public List<FileDescriptorProto> file;
 
     public Builder() {
+      file = Collections.emptyList();
     }
 
     public Builder(FileDescriptorSet message) {

@@ -60,9 +60,10 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRepeated, Builder> {
-    public List<String> a = Collections.emptyList();
+    public List<String> a;
 
     public Builder() {
+      a = Collections.emptyList();
     }
 
     public Builder(RedactedRepeated message) {
