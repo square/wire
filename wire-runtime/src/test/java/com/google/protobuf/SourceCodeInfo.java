@@ -105,9 +105,10 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<SourceCodeInfo, Builder> {
-    public List<Location> location = Collections.emptyList();
+    public List<Location> location;
 
     public Builder() {
+      location = Collections.emptyList();
     }
 
     public Builder(SourceCodeInfo message) {
@@ -256,11 +257,13 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Location, Builder> {
-      public List<Integer> path = Collections.emptyList();
+      public List<Integer> path;
 
-      public List<Integer> span = Collections.emptyList();
+      public List<Integer> span;
 
       public Builder() {
+        path = Collections.emptyList();
+        span = Collections.emptyList();
       }
 
       public Builder(Location message) {

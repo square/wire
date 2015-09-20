@@ -93,13 +93,14 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public static final class Builder extends com.squareup.wire.Message.Builder<ServiceDescriptorProto, Builder> {
     public String name;
 
-    public List<MethodDescriptorProto> method = Collections.emptyList();
+    public List<MethodDescriptorProto> method;
 
     public String doc;
 
     public ServiceOptions options;
 
     public Builder() {
+      method = Collections.emptyList();
     }
 
     public Builder(ServiceDescriptorProto message) {

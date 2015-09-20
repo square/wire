@@ -136,7 +136,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<UninterpretedOption, Builder> {
-    public List<NamePart> name = Collections.emptyList();
+    public List<NamePart> name;
 
     public String identifier_value;
 
@@ -151,6 +151,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
     public String aggregate_value;
 
     public Builder() {
+      name = Collections.emptyList();
     }
 
     public Builder(UninterpretedOption message) {

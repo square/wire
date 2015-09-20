@@ -64,11 +64,13 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RepeatedAndPacked, Builder> {
-    public List<Integer> rep_int32 = Collections.emptyList();
+    public List<Integer> rep_int32;
 
-    public List<Integer> pack_int32 = Collections.emptyList();
+    public List<Integer> pack_int32;
 
     public Builder() {
+      rep_int32 = Collections.emptyList();
+      pack_int32 = Collections.emptyList();
     }
 
     public Builder(RepeatedAndPacked message) {

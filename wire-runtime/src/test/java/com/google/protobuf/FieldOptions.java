@@ -143,9 +143,10 @@ public final class FieldOptions extends Message<FieldOptions> {
 
     public String experimental_map_key;
 
-    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
+    public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
+      uninterpreted_option = Collections.emptyList();
     }
 
     public Builder(FieldOptions message) {

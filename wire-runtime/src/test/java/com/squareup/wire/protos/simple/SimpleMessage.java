@@ -227,7 +227,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
 
     public Integer required_int32;
 
-    public List<Double> repeated_double = Collections.emptyList();
+    public List<Double> repeated_double;
 
     public ForeignEnum default_foreign_enum;
 
@@ -242,6 +242,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     public String o;
 
     public Builder() {
+      repeated_double = Collections.emptyList();
     }
 
     public Builder(SimpleMessage message) {

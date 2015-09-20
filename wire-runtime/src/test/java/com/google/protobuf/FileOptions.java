@@ -229,9 +229,10 @@ public final class FileOptions extends Message<FileOptions> {
 
     public Boolean py_generic_services;
 
-    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
+    public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
+      uninterpreted_option = Collections.emptyList();
     }
 
     public Builder(FileOptions message) {

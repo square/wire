@@ -652,18 +652,11 @@ public final class JavaGenerator {
 
     result.superclass(builderOf(javaType, builderType));
 
-    List<Field> fields = type.fieldsAndOneOfFields();
-    for (Field field : fields) {
-      TypeName fieldJavaType = fieldType(field);
-      FieldSpec.Builder fieldSpec =
-          FieldSpec.builder(fieldJavaType, sanitize(field.name()), PUBLIC);
-      if (field.isPacked() || field.isRepeated()) {
-        fieldSpec.initializer("$T.emptyList()", Collections.class);
-      }
-      result.addField(fieldSpec.build());
+    for (Field field : type.fieldsAndOneOfFields()) {
+      result.addField(fieldType(field), sanitize(field.name()), PUBLIC);
     }
 
-    result.addMethod(builderNoArgsConstructor());
+    result.addMethod(builderNoArgsConstructor(type));
     result.addMethod(builderCopyConstructor(type));
 
     for (Field field : type.fields()) {
@@ -683,10 +676,17 @@ public final class JavaGenerator {
   // Example:
   //
   // public Builder() {
+  //   names = Collections.emptyList();
   // }
   //
-  private MethodSpec builderNoArgsConstructor() {
-    return MethodSpec.constructorBuilder().addModifiers(PUBLIC).build();
+  private MethodSpec builderNoArgsConstructor(MessageType type) {
+    MethodSpec.Builder result = MethodSpec.constructorBuilder().addModifiers(PUBLIC);
+    for (Field field : type.fieldsAndOneOfFields()) {
+      if (field.isPacked() || field.isRepeated()) {
+        result.addStatement("$L = $T.emptyList()", sanitize(field.name()), Collections.class);
+      }
+    }
+    return result.build();
   }
 
   // Example:

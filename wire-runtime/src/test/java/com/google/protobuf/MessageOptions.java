@@ -108,9 +108,10 @@ public final class MessageOptions extends Message<MessageOptions> {
 
     public Boolean no_standard_descriptor_accessor;
 
-    public List<UninterpretedOption> uninterpreted_option = Collections.emptyList();
+    public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
+      uninterpreted_option = Collections.emptyList();
     }
 
     public Builder(MessageOptions message) {

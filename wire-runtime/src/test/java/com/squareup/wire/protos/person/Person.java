@@ -109,9 +109,10 @@ public final class Person extends Message<Person> {
 
     public String email;
 
-    public List<PhoneNumber> phone = Collections.emptyList();
+    public List<PhoneNumber> phone;
 
     public Builder() {
+      phone = Collections.emptyList();
     }
 
     public Builder(Person message) {

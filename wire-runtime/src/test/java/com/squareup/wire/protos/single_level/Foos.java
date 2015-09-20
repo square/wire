@@ -53,9 +53,10 @@ public final class Foos extends Message<Foos> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Foos, Builder> {
-    public List<Foo> foos = Collections.emptyList();
+    public List<Foo> foos;
 
     public Builder() {
+      foos = Collections.emptyList();
     }
 
     public Builder(Foos message) {
