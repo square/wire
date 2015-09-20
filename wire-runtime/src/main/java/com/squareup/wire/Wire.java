@@ -46,7 +46,12 @@ public final class Wire {
    * @param <E> the enum class type
    */
   public static <E extends Enum & WireEnum> E enumFromInt(Class<E> enumClass, int value) {
-    RuntimeEnumAdapter<E> adapter = ProtoAdapter.newEnumAdapter(enumClass);
+    RuntimeEnumAdapter<E> adapter;
+    try {
+      adapter = (RuntimeEnumAdapter<E>) enumClass.getField("ADAPTER").get(null);
+    } catch (IllegalAccessException | NoSuchFieldException | ClassCastException e) {
+      adapter = ProtoAdapter.newEnumAdapter(enumClass);
+    }
     return adapter.fromInt(value);
   }
 }
