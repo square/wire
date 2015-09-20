@@ -9,7 +9,6 @@ import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.Override;
-import java.util.Collections;
 import java.util.List;
 
 public final class MessageOptions extends Message<MessageOptions> {
@@ -111,7 +110,7 @@ public final class MessageOptions extends Message<MessageOptions> {
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
-      uninterpreted_option = Collections.emptyList();
+      uninterpreted_option = newMutableList();
     }
 
     public Builder(MessageOptions message) {

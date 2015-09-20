@@ -9,7 +9,6 @@ import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
-import java.util.Collections;
 import java.util.List;
 
 public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
@@ -69,8 +68,8 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
     public List<Integer> pack_int32;
 
     public Builder() {
-      rep_int32 = Collections.emptyList();
-      pack_int32 = Collections.emptyList();
+      rep_int32 = newMutableList();
+      pack_int32 = newMutableList();
     }
 
     public Builder(RepeatedAndPacked message) {

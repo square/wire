@@ -139,19 +139,30 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     public abstract T build();
   }
 
+  /** <b>For generated code only.</b> */
+  protected static <T> List<T> newMutableList() {
+    return new MutableOnWriteList<>(Collections.<T>emptyList());
+  }
+
   /** <b>For generated code only.</b> Utility method to return a mutable copy of {@code list}. */
   protected static <T> List<T> copyOf(List<T> list) {
     if (list == null) throw new NullPointerException("list == null");
+    if (list == Collections.emptyList() || list instanceof ImmutableList) {
+      return new MutableOnWriteList<>(list);
+    }
     return new ArrayList<>(list);
   }
 
   /** <b>For generated code only.</b> Utility method to return an immutable copy of {@code list}. */
   protected static <T> List<T> immutableCopyOf(List<T> list) {
     if (list == null) throw new NullPointerException("list == null");
+    if (list instanceof MutableOnWriteList) {
+      list = ((MutableOnWriteList<T>) list).mutableList;
+    }
     if (list == Collections.emptyList() || list instanceof ImmutableList) {
       return list;
     }
-    return Collections.unmodifiableList(new ArrayList<>(list));
+    return new ImmutableList<>(list);
   }
 
   /** <b>For generated code only.</b> */

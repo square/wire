@@ -18,7 +18,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public final class FooBar extends Message<FooBar> {
@@ -187,8 +186,8 @@ public final class FooBar extends Message<FooBar> {
     public List<FooBar> nested;
 
     public Builder() {
-      fred = Collections.emptyList();
-      nested = Collections.emptyList();
+      fred = newMutableList();
+      nested = newMutableList();
     }
 
     public Builder(FooBar message) {
@@ -357,7 +356,7 @@ public final class FooBar extends Message<FooBar> {
       public List<Integer> serial;
 
       public Builder() {
-        serial = Collections.emptyList();
+        serial = newMutableList();
       }
 
       public Builder(More message) {

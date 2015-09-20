@@ -9,7 +9,6 @@ import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -100,7 +99,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     public ServiceOptions options;
 
     public Builder() {
-      method = Collections.emptyList();
+      method = newMutableList();
     }
 
     public Builder(ServiceDescriptorProto message) {

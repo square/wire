@@ -10,7 +10,6 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -149,11 +148,11 @@ public final class DescriptorProto extends Message<DescriptorProto> {
     public MessageOptions options;
 
     public Builder() {
-      field = Collections.emptyList();
-      extension = Collections.emptyList();
-      nested_type = Collections.emptyList();
-      enum_type = Collections.emptyList();
-      extension_range = Collections.emptyList();
+      field = newMutableList();
+      extension = newMutableList();
+      nested_type = newMutableList();
+      enum_type = newMutableList();
+      extension_range = newMutableList();
     }
 
     public Builder(DescriptorProto message) {

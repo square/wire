@@ -10,7 +10,6 @@ import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 
 public final class RedactedRepeated extends Message<RedactedRepeated> {
@@ -63,7 +62,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
     public List<String> a;
 
     public Builder() {
-      a = Collections.emptyList();
+      a = newMutableList();
     }
 
     public Builder(RedactedRepeated message) {

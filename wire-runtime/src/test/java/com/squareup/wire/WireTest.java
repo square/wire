@@ -33,6 +33,7 @@ import static com.squareup.wire.protos.simple.Ext_simple_message.barext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.bazext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.fooext;
 import static com.squareup.wire.protos.simple.Ext_simple_message.nested_message_ext;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -345,5 +346,39 @@ public class WireTest {
     RepeatedAndPacked data = RepeatedAndPacked.ADAPTER.decode(bytes);
     assertThat(data.rep_int32).isEqualTo(Collections.emptyList());
     assertThat(data.pack_int32).isEqualTo(Collections.emptyList());
+  }
+
+  @Test public void unmodifiedMutableListReusesImmutableInstance() {
+    PhoneNumber phone = new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build();
+    Person personWithPhone = new Person.Builder()
+        .id(1)
+        .name("Joe Schmoe")
+        .phone(singletonList(phone))
+        .build();
+    Person personNoPhone = new Person.Builder()
+        .id(1)
+        .name("Joe Schmoe")
+        .build();
+    assertThat(personWithPhone.phone).isInstanceOf(ImmutableList.class);
+    assertThat(personNoPhone.phone).isSameAs(Collections.emptyList());
+
+    // Round-trip these instances through the builder and ensure the lists are the same instances.
+    assertThat(new Person.Builder(personWithPhone).build().phone).isSameAs(personWithPhone.phone);
+    assertThat(new Person.Builder(personNoPhone).build().phone).isSameAs(personNoPhone.phone);
+  }
+
+  @Test public void builderListsAreAlwaysMutable() {
+    PhoneNumber phone = new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build();
+
+    Person.Builder newBuilder = new Person.Builder();
+    newBuilder.phone.add(phone);
+
+    Person person = new Person.Builder()
+        .id(1)
+        .name("Joe Schmoe")
+        .phone(singletonList(phone))
+        .build();
+    Person.Builder copyBuilder = new Person.Builder(person);
+    copyBuilder.phone.add(phone);
   }
 }
