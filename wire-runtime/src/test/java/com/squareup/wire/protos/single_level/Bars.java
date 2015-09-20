@@ -66,7 +66,8 @@ public final class Bars extends Message<Bars> {
     }
 
     public Builder bars(List<Bar> bars) {
-      this.bars = canonicalizeList(bars);
+      checkElementsNotNull(bars);
+      this.bars = bars;
       return this;
     }
 

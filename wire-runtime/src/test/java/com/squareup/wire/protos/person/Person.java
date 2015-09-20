@@ -152,7 +152,8 @@ public final class Person extends Message<Person> {
      * A list of the customer's phone numbers.
      */
     public Builder phone(List<PhoneNumber> phone) {
-      this.phone = canonicalizeList(phone);
+      checkElementsNotNull(phone);
+      this.phone = phone;
       return this;
     }
 

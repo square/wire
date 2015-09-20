@@ -73,7 +73,8 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
     }
 
     public Builder a(List<String> a) {
-      this.a = canonicalizeList(a);
+      checkElementsNotNull(a);
+      this.a = a;
       return this;
     }
 

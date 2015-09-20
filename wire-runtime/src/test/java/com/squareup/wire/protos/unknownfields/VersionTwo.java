@@ -164,7 +164,8 @@ public final class VersionTwo extends Message<VersionTwo> {
     }
 
     public Builder v2_rs(List<String> v2_rs) {
-      this.v2_rs = canonicalizeList(v2_rs);
+      checkElementsNotNull(v2_rs);
+      this.v2_rs = v2_rs;
       return this;
     }
 

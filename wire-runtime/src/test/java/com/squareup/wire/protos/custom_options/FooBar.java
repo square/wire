@@ -224,7 +224,8 @@ public final class FooBar extends Message<FooBar> {
     }
 
     public Builder fred(List<Float> fred) {
-      this.fred = canonicalizeList(fred);
+      checkElementsNotNull(fred);
+      this.fred = fred;
       return this;
     }
 
@@ -234,7 +235,8 @@ public final class FooBar extends Message<FooBar> {
     }
 
     public Builder nested(List<FooBar> nested) {
-      this.nested = canonicalizeList(nested);
+      checkElementsNotNull(nested);
+      this.nested = nested;
       return this;
     }
 
@@ -365,7 +367,8 @@ public final class FooBar extends Message<FooBar> {
       }
 
       public Builder serial(List<Integer> serial) {
-        this.serial = canonicalizeList(serial);
+        checkElementsNotNull(serial);
+        this.serial = serial;
         return this;
       }
 

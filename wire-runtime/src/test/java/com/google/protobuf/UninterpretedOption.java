@@ -167,7 +167,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
     }
 
     public Builder name(List<NamePart> name) {
-      this.name = canonicalizeList(name);
+      checkElementsNotNull(name);
+      this.name = name;
       return this;
     }
 

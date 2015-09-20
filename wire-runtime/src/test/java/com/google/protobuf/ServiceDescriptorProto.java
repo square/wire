@@ -118,7 +118,8 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     }
 
     public Builder method(List<MethodDescriptorProto> method) {
-      this.method = canonicalizeList(method);
+      checkElementsNotNull(method);
+      this.method = method;
       return this;
     }
 

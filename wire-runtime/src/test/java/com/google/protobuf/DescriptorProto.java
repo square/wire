@@ -183,27 +183,32 @@ public final class DescriptorProto extends Message<DescriptorProto> {
     }
 
     public Builder field(List<FieldDescriptorProto> field) {
-      this.field = canonicalizeList(field);
+      checkElementsNotNull(field);
+      this.field = field;
       return this;
     }
 
     public Builder extension(List<FieldDescriptorProto> extension) {
-      this.extension = canonicalizeList(extension);
+      checkElementsNotNull(extension);
+      this.extension = extension;
       return this;
     }
 
     public Builder nested_type(List<DescriptorProto> nested_type) {
-      this.nested_type = canonicalizeList(nested_type);
+      checkElementsNotNull(nested_type);
+      this.nested_type = nested_type;
       return this;
     }
 
     public Builder enum_type(List<EnumDescriptorProto> enum_type) {
-      this.enum_type = canonicalizeList(enum_type);
+      checkElementsNotNull(enum_type);
+      this.enum_type = enum_type;
       return this;
     }
 
     public Builder extension_range(List<ExtensionRange> extension_range) {
-      this.extension_range = canonicalizeList(extension_range);
+      checkElementsNotNull(extension_range);
+      this.extension_range = extension_range;
       return this;
     }
 

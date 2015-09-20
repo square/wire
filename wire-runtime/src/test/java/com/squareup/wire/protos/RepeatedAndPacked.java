@@ -81,12 +81,14 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
     }
 
     public Builder rep_int32(List<Integer> rep_int32) {
-      this.rep_int32 = canonicalizeList(rep_int32);
+      checkElementsNotNull(rep_int32);
+      this.rep_int32 = rep_int32;
       return this;
     }
 
     public Builder pack_int32(List<Integer> pack_int32) {
-      this.pack_int32 = canonicalizeList(pack_int32);
+      checkElementsNotNull(pack_int32);
+      this.pack_int32 = pack_int32;
       return this;
     }
 

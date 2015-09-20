@@ -305,7 +305,8 @@ public final class SimpleMessage extends Message<SimpleMessage> {
      */
     @Deprecated
     public Builder repeated_double(List<Double> repeated_double) {
-      this.repeated_double = canonicalizeList(repeated_double);
+      checkElementsNotNull(repeated_double);
+      this.repeated_double = repeated_double;
       return this;
     }
 

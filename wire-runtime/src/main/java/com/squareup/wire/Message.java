@@ -22,9 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Superclass for protocol buffer messages.
- */
+/** A protocol buffer message. */
 public abstract class Message<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
@@ -45,29 +43,6 @@ public abstract class Message<T extends Message<T>> implements Serializable {
 
   public final TagMap tagMap() {
     return tagMap;
-  }
-
-  /** Utility method to return a mutable copy of a given List. Used by generated code. */
-  protected static <T> List<T> copyOf(List<T> list) {
-    if (list == null) {
-      throw new NullPointerException("list == null");
-    }
-    return new ArrayList<>(list);
-  }
-
-  /** Utility method to return an immutable copy of a given List. Used by generated code. */
-  protected static <T> List<T> immutableCopyOf(List<T> list) {
-    if (list == null) {
-      throw new NullPointerException("list == null");
-    }
-    if (list == Collections.emptyList() || list instanceof ImmutableList) {
-      return list;
-    }
-    return Collections.unmodifiableList(new ArrayList<>(list));
-  }
-
-  protected static boolean equals(Object a, Object b) {
-    return a == b || (a != null && a.equals(b));
   }
 
   /**
@@ -126,43 +101,6 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     }
 
     /**
-     * Create an exception for missing required fields.
-     *
-     * @param args Alternating field value and field name pairs.
-     */
-    protected static IllegalStateException missingRequiredFields(Object... args) {
-      StringBuilder sb = new StringBuilder();
-      String plural = "";
-      for (int i = 0, size = args.length; i < size; i += 2) {
-        if (args[i] == null) {
-          if (sb.length() > 0) {
-            plural = "s"; // Found more than one missing field
-          }
-          sb.append("\n  ");
-          sb.append(args[i + 1]);
-        }
-      }
-      throw new IllegalStateException("Required field" + plural + " not set:" + sb);
-    }
-
-    /**
-     * If {@code list} is null it will be replaced with {@link Collections#emptyList()}.
-     * Otherwise look for null items and throw {@link NullPointerException} if one is found.
-     */
-    protected static <T> List<T> canonicalizeList(List<T> list) {
-      if (list == null) {
-        throw new NullPointerException("list == null");
-      }
-      for (int i = 0, size = list.size(); i < size; i++) {
-        T element = list.get(i);
-        if (element == null) {
-          throw new NullPointerException("Element at index " + i + " is null");
-        }
-      }
-      return list;
-    }
-
-    /**
      * Returns the value for {@code extension} on this message, or null if no
      * value is set.
      */
@@ -199,5 +137,59 @@ public abstract class Message<T extends Message<T>> implements Serializable {
 
     /** Returns an immutable {@link Message} based on the fields that set in this builder. */
     public abstract T build();
+  }
+
+  /** <b>For generated code only.</b> Utility method to return a mutable copy of {@code list}. */
+  protected static <T> List<T> copyOf(List<T> list) {
+    if (list == null) throw new NullPointerException("list == null");
+    return new ArrayList<>(list);
+  }
+
+  /** <b>For generated code only.</b> Utility method to return an immutable copy of {@code list}. */
+  protected static <T> List<T> immutableCopyOf(List<T> list) {
+    if (list == null) throw new NullPointerException("list == null");
+    if (list == Collections.emptyList() || list instanceof ImmutableList) {
+      return list;
+    }
+    return Collections.unmodifiableList(new ArrayList<>(list));
+  }
+
+  /** <b>For generated code only.</b> */
+  protected static boolean equals(Object a, Object b) {
+    return a == b || (a != null && a.equals(b));
+  }
+
+  /**
+   * <b>For generated code only.</b> Create an exception for missing required fields.
+   *
+   * @param args Alternating field value and field name pairs.
+   */
+  protected static IllegalStateException missingRequiredFields(Object... args) {
+    StringBuilder sb = new StringBuilder();
+    String plural = "";
+    for (int i = 0, size = args.length; i < size; i += 2) {
+      if (args[i] == null) {
+        if (sb.length() > 0) {
+          plural = "s"; // Found more than one missing field
+        }
+        sb.append("\n  ");
+        sb.append(args[i + 1]);
+      }
+    }
+    throw new IllegalStateException("Required field" + plural + " not set:" + sb);
+  }
+
+  /**
+   * <b>For generated code only.</b> Throw {@link NullPointerException} if {@code list} or one of
+   * its items are null.
+   */
+  protected static void checkElementsNotNull(List<?> list) {
+    if (list == null) throw new NullPointerException("list == null");
+    for (int i = 0, size = list.size(); i < size; i++) {
+      Object element = list.get(i);
+      if (element == null) {
+        throw new NullPointerException("Element at index " + i + " is null");
+      }
+    }
   }
 }

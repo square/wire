@@ -161,7 +161,8 @@ public final class MessageOptions extends Message<MessageOptions> {
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      this.uninterpreted_option = canonicalizeList(uninterpreted_option);
+      checkElementsNotNull(uninterpreted_option);
+      this.uninterpreted_option = uninterpreted_option;
       return this;
     }
 
