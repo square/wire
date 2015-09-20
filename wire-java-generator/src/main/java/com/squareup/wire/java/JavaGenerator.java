@@ -741,15 +741,14 @@ public final class JavaGenerator {
     }
 
     if (field.isRepeated()) {
-      result.addStatement("this.$L = canonicalizeList($L)", fieldName, fieldName);
-    } else {
-      result.addStatement("this.$L = $L", fieldName, fieldName);
+      result.addStatement("checkElementsNotNull($L)", fieldName);
+    }
+    result.addStatement("this.$L = $L", fieldName, fieldName);
 
-      if (oneOf != null) {
-        for (Field other : oneOf.fields()) {
-          if (field != other) {
-            result.addStatement("this.$L = null", sanitize(other.name()));
-          }
+    if (oneOf != null) {
+      for (Field other : oneOf.fields()) {
+        if (field != other) {
+          result.addStatement("this.$L = null", sanitize(other.name()));
         }
       }
     }

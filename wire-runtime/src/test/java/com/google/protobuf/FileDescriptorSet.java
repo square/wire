@@ -69,7 +69,8 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
     }
 
     public Builder file(List<FileDescriptorProto> file) {
-      this.file = canonicalizeList(file);
+      checkElementsNotNull(file);
+      this.file = file;
       return this;
     }
 

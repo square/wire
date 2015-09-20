@@ -125,7 +125,8 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
     }
 
     public Builder value(List<EnumValueDescriptorProto> value) {
-      this.value = canonicalizeList(value);
+      checkElementsNotNull(value);
+      this.value = value;
       return this;
     }
 

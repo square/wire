@@ -210,7 +210,8 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
      * Names of files imported by this file.
      */
     public Builder dependency(List<String> dependency) {
-      this.dependency = canonicalizeList(dependency);
+      checkElementsNotNull(dependency);
+      this.dependency = dependency;
       return this;
     }
 
@@ -218,22 +219,26 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
      * All top-level definitions in this file.
      */
     public Builder message_type(List<DescriptorProto> message_type) {
-      this.message_type = canonicalizeList(message_type);
+      checkElementsNotNull(message_type);
+      this.message_type = message_type;
       return this;
     }
 
     public Builder enum_type(List<EnumDescriptorProto> enum_type) {
-      this.enum_type = canonicalizeList(enum_type);
+      checkElementsNotNull(enum_type);
+      this.enum_type = enum_type;
       return this;
     }
 
     public Builder service(List<ServiceDescriptorProto> service) {
-      this.service = canonicalizeList(service);
+      checkElementsNotNull(service);
+      this.service = service;
       return this;
     }
 
     public Builder extension(List<FieldDescriptorProto> extension) {
-      this.extension = canonicalizeList(extension);
+      checkElementsNotNull(extension);
+      this.extension = extension;
       return this;
     }
 

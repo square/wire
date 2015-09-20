@@ -1347,157 +1347,188 @@ public final class AllTypes extends Message<AllTypes> {
     }
 
     public Builder rep_int32(List<Integer> rep_int32) {
-      this.rep_int32 = canonicalizeList(rep_int32);
+      checkElementsNotNull(rep_int32);
+      this.rep_int32 = rep_int32;
       return this;
     }
 
     public Builder rep_uint32(List<Integer> rep_uint32) {
-      this.rep_uint32 = canonicalizeList(rep_uint32);
+      checkElementsNotNull(rep_uint32);
+      this.rep_uint32 = rep_uint32;
       return this;
     }
 
     public Builder rep_sint32(List<Integer> rep_sint32) {
-      this.rep_sint32 = canonicalizeList(rep_sint32);
+      checkElementsNotNull(rep_sint32);
+      this.rep_sint32 = rep_sint32;
       return this;
     }
 
     public Builder rep_fixed32(List<Integer> rep_fixed32) {
-      this.rep_fixed32 = canonicalizeList(rep_fixed32);
+      checkElementsNotNull(rep_fixed32);
+      this.rep_fixed32 = rep_fixed32;
       return this;
     }
 
     public Builder rep_sfixed32(List<Integer> rep_sfixed32) {
-      this.rep_sfixed32 = canonicalizeList(rep_sfixed32);
+      checkElementsNotNull(rep_sfixed32);
+      this.rep_sfixed32 = rep_sfixed32;
       return this;
     }
 
     public Builder rep_int64(List<Long> rep_int64) {
-      this.rep_int64 = canonicalizeList(rep_int64);
+      checkElementsNotNull(rep_int64);
+      this.rep_int64 = rep_int64;
       return this;
     }
 
     public Builder rep_uint64(List<Long> rep_uint64) {
-      this.rep_uint64 = canonicalizeList(rep_uint64);
+      checkElementsNotNull(rep_uint64);
+      this.rep_uint64 = rep_uint64;
       return this;
     }
 
     public Builder rep_sint64(List<Long> rep_sint64) {
-      this.rep_sint64 = canonicalizeList(rep_sint64);
+      checkElementsNotNull(rep_sint64);
+      this.rep_sint64 = rep_sint64;
       return this;
     }
 
     public Builder rep_fixed64(List<Long> rep_fixed64) {
-      this.rep_fixed64 = canonicalizeList(rep_fixed64);
+      checkElementsNotNull(rep_fixed64);
+      this.rep_fixed64 = rep_fixed64;
       return this;
     }
 
     public Builder rep_sfixed64(List<Long> rep_sfixed64) {
-      this.rep_sfixed64 = canonicalizeList(rep_sfixed64);
+      checkElementsNotNull(rep_sfixed64);
+      this.rep_sfixed64 = rep_sfixed64;
       return this;
     }
 
     public Builder rep_bool(List<Boolean> rep_bool) {
-      this.rep_bool = canonicalizeList(rep_bool);
+      checkElementsNotNull(rep_bool);
+      this.rep_bool = rep_bool;
       return this;
     }
 
     public Builder rep_float(List<Float> rep_float) {
-      this.rep_float = canonicalizeList(rep_float);
+      checkElementsNotNull(rep_float);
+      this.rep_float = rep_float;
       return this;
     }
 
     public Builder rep_double(List<Double> rep_double) {
-      this.rep_double = canonicalizeList(rep_double);
+      checkElementsNotNull(rep_double);
+      this.rep_double = rep_double;
       return this;
     }
 
     public Builder rep_string(List<String> rep_string) {
-      this.rep_string = canonicalizeList(rep_string);
+      checkElementsNotNull(rep_string);
+      this.rep_string = rep_string;
       return this;
     }
 
     public Builder rep_bytes(List<ByteString> rep_bytes) {
-      this.rep_bytes = canonicalizeList(rep_bytes);
+      checkElementsNotNull(rep_bytes);
+      this.rep_bytes = rep_bytes;
       return this;
     }
 
     public Builder rep_nested_enum(List<NestedEnum> rep_nested_enum) {
-      this.rep_nested_enum = canonicalizeList(rep_nested_enum);
+      checkElementsNotNull(rep_nested_enum);
+      this.rep_nested_enum = rep_nested_enum;
       return this;
     }
 
     public Builder rep_nested_message(List<NestedMessage> rep_nested_message) {
-      this.rep_nested_message = canonicalizeList(rep_nested_message);
+      checkElementsNotNull(rep_nested_message);
+      this.rep_nested_message = rep_nested_message;
       return this;
     }
 
     public Builder pack_int32(List<Integer> pack_int32) {
-      this.pack_int32 = canonicalizeList(pack_int32);
+      checkElementsNotNull(pack_int32);
+      this.pack_int32 = pack_int32;
       return this;
     }
 
     public Builder pack_uint32(List<Integer> pack_uint32) {
-      this.pack_uint32 = canonicalizeList(pack_uint32);
+      checkElementsNotNull(pack_uint32);
+      this.pack_uint32 = pack_uint32;
       return this;
     }
 
     public Builder pack_sint32(List<Integer> pack_sint32) {
-      this.pack_sint32 = canonicalizeList(pack_sint32);
+      checkElementsNotNull(pack_sint32);
+      this.pack_sint32 = pack_sint32;
       return this;
     }
 
     public Builder pack_fixed32(List<Integer> pack_fixed32) {
-      this.pack_fixed32 = canonicalizeList(pack_fixed32);
+      checkElementsNotNull(pack_fixed32);
+      this.pack_fixed32 = pack_fixed32;
       return this;
     }
 
     public Builder pack_sfixed32(List<Integer> pack_sfixed32) {
-      this.pack_sfixed32 = canonicalizeList(pack_sfixed32);
+      checkElementsNotNull(pack_sfixed32);
+      this.pack_sfixed32 = pack_sfixed32;
       return this;
     }
 
     public Builder pack_int64(List<Long> pack_int64) {
-      this.pack_int64 = canonicalizeList(pack_int64);
+      checkElementsNotNull(pack_int64);
+      this.pack_int64 = pack_int64;
       return this;
     }
 
     public Builder pack_uint64(List<Long> pack_uint64) {
-      this.pack_uint64 = canonicalizeList(pack_uint64);
+      checkElementsNotNull(pack_uint64);
+      this.pack_uint64 = pack_uint64;
       return this;
     }
 
     public Builder pack_sint64(List<Long> pack_sint64) {
-      this.pack_sint64 = canonicalizeList(pack_sint64);
+      checkElementsNotNull(pack_sint64);
+      this.pack_sint64 = pack_sint64;
       return this;
     }
 
     public Builder pack_fixed64(List<Long> pack_fixed64) {
-      this.pack_fixed64 = canonicalizeList(pack_fixed64);
+      checkElementsNotNull(pack_fixed64);
+      this.pack_fixed64 = pack_fixed64;
       return this;
     }
 
     public Builder pack_sfixed64(List<Long> pack_sfixed64) {
-      this.pack_sfixed64 = canonicalizeList(pack_sfixed64);
+      checkElementsNotNull(pack_sfixed64);
+      this.pack_sfixed64 = pack_sfixed64;
       return this;
     }
 
     public Builder pack_bool(List<Boolean> pack_bool) {
-      this.pack_bool = canonicalizeList(pack_bool);
+      checkElementsNotNull(pack_bool);
+      this.pack_bool = pack_bool;
       return this;
     }
 
     public Builder pack_float(List<Float> pack_float) {
-      this.pack_float = canonicalizeList(pack_float);
+      checkElementsNotNull(pack_float);
+      this.pack_float = pack_float;
       return this;
     }
 
     public Builder pack_double(List<Double> pack_double) {
-      this.pack_double = canonicalizeList(pack_double);
+      checkElementsNotNull(pack_double);
+      this.pack_double = pack_double;
       return this;
     }
 
     public Builder pack_nested_enum(List<NestedEnum> pack_nested_enum) {
-      this.pack_nested_enum = canonicalizeList(pack_nested_enum);
+      checkElementsNotNull(pack_nested_enum);
+      this.pack_nested_enum = pack_nested_enum;
       return this;
     }
 

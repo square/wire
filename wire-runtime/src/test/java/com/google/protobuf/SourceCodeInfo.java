@@ -162,7 +162,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
      *   be recorded in the future.
      */
     public Builder location(List<Location> location) {
-      this.location = canonicalizeList(location);
+      checkElementsNotNull(location);
+      this.location = location;
       return this;
     }
 
@@ -296,7 +297,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
        * of the label to the terminating semicolon).
        */
       public Builder path(List<Integer> path) {
-        this.path = canonicalizeList(path);
+        checkElementsNotNull(path);
+        this.path = path;
         return this;
       }
 
@@ -308,7 +310,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
        * 1 to each before displaying to a user.
        */
       public Builder span(List<Integer> span) {
-        this.span = canonicalizeList(span);
+        checkElementsNotNull(span);
+        this.span = span;
         return this;
       }
 

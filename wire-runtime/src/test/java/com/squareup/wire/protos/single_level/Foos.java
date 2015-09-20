@@ -65,7 +65,8 @@ public final class Foos extends Message<Foos> {
     }
 
     public Builder foos(List<Foo> foos) {
-      this.foos = canonicalizeList(foos);
+      checkElementsNotNull(foos);
+      this.foos = foos;
       return this;
     }
 
