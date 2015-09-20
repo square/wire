@@ -124,7 +124,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
       tag = 9,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  public final String _package;
+  public final String package_;
 
   /**
    * field with the name "result"
@@ -153,11 +153,11 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   )
   public final String o;
 
-  public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String _package, String result, String other, String o) {
-    this(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, _package, result, other, o, TagMap.EMPTY);
+  public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String package_, String result, String other, String o) {
+    this(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, package_, result, other, o, TagMap.EMPTY);
   }
 
-  public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String _package, String result, String other, String o, TagMap tagMap) {
+  public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String package_, String result, String other, String o, TagMap tagMap) {
     super(tagMap);
     this.optional_int32 = optional_int32;
     this.optional_nested_msg = optional_nested_msg;
@@ -167,52 +167,52 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     this.repeated_double = immutableCopyOf(repeated_double);
     this.default_foreign_enum = default_foreign_enum;
     this.no_default_foreign_enum = no_default_foreign_enum;
-    this._package = _package;
+    this.package_ = package_;
     this.result = result;
     this.other = other;
     this.o = o;
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof SimpleMessage)) return false;
-    SimpleMessage o = (SimpleMessage) other;
-    return equals(tagMap(), o.tagMap())
-        && equals(optional_int32, o.optional_int32)
-        && equals(optional_nested_msg, o.optional_nested_msg)
-        && equals(optional_external_msg, o.optional_external_msg)
-        && equals(default_nested_enum, o.default_nested_enum)
-        && equals(required_int32, o.required_int32)
-        && equals(repeated_double, o.repeated_double)
-        && equals(default_foreign_enum, o.default_foreign_enum)
-        && equals(no_default_foreign_enum, o.no_default_foreign_enum)
-        && equals(_package, o._package)
-        && equals(result, o.result)
-        && equals(this.other, o.other)
-        && equals(this.o, o.o);
+  public boolean equals(Object other_) {
+    if (other_ == this) return true;
+    if (!(other_ instanceof SimpleMessage)) return false;
+    SimpleMessage o_ = (SimpleMessage) other_;
+    return equals(tagMap(), o_.tagMap())
+        && equals(optional_int32, o_.optional_int32)
+        && equals(optional_nested_msg, o_.optional_nested_msg)
+        && equals(optional_external_msg, o_.optional_external_msg)
+        && equals(default_nested_enum, o_.default_nested_enum)
+        && equals(required_int32, o_.required_int32)
+        && equals(repeated_double, o_.repeated_double)
+        && equals(default_foreign_enum, o_.default_foreign_enum)
+        && equals(no_default_foreign_enum, o_.no_default_foreign_enum)
+        && equals(package_, o_.package_)
+        && equals(result, o_.result)
+        && equals(other, o_.other)
+        && equals(o, o_.o);
   }
 
   @Override
   public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = tagMap().hashCode();
-      result = result * 37 + (optional_int32 != null ? optional_int32.hashCode() : 0);
-      result = result * 37 + (optional_nested_msg != null ? optional_nested_msg.hashCode() : 0);
-      result = result * 37 + (optional_external_msg != null ? optional_external_msg.hashCode() : 0);
-      result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
-      result = result * 37 + (required_int32 != null ? required_int32.hashCode() : 0);
-      result = result * 37 + (repeated_double != null ? repeated_double.hashCode() : 1);
-      result = result * 37 + (default_foreign_enum != null ? default_foreign_enum.hashCode() : 0);
-      result = result * 37 + (no_default_foreign_enum != null ? no_default_foreign_enum.hashCode() : 0);
-      result = result * 37 + (_package != null ? _package.hashCode() : 0);
-      result = result * 37 + (this.result != null ? this.result.hashCode() : 0);
-      result = result * 37 + (other != null ? other.hashCode() : 0);
-      result = result * 37 + (o != null ? o.hashCode() : 0);
-      hashCode = result;
+    int result_ = super.hashCode;
+    if (result_ == 0) {
+      result_ = tagMap().hashCode();
+      result_ = result_ * 37 + (optional_int32 != null ? optional_int32.hashCode() : 0);
+      result_ = result_ * 37 + (optional_nested_msg != null ? optional_nested_msg.hashCode() : 0);
+      result_ = result_ * 37 + (optional_external_msg != null ? optional_external_msg.hashCode() : 0);
+      result_ = result_ * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
+      result_ = result_ * 37 + (required_int32 != null ? required_int32.hashCode() : 0);
+      result_ = result_ * 37 + (repeated_double != null ? repeated_double.hashCode() : 1);
+      result_ = result_ * 37 + (default_foreign_enum != null ? default_foreign_enum.hashCode() : 0);
+      result_ = result_ * 37 + (no_default_foreign_enum != null ? no_default_foreign_enum.hashCode() : 0);
+      result_ = result_ * 37 + (package_ != null ? package_.hashCode() : 0);
+      result_ = result_ * 37 + (result != null ? result.hashCode() : 0);
+      result_ = result_ * 37 + (other != null ? other.hashCode() : 0);
+      result_ = result_ * 37 + (o != null ? o.hashCode() : 0);
+      super.hashCode = result_;
     }
-    return result;
+    return result_;
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<SimpleMessage, Builder> {
@@ -232,7 +232,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
 
     public ForeignEnum no_default_foreign_enum;
 
-    public String _package;
+    public String package_;
 
     public String result;
 
@@ -255,7 +255,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
       this.repeated_double = copyOf(message.repeated_double);
       this.default_foreign_enum = message.default_foreign_enum;
       this.no_default_foreign_enum = message.no_default_foreign_enum;
-      this._package = message._package;
+      this.package_ = message.package_;
       this.result = message.result;
       this.other = message.other;
       this.o = message.o;
@@ -328,8 +328,8 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     /**
      * field with the same name as a Java keyword
      */
-    public Builder _package(String _package) {
-      this._package = _package;
+    public Builder package_(String package_) {
+      this.package_ = package_;
       return this;
     }
 
@@ -362,7 +362,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
       if (required_int32 == null) {
         throw missingRequiredFields(required_int32, "required_int32");
       }
-      return new SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, _package, result, other, o, buildTagMap());
+      return new SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, package_, result, other, o, buildTagMap());
     }
   }
 
@@ -402,16 +402,16 @@ public final class SimpleMessage extends Message<SimpleMessage> {
 
     @Override
     public int hashCode() {
-      int result = hashCode;
+      int result = super.hashCode;
       if (result == 0) {
         result = tagMap().hashCode();
         result = result * 37 + (bb != null ? bb.hashCode() : 0);
-        hashCode = result;
+        super.hashCode = result;
       }
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, NestedMessage.Builder> {
       public Integer bb;
 
       public Builder() {

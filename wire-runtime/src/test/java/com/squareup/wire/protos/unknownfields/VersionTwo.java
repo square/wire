@@ -95,7 +95,7 @@ public final class VersionTwo extends Message<VersionTwo> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
@@ -104,7 +104,7 @@ public final class VersionTwo extends Message<VersionTwo> {
       result = result * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
       result = result * 37 + (v2_f64 != null ? v2_f64.hashCode() : 0);
       result = result * 37 + (v2_rs != null ? v2_rs.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

@@ -59,12 +59,12 @@ public final class RedactedExtension extends Message<RedactedExtension> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (d != null ? d.hashCode() : 0);
       result = result * 37 + (e != null ? e.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

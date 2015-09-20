@@ -43,11 +43,11 @@ public final class VersionOne extends Message<VersionOne> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

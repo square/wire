@@ -43,11 +43,11 @@ public final class OneExtension extends Message<OneExtension> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (id != null ? id.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

@@ -78,14 +78,14 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (number != null ? number.hashCode() : 0);
       result = result * 37 + (options != null ? options.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

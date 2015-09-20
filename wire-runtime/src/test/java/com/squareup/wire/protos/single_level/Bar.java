@@ -43,11 +43,11 @@ public final class Bar extends Message<Bar> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (baz != null ? baz.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

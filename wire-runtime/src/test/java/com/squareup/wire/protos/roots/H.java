@@ -40,11 +40,11 @@ public final class H extends Message<H> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (ef != null ? ef.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

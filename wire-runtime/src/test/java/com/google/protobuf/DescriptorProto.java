@@ -114,7 +114,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
@@ -125,7 +125,7 @@ public final class DescriptorProto extends Message<DescriptorProto> {
       result = result * 37 + (enum_type != null ? enum_type.hashCode() : 1);
       result = result * 37 + (extension_range != null ? extension_range.hashCode() : 1);
       result = result * 37 + (options != null ? options.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }
@@ -265,17 +265,17 @@ public final class DescriptorProto extends Message<DescriptorProto> {
 
     @Override
     public int hashCode() {
-      int result = hashCode;
+      int result = super.hashCode;
       if (result == 0) {
         result = tagMap().hashCode();
         result = result * 37 + (start != null ? start.hashCode() : 0);
         result = result * 37 + (end != null ? end.hashCode() : 0);
-        hashCode = result;
+        super.hashCode = result;
       }
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<ExtensionRange, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<ExtensionRange, ExtensionRange.Builder> {
       public Integer start;
 
       public Integer end;

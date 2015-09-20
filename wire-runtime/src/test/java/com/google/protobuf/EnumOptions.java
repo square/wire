@@ -45,11 +45,11 @@ public final class EnumOptions extends Message<EnumOptions> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

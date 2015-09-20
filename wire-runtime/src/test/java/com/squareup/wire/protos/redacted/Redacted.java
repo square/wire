@@ -73,13 +73,13 @@ public final class Redacted extends Message<Redacted> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

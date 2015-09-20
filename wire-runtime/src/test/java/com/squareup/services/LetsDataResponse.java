@@ -43,11 +43,11 @@ public final class LetsDataResponse extends Message<LetsDataResponse> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (data != null ? data.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

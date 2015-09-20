@@ -46,11 +46,11 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (file != null ? file.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

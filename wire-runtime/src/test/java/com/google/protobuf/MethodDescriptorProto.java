@@ -91,7 +91,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
@@ -99,7 +99,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
       result = result * 37 + (input_type != null ? input_type.hashCode() : 0);
       result = result * 37 + (output_type != null ? output_type.hashCode() : 0);
       result = result * 37 + (options != null ? options.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

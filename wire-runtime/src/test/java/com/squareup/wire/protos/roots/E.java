@@ -51,12 +51,12 @@ public final class E extends Message<E> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (f != null ? f.hashCode() : 0);
       result = result * 37 + (g != null ? g.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }
@@ -125,16 +125,16 @@ public final class E extends Message<E> {
 
     @Override
     public int hashCode() {
-      int result = hashCode;
+      int result = super.hashCode;
       if (result == 0) {
         result = tagMap().hashCode();
         result = result * 37 + (i != null ? i.hashCode() : 0);
-        hashCode = result;
+        super.hashCode = result;
       }
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<F, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<F, F.Builder> {
       public Integer i;
 
       public Builder() {

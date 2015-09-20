@@ -834,7 +834,7 @@ public final class AllTypes extends Message<AllTypes> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
@@ -918,7 +918,7 @@ public final class AllTypes extends Message<AllTypes> {
       result = result * 37 + (default_string != null ? default_string.hashCode() : 0);
       result = result * 37 + (default_bytes != null ? default_bytes.hashCode() : 0);
       result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }
@@ -1733,16 +1733,16 @@ public final class AllTypes extends Message<AllTypes> {
 
     @Override
     public int hashCode() {
-      int result = hashCode;
+      int result = super.hashCode;
       if (result == 0) {
         result = tagMap().hashCode();
         result = result * 37 + (a != null ? a.hashCode() : 0);
-        hashCode = result;
+        super.hashCode = result;
       }
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, NestedMessage.Builder> {
       public Integer a;
 
       public Builder() {
