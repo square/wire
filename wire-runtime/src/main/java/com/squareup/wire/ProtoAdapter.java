@@ -39,11 +39,11 @@ import static java.lang.Double.doubleToLongBits;
 import static java.lang.Float.floatToIntBits;
 
 public abstract class ProtoAdapter<E> {
-  static final int FIXED_BOOL_SIZE = 1;
-  static final int FIXED_32_SIZE = 4;
-  static final int FIXED_64_SIZE = 8;
+  private static final int FIXED_BOOL_SIZE = 1;
+  private static final int FIXED_32_SIZE = 4;
+  private static final int FIXED_64_SIZE = 8;
 
-  final FieldEncoding fieldEncoding;
+  private final FieldEncoding fieldEncoding;
   final Class<?> javaType;
 
   public ProtoAdapter(FieldEncoding fieldEncoding, Class<?> javaType) {
