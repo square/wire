@@ -8,7 +8,6 @@ import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,7 +59,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
     public List<FileDescriptorProto> file;
 
     public Builder() {
-      file = Collections.emptyList();
+      file = newMutableList();
     }
 
     public Builder(FileDescriptorSet message) {

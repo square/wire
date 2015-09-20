@@ -15,7 +15,6 @@ import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
 
@@ -1088,37 +1087,37 @@ public final class AllTypes extends Message<AllTypes> {
     public NestedEnum default_nested_enum;
 
     public Builder() {
-      rep_int32 = Collections.emptyList();
-      rep_uint32 = Collections.emptyList();
-      rep_sint32 = Collections.emptyList();
-      rep_fixed32 = Collections.emptyList();
-      rep_sfixed32 = Collections.emptyList();
-      rep_int64 = Collections.emptyList();
-      rep_uint64 = Collections.emptyList();
-      rep_sint64 = Collections.emptyList();
-      rep_fixed64 = Collections.emptyList();
-      rep_sfixed64 = Collections.emptyList();
-      rep_bool = Collections.emptyList();
-      rep_float = Collections.emptyList();
-      rep_double = Collections.emptyList();
-      rep_string = Collections.emptyList();
-      rep_bytes = Collections.emptyList();
-      rep_nested_enum = Collections.emptyList();
-      rep_nested_message = Collections.emptyList();
-      pack_int32 = Collections.emptyList();
-      pack_uint32 = Collections.emptyList();
-      pack_sint32 = Collections.emptyList();
-      pack_fixed32 = Collections.emptyList();
-      pack_sfixed32 = Collections.emptyList();
-      pack_int64 = Collections.emptyList();
-      pack_uint64 = Collections.emptyList();
-      pack_sint64 = Collections.emptyList();
-      pack_fixed64 = Collections.emptyList();
-      pack_sfixed64 = Collections.emptyList();
-      pack_bool = Collections.emptyList();
-      pack_float = Collections.emptyList();
-      pack_double = Collections.emptyList();
-      pack_nested_enum = Collections.emptyList();
+      rep_int32 = newMutableList();
+      rep_uint32 = newMutableList();
+      rep_sint32 = newMutableList();
+      rep_fixed32 = newMutableList();
+      rep_sfixed32 = newMutableList();
+      rep_int64 = newMutableList();
+      rep_uint64 = newMutableList();
+      rep_sint64 = newMutableList();
+      rep_fixed64 = newMutableList();
+      rep_sfixed64 = newMutableList();
+      rep_bool = newMutableList();
+      rep_float = newMutableList();
+      rep_double = newMutableList();
+      rep_string = newMutableList();
+      rep_bytes = newMutableList();
+      rep_nested_enum = newMutableList();
+      rep_nested_message = newMutableList();
+      pack_int32 = newMutableList();
+      pack_uint32 = newMutableList();
+      pack_sint32 = newMutableList();
+      pack_fixed32 = newMutableList();
+      pack_sfixed32 = newMutableList();
+      pack_int64 = newMutableList();
+      pack_uint64 = newMutableList();
+      pack_sint64 = newMutableList();
+      pack_fixed64 = newMutableList();
+      pack_sfixed64 = newMutableList();
+      pack_bool = newMutableList();
+      pack_float = newMutableList();
+      pack_double = newMutableList();
+      pack_nested_enum = newMutableList();
     }
 
     public Builder(AllTypes message) {

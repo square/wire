@@ -9,7 +9,6 @@ import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -108,7 +107,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     public List<Location> location;
 
     public Builder() {
-      location = Collections.emptyList();
+      location = newMutableList();
     }
 
     public Builder(SourceCodeInfo message) {
@@ -263,8 +262,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
       public List<Integer> span;
 
       public Builder() {
-        path = Collections.emptyList();
-        span = Collections.emptyList();
+        path = newMutableList();
+        span = newMutableList();
       }
 
       public Builder(Location message) {

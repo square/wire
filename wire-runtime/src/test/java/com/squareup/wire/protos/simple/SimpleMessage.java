@@ -14,7 +14,6 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -242,7 +241,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     public String o;
 
     public Builder() {
-      repeated_double = Collections.emptyList();
+      repeated_double = newMutableList();
     }
 
     public Builder(SimpleMessage message) {

@@ -9,7 +9,6 @@ import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -174,11 +173,11 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
     public SourceCodeInfo source_code_info;
 
     public Builder() {
-      dependency = Collections.emptyList();
-      message_type = Collections.emptyList();
-      enum_type = Collections.emptyList();
-      service = Collections.emptyList();
-      extension = Collections.emptyList();
+      dependency = newMutableList();
+      message_type = newMutableList();
+      enum_type = newMutableList();
+      service = newMutableList();
+      extension = newMutableList();
     }
 
     public Builder(FileDescriptorProto message) {

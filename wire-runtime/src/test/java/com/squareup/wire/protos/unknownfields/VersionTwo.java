@@ -11,7 +11,6 @@ import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 
 public final class VersionTwo extends Message<VersionTwo> {
@@ -124,7 +123,7 @@ public final class VersionTwo extends Message<VersionTwo> {
     public List<String> v2_rs;
 
     public Builder() {
-      v2_rs = Collections.emptyList();
+      v2_rs = newMutableList();
     }
 
     public Builder(VersionTwo message) {

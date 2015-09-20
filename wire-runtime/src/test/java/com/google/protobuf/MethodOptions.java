@@ -8,7 +8,6 @@ import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
-import java.util.Collections;
 import java.util.List;
 
 public final class MethodOptions extends Message<MethodOptions> {
@@ -63,7 +62,7 @@ public final class MethodOptions extends Message<MethodOptions> {
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
-      uninterpreted_option = Collections.emptyList();
+      uninterpreted_option = newMutableList();
     }
 
     public Builder(MethodOptions message) {

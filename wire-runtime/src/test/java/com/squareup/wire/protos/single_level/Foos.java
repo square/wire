@@ -8,7 +8,6 @@ import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
-import java.util.Collections;
 import java.util.List;
 
 public final class Foos extends Message<Foos> {
@@ -56,7 +55,7 @@ public final class Foos extends Message<Foos> {
     public List<Foo> foos;
 
     public Builder() {
-      foos = Collections.emptyList();
+      foos = newMutableList();
     }
 
     public Builder(Foos message) {

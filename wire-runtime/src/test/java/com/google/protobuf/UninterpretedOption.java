@@ -12,7 +12,6 @@ import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
 
@@ -151,7 +150,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
     public String aggregate_value;
 
     public Builder() {
-      name = Collections.emptyList();
+      name = newMutableList();
     }
 
     public Builder(UninterpretedOption message) {

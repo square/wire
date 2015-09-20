@@ -11,7 +11,6 @@ import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -232,7 +231,7 @@ public final class FileOptions extends Message<FileOptions> {
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
-      uninterpreted_option = Collections.emptyList();
+      uninterpreted_option = newMutableList();
     }
 
     public Builder(FileOptions message) {

@@ -669,14 +669,14 @@ public final class JavaGenerator {
   // Example:
   //
   // public Builder() {
-  //   names = Collections.emptyList();
+  //   names = newMutableList();
   // }
   //
   private MethodSpec builderNoArgsConstructor(MessageType type) {
     MethodSpec.Builder result = MethodSpec.constructorBuilder().addModifiers(PUBLIC);
     for (Field field : type.fieldsAndOneOfFields()) {
       if (field.isPacked() || field.isRepeated()) {
-        result.addStatement("$L = $T.emptyList()", sanitize(field.name()), Collections.class);
+        result.addStatement("$L = newMutableList()", sanitize(field.name()));
       }
     }
     return result.build();

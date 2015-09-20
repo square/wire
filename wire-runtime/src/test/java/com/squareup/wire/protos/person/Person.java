@@ -11,7 +11,6 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
-import java.util.Collections;
 import java.util.List;
 
 public final class Person extends Message<Person> {
@@ -112,7 +111,7 @@ public final class Person extends Message<Person> {
     public List<PhoneNumber> phone;
 
     public Builder() {
-      phone = Collections.emptyList();
+      phone = newMutableList();
     }
 
     public Builder(Person message) {
