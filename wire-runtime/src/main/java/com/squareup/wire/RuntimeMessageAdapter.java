@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.squareup.wire.Message.Builder;
@@ -128,19 +129,24 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   @Override public M redact(M message) {
     B builder = newBuilder(message);
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
-      if (!fieldBinding.redacted
-          && !Message.class.isAssignableFrom(fieldBinding.singleAdapter().javaType)) {
-        continue;
-      }
       if (fieldBinding.redacted && fieldBinding.label == WireField.Label.REQUIRED) {
         throw new IllegalArgumentException(String.format(
             "Field %s.%s is REQUIRED and cannot be redacted.",
             javaType.getName(), fieldBinding.name));
       }
-      Object builderValue = fieldBinding.getFromBuilder(builder);
-      if (builderValue != null) {
-        Object redactedValue = fieldBinding.adapter().redact(builderValue);
-        fieldBinding.set(builder, redactedValue);
+      boolean isMessage = Message.class.isAssignableFrom(fieldBinding.singleAdapter().javaType);
+      if (fieldBinding.redacted || (isMessage && !fieldBinding.label.isRepeated())) {
+        Object builderValue = fieldBinding.getFromBuilder(builder);
+        if (builderValue != null) {
+          Object redactedValue = fieldBinding.adapter().redact(builderValue);
+          fieldBinding.set(builder, redactedValue);
+        }
+      } else if (isMessage && fieldBinding.label.isRepeated()) {
+        //noinspection unchecked
+        List<Object> values = (List<Object>) fieldBinding.getFromBuilder(builder);
+        //noinspection unchecked
+        ProtoAdapter<Object> adapter = (ProtoAdapter<Object>) fieldBinding.singleAdapter();
+        Message.redactElements(values, adapter);
       }
     }
     if (builder.tagMapBuilder != null) {

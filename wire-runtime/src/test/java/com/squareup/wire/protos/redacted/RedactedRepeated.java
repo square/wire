@@ -29,13 +29,24 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   )
   public final List<String> a;
 
-  public RedactedRepeated(List<String> a) {
-    this(a, TagMap.EMPTY);
+  /**
+   * Values in the repeated type need redacting.
+   */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.protos.redacted.Redacted#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Redacted> b;
+
+  public RedactedRepeated(List<String> a, List<Redacted> b) {
+    this(a, b, TagMap.EMPTY);
   }
 
-  public RedactedRepeated(List<String> a, TagMap tagMap) {
+  public RedactedRepeated(List<String> a, List<Redacted> b, TagMap tagMap) {
     super(tagMap);
     this.a = immutableCopyOf(a);
+    this.b = immutableCopyOf(b);
   }
 
   @Override
@@ -44,7 +55,8 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
     if (!(other instanceof RedactedRepeated)) return false;
     RedactedRepeated o = (RedactedRepeated) other;
     return equals(tagMap(), o.tagMap())
-        && equals(a, o.a);
+        && equals(a, o.a)
+        && equals(b, o.b);
   }
 
   @Override
@@ -53,6 +65,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 1);
+      result = result * 37 + (b != null ? b.hashCode() : 1);
       super.hashCode = result;
     }
     return result;
@@ -61,14 +74,18 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRepeated, Builder> {
     public List<String> a;
 
+    public List<Redacted> b;
+
     public Builder() {
       a = newMutableList();
+      b = newMutableList();
     }
 
     public Builder(RedactedRepeated message) {
       super(message);
       if (message == null) return;
       this.a = copyOf(message.a);
+      this.b = copyOf(message.b);
     }
 
     public Builder a(List<String> a) {
@@ -77,9 +94,18 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
       return this;
     }
 
+    /**
+     * Values in the repeated type need redacting.
+     */
+    public Builder b(List<Redacted> b) {
+      checkElementsNotNull(b);
+      this.b = b;
+      return this;
+    }
+
     @Override
     public RedactedRepeated build() {
-      return new RedactedRepeated(a, buildTagMap());
+      return new RedactedRepeated(a, b, buildTagMap());
     }
   }
 }

@@ -25,7 +25,6 @@ import com.squareup.wire.protos.redacted.RedactedRepeated;
 import com.squareup.wire.protos.redacted.RedactedRequired;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,8 +32,15 @@ import static org.junit.Assert.fail;
 
 public class RuntimeMessageAdapterRedactTest {
   @Test public void string() throws IOException {
-    assertThat(new Redacted.Builder().a("a").b("b").c("c").build().toString())
-        .isEqualTo("Redacted{a=██, b=b, c=c}");
+    Redacted redacted = new Redacted.Builder().a("a").b("b").c("c").build();
+    assertThat(redacted.toString()).isEqualTo("Redacted{a=██, b=b, c=c}");
+
+    RedactedRepeated redactedRepeated = new RedactedRepeated.Builder()
+        .a(Arrays.asList("a", "b"))
+        .b(Arrays.asList(new Redacted("a", "b", "c"), new Redacted("d", "e", "f")))
+        .build();
+    assertThat(redactedRepeated.toString()).isEqualTo(
+        "RedactedRepeated{a=██, b=[Redacted{a=██, b=b, c=c}, Redacted{a=██, b=e, c=f}]}");
   }
 
   @Test public void message() {
@@ -81,9 +87,15 @@ public class RuntimeMessageAdapterRedactTest {
   }
 
   @Test public void repeatedField() {
-    RedactedRepeated message = new RedactedRepeated(Arrays.asList("a", "b"));
-    RedactedRepeated expected = new RedactedRepeated(Collections.<String>emptyList());
-    assertThat(RedactedRepeated.ADAPTER.redact(message)).isEqualTo(expected);
+    RedactedRepeated message = new RedactedRepeated.Builder()
+        .a(Arrays.asList("a", "b"))
+        .b(Arrays.asList(new Redacted("a", "b", "c"), new Redacted("d", "e", "f")))
+        .build();
+    RedactedRepeated expected = new RedactedRepeated.Builder()
+        .b(Arrays.asList(new Redacted(null, "b", "c"), new Redacted(null, "e", "f")))
+        .build();
+    RedactedRepeated actual = RedactedRepeated.ADAPTER.redact(message);
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test public void requiredRedactedFieldThrowsRedacting() {
