@@ -43,11 +43,11 @@ public final class ChildPackage extends Message<ChildPackage> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (inner_foreign_enum != null ? inner_foreign_enum.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

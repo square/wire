@@ -49,11 +49,11 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

@@ -89,14 +89,14 @@ public final class Person extends Message<Person> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (id != null ? id.hashCode() : 0);
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + (phone != null ? phone.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }
@@ -241,17 +241,17 @@ public final class Person extends Message<Person> {
 
     @Override
     public int hashCode() {
-      int result = hashCode;
+      int result = super.hashCode;
       if (result == 0) {
         result = tagMap().hashCode();
         result = result * 37 + (number != null ? number.hashCode() : 0);
         result = result * 37 + (type != null ? type.hashCode() : 0);
-        hashCode = result;
+        super.hashCode = result;
       }
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<PhoneNumber, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<PhoneNumber, PhoneNumber.Builder> {
       public String number;
 
       public PhoneType type;

@@ -60,12 +60,12 @@ public final class OneOfMessage extends Message<OneOfMessage> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

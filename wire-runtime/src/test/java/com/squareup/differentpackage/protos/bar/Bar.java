@@ -70,7 +70,7 @@ public final class Bar extends Message<Bar> {
       return tagMap().hashCode();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<Baz, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<Baz, Baz.Builder> {
       public Builder() {
       }
 
@@ -117,16 +117,16 @@ public final class Bar extends Message<Bar> {
 
       @Override
       public int hashCode() {
-        int result = hashCode;
+        int result = super.hashCode;
         if (result == 0) {
           result = tagMap().hashCode();
           result = result * 37 + (boo != null ? boo.hashCode() : 0);
-          hashCode = result;
+          super.hashCode = result;
         }
         return result;
       }
 
-      public static final class Builder extends com.squareup.wire.Message.Builder<Moo, Builder> {
+      public static final class Builder extends com.squareup.wire.Message.Builder<Moo, Moo.Builder> {
         public String boo;
 
         public Builder() {

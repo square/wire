@@ -39,7 +39,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  public final String _package;
+  public final String package_;
 
   /**
    * Names of files imported by this file.
@@ -100,14 +100,14 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   )
   public final SourceCodeInfo source_code_info;
 
-  public FileDescriptorProto(String name, String _package, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info) {
-    this(name, _package, dependency, message_type, enum_type, service, extension, options, source_code_info, TagMap.EMPTY);
+  public FileDescriptorProto(String name, String package_, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info) {
+    this(name, package_, dependency, message_type, enum_type, service, extension, options, source_code_info, TagMap.EMPTY);
   }
 
-  public FileDescriptorProto(String name, String _package, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info, TagMap tagMap) {
+  public FileDescriptorProto(String name, String package_, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info, TagMap tagMap) {
     super(tagMap);
     this.name = name;
-    this._package = _package;
+    this.package_ = package_;
     this.dependency = immutableCopyOf(dependency);
     this.message_type = immutableCopyOf(message_type);
     this.enum_type = immutableCopyOf(enum_type);
@@ -124,7 +124,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
     FileDescriptorProto o = (FileDescriptorProto) other;
     return equals(tagMap(), o.tagMap())
         && equals(name, o.name)
-        && equals(_package, o._package)
+        && equals(package_, o.package_)
         && equals(dependency, o.dependency)
         && equals(message_type, o.message_type)
         && equals(enum_type, o.enum_type)
@@ -136,11 +136,11 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
-      result = result * 37 + (_package != null ? _package.hashCode() : 0);
+      result = result * 37 + (package_ != null ? package_.hashCode() : 0);
       result = result * 37 + (dependency != null ? dependency.hashCode() : 1);
       result = result * 37 + (message_type != null ? message_type.hashCode() : 1);
       result = result * 37 + (enum_type != null ? enum_type.hashCode() : 1);
@@ -148,7 +148,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
       result = result * 37 + (extension != null ? extension.hashCode() : 1);
       result = result * 37 + (options != null ? options.hashCode() : 0);
       result = result * 37 + (source_code_info != null ? source_code_info.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }
@@ -156,7 +156,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorProto, Builder> {
     public String name;
 
-    public String _package;
+    public String package_;
 
     public List<String> dependency;
 
@@ -184,7 +184,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
       super(message);
       if (message == null) return;
       this.name = message.name;
-      this._package = message._package;
+      this.package_ = message.package_;
       this.dependency = copyOf(message.dependency);
       this.message_type = copyOf(message.message_type);
       this.enum_type = copyOf(message.enum_type);
@@ -205,8 +205,8 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
     /**
      * e.g. "foo", "foo.bar", etc.
      */
-    public Builder _package(String _package) {
-      this._package = _package;
+    public Builder package_(String package_) {
+      this.package_ = package_;
       return this;
     }
 
@@ -264,7 +264,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
 
     @Override
     public FileDescriptorProto build() {
-      return new FileDescriptorProto(name, _package, dependency, message_type, enum_type, service, extension, options, source_code_info, buildTagMap());
+      return new FileDescriptorProto(name, package_, dependency, message_type, enum_type, service, extension, options, source_code_info, buildTagMap());
     }
   }
 }

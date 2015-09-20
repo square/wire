@@ -119,7 +119,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 1);
@@ -129,7 +129,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
       result = result * 37 + (double_value != null ? double_value.hashCode() : 0);
       result = result * 37 + (string_value != null ? string_value.hashCode() : 0);
       result = result * 37 + (aggregate_value != null ? aggregate_value.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }
@@ -263,17 +263,17 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
     @Override
     public int hashCode() {
-      int result = hashCode;
+      int result = super.hashCode;
       if (result == 0) {
         result = tagMap().hashCode();
         result = result * 37 + (name_part != null ? name_part.hashCode() : 0);
         result = result * 37 + (is_extension != null ? is_extension.hashCode() : 0);
-        hashCode = result;
+        super.hashCode = result;
       }
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NamePart, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<NamePart, NamePart.Builder> {
       public String name_part;
 
       public Boolean is_extension;

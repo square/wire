@@ -194,7 +194,7 @@ public final class FileOptions extends Message<FileOptions> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (java_package != null ? java_package.hashCode() : 0);
@@ -206,7 +206,7 @@ public final class FileOptions extends Message<FileOptions> {
       result = result * 37 + (java_generic_services != null ? java_generic_services.hashCode() : 0);
       result = result * 37 + (py_generic_services != null ? py_generic_services.hashCode() : 0);
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

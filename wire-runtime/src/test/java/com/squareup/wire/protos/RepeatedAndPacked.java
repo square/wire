@@ -52,12 +52,12 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 1);
       result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

@@ -40,11 +40,11 @@ public final class RedactedCycleB extends Message<RedactedCycleB> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

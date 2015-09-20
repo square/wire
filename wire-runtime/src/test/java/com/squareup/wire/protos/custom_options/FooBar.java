@@ -155,7 +155,7 @@ public final class FooBar extends Message<FooBar> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
@@ -165,7 +165,7 @@ public final class FooBar extends Message<FooBar> {
       result = result * 37 + (fred != null ? fred.hashCode() : 1);
       result = result * 37 + (daisy != null ? daisy.hashCode() : 0);
       result = result * 37 + (nested != null ? nested.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }
@@ -278,16 +278,16 @@ public final class FooBar extends Message<FooBar> {
 
     @Override
     public int hashCode() {
-      int result = hashCode;
+      int result = super.hashCode;
       if (result == 0) {
         result = tagMap().hashCode();
         result = result * 37 + (value != null ? value.hashCode() : 0);
-        hashCode = result;
+        super.hashCode = result;
       }
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<Nested, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<Nested, Nested.Builder> {
       public FooBarBazEnum value;
 
       public Builder() {
@@ -343,16 +343,16 @@ public final class FooBar extends Message<FooBar> {
 
     @Override
     public int hashCode() {
-      int result = hashCode;
+      int result = super.hashCode;
       if (result == 0) {
         result = tagMap().hashCode();
         result = result * 37 + (serial != null ? serial.hashCode() : 1);
-        hashCode = result;
+        super.hashCode = result;
       }
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<More, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<More, More.Builder> {
       public List<Integer> serial;
 
       public Builder() {

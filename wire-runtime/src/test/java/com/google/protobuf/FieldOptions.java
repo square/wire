@@ -120,7 +120,7 @@ public final class FieldOptions extends Message<FieldOptions> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (ctype != null ? ctype.hashCode() : 0);
@@ -128,7 +128,7 @@ public final class FieldOptions extends Message<FieldOptions> {
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
       result = result * 37 + (experimental_map_key != null ? experimental_map_key.hashCode() : 0);
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

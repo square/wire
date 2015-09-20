@@ -94,11 +94,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (location != null ? location.hashCode() : 1);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }
@@ -246,17 +246,17 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
 
     @Override
     public int hashCode() {
-      int result = hashCode;
+      int result = super.hashCode;
       if (result == 0) {
         result = tagMap().hashCode();
         result = result * 37 + (path != null ? path.hashCode() : 1);
         result = result * 37 + (span != null ? span.hashCode() : 1);
-        hashCode = result;
+        super.hashCode = result;
       }
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<Location, Builder> {
+    public static final class Builder extends com.squareup.wire.Message.Builder<Location, Location.Builder> {
       public List<Integer> path;
 
       public List<Integer> span;

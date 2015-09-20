@@ -43,11 +43,11 @@ public final class OneBytesField extends Message<OneBytesField> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }

@@ -43,11 +43,11 @@ public final class OneField extends Message<OneField> {
 
   @Override
   public int hashCode() {
-    int result = hashCode;
+    int result = super.hashCode;
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
-      hashCode = result;
+      super.hashCode = result;
     }
     return result;
   }
