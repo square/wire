@@ -1694,6 +1694,16 @@ public final class AllTypes extends Message<AllTypes> {
       this.value = value;
     }
 
+    /**
+     * Return the constant for {@code value} or null.
+     */
+    public static NestedEnum fromValue(int value) {
+      switch (value) {
+        case 1: return A;
+        default: return null;
+      }
+    }
+
     @Override
     public int getValue() {
       return value;

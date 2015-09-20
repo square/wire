@@ -185,6 +185,18 @@ public final class Person extends Message<Person> {
       this.value = value;
     }
 
+    /**
+     * Return the constant for {@code value} or null.
+     */
+    public static PhoneType fromValue(int value) {
+      switch (value) {
+        case 0: return MOBILE;
+        case 1: return HOME;
+        case 2: return WORK;
+        default: return null;
+      }
+    }
+
     @Override
     public int getValue() {
       return value;

@@ -453,6 +453,18 @@ public final class SimpleMessage extends Message<SimpleMessage> {
       this.value = value;
     }
 
+    /**
+     * Return the constant for {@code value} or null.
+     */
+    public static NestedEnum fromValue(int value) {
+      switch (value) {
+        case 1: return FOO;
+        case 2: return BAR;
+        case 3: return BAZ;
+        default: return null;
+      }
+    }
+
     @Override
     public int getValue() {
       return value;

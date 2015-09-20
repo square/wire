@@ -370,6 +370,18 @@ public final class FileOptions extends Message<FileOptions> {
       this.value = value;
     }
 
+    /**
+     * Return the constant for {@code value} or null.
+     */
+    public static OptimizeMode fromValue(int value) {
+      switch (value) {
+        case 1: return SPEED;
+        case 2: return CODE_SIZE;
+        case 3: return LITE_RUNTIME;
+        default: return null;
+      }
+    }
+
     @Override
     public int getValue() {
       return value;

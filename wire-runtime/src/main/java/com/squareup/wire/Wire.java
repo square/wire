@@ -37,21 +37,4 @@ public final class Wire {
   public static <T> T get(T value, T defaultValue) {
     return value != null ? value : defaultValue;
   }
-
-  /**
-   * Returns the enumerated value tagged with the given integer value for the
-   * given enum class. If no enum value in the given class is initialized
-   * with the given integer tag value, an exception will be thrown.
-   *
-   * @param <E> the enum class type
-   */
-  public static <E extends Enum & WireEnum> E enumFromInt(Class<E> enumClass, int value) {
-    RuntimeEnumAdapter<E> adapter;
-    try {
-      adapter = (RuntimeEnumAdapter<E>) enumClass.getField("ADAPTER").get(null);
-    } catch (IllegalAccessException | NoSuchFieldException | ClassCastException e) {
-      adapter = ProtoAdapter.newEnumAdapter(enumClass);
-    }
-    return adapter.fromInt(value);
-  }
 }

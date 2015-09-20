@@ -19,6 +19,17 @@ public enum G implements WireEnum {
     this.value = value;
   }
 
+  /**
+   * Return the constant for {@code value} or null.
+   */
+  public static G fromValue(int value) {
+    switch (value) {
+      case 1: return FOO;
+      case 2: return BAR;
+      default: return null;
+    }
+  }
+
   @Override
   public int getValue() {
     return value;

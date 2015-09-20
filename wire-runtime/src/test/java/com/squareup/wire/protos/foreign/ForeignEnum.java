@@ -19,6 +19,17 @@ public enum ForeignEnum implements WireEnum {
     this.value = value;
   }
 
+  /**
+   * Return the constant for {@code value} or null.
+   */
+  public static ForeignEnum fromValue(int value) {
+    switch (value) {
+      case 0: return BAV;
+      case 1: return BAX;
+      default: return null;
+    }
+  }
+
   @Override
   public int getValue() {
     return value;

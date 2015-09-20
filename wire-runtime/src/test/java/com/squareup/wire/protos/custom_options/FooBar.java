@@ -410,6 +410,18 @@ public final class FooBar extends Message<FooBar> {
       this.foreign_enum_value_option = foreign_enum_value_option;
     }
 
+    /**
+     * Return the constant for {@code value} or null.
+     */
+    public static FooBarBazEnum fromValue(int value) {
+      switch (value) {
+        case 1: return FOO;
+        case 2: return BAR;
+        case 3: return BAZ;
+        default: return null;
+      }
+    }
+
     @Override
     public int getValue() {
       return value;
