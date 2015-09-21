@@ -44,4 +44,10 @@ public final class ProtoAdapterTest {
       assertThat(expected).hasMessageStartingWith("failed to access ");
     }
   }
+
+  @Test public void repeatedHelpersCacheInstances() {
+    ProtoAdapter<?> adapter = ProtoAdapter.UINT64;
+    assertThat(adapter.asRepeated()).isSameAs(adapter.asRepeated());
+    assertThat(adapter.asPacked()).isSameAs(adapter.asPacked());
+  }
 }
