@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import com.squareup.wire.protos.RepeatedAndPacked;
+import com.squareup.wire.protos.edgecases.NoFields;
 import com.squareup.wire.protos.person.Person;
 import com.squareup.wire.protos.person.Person.PhoneNumber;
 import com.squareup.wire.protos.person.Person.PhoneType;
@@ -211,7 +212,7 @@ public class WireTest {
     // Original value shows up as an extension.
     assertThat(msg.toString()).contains("squareup.protos.simple.nested_enum_ext=BAZ");
     // New value is unknown in the tag map.
-    assertThat(newMsg.toString()).contains("ExternalMessage{129=[17]}");
+    assertThat(newMsg.toString()).contains("ExternalMessage{129=17}");
 
     // Serialized outputs are the same.
     byte[] newData = adapter.encode(newMsg);
@@ -380,5 +381,10 @@ public class WireTest {
         .build();
     Person.Builder copyBuilder = new Person.Builder(person);
     copyBuilder.phone.add(phone);
+  }
+
+  @Test public void emptyMessageToString() {
+    NoFields empty = new NoFields();
+    assertThat(empty.toString()).isEqualTo("NoFields{}");
   }
 }

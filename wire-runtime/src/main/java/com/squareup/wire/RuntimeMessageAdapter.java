@@ -28,6 +28,8 @@ import static com.squareup.wire.Message.Builder;
 
 final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     extends ProtoAdapter<M> {
+  private static final String REDACTED = "\u2588\u2588";
+
   static <M extends Message<M>, B extends Builder<M, B>> RuntimeMessageAdapter<M, B> create(
       Class<M> messageType) {
     Class<B> builderType = getBuilderType(messageType);
@@ -166,30 +168,20 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
 
   @Override public String toString(M message) {
     StringBuilder sb = new StringBuilder();
-    sb.append(messageType.getSimpleName());
-    sb.append('{');
-    boolean seenValue = false;
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
       Object value = fieldBinding.get(message);
-      if (value == null) continue;
-      if (seenValue) sb.append(", ");
-      sb.append(fieldBinding.name)
-          .append('=')
-          .append(fieldBinding.redacted ? "██" : value);
-      seenValue = true;
-    }
-    for (Extension<?, ?> extension : message.tagMap.extensions(true)) {
-      if (seenValue) sb.append(", ");
-      if (extension.isUnknown()) {
-        sb.append(extension.getTag());
-      } else {
-        sb.append(extension.getName());
+      if (value != null) {
+        sb.append(", ")
+            .append(fieldBinding.name)
+            .append('=')
+            .append(fieldBinding.redacted ? REDACTED : value);
       }
-      sb.append('=').append(message.tagMap.get(extension));
-      seenValue = true;
     }
-    sb.append('}');
-    return sb.toString();
+    message.tagMap.appendToString(sb);
+
+    // Replace leading comma with class name and opening brace.
+    sb.replace(0, 2, messageType.getSimpleName() + '{');
+    return sb.append('}').toString();
   }
 
   @Override public M decode(ProtoReader reader) throws IOException {
