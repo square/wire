@@ -227,6 +227,31 @@ public final class TagMap {
     return Arrays.hashCode(array);
   }
 
+  /**
+   * Append comma-prefixed and separated key/value pairs to {@code builder} for the extensions
+   * and unknown fields in this map.
+   */
+  public void appendToString(StringBuilder builder) {
+    for (int i = 0; i < array.length;) {
+      Extension<?, ?> extension = (Extension<?, ?>) array[i];
+      builder.append(", ")
+          .append(extension.isUnknown() ? extension.getTag() : extension.getName())
+          .append("=");
+      int end = runEnd(i);
+      if (end > i + 2) {
+        builder.append('[');
+        for (int start = i; i < end; i += 2) {
+          if (i > start) builder.append(", ");
+          builder.append(array[i + 1]);
+        }
+        builder.append(']');
+      } else {
+        builder.append(array[i + 1]);
+        i += 2;
+      }
+    }
+  }
+
   public static final class Builder {
     static final int INITIAL_CAPACITY = 8;
     static final Object[] EMPTY_ARRAY = new Object[0];
