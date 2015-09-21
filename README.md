@@ -35,10 +35,10 @@ option java_package = "com.squareup.dinosaurs";
 import "squareup/geology/period.proto";
 
 message Dinosaur {
-  /** Common name of this dinosaur, like "Stegosaurus". */
+  // Common name of this dinosaur, like "Stegosaurus".
   optional string name = 1;
 
-  /** URLs with images of this dinosaur. */
+  // URLs with images of this dinosaur.
   repeated string picture_urls = 2;
 
   optional squareup.geology.Period period = 5;
@@ -55,13 +55,13 @@ package squareup.geology;
 option java_package = "com.squareup.geology";
 
 enum Period {
-  /** 145.5 million years ago — 66.0 million years ago. */
+  // 145.5 million years ago — 66.0 million years ago.
   CRETACEOUS = 1;
 
-  /** 201.3 million years ago — 145.0 million years ago. */
+  // 201.3 million years ago — 145.0 million years ago.
   JURASSIC = 2;
 
-  /** 252.17 million years ago — 201.3 million years ago. */
+  // 252.17 million years ago — 201.3 million years ago.
   TRIASSIC = 3;
 }
 ```
