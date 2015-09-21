@@ -82,7 +82,7 @@ public final class JavaGenerator {
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
   static final ClassName EXTENSION = ClassName.get(Extension.class);
-  static final ClassName TAGMAP = ClassName.get(TagMap.class);
+  static final ClassName TAG_MAP = ClassName.get(TagMap.class);
   static final TypeName MESSAGE_OPTIONS = ClassName.get("com.google.protobuf", "MessageOptions");
   static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
   static final TypeName ENUM_OPTIONS = ClassName.get("com.google.protobuf", "EnumOptions");
@@ -556,7 +556,7 @@ public final class JavaGenerator {
       result.addParameter(javaType, fieldName);
       result.addCode("$L, ", fieldName);
     }
-    result.addCode("$T.EMPTY);\n", TAGMAP);
+    result.addCode("$T.EMPTY);\n", TAG_MAP);
     return result.build();
   }
 
@@ -586,7 +586,7 @@ public final class JavaGenerator {
       }
     }
 
-    result.addParameter(TAGMAP, tagMapName);
+    result.addParameter(TAG_MAP, tagMapName);
 
     return result.build();
   }
