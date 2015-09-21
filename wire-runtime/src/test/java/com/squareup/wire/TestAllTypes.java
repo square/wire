@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.protobuf;
+package com.squareup.wire;
 
-import com.squareup.wire.Extension;
-import com.squareup.wire.ExtensionRegistry;
-import com.squareup.wire.FieldEncoding;
-import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.io.ByteArrayInputStream;
