@@ -37,6 +37,9 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.protoPaths")
   private String[] protoPaths;
 
+  @Parameter(property = "wire.android")
+  private boolean emitAndroid;
+
   @Parameter(property = "wire.noOptions")
   private boolean noOptions;
 
@@ -86,7 +89,8 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           ? Arrays.asList(enumOptions)
           : Collections.<String>emptyList();
       JavaGenerator javaGenerator = JavaGenerator.get(schema)
-          .withOptions(!noOptions, enumOptionsList);
+          .withOptions(!noOptions, enumOptionsList)
+          .withAndroid(emitAndroid);
 
       for (ProtoFile protoFile : schema.protoFiles()) {
         if (!protoFilesList.contains(protoFile.location().path())) {

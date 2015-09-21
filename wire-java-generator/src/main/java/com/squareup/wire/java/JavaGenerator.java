@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -86,6 +87,9 @@ public final class JavaGenerator {
   static final TypeName MESSAGE_OPTIONS = ClassName.get("com.google.protobuf", "MessageOptions");
   static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
   static final TypeName ENUM_OPTIONS = ClassName.get("com.google.protobuf", "EnumOptions");
+  static final ClassName PARCEL = ClassName.get("android.os", "Parcel");
+  static final ClassName PARCELABLE = ClassName.get("android.os", "Parcelable");
+  static final ClassName CREATOR = PARCELABLE.nestedClass("Creator");
 
   private static final Map<ProtoType, TypeName> SCALAR_TYPES_MAP =
       ImmutableMap.<ProtoType, TypeName>builder()
@@ -113,23 +117,27 @@ public final class JavaGenerator {
   private final ImmutableMap<Field, ProtoFile> extensionFieldToFile;
   private final boolean emitOptions;
   private final ImmutableSet<String> enumOptions;
+  private final boolean emitAndroid;
 
-  private JavaGenerator(
-      Schema schema,
-      ImmutableMap<ProtoType, TypeName> nameToJavaName,
-      ImmutableMap<Field, ProtoFile> extensionFieldToFile,
-      boolean emitOptions,
-      ImmutableSet<String> enumOptions) {
+  private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToJavaName,
+      ImmutableMap<Field, ProtoFile> extensionFieldToFile, boolean emitOptions,
+      ImmutableSet<String> enumOptions, boolean emitAndroid) {
     this.schema = schema;
     this.nameToJavaName = nameToJavaName;
     this.extensionFieldToFile = extensionFieldToFile;
     this.emitOptions = emitOptions;
     this.enumOptions = enumOptions;
+    this.emitAndroid = emitAndroid;
   }
 
   public JavaGenerator withOptions(boolean emitOptions, Collection<String> enumOptions) {
     return new JavaGenerator(schema, nameToJavaName, extensionFieldToFile, emitOptions,
-        ImmutableSet.copyOf(enumOptions));
+        ImmutableSet.copyOf(enumOptions), emitAndroid);
+  }
+
+  public JavaGenerator withAndroid(boolean emitAndroid) {
+    return new JavaGenerator(schema, nameToJavaName, extensionFieldToFile, emitOptions, enumOptions,
+        emitAndroid);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -153,7 +161,7 @@ public final class JavaGenerator {
     }
 
     return new JavaGenerator(schema, nameToJavaName.build(), extensionFieldToFile.build(), false,
-        ImmutableSet.<String>of());
+        ImmutableSet.<String>of(), false);
   }
 
   private static void putAll(ImmutableMap.Builder<ProtoType, TypeName> wireToJava,
@@ -238,6 +246,10 @@ public final class JavaGenerator {
 
   static TypeName extensionOf(TypeName messageType, TypeName fieldType) {
     return ParameterizedTypeName.get(EXTENSION, messageType, fieldType);
+  }
+
+  static TypeName creatorOf(TypeName messageType) {
+    return ParameterizedTypeName.get(CREATOR, messageType);
   }
 
   /** A grab-bag of fixes for things that can go wrong when converting to javadoc. */
@@ -357,6 +369,9 @@ public final class JavaGenerator {
     nameAllocator.newName("serialVersionUID", "serialVersionUID");
     nameAllocator.newName("ADAPTER", "ADAPTER");
     nameAllocator.newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS");
+    if (emitAndroid) {
+      nameAllocator.newName("CREATOR", "CREATOR");
+    }
     for (Field field : type.fieldsAndOneOfFields()) {
       nameAllocator.newName(field.name(), field);
     }
@@ -382,7 +397,8 @@ public final class JavaGenerator {
 
     builder.superclass(messageOf(javaType));
 
-    builder.addField(FieldSpec.builder(adapterOf(javaType), nameAllocator.get("ADAPTER"))
+    String adapterName = nameAllocator.get("ADAPTER");
+    builder.addField(FieldSpec.builder(adapterOf(javaType), adapterName)
         .addModifiers(PUBLIC, STATIC, FINAL)
         .initializer("$T.newMessageAdapter($T.class)", ProtoAdapter.class, javaType)
         .build());
@@ -434,6 +450,48 @@ public final class JavaGenerator {
     builder.addMethod(messageFieldsAndTagMapConstructor(nameAllocator, type));
     builder.addMethod(messageEquals(nameAllocator, type));
     builder.addMethod(messageHashCode(nameAllocator, type));
+
+    if (emitAndroid) {
+      builder.addSuperinterface(PARCELABLE);
+
+      builder.addMethod(MethodSpec.methodBuilder("writeToParcel")
+          .addAnnotation(Override.class)
+          .addModifiers(PUBLIC)
+          .addParameter(PARCEL, "out")
+          .addParameter(int.class, "flags")
+          .addStatement("out.writeByteArray($N.encode(this))", adapterName)
+          .build());
+
+      builder.addMethod(MethodSpec.methodBuilder("describeContents")
+          .addAnnotation(Override.class)
+          .addModifiers(PUBLIC)
+          .returns(int.class)
+          .addStatement("return 0")
+          .build());
+
+      TypeName creatorType = creatorOf(javaType);
+      builder.addField(
+          FieldSpec.builder(creatorType, nameAllocator.get("CREATOR"), PUBLIC, STATIC, FINAL)
+              .initializer("$L", TypeSpec.anonymousClassBuilder("")
+                  .superclass(creatorType)
+                  .addMethod(MethodSpec.methodBuilder("createFromParcel")
+                      .addAnnotation(Override.class)
+                      .addModifiers(PUBLIC)
+                      .returns(javaType)
+                      .addParameter(PARCEL, "in")
+                      .addStatement("return $N.decode(in.createByteArray())", adapterName)
+                      .build())
+                  .addMethod(MethodSpec.methodBuilder("newArray")
+                      .addAnnotation(Override.class)
+                      .addModifiers(PUBLIC)
+                      .returns(ArrayTypeName.of(javaType))
+                      .addParameter(int.class, "size")
+                      .addStatement("return new $T[size]", javaType)
+                      .build())
+                  .build())
+              .build());
+    }
+
     builder.addType(builder(nameAllocator, type, javaType, builderJavaType));
 
     for (Type nestedType : type.nestedTypes()) {
