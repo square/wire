@@ -17,6 +17,8 @@ package com.squareup.wire;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -67,6 +69,39 @@ public abstract class Message<T extends Message<T>> implements Serializable {
 
   protected final Object writeReplace() throws ObjectStreamException {
     return new MessageSerializedForm<>(this, (Class<Message>) getClass());
+  }
+
+  /** Returns a new builder for this class, initialized with the data in this message. */
+  public final <B extends Builder<T, B>> B newBuilder() {
+    Class<T> messageType = (Class) getClass();
+    try {
+      Class<B> builderType = RuntimeMessageAdapter.getBuilderType(messageType);
+      Constructor<B> constructor = RuntimeMessageAdapter.getBuilderCopyConstructor(
+          builderType, messageType);
+      return constructor.newInstance(this);
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+      throw new IllegalStateException("Failed to create builder for " + messageType);
+    }
+  }
+
+  /** Returns a copy of this message with unknown fields removed. */
+  public final T withoutUnknownFields() {
+    TagMap.Builder tagMapBuilder = null;
+    for (Extension<?, ?> extension : tagMap.extensions(true)) {
+      if (!extension.isUnknown()) continue;
+      if (tagMapBuilder == null) {
+        tagMapBuilder = new TagMap.Builder(tagMap);
+      }
+      tagMapBuilder.removeAll(extension.getTag());
+    }
+
+    if (tagMapBuilder == null) {
+      return (T) this; // No unknown fields were removed.
+    }
+
+    Builder<T, ?> builder = ((Message) this).newBuilder();
+    builder.tagMapBuilder = tagMapBuilder;
+    return builder.build();
   }
 
   /**

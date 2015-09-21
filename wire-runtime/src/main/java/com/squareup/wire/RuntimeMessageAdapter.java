@@ -82,7 +82,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   }
 
   @SuppressWarnings("unchecked")
-  private static <M extends Message<M>, B extends Builder<M, B>> Class<B> getBuilderType(
+  static <M extends Message<M>, B extends Builder<M, B>> Class<B> getBuilderType(
       Class<M> messageType) {
     try {
       return (Class<B>) Class.forName(messageType.getName() + "$Builder");
@@ -92,7 +92,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     }
   }
 
-  private static <M extends Message<M>, B extends Builder<M, B>> Constructor<B>
+  static <M extends Message<M>, B extends Builder<M, B>> Constructor<B>
   getBuilderCopyConstructor(Class<B> builderType, Class<M> messageType) {
     try {
       return builderType.getConstructor(messageType);

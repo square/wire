@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import okio.ByteString;
 import org.junit.Test;
 
 import static com.squareup.wire.protos.simple.Ext_simple_message.barext;
@@ -380,5 +381,54 @@ public class WireTest {
         .build();
     Person.Builder copyBuilder = new Person.Builder(person);
     copyBuilder.phone.add(phone);
+  }
+
+  @Test public void newBuilder() {
+    PhoneNumber phoneNumber1 = new PhoneNumber.Builder()
+        .number("555-1212")
+        .type(PhoneType.WORK)
+        .build();
+
+    PhoneNumber phoneNumber2 = phoneNumber1.<PhoneNumber.Builder>newBuilder()
+        .number("555-4567")
+        .build();
+
+    assertThat(phoneNumber2).isEqualTo(new PhoneNumber.Builder()
+        .number("555-4567")
+        .type(PhoneType.WORK)
+        .build());
+  }
+
+  @Test public void withoutUnknownFields() {
+    Extension<PhoneNumber, Object> carrier = Extension.unknown(
+        PhoneNumber.class, 100, FieldEncoding.LENGTH_DELIMITED);
+    ByteString att = ByteString.encodeUtf8("AT&T");
+
+    PhoneNumber phone = new PhoneNumber.Builder()
+        .number("555-1212")
+        .type(PhoneType.WORK)
+        .build();
+    assertThat(phone.getExtension(carrier)).isEqualTo(Collections.emptyList());
+
+    PhoneNumber phoneWithUnknownFields = new PhoneNumber.Builder()
+        .number("555-1212")
+        .type(PhoneType.WORK)
+        .setExtension(carrier, att)
+        .build();
+    assertThat(phoneWithUnknownFields.getExtension(carrier))
+        .isEqualTo(Collections.singletonList(att));
+    assertThat(phoneWithUnknownFields).isNotEqualTo(phone);
+
+    PhoneNumber phoneWithoutUnknownFields = phoneWithUnknownFields.withoutUnknownFields();
+    assertThat(phone.getExtension(carrier)).isEqualTo(Collections.emptyList());
+    assertThat(phoneWithoutUnknownFields).isEqualTo(phone);
+  }
+
+  @Test public void withoutUnknownFieldsReturnsSelf() {
+    PhoneNumber phone = new PhoneNumber.Builder()
+        .number("555-1212")
+        .type(PhoneType.WORK)
+        .build();
+    assertThat(phone.withoutUnknownFields()).isSameAs(phone);
   }
 }
