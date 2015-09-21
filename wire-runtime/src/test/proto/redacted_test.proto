@@ -47,6 +47,9 @@ message RedactedCycleB {
 
 message RedactedRepeated {
   repeated string a = 1 [(squareup.protos.redacted_test.redacted) = true];
+
+  // Values in the repeated type need redacting.
+  repeated Redacted b = 2;
 }
 
 message RedactedRequired {

@@ -166,6 +166,13 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   }
 
   /** <b>For generated code only.</b> */
+  protected static <T> void redactElements(List<T> list, ProtoAdapter<T> adapter) {
+    for (int i = 0, count = list.size(); i < count; i++) {
+      list.set(i, adapter.redact(list.get(i)));
+    }
+  }
+
+  /** <b>For generated code only.</b> */
   protected static boolean equals(Object a, Object b) {
     return a == b || (a != null && a.equals(b));
   }
