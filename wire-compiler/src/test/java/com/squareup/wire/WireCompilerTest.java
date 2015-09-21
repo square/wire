@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.java.JavaGenerator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -551,37 +550,20 @@ public class WireCompilerTest {
   }
 
   private void assertFilesMatch(File outputDir, String path) throws IOException {
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path);
+    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
     File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
   }
 
   private void assertFilesMatchNoOptions(File outputDir, String path) throws IOException {
     // Compare against file with .noOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path + ".noOptions");
+    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".noOptions");
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {
-      expectedFile = new File("../wire-runtime/src/test/java/" + path);
+      expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
     }
     File actualFile = new File(outputDir, path);
-    assertFilesMatch(expectedFile, actualFile);
-  }
-
-  private void assertJavaFilesMatchWithSuffix(File outputDir, String path, String suffix)
-      throws IOException {
-    path = path.substring(0, path.indexOf(".java"));
-    // Compare against file with .noOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path + suffix + ".java");
-    if (expectedFile.exists()) {
-      System.out.println("Comparing against expected output " + expectedFile.getName());
-    } else {
-      expectedFile = new File("../wire-runtime/src/test/java/" + path + ".java");
-    }
-    File actualFile = new File(outputDir, path + suffix + ".java");
-    if (!actualFile.exists()) {
-      actualFile = new File(outputDir, path + ".java");
-    }
     assertFilesMatch(expectedFile, actualFile);
   }
 
