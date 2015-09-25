@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.FieldElement;
 
 public final class Field {
@@ -60,6 +59,16 @@ public final class Field {
 
   public String name() {
     return element.name();
+  }
+
+  /**
+   * Returns this field's name, prefixed with its package name. Uniquely identifies extension
+   * fields, such as in options.
+   */
+  String qualifiedName() {
+    return packageName != null
+        ? packageName + '.' + element.name()
+        : element.name();
   }
 
   public int tag() {

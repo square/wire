@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,38 +23,35 @@ import java.util.List;
 import java.util.Map;
 
 public final class ExtensionRegistry {
+  static final ExtensionRegistry NO_EXTENSIONS = new ExtensionRegistry();
+
   private final Map<Class<? extends Message>, List<Extension<?, ?>>> messageToExtensions =
       new LinkedHashMap<>();
 
   /**
    * Creates a new instance that can encode and decode the extensions specified in
-   * {@code extensionClasses}. Typically the classes in this list are generated and start with the
-   * "Ext_" prefix.
+   * {@code extensionLists}. Typically the lists are generated as an {@code EXTENSIONS} field on
+   * the "Ext_" prefixed classes.
    */
-  public ExtensionRegistry(Class<?>... extensionClasses) {
-    this(Arrays.asList(extensionClasses));
+  @SafeVarargs
+  public ExtensionRegistry(Iterable<Extension<?, ?>>... extensionLists) {
+    this(Arrays.asList(extensionLists));
   }
 
   /**
    * Creates a new instance that can encode and decode the extensions specified in
-   * {@code extensionClasses}. Typically the classes in this list are generated and start with the
-   * "Ext_" prefix.
+   * {@code extensionLists}. Typically the lists are generated as an {@code EXTENSIONS} field on
+   * the "Ext_" prefixed classes.
    */
-  public ExtensionRegistry(List<Class<?>> extensionClasses) {
-    for (Class<?> extensionClass : extensionClasses) {
-      for (Field field : extensionClass.getDeclaredFields()) {
-        if (field.getType().equals(Extension.class)) {
-          try {
-            registerExtension((Extension) field.get(null));
-          } catch (IllegalAccessException e) {
-            throw new AssertionError(e);
-          }
-        }
+  public ExtensionRegistry(Iterable<? extends Iterable<Extension<?, ?>>> extensionLists) {
+    for (Iterable<Extension<?, ?>> extensionList : extensionLists) {
+      for (Extension<?, ?> extension : extensionList) {
+        registerExtension(extension);
       }
     }
   }
 
-  private <T extends Message<T>, E> void registerExtension(Extension<T, E> extension) {
+  private <T extends Message<T>> void registerExtension(Extension<T, ?> extension) {
     Class<? extends Message> messageClass = extension.getExtendedType();
     List<Extension<?, ?>> extensions = messageToExtensions.get(messageClass);
     if (extensions == null) {
@@ -66,8 +62,19 @@ public final class ExtensionRegistry {
   }
 
   @SuppressWarnings("unchecked")
-  public List<Extension<?, ?>> extensions(Class<? extends Message> messageClass) {
-    List<Extension<?, ?>> map = messageToExtensions.get(messageClass);
-    return map != null ? map : Collections.<Extension<?, ?>>emptyList();
+  public <T extends Message<T>> List<Extension<T, ?>> extensions(Class<T> messageClass) {
+    List<Extension<T, ?>> map = (List) messageToExtensions.get(messageClass);
+    return map != null ? map : Collections.<Extension<T, ?>>emptyList();
+  }
+
+  /**
+   * Returns the extension for {@code tag} on {@code messageType}, or null if no such extension is
+   * known.
+   */
+  public <T extends Message<T>> Extension<T, ?> get(Class<T> messageType, int tag) {
+    for (Extension<T, ?> extension : extensions(messageType)) {
+      if (extension.getTag() == tag) return extension;
+    }
+    return null;
   }
 }

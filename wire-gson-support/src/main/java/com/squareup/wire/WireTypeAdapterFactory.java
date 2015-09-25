@@ -43,8 +43,7 @@ import okio.ByteString;
  * in the way it serializes unknown fields, so we use our own approach for this case.
  */
 public final class WireTypeAdapterFactory implements TypeAdapterFactory {
-
-  private final Wire wire;
+  private final ExtensionRegistry extensionRegistry;
 
   /**
    * Constructs an adapter that is capable of serializing and deserializing extension values
@@ -52,8 +51,12 @@ public final class WireTypeAdapterFactory implements TypeAdapterFactory {
    * shortened version of the class name will be used as a type marker in the JSON serialized
    * form. It is not necessary to include non-extension classes in the whitelist.
    */
-  public WireTypeAdapterFactory(Wire wire) {
-    this.wire = wire;
+  public WireTypeAdapterFactory(ExtensionRegistry extensionRegistry) {
+    this.extensionRegistry = extensionRegistry;
+  }
+
+  public WireTypeAdapterFactory() {
+    this(ExtensionRegistry.NO_EXTENSIONS);
   }
 
   @SuppressWarnings("unchecked")
@@ -62,7 +65,7 @@ public final class WireTypeAdapterFactory implements TypeAdapterFactory {
       return (TypeAdapter<T>) new ByteStringTypeAdapter();
     }
     if (Message.class.isAssignableFrom(type.getRawType())) {
-      return (TypeAdapter<T>) new MessageTypeAdapter(wire, gson, type);
+      return (TypeAdapter<T>) new MessageTypeAdapter(extensionRegistry, gson, type);
     }
     return null;
   }

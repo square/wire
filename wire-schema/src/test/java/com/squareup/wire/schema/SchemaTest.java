@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema;
 
-import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.Util;
 import org.junit.Test;
 
@@ -272,25 +271,23 @@ public final class SchemaTest {
   }
 
   @Test public void duplicateOption() throws Exception {
-    Schema schema = new SchemaBuilder()
-        .add("message.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "message Message {\n"
-            + "  optional int32 a = 1 [color=red, color=blue];\n"
-            + "}\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional string color = 60001;\n"
-            + "}\n")
-        .add("google/protobuf/descriptor.proto")
-        .build();
-    MessageType message = (MessageType) schema.getType("Message");
-
-    Options options = message.field("a").options();
     try {
-      options.get("color");
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "import \"google/protobuf/descriptor.proto\";\n"
+              + "message Message {\n"
+              + "  optional int32 a = 1 [color=red, color=blue];\n"
+              + "}\n"
+              + "extend google.protobuf.FieldOptions {\n"
+              + "  optional string color = 60001;\n"
+              + "}\n")
+          .add("google/protobuf/descriptor.proto")
+          .build();
       fail();
-    } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage("Multiple options match name: color");
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("conflicting options: red, blue\n"
+          + "  for field a (message.proto at 3:3)\n"
+          + "  in message Message (message.proto at 2:1)");
     }
   }
 

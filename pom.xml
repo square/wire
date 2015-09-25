@@ -14,8 +14,6 @@
   <packaging>pom</packaging>
   <version>2.0.0-SNAPSHOT</version>
 
-  <name>Wire Protocol Buffers</name>
-  <description>Parent module for Wire protocol buffers</description>
   <inceptionYear>2013</inceptionYear>
 
   <scm>
@@ -44,11 +42,12 @@
   </licenses>
 
   <modules>
+    <module>sample</module>
     <module>wire-compiler</module>
-    <module>wire-java-generator</module>
-    <module>wire-runtime</module>
     <module>wire-gson-support</module>
+    <module>wire-java-generator</module>
     <module>wire-maven-plugin</module>
+    <module>wire-runtime</module>
     <module>wire-schema</module>
   </modules>
 
@@ -62,7 +61,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>19.0-SNAPSHOT</version>
+        <version>18.0</version>
       </dependency>
       <dependency>
         <groupId>com.squareup.okio</groupId>
@@ -82,7 +81,7 @@
       <dependency>
         <groupId>com.squareup</groupId>
         <artifactId>javapoet</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.auto.value</groupId>
@@ -93,6 +92,12 @@
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>1.7.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.jimfs</groupId>
+        <artifactId>jimfs</artifactId>
+        <version>1.0</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

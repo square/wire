@@ -16,7 +16,6 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.ExtendElement;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ServiceElement;
@@ -136,6 +135,10 @@ public final class ProtoFile {
 
     return new ProtoFile(
         element, retainedTypes.build(), retainedServices.build(), extendList, options);
+  }
+
+  @Override public String toString() {
+    return location().path();
   }
 
   /** Syntax version. */

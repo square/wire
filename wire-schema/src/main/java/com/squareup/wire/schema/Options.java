@@ -18,7 +18,6 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.squareup.wire.ProtoType;
 import com.squareup.wire.schema.internal.parser.OptionElement;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -102,7 +101,7 @@ public final class Options {
     for (OptionElement option : optionElements) {
       Map<Field, Object> canonicalOption = canonicalizeOption(linker, optionType, option);
       if (canonicalOption != null) {
-        map = union(map, canonicalOption);
+        map = union(linker, map, canonicalOption);
       }
     }
 
@@ -135,6 +134,9 @@ public final class Options {
       last.put(field, nested);
       last = nested;
       field = linker.dereference(field, path[i]);
+      if (field == null) {
+        return null; // Unable to dereference this path segment.
+      }
     }
 
     last.put(field, canonicalizeValue(linker, field, option.value()));
@@ -176,7 +178,11 @@ public final class Options {
       ImmutableMap.Builder<Field, Object> result = ImmutableMap.builder();
       OptionElement option = (OptionElement) value;
       Field field = linker.dereference(context, option.name());
-      result.put(field, canonicalizeValue(linker, field, option.value()));
+      if (field == null) {
+        linker.addError("unable to resolve option %s on %s", option.name(), context.type());
+      } else {
+        result.put(field, canonicalizeValue(linker, field, option.value()));
+      }
       return coerceValueForField(context, result.build());
     }
 
@@ -185,7 +191,11 @@ public final class Options {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
         String name = (String) entry.getKey();
         Field field = linker.dereference(context, name);
-        result.put(field, canonicalizeValue(linker, field, entry.getValue()));
+        if (field == null) {
+          linker.addError("unable to resolve option %s on %s", name, context.type());
+        } else {
+          result.put(field, canonicalizeValue(linker, field, entry.getValue()));
+        }
       }
       return coerceValueForField(context, result.build());
     }
@@ -215,23 +225,24 @@ public final class Options {
 
   /** Combine values for the same key, resolving conflicts based on their type. */
   @SuppressWarnings("unchecked")
-  private Object union(Object a, Object b) {
+  private Object union(Linker linker, Object a, Object b) {
     if (a instanceof List) {
       return union((List<?>) a, (List<?>) b);
     } else if (a instanceof Map) {
-      return union((Map<Field, Object>) a, (Map<Field, Object>) b);
+      return union(linker, (Map<Field, Object>) a, (Map<Field, Object>) b);
     } else {
-      throw new IllegalArgumentException("Unable to union values: " + a + ", " + b);
+      linker.addError("conflicting options: %s, %s", a, b);
+      return a; // Just return any placeholder.
     }
   }
 
   private ImmutableMap<Field, Object> union(
-      Map<Field, Object> a, Map<Field, Object> b) {
+      Linker linker, Map<Field, Object> a, Map<Field, Object> b) {
     Map<Field, Object> result = new LinkedHashMap<>(a);
     for (Map.Entry<Field, Object> entry : b.entrySet()) {
       Object aValue = result.get(entry.getKey());
       Object bValue = entry.getValue();
-      Object union = aValue != null ? union(aValue, bValue) : bValue;
+      Object union = aValue != null ? union(linker, aValue, bValue) : bValue;
       result.put(entry.getKey(), union);
     }
     return ImmutableMap.copyOf(result);

@@ -29,12 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SerializableTest {
 
-  @Test public void testSimpleSerializable() throws Exception {
+  @Test public void simple() throws Exception {
     SimpleMessage message = new SimpleMessage.Builder().required_int32(42).build();
-    assertThat(serializeDeserialize(message)).isEqualTo(message);
+    assertThat(deserialize(serialize(message))).isEqualTo(message);
   }
 
-  @Test public void testNestedMessageSerializable() throws Exception {
+  @Test public void nestedMessage() throws Exception {
     Person person = new Person.Builder()
         .name("Omar")
         .id(1234)
@@ -44,12 +44,12 @@ public class SerializableTest {
             .type(Person.PhoneType.MOBILE)
             .build()))
         .build();
-    assertThat(serializeDeserialize(person)).isEqualTo(person);
+    assertThat(deserialize(serialize(person))).isEqualTo(person);
   }
 
-  @Test public void testNoFieldsSerializable() throws Exception {
+  @Test public void noFields() throws Exception {
     NoFields noFields = new NoFields();
-    assertThat(serializeDeserialize(noFields)).isEqualTo(noFields);
+    assertThat(deserialize(serialize(noFields))).isEqualTo(noFields);
   }
 
   @Test public void decodeGolden() throws Exception {
@@ -60,24 +60,31 @@ public class SerializableTest {
     ByteString goldenSerialized = ByteString.decodeBase64("rO0ABXNyACdjb20uc3F1YXJldXAud2lyZS5NZXNz"
         + "YWdlU2VyaWFsaXplZEZvcm0AAAAAAAAAAAIAAlsABWJ5dGVzdAACW0JMAAxtZXNzYWdlQ2xhc3N0ABFMamF2YS9s"
         + "YW5nL0NsYXNzO3hwdXIAAltCrPMX+AYIVOACAAB4cAAAAAkoY1IFdGFjb3N2cgAtY29tLnNxdWFyZXVwLndpcmUu"
-        + "cHJvdG9zLnNpbXBsZS5TaW1wbGVNZXNzYWdlAAAAAAAAAAACAAxMAAhfcGFja2FnZXQAEkxqYXZhL2xhbmcvU3Ry"
-        + "aW5nO0wAFGRlZmF1bHRfZm9yZWlnbl9lbnVtdAAuTGNvbS9zcXVhcmV1cC93aXJlL3Byb3Rvcy9mb3JlaWduL0Zv"
-        + "cmVpZ25FbnVtO0wAE2RlZmF1bHRfbmVzdGVkX2VudW10ADpMY29tL3NxdWFyZXVwL3dpcmUvcHJvdG9zL3NpbXBs"
-        + "ZS9TaW1wbGVNZXNzYWdlJE5lc3RlZEVudW07TAAXbm9fZGVmYXVsdF9mb3JlaWduX2VudW1xAH4ACEwAAW9xAH4A"
-        + "B0wAFW9wdGlvbmFsX2V4dGVybmFsX21zZ3QAMUxjb20vc3F1YXJldXAvd2lyZS9wcm90b3Mvc2ltcGxlL0V4dGVy"
-        + "bmFsTWVzc2FnZTtMAA5vcHRpb25hbF9pbnQzMnQAE0xqYXZhL2xhbmcvSW50ZWdlcjtMABNvcHRpb25hbF9uZXN0"
-        + "ZWRfbXNndAA9TGNvbS9zcXVhcmV1cC93aXJlL3Byb3Rvcy9zaW1wbGUvU2ltcGxlTWVzc2FnZSROZXN0ZWRNZXNz"
-        + "YWdlO0wABW90aGVycQB+AAdMAA9yZXBlYXRlZF9kb3VibGV0ABBMamF2YS91dGlsL0xpc3Q7TAAOcmVxdWlyZWRf"
-        + "aW50MzJxAH4AC0wABnJlc3VsdHEAfgAHeHIAGWNvbS5zcXVhcmV1cC53aXJlLk1lc3NhZ2UAAAAAAAAAAAIAAHhw"
+        + "cHJvdG9zLnNpbXBsZS5TaW1wbGVNZXNzYWdlAAAAAAAAAAACAAxMABRkZWZhdWx0X2ZvcmVpZ25fZW51bXQALkxj"
+        + "b20vc3F1YXJldXAvd2lyZS9wcm90b3MvZm9yZWlnbi9Gb3JlaWduRW51bTtMABNkZWZhdWx0X25lc3RlZF9lbnVt"
+        + "dAA6TGNvbS9zcXVhcmV1cC93aXJlL3Byb3Rvcy9zaW1wbGUvU2ltcGxlTWVzc2FnZSROZXN0ZWRFbnVtO0wAF25v"
+        + "X2RlZmF1bHRfZm9yZWlnbl9lbnVtcQB+AAdMAAFvdAASTGphdmEvbGFuZy9TdHJpbmc7TAAVb3B0aW9uYWxfZXh0"
+        + "ZXJuYWxfbXNndAAxTGNvbS9zcXVhcmV1cC93aXJlL3Byb3Rvcy9zaW1wbGUvRXh0ZXJuYWxNZXNzYWdlO0wADm9w"
+        + "dGlvbmFsX2ludDMydAATTGphdmEvbGFuZy9JbnRlZ2VyO0wAE29wdGlvbmFsX25lc3RlZF9tc2d0AD1MY29tL3Nx"
+        + "dWFyZXVwL3dpcmUvcHJvdG9zL3NpbXBsZS9TaW1wbGVNZXNzYWdlJE5lc3RlZE1lc3NhZ2U7TAAFb3RoZXJxAH4A"
+        + "CUwACHBhY2thZ2VfcQB+AAlMAA9yZXBlYXRlZF9kb3VibGV0ABBMamF2YS91dGlsL0xpc3Q7TAAOcmVxdWlyZWRf"
+        + "aW50MzJxAH4AC0wABnJlc3VsdHEAfgAJeHIAGWNvbS5zcXVhcmV1cC53aXJlLk1lc3NhZ2UAAAAAAAAAAAIAAHhw"
     );
-    Buffer buffer = new Buffer();
-    buffer.write(goldenSerialized);
-    assertThat(new ObjectInputStream(buffer.inputStream()).readObject()).isEqualTo(goldenValue);
+    assertThat(deserialize(goldenSerialized)).isEqualTo(goldenValue);
+    assertThat(serialize(goldenValue)).isEqualTo(goldenSerialized);
   }
 
-  private static Object serializeDeserialize(Message message) throws Exception {
+  private static ByteString serialize(Message message) throws Exception {
     Buffer buffer = new Buffer();
-    new ObjectOutputStream(buffer.outputStream()).writeObject(message);
-    return new ObjectInputStream(buffer.inputStream()).readObject();
+    ObjectOutputStream stream = new ObjectOutputStream(buffer.outputStream());
+    stream.writeObject(message);
+    stream.flush();
+    return buffer.readByteString();
+  }
+
+  public static Object deserialize(ByteString data) throws Exception {
+    Buffer buffer = new Buffer().write(data);
+    ObjectInputStream stream = new ObjectInputStream(buffer.inputStream());
+    return stream.readObject();
   }
 }

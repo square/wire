@@ -20,20 +20,20 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
 
-final class MessageSerializedForm implements Serializable {
+final class MessageSerializedForm<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
   private final byte[] bytes;
-  private final Class<? extends Message> messageClass;
+  private final Class<T> messageClass;
 
-  public MessageSerializedForm(Message message, Class<? extends Message> messageClass) {
+  public MessageSerializedForm(T message, Class<T> messageClass) {
     //noinspection unchecked
-    this.bytes = Message.WIRE.adapter((Class<Message>) messageClass).encode(message);
+    this.bytes = ProtoAdapter.get(messageClass).encode(message);
     this.messageClass = messageClass;
   }
 
   Object readResolve() throws ObjectStreamException {
-    ProtoAdapter<? extends Message> adapter = Message.WIRE.adapter(messageClass);
+    ProtoAdapter<? extends Message> adapter = ProtoAdapter.get(messageClass);
     try {
       // Extensions will be decoded as unknown values.
       return adapter.decode(bytes);

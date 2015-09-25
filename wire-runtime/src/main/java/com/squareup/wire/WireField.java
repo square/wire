@@ -20,8 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static com.squareup.wire.Message.Label;
-
 /**
  * Annotates generated {@link Message} fields with metadata for serialization and
  * deserialization.
@@ -33,11 +31,11 @@ public @interface WireField {
   int tag();
 
   /**
-   * The field's protocol buffer data type. This is either a scalar (like {@code int32} or {@code
-   * string}), a message type (like {@code squareup.protos.Person}), or an enum type (like {@code
-   * squareup.protos.CurrencyCode}).
+   * Reference to the static field that holds a {@link ProtoAdapter} that can encode and decode this
+   * field. The reference is a string like {@code com.squareup.wire.protos.person.Person#ADAPTER}
+   * and contains a fully-qualified class name followed by a hash symbol and a field name.
    */
-  String type();
+  String adapter();
 
   /**
    * The field's protocol buffer label, one of {@link Label#OPTIONAL},
@@ -55,4 +53,23 @@ public @interface WireField {
    * Redacted fields are omitted from toString() to protect sensitive data. Defaults to false.
    */
   boolean redacted() default false;
+
+  /** A protocol buffer label. */
+  enum Label {
+    REQUIRED, OPTIONAL, REPEATED, ONE_OF,
+    /** Implies {@link #REPEATED}. */
+    PACKED;
+
+    boolean isRepeated() {
+      return this == REPEATED || this == PACKED;
+    }
+
+    boolean isPacked() {
+      return this == PACKED;
+    }
+
+    boolean isOneOf() {
+      return this == ONE_OF;
+    }
+  }
 }

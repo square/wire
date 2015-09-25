@@ -34,9 +34,9 @@ final class CommandLineOptions {
   public static final String ENUM_OPTIONS_FLAG = "--enum_options=";
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
+  public static final String ANDROID = "--android";
 
   final List<String> protoPaths;
-
   final String javaOut;
   final List<String> sourceFileNames;
   final List<String> roots;
@@ -45,13 +45,11 @@ final class CommandLineOptions {
   final Set<String> enumOptions;
   final boolean quiet;
   final boolean dryRun;
+  final boolean emitAndroid;
 
-  CommandLineOptions(String protoPath, String javaOut,
-      List<String> sourceFileNames, List<String> roots,
-      String registryClass, boolean emitOptions,
-      Set<String> enumOptions,
-      boolean quiet,
-      boolean dryRun) {
+  CommandLineOptions(String protoPath, String javaOut, List<String> sourceFileNames,
+      List<String> roots, String registryClass, boolean emitOptions, Set<String> enumOptions,
+      boolean quiet, boolean dryRun, boolean emitAndroid) {
     this.protoPaths = Arrays.asList(protoPath);
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
@@ -61,6 +59,7 @@ final class CommandLineOptions {
     this.enumOptions = enumOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;
+    this.emitAndroid = emitAndroid;
   }
 
   /**
@@ -73,7 +72,7 @@ final class CommandLineOptions {
    *     [--enum_options=&lt;option_name&gt;[,&lt;option_name&gt;...]]
    *     [--service_factory=&lt;class_name&gt;]
    *     [--service_factory_opt=&lt;value&gt;] [--service_factory_opt=&lt;value&gt;]...]
-   *     [--quiet] [--dry_run]
+   *     [--quiet] [--dry_run] [--android]
    *     [file [file...]]
    * </pre>
    *
@@ -98,13 +97,14 @@ final class CommandLineOptions {
    * Regardless of the value of the {@code --no_options} flag, code will be emitted for all
    * enum value options listed in the {@code --enum_options} flag. The resulting code will contain
    * a public static field for each option used within a particular enum type.
-   * </p>
    * <p>
    * If {@code --quiet} is specified, diagnostic messages to stdout are suppressed.
-   * </p>
    * <p>
    * The {@code --dry_run} flag causes the compile to just emit the names of the source files that
    * would be generated to stdout.
+   * <p>
+   * The {@code --android} flag will cause all messages to implement the {@code Parcelable}
+   * interface.
    */
   CommandLineOptions(String... args) throws WireException {
     int index = 0;
@@ -118,6 +118,7 @@ final class CommandLineOptions {
     List<String> enumOptionsList = new ArrayList<>();
     boolean quiet = false;
     boolean dryRun = false;
+    boolean emitAndroid = false;
 
     while (index < args.length) {
       if (args[index].startsWith(PROTO_PATH_FLAG)) {
@@ -141,10 +142,12 @@ final class CommandLineOptions {
         emitOptions = false;
       } else if (args[index].startsWith(ENUM_OPTIONS_FLAG)) {
         enumOptionsList.addAll(splitArg(args[index], ENUM_OPTIONS_FLAG.length()));
-      } else if (args[index].startsWith(QUIET_FLAG)) {
+      } else if (args[index].equals(QUIET_FLAG)) {
         quiet = true;
-      } else if (args[index].startsWith(DRY_RUN_FLAG)) {
+      } else if (args[index].equals(DRY_RUN_FLAG)) {
         dryRun = true;
+      } else if (args[index].equals(ANDROID)) {
+        emitAndroid = true;
       } else {
         sourceFileNames.add(args[index]);
       }
@@ -160,6 +163,7 @@ final class CommandLineOptions {
     this.enumOptions = new LinkedHashSet<>(enumOptionsList);
     this.quiet = quiet;
     this.dryRun = dryRun;
+    this.emitAndroid = emitAndroid;
   }
 
   private static List<String> splitArg(String arg, int flagLength) {

@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
 
-  private final Wire wire = new Wire(new ExtensionRegistry(Ext_all_types.class));
+  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry(Ext_all_types.EXTENSIONS);
 
   private static final String JSON_BASE = "\"opt_int32\":111,"
       + "\"opt_uint32\":112,"
@@ -98,7 +98,7 @@ public class GsonTest {
 
   private static final String JSON_EXTENSIONS =
       ",\"squareup.protos.alltypes.ext_opt_int32\":2147483647,"
-          + "\"squareup.protos.alltypes.ext_opt_int64\":4611686018427388081,"
+          + "\"squareup.protos.alltypes.ext_opt_int64\":-4611686018427387726,"
           + "\"squareup.protos.alltypes.ext_opt_uint64\":13835058055282163890,"
           + "\"squareup.protos.alltypes.ext_opt_sint64\":-4611686018427387726,"
           + "\"squareup.protos.alltypes.ext_opt_bool\":true,"
@@ -210,7 +210,7 @@ public class GsonTest {
   private AllTypes.Builder setExtensions(AllTypes.Builder builder) {
     AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
     builder.setExtension(Ext_all_types.ext_opt_int32, Integer.MAX_VALUE)
-        .setExtension(Ext_all_types.ext_opt_int64, Long.MAX_VALUE / 2 + 178)
+        .setExtension(Ext_all_types.ext_opt_int64, Long.MIN_VALUE / 2 + 178)
         .setExtension(Ext_all_types.ext_opt_uint64, Long.MIN_VALUE / 2 + 178)
         .setExtension(Ext_all_types.ext_opt_sint64, Long.MIN_VALUE / 2 + 178)
         .setExtension(Ext_all_types.ext_opt_bool, true)
@@ -238,7 +238,7 @@ public class GsonTest {
 
   private Gson createGson() {
     return new GsonBuilder()
-        .registerTypeAdapterFactory(new WireTypeAdapterFactory(wire))
+        .registerTypeAdapterFactory(new WireTypeAdapterFactory(extensionRegistry))
         .disableHtmlEscaping()
         .create();
   }
@@ -246,7 +246,7 @@ public class GsonTest {
   @Test
   public void testGsonNoExtensions() {
     Gson gson = new GsonBuilder()
-        .registerTypeAdapterFactory(new WireTypeAdapterFactory(wire))
+        .registerTypeAdapterFactory(new WireTypeAdapterFactory(extensionRegistry))
         .disableHtmlEscaping()
         .create();
 
@@ -279,10 +279,11 @@ public class GsonTest {
     Gson gson = createGson();
 
     AllTypes.Builder builder = createBuilder();
-    builder.addFixed32(9000, 9000);
-    builder.addFixed64(9001, 9001L);
-    builder.addLengthDelimited(9002, ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
-    builder.addVarint(9003, 9003);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9000, FieldEncoding.FIXED32), 9000);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9001, FieldEncoding.FIXED64), 9001L);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9002, FieldEncoding.LENGTH_DELIMITED),
+        ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
+    builder.setExtension(Extension.unknown(AllTypes.class, 9003, FieldEncoding.VARINT), 9003L);
 
     AllTypes allTypes = builder.build();
     String json = gson.toJson(allTypes);
@@ -298,10 +299,11 @@ public class GsonTest {
     Gson gson = createGson();
 
     AllTypes.Builder builder = createBuilder();
-    builder.addFixed32(9000, 9000);
-    builder.addFixed64(9001, 9001L);
-    builder.addLengthDelimited(9002, ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
-    builder.addVarint(9003, 9003);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9000, FieldEncoding.FIXED32), 9000);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9001, FieldEncoding.FIXED64), 9001L);
+    builder.setExtension(Extension.unknown(AllTypes.class, 9002, FieldEncoding.LENGTH_DELIMITED),
+        ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
+    builder.setExtension(Extension.unknown(AllTypes.class, 9003, FieldEncoding.VARINT), 9003L);
 
     AllTypes allTypes = setExtensions(builder).build();
     String json = gson.toJson(allTypes);

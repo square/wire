@@ -18,7 +18,6 @@ package com.squareup.wire;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,42 +42,48 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
     }
   }
 
-  public final Message.Label label;
+  public final WireField.Label label;
   public final String name;
   public final int tag;
-  public final ProtoType type;
+  public final String adapterString;
   public final boolean redacted;
-  public final ProtoAdapter<?> singleAdapter;
-  public final ProtoAdapter<?> adapter;
-
   private final Field messageField;
   private final Field builderField;
   private final Method builderMethod;
 
-  FieldBinding(WireField wireField, ProtoAdapter<?> singleAdapter,
-      Field messageField, Class<B> builderType) {
+  // Delegate adapters are created lazily; otherwise we could stack overflow!
+  private ProtoAdapter<?> singleAdapter;
+  private ProtoAdapter<Object> adapter;
+
+  FieldBinding(WireField wireField, Field messageField, Class<B> builderType) {
     this.label = wireField.label();
     this.name = messageField.getName();
     this.tag = wireField.tag();
-    this.type = ProtoType.get(wireField.type());
+    this.adapterString = wireField.adapter();
     this.redacted = wireField.redacted();
-    this.singleAdapter = singleAdapter;
-    this.adapter = singleAdapter.withLabel(label);
     this.messageField = messageField;
     this.builderField = getBuilderField(builderType, name);
     this.builderMethod = getBuilderMethod(builderType, name, messageField.getType());
+  }
+
+  ProtoAdapter<?> singleAdapter() {
+    ProtoAdapter<?> result = singleAdapter;
+    return result != null ? result : (singleAdapter = ProtoAdapter.get(adapterString));
+  }
+
+  ProtoAdapter<Object> adapter() {
+    ProtoAdapter<Object> result = adapter;
+    return result != null
+        ? result
+        : (adapter = (ProtoAdapter<Object>) singleAdapter().withLabel(label));
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
   void value(B builder, Object value) {
     if (label.isRepeated()) {
       try {
-        List<?> list = (List<?>) builderField.get(builder);
-        if (list == Collections.emptyList()) {
-          list = new ImmutableList();
-          builderField.set(builder, list);
-        }
-        ((ImmutableList<Object>) list).list.add(value);
+        List<Object> list = (List<Object>) builderField.get(builder);
+        list.add(value);
       } catch (IllegalAccessException e) {
         throw new AssertionError(e);
       }
@@ -97,9 +102,7 @@ final class FieldBinding<M extends Message<M>, B extends Message.Builder<M, B>> 
       } else {
         builderField.set(builder, value);
       }
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    } catch (InvocationTargetException e) {
+    } catch (IllegalAccessException | InvocationTargetException e) {
       throw new AssertionError(e);
     }
   }

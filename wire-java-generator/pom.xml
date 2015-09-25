@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>wire-java-generator</artifactId>
-  <name>Wire Protocol Buffer Java Generator</name>
 
   <dependencies>
     <dependency>

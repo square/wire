@@ -21,38 +21,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import okio.ByteString;
 
-/**
- * Superclass for protocol buffer messages.
- */
+/** A protocol buffer message. */
 public abstract class Message<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
-  // Hidden Wire instance that can perform work that does not require knowledge of extensions.
-  static final Wire WIRE = new Wire();
-
-  /** A protocol buffer label. */
-  public enum Label {
-    REQUIRED, OPTIONAL, REPEATED, ONE_OF,
-    /** Implies {@link #REPEATED}. */
-    PACKED;
-
-    boolean isRepeated() {
-      return this == REPEATED || this == PACKED;
-    }
-
-    boolean isPacked() {
-      return this == PACKED;
-    }
-
-    boolean isOneOf() {
-      return this == ONE_OF;
-    }
-  }
-
-  /** Set to null until a field is added. */
-  transient TagMap tagMap;
+  final transient TagMap tagMap;
 
   /** If not {@code 0} then the serialized size of this message. */
   transient int cachedSerializedSize = 0;
@@ -60,103 +34,39 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected transient int hashCode = 0;
 
-  protected Message() {
-  }
-
-  /**
-   * Initializes any unknown field data to that stored in the given {@code Builder}.
-   */
-  protected void setBuilder(Builder builder) {
-    if (builder.tagMapBuilder != null) {
-      tagMap = builder.tagMapBuilder.build();
+  protected Message(TagMap tagMap) {
+    if (tagMap == null) {
+      throw new NullPointerException("tagMap == null");
     }
+    this.tagMap = tagMap;
   }
 
-  // Increase visibility for testing
-  TagMap tagMap() {
+  public final TagMap tagMap() {
     return tagMap;
-  }
-
-  /** Utility method to return a mutable copy of a given List. Used by generated code. */
-  protected static <T> List<T> copyOf(List<T> list) {
-    if (list == null) {
-      throw new NullPointerException("list == null");
-    }
-    return new ArrayList<>(list);
-  }
-
-  /** Utility method to return an immutable copy of a given List. Used by generated code. */
-  protected static <T> List<T> immutableCopyOf(List<T> list) {
-    if (list == null) {
-      throw new NullPointerException("list == null");
-    }
-    if (list == Collections.emptyList() || list instanceof ImmutableList) {
-      return list;
-    }
-    return Collections.unmodifiableList(new ArrayList<>(list));
-  }
-
-  /**
-   * Returns the enumerated value tagged with the given integer value for the
-   * given enum class. If no enum value in the given class is initialized
-   * with the given integer tag value, an exception will be thrown.
-   *
-   * @param <E> the enum class type
-   */
-  public static <E extends Enum & WireEnum> E enumFromInt(Class<E> enumClass, int value) {
-    RuntimeEnumAdapter<E> adapter = WIRE.enumAdapter(enumClass);
-    return adapter.fromInt(value);
-  }
-
-  int tagMapEncodedSize() {
-    return tagMap == null ? 0 : tagMap.encodedSize();
-  }
-
-  protected static boolean equals(Object a, Object b) {
-    return a == b || (a != null && a.equals(b));
   }
 
   /**
    * Returns an immutable list of the extensions on this message in tag order.
    */
-  public Set<Extension<?, ?>> getExtensions() {
-    return tagMap != null
-        ? tagMap.extensions(false)
-        : Collections.<Extension<?, ?>>emptySet();
+  public final Set<Extension<?, ?>> getExtensions() {
+    return tagMap.extensions(false);
   }
 
   /**
    * Returns the value for {@code extension} on this message, or null if no
    * value is set.
    */
-  public <E> E getExtension(Extension<T, E> extension) {
-    return tagMap != null ? (E) tagMap.get(extension) : null;
-  }
-
-  /**
-   * Returns true if the extensions on this message equals the extensions of
-   * {@code other}.
-   */
-  protected boolean extensionsEqual(Message<T> other) {
-    return tagMap != null
-        ? tagMap.equals(other.tagMap)
-        : other.tagMap == null;
-  }
-
-  /**
-   * Returns a hash code for the extensions on this message.
-   */
-  protected int extensionsHashCode() {
-    return tagMap != null ? tagMap.hashCode() : 0;
+  public final <E> E getExtension(Extension<T, E> extension) {
+    return (E) tagMap.get(extension);
   }
 
   @SuppressWarnings("unchecked")
   @Override public String toString() {
-    return WIRE.adapter((Class<Message>) getClass()).toString(this);
+    return ProtoAdapter.get((Class<Message>) getClass()).toString(this);
   }
 
-  private Object writeReplace() throws ObjectStreamException {
-    return new MessageSerializedForm(this, getClass());
+  protected final Object writeReplace() throws ObjectStreamException {
+    return new MessageSerializedForm<>(this, (Class<Message>) getClass());
   }
 
   /**
@@ -177,40 +87,13 @@ public abstract class Message<T extends Message<T>> implements Serializable {
      * field data in the given {@link Message}.
      */
     public Builder(Message message) {
-      if (message != null && message.tagMap != null) {
+      if (message != null && message.tagMap != TagMap.EMPTY) {
         this.tagMapBuilder = new TagMap.Builder(message.tagMap);
       }
     }
 
-    /**
-     * Adds a {@code varint} value to the unknown field set with the given tag number.
-     */
-    public void addVarint(int tag, long value) {
-      ensureTagMap().add(tag, FieldEncoding.VARINT, value);
-    }
-
-    /**
-     * Adds a {@code fixed32} value to the unknown field set with the given tag number.
-     */
-    public void addFixed32(int tag, int value) {
-      ensureTagMap().add(tag, FieldEncoding.FIXED32, value);
-    }
-
-    /**
-     * Adds a {@code fixed64} value to the unknown field set with the given tag number.
-     */
-    public void addFixed64(int tag, long value) {
-      ensureTagMap().add(tag, FieldEncoding.FIXED64, value);
-    }
-
-    /**
-     * Adds a length delimited value to the unknown field set with the given tag number.
-     */
-    public void addLengthDelimited(int tag, ByteString value) {
-      ensureTagMap().add(tag, FieldEncoding.LENGTH_DELIMITED, value);
-    }
-
-    TagMap.Builder ensureTagMap() {
+    /** The {@link TagMap} builder in which unknown fields and extensions are stored. */
+    public TagMap.Builder tagMap() {
       if (tagMapBuilder == null) {
         tagMapBuilder = new TagMap.Builder();
       }
@@ -218,54 +101,17 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     }
 
     /**
-     * Create an exception for missing required fields.
-     *
-     * @param args Alternating field value and field name pairs.
-     */
-    protected IllegalStateException missingRequiredFields(Object... args) {
-      StringBuilder sb = new StringBuilder();
-      String plural = "";
-      for (int i = 0, size = args.length; i < size; i += 2) {
-        if (args[i] == null) {
-          if (sb.length() > 0) {
-            plural = "s"; // Found more than one missing field
-          }
-          sb.append("\n  ");
-          sb.append(args[i + 1]);
-        }
-      }
-      throw new IllegalStateException("Required field" + plural + " not set:" + sb);
-    }
-
-    /**
-     * If {@code list} is null it will be replaced with {@link Collections#emptyList()}.
-     * Otherwise look for null items and throw {@link NullPointerException} if one is found.
-     */
-    protected static <T> List<T> canonicalizeList(List<T> list) {
-      if (list == null) {
-        throw new NullPointerException("list == null");
-      }
-      for (int i = 0, size = list.size(); i < size; i++) {
-        T element = list.get(i);
-        if (element == null) {
-          throw new NullPointerException("Element at index " + i + " is null");
-        }
-      }
-      return list;
-    }
-
-    /**
      * Returns the value for {@code extension} on this message, or null if no
      * value is set.
      */
-    public <E> E getExtension(Extension<T, E> extension) {
+    public final <E> E getExtension(Extension<T, E> extension) {
       return tagMapBuilder != null ? (E) tagMapBuilder.get(extension) : null;
     }
 
     /**
      * Sets the value of {@code extension} on this builder to {@code value}.
      */
-    public <E> B setExtension(Extension<T, E> extension, E value) {
+    public final <E> B setExtension(Extension<T, E> extension, E value) {
       if (tagMapBuilder == null) {
         tagMapBuilder = new TagMap.Builder();
       } else {
@@ -282,9 +128,86 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     }
 
     /**
-     * Returns an immutable {@link com.squareup.wire.Message} based on the fields that have been set
-     * in this builder.
+     * Returns an immutable {@link TagMap} based on the unknown fields and extensions set in this
+     * builder, or null.
      */
+    public TagMap buildTagMap() {
+      return tagMapBuilder != null ? tagMapBuilder.build() : TagMap.EMPTY;
+    }
+
+    /** Returns an immutable {@link Message} based on the fields that set in this builder. */
     public abstract T build();
+  }
+
+  /** <b>For generated code only.</b> */
+  protected static <T> List<T> newMutableList() {
+    return new MutableOnWriteList<>(Collections.<T>emptyList());
+  }
+
+  /** <b>For generated code only.</b> Utility method to return a mutable copy of {@code list}. */
+  protected static <T> List<T> copyOf(List<T> list) {
+    if (list == null) throw new NullPointerException("list == null");
+    if (list == Collections.emptyList() || list instanceof ImmutableList) {
+      return new MutableOnWriteList<>(list);
+    }
+    return new ArrayList<>(list);
+  }
+
+  /** <b>For generated code only.</b> Utility method to return an immutable copy of {@code list}. */
+  protected static <T> List<T> immutableCopyOf(List<T> list) {
+    if (list == null) throw new NullPointerException("list == null");
+    if (list instanceof MutableOnWriteList) {
+      list = ((MutableOnWriteList<T>) list).mutableList;
+    }
+    if (list == Collections.emptyList() || list instanceof ImmutableList) {
+      return list;
+    }
+    return new ImmutableList<>(list);
+  }
+
+  /** <b>For generated code only.</b> */
+  protected static <T> void redactElements(List<T> list, ProtoAdapter<T> adapter) {
+    for (int i = 0, count = list.size(); i < count; i++) {
+      list.set(i, adapter.redact(list.get(i)));
+    }
+  }
+
+  /** <b>For generated code only.</b> */
+  protected static boolean equals(Object a, Object b) {
+    return a == b || (a != null && a.equals(b));
+  }
+
+  /**
+   * <b>For generated code only.</b> Create an exception for missing required fields.
+   *
+   * @param args Alternating field value and field name pairs.
+   */
+  protected static IllegalStateException missingRequiredFields(Object... args) {
+    StringBuilder sb = new StringBuilder();
+    String plural = "";
+    for (int i = 0, size = args.length; i < size; i += 2) {
+      if (args[i] == null) {
+        if (sb.length() > 0) {
+          plural = "s"; // Found more than one missing field
+        }
+        sb.append("\n  ");
+        sb.append(args[i + 1]);
+      }
+    }
+    throw new IllegalStateException("Required field" + plural + " not set:" + sb);
+  }
+
+  /**
+   * <b>For generated code only.</b> Throw {@link NullPointerException} if {@code list} or one of
+   * its items are null.
+   */
+  protected static void checkElementsNotNull(List<?> list) {
+    if (list == null) throw new NullPointerException("list == null");
+    for (int i = 0, size = list.size(); i < size; i++) {
+      Object element = list.get(i);
+      if (element == null) {
+        throw new NullPointerException("Element at index " + i + " is null");
+      }
+    }
   }
 }

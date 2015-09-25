@@ -16,7 +16,6 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.ProtoType;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;

@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>wire-gson-support</artifactId>
-  <name>Wire Protocol Buffer Gson Support</name>
 
   <dependencies>
     <dependency>

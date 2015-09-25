@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.java.JavaGenerator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -61,23 +60,12 @@ public class WireCompilerTest {
   }
 
   private void testProto(String[] sources, String[] outputs) throws Exception {
-    testProto(sources, outputs, null);
-  }
-
-  private void testProto(String[] sources, String[] outputs,
-      String serviceFactory, String... options) throws Exception {
     List<String> args = new ArrayList<>();
     args.add("--proto_path=../wire-runtime/src/test/proto");
     args.add("--java_out=" + testDir.getAbsolutePath());
     args.add("--enum_options=squareup.protos.custom_options.enum_value_option,"
         + "squareup.protos.custom_options.complex_enum_value_option,"
         + "squareup.protos.foreign.foreign_enum_value_option");
-    if (serviceFactory != null) {
-      args.add("--service_factory=" + serviceFactory);
-    }
-    for (String option : options) {
-      args.add("--service_factory_opt=" + option);
-    }
     args.addAll(Arrays.asList(sources));
     invokeCompiler(args.toArray(new String[args.size()]));
 
@@ -88,6 +76,27 @@ public class WireCompilerTest {
 
     for (String output : outputs) {
       assertFilesMatch(testDir, output);
+    }
+  }
+
+  private void testProtoAndroid(String[] sources, String[] outputs) throws Exception {
+    List<String> args = new ArrayList<>();
+    args.add("--proto_path=../wire-runtime/src/test/proto");
+    args.add("--java_out=" + testDir.getAbsolutePath());
+    args.add("--android");
+    args.add("--enum_options=squareup.protos.custom_options.enum_value_option,"
+        + "squareup.protos.custom_options.complex_enum_value_option,"
+        + "squareup.protos.foreign.foreign_enum_value_option");
+    args.addAll(Arrays.asList(sources));
+    invokeCompiler(args.toArray(new String[args.size()]));
+
+    List<String> filesAfter = getAllFiles(testDir);
+    assertThat(filesAfter.size())
+        .overridingErrorMessage(filesAfter.toString())
+        .isEqualTo(outputs.length);
+
+    for (String output : outputs) {
+      assertFilesMatchAndroid(testDir, output);
     }
   }
 
@@ -193,6 +202,16 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/person/Person.java"
     };
     testProto(sources, outputs);
+  }
+
+  @Test public void testPersonAndroid() throws Exception {
+    String[] sources = {
+        "person.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/person/Person.java"
+    };
+    testProtoAndroid(sources, outputs);
   }
 
   @Test public void testSimple() throws Exception {
@@ -551,37 +570,32 @@ public class WireCompilerTest {
   }
 
   private void assertFilesMatch(File outputDir, String path) throws IOException {
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path);
+    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
     File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
   }
 
   private void assertFilesMatchNoOptions(File outputDir, String path) throws IOException {
     // Compare against file with .noOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path + ".noOptions");
+    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".noOptions");
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {
-      expectedFile = new File("../wire-runtime/src/test/java/" + path);
+      expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
     }
     File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
   }
 
-  private void assertJavaFilesMatchWithSuffix(File outputDir, String path, String suffix)
-      throws IOException {
-    path = path.substring(0, path.indexOf(".java"));
-    // Compare against file with .noOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/java/" + path + suffix + ".java");
+  private void assertFilesMatchAndroid(File outputDir, String path) throws IOException {
+    // Compare against file with .android suffix if present
+    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".android");
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {
-      expectedFile = new File("../wire-runtime/src/test/java/" + path + ".java");
+      expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
     }
-    File actualFile = new File(outputDir, path + suffix + ".java");
-    if (!actualFile.exists()) {
-      actualFile = new File(outputDir, path + ".java");
-    }
+    File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
   }
 

@@ -53,15 +53,17 @@ import static com.squareup.wire.ProtoWriter.varint32Size;
  * <p>Instances of this class are immutable.
  */
 public final class TagMap {
+  /** A tag map with no values. */
+  public static final TagMap EMPTY = new TagMap(Builder.EMPTY_ARRAY);
+
   /**
    * Alternating extensions and values. Extensions are both known and unknown extensions. Values
    * are single elements. Extensions with multiple elements occur multiple times in this array.
    */
   private final Object[] array;
 
-  private TagMap(Builder builder) {
-    this.array = new Object[builder.limit];
-    System.arraycopy(builder.array, 0, array, 0, builder.limit);
+  private TagMap(Object[] array) {
+    this.array = array;
   }
 
   /**
@@ -130,7 +132,7 @@ public final class TagMap {
     int runEnd = runStart + 2;
     while (runEnd < array.length
         && ((Extension<?, ?>) array[runEnd]).getTag() == extension.getTag()
-        && ((Extension<?, ?>) array[runEnd]).getType().equals(extension.getType())) {
+        && ((Extension<?, ?>) array[runEnd]).getAdapter().equals(extension.getAdapter())) {
       runEnd += 2;
     }
     return runEnd;
@@ -169,7 +171,7 @@ public final class TagMap {
   static void transcode(List<Object> list, Extension<?, ?> sourceExtension,
       Object value, Extension<?, ?> targetExtension) {
     // If the adapter we're expecting has already been applied, we're done.
-    if (sourceExtension.getType().equals(targetExtension.getType())) {
+    if (sourceExtension.getAdapter().equals(targetExtension.getAdapter())) {
       list.add(value);
       return;
     }
@@ -196,6 +198,10 @@ public final class TagMap {
     }
   }
 
+  private static ProtoAdapter<Object> adapter(Extension<?, ?> sourceExtension) {
+    return (ProtoAdapter<Object>) sourceExtension.getAdapter();
+  }
+
   /**
    * Returns a set of the unique, known extensions in use by this map.
    *
@@ -212,12 +218,6 @@ public final class TagMap {
     return Collections.unmodifiableSet(result);
   }
 
-  @SuppressWarnings("unchecked") // Caller beware! Assumes the extension and value match at runtime.
-  static ProtoAdapter<Object> adapter(Extension<?, ?> extension) {
-    return (ProtoAdapter<Object>) ProtoAdapter.get(Message.WIRE, extension.getType(),
-        extension.getMessageType(), extension.getEnumType());
-  }
-
   @Override public boolean equals(Object o) {
     return o instanceof TagMap
         && Arrays.equals(((TagMap) o).array, array);
@@ -227,14 +227,41 @@ public final class TagMap {
     return Arrays.hashCode(array);
   }
 
+  /**
+   * Append comma-prefixed and separated key/value pairs to {@code builder} for the extensions
+   * and unknown fields in this map.
+   */
+  public void appendToString(StringBuilder builder) {
+    for (int i = 0; i < array.length;) {
+      Extension<?, ?> extension = (Extension<?, ?>) array[i];
+      builder.append(", ")
+          .append(extension.isUnknown() ? extension.getTag() : extension.getName())
+          .append("=");
+      int end = runEnd(i);
+      if (end > i + 2) {
+        builder.append('[');
+        for (int start = i; i < end; i += 2) {
+          if (i > start) builder.append(", ");
+          builder.append(array[i + 1]);
+        }
+        builder.append(']');
+      } else {
+        builder.append(array[i + 1]);
+        i += 2;
+      }
+    }
+  }
+
   public static final class Builder {
     static final int INITIAL_CAPACITY = 8;
+    static final Object[] EMPTY_ARRAY = new Object[0];
 
     private Object[] array;
-    private int limit = 0;
+    private int limit;
 
     public Builder() {
-      array = new Object[INITIAL_CAPACITY];
+      this.array = EMPTY_ARRAY;
+      this.limit = 0;
     }
 
     public Builder(TagMap tagMap) {
@@ -242,11 +269,9 @@ public final class TagMap {
       this.limit = tagMap.array.length;
     }
 
-    public <T> Builder add(int tag, FieldEncoding fieldEncoding, T value) {
-      return add(Extension.unknown(tag, fieldEncoding), value);
-    }
-
     public Builder add(Extension<?, ?> extension, Object value) {
+      if (extension == null) throw new NullPointerException("extension == null");
+      if (value == null) throw new NullPointerException("value == null");
       if (limit == array.length) {
         int newLimit = Math.max(limit * 2, INITIAL_CAPACITY);
         Object[] newArray = new Object[newLimit];
@@ -304,7 +329,10 @@ public final class TagMap {
     }
 
     public TagMap build() {
-      return new TagMap(this);
+      if (limit == 0) return EMPTY;
+      Object[] resultArray = new Object[limit];
+      System.arraycopy(array, 0, resultArray, 0, limit);
+      return new TagMap(resultArray);
     }
   }
 }

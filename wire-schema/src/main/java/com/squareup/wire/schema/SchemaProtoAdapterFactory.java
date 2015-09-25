@@ -19,7 +19,6 @@ import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.ProtoType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
