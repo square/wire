@@ -1,0 +1,1478 @@
+package PBData.beeshop.db;
+
+option java_package = "com.shopee.protocol.shop";
+
+
+enum LogisticsShopFlag {
+    ENABLE_SHOPEE_SUPPORTED = 1;
+    SHOP_ENABLE_SHOPEE_SUPPORTED = 2;
+}
+
+enum LogisticsOrderFlag {
+    HAS_TRACKING = 1;
+}
+
+enum ShippingMethod
+{
+    SELF_COLLECT     = 0;
+    DELIVERY         = 1;
+}
+
+enum PaymentMethod
+{
+    PAY_NONE            = 0;
+    PAY_CYBERSOURCE     = 1;
+    PAY_BANK_TRANSFER   = 2;
+    PAY_OFFLINE_PAYMENT = 3;
+    PAY_IPAY88		= 4; // MY pay method
+    PAY_FREE		= 5;
+    PAY_COD             = 6; // Cash on delivery
+    PAY_ESUN            = 7; // TW used payment
+    PAY_BILL_PAYMENT    = 8; // TH bill payment
+}
+
+enum CompareMethod
+{
+	EQUAL = 1;
+	LE = 2;
+	GE = 3;
+	LESS = 4;
+	GREATER = 5;
+}
+
+enum PaymentStatus
+{
+    NONE                    = 0;
+    SUCCESS                 = 1;
+    BANK_TRANSFER_INIT      = 100;
+    BANK_TRANSFER_VERIFYING = 101;
+    BANK_TRANSFER_REINIT    = 102;
+    BANK_TRANSFER_PENDING   = 103;
+    OFFLINE_PAYMENT         = 200;
+}
+
+enum EscrowPaymentMethod
+{
+    BANK_TRANSFER   = 1;
+    SEVEN_ELEVEN    = 2;
+}
+
+enum StatsType
+{
+    ORDERS = 0;
+    INCOME = 1;
+	VISITS = 2;
+	SEARCH = 3;
+}
+
+enum AuditType
+{
+    ITEM_NEW        = 1;
+    ITEM_EDIT       = 2;
+    ITEM_REPORT     = 3;
+    ITEM_DEL        = 4;
+    USER_REPORT     = 5;
+    BANKACC         = 6;
+    CHECKOUT        = 7;
+    REFUND          = 8;
+    ESCROW_RELEASE  = 9;
+    PAYMENT_STATUS  = 10;
+    MANUAL          = 11;
+    ITEM_STATUS     = 12;
+}
+
+enum ItemOption
+{
+    FIRSTITEM_DISMISSED = 1;
+    INVALID_DISMISSED = 2;
+}
+
+enum OrderType
+{
+    UNKNOWN = 0;
+    SIMPLE = 1;
+    ESCROW = 2;
+}
+
+enum BankaccVerified
+{
+    UNSUBMIT    = 0;
+    REQUESTED   = 1;
+    APPROVED    = 2;
+    REJECTED    = 3;
+    CHECKED     = 4;
+}
+
+enum EscrowOption
+{
+    ESCROW_OFF = 0;
+    ESCROW_ON  = 1;
+}
+
+enum TransType
+{
+    OTHER_ORDER    = 0;
+    ESCROW_ORDER   = 1;
+    WITHDRAW       = 2;
+}
+
+enum ActivityType 
+{
+    FOLLOW_YOU              = 0;
+    LIKE_YOUR_ITEM          = 1;
+    YOUR_LIKEITEM_UPDATED   = 2;
+    AT_YOU_IN_COMMENT       = 3;
+    COMMENT_YOUR_ITEM       = 4;
+    CONTACT_REGISTERED      = 5;
+    ITEM_RATED              = 6;
+    CUSTOMIZED_ACTIVITY     = 7;
+}
+
+enum ProductListWeightType
+{
+    BOOST       = 0;
+    ARRIVAL     = 1;
+    SOCIAL      = 2;
+    SALE        = 3;
+    RANDOM      = 4;
+}
+
+enum ActivityUpdateType 
+{
+    ITEM_DELETED        = 0;
+    ITEM_OUTOF_STOCK    = 1;
+    ITEM_EDITED         = 2;
+}
+
+enum ActionRedirctType 
+{
+    REDIRECT_NONE                       = 0;    //NA
+    REDIRECT_ORDERS_DETAIL              = 1;    
+    REDIRECT_MY_PRODUCTS                = 2;    
+    REDIRECT_MY_INCOME                  = 3;    
+    REDIRECT_ORDERS_RETURNREFUND        = 4;    
+    REDIRECT_ORDERS_CANCEL              = 5;    
+    REDIRECT_OUTOF_STOCK                = 6;    
+    //REDIRECT_REFUND_SELLERCANCEL        = 7;    
+    REDIRECT_PURE_REFUND                = 8;    
+    REDIRECT_NEW_WEB_PAGE               = 10;   // go to the action_redirect_url 
+    REDIRECT_UPLOAD_RECEIPT_PAGE        = 11;   //Upload receipt page of that checkout
+    REDIRECT_SHOPING_CART				= 12;
+    REDIRECT_BUNCH_ORDERS_DETAIL        = 13;    
+    //REDIRECT_BUY_PAGE                   = 14;    
+    //REDIRECT_CHAT_PAGE                  = 15;    
+    REDIRECT_ORDER_CHAT_PAGE            = 16;    
+    //REDIRECT_PRODUCT_OFFER_CHAT_PAGE    = 17;    
+    REDIRECT_RELATED_PRODUCT_PAGE       = 18;    
+    REDIRECT_CREDIT_CARD_PAYMENT_PAGE   = 19;    
+    REDIRECT_MY_WALLET                  = 20;    
+}
+
+enum ItemCondition
+{
+    NOT_SET             = 0;
+    NEW_WITH_TAGS       = 1;
+    NEW_WITHOUT_TAGS    = 2;
+    NEW_WITH_DEFECTS    = 3;
+    USED                = 4;
+}
+
+enum PNOption
+{
+    NOTI_ALL                = 1;
+    NOTI_ACTION_REQUIRED    = 2;
+    NOTI_ACTIVITY           = 4;
+    NOTI_CHATS              = 8;
+    NOTI_STOCK              = 16;
+    NOTI_GROUP_NOTI_OFF     = 32;
+}
+
+
+enum ContactAcctype
+{
+    PHONE    = 1;
+    FACEBOOK = 2;
+    EMAIL    = 3;
+    PHONE_AND_EMAIL    = 4;
+}
+
+enum OrderCancelReason
+{
+    CANCEL_REASON_NONE               = 0;
+    CANCEL_REASON_OUT_OF_STOCK       = 1;
+    CANCEL_REASON_CUSTOMER_REQUEST   = 2;
+    CANCEL_REASON_UNDELIVERABLE_AREA = 3;
+
+    CANCEL_REASON_SYSTEM_UNPAID           = 100;
+    CANCEL_REASON_SYSTEM_UNDERPAID        = 101;
+    CANCEL_REASON_SYSTEM_PAYMENT_REJECTED = 102;
+
+    CANCEL_REASON_LOGISTICS_REQUEST_CANCELED = 200;
+    CANCEL_REASON_LOGISTICS_PICKUP_FAILED    = 201;
+    CANCEL_REASON_LOGISTICS_DELIVERY_FAILED  = 202;
+    CANCEL_REASON_LOGISTICS_COD_REJECTED     = 203;
+}
+
+enum ReturnReason
+{
+    RETURN_REASON_NONE         = 0;
+    RETURN_REASON_NONRECEIPT   = 1;
+    RETURN_REASON_WRONG_ITEM   = 2;
+    RETURN_REASON_ITEM_DAMAGED = 3;
+    RETURN_REASON_DIFF_DESC    = 4;
+    RETURN_REASON_MUTUAL_AGREE = 5;
+    RETURN_REASON_OTHER        = 6;
+}
+
+enum ReturnDisputeReason
+{
+    REJECT_NONRECEIPT = 1;
+    REJECT_OTHER      = 2;
+    NOT_RECEIVED      = 3;
+}
+
+enum ArchiveFlag
+{
+    BUYER_ARCHIVE  = 1;
+    SELLER_ARCHIVE = 2;
+}
+
+enum BankTransferOption
+{
+    NORMAL           = 1;
+    ATM_PAYMENT      = 2;
+    INTERNET_BANKING = 3;
+}
+
+message Gid
+{
+    optional int64  id = 1;
+    optional string type = 2;
+}
+
+message Config
+{
+    optional string name = 1;
+    optional string value = 2;
+}
+
+message SubCategory
+{
+    optional int32 parent_category = 1;
+    optional int32 sub_category = 2;
+}
+
+message ItemExtInfo
+{
+    optional int32  estimated_days = 1;
+    optional int64  price_before_discount = 2;	// origin price before the seller promotion
+    optional bytes  logistics_info = 3;	// json defined by xianyou
+    optional int64  seller_promotionid = 4; // if price_before_discount != price, this is the seller promotionid
+    optional string display_shipping_fee = 5; // calculated shipping fee used for client to display
+    optional string instagram_media_id = 6; // instagram item id
+    optional int64 rebate_price = 7; // Cost of Good Sold, for seller promotion
+    repeated SubCategory categories = 8;
+}
+
+message Item
+{
+    optional int64  itemid = 1;
+    required int32  shopid = 2;
+    optional string name = 3;
+    optional string description = 4;
+    optional string images = 5;
+    optional int64  price = 6; // this is the price displayed, in seller promotion, this is the price after discount
+    optional string currency = 7;
+    optional int32  stock = 8;
+    optional int32  status = 9;
+    optional int32  ctime = 10;
+    optional int32  mtime = 11;
+    optional int32  sold = 14; // sold count, for display should not used for statistics
+    optional int64  price_min = 15;
+    optional int64  price_max = 16;
+    optional int32  recommend = 17;
+    optional string collect_address = 18;
+    optional int32  catid = 19;
+    optional int32  pop = 20;
+    optional int32  liked_count = 21;
+    optional int32  offer_count = 22;
+    optional string brand = 23;
+    optional int32  condition = 24;
+    optional int32  rating_good = 25;
+    optional int32  rating_normal = 26;
+    optional int32  rating_bad = 27;
+    optional int32  cmt_count = 28;
+    optional string country = 29;
+    optional int32  option = 30;	// web used field
+    optional bytes  extinfo = 31;
+    optional int32  stockout_time = 32;
+}
+
+// this is a copy but less field Item message
+message ItemNoDescription
+{
+    optional int64  itemid = 1;
+    required int32  shopid = 2;
+    optional string name = 3;
+    optional string images = 5;
+    optional int64  price = 6; // this is the price displayed, in seller promotion, this is the price after discount
+    optional string currency = 7;
+    optional int32  stock = 8;
+    optional int32  status = 9;
+    optional int32  ctime = 10;
+    optional int32  mtime = 11;
+    optional int32  sold = 14; // sold count, for display should not used for statistics
+    optional int64  price_min = 15;
+    optional int64  price_max = 16;
+    optional int32  recommend = 17;
+    optional int32  catid = 19;
+    optional int32  pop = 20;
+    optional int32  liked_count = 21;
+    optional int32  offer_count = 22;
+    optional string brand = 23;
+    optional int32  condition = 24;
+    optional int32  rating_good = 25;
+    optional int32  rating_normal = 26;
+    optional int32  rating_bad = 27;
+    optional int32  cmt_count = 28;
+    optional string country = 29;
+    optional int32  option = 30;	// web used field
+    optional bytes  extinfo = 31;
+    optional int32  stockout_time = 32;
+}
+
+message ItemSimpleInfo
+{
+    optional int64  itemid      = 1;
+    required int32  shopid      = 2;
+    optional string name        = 3;
+    optional string description = 4;
+    optional string images      = 5;
+    optional int64  price       = 6; // same as item.Price
+    optional string currency    = 7;
+    optional int32  stock       = 8;
+    optional int32  status      = 9;
+    optional int32  liked_count = 21;
+    optional int32  cmt_count   = 28;
+    optional int32  option      = 30;
+    optional int32  ctime       = 10;
+    optional int32  sold        = 14;
+    optional int32  catid       = 19;
+    optional string country     = 29;
+    optional bytes extinfo = 31;
+}
+
+message ItemModel
+{
+    optional int64  modelid = 1;
+    optional int64  itemid = 2;
+    required string name = 3;
+    required int64  price = 4;
+    required string currency = 5;
+    optional int32  stock = 6;
+    optional int32  status = 7;
+}
+
+message PromotionItem
+{
+    optional int32 shopid = 1;
+    optional int64 itemid = 2;
+}
+
+message PromotionInfo
+{
+    optional string url = 1;
+    optional string description = 2;
+    repeated int32 categories = 3; // used for return & refund
+    repeated int32 shopids = 4;
+    repeated PromotionItem items = 5;
+    optional string voucher_code = 6;
+	optional int64 promotionid = 7;
+	optional int64 used_price = 8;
+    repeated int32 carriers = 9;
+    repeated int32 banks = 10;
+}
+
+message PromotionRule
+{
+    required string field = 1;
+    required int32 compare = 2; // ==, >=, <=, >, < CompareMethod
+    required int32 value = 3;
+}
+
+message PromotionUsers
+{
+    optional bool all_user = 1;
+    repeated int32 userids = 2;
+    optional int64 register_time_start = 3;
+    optional int64 register_time_end = 4;
+}
+
+message PromotionDelayedNoti
+{
+    optional int32 send_time = 1; //Send at the specific time of the day (seconds since midnight).
+    optional int32 delay_days = 2; //Delay for this many of calendar days.
+    optional string action_url = 3;
+    optional string action_icon = 4;
+    optional string action_title = 5;
+    optional string action_content = 6;
+    optional string push_content = 7;
+}
+
+message PromotionRuleSet
+{
+    repeated PromotionRule rules = 1;
+    optional PromotionUsers choose_users = 2;
+    repeated int32 categories = 3;
+    repeated int32 shopids = 4;
+    repeated PromotionItem items = 5;
+    repeated PromotionDelayedNoti delay_info = 6;
+    optional bool push_existsing_user = 7;
+    repeated int32 carriers = 8;
+    repeated int32 banks = 9;
+}
+
+message Promotion
+{
+    optional int64 promotionid = 1;
+    optional string name = 2;
+    optional string url = 3;
+    optional int64 start_time = 4;
+    optional int64 end_time = 5;
+    optional int64 notice_start_time = 6; // for seller, not used this version
+    optional int64 notice_end_time = 7;	  // for seller
+    optional int32 discount = 8;
+    optional int64 value = 9;
+    optional string banner = 10;
+    optional bytes rule = 11;
+    optional string prefix = 12;
+    optional int32  length = 13;
+    optional int32	usage_limit = 14;	// how many user can use the voucher code
+    optional int32 total_count = 15;	// how many voucher code in this promotion
+    optional string country = 16;
+    optional int64 min_price = 17;		// cart item total price > this can use the voucher
+    optional int32 status = 18;			// enabled, disabled
+    optional int32 distributed_count = 19;  // how many voucher code already distributed
+    optional int32 use_type = 20;	// public | private
+    optional int32 total_usage = 21;    // how many times this promotion can be used
+    optional int32 current_usage = 22; // how many times already used
+    optional int64 ctime = 23;
+    optional int64 mtime = 24;
+    optional string description = 25;	// description of promotion
+    optional bool action_trigger    = 26;
+    optional string action_content  = 27;
+    optional int64 stop_dispatch_time = 28;
+    optional string action_title = 29;
+    optional string push_content  = 30;
+}
+
+message PublicVoucher
+{
+    optional string voucher_code = 1;
+    optional int64 promotionid = 2;
+    optional int32 usage_limit = 3;  // same as promotion.usage_limit
+    optional int32 used_count = 4;
+    optional int32 status = 5;		// active, inactive
+    optional int32 ctime = 6;
+}
+
+message Voucher
+{
+    optional int32 userid = 1;			// split table
+    optional int64 promotionid = 2;		// split table
+    optional string voucher_code = 3;
+    optional int64 creation_time = 4;
+    optional int32 collection_status = 5;
+    optional int64 collection_time = 6;
+    optional int32 usage_status = 7;	// used, not used, cancled
+    optional int64 usage_time = 8;
+    optional int32 status = 9; // 1 normal, 0 deleted
+}
+
+message VoucherAudit
+{
+    optional int32 userid = 1;
+    optional string voucher_code = 2;
+    optional int64 promotionid = 3;
+    optional int64 checkoutid = 4;
+    optional int32 usage_time = 5;
+    optional int32 status = 6;
+}
+
+message Snapshot
+{
+    optional Item       item = 1;
+    repeated ItemModel  model = 2;
+}
+
+message ItemSnapshot
+{
+    optional int64  snapshotid = 1;
+    optional int32  shopid = 2;
+    optional int64  itemid = 3;
+    optional int32  status = 4;
+    optional int32  ctime = 5;
+    optional bytes  snapshot = 6;
+}
+
+message ShopExtInfo
+{
+    optional BuyerAddress address = 1; // not used after logistics version release
+    optional int32 disable_make_offer = 2;
+    optional bytes logistics_info = 3; // defined by xianyou
+    optional int32 pickup_address_id = 4; // default pickup address id in BuyerAddress
+    optional string display_default_shipping_info = 5; // default shipping info to display when adding/editing item, if item doesn't have shipping
+    optional int64 logistics_flag = 6; //LogisticsShopFlag
+    optional bytes default_item_logistics_info = 7; // default logistics info to submit to server when adding/editing item, if item doesn't have shipping
+    repeated string covers = 8; // cover images displayed in shop
+}
+
+message Shop
+{
+    optional int32  shopid = 1;
+    optional int32  userid = 2;
+    optional string name = 3;
+    optional string description = 4;
+    optional string images = 5;
+    optional bytes  contacts = 6;
+    optional int32  ctime = 7;
+    optional int32  mtime = 8;
+    optional int32  status = 9;
+    optional string collect_address = 10;
+    optional bytes  payment = 11;
+    optional bytes  shipment = 12;
+    optional int32  escrow_option = 13;
+    optional bytes  escrow_payment = 14;
+    optional string cover = 15;
+    optional double latitude = 16;
+    optional double longitude = 17;
+    optional string place = 18;
+    optional int32  pop = 19;
+    optional int32  rating_good = 20;
+    optional int32  rating_normal = 21;
+    optional int32  rating_bad = 22;
+    optional int32  sold_total = 23;
+    optional int32  item_count = 24;
+    optional int32  follower_count = 25;
+    optional bytes  extinfo = 26;  // ShopExtInfo
+    optional string country = 27;
+    optional int64  flag = 28;
+}
+
+message ShopBalance
+{
+    optional int32  shopid = 1;
+    optional int32  userid = 2;
+    optional string currency = 3;
+    optional int64  available = 4;
+    optional int64  frozen = 5;
+    optional int64  total_withdrawn = 6;
+    optional int32  last_withdraw_time = 7;
+    optional int64  processing = 8;
+    optional int64  other = 9;
+    optional int64  withdraw_limit = 10;
+}
+
+message ShopContactList
+{
+    repeated ShopContact contact = 1;
+}
+
+message ShopContact
+{
+    optional string platform = 1;
+    optional string account = 2;
+}
+
+message PaymentOptionList
+{
+   repeated PaymentOption option = 1;
+}
+
+message PaymentOption
+{
+   optional int32 payment_method = 1;
+   optional int32 enabled = 2;
+   optional bytes param = 3;
+}
+
+message PaymentBankAccount
+{
+   optional string bank_name = 1;
+   optional string bank_account = 2;
+   optional string bank_owner_name = 3;	
+}
+
+message ShopShipmentList
+{
+   repeated ShopShipment shop_shipment = 1;
+}
+
+message ShopShipment
+{
+   optional int32 carrierid = 1;
+   optional string name = 2;
+   optional int64 shipping_fee = 3;
+   optional string currency = 4;
+   optional int32 is_custom = 5;
+}
+
+message ShopEscrowPaymentOptionList
+{
+    repeated ShopEscrowPaymentOption options= 1;
+}
+
+message ShopEscrowPaymentOption
+{
+    optional int32 payment_method = 1;
+    optional int32 enabled = 2;
+    optional int32 service_fee_type = 3; // 0-seller, 1-buyer
+    optional int64 service_fee = 4; //Set by server
+    optional string currency = 5;
+}
+
+message Vcode
+{
+    optional string phone = 1;
+    optional int32  userid = 2;
+    optional string vcode = 3;
+    optional int32  mtime = 4;
+}
+
+message Account
+{
+    optional int32  userid = 1;
+    optional int32  shopid = 2;
+    optional string phone = 3;
+    optional string email = 4;
+    optional string fbid = 5;
+    optional string password = 6;
+    optional int32  status = 9;
+    optional int32  bankacc_verified = 13;
+    optional string remark = 14;
+    optional string username = 15;
+    optional string portrait = 16;
+    optional string machine_code = 17;	// type of device, e.g. android, apple
+    optional bytes  deviceid = 18;
+    optional uint64 pn_option = 19;
+    optional string language = 20;
+    optional int32  appversion = 21;
+    optional string country = 22;
+    optional int32  ctime = 23;
+    optional int32  mtime = 24;
+    optional int32  following_count = 25;
+    optional bool   phone_verified = 26;
+    optional bool   email_verified = 27;
+    optional int32  last_login = 28;
+    optional bool   is_seller = 29;
+    optional bool   phone_public = 30;
+    optional bytes  pn_token = 31; // apple pn key; but pn_token=deviceid when machine_code=="android" and appversion>=16 
+    optional bytes  extinfo = 32;   // AccountExtInfo
+    optional int32  liked_count = 33;
+    optional int32  web_last_login = 34;
+    optional int32  inited = 35;
+    optional int32  beetalk_userid = 36;
+}
+
+message AccountExtInfo
+{
+    repeated CreditCardInfo     credit_card = 1;
+    optional BankAccountInfo    bank_account = 2;
+    optional string             ic_number = 3;
+    optional BankAccountInfo    buyer_bank_account = 4;
+    optional int32              default_payment_method = 5; // PaymentMethod
+    optional int32              delivery_address_id = 6;  // default delivery address id in BuyerAddress
+    optional bool               feed_private = 7;
+    optional int64              web_option = 8;
+    optional bool               star_seller = 9;
+}
+
+message CreditCardInfo
+{
+    required string payment_token = 2;
+    required string card_number = 3;
+    required int32  card_type = 4;
+    optional string expiry_date = 5;
+    optional int32  status = 6; // Status_CARD
+}
+
+message BankAccountInfo
+{
+    optional int64  account_no = 1;		// not used
+    optional string bank_name = 2;
+    optional int32  branch_code = 3;
+    optional string account_name = 4;
+    optional string real_name = 5;
+    optional string icno = 6;
+    optional string account_number = 7;
+    optional int32  mtime = 8;
+    optional int32  bank_code = 9;
+    optional string region = 10;
+    optional string branch_name = 11;
+    optional int32  status = 12;
+    optional BankAccountInfo last_bank_account = 13;
+}
+
+// Facebook account info
+// the information is returned by facebook api
+message FbAccountInfo
+{
+    optional string fbid = 1;
+    optional string email = 2;
+    optional string name = 3;
+    optional string first_name = 4;
+    optional string last_name = 5;
+    optional string gender = 6;
+    optional string link = 7;
+    optional string locale = 8;
+    optional int32  timezone = 9;
+    optional string updated_time = 10;
+    optional bool   verified = 11;
+    optional int32  friends_count = 12;
+}
+
+message BeetalkAccountInfo
+{
+    optional int32 beetalk_userid = 1;
+    optional string uniqueid = 2;
+    optional string mobile = 3;
+    optional string nickname = 4;
+    optional int64 icon = 5;
+    optional int32 gender = 6;
+    optional int32 birthday = 7;
+    optional int32 buddy_count= 8;
+    optional int32 info_sync_time= 9;
+    optional int32 buddy_sync_time= 10;
+}
+
+message OrderLogisticsInfo
+{
+    optional int32 logisticsid = 1;
+    optional int32 pickup_cutoff_time = 2; // after this time can not change pickup info
+    optional string pickup_fail_reason = 3; // for app to display
+    optional string deliver_fail_reason = 4; // for app to display
+    optional string delivery_status_desc = 5; // for app to display
+    optional int32 delivery_status_mtime = 6; // for app to display
+    optional int64 logistics_flag = 7;
+}
+
+message OrderExtInfo
+{
+    repeated string item_image = 1;  // all item's image
+    optional string item_name = 2;  // first item's name
+    optional int64  item_price = 3;  // first item's price
+    optional int64  order_price = 4;  // first item's order price
+    optional int32  buy_count = 5;  // first item's buy count
+    optional int32  item_count = 6;  // distinct item count
+    optional int32  total_count = 7;  // total buy count
+    optional int32  seller_userid = 8;
+    optional int32  days_to_ship = 9;
+    optional int32  days_to_delivery = 10;
+    optional int32  days_to_confirm = 11;
+    optional int32  days_extended = 12; // days to extend the escrow release time
+    optional int32  days_to_pay = 13;
+    optional int32  cancel_reason = 14;
+    optional int64  first_itemid = 16;
+    optional bool   first_item_return = 17;
+    optional int32  release_time = 18;
+    optional int32  cancel_userid = 19;
+    optional int32  batchid = 20;
+    optional string payment_channel_name = 21;
+    optional int32  seller_due_date = 22;
+    optional int32  payby_date = 23;
+    optional int64  price_before_discount = 24; // total price before buyer promotion, including returned items, including shipping fee
+    optional int32  discount_percentage = 25; // if the promotion is discount then display otherwise unset
+    optional PromotionInfo promotion_info = 26;
+    optional int64  item_price_before_discount = 27; // first item's price before use promotion code
+    optional BuyerAddress buyer_address = 28;
+    optional BuyerAddress seller_address = 29;
+    optional OrderLogisticsInfo logistics_info = 30; 
+    optional int32 arrange_pickup_by_date = 31;
+    optional int32 ship_by_date = 32;
+    optional int64 discount_shipping_fee = 33; // shipping fee after discount
+    optional int64 origin_shipping_fee = 34;  // shipping fee before discount & revise
+    optional int64 carrier_shipping_fee = 35;  // the shipping fee carrier will receive
+    optional int32 cod_process_by_date = 36;  // cod confirm deadline
+    optional int32 days_toship_extended = 37; // days to extend the arrange shipping time
+    optional int32 is_from_webcheckout = 38; // if this order is from webcheckout
+}
+
+// Order is an order makes by user
+// a user contains one or more item in OrderItem
+message Order
+{
+    optional int64  orderid = 1;
+    required int32  shopid = 2;
+    optional int32  userid = 3;
+    optional string ordersn = 4; // returned to user, for future check
+    optional int64  total_price = 5; // total price after buyer promotion, including returned items, including shipping fee
+    optional int64  actual_price = 6; // actual price after return & refund
+    optional int64  paid_amount = 7; // already paid money count
+    optional string currency = 8;
+    optional int32  shipping_method = 9; // 0 - not supported, > 0 - supported
+    optional string shipping_name = 10;
+    optional string shipping_phone = 11;
+    optional string shipping_address = 12;
+    optional int64  shipping_fee = 13; // actual shipping fee, Will be refunded if whole order is returned
+    optional string shipping_carrier = 14; // Kerry/Heimao (supported) or SingPost
+    optional string shipping_traceno = 15; // consignment number
+    optional string actual_carrier = 16;
+    optional int32  order_type = 17;
+    optional int32  payment_method = 18; // PaymentMethod
+    optional int64  escrow_fee = 19;
+    optional string remark = 20;
+    optional int32  status = 21;
+    optional int32  create_time = 22;
+    optional int32  pay_time = 23;
+    optional int32  revise_time = 24;
+    optional int32  delivery_time = 25; // history reason, this is the shipping started time
+    optional int32  complete_time = 26;
+    optional int32  cancel_time = 27;
+    optional int64  checkoutid = 28;
+    optional bytes  extinfo = 29;    // OrderExtInfo
+    optional bool   is_rated = 30;
+    optional int32  status_ext = 31;
+    optional int32  archive = 32;
+    optional int32  mtime = 33;
+    optional int32  bankaccount_id = 34;
+    optional int32  logistics_status = 35;    // logistics state - LOGISTICS_*
+    optional int32  pickup_time = 36;         // seller arranged pickup_time
+    optional int32  shipping_confirm_time = 37; // COD->confirmed time, NONCOD->paid_time
+    optional int32  list_type = 39;  // same as cmd.OrderListType
+    optional int32  receive_time = 40; // this is the shipping end time
+}
+
+message OrderItem
+{
+    optional int32  userid = 1;
+    optional int64  orderid = 2;
+    optional int32  shopid = 3;
+    required int64  itemid = 4;
+    optional int64  modelid = 5;	// each item can has more different models
+    optional int32  amount = 6;
+    optional int64  item_price = 7;  // same as Item.Price
+    optional int64  order_price = 8;  // if has offer, equals to offer price else equals item_price
+    optional string currency = 9;
+    optional int32  status = 10;
+    optional int64  chatid = 11;  // use chatid to find offer
+    optional int64  snapshotid = 12;	// ItemSnapshot->snapshopid
+}
+
+message CommentTagInfo
+{
+   optional int32 offset   = 1;
+   optional int32 length   = 2;
+   optional int64 infoid   = 3;
+   optional int32 type     = 4; // 0:User
+}
+
+message CommentTagInfoList
+{
+   repeated CommentTagInfo tags = 1;
+}
+
+message ItemComment
+{
+    optional int32  cmtid = 1;
+    optional int32  userid = 2;
+    optional int64  orderid = 3;
+    optional int32  shopid = 4;
+    optional int64  itemid = 5;
+    optional int64  modelid = 6;
+    optional int32  rating = 7;
+    optional string comment = 8;
+    optional int32  ctime = 9;
+    optional int32  status = 10;
+    optional bytes  mentioned = 11;
+}
+
+message NotiMsg
+{
+    optional int64  msgid = 1;
+    optional int32  shopid = 2;
+    optional int32  cmd = 3;
+    optional bytes  msg = 4;
+    optional int32  ctime = 5;
+    optional int32  status = 6;
+}
+
+message ShopStats
+{
+    optional int32  shopid = 1;
+    optional int32  day = 2;  // in format yyyymmdd
+    optional int32  stype = 3; // StatsType
+    optional int64  value = 4;
+}
+
+message Feedback
+{
+    optional int32  userid = 1;
+    optional int32  shopid = 2;
+    optional string name = 3;
+    optional string email = 4;
+    optional string content = 5;
+    optional int32  ctime = 6;
+}
+
+message ItemAudit
+{
+    optional int32  auditid = 1;
+    optional int32  shopid = 2;
+    optional int64  itemid = 3;
+    optional int32  audit_type = 4;
+    optional int32  status = 5;
+    optional string data = 6;
+    optional int32  ctime = 7;
+    optional int32  mtime = 8;
+    optional string country = 9;
+}
+
+message UserAudit
+{
+    optional int32  auditid = 1;
+    optional int32  userid = 2;
+    optional int32  audit_type = 3;
+    optional int32  status = 4;
+    optional string data = 5;
+    optional int32  ctime = 6;
+    optional int32  mtime = 7;
+    optional string country = 8;
+}
+
+message OrderAudit
+{
+    optional int32  auditid = 1;
+    optional int32  shopid = 2;
+    optional int64  orderid = 3;
+    optional int32  opuserid = 4;
+    optional int32  old_status = 5;
+    optional int32  new_status = 6;
+    optional string data = 7;
+    optional int32  ctime = 8;
+    optional int32  mtime = 9;
+    optional string country = 10;
+}
+
+message LogisticsAudit
+{
+    optional int32  auditid = 1;
+    optional int32  shopid = 2;
+    optional int64  orderid = 3;
+    optional int32  opuserid = 4;
+    optional int32  old_status = 5;
+    optional int32  new_status = 6;
+    optional string data = 7;
+    optional int32  ctime = 8;
+    optional int32  mtime = 9;
+    optional string country = 10;
+}
+
+message ReturnAudit
+{
+    optional int32  auditid = 1;
+    optional int32  shopid = 2;
+    optional int64  return_id = 3;
+    optional int32  opuserid = 4;
+    optional int32  old_status = 5;
+    optional int32  new_status = 6;
+    optional string data = 7;
+    optional int32  ctime = 8;
+    optional int32  mtime = 9;
+    optional string country = 10;
+}
+
+message RefundAudit
+{
+    optional int32  auditid = 1;
+    optional int32  userid = 2;
+    optional int64  refund_id = 3;
+    optional int32  opuserid = 4;
+    optional int32  old_status = 5;
+    optional int32  new_status = 6;
+    optional string data = 7;
+    optional int32  ctime = 8;
+    optional int32  mtime = 9;
+    optional string country = 10;
+}
+
+message CheckoutAudit
+{
+    optional int32  auditid = 1;
+    optional int32  userid = 2;
+    optional int64  checkoutid = 3;
+    optional int32  opuserid = 4;
+    optional int32  old_status = 5;
+    optional int32  new_status = 6;
+    optional int64  amount = 7;
+    optional string currency = 8;
+    optional string data = 9;
+    optional int32  ctime = 10;
+    optional int32  mtime = 11;
+    optional string country = 12;
+    optional int32  audit_type = 13;
+}
+
+message ShopFollow
+{
+    required int32  userid = 1;
+    optional int32  shopid = 2;
+    optional int32  status = 3;
+    optional int32  ctime = 4;
+}
+
+message ItemLiked
+{
+    required int32  userid = 1;
+    optional int32  shopid = 2;
+    optional int64  itemid = 3;
+    optional int32  status = 4;
+    optional int32  ctime = 5;
+}
+
+message BuyerAddress
+{
+    optional int32  id = 1;
+    optional int32  userid = 2;
+    optional string name = 3;
+    optional string phone = 4;
+    optional string country = 5;
+    optional string state = 6;
+    optional string city = 7;
+    optional string address = 8;
+    optional int32  status = 9;
+    optional int32  ctime = 10;
+    optional int32  mtime = 11;
+    optional string zipcode = 12;
+    optional int32  deftime = 13;
+    optional string full_address = 14;
+	optional string district = 15; // newly added fields used for different level address
+	optional string town = 16;
+	optional int32  logistics_status = 17; // last recent logistics success status, 0-default, 1-success, 2-failed
+}
+
+message TransHistory
+{
+    optional int32  transid = 1;
+    optional int32  userid = 2;
+    optional int32  shopid = 3;
+    optional int64  orderid = 4;
+    optional string image = 5;
+    optional string custom_name = 6;
+    optional string withdraw_name = 7;
+    optional string withdraw_bankacc = 8;
+    optional int64  amount = 9;
+    optional string currency = 10;
+    optional int64  withdraw_transfee = 11;
+    optional int32  trans_type = 12;
+    optional int32  status = 13;
+    optional int32  ctime = 14;
+    optional int32  mtime = 15;
+    optional int32  release_time = 16;
+    optional int64  price_before_discount = 17;
+}
+
+message UserLoginInfo
+{
+    optional int32  userid = 1;
+    optional string server_addr = 2;
+    optional int32  timestamp = 3;
+    optional uint64 clikey = 4;
+    optional int32  shopid = 5;
+    optional bool   push_ready = 6;
+    optional string country = 7;
+}
+
+message UserLoginClikey
+{
+    optional int32  userid = 1;
+    repeated uint64 clikey = 2;
+}
+
+message ChatTextInfo
+{
+    required string text = 1;
+}
+
+message ChatImageInfo
+{
+    required string imageUrl = 1;
+    optional string thumbUrl = 2;
+    optional int32 thumbWidth = 3;
+    optional int32 thumbHeight = 4;
+}
+
+message ChatProductInfo
+{
+    optional int64 itemid = 1;
+    optional int32 shopid = 2;
+    optional string name = 3;
+    optional string thumbUrl = 4;
+    optional string price = 5;
+    optional int32 quantity = 6;
+    optional int64 snapshopid = 7;
+}
+
+message ChatOfferInfo
+{
+    required int32 offerStatus = 1;
+    required int64 price = 2;
+    required string currency = 3;
+    required int32 quantity = 4;
+}
+
+message Category
+{
+    optional int32  catid = 1;
+    optional string name = 2;
+    optional string image = 3;
+    optional string country = 4;
+    optional int32  status = 5;
+    optional int32  sort_weight = 6;  // for homepage
+    optional string display_name = 7;
+    optional int32  usage_sort_weight = 8;  // for add product
+    optional int32  parent_category = 9; // parent catid, 0 for top level category
+    optional int32  is_default_subcat = 10; // this category is default subcategory in parent cat, for old version app
+}
+
+message Conversation
+{
+    optional int64  chatid = 1;
+    optional int32  buyer_userid = 2;
+    optional int32  seller_userid = 3;
+    optional int32  shopid = 4;
+    optional int64  itemid = 5;
+    optional int32  buy_count = 6;
+    optional int64  offer_price = 7;
+    optional int64  accept_price = 8;
+    optional int32  offer_status = 9;
+    optional int32  ctime = 10;  // create time of offer
+    optional int32  mtime = 11;  // modify time of offer
+    optional int64  orderid = 12;
+    optional int32  archive = 13;
+}
+
+message ConversationMsg
+{
+    optional int64  chatid = 1;
+    optional int32  userid = 2;  // from userid
+    optional int64  msgid = 3;
+    optional int32  status = 4;
+    optional int32  ctime = 5;
+}
+
+message Cart
+{
+    optional int32  id          = 1;
+    optional int32  userid      = 2;
+    optional int32  shopid      = 3;
+    optional int32  mtime       = 4;
+    optional string cartproto   = 5; // cmd.ShopOrder
+    optional int32  item_count  = 6; // number of items in cartproto
+}
+
+message Activity
+{
+    optional int32  activity_id     = 1;
+    optional int32  userid          = 2;
+    optional int32  type            = 3; // db.ActivityType
+    optional int32  createtime      = 4;
+    optional string activity_proto  = 5; // cmd.ActivityInfo
+    optional int32  status          = 6; // db.Status_ACTIVITY_
+}
+
+message SimpleAction  
+{
+    optional int64  action_id       = 1;
+}
+
+message Action
+{
+    optional int64  action_id       = 1;
+    optional int32  userid          = 2;
+    optional int32  type            = 3; // cmd.NotiCode
+    optional int32  createtime      = 4;
+    optional string action_proto  = 5; // cmd.ActionInfoDB
+    optional int32  status          = 6; // db.Status_ACTION_
+}
+
+message ProductListWeight
+{
+    optional int32  id              = 1; // autoincrement primary key
+    optional int32  catid          = 2; // -1 for default
+    optional int32  weight_type     = 3; // ProductListWeightType
+    optional double weight_value    = 4;
+    optional int32  mtime           = 5;
+    optional string country         = 6;
+}
+
+message RecUserConfig
+{
+    optional int32 id				= 1; // autoincrement primary key
+    optional string fname 			= 2; // config name
+    optional string algo_name 		= 3; // algorithm name
+    optional string country			= 4;
+    optional int32 fvalue 			= 5;
+}
+
+message RecUserStats
+{
+    optional int32 id			    = 1; // autoincrement primary key
+    optional int32 shopid		    = 2;
+    optional int32 userid 			= 3;
+    optional string country 		= 4;
+    optional string category		= 5; // stat type i.e."search"
+    optional int32 ctime			= 6;
+    optional int32 value			= 7;
+}
+
+message RecUserBoost
+{
+    optional int32 id				= 1;
+    optional int32 userid			= 2;
+    optional double boost_value		= 3;
+    optional string country			= 4;
+}
+
+message ProductListBoost
+{
+    optional int32  id              = 1;
+    optional int32  shopid          = 2;
+    optional int64  itemid          = 3;
+    optional double boost_value     = 4;
+    optional string country         = 5;
+    optional int32  mtime           = 6;
+    optional int32  status          = 7;
+}
+
+
+message Collection
+{
+    optional int32  collection_id   = 1;
+    optional string name            = 2;
+    optional string description     = 3;
+    optional string image           = 4;
+    optional string country         = 5;
+    optional int32  status          = 6;
+    optional int32  ctime           = 7;
+    optional int32  mtime           = 8;
+    optional string data            = 9;
+}
+
+message ReturnInfo
+{
+    repeated int64  itemid = 1;
+    optional string buyer_email = 2;
+    optional string seller_email = 3;
+    repeated OrderItem item = 4;
+    optional int32 requested_time = 5;
+    optional int32 accepted_time = 6;
+    optional int32 cancelled_time = 7;
+    optional int32 judging_time = 8;
+    optional int32 refundpaid_time = 9;
+    optional int32 closed_time = 10;
+    optional string text_reason = 11;
+    optional int32 seller_due_date = 12;
+    optional int32 dispute_reason = 13;
+    optional string dispute_text_reason = 14;
+    optional int32 seller_reply_due_date = 15; // seller provide evidence due date
+    optional int64  amount_before_discount = 16; // amount of money to refund before voucher
+    optional int32	discount_percentage = 17;
+    optional PromotionInfo promotion_info = 18;
+    optional int64 shipping_fee = 19; // returns the shipping fee part of total return
+}
+
+message Return
+{
+    optional int64  return_id       = 1;
+    optional int64  orderid         = 2;
+    optional int32  shopid          = 3;
+    optional int32  userid          = 4;
+    optional int64  refund_amount   = 5; // actual refund amount of money
+    optional string currency        = 6;
+    optional int32  reason          = 7;
+    optional int32  status          = 8;
+    optional int32  ctime           = 9;
+    optional int32  mtime           = 10;
+    optional bytes  return_info     = 11; // serialized format data of ReturnInfo
+    optional string country         = 12;
+    optional string return_sn       = 13;
+    optional int32  archive         = 14;
+}
+
+message Contact
+{
+    optional int32  userid          = 1;
+    optional string account         = 2;
+    optional int32  acctype         = 3;
+    optional int32  acc_userid      = 4;
+    optional int32  acc_shopid      = 5;
+    optional int32  status          = 6;
+    optional string name            = 7;
+    optional bytes  deviceid        = 8;
+}
+
+message RefundExtInfo
+{
+    optional BankAccountInfo    bank_account = 1;
+    optional int32  batchid = 2;
+    optional string checkout_sn = 3;
+    optional int32 created_time = 4;
+    optional int32 verified_time = 5;
+    optional int32 pending_time = 6;
+    optional int32 paid_time = 7;
+    optional int32 days_shopee = 8;
+    optional int32 days_bank = 9;
+    optional int64 amount_before_discount = 10; // amount of money before voucher
+    optional int32 discount_percentage = 11; // percentage of discount if the voucher is this type
+    optional PromotionInfo promotion_info = 12;
+}
+
+message Refund
+{
+    optional int64  refund_id = 1;
+    optional int32  userid = 2;
+    optional int32  status = 3;
+    optional int64  amount = 4;
+    optional string currency = 5;
+    optional string reason = 6;
+    optional int32  ctime = 7;
+    optional int32  mtime = 8;
+    optional int64  orderid = 9;
+    optional int32  shopid = 10;
+    optional int64  return_id = 11;
+    optional string country = 12;
+    optional string refund_sn = 13;
+    optional int64  checkoutid = 14;
+    optional int32  payment_method = 15;
+    optional bytes  extinfo = 16;  // RefundExtInfo
+    optional int32  bankaccount_id = 17;
+}
+
+message CheckoutOrder
+{
+    optional int32  shopid = 1;
+    optional int64  orderid = 2;
+    optional int32  item_count = 3;
+    repeated string images = 4;
+    optional int32  status = 5;
+    optional int64  price = 6; // actual_price of Order
+    optional string currency = 7;
+    optional int32  days_to_pay = 8;
+    optional string ordersn = 9;
+}
+
+message CheckoutPaymentInfo
+{
+    optional int32 bank_transfer_option = 1; // enum BankTransferOption
+    optional string bank_transfer_bank  = 2;
+    optional int32 channelid = 3;
+}
+
+message CheckoutInfo
+{
+    repeated CheckoutOrder order = 1;
+    optional string payment_channel_name = 2;
+    optional int64 unique_code = 3;
+    optional int32 payment_card = 4;
+    optional int32 payby_date = 5;
+    optional int32 receipt_upload_time = 6;
+    optional int32 receipt_processby_date = 7;
+    optional int32 receipt_reject_time = 8;
+    optional int32 receipt_process_work_days = 9;
+    optional int32 checkout_order_type = 10;    // OrderType
+    optional int64 price_before_discount = 11;  // total price before use voucher, with shipping fee
+    optional int32 discount_percentage = 12;    // if the promotion is discount then display otherwise unset
+    optional PromotionInfo promotion_info = 13;
+    optional int64 total_shipping_fee = 14; // All orders' shipping fees
+    optional CheckoutPaymentInfo checkout_payment_info = 15;
+}
+
+// Checkout price calculation
+// voucher = price_before_discount - total_price
+// total price without shipping = price_before_discount - total_shipping_fee
+
+message Checkout
+{
+    optional int64  checkoutid = 1;
+    optional int32  userid = 2;
+    optional int32  status = 3; // see Status_PAYMENT_*
+    optional int64  total_price = 4; // All orders' total price + all orders' shipping fees
+    optional int64  paid_amount = 5;
+    optional string currency = 6;	// currency unit used for display, e.g. sg dollar, us dollar...
+    optional int32  ctime = 7;		// create time of the checkout in seconds
+    optional int32  mtime = 8;		// last modify time of the checkout in seconds
+    optional bytes  checkout_info = 9;	// info contains serialized form of CheckoutInfo
+    optional string country = 10;
+    optional int32  payment_status = 11; // see PaymentStatus
+    optional string checkout_sn = 12;	// this sn is returned to user for check
+    optional int64  actual_price = 13;	// total price of not canceled items
+    optional int32  payment_type = 14;  // see PaymentMethod
+	optional int32  logistics_status = 15; // see Order.logistics_status - Status_LOGISTICS_*
+}
+
+message Device
+{
+    optional bytes deviceid = 1;
+    optional bytes pn_token = 2;
+    optional int32  ctime = 3;			// server fill, client ignore
+    optional int32  mtime = 4;			// server fill, client ignore
+    optional int32  device_hash = 5;	// index field, client ignore
+    optional int32  appversion = 6;
+    optional string country = 7;
+    optional string machine_code = 8;
+    optional bytes  extinfo = 9;		// for future extension
+    optional int32  userid = 10;
+}
+
+
+message MarketPushnoti
+{
+    optional int32 task_id          = 1;
+    optional string operator_email  = 2;
+    optional string description     = 3;
+    optional string banner          = 4;
+    optional string url             = 5;
+    optional string title           = 6;
+    optional string content         = 7;
+    optional string placeholder_string  = 8;
+    optional string country         = 9;
+    optional string status          = 10;
+    optional string error_msg       = 11;
+    optional int32 ctime            = 12;
+    optional int32 mtime            = 13;
+    //optional string stats_info      = 14;
+    optional string name            = 15;
+    optional int32 send_option      = 16;  // 0:AR+PN  1:PN
+    optional bytes  extinfo         = 17;   // serilized TriggerCustomizedNoti
+    optional string action_content   = 18;
+}
+
+message MarketPushnotiTasklist
+{
+    optional int32 id               = 1;
+    optional int32 task_id          = 2;
+    optional int32 user_id          = 3;
+    optional string value_string    = 4;
+    optional string push_content    = 5;
+    optional string status          = 6;
+    optional string error_msg       = 7;
+    optional int32 ctime            = 8;
+    optional int32 mtime            = 9;
+    optional string url             = 10;
+    optional string banner          = 11;
+    optional string title           = 12;
+    optional int32 task_type        = 13;
+    optional int32 send_option      = 14;  // 0:AR+PN  1:PN
+    optional bytes  extinfo         = 15;   // serilized TriggerCustomizedNoti
+    optional string pure_action_content  = 16; 
+}
+
+message ItemCategory
+{
+    optional int32 categoryid = 1;
+    optional int64 itemid = 2;
+    optional int32 shopid = 3;
+    optional int32 mtime = 4;
+    optional int32 score = 5;
+    optional int32 is_invisible = 6;
+}

@@ -1,0 +1,41 @@
+import "beeshop_db.proto";
+package beeshop.cmd;
+option java_package = "com.shopee.app.database.orm.bean";
+
+message ItemExtInfo
+{
+    optional int32  estimated_days = 1;
+    optional int64  price_before_discount = 2;  // origin price before the seller promotion
+    optional bytes  logistics_info = 3; // json defined by xianyou
+    optional int64  seller_promotionid = 4; // if price_before_discount != price, this is the seller promotionid
+    optional string display_shipping_fee = 5; // calculated shipping fee used for client to display
+    optional string instagram_media_id = 6; // instagram item id
+    optional int64 rebate_price = 7; // Cost of Good Sold, for seller promotion
+}
+
+message BackendParam
+{
+    optional int32  userid = 1;
+    optional int32  shopid = 2;
+    optional string reason = 3;
+    optional string operator = 4;
+    optional string country = 5;
+    optional bool   need_audit_log = 6;
+}
+
+
+message OrderItem
+{
+    optional int32  userid = 1;
+    optional int64  orderid = 2;
+    optional int32  shopid = 3;
+    required int64  itemid = 4;
+    optional int64  modelid = 5;	// each item can has more different models
+    optional int32  amount = 6;
+    optional int64  item_price = 7;  // same as Item.Price
+    optional int64  order_price = 8;  // if has offer, equals to offer price else equals item_price
+    optional string currency = 9;
+    optional int32  status = 10;
+    optional int64  chatid = 11;  // use chatid to find offer
+    optional int64  snapshotid = 12;	// ItemSnapshot->snapshopid
+}

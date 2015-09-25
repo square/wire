@@ -1,0 +1,21 @@
+package PBData;
+
+message String
+{
+	required string value = 1;
+}
+
+message Bool
+{
+	required bool value = 1;
+}
+
+message Int
+{
+	required int64 value = 1;
+}
+
+message UInt
+{
+	required uint64 value = 1;
+}
