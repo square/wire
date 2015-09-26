@@ -20,15 +20,15 @@ import com.google.common.io.Closer;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ProtoParser;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayDeque;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +44,6 @@ import okio.Source;
  */
 public final class SchemaLoader {
   private final List<Path> sources = new ArrayList<>();
-  private final List<String> protos = new ArrayList<>();
 
   /** Add directory or zip file source from which proto files will be loaded. */
   public SchemaLoader addSource(File file) {
@@ -60,20 +59,6 @@ public final class SchemaLoader {
   /** Returns a mutable list of the sources that this loader will load from. */
   public List<Path> sources() {
     return sources;
-  }
-
-  /**
-   * Add one or more proto files to load. Dependencies will be loaded automatically from the
-   * configured sources.
-   */
-  public SchemaLoader addProto(String proto) {
-    protos.add(proto);
-    return this;
-  }
-
-  /** Returns a mutable list of the protos that this loader will load. */
-  public List<String> protos() {
-    return protos;
   }
 
   public Schema load() throws IOException {
@@ -92,58 +77,30 @@ public final class SchemaLoader {
           directories.add(source);
         }
       }
-      return loadZipsAndDirectories(directories);
+      return loadFromDirectories(directories);
     }
   }
 
-  private Schema loadZipsAndDirectories(List<Path> directories) throws IOException {
-    Deque<String> protos = new ArrayDeque<>(this.protos);
+  private Schema loadFromDirectories(final List<Path> directories) throws IOException {
+    final Map<Path, ProtoFile> loaded = new LinkedHashMap<>();
 
-    Map<String, ProtoFile> loaded = new LinkedHashMap<>();
-    while (!protos.isEmpty()) {
-      String proto = protos.removeFirst();
-      if (loaded.containsKey(proto)) {
-        continue;
-      }
-
-      ProtoFileElement element = null;
-      for (Path directory : directories) {
-        Source source = source(proto, directory);
-        if (source == null) {
-          continue;
+    for (final Path directory : directories) {
+      Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+        @Override
+        public FileVisitResult visitFile(Path proto, BasicFileAttributes attrs) throws IOException {
+          if (!loaded.containsKey(proto)) {
+            try (Source source = Okio.source(proto)) {
+              Location location = Location.get(directory.relativize(proto).toString());
+              String data = Okio.buffer(source).readUtf8();
+              ProtoFileElement element = ProtoParser.parse(location, data);
+              loaded.put(proto, ProtoFile.get(element));
+            }
+          }
+          return FileVisitResult.CONTINUE;
         }
-
-        try {
-          Location location = Location.get(directory.toString(), proto);
-          String data = Okio.buffer(source).readUtf8();
-          element = ProtoParser.parse(location, data);
-        } catch (IOException e) {
-          throw new IOException("Failed to load " + proto + " from " + directory, e);
-        } finally {
-          source.close();
-        }
-      }
-      if (element == null) {
-        throw new FileNotFoundException("Failed to locate " + proto + " in " + sources);
-      }
-
-      ProtoFile protoFile = ProtoFile.get(element);
-      loaded.put(proto, protoFile);
-
-      // Queue dependencies to be loaded.
-      for (String importPath : element.imports()) {
-        protos.addLast(importPath);
-      }
+      });
     }
 
     return new Linker(loaded.values()).link();
-  }
-
-  private static Source source(String proto, Path directory) throws IOException {
-    Path resolvedPath = directory.resolve(proto);
-    if (Files.exists(resolvedPath)) {
-      return Okio.source(resolvedPath);
-    }
-    return null;
   }
 }

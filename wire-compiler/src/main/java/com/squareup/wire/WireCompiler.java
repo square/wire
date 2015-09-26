@@ -73,9 +73,6 @@ public final class WireCompiler {
     for (String protoPath : options.protoPaths) {
       schemaLoader.addSource(fs.getPath(protoPath));
     }
-    for (String sourceFileName : options.sourceFileNames) {
-      schemaLoader.addProto(sourceFileName);
-    }
     Schema schema = schemaLoader.load();
 
     if (!options.roots.isEmpty()) {
@@ -88,10 +85,6 @@ public final class WireCompiler {
         .withAndroid(options.emitAndroid);
 
     for (ProtoFile protoFile : schema.protoFiles()) {
-      if (!options.sourceFileNames.contains(protoFile.location().path())) {
-        continue; // Don't emit anything for files not explicitly compiled.
-      }
-
       for (Type type : protoFile.types()) {
         ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.name());
         TypeSpec typeSpec = type instanceof MessageType

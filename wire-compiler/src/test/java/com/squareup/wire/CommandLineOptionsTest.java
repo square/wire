@@ -1,9 +1,6 @@
 package com.squareup.wire;
 
 import com.google.common.collect.Lists;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,40 +36,6 @@ public class CommandLineOptionsTest {
 
     options = new CommandLineOptions("--java_out=baz/qux");
     assertThat(options.javaOut).isEqualTo("baz/qux");
-  }
-
-  @Test public void sourceFileNames() throws Exception {
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.sourceFileNames).isEmpty();
-
-    List<String> expected = new ArrayList<>();
-    options = new CommandLineOptions("baz", "qux");
-    expected.add("baz");
-    expected.add("qux");
-    assertThat(options.sourceFileNames).isEqualTo(expected);
-  }
-
-  @Test public void sourceFileNamesFromInclude() throws Exception {
-    File tmpFile = File.createTempFile("proto", ".include");
-    try {
-      PrintWriter out = new PrintWriter(new FileOutputStream(tmpFile));
-      out.println("foo");
-      out.println("bar");
-      out.close();
-
-      CommandLineOptions options = new CommandLineOptions("--files=" + tmpFile.getAbsolutePath());
-      List<String> expected = new ArrayList<>();
-      expected.add("foo");
-      expected.add("bar");
-      assertThat(options.sourceFileNames).isEqualTo(expected);
-
-      // Test both --files and bare filenames together
-      options = new CommandLineOptions("--files=" + tmpFile.getAbsolutePath(), "baz");
-      expected.add("baz");
-      assertThat(options.sourceFileNames).isEqualTo(expected);
-    } finally {
-      tmpFile.delete();
-    }
   }
 
   @Test public void roots() throws Exception {

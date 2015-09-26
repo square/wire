@@ -15,19 +15,17 @@
  */
 package com.squareup.wire;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
+
+import static java.util.Collections.singletonList;
 
 final class CommandLineOptions {
   public static final String PROTO_PATH_FLAG = "--proto_path=";
   public static final String JAVA_OUT_FLAG = "--java_out=";
-  public static final String FILES_FLAG = "--files=";
   public static final String ROOTS_FLAG = "--roots=";
   public static final String REGISTRY_CLASS_FLAG = "--registry_class=";
   public static final String NO_OPTIONS_FLAG = "--no_options";
@@ -38,7 +36,6 @@ final class CommandLineOptions {
 
   final List<String> protoPaths;
   final String javaOut;
-  final List<String> sourceFileNames;
   final List<String> roots;
   final String registryClass;
   final boolean emitOptions;
@@ -47,12 +44,11 @@ final class CommandLineOptions {
   final boolean dryRun;
   final boolean emitAndroid;
 
-  CommandLineOptions(String protoPath, String javaOut, List<String> sourceFileNames,
-      List<String> roots, String registryClass, boolean emitOptions, Set<String> enumOptions,
-      boolean quiet, boolean dryRun, boolean emitAndroid) {
-    this.protoPaths = Arrays.asList(protoPath);
+  CommandLineOptions(String protoPath, String javaOut, List<String> roots, String registryClass,
+      boolean emitOptions, Set<String> enumOptions, boolean quiet, boolean dryRun,
+      boolean emitAndroid) {
+    this.protoPaths = singletonList(protoPath);
     this.javaOut = javaOut;
-    this.sourceFileNames = sourceFileNames;
     this.roots = roots;
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
@@ -67,13 +63,12 @@ final class CommandLineOptions {
    *
    * <pre>
    * java WireCompiler --proto_path=&lt;path&gt; --java_out=&lt;path&gt;
-   *     [--files=&lt;protos.include&gt;] [--roots=&lt;message_name&gt;[,&lt;message_name&gt;...]]
+   *     [--roots=&lt;message_name&gt;[,&lt;message_name&gt;...]]
    *     [--registry_class=&lt;class_name&gt;] [--no_options]
    *     [--enum_options=&lt;option_name&gt;[,&lt;option_name&gt;...]]
    *     [--service_factory=&lt;class_name&gt;]
    *     [--service_factory_opt=&lt;value&gt;] [--service_factory_opt=&lt;value&gt;]...]
    *     [--quiet] [--dry_run] [--android]
-   *     [file [file...]]
    * </pre>
    *
    * If the {@code --roots} flag is present, its argument must be a comma-separated list
@@ -107,9 +102,10 @@ final class CommandLineOptions {
    * interface.
    */
   CommandLineOptions(String... args) throws WireException {
-    int index = 0;
+    this(Arrays.asList(args));
+  }
 
-    List<String> sourceFileNames = new ArrayList<>();
+  CommandLineOptions(List<String> args) throws WireException {
     List<String> roots = new ArrayList<>();
     boolean emitOptions = true;
     List<String> protoPaths = new ArrayList<>();
@@ -120,43 +116,32 @@ final class CommandLineOptions {
     boolean dryRun = false;
     boolean emitAndroid = false;
 
-    while (index < args.length) {
-      if (args[index].startsWith(PROTO_PATH_FLAG)) {
-        protoPaths.add(args[index].substring(PROTO_PATH_FLAG.length()));
-      } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
-        javaOut = args[index].substring(JAVA_OUT_FLAG.length());
-      } else if (args[index].startsWith(FILES_FLAG)) {
-        File files = new File(args[index].substring(FILES_FLAG.length()));
-        String[] fileNames;
-        try {
-          fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
-        } catch (FileNotFoundException ex) {
-          throw new WireException("Error processing argument " + args[index], ex);
-        }
-        sourceFileNames.addAll(Arrays.asList(fileNames));
-      } else if (args[index].startsWith(ROOTS_FLAG)) {
-        roots.addAll(splitArg(args[index], ROOTS_FLAG.length()));
-      } else if (args[index].startsWith(REGISTRY_CLASS_FLAG)) {
-        registryClass = args[index].substring(REGISTRY_CLASS_FLAG.length());
-      } else if (args[index].equals(NO_OPTIONS_FLAG)) {
+    for (String arg : args) {
+      if (arg.startsWith(PROTO_PATH_FLAG)) {
+        protoPaths.add(arg.substring(PROTO_PATH_FLAG.length()));
+      } else if (arg.startsWith(JAVA_OUT_FLAG)) {
+        javaOut = arg.substring(JAVA_OUT_FLAG.length());
+      } else if (arg.startsWith(ROOTS_FLAG)) {
+        roots.addAll(splitArg(arg, ROOTS_FLAG.length()));
+      } else if (arg.startsWith(REGISTRY_CLASS_FLAG)) {
+        registryClass = arg.substring(REGISTRY_CLASS_FLAG.length());
+      } else if (arg.equals(NO_OPTIONS_FLAG)) {
         emitOptions = false;
-      } else if (args[index].startsWith(ENUM_OPTIONS_FLAG)) {
-        enumOptionsList.addAll(splitArg(args[index], ENUM_OPTIONS_FLAG.length()));
-      } else if (args[index].equals(QUIET_FLAG)) {
+      } else if (arg.startsWith(ENUM_OPTIONS_FLAG)) {
+        enumOptionsList.addAll(splitArg(arg, ENUM_OPTIONS_FLAG.length()));
+      } else if (arg.equals(QUIET_FLAG)) {
         quiet = true;
-      } else if (args[index].equals(DRY_RUN_FLAG)) {
+      } else if (arg.equals(DRY_RUN_FLAG)) {
         dryRun = true;
-      } else if (args[index].equals(ANDROID)) {
+      } else if (arg.equals(ANDROID)) {
         emitAndroid = true;
       } else {
-        sourceFileNames.add(args[index]);
+        throw new IllegalArgumentException("Unknown flag: " + arg);
       }
-      index++;
     }
 
     this.protoPaths = protoPaths;
     this.javaOut = javaOut;
-    this.sourceFileNames = sourceFileNames;
     this.roots = roots;
     this.registryClass = registryClass;
     this.emitOptions = emitOptions;
