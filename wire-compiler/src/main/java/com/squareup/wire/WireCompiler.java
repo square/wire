@@ -71,10 +71,10 @@ public final class WireCompiler {
   public void compile() throws IOException {
     SchemaLoader schemaLoader = new SchemaLoader();
     for (String protoPath : options.protoPaths) {
-      schemaLoader.addDirectory(fs.getPath(protoPath));
+      schemaLoader.addSource(fs.getPath(protoPath));
     }
     for (String sourceFileName : options.sourceFileNames) {
-      schemaLoader.addProto(fs.getPath(sourceFileName));
+      schemaLoader.addProto(sourceFileName);
     }
     Schema schema = schemaLoader.load();
 

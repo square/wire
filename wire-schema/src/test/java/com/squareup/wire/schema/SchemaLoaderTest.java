@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.junit.Rule;
@@ -39,10 +38,10 @@ public final class SchemaLoaderTest {
     File file2 = tempFolder2.newFile();
 
     new SchemaLoader()
-        .addDirectory(tempFolder1.getRoot())
-        .addDirectory(tempFolder2.getRoot())
-        .addProto(file1)
-        .addProto(file2)
+        .addSource(tempFolder1.getRoot())
+        .addSource(tempFolder2.getRoot())
+        .addProto(file1.getName())
+        .addProto(file2.getName())
         .load();
   }
 
@@ -50,8 +49,8 @@ public final class SchemaLoaderTest {
     File file = tempFolder2.newFile();
 
     SchemaLoader loader = new SchemaLoader()
-        .addDirectory(tempFolder1.getRoot())
-        .addProto(file);
+        .addSource(tempFolder1.getRoot())
+        .addProto(file.getName());
     try {
       loader.load();
       fail();
@@ -67,8 +66,8 @@ public final class SchemaLoaderTest {
     zipOutputStream.close();
 
     Schema schema = new SchemaLoader()
-        .addDirectory(file)
-        .addProto(Paths.get("a", "b", "message.proto"))
+        .addSource(file)
+        .addProto("a/b/message.proto")
         .load();
     assertThat(schema.getType("Message")).isNotNull();
   }
@@ -82,8 +81,8 @@ public final class SchemaLoaderTest {
 
     try {
       new SchemaLoader()
-          .addDirectory(file)
-          .addProto(Paths.get("a", "b", "rabbit_food.proto"))
+          .addSource(file)
+          .addProto("a/b/message.proto")
           .load();
       fail();
     } catch (FileNotFoundException expected) {

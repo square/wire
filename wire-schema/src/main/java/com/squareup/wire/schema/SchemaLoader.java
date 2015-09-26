@@ -15,12 +15,15 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.collect.Iterables;
+import com.google.common.io.Closer;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ProtoParser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -29,118 +32,89 @@ import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import okio.Okio;
 import okio.Source;
 
 /**
  * Load proto files and their transitive dependencies, parse them, and link them together.
  *
- * <p>To find proto files to load, a non-empty set of directories is searched. Each directory is
+ * <p>To find proto files to load, a non-empty set of sources are searched. Each source is
  * either a regular directory or a ZIP file. Within ZIP files, proto files are expected to be found
  * relative to the root of the archive.
  */
 public final class SchemaLoader {
-  private final List<Path> directories = new ArrayList<>();
-  private final List<Path> protos = new ArrayList<>();
+  private final List<Path> sources = new ArrayList<>();
+  private final List<String> protos = new ArrayList<>();
 
-  /** Open ZIP files that need to be released. Only non-empty while loading. */
-  private final Map<Path, ZipFile> zipFiles = new LinkedHashMap<>();
-
-  /** Add one or more directories from which proto files will be loaded. */
-  public SchemaLoader addDirectory(File file) {
-    return addDirectory(file.toPath());
+  /** Add directory or zip file source from which proto files will be loaded. */
+  public SchemaLoader addSource(File file) {
+    return addSource(file.toPath());
   }
 
-  /** Add one or more directories from which proto files will be loaded. */
-  public SchemaLoader addDirectory(Path path) {
-    directories.add(path);
+  /** Add directory or zip file source from which proto files will be loaded. */
+  public SchemaLoader addSource(Path path) {
+    sources.add(path);
     return this;
   }
 
-  /** Returns a mutable list of the directories that this loader will load from. */
-  public List<Path> directories() {
-    return directories;
+  /** Returns a mutable list of the sources that this loader will load from. */
+  public List<Path> sources() {
+    return sources;
   }
 
   /**
    * Add one or more proto files to load. Dependencies will be loaded automatically from the
-   * configured directories.
+   * configured sources.
    */
-  public SchemaLoader addProto(File file) {
-    return addProto(file.toPath());
-  }
-
-  /**
-   * Add one or more proto files to load. Dependencies will be loaded automatically from the
-   * configured directories.
-   */
-  public SchemaLoader addProto(Path path) {
-    protos.add(path);
+  public SchemaLoader addProto(String proto) {
+    protos.add(proto);
     return this;
   }
 
   /** Returns a mutable list of the protos that this loader will load. */
-  public List<Path> protos() {
+  public List<String> protos() {
     return protos;
   }
 
   public Schema load() throws IOException {
-    if (directories.isEmpty()) {
-      throw new IllegalStateException("No directories added.");
+    if (sources.isEmpty()) {
+      throw new IllegalStateException("No sources added.");
     }
 
-    try {
-      // Attempt to load open each directory entry as a ZIP file. Most will fail; the rest are
-      // real ZIP files. We could ask first "is this a ZIP file" but trying and failing is easier!
-      for (Path directory : directories) {
-        if (Files.isRegularFile(directory)) {
-          try {
-            ZipFile zipFile = new ZipFile(directory.toFile());
-            zipFiles.put(directory, zipFile);
-          } catch (IOException ignored) {
-            // Not a ZIP file?!
-          }
+    try (Closer closer = Closer.create()) {
+      List<Path> directories = new ArrayList<>();
+      for (Path source : sources) {
+        if (Files.isRegularFile(source)) {
+          FileSystem sourceFs = FileSystems.newFileSystem(source, getClass().getClassLoader());
+          closer.register(sourceFs);
+          Iterables.addAll(directories, sourceFs.getRootDirectories());
+        } else {
+          directories.add(source);
         }
       }
-      return loadZipsAndDirectories();
-    } finally {
-      for (ZipFile zipFile : zipFiles.values()) {
-        try {
-          zipFile.close();
-        } catch (IOException ignored) {
-        }
-      }
-      zipFiles.clear();
+      return loadZipsAndDirectories(directories);
     }
   }
 
-  private Schema loadZipsAndDirectories() throws IOException {
-    Deque<Path> protos = new ArrayDeque<>(this.protos);
-    if (protos.isEmpty()) {
-      // TODO traverse all files in every directory.
-    }
+  private Schema loadZipsAndDirectories(List<Path> directories) throws IOException {
+    Deque<String> protos = new ArrayDeque<>(this.protos);
 
-    Map<Path, ProtoFile> loaded = new LinkedHashMap<>();
+    Map<String, ProtoFile> loaded = new LinkedHashMap<>();
     while (!protos.isEmpty()) {
-      Path proto = protos.removeFirst();
+      String proto = protos.removeFirst();
       if (loaded.containsKey(proto)) {
         continue;
       }
 
       ProtoFileElement element = null;
       for (Path directory : directories) {
-        if (proto.isAbsolute() && !proto.startsWith(directory)) {
-          continue;
-        }
         Source source = source(proto, directory);
         if (source == null) {
           continue;
         }
 
         try {
-          Location location = Location.get(directory.toString(), proto.toString());
+          Location location = Location.get(directory.toString(), proto);
           String data = Okio.buffer(source).readUtf8();
           element = ProtoParser.parse(location, data);
         } catch (IOException e) {
@@ -150,34 +124,26 @@ public final class SchemaLoader {
         }
       }
       if (element == null) {
-        throw new FileNotFoundException("Failed to locate " + proto + " in " + directories);
+        throw new FileNotFoundException("Failed to locate " + proto + " in " + sources);
       }
 
       ProtoFile protoFile = ProtoFile.get(element);
       loaded.put(proto, protoFile);
 
       // Queue dependencies to be loaded.
-      FileSystem fs = proto.getFileSystem();
       for (String importPath : element.imports()) {
-        protos.addLast(fs.getPath(importPath));
+        protos.addLast(importPath);
       }
     }
 
     return new Linker(loaded.values()).link();
   }
 
-  private Source source(Path proto, Path directory) throws IOException {
-    ZipFile zipFile = zipFiles.get(directory);
-    ZipEntry zipEntry;
-    if (zipFile != null && (zipEntry = zipFile.getEntry(proto.toString())) != null) {
-      return Okio.source(zipFile.getInputStream(zipEntry));
-    }
-
+  private static Source source(String proto, Path directory) throws IOException {
     Path resolvedPath = directory.resolve(proto);
     if (Files.exists(resolvedPath)) {
       return Okio.source(resolvedPath);
     }
-
     return null;
   }
 }
