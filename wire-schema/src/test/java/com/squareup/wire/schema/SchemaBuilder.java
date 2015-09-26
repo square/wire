@@ -32,7 +32,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 class SchemaBuilder {
   final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
   final Path root = fs.getPath("/");
-  final SchemaLoader schemaLoader = new SchemaLoader().addDirectory(root);
+  final SchemaLoader schemaLoader = new SchemaLoader().addSource(root);
 
   public SchemaBuilder add(String name, String protoFile) {
     Path relativePath = fs.getPath(name);
@@ -46,7 +46,7 @@ class SchemaBuilder {
     } catch (IOException e) {
       throw new AssertionError(e);
     }
-    schemaLoader.addProto(relativePath);
+    schemaLoader.addProto(name);
     return this;
   }
 

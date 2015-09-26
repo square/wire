@@ -154,10 +154,10 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
 
     SchemaLoader schemaLoader = new SchemaLoader();
     for (String directory : directories) {
-      schemaLoader.addDirectory(new File(directory));
+      schemaLoader.addSource(new File(directory));
     }
     for (String proto : protos) {
-      schemaLoader.addProto(new File(proto));
+      schemaLoader.addProto(proto);
     }
     Schema schema = schemaLoader.load();
 
