@@ -12,8 +12,8 @@ import java.util.List;
 public final class ProtoRegistry {
   @SuppressWarnings("unchecked")
   public static final List<Class<?>> EXTENSIONS = Collections.unmodifiableList(Arrays.asList(
-      Ext_simple_message.class,
-      Ext_foreign.class));
+      Ext_foreign.class,
+      Ext_simple_message.class));
 
   private ProtoRegistry() {
   }

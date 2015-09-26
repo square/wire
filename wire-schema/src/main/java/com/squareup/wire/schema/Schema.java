@@ -17,6 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Ordering;
 import com.squareup.wire.ProtoAdapter;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -29,12 +30,18 @@ import java.util.Map;
  * <p>Use {@link SchemaLoader} to load a schema from source files.
  */
 public final class Schema {
+  private static final Ordering<ProtoFile> PATH_ORDER = new Ordering<ProtoFile>() {
+    @Override public int compare(ProtoFile left, ProtoFile right) {
+      return left.location().path().compareTo(right.location().path());
+    }
+  };
+
   private final ImmutableList<ProtoFile> protoFiles;
   private final ImmutableMap<String, Type> typesIndex;
   private final ImmutableMap<String, Service> servicesIndex;
 
   Schema(Iterable<ProtoFile> protoFiles) {
-    this.protoFiles = ImmutableList.copyOf(protoFiles);
+    this.protoFiles = PATH_ORDER.immutableSortedCopy(protoFiles);
     this.typesIndex = buildTypesIndex(protoFiles);
     this.servicesIndex = buildServicesIndex(protoFiles);
   }
