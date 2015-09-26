@@ -46,7 +46,6 @@ class SchemaBuilder {
     } catch (IOException e) {
       throw new AssertionError(e);
     }
-    schemaLoader.addProto(name);
     return this;
   }
 

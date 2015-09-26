@@ -15,159 +15,117 @@
  */
 package com.squareup.wire;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import okio.Okio;
 import okio.Source;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WireCompilerTest {
+  @Rule public final TemporaryFolder temp = new TemporaryFolder();
+
+  private Path protoDir;
+  private Path outputDir;
   private StringWireLogger logger;
-  private File testDir;
 
-  @Before public void setUp() {
-    System.out.println("cwd = " + new File(".").getAbsolutePath());
-    testDir = makeTestDirectory("WireCompilerTest");
+  @Before public void setUp() throws IOException {
+    protoDir = temp.newFolder().toPath();
+    outputDir = temp.newFolder().toPath();
   }
 
-  private File makeTestDirectory(String path) {
-    File dir = new File(path);
-    dir.mkdir();
-    cleanup(dir);
-    List<String> filesBefore = getAllFiles(dir);
-    assertThat(filesBefore).hasSize(0);
-    return dir;
-  }
+  private void testProto(String[] sources, String[] outputs, String[] flags, String suffix)
+      throws Exception {
+    // Copy the listed sources to the proto directory.
+    Path sourceDir = Paths.get("../wire-runtime/src/test/proto/");
+    for (String source : sources) {
+      Path sourceFile = sourceDir.resolve(source);
+      Path protoFile = protoDir.resolve(source);
 
-  @After public void tearDown() {
-    cleanupAndDelete(testDir);
-  }
+      Path parent = protoFile.getParent();
+      if (parent != null) {
+        Files.createDirectories(parent);
+      }
 
-  private void cleanupAndDelete(File dir) {
-    cleanup(dir);
-    if (!dir.delete()) {
-      System.err.println("Couldn't delete " + dir.getAbsolutePath());
+      Files.copy(sourceFile, protoFile);
+    }
+
+    List<String> args = new ArrayList<>();
+    args.add("--proto_path=" + protoDir);
+    args.add("--java_out=" + outputDir);
+    Collections.addAll(args, flags);
+
+    CommandLineOptions options = new CommandLineOptions(args);
+    logger = new StringWireLogger(options.quiet);
+    FileSystem fs = FileSystems.getDefault();
+    new WireCompiler(options, fs, logger).compile();
+
+    List<Path> filesAfter = getAllFiles();
+    assertThat(filesAfter.size())
+        .overridingErrorMessage(filesAfter.toString())
+        .isEqualTo(outputs.length);
+
+    for (String output : outputs) {
+      assertFilesMatch(output, suffix);
     }
   }
 
   private void testProto(String[] sources, String[] outputs) throws Exception {
-    List<String> args = new ArrayList<>();
-    args.add("--proto_path=../wire-runtime/src/test/proto");
-    args.add("--java_out=" + testDir.getAbsolutePath());
-    args.add("--enum_options=squareup.protos.custom_options.enum_value_option,"
-        + "squareup.protos.custom_options.complex_enum_value_option,"
-        + "squareup.protos.foreign.foreign_enum_value_option");
-    args.addAll(Arrays.asList(sources));
-    invokeCompiler(args.toArray(new String[args.size()]));
-
-    List<String> filesAfter = getAllFiles(testDir);
-    assertThat(filesAfter.size())
-        .overridingErrorMessage(filesAfter.toString())
-        .isEqualTo(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatch(testDir, output);
-    }
+    String[] flags = {
+        "--enum_options=squareup.protos.custom_options.enum_value_option,"
+            + "squareup.protos.custom_options.complex_enum_value_option,"
+            + "squareup.protos.foreign.foreign_enum_value_option"
+    };
+    testProto(sources, outputs, flags, "");
   }
 
   private void testProtoAndroid(String[] sources, String[] outputs) throws Exception {
-    List<String> args = new ArrayList<>();
-    args.add("--proto_path=../wire-runtime/src/test/proto");
-    args.add("--java_out=" + testDir.getAbsolutePath());
-    args.add("--android");
-    args.add("--enum_options=squareup.protos.custom_options.enum_value_option,"
-        + "squareup.protos.custom_options.complex_enum_value_option,"
-        + "squareup.protos.foreign.foreign_enum_value_option");
-    args.addAll(Arrays.asList(sources));
-    invokeCompiler(args.toArray(new String[args.size()]));
-
-    List<String> filesAfter = getAllFiles(testDir);
-    assertThat(filesAfter.size())
-        .overridingErrorMessage(filesAfter.toString())
-        .isEqualTo(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatchAndroid(testDir, output);
-    }
+    String[] flags = {
+        "--enum_options=squareup.protos.custom_options.enum_value_option,"
+            + "squareup.protos.custom_options.complex_enum_value_option,"
+            + "squareup.protos.foreign.foreign_enum_value_option",
+        "--android"
+    };
+    testProto(sources, outputs, flags, ".android");
   }
 
   private void testProtoNoOptions(String[] sources, String[] outputs) throws Exception {
-    int numFlags = 4;
-    String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
-    args[1] = "--no_options";
-    // Emit one of the enum options anyway.
-    args[2] = "--enum_options=squareup.protos.custom_options.enum_value_option";
-    args[3] = "--java_out=" + testDir.getAbsolutePath();
-    System.arraycopy(sources, 0, args, numFlags, sources.length);
-
-    invokeCompiler(args);
-
-    List<String> filesAfter = getAllFiles(testDir);
-    assertThat(filesAfter).hasSize(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatchNoOptions(testDir, output);
-    }
+    String[] flags = {
+        "--no_options",
+        // Emit one of the enum options anyway.
+        "--enum_options=squareup.protos.custom_options.enum_value_option"
+    };
+    testProto(sources, outputs, flags, ".noOptions");
   }
 
   private void testProtoWithRegistry(String[] sources, String registryClass, String[] outputs)
       throws Exception {
-    int numFlags = 3;
-    String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
-    args[1] = "--java_out=" + testDir.getAbsolutePath();
-    args[2] = "--registry_class=" + registryClass;
-    System.arraycopy(sources, 0, args, numFlags, sources.length);
-
-    invokeCompiler(args);
-
-    List<String> filesAfter = getAllFiles(testDir);
-    assertThat(filesAfter).hasSize(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatch(testDir, output);
-    }
+    String[] flags = {
+        "--registry_class=" + registryClass
+    };
+    testProto(sources, outputs, flags, "");
   }
 
   private void testProtoWithRoots(String[] sources, String roots, String[] outputs)
       throws Exception {
-    String[] extraArgs = {};
-    this.testProtoWithRoots(sources, roots, outputs, extraArgs);
-  }
-
-  private void testProtoWithRoots(
-      String[] sources, String roots, String[] outputs, String[] extraArgs) throws Exception {
-    int numFlags = 3;
-    String[] args = new String[numFlags + sources.length + extraArgs.length];
-    int index = 0;
-    args[index++] = "--proto_path=../wire-runtime/src/test/proto";
-    args[index++] = "--java_out=" + testDir.getAbsolutePath();
-    args[index++] = "--roots=" + roots;
-    for (int i = 0; i < extraArgs.length; i++) {
-      args[index++] = extraArgs[i];
-    }
-    System.arraycopy(sources, 0, args, index, sources.length);
-
-    invokeCompiler(args);
-
-    List<String> filesAfter = getAllFiles(testDir);
-    assertThat(filesAfter.size())
-        .overridingErrorMessage("Wrong number of files written")
-        .isEqualTo(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatch(testDir, output);
-    }
+    String[] flags = {
+        "--roots=" + roots
+    };
+    testProto(sources, outputs, flags, "");
   }
 
   @Test public void testFooBar() throws Exception {
@@ -218,7 +176,8 @@ public class WireCompilerTest {
     String[] sources = {
         "simple_message.proto",
         "external_message.proto",
-        "foreign.proto"
+        "foreign.proto",
+        "google/protobuf/descriptor.proto"
     };
     String[] outputs = {
         "com/squareup/wire/protos/simple/Ext_simple_message.java",
@@ -245,7 +204,8 @@ public class WireCompilerTest {
     String[] sources = {
         "simple_message.proto",
         "external_message.proto",
-        "foreign.proto"
+        "foreign.proto",
+        "google/protobuf/descriptor.proto"
     };
     String registry = "com.squareup.wire.protos.ProtoRegistry";
     String[] outputs = {
@@ -312,10 +272,15 @@ public class WireCompilerTest {
 
   @Test public void testChildPackage() throws Exception {
     String[] sources = {
-        "child_pkg.proto"
+        "child_pkg.proto",
+        "foreign.proto",
+        "google/protobuf/descriptor.proto"
     };
     String[] outputs = {
         "com/squareup/wire/protos/ChildPackage.java",
+        "com/squareup/wire/protos/foreign/Ext_foreign.java",
+        "com/squareup/wire/protos/foreign/ForeignEnum.java",
+        "com/squareup/wire/protos/foreign/ForeignMessage.java"
     };
     testProto(sources, outputs);
   }
@@ -357,32 +322,42 @@ public class WireCompilerTest {
 
   @Test public void testCustomOptions() throws Exception {
     String[] sources = {
-        "custom_options.proto"
+        "custom_options.proto",
+        "foreign.proto",
+        "google/protobuf/descriptor.proto"
     };
     String[] outputs = {
         "com/squareup/wire/protos/custom_options/FooBar.java",
         "com/squareup/wire/protos/custom_options/Ext_custom_options.java",
-        "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
+        "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
+        "com/squareup/wire/protos/foreign/Ext_foreign.java",
+        "com/squareup/wire/protos/foreign/ForeignEnum.java",
+        "com/squareup/wire/protos/foreign/ForeignMessage.java"
     };
     testProto(sources, outputs);
   }
 
   @Test public void testCustomOptionsNoOptions() throws Exception {
     String[] sources = {
-        "custom_options.proto"
+        "custom_options.proto",
+        "foreign.proto",
+        "google/protobuf/descriptor.proto"
     };
     String[] outputs = {
         "com/squareup/wire/protos/custom_options/FooBar.java",
         "com/squareup/wire/protos/custom_options/Ext_custom_options.java",
-        "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
+        "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
+        "com/squareup/wire/protos/foreign/Ext_foreign.java",
+        "com/squareup/wire/protos/foreign/ForeignEnum.java",
+        "com/squareup/wire/protos/foreign/ForeignMessage.java"
     };
-
     testProtoNoOptions(sources, outputs);
   }
 
   @Test public void testRedacted() throws Exception {
     String[] sources = {
-        "redacted_test.proto"
+        "redacted_test.proto",
+        "google/protobuf/descriptor.proto"
     };
     String[] outputs = {
         "com/squareup/wire/protos/redacted/Ext_redacted_test.java",
@@ -505,114 +480,60 @@ public class WireCompilerTest {
     };
 
     String[] outputs = { };
-    String roots = "squareup.wire.protos.roots.TheService";
     // When running with the --dry_run flag and --quiet, only the names of the output
     // files should be printed to the log.
-    String[] extraArgs = {
+    String[] flags = {
         "--dry_run",
-        "--quiet"
+        "--quiet",
+        "--roots=squareup.wire.protos.roots.TheService"
     };
-    testProtoWithRoots(sources, roots, outputs, extraArgs);
+    testProto(sources, outputs, flags, "");
     assertThat(logger.getLog()).isEqualTo(""
-            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
-            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
+            + outputDir.toAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
+            + outputDir.toAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
   }
 
-  private void cleanup(File dir) {
-    assertThat(dir).isNotNull();
-    assertThat(dir.isDirectory()).isTrue();
-    File[] files = dir.listFiles();
-    if (files != null) {
-      for (File f : files) {
-        cleanupHelper(f);
-      }
-    }
-  }
-
-  private void cleanupHelper(File f) {
-    assertThat(f).isNotNull();
-    if (f.isDirectory()) {
-      File[] files = f.listFiles();
-      if (files != null) {
-        for (File ff : files) {
-          cleanupHelper(ff);
+  private List<Path> getAllFiles() throws IOException {
+    final List<Path> files = new ArrayList<>();
+    final Path descriptor = outputDir.resolve("com/google/protobuf/");
+    Files.walkFileTree(outputDir, new SimpleFileVisitor<Path>() {
+      @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+          throws IOException {
+        if (!file.startsWith(descriptor)) {
+          files.add(file);
         }
+        return FileVisitResult.CONTINUE;
       }
-      f.delete();
-    } else {
-      f.delete();
-    }
-  }
-
-  private List<String> getAllFiles(File root) {
-    List<String> files = new ArrayList<>();
-    getAllFilesHelper(root, files);
+    });
     return files;
   }
 
-  private void getAllFilesHelper(File root, List<String> files) {
-    if (root.isFile()) {
-      files.add(root.getAbsolutePath());
-    }
-    File[] allFiles = root.listFiles();
-    if (allFiles != null) {
-      for (File f : allFiles) {
-        getAllFilesHelper(f, files);
-      }
-    }
-  }
-
-  private void invokeCompiler(String[] args) throws Exception {
-    CommandLineOptions options = new CommandLineOptions(args);
-    logger = new StringWireLogger(options.quiet);
-    FileSystem fs = FileSystems.getDefault();
-    new WireCompiler(options, fs, logger).compile();
-  }
-
-  private void assertFilesMatch(File outputDir, String path) throws IOException {
-    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
-    File actualFile = new File(outputDir, path);
-    assertFilesMatch(expectedFile, actualFile);
-  }
-
-  private void assertFilesMatchNoOptions(File outputDir, String path) throws IOException {
-    // Compare against file with .noOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".noOptions");
-    if (expectedFile.exists()) {
-      System.out.println("Comparing against expected output " + expectedFile.getName());
-    } else {
-      expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
-    }
-    File actualFile = new File(outputDir, path);
-    assertFilesMatch(expectedFile, actualFile);
-  }
-
-  private void assertFilesMatchAndroid(File outputDir, String path) throws IOException {
-    // Compare against file with .android suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".android");
-    if (expectedFile.exists()) {
-      System.out.println("Comparing against expected output " + expectedFile.getName());
-    } else {
-      expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
-    }
-    File actualFile = new File(outputDir, path);
-    assertFilesMatch(expectedFile, actualFile);
-  }
-
-  private void assertFilesMatch(File expectedFile, File actualFile) throws IOException {
-    String expected;
-    try (Source source = Okio.source(expectedFile)) {
-      expected = Okio.buffer(source).readUtf8();
+  private void assertFilesMatch(String path, String suffix) throws IOException {
+    Path expectedDir = Paths.get("../wire-runtime/src/test/proto-java/");
+    Path expected = expectedDir.resolve(path + suffix);
+    if (!Files.isRegularFile(expected)) {
+      expected = expectedDir.resolve(path);
     }
 
-    String actual;
-    try (Source source = Okio.source(actualFile)) {
-      actual = Okio.buffer(source).readUtf8();
+    Path actual = outputDir.resolve(path);
+
+    assertFilesMatch(expected, actual);
+  }
+
+  private void assertFilesMatch(Path expected, Path actual) throws IOException {
+    String expectedContent;
+    try (Source source = Okio.source(expected)) {
+      expectedContent = Okio.buffer(source).readUtf8();
+    }
+
+    String actualContent;
+    try (Source source = Okio.source(actual)) {
+      actualContent = Okio.buffer(source).readUtf8();
     }
 
     // Normalize CRLF -> LF
-    expected = expected.replace("\r\n", "\n");
-    actual = actual.replace("\r\n", "\n");
-    assertThat(actual).isEqualTo(expected);
+    expectedContent = expectedContent.replace("\r\n", "\n");
+    actualContent = actualContent.replace("\r\n", "\n");
+    assertThat(actualContent).isEqualTo(expectedContent);
   }
 }

@@ -55,10 +55,6 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.registryClass")
   private String registryClass;
 
-  /** List of proto files to compile relative to ${protoPaths}. */
-  @Parameter(property = "wire.protoFiles", required = true)
-  private String[] protoFiles;
-
   @Parameter(
       property = "wire.generatedSourceDirectory",
       defaultValue = "${project.build.directory}/generated-sources/wire")
@@ -78,8 +74,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
       List<String> directories = protoPaths != null && protoPaths.length > 0
           ? Arrays.asList(protoPaths)
           : Collections.singletonList(protoSourceDirectory);
-      List<String> protoFilesList = Arrays.asList(protoFiles);
-      Schema schema = loadSchema(directories, protoFilesList);
+      Schema schema = loadSchema(directories);
 
       if (roots != null && roots.length > 0) {
         schema = retainRoots(schema);
@@ -93,10 +88,6 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           .withAndroid(emitAndroid);
 
       for (ProtoFile protoFile : schema.protoFiles()) {
-        if (!protoFilesList.contains(protoFile.location().path())) {
-          continue; // Don't emit anything for files not explicitly compiled.
-        }
-
         for (Type type : protoFile.types()) {
           Stopwatch stopwatch = Stopwatch.createStarted();
           ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.name());
@@ -149,15 +140,12 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     return result;
   }
 
-  private Schema loadSchema(List<String> directories, List<String> protos) throws IOException {
+  private Schema loadSchema(List<String> directories) throws IOException {
     Stopwatch stopwatch = Stopwatch.createStarted();
 
     SchemaLoader schemaLoader = new SchemaLoader();
     for (String directory : directories) {
       schemaLoader.addSource(new File(directory));
-    }
-    for (String proto : protos) {
-      schemaLoader.addProto(proto);
     }
     Schema schema = schemaLoader.load();
 

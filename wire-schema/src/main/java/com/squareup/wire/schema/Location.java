@@ -17,7 +17,6 @@ package com.squareup.wire.schema;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.base.CharMatcher;
-import java.io.File;
 
 /**
  * Locates a .proto file, or a position within a .proto file, on the file system. This includes a
@@ -26,23 +25,15 @@ import java.io.File;
 @AutoValue
 public abstract class Location {
   public static Location get(String path) {
-    return get("", path);
-  }
-
-  public static Location get(String base, String path) {
-    base = CharMatcher.is('/').trimTrailingFrom(base);
     path = CharMatcher.is('/').trimLeadingFrom(path);
-    return new AutoValue_Location(base, path, -1, -1);
+    return new AutoValue_Location(path, -1, -1);
   }
 
   public Location at(int line, int column) {
-    return new AutoValue_Location(base(), path(), line, column);
+    return new AutoValue_Location(path(), line, column);
   }
 
-  /** Returns the base of this location; typically a directory or .jar file. */
-  public abstract String base();
-
-  /** Returns the path to this location relative to {@link #base}. */
+  /** Returns the path to this location. */
   public abstract String path();
 
   /** Returns the line number of this location, or -1 for no specific line number. */
@@ -53,9 +44,6 @@ public abstract class Location {
 
   @Override public String toString() {
     StringBuilder result = new StringBuilder();
-    if (!base().isEmpty()) {
-      result.append(base()).append(File.separator);
-    }
     result.append(path());
     if (line() != -1) {
       result.append(" at ").append(line());

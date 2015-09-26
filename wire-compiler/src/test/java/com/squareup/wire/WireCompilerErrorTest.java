@@ -22,14 +22,12 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import okio.Okio;
 import okio.Source;
 import org.junit.Test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -41,9 +39,9 @@ public class WireCompilerErrorTest {
    * indexed by class name.
    */
   private void compile(String source) throws Exception {
-    CommandLineOptions options = new CommandLineOptions("/source",  "/target",
-        singletonList("test.proto"), new ArrayList<String>(), null, true,
-        Collections.<String>emptySet(), false, false, false);
+    CommandLineOptions options =
+        new CommandLineOptions("/source", "/target", Collections.<String>emptyList(), null, true,
+            Collections.<String>emptySet(), false, false, false);
 
     Path test = fileSystem.getPath("/source/test.proto");
     Files.createDirectory(fileSystem.getPath("/source"));
@@ -71,8 +69,8 @@ public class WireCompilerErrorTest {
       fail();
     } catch (SchemaException e) {
       assertThat(e).hasMessage("tag is out of range: 0\n"
-          + "  for field f (/source/test.proto at 3:3)\n"
-          + "  in message com.squareup.protos.test.Simple (/source/test.proto at 2:1)");
+          + "  for field f (test.proto at 3:3)\n"
+          + "  in message com.squareup.protos.test.Simple (test.proto at 2:1)");
     }
   }
 
@@ -86,9 +84,9 @@ public class WireCompilerErrorTest {
       fail();
     } catch (SchemaException e) {
       assertThat(e).hasMessage("multiple fields share tag 1:\n"
-          + "  1. f (/source/test.proto at 3:3)\n"
-          + "  2. g (/source/test.proto at 4:3)\n"
-          + "  for message com.squareup.protos.test.Simple (/source/test.proto at 2:1)");
+          + "  1. f (test.proto at 3:3)\n"
+          + "  2. g (test.proto at 4:3)\n"
+          + "  for message com.squareup.protos.test.Simple (test.proto at 2:1)");
     }
   }
 
@@ -109,9 +107,9 @@ public class WireCompilerErrorTest {
       fail();
     } catch (SchemaException e) {
       assertThat(e).hasMessage("multiple enums share constant QUIX:\n"
-          + "  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test.proto at 4:7)\n"
-          + "  2. com.squareup.protos.test.Foo.Bar2.QUIX (/source/test.proto at 10:7)\n"
-          + "  for message com.squareup.protos.test.Foo (/source/test.proto at 2:3)");
+          + "  1. com.squareup.protos.test.Foo.Bar.QUIX (test.proto at 4:7)\n"
+          + "  2. com.squareup.protos.test.Foo.Bar2.QUIX (test.proto at 10:7)\n"
+          + "  for message com.squareup.protos.test.Foo (test.proto at 2:3)");
     }
   }
 

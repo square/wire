@@ -316,12 +316,6 @@ automatically add the generated Java code to your project's source roots.
           <goals>
             <goal>generate-sources</goal>
           </goals>
-          <configuration>
-            <protoFiles>
-              <param>squareup/dinosaurs/dinosaur.proto</param>
-              <param>squareup/geology/period.proto</param>
-            </protoFiles>
-          </configuration>
         </execution>
       </executions>
     </plugin>
@@ -329,7 +323,7 @@ automatically add the generated Java code to your project's source roots.
 </build>
 ```
 
-Wire can read `.proto` files from the local file system and from within `.jar` files.
+Wire can read `.proto` files from the local file system and from within `.jar` and `.zip` files.
 
 The compiler can optionally prune your schema to a subset of root types and their transitive
 dependencies. This is useful when sharing a schema between projects: a Java service and Android app
@@ -340,9 +334,7 @@ If you don't use Maven, the compiler also has a command line interface. Just sub
 
     % java -jar wire-compiler-VERSION-jar-with-dependencies.jar \
         --proto_path=src/main/proto \
-        --java_out=out \
-        squareup/dinosaurs/dinosaur.proto \
-        squareup/geology/period.proto
+        --java_out=out
     Writing com.squareup.dinosaurs.Dinosaur to out
     Writing com.squareup.geology.Period to out
 
