@@ -24,8 +24,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -63,8 +66,8 @@ public final class SchemaLoader {
   }
 
   /**
-   * Add one or more proto files to load. Dependencies will be loaded automatically from the
-   * configured sources.
+   * Add a proto file to load. Dependencies will be loaded automatically from the configured
+   * sources.
    */
   public SchemaLoader addProto(String proto) {
     protos.add(proto);
@@ -92,12 +95,23 @@ public final class SchemaLoader {
           directories.add(source);
         }
       }
-      return loadZipsAndDirectories(directories);
+      return loadFromDirectories(directories);
     }
   }
 
-  private Schema loadZipsAndDirectories(List<Path> directories) throws IOException {
-    Deque<String> protos = new ArrayDeque<>(this.protos);
+  private Schema loadFromDirectories(List<Path> directories) throws IOException {
+    final Deque<String> protos = new ArrayDeque<>(this.protos);
+    if (protos.isEmpty()) {
+      for (final Path directory : directories) {
+        Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+          @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+              throws IOException {
+            protos.add(directory.relativize(file).toString());
+            return FileVisitResult.CONTINUE;
+          }
+        });
+      }
+    }
 
     Map<String, ProtoFile> loaded = new LinkedHashMap<>();
     while (!protos.isEmpty()) {

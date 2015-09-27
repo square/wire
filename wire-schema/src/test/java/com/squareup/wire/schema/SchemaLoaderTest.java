@@ -15,23 +15,37 @@
  */
 package com.squareup.wire.schema;
 
-import com.google.common.base.Charsets;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class SchemaLoaderTest {
   @Rule public final TemporaryFolder tempFolder1 = new TemporaryFolder();
   @Rule public final TemporaryFolder tempFolder2 = new TemporaryFolder();
+
+  @Test public void loadAllFilesWhenNoneSpecified() throws IOException {
+    File file1 = tempFolder1.newFile();
+    Files.write(file1.toPath(), "message Message1 {}".getBytes(UTF_8));
+    File file2 = tempFolder1.newFile();
+    Files.write(file2.toPath(), "message Message2 {}".getBytes(UTF_8));
+
+    Schema schema = new SchemaLoader()
+        .addSource(tempFolder1.getRoot())
+        .load();
+    assertThat(schema.getType("Message1")).isNotNull();
+    assertThat(schema.getType("Message2")).isNotNull();
+  }
 
   @Test public void locateInMultiplePaths() throws IOException {
     File file1 = tempFolder1.newFile();
@@ -62,7 +76,7 @@ public final class SchemaLoaderTest {
     File file = tempFolder1.newFile();
     ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
     zipOutputStream.putNextEntry(new ZipEntry("a/b/message.proto"));
-    zipOutputStream.write("message Message {}".getBytes(Charsets.UTF_8));
+    zipOutputStream.write("message Message {}".getBytes(UTF_8));
     zipOutputStream.close();
 
     Schema schema = new SchemaLoader()
@@ -76,7 +90,7 @@ public final class SchemaLoaderTest {
     File file = tempFolder1.newFile();
     ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
     zipOutputStream.putNextEntry(new ZipEntry("a/b/trix.proto"));
-    zipOutputStream.write("message Trix {}".getBytes(Charsets.UTF_8));
+    zipOutputStream.write("message Trix {}".getBytes(UTF_8));
     zipOutputStream.close();
 
     try {
