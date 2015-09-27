@@ -107,8 +107,6 @@ final class CommandLineOptions {
    * interface.
    */
   CommandLineOptions(String... args) throws WireException {
-    int index = 0;
-
     List<String> sourceFileNames = new ArrayList<>();
     List<String> roots = new ArrayList<>();
     boolean emitOptions = true;
@@ -120,38 +118,37 @@ final class CommandLineOptions {
     boolean dryRun = false;
     boolean emitAndroid = false;
 
-    while (index < args.length) {
-      if (args[index].startsWith(PROTO_PATH_FLAG)) {
-        protoPaths.add(args[index].substring(PROTO_PATH_FLAG.length()));
-      } else if (args[index].startsWith(JAVA_OUT_FLAG)) {
-        javaOut = args[index].substring(JAVA_OUT_FLAG.length());
-      } else if (args[index].startsWith(FILES_FLAG)) {
-        File files = new File(args[index].substring(FILES_FLAG.length()));
+    for (String arg : args) {
+      if (arg.startsWith(PROTO_PATH_FLAG)) {
+        protoPaths.add(arg.substring(PROTO_PATH_FLAG.length()));
+      } else if (arg.startsWith(JAVA_OUT_FLAG)) {
+        javaOut = arg.substring(JAVA_OUT_FLAG.length());
+      } else if (arg.startsWith(FILES_FLAG)) {
+        File files = new File(arg.substring(FILES_FLAG.length()));
         String[] fileNames;
         try {
           fileNames = new Scanner(files, "UTF-8").useDelimiter("\\A").next().split("\n");
         } catch (FileNotFoundException ex) {
-          throw new WireException("Error processing argument " + args[index], ex);
+          throw new WireException("Error processing argument " + arg, ex);
         }
         sourceFileNames.addAll(Arrays.asList(fileNames));
-      } else if (args[index].startsWith(ROOTS_FLAG)) {
-        roots.addAll(splitArg(args[index], ROOTS_FLAG.length()));
-      } else if (args[index].startsWith(REGISTRY_CLASS_FLAG)) {
-        registryClass = args[index].substring(REGISTRY_CLASS_FLAG.length());
-      } else if (args[index].equals(NO_OPTIONS_FLAG)) {
+      } else if (arg.startsWith(ROOTS_FLAG)) {
+        roots.addAll(splitArg(arg, ROOTS_FLAG.length()));
+      } else if (arg.startsWith(REGISTRY_CLASS_FLAG)) {
+        registryClass = arg.substring(REGISTRY_CLASS_FLAG.length());
+      } else if (arg.equals(NO_OPTIONS_FLAG)) {
         emitOptions = false;
-      } else if (args[index].startsWith(ENUM_OPTIONS_FLAG)) {
-        enumOptionsList.addAll(splitArg(args[index], ENUM_OPTIONS_FLAG.length()));
-      } else if (args[index].equals(QUIET_FLAG)) {
+      } else if (arg.startsWith(ENUM_OPTIONS_FLAG)) {
+        enumOptionsList.addAll(splitArg(arg, ENUM_OPTIONS_FLAG.length()));
+      } else if (arg.equals(QUIET_FLAG)) {
         quiet = true;
-      } else if (args[index].equals(DRY_RUN_FLAG)) {
+      } else if (arg.equals(DRY_RUN_FLAG)) {
         dryRun = true;
-      } else if (args[index].equals(ANDROID)) {
+      } else if (arg.equals(ANDROID)) {
         emitAndroid = true;
       } else {
-        sourceFileNames.add(args[index]);
+        sourceFileNames.add(arg);
       }
-      index++;
     }
 
     this.protoPaths = protoPaths;
