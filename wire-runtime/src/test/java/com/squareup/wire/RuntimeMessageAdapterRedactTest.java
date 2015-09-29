@@ -103,9 +103,9 @@ public class RuntimeMessageAdapterRedactTest {
     try {
       adapter.redact(new RedactedRequired("a"));
       fail();
-    } catch (IllegalArgumentException e) {
+    } catch (UnsupportedOperationException e) {
       assertThat(e).hasMessage(
-          "Field com.squareup.wire.protos.redacted.RedactedRequired.a is REQUIRED and cannot be redacted.");
+          "Field 'a' in com.squareup.wire.protos.redacted.RedactedRequired is required and cannot be redacted.");
     }
   }
 

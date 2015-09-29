@@ -467,4 +467,13 @@ public abstract class ProtoAdapter<E> {
       }
     };
   }
+
+  public static final class EnumConstantNotFoundException extends IllegalArgumentException {
+    public final int value;
+
+    EnumConstantNotFoundException(int value, Class<?> type) {
+      super("Unknown enum tag " + value + " for " + type.getCanonicalName());
+      this.value = value;
+    }
+  }
 }

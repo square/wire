@@ -84,9 +84,6 @@ public class WireCompilerTest {
     args.add("--proto_path=../wire-runtime/src/test/proto");
     args.add("--java_out=" + testDir.getAbsolutePath());
     args.add("--android");
-    args.add("--enum_options=squareup.protos.custom_options.enum_value_option,"
-        + "squareup.protos.custom_options.complex_enum_value_option,"
-        + "squareup.protos.foreign.foreign_enum_value_option");
     args.addAll(Arrays.asList(sources));
     invokeCompiler(args.toArray(new String[args.size()]));
 
@@ -97,6 +94,24 @@ public class WireCompilerTest {
 
     for (String output : outputs) {
       assertFilesMatchAndroid(testDir, output);
+    }
+  }
+
+  private void testProtoFull(String[] sources, String[] outputs) throws Exception {
+    List<String> args = new ArrayList<>();
+    args.add("--proto_path=../wire-runtime/src/test/proto");
+    args.add("--java_out=" + testDir.getAbsolutePath());
+    args.add("--full");
+    args.addAll(Arrays.asList(sources));
+    invokeCompiler(args.toArray(new String[args.size()]));
+
+    List<String> filesAfter = getAllFiles(testDir);
+    assertThat(filesAfter.size())
+        .overridingErrorMessage(filesAfter.toString())
+        .isEqualTo(outputs.length);
+
+    for (String output : outputs) {
+      assertFilesMatchFull(testDir, output);
     }
   }
 
@@ -212,6 +227,17 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/person/Person.java"
     };
     testProtoAndroid(sources, outputs);
+  }
+
+  @Test public void testPersonFull() throws Exception {
+    String[] sources = {
+        "all_types.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/alltypes/AllTypes.java",
+        "com/squareup/wire/protos/alltypes/Ext_all_types.java"
+    };
+    testProtoFull(sources, outputs);
   }
 
   @Test public void testSimple() throws Exception {
@@ -590,6 +616,18 @@ public class WireCompilerTest {
   private void assertFilesMatchAndroid(File outputDir, String path) throws IOException {
     // Compare against file with .android suffix if present
     File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".android");
+    if (expectedFile.exists()) {
+      System.out.println("Comparing against expected output " + expectedFile.getName());
+    } else {
+      expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
+    }
+    File actualFile = new File(outputDir, path);
+    assertFilesMatch(expectedFile, actualFile);
+  }
+
+  private void assertFilesMatchFull(File outputDir, String path) throws IOException {
+    // Compare against file with .full suffix if present
+    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".full");
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {
