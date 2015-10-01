@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.protos.redacted.Ext_redacted_test;
 import com.squareup.wire.protos.redacted.NotRedacted;
 import com.squareup.wire.protos.redacted.Redacted;
 import com.squareup.wire.protos.redacted.RedactedChild;
@@ -37,7 +36,7 @@ public class RuntimeMessageAdapterRedactTest {
 
     RedactedRepeated redactedRepeated = new RedactedRepeated.Builder()
         .a(Arrays.asList("a", "b"))
-        .b(Arrays.asList(new Redacted("a", "b", "c"), new Redacted("d", "e", "f")))
+        .b(Arrays.asList(new Redacted("a", "b", "c", null), new Redacted("d", "e", "f", null)))
         .build();
     assertThat(redactedRepeated.toString()).isEqualTo(
         "RedactedRepeated{a=██, b=[Redacted{a=██, b=b, c=c}, Redacted{a=██, b=e, c=f}]}");
@@ -68,13 +67,13 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void redactedExtensions() {
     Redacted message = new Redacted.Builder()
-        .setExtension(Ext_redacted_test.extension, new RedactedExtension.Builder()
+        .extension(new RedactedExtension.Builder()
             .d("d")
             .e("e")
             .build())
         .build();
     Redacted expected = new Redacted.Builder()
-        .setExtension(Ext_redacted_test.extension, new RedactedExtension.Builder()
+        .extension(new RedactedExtension.Builder()
             .e("e")
             .build())
         .build();
@@ -89,10 +88,10 @@ public class RuntimeMessageAdapterRedactTest {
   @Test public void repeatedField() {
     RedactedRepeated message = new RedactedRepeated.Builder()
         .a(Arrays.asList("a", "b"))
-        .b(Arrays.asList(new Redacted("a", "b", "c"), new Redacted("d", "e", "f")))
+        .b(Arrays.asList(new Redacted("a", "b", "c", null), new Redacted("d", "e", "f", null)))
         .build();
     RedactedRepeated expected = new RedactedRepeated.Builder()
-        .b(Arrays.asList(new Redacted(null, "b", "c"), new Redacted(null, "e", "f")))
+        .b(Arrays.asList(new Redacted(null, "b", "c", null), new Redacted(null, "e", "f", null)))
         .build();
     RedactedRepeated actual = RedactedRepeated.ADAPTER.redact(message);
     assertThat(actual).isEqualTo(expected);

@@ -54,8 +54,8 @@ public final class Rpc {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    requestType = linker.resolveNamedType(element.requestType());
-    responseType = linker.resolveNamedType(element.responseType());
+    requestType = linker.resolveMessageType(element.requestType());
+    responseType = linker.resolveMessageType(element.responseType());
   }
 
   void linkOptions(Linker linker) {

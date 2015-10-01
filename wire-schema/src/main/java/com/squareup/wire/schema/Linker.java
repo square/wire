@@ -16,8 +16,6 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.squareup.wire.schema.internal.Util;
@@ -32,7 +30,6 @@ import java.util.Map;
 final class Linker {
   private final ImmutableList<ProtoFile> protoFiles;
   private final Map<String, Type> protoTypeNames;
-  private final Map<ProtoType, Map<String, Field>> extensionsMap;
   private final Multimap<String, String> imports;
   private final List<String> errors;
   private final List<Object> contextStack;
@@ -40,7 +37,6 @@ final class Linker {
   public Linker(Iterable<ProtoFile> protoFiles) {
     this.protoFiles = ImmutableList.copyOf(protoFiles);
     this.protoTypeNames = new LinkedHashMap<>();
-    this.extensionsMap = new LinkedHashMap<>();
     this.imports = LinkedHashMultimap.create();
     this.contextStack = Collections.emptyList();
     this.errors = new ArrayList<>();
@@ -49,7 +45,6 @@ final class Linker {
   private Linker(Linker enclosing, Object additionalContext) {
     this.protoFiles = enclosing.protoFiles;
     this.protoTypeNames = enclosing.protoTypeNames;
-    this.extensionsMap = enclosing.extensionsMap;
     this.imports = enclosing.imports;
     this.contextStack = Util.concatenate(enclosing.contextStack, additionalContext);
     this.errors = enclosing.errors;
@@ -68,20 +63,6 @@ final class Linker {
       Linker linker = withContext(protoFile);
       for (Extend extend : protoFile.extendList()) {
         extend.link(linker);
-      }
-    }
-
-    // Register extensions. This needs the extensions to be linked.
-    for (ProtoFile protoFile : protoFiles) {
-      for (Extend extend : protoFile.extendList()) {
-        Map<String, Field> map = extensionsMap.get(extend.type());
-        if (map == null) {
-          map = new LinkedHashMap<>();
-          extensionsMap.put(extend.type(), map);
-        }
-        for (Field field : extend.fields()) {
-          map.put(field.qualifiedName(), field);
-        }
       }
     }
 
@@ -164,24 +145,31 @@ final class Linker {
   }
 
   /** Returns the type name for the relative or fully-qualified name {@code name}. */
-  ProtoType resolveNamedType(String name) {
+  ProtoType resolveMessageType(String name) {
     return resolveType(name, true);
   }
 
-  private ProtoType resolveType(String name, boolean namedTypesOnly) {
+  private ProtoType resolveType(String name, boolean messageOnly) {
     ProtoType scalar = ProtoType.get(name);
     if (scalar.isScalar()) {
-      if (namedTypesOnly) {
+      if (messageOnly) {
         addError("expected a message but was %s", name);
       }
       return scalar;
     }
 
     Type resolved = resolve(name, protoTypeNames);
-    if (resolved != null) return resolved.name();
+    if (resolved == null) {
+      addError("unable to resolve %s", name);
+      return ProtoType.BYTES; // Just return any placeholder.
+    }
 
-    addError("unable to resolve %s", name);
-    return ProtoType.BYTES; // Just return any placeholder.
+    if (messageOnly && !(resolved instanceof MessageType)) {
+      addError("expected a message but was %s", name);
+      return ProtoType.BYTES; // Just return any placeholder.
+    }
+
+    return resolved.name();
   }
 
   <T> T resolve(String name, Map<String, T> map) {
@@ -215,6 +203,9 @@ final class Linker {
       } else if (context instanceof ProtoFile) {
         String packageName = ((ProtoFile) context).packageName();
         return packageName != null ? packageName : "";
+      } else if (context instanceof Field && ((Field) context).isExtension()) {
+        String packageName = ((Field) context).packageName();
+        return packageName != null ? packageName : "";
       }
     }
     throw new IllegalStateException();
@@ -233,12 +224,6 @@ final class Linker {
     return protoTypeNames.get(protoType.toString());
   }
 
-  /** Returns the map of known extensions for {@code extensionType}. */
-  public Map<String, Field> extensions(ProtoType extensionType) {
-    Map<String, Field> result = extensionsMap.get(extensionType);
-    return result != null ? result : ImmutableMap.<String, Field>of();
-  }
-
   /** Returns the field named {@code field} on the message type of {@code self}. */
   Field dereference(Field self, String field) {
     if (field.startsWith("[") && field.endsWith("]")) {
@@ -247,30 +232,29 @@ final class Linker {
 
     Type type = protoTypeNames.get(self.type().toString());
     if (type instanceof MessageType) {
-      Field messageField = ((MessageType) type).field(field);
-      if (messageField != null) {
-        return messageField;
-      }
+      MessageType messageType = (MessageType) type;
+      Field messageField = messageType.field(field);
+      if (messageField != null) return messageField;
 
-      Map<String, Field> typeExtensions = extensionsMap.get(self.type());
+      Map<String, Field> typeExtensions = messageType.extensionFieldsMap();
       Field extensionField = resolve(field, typeExtensions);
-      if (extensionField != null) {
-        return extensionField;
-      }
+      if (extensionField != null) return extensionField;
     }
 
     return null; // Unable to traverse this field path.
   }
 
   /** Validate that the tags of {@code fields} are unique and in range. */
-  void validateTags(Iterable<Field> fields, Map<String, Field> extensionFields) {
+  void validateFields(Iterable<Field> fields) {
     Multimap<Integer, Field> tagToField = LinkedHashMultimap.create();
-    for (Field field : Iterables.concat(fields, extensionFields.values())) {
+    Multimap<String, Field> nameToField = LinkedHashMultimap.create();
+    for (Field field : fields) {
       int tag = field.tag();
       if (!Util.isValidTag(tag)) {
         withContext(field).addError("tag is out of range: %s", tag);
       } else {
         tagToField.put(tag, field);
+        nameToField.put(field.name(), field);
       }
     }
 
@@ -278,6 +262,19 @@ final class Linker {
       if (entry.getValue().size() > 1) {
         StringBuilder error = new StringBuilder();
         error.append(String.format("multiple fields share tag %s:", entry.getKey()));
+        int index = 1;
+        for (Field field : entry.getValue()) {
+          error.append(String.format("\n  %s. %s (%s)",
+              index++, field.name(), field.location()));
+        }
+        addError("%s", error);
+      }
+    }
+
+    for (Map.Entry<String, Collection<Field>> entry : nameToField.asMap().entrySet()) {
+      if (entry.getValue().size() > 1) {
+        StringBuilder error = new StringBuilder();
+        error.append(String.format("multiple fields share name %s:", entry.getKey()));
         int index = 1;
         for (Field field : entry.getValue()) {
           error.append(String.format("\n  %s. %s (%s)",

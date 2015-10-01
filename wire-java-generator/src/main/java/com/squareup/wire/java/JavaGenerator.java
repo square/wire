@@ -44,7 +44,6 @@ import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
-import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
@@ -119,18 +118,16 @@ public final class JavaGenerator {
 
   private final Schema schema;
   private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
-  private final ImmutableMap<Field, ProtoFile> extensionFieldToFile;
   private final boolean emitOptions;
   private final ImmutableSet<String> enumOptions;
   private final boolean emitAndroid;
   private final boolean emitFull;
 
   private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToJavaName,
-      ImmutableMap<Field, ProtoFile> extensionFieldToFile, boolean emitOptions,
-      ImmutableSet<String> enumOptions, boolean emitAndroid, boolean emitFull) {
+      boolean emitOptions, ImmutableSet<String> enumOptions, boolean emitAndroid,
+      boolean emitFull) {
     this.schema = schema;
     this.nameToJavaName = nameToJavaName;
-    this.extensionFieldToFile = extensionFieldToFile;
     this.emitOptions = emitOptions;
     this.enumOptions = enumOptions;
     this.emitAndroid = emitAndroid;
@@ -138,41 +135,35 @@ public final class JavaGenerator {
   }
 
   public JavaGenerator withOptions(boolean emitOptions, Collection<String> enumOptions) {
-    return new JavaGenerator(schema, nameToJavaName, extensionFieldToFile, emitOptions,
+    return new JavaGenerator(schema, nameToJavaName, emitOptions,
         ImmutableSet.copyOf(enumOptions), emitAndroid, emitFull);
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToJavaName, extensionFieldToFile, emitOptions, enumOptions,
+    return new JavaGenerator(schema, nameToJavaName, emitOptions, enumOptions,
         emitAndroid, emitFull);
   }
 
   public JavaGenerator withFull(boolean fullGeneration) {
-    return new JavaGenerator(schema, nameToJavaName, extensionFieldToFile, emitOptions, enumOptions,
+    return new JavaGenerator(schema, nameToJavaName, emitOptions, enumOptions,
         emitAndroid, fullGeneration);
   }
 
   public static JavaGenerator get(Schema schema) {
     ImmutableMap.Builder<ProtoType, TypeName> nameToJavaName = ImmutableMap.builder();
-    ImmutableMap.Builder<Field, ProtoFile> extensionFieldToFile = ImmutableMap.builder();
     nameToJavaName.putAll(SCALAR_TYPES_MAP);
 
     for (ProtoFile protoFile : schema.protoFiles()) {
       String javaPackage = javaPackage(protoFile);
       putAll(nameToJavaName, javaPackage, null, protoFile.types());
 
-      for (Extend extend : protoFile.extendList()) {
-        for (Field field : extend.fields()) {
-          extensionFieldToFile.put(field, protoFile);
-        }
-      }
       for (Service service : protoFile.services()) {
         ClassName className = ClassName.get(javaPackage, service.type().simpleName());
         nameToJavaName.put(service.type(), className);
       }
     }
 
-    return new JavaGenerator(schema, nameToJavaName.build(), extensionFieldToFile.build(), false,
+    return new JavaGenerator(schema, nameToJavaName.build(), false,
         ImmutableSet.<String>of(), false, false);
   }
 
@@ -189,23 +180,6 @@ public final class JavaGenerator {
 
   public Schema schema() {
     return schema;
-  }
-
-  /**
-   * Returns the extensions class name. The returned name is derived from the proto file name, like
-   * {@code Ext_person} for {@code person.proto}. Its package is the proto file’s Java package.
-   */
-  public ClassName extensionsClass(ProtoFile protoFile) {
-    return ClassName.get(javaPackage(protoFile), "Ext_" + protoFile.name());
-  }
-
-  /**
-   * Returns the extensions class like {@code Ext_person} for {@code field}, or null if the field
-   * wasn't declared by an extension.
-   */
-  public ClassName extensionsClass(Field field) {
-    ProtoFile protoFile = extensionFieldToFile.get(field);
-    return protoFile != null ? extensionsClass(protoFile) : null;
   }
 
   /**
@@ -752,8 +726,7 @@ public final class JavaGenerator {
         continue; // TODO(jwilson): also check that the declaring types match.
       }
 
-      ClassName extensionClass = extensionsClass(extensionRoot);
-      initializer.add("\n.setExtension($T.$L, $L)", extensionClass, extensionRoot.name(),
+      initializer.add("\n.$L($L)", extensionRoot.name(),
           fieldInitializer(extensionRoot.type(), entry.getValue()));
       empty = false;
     }
@@ -1184,13 +1157,7 @@ public final class JavaGenerator {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
         Field field = (Field) entry.getKey();
         CodeBlock valueInitializer = fieldInitializer(field.type(), entry.getValue());
-        ClassName extensionClass = extensionsClass(field);
-        if (extensionClass != null) {
-          builder.add("\n$>$>.setExtension($T.$L, $L)$<$<",
-              extensionClass, field.name(), valueInitializer);
-        } else {
-          builder.add("\n$>$>.$L($L)$<$<", field.name(), valueInitializer);
-        }
+        builder.add("\n$>$>.$L($L)$<$<", field.name(), valueInitializer);
       }
       builder.add("\n$>$>.build()$<$<");
       return builder.build();
@@ -1239,121 +1206,5 @@ public final class JavaGenerator {
 
   private int nullHashValue(Field field) {
     return field.isRepeated() ? 1 : 0;
-  }
-
-  public TypeSpec generateExtensionsClass(ClassName javaTypeName, ProtoFile protoFile) {
-    TypeSpec.Builder builder = TypeSpec.classBuilder(javaTypeName.simpleName())
-        .addModifiers(PUBLIC, FINAL);
-
-    // Private no-args constructor
-    builder.addMethod(MethodSpec.constructorBuilder()
-        .addModifiers(PRIVATE)
-        .build());
-
-    List<String> names = new ArrayList<>();
-    for (Extend extend : protoFile.extendList()) {
-      ProtoType extendType = extend.type();
-      TypeName javaType = typeName(extendType);
-
-      if (!emitOptions && (extendType.equals(Options.FIELD_OPTIONS)
-          || extendType.equals(Options.MESSAGE_OPTIONS))) {
-        continue;
-      }
-
-      for (Field field : extend.fields()) {
-        FieldSpec fieldSpec = extensionField(protoFile, javaType, field);
-        names.add(fieldSpec.name);
-        builder.addField(fieldSpec);
-      }
-    }
-
-    WildcardTypeName wildcard = WildcardTypeName.subtypeOf(Object.class);
-    TypeName extensionType = ParameterizedTypeName.get(EXTENSION, wildcard, wildcard);
-    TypeName listOfExtensionsType = ParameterizedTypeName.get(LIST, extensionType);
-    builder.addField(FieldSpec.builder(listOfExtensionsType, "EXTENSIONS", PUBLIC, STATIC, FINAL)
-        .initializer("$[$T.<$T>asList(\n$L)$]", Arrays.class, extensionType,
-            Joiner.on(",\n").join(names))
-        .build());
-
-    return builder.build();
-  }
-
-  private FieldSpec extensionField(
-      ProtoFile protoFile, TypeName extendType, Field field) {
-    TypeName fieldType = typeName(field.type());
-
-    if (field.isRepeated()) {
-      fieldType = listOf(fieldType);
-    }
-
-    return FieldSpec.builder(extensionOf(extendType, fieldType), field.name())
-        .addModifiers(PUBLIC, STATIC, FINAL)
-        .initializer("$[$T.get($T.class,\n$T.$L,\n$S,\n$L,\n$S)$]", Extension.class, extendType,
-            WireField.Label.class, extensionLabel(field),
-            protoFile.packageName() + "." + field.name(),
-            field.tag(), adapterString(field.type()))
-        .build();
-  }
-
-  private String extensionLabel(Field field) {
-    switch (field.label()) {
-      case OPTIONAL:
-        return "OPTIONAL";
-
-      case REQUIRED:
-        return "REQUIRED";
-
-      case REPEATED:
-        return field.isPacked() ? "PACKED" : "REPEATED";
-
-      default:
-        throw new AssertionError("Unexpected extension label \"" + field.label() + "\"");
-    }
-  }
-
-  public TypeSpec generateRegistry(ClassName javaTypeName) {
-    TypeSpec.Builder builder = TypeSpec.classBuilder(javaTypeName.simpleName())
-        .addModifiers(PUBLIC, FINAL);
-
-    ImmutableSet.Builder<TypeName> extensionClassesBuilder = ImmutableSet.builder();
-    for (ProtoFile protoFile : schema().protoFiles()) {
-      if (!protoFile.extendList().isEmpty()) {
-        extensionClassesBuilder.add(extensionsClass(protoFile));
-      }
-    }
-    ImmutableList<TypeName> extensionClasses = extensionClassesBuilder.build().asList();
-
-    CodeBlock.Builder initializer = CodeBlock.builder();
-    if (extensionClasses.isEmpty()) {
-      initializer.add("$T.emptyList()", Collections.class);
-    } else {
-      initializer.add("$>$>$T.unmodifiableList($T.asList(", Collections.class, Arrays.class);
-      for (int i = 0, size = extensionClasses.size(); i < size; i++) {
-        TypeName typeName = extensionClasses.get(i);
-        initializer.add("\n$T.class", typeName);
-        if (i + 1 < extensionClasses.size()) initializer.add(",");
-      }
-      initializer.add("))$<$<");
-    }
-
-    TypeName wildcard = extensionClasses.size() == 1
-        ? extensionClasses.get(0)
-        : WildcardTypeName.subtypeOf(Object.class);
-
-    TypeName listType = listOf(ParameterizedTypeName.get(ClassName.get(Class.class), wildcard));
-
-    builder.addField(FieldSpec.builder(listType, "EXTENSIONS", PUBLIC, STATIC, FINAL)
-        .initializer(initializer.build())
-        .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
-            .addMember("value", "$S", "unchecked")
-            .build())
-        .build());
-
-    // Private no-args constructor
-    builder.addMethod(MethodSpec.constructorBuilder()
-        .addModifiers(PRIVATE)
-        .build());
-
-    return builder.build();
   }
 }

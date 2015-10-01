@@ -17,19 +17,28 @@ public final class ForeignMessage extends Message<ForeignMessage> {
 
   public static final Integer DEFAULT_I = 0;
 
+  public static final Integer DEFAULT_J = 0;
+
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer i;
 
-  public ForeignMessage(Integer i) {
-    this(i, TagMap.EMPTY);
+  @WireField(
+      tag = 100,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer j;
+
+  public ForeignMessage(Integer i, Integer j) {
+    this(i, j, TagMap.EMPTY);
   }
 
-  public ForeignMessage(Integer i, TagMap tagMap) {
+  public ForeignMessage(Integer i, Integer j, TagMap tagMap) {
     super(tagMap);
     this.i = i;
+    this.j = j;
   }
 
   @Override
@@ -38,7 +47,8 @@ public final class ForeignMessage extends Message<ForeignMessage> {
     if (!(other instanceof ForeignMessage)) return false;
     ForeignMessage o = (ForeignMessage) other;
     return equals(tagMap(), o.tagMap())
-        && equals(i, o.i);
+        && equals(i, o.i)
+        && equals(j, o.j);
   }
 
   @Override
@@ -47,6 +57,7 @@ public final class ForeignMessage extends Message<ForeignMessage> {
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
+      result = result * 37 + (j != null ? j.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -55,6 +66,8 @@ public final class ForeignMessage extends Message<ForeignMessage> {
   public static final class Builder extends com.squareup.wire.Message.Builder<ForeignMessage, Builder> {
     public Integer i;
 
+    public Integer j;
+
     public Builder() {
     }
 
@@ -62,6 +75,7 @@ public final class ForeignMessage extends Message<ForeignMessage> {
       super(message);
       if (message == null) return;
       this.i = message.i;
+      this.j = message.j;
     }
 
     public Builder i(Integer i) {
@@ -69,9 +83,14 @@ public final class ForeignMessage extends Message<ForeignMessage> {
       return this;
     }
 
+    public Builder j(Integer j) {
+      this.j = j;
+      return this;
+    }
+
     @Override
     public ForeignMessage build() {
-      return new ForeignMessage(i, buildTagMap());
+      return new ForeignMessage(i, j, buildTagMap());
     }
   }
 }

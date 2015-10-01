@@ -7,8 +7,10 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Float;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import java.util.List;
 
 public final class ExternalMessage extends Message<ExternalMessage> {
   public static final ProtoAdapter<ExternalMessage> ADAPTER = ProtoAdapter.newMessageAdapter(ExternalMessage.class);
@@ -17,19 +19,61 @@ public final class ExternalMessage extends Message<ExternalMessage> {
 
   public static final Float DEFAULT_F = 20f;
 
+  public static final Integer DEFAULT_BAREXT = 0;
+
+  public static final Integer DEFAULT_BAZEXT = 0;
+
+  public static final SimpleMessage.NestedEnum DEFAULT_NESTED_ENUM_EXT = SimpleMessage.NestedEnum.FOO;
+
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   public final Float f;
 
-  public ExternalMessage(Float f) {
-    this(f, TagMap.EMPTY);
+  @WireField(
+      tag = 125,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Integer> fooext;
+
+  @WireField(
+      tag = 126,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer barext;
+
+  @WireField(
+      tag = 127,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer bazext;
+
+  @WireField(
+      tag = 128,
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedMessage#ADAPTER"
+  )
+  public final SimpleMessage.NestedMessage nested_message_ext;
+
+  @WireField(
+      tag = 129,
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedEnum#ADAPTER"
+  )
+  public final SimpleMessage.NestedEnum nested_enum_ext;
+
+  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext) {
+    this(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, TagMap.EMPTY);
   }
 
-  public ExternalMessage(Float f, TagMap tagMap) {
+  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext, TagMap tagMap) {
     super(tagMap);
     this.f = f;
+    this.fooext = immutableCopyOf(fooext);
+    this.barext = barext;
+    this.bazext = bazext;
+    this.nested_message_ext = nested_message_ext;
+    this.nested_enum_ext = nested_enum_ext;
   }
 
   @Override
@@ -38,7 +82,12 @@ public final class ExternalMessage extends Message<ExternalMessage> {
     if (!(other instanceof ExternalMessage)) return false;
     ExternalMessage o = (ExternalMessage) other;
     return equals(tagMap(), o.tagMap())
-        && equals(f, o.f);
+        && equals(f, o.f)
+        && equals(fooext, o.fooext)
+        && equals(barext, o.barext)
+        && equals(bazext, o.bazext)
+        && equals(nested_message_ext, o.nested_message_ext)
+        && equals(nested_enum_ext, o.nested_enum_ext);
   }
 
   @Override
@@ -47,6 +96,11 @@ public final class ExternalMessage extends Message<ExternalMessage> {
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (f != null ? f.hashCode() : 0);
+      result = result * 37 + (fooext != null ? fooext.hashCode() : 1);
+      result = result * 37 + (barext != null ? barext.hashCode() : 0);
+      result = result * 37 + (bazext != null ? bazext.hashCode() : 0);
+      result = result * 37 + (nested_message_ext != null ? nested_message_ext.hashCode() : 0);
+      result = result * 37 + (nested_enum_ext != null ? nested_enum_ext.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -55,13 +109,29 @@ public final class ExternalMessage extends Message<ExternalMessage> {
   public static final class Builder extends com.squareup.wire.Message.Builder<ExternalMessage, Builder> {
     public Float f;
 
+    public List<Integer> fooext;
+
+    public Integer barext;
+
+    public Integer bazext;
+
+    public SimpleMessage.NestedMessage nested_message_ext;
+
+    public SimpleMessage.NestedEnum nested_enum_ext;
+
     public Builder() {
+      fooext = newMutableList();
     }
 
     public Builder(ExternalMessage message) {
       super(message);
       if (message == null) return;
       this.f = message.f;
+      this.fooext = copyOf(message.fooext);
+      this.barext = message.barext;
+      this.bazext = message.bazext;
+      this.nested_message_ext = message.nested_message_ext;
+      this.nested_enum_ext = message.nested_enum_ext;
     }
 
     public Builder f(Float f) {
@@ -69,9 +139,35 @@ public final class ExternalMessage extends Message<ExternalMessage> {
       return this;
     }
 
+    public Builder fooext(List<Integer> fooext) {
+      checkElementsNotNull(fooext);
+      this.fooext = fooext;
+      return this;
+    }
+
+    public Builder barext(Integer barext) {
+      this.barext = barext;
+      return this;
+    }
+
+    public Builder bazext(Integer bazext) {
+      this.bazext = bazext;
+      return this;
+    }
+
+    public Builder nested_message_ext(SimpleMessage.NestedMessage nested_message_ext) {
+      this.nested_message_ext = nested_message_ext;
+      return this;
+    }
+
+    public Builder nested_enum_ext(SimpleMessage.NestedEnum nested_enum_ext) {
+      this.nested_enum_ext = nested_enum_ext;
+      return this;
+    }
+
     @Override
     public ExternalMessage build() {
-      return new ExternalMessage(f, buildTagMap());
+      return new ExternalMessage(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, buildTagMap());
     }
   }
 }

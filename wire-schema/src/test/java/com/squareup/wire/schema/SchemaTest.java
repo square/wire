@@ -199,7 +199,7 @@ public final class SchemaTest {
           + "  in message Message (message.proto at 1:1)\n"
           + "packed=true not permitted on bytes\n"
           + "  for field h (message.proto at 11:3)\n"
-          + "  in extend Message (message.proto at 9:1)");
+          + "  in message Message (message.proto at 1:1)");
     }
   }
 
@@ -437,7 +437,7 @@ public final class SchemaTest {
     } catch (SchemaException expected) {
       assertThat(expected).hasMessage("unable to resolve foo_package.Foo\n"
           + "  for field unknown (message.proto at 4:3)\n"
-          + "  in extend Message (message.proto at 3:1)");
+          + "  in message Message (message.proto at 1:1)");
     }
   }
 
@@ -520,6 +520,93 @@ public final class SchemaTest {
     }
   }
 
+  @Test public void messageNameCollisionDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "  optional string a = 1;\n"
+              + "  optional string a = 2;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("multiple fields share name a:\n"
+          + "  1. a (message.proto at 2:3)\n"
+          + "  2. a (message.proto at 3:3)\n"
+          + "  for message Message (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void messageAndExtensionNameCollisionDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "  optional string a = 1;\n"
+              + "}\n")
+          .add("extend.proto", ""
+              + "import \"message.proto\";\n"
+              + "extend Message {\n"
+              + "  optional string a = 2;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("multiple fields share name a:\n"
+          + "  1. a (message.proto at 2:3)\n"
+          + "  2. a (extend.proto at 3:3)\n"
+          + "  for message Message (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void extendNameCollisionDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("message.proto", ""
+              + "message Message {\n"
+              + "}\n")
+          .add("extend1.proto", ""
+              + "import \"message.proto\";\n"
+              + "extend Message {\n"
+              + "  optional string a = 1;\n"
+              + "}\n")
+          .add("extend2.proto", ""
+              + "import \"message.proto\";\n"
+              + "extend Message {\n"
+              + "  optional string a = 2;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("multiple fields share name a:\n"
+          + "  1. a (extend1.proto at 3:3)\n"
+          + "  2. a (extend2.proto at 3:3)\n"
+          + "  for message Message (message.proto at 1:1)");
+    }
+  }
+
+  @Test public void extendEnumDisallowed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("enum.proto", ""
+              + "enum Enum {\n"
+              + "  A = 1;\n"
+              + "  B = 2;\n"
+              + "}\n")
+          .add("extend.proto", ""
+              + "import \"enum.proto\";\n"
+              + "extend Enum {\n"
+              + "  optional string a = 2;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("expected a message but was Enum\n"
+          + "  for extend (extend.proto at 2:1)");
+    }
+  }
+
   @Test public void requiredExtendFieldDisallowed() throws Exception {
     try {
       new SchemaBuilder()
@@ -534,7 +621,7 @@ public final class SchemaTest {
     } catch (SchemaException expected) {
       assertThat(expected).hasMessage("extension fields cannot be required\n"
           + "  for field a (message.proto at 4:3)\n"
-          + "  in extend Message (message.proto at 3:1)");
+          + "  in message Message (message.proto at 1:1)");
     }
   }
 

@@ -107,7 +107,7 @@ public final class ProtoFile {
     return services;
   }
 
-  public ImmutableList<Extend> extendList() {
+  ImmutableList<Extend> extendList() {
     return extendList;
   }
 

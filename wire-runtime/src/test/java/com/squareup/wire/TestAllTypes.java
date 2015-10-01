@@ -16,7 +16,6 @@
 package com.squareup.wire;
 
 import com.squareup.wire.protos.alltypes.AllTypes;
-import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import okio.Buffer;
 import okio.ByteString;
 import okio.ForwardingSource;
@@ -45,7 +43,7 @@ public class TestAllTypes {
   }
 
   private static <T> List<T> list(T x, int numRepeated) {
-    List<T> data = new ArrayList<T>(numRepeated);
+    List<T> data = new ArrayList<>(numRepeated);
     for (int i = 0; i < numRepeated; i++) {
       data.add(x);
     }
@@ -125,13 +123,13 @@ public class TestAllTypes {
         .pack_float(list(122.0F, numRepeated))
         .pack_double(list(123.0, numRepeated))
         .pack_nested_enum(list(A, numRepeated))
-        .setExtension(Ext_all_types.ext_opt_bool, true)
-        .setExtension(Ext_all_types.ext_rep_bool, list(true, numRepeated))
-        .setExtension(Ext_all_types.ext_pack_bool, list(true, numRepeated));
+        .ext_opt_bool(true)
+        .ext_rep_bool(list(true, numRepeated))
+        .ext_pack_bool(list(true, numRepeated));
   }
 
   private final AllTypes allTypes = createAllTypes();
-  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry(Ext_all_types.EXTENSIONS);
+  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry();
   private final ProtoAdapter<AllTypes> adapter = AllTypes.ADAPTER;
 
   private AllTypes createAllTypes(int numRepeated) {
@@ -286,17 +284,17 @@ public class TestAllTypes {
     assertThat(builder.pack_nested_enum.get(0)).isEqualTo(A);
     assertThat(builder.pack_nested_enum.get(1)).isEqualTo(A);
 
-    assertThat(builder.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
-    assertThat(builder.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true));
-    assertThat(builder.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
+    assertThat(builder.ext_opt_bool).isEqualTo(Boolean.TRUE);
+    assertThat(builder.ext_rep_bool).isEqualTo(list(true));
+    assertThat(builder.ext_pack_bool).isEqualTo(list(true));
 
-    builder.setExtension(Ext_all_types.ext_opt_bool, false);
-    builder.setExtension(Ext_all_types.ext_rep_bool, list(false));
-    builder.setExtension(Ext_all_types.ext_pack_bool, list(false));
+    builder.ext_opt_bool(false);
+    builder.ext_rep_bool(list(false));
+    builder.ext_pack_bool(list(false));
 
-    assertThat(builder.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.FALSE);
-    assertThat(builder.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(false));
-    assertThat(builder.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(false));
+    assertThat(builder.ext_opt_bool).isEqualTo(Boolean.FALSE);
+    assertThat(builder.ext_rep_bool).isEqualTo(list(false));
+    assertThat(builder.ext_pack_bool).isEqualTo(list(false));
   }
 
   @Test
@@ -345,15 +343,9 @@ public class TestAllTypes {
     AllTypes parsed = adapter.decode(input, extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
-    assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
-    assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true));
-    assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
-
-    Set<Extension<?, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions).hasSize(3);
-    assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
+    assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
+    assertThat(allTypes.ext_rep_bool).isEqualTo(list(true));
+    assertThat(allTypes.ext_pack_bool).isEqualTo(list(true));
   }
 
   @Test
@@ -363,15 +355,9 @@ public class TestAllTypes {
     AllTypes parsed = adapter.decode(data, extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
-    assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
-    assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true));
-    assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
-
-    Set<Extension<?, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions).hasSize(3);
-    assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
+    assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
+    assertThat(allTypes.ext_rep_bool).isEqualTo(list(true));
+    assertThat(allTypes.ext_pack_bool).isEqualTo(list(true));
   }
 
   @Test
@@ -382,15 +368,9 @@ public class TestAllTypes {
     AllTypes parsed = adapter.decode(stream, extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
-    assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
-    assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true));
-    assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
-
-    Set<Extension<?, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions).hasSize(3);
-    assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
+    assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
+    assertThat(allTypes.ext_rep_bool).isEqualTo(list(true));
+    assertThat(allTypes.ext_pack_bool).isEqualTo(list(true));
   }
 
   @Test
@@ -401,15 +381,9 @@ public class TestAllTypes {
     AllTypes parsed = adapter.decode(data, extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
-    assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
-    assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true, 50));
-    assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true, 50));
-
-    Set<Extension<?, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions).hasSize(3);
-    assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
+    assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
+    assertThat(allTypes.ext_rep_bool).isEqualTo(list(true, 50));
+    assertThat(allTypes.ext_pack_bool).isEqualTo(list(true, 50));
   }
 
   /** A source that returns 1, 2, 3, or 4 bytes at a time. */
@@ -435,22 +409,16 @@ public class TestAllTypes {
     AllTypes parsed = adapter.decode(Okio.buffer(input), extensionRegistry);
     assertThat(parsed).isEqualTo(allTypes);
 
-    assertThat(allTypes.getExtension(Ext_all_types.ext_opt_bool)).isEqualTo(Boolean.TRUE);
-    assertThat(allTypes.getExtension(Ext_all_types.ext_rep_bool)).isEqualTo(list(true));
-    assertThat(allTypes.getExtension(Ext_all_types.ext_pack_bool)).isEqualTo(list(true));
-
-    Set<Extension<?, ?>> extensions = parsed.getExtensions();
-    assertThat(extensions).hasSize(3);
-    assertThat(extensions.contains(Ext_all_types.ext_opt_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_rep_bool)).isTrue();
-    assertThat(extensions.contains(Ext_all_types.ext_pack_bool)).isTrue();
+    assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
+    assertThat(allTypes.ext_rep_bool).isEqualTo(list(true));
+    assertThat(allTypes.ext_pack_bool).isEqualTo(list(true));
   }
 
   @Test
   public void testReadNoExtension() throws IOException {
     byte[] data = adapter.encode(allTypes);
     AllTypes parsed = AllTypes.ADAPTER.decode(data);
-    assertThat(allTypes).isNotEqualTo(parsed);
+    assertThat(allTypes).isEqualTo(parsed);
   }
 
   @Test

@@ -135,25 +135,6 @@ public class WireCompilerTest {
     }
   }
 
-  private void testProtoWithRegistry(String[] sources, String registryClass, String[] outputs)
-      throws Exception {
-    int numFlags = 3;
-    String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
-    args[1] = "--java_out=" + testDir.getAbsolutePath();
-    args[2] = "--registry_class=" + registryClass;
-    System.arraycopy(sources, 0, args, numFlags, sources.length);
-
-    invokeCompiler(args);
-
-    List<String> filesAfter = getAllFiles(testDir);
-    assertThat(filesAfter).hasSize(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatch(testDir, output);
-    }
-  }
-
   private void testProtoWithRoots(String[] sources, String roots, String[] outputs)
       throws Exception {
     String[] extraArgs = {};
@@ -234,8 +215,7 @@ public class WireCompilerTest {
         "all_types.proto"
     };
     String[] outputs = {
-        "com/squareup/wire/protos/alltypes/AllTypes.java",
-        "com/squareup/wire/protos/alltypes/Ext_all_types.java"
+        "com/squareup/wire/protos/alltypes/AllTypes.java"
     };
     testProtoFull(sources, outputs);
   }
@@ -247,10 +227,8 @@ public class WireCompilerTest {
         "foreign.proto"
     };
     String[] outputs = {
-        "com/squareup/wire/protos/simple/Ext_simple_message.java",
         "com/squareup/wire/protos/simple/SimpleMessage.java",
         "com/squareup/wire/protos/simple/ExternalMessage.java",
-        "com/squareup/wire/protos/foreign/Ext_foreign.java",
         "com/squareup/wire/protos/foreign/ForeignEnum.java",
         "com/squareup/wire/protos/foreign/ForeignMessage.java"
     };
@@ -265,51 +243,6 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/oneof/OneOfMessage.java"
     };
     testProto(sources, outputs);
-  }
-
-  @Test public void testRegistry() throws Exception {
-    String[] sources = {
-        "simple_message.proto",
-        "external_message.proto",
-        "foreign.proto"
-    };
-    String registry = "com.squareup.wire.protos.ProtoRegistry";
-    String[] outputs = {
-        "com/squareup/wire/protos/ProtoRegistry.java",
-        "com/squareup/wire/protos/simple/Ext_simple_message.java",
-        "com/squareup/wire/protos/simple/SimpleMessage.java",
-        "com/squareup/wire/protos/simple/ExternalMessage.java",
-        "com/squareup/wire/protos/foreign/Ext_foreign.java",
-        "com/squareup/wire/protos/foreign/ForeignEnum.java",
-        "com/squareup/wire/protos/foreign/ForeignMessage.java"
-    };
-    testProtoWithRegistry(sources, registry, outputs);
-  }
-
-  @Test public void testEmptyRegistry() throws Exception {
-    String[] sources = {
-        "person.proto"
-    };
-    String registry = "com.squareup.wire.protos.person.EmptyRegistry";
-    String[] outputs = {
-        "com/squareup/wire/protos/person/EmptyRegistry.java",
-        "com/squareup/wire/protos/person/Person.java"
-    };
-    testProtoWithRegistry(sources, registry, outputs);
-  }
-
-  @Test public void testOneClassRegistry() throws Exception {
-    String[] sources = {
-        "one_extension.proto"
-    };
-    String registry = "com.squareup.wire.protos.one_extension.OneExtensionRegistry";
-    String[] outputs = {
-        "com/squareup/wire/protos/one_extension/Ext_one_extension.java",
-        "com/squareup/wire/protos/one_extension/Foo.java",
-        "com/squareup/wire/protos/one_extension/OneExtension.java",
-        "com/squareup/wire/protos/one_extension/OneExtensionRegistry.java"
-    };
-    testProtoWithRegistry(sources, registry, outputs);
   }
 
   @Test public void testSingleLevel() throws Exception {
@@ -351,7 +284,6 @@ public class WireCompilerTest {
         "all_types.proto"
     };
     String[] outputs = {
-        "com/squareup/wire/protos/alltypes/Ext_all_types.java",
         "com/squareup/wire/protos/alltypes/AllTypes.java"
     };
     testProto(sources, outputs);
@@ -387,7 +319,6 @@ public class WireCompilerTest {
     };
     String[] outputs = {
         "com/squareup/wire/protos/custom_options/FooBar.java",
-        "com/squareup/wire/protos/custom_options/Ext_custom_options.java",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
     };
     testProto(sources, outputs);
@@ -399,7 +330,6 @@ public class WireCompilerTest {
     };
     String[] outputs = {
         "com/squareup/wire/protos/custom_options/FooBar.java",
-        "com/squareup/wire/protos/custom_options/Ext_custom_options.java",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
     };
 
@@ -411,7 +341,6 @@ public class WireCompilerTest {
         "redacted_test.proto"
     };
     String[] outputs = {
-        "com/squareup/wire/protos/redacted/Ext_redacted_test.java",
         "com/squareup/wire/protos/redacted/NotRedacted.java",
         "com/squareup/wire/protos/redacted/Redacted.java",
         "com/squareup/wire/protos/redacted/RedactedChild.java",
@@ -439,7 +368,6 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/roots/I.java",
         "com/squareup/wire/protos/roots/J.java",
         "com/squareup/wire/protos/roots/K.java",
-        "com/squareup/wire/protos/roots/Ext_roots.java"
     };
     testProto(sources, outputs);
   }
@@ -455,8 +383,7 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/roots/D.java",
         "com/squareup/wire/protos/roots/I.java",
         "com/squareup/wire/protos/roots/J.java",
-        "com/squareup/wire/protos/roots/K.java",
-        "com/squareup/wire/protos/roots/Ext_roots.java"
+        "com/squareup/wire/protos/roots/K.java"
     };
     String roots = "squareup.protos.roots.A";
     testProtoWithRoots(sources, roots, outputs);
@@ -471,8 +398,7 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/roots/C.java",
         "com/squareup/wire/protos/roots/I.java",
         "com/squareup/wire/protos/roots/J.java",
-        "com/squareup/wire/protos/roots/K.java",
-        "com/squareup/wire/protos/roots/Ext_roots.java"
+        "com/squareup/wire/protos/roots/K.java"
     };
     String roots = "squareup.protos.roots.B";
     testProtoWithRoots(sources, roots, outputs);
@@ -487,8 +413,7 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/roots/G.java",
         "com/squareup/wire/protos/roots/I.java",
         "com/squareup/wire/protos/roots/J.java",
-        "com/squareup/wire/protos/roots/K.java",
-        "com/squareup/wire/protos/roots/Ext_roots.java"
+        "com/squareup/wire/protos/roots/K.java"
     };
     String roots = "squareup.protos.roots.E";
     testProtoWithRoots(sources, roots, outputs);
@@ -504,8 +429,7 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/roots/H.java",
         "com/squareup/wire/protos/roots/I.java",
         "com/squareup/wire/protos/roots/J.java",
-        "com/squareup/wire/protos/roots/K.java",
-        "com/squareup/wire/protos/roots/Ext_roots.java"
+        "com/squareup/wire/protos/roots/K.java"
     };
     String roots = "squareup.protos.roots.H";
     testProtoWithRoots(sources, roots, outputs);
@@ -518,8 +442,7 @@ public class WireCompilerTest {
     String[] outputs = {
         "com/squareup/wire/protos/roots/I.java",
         "com/squareup/wire/protos/roots/J.java",
-        "com/squareup/wire/protos/roots/K.java",
-        "com/squareup/wire/protos/roots/Ext_roots.java"
+        "com/squareup/wire/protos/roots/K.java"
     };
     String roots = "squareup.protos.roots.I";
     testProtoWithRoots(sources, roots, outputs);

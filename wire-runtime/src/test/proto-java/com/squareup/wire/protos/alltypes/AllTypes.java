@@ -120,6 +120,38 @@ public final class AllTypes extends Message<AllTypes> {
 
   public static final NestedEnum DEFAULT_DEFAULT_NESTED_ENUM = NestedEnum.A;
 
+  public static final Integer DEFAULT_EXT_OPT_INT32 = 0;
+
+  public static final Integer DEFAULT_EXT_OPT_UINT32 = 0;
+
+  public static final Integer DEFAULT_EXT_OPT_SINT32 = 0;
+
+  public static final Integer DEFAULT_EXT_OPT_FIXED32 = 0;
+
+  public static final Integer DEFAULT_EXT_OPT_SFIXED32 = 0;
+
+  public static final Long DEFAULT_EXT_OPT_INT64 = 0L;
+
+  public static final Long DEFAULT_EXT_OPT_UINT64 = 0L;
+
+  public static final Long DEFAULT_EXT_OPT_SINT64 = 0L;
+
+  public static final Long DEFAULT_EXT_OPT_FIXED64 = 0L;
+
+  public static final Long DEFAULT_EXT_OPT_SFIXED64 = 0L;
+
+  public static final Boolean DEFAULT_EXT_OPT_BOOL = false;
+
+  public static final Float DEFAULT_EXT_OPT_FLOAT = 0.0f;
+
+  public static final Double DEFAULT_EXT_OPT_DOUBLE = 0.0d;
+
+  public static final String DEFAULT_EXT_OPT_STRING = "";
+
+  public static final ByteString DEFAULT_EXT_OPT_BYTES = ByteString.EMPTY;
+
+  public static final NestedEnum DEFAULT_EXT_OPT_NESTED_ENUM = NestedEnum.A;
+
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
@@ -654,11 +686,330 @@ public final class AllTypes extends Message<AllTypes> {
   )
   public final NestedEnum default_nested_enum;
 
-  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum) {
-    this(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, TagMap.EMPTY);
+  @WireField(
+      tag = 1001,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer ext_opt_int32;
+
+  @WireField(
+      tag = 1002,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
+  )
+  public final Integer ext_opt_uint32;
+
+  @WireField(
+      tag = 1003,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
+  )
+  public final Integer ext_opt_sint32;
+
+  @WireField(
+      tag = 1004,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+  )
+  public final Integer ext_opt_fixed32;
+
+  @WireField(
+      tag = 1005,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
+  )
+  public final Integer ext_opt_sfixed32;
+
+  @WireField(
+      tag = 1006,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
+  )
+  public final Long ext_opt_int64;
+
+  @WireField(
+      tag = 1007,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
+  )
+  public final Long ext_opt_uint64;
+
+  @WireField(
+      tag = 1008,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
+  )
+  public final Long ext_opt_sint64;
+
+  @WireField(
+      tag = 1009,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+  )
+  public final Long ext_opt_fixed64;
+
+  @WireField(
+      tag = 1010,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
+  )
+  public final Long ext_opt_sfixed64;
+
+  @WireField(
+      tag = 1011,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean ext_opt_bool;
+
+  @WireField(
+      tag = 1012,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
+  public final Float ext_opt_float;
+
+  @WireField(
+      tag = 1013,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+  )
+  public final Double ext_opt_double;
+
+  @WireField(
+      tag = 1014,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String ext_opt_string;
+
+  @WireField(
+      tag = 1015,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
+  )
+  public final ByteString ext_opt_bytes;
+
+  @WireField(
+      tag = 1016,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER"
+  )
+  public final NestedEnum ext_opt_nested_enum;
+
+  @WireField(
+      tag = 1017,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER"
+  )
+  public final NestedMessage ext_opt_nested_message;
+
+  @WireField(
+      tag = 1101,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Integer> ext_rep_int32;
+
+  @WireField(
+      tag = 1102,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Integer> ext_rep_uint32;
+
+  @WireField(
+      tag = 1103,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Integer> ext_rep_sint32;
+
+  @WireField(
+      tag = 1104,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Integer> ext_rep_fixed32;
+
+  @WireField(
+      tag = 1105,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Integer> ext_rep_sfixed32;
+
+  @WireField(
+      tag = 1106,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Long> ext_rep_int64;
+
+  @WireField(
+      tag = 1107,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Long> ext_rep_uint64;
+
+  @WireField(
+      tag = 1108,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Long> ext_rep_sint64;
+
+  @WireField(
+      tag = 1109,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Long> ext_rep_fixed64;
+
+  @WireField(
+      tag = 1110,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Long> ext_rep_sfixed64;
+
+  @WireField(
+      tag = 1111,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Boolean> ext_rep_bool;
+
+  @WireField(
+      tag = 1112,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Float> ext_rep_float;
+
+  @WireField(
+      tag = 1113,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Double> ext_rep_double;
+
+  @WireField(
+      tag = 1114,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REPEATED
+  )
+  public final List<String> ext_rep_string;
+
+  @WireField(
+      tag = 1115,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+      label = WireField.Label.REPEATED
+  )
+  public final List<ByteString> ext_rep_bytes;
+
+  @WireField(
+      tag = 1116,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
+  public final List<NestedEnum> ext_rep_nested_enum;
+
+  @WireField(
+      tag = 1117,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
+  public final List<NestedMessage> ext_rep_nested_message;
+
+  @WireField(
+      tag = 1201,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.PACKED
+  )
+  public final List<Integer> ext_pack_int32;
+
+  @WireField(
+      tag = 1202,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+      label = WireField.Label.PACKED
+  )
+  public final List<Integer> ext_pack_uint32;
+
+  @WireField(
+      tag = 1203,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      label = WireField.Label.PACKED
+  )
+  public final List<Integer> ext_pack_sint32;
+
+  @WireField(
+      tag = 1204,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+      label = WireField.Label.PACKED
+  )
+  public final List<Integer> ext_pack_fixed32;
+
+  @WireField(
+      tag = 1205,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+      label = WireField.Label.PACKED
+  )
+  public final List<Integer> ext_pack_sfixed32;
+
+  @WireField(
+      tag = 1206,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
+      label = WireField.Label.PACKED
+  )
+  public final List<Long> ext_pack_int64;
+
+  @WireField(
+      tag = 1207,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+      label = WireField.Label.PACKED
+  )
+  public final List<Long> ext_pack_uint64;
+
+  @WireField(
+      tag = 1208,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+      label = WireField.Label.PACKED
+  )
+  public final List<Long> ext_pack_sint64;
+
+  @WireField(
+      tag = 1209,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+      label = WireField.Label.PACKED
+  )
+  public final List<Long> ext_pack_fixed64;
+
+  @WireField(
+      tag = 1210,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      label = WireField.Label.PACKED
+  )
+  public final List<Long> ext_pack_sfixed64;
+
+  @WireField(
+      tag = 1211,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+      label = WireField.Label.PACKED
+  )
+  public final List<Boolean> ext_pack_bool;
+
+  @WireField(
+      tag = 1212,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+      label = WireField.Label.PACKED
+  )
+  public final List<Float> ext_pack_float;
+
+  @WireField(
+      tag = 1213,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+      label = WireField.Label.PACKED
+  )
+  public final List<Double> ext_pack_double;
+
+  @WireField(
+      tag = 1216,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
+      label = WireField.Label.PACKED
+  )
+  public final List<NestedEnum> ext_pack_nested_enum;
+
+  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum, Integer ext_opt_int32, Integer ext_opt_uint32, Integer ext_opt_sint32, Integer ext_opt_fixed32, Integer ext_opt_sfixed32, Long ext_opt_int64, Long ext_opt_uint64, Long ext_opt_sint64, Long ext_opt_fixed64, Long ext_opt_sfixed64, Boolean ext_opt_bool, Float ext_opt_float, Double ext_opt_double, String ext_opt_string, ByteString ext_opt_bytes, NestedEnum ext_opt_nested_enum, NestedMessage ext_opt_nested_message, List<Integer> ext_rep_int32, List<Integer> ext_rep_uint32, List<Integer> ext_rep_sint32, List<Integer> ext_rep_fixed32, List<Integer> ext_rep_sfixed32, List<Long> ext_rep_int64, List<Long> ext_rep_uint64, List<Long> ext_rep_sint64, List<Long> ext_rep_fixed64, List<Long> ext_rep_sfixed64, List<Boolean> ext_rep_bool, List<Float> ext_rep_float, List<Double> ext_rep_double, List<String> ext_rep_string, List<ByteString> ext_rep_bytes, List<NestedEnum> ext_rep_nested_enum, List<NestedMessage> ext_rep_nested_message, List<Integer> ext_pack_int32, List<Integer> ext_pack_uint32, List<Integer> ext_pack_sint32, List<Integer> ext_pack_fixed32, List<Integer> ext_pack_sfixed32, List<Long> ext_pack_int64, List<Long> ext_pack_uint64, List<Long> ext_pack_sint64, List<Long> ext_pack_fixed64, List<Long> ext_pack_sfixed64, List<Boolean> ext_pack_bool, List<Float> ext_pack_float, List<Double> ext_pack_double, List<NestedEnum> ext_pack_nested_enum) {
+    this(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum, TagMap.EMPTY);
   }
 
-  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum, TagMap tagMap) {
+  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum, Integer ext_opt_int32, Integer ext_opt_uint32, Integer ext_opt_sint32, Integer ext_opt_fixed32, Integer ext_opt_sfixed32, Long ext_opt_int64, Long ext_opt_uint64, Long ext_opt_sint64, Long ext_opt_fixed64, Long ext_opt_sfixed64, Boolean ext_opt_bool, Float ext_opt_float, Double ext_opt_double, String ext_opt_string, ByteString ext_opt_bytes, NestedEnum ext_opt_nested_enum, NestedMessage ext_opt_nested_message, List<Integer> ext_rep_int32, List<Integer> ext_rep_uint32, List<Integer> ext_rep_sint32, List<Integer> ext_rep_fixed32, List<Integer> ext_rep_sfixed32, List<Long> ext_rep_int64, List<Long> ext_rep_uint64, List<Long> ext_rep_sint64, List<Long> ext_rep_fixed64, List<Long> ext_rep_sfixed64, List<Boolean> ext_rep_bool, List<Float> ext_rep_float, List<Double> ext_rep_double, List<String> ext_rep_string, List<ByteString> ext_rep_bytes, List<NestedEnum> ext_rep_nested_enum, List<NestedMessage> ext_rep_nested_message, List<Integer> ext_pack_int32, List<Integer> ext_pack_uint32, List<Integer> ext_pack_sint32, List<Integer> ext_pack_fixed32, List<Integer> ext_pack_sfixed32, List<Long> ext_pack_int64, List<Long> ext_pack_uint64, List<Long> ext_pack_sint64, List<Long> ext_pack_fixed64, List<Long> ext_pack_sfixed64, List<Boolean> ext_pack_bool, List<Float> ext_pack_float, List<Double> ext_pack_double, List<NestedEnum> ext_pack_nested_enum, TagMap tagMap) {
     super(tagMap);
     this.opt_int32 = opt_int32;
     this.opt_uint32 = opt_uint32;
@@ -741,6 +1092,54 @@ public final class AllTypes extends Message<AllTypes> {
     this.default_string = default_string;
     this.default_bytes = default_bytes;
     this.default_nested_enum = default_nested_enum;
+    this.ext_opt_int32 = ext_opt_int32;
+    this.ext_opt_uint32 = ext_opt_uint32;
+    this.ext_opt_sint32 = ext_opt_sint32;
+    this.ext_opt_fixed32 = ext_opt_fixed32;
+    this.ext_opt_sfixed32 = ext_opt_sfixed32;
+    this.ext_opt_int64 = ext_opt_int64;
+    this.ext_opt_uint64 = ext_opt_uint64;
+    this.ext_opt_sint64 = ext_opt_sint64;
+    this.ext_opt_fixed64 = ext_opt_fixed64;
+    this.ext_opt_sfixed64 = ext_opt_sfixed64;
+    this.ext_opt_bool = ext_opt_bool;
+    this.ext_opt_float = ext_opt_float;
+    this.ext_opt_double = ext_opt_double;
+    this.ext_opt_string = ext_opt_string;
+    this.ext_opt_bytes = ext_opt_bytes;
+    this.ext_opt_nested_enum = ext_opt_nested_enum;
+    this.ext_opt_nested_message = ext_opt_nested_message;
+    this.ext_rep_int32 = immutableCopyOf(ext_rep_int32);
+    this.ext_rep_uint32 = immutableCopyOf(ext_rep_uint32);
+    this.ext_rep_sint32 = immutableCopyOf(ext_rep_sint32);
+    this.ext_rep_fixed32 = immutableCopyOf(ext_rep_fixed32);
+    this.ext_rep_sfixed32 = immutableCopyOf(ext_rep_sfixed32);
+    this.ext_rep_int64 = immutableCopyOf(ext_rep_int64);
+    this.ext_rep_uint64 = immutableCopyOf(ext_rep_uint64);
+    this.ext_rep_sint64 = immutableCopyOf(ext_rep_sint64);
+    this.ext_rep_fixed64 = immutableCopyOf(ext_rep_fixed64);
+    this.ext_rep_sfixed64 = immutableCopyOf(ext_rep_sfixed64);
+    this.ext_rep_bool = immutableCopyOf(ext_rep_bool);
+    this.ext_rep_float = immutableCopyOf(ext_rep_float);
+    this.ext_rep_double = immutableCopyOf(ext_rep_double);
+    this.ext_rep_string = immutableCopyOf(ext_rep_string);
+    this.ext_rep_bytes = immutableCopyOf(ext_rep_bytes);
+    this.ext_rep_nested_enum = immutableCopyOf(ext_rep_nested_enum);
+    this.ext_rep_nested_message = immutableCopyOf(ext_rep_nested_message);
+    this.ext_pack_int32 = immutableCopyOf(ext_pack_int32);
+    this.ext_pack_uint32 = immutableCopyOf(ext_pack_uint32);
+    this.ext_pack_sint32 = immutableCopyOf(ext_pack_sint32);
+    this.ext_pack_fixed32 = immutableCopyOf(ext_pack_fixed32);
+    this.ext_pack_sfixed32 = immutableCopyOf(ext_pack_sfixed32);
+    this.ext_pack_int64 = immutableCopyOf(ext_pack_int64);
+    this.ext_pack_uint64 = immutableCopyOf(ext_pack_uint64);
+    this.ext_pack_sint64 = immutableCopyOf(ext_pack_sint64);
+    this.ext_pack_fixed64 = immutableCopyOf(ext_pack_fixed64);
+    this.ext_pack_sfixed64 = immutableCopyOf(ext_pack_sfixed64);
+    this.ext_pack_bool = immutableCopyOf(ext_pack_bool);
+    this.ext_pack_float = immutableCopyOf(ext_pack_float);
+    this.ext_pack_double = immutableCopyOf(ext_pack_double);
+    this.ext_pack_nested_enum = immutableCopyOf(ext_pack_nested_enum);
   }
 
   @Override
@@ -829,7 +1228,55 @@ public final class AllTypes extends Message<AllTypes> {
         && equals(default_double, o.default_double)
         && equals(default_string, o.default_string)
         && equals(default_bytes, o.default_bytes)
-        && equals(default_nested_enum, o.default_nested_enum);
+        && equals(default_nested_enum, o.default_nested_enum)
+        && equals(ext_opt_int32, o.ext_opt_int32)
+        && equals(ext_opt_uint32, o.ext_opt_uint32)
+        && equals(ext_opt_sint32, o.ext_opt_sint32)
+        && equals(ext_opt_fixed32, o.ext_opt_fixed32)
+        && equals(ext_opt_sfixed32, o.ext_opt_sfixed32)
+        && equals(ext_opt_int64, o.ext_opt_int64)
+        && equals(ext_opt_uint64, o.ext_opt_uint64)
+        && equals(ext_opt_sint64, o.ext_opt_sint64)
+        && equals(ext_opt_fixed64, o.ext_opt_fixed64)
+        && equals(ext_opt_sfixed64, o.ext_opt_sfixed64)
+        && equals(ext_opt_bool, o.ext_opt_bool)
+        && equals(ext_opt_float, o.ext_opt_float)
+        && equals(ext_opt_double, o.ext_opt_double)
+        && equals(ext_opt_string, o.ext_opt_string)
+        && equals(ext_opt_bytes, o.ext_opt_bytes)
+        && equals(ext_opt_nested_enum, o.ext_opt_nested_enum)
+        && equals(ext_opt_nested_message, o.ext_opt_nested_message)
+        && equals(ext_rep_int32, o.ext_rep_int32)
+        && equals(ext_rep_uint32, o.ext_rep_uint32)
+        && equals(ext_rep_sint32, o.ext_rep_sint32)
+        && equals(ext_rep_fixed32, o.ext_rep_fixed32)
+        && equals(ext_rep_sfixed32, o.ext_rep_sfixed32)
+        && equals(ext_rep_int64, o.ext_rep_int64)
+        && equals(ext_rep_uint64, o.ext_rep_uint64)
+        && equals(ext_rep_sint64, o.ext_rep_sint64)
+        && equals(ext_rep_fixed64, o.ext_rep_fixed64)
+        && equals(ext_rep_sfixed64, o.ext_rep_sfixed64)
+        && equals(ext_rep_bool, o.ext_rep_bool)
+        && equals(ext_rep_float, o.ext_rep_float)
+        && equals(ext_rep_double, o.ext_rep_double)
+        && equals(ext_rep_string, o.ext_rep_string)
+        && equals(ext_rep_bytes, o.ext_rep_bytes)
+        && equals(ext_rep_nested_enum, o.ext_rep_nested_enum)
+        && equals(ext_rep_nested_message, o.ext_rep_nested_message)
+        && equals(ext_pack_int32, o.ext_pack_int32)
+        && equals(ext_pack_uint32, o.ext_pack_uint32)
+        && equals(ext_pack_sint32, o.ext_pack_sint32)
+        && equals(ext_pack_fixed32, o.ext_pack_fixed32)
+        && equals(ext_pack_sfixed32, o.ext_pack_sfixed32)
+        && equals(ext_pack_int64, o.ext_pack_int64)
+        && equals(ext_pack_uint64, o.ext_pack_uint64)
+        && equals(ext_pack_sint64, o.ext_pack_sint64)
+        && equals(ext_pack_fixed64, o.ext_pack_fixed64)
+        && equals(ext_pack_sfixed64, o.ext_pack_sfixed64)
+        && equals(ext_pack_bool, o.ext_pack_bool)
+        && equals(ext_pack_float, o.ext_pack_float)
+        && equals(ext_pack_double, o.ext_pack_double)
+        && equals(ext_pack_nested_enum, o.ext_pack_nested_enum);
   }
 
   @Override
@@ -918,6 +1365,54 @@ public final class AllTypes extends Message<AllTypes> {
       result = result * 37 + (default_string != null ? default_string.hashCode() : 0);
       result = result * 37 + (default_bytes != null ? default_bytes.hashCode() : 0);
       result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
+      result = result * 37 + (ext_opt_int32 != null ? ext_opt_int32.hashCode() : 0);
+      result = result * 37 + (ext_opt_uint32 != null ? ext_opt_uint32.hashCode() : 0);
+      result = result * 37 + (ext_opt_sint32 != null ? ext_opt_sint32.hashCode() : 0);
+      result = result * 37 + (ext_opt_fixed32 != null ? ext_opt_fixed32.hashCode() : 0);
+      result = result * 37 + (ext_opt_sfixed32 != null ? ext_opt_sfixed32.hashCode() : 0);
+      result = result * 37 + (ext_opt_int64 != null ? ext_opt_int64.hashCode() : 0);
+      result = result * 37 + (ext_opt_uint64 != null ? ext_opt_uint64.hashCode() : 0);
+      result = result * 37 + (ext_opt_sint64 != null ? ext_opt_sint64.hashCode() : 0);
+      result = result * 37 + (ext_opt_fixed64 != null ? ext_opt_fixed64.hashCode() : 0);
+      result = result * 37 + (ext_opt_sfixed64 != null ? ext_opt_sfixed64.hashCode() : 0);
+      result = result * 37 + (ext_opt_bool != null ? ext_opt_bool.hashCode() : 0);
+      result = result * 37 + (ext_opt_float != null ? ext_opt_float.hashCode() : 0);
+      result = result * 37 + (ext_opt_double != null ? ext_opt_double.hashCode() : 0);
+      result = result * 37 + (ext_opt_string != null ? ext_opt_string.hashCode() : 0);
+      result = result * 37 + (ext_opt_bytes != null ? ext_opt_bytes.hashCode() : 0);
+      result = result * 37 + (ext_opt_nested_enum != null ? ext_opt_nested_enum.hashCode() : 0);
+      result = result * 37 + (ext_opt_nested_message != null ? ext_opt_nested_message.hashCode() : 0);
+      result = result * 37 + (ext_rep_int32 != null ? ext_rep_int32.hashCode() : 1);
+      result = result * 37 + (ext_rep_uint32 != null ? ext_rep_uint32.hashCode() : 1);
+      result = result * 37 + (ext_rep_sint32 != null ? ext_rep_sint32.hashCode() : 1);
+      result = result * 37 + (ext_rep_fixed32 != null ? ext_rep_fixed32.hashCode() : 1);
+      result = result * 37 + (ext_rep_sfixed32 != null ? ext_rep_sfixed32.hashCode() : 1);
+      result = result * 37 + (ext_rep_int64 != null ? ext_rep_int64.hashCode() : 1);
+      result = result * 37 + (ext_rep_uint64 != null ? ext_rep_uint64.hashCode() : 1);
+      result = result * 37 + (ext_rep_sint64 != null ? ext_rep_sint64.hashCode() : 1);
+      result = result * 37 + (ext_rep_fixed64 != null ? ext_rep_fixed64.hashCode() : 1);
+      result = result * 37 + (ext_rep_sfixed64 != null ? ext_rep_sfixed64.hashCode() : 1);
+      result = result * 37 + (ext_rep_bool != null ? ext_rep_bool.hashCode() : 1);
+      result = result * 37 + (ext_rep_float != null ? ext_rep_float.hashCode() : 1);
+      result = result * 37 + (ext_rep_double != null ? ext_rep_double.hashCode() : 1);
+      result = result * 37 + (ext_rep_string != null ? ext_rep_string.hashCode() : 1);
+      result = result * 37 + (ext_rep_bytes != null ? ext_rep_bytes.hashCode() : 1);
+      result = result * 37 + (ext_rep_nested_enum != null ? ext_rep_nested_enum.hashCode() : 1);
+      result = result * 37 + (ext_rep_nested_message != null ? ext_rep_nested_message.hashCode() : 1);
+      result = result * 37 + (ext_pack_int32 != null ? ext_pack_int32.hashCode() : 1);
+      result = result * 37 + (ext_pack_uint32 != null ? ext_pack_uint32.hashCode() : 1);
+      result = result * 37 + (ext_pack_sint32 != null ? ext_pack_sint32.hashCode() : 1);
+      result = result * 37 + (ext_pack_fixed32 != null ? ext_pack_fixed32.hashCode() : 1);
+      result = result * 37 + (ext_pack_sfixed32 != null ? ext_pack_sfixed32.hashCode() : 1);
+      result = result * 37 + (ext_pack_int64 != null ? ext_pack_int64.hashCode() : 1);
+      result = result * 37 + (ext_pack_uint64 != null ? ext_pack_uint64.hashCode() : 1);
+      result = result * 37 + (ext_pack_sint64 != null ? ext_pack_sint64.hashCode() : 1);
+      result = result * 37 + (ext_pack_fixed64 != null ? ext_pack_fixed64.hashCode() : 1);
+      result = result * 37 + (ext_pack_sfixed64 != null ? ext_pack_sfixed64.hashCode() : 1);
+      result = result * 37 + (ext_pack_bool != null ? ext_pack_bool.hashCode() : 1);
+      result = result * 37 + (ext_pack_float != null ? ext_pack_float.hashCode() : 1);
+      result = result * 37 + (ext_pack_double != null ? ext_pack_double.hashCode() : 1);
+      result = result * 37 + (ext_pack_nested_enum != null ? ext_pack_nested_enum.hashCode() : 1);
       super.hashCode = result;
     }
     return result;
@@ -1086,6 +1581,102 @@ public final class AllTypes extends Message<AllTypes> {
 
     public NestedEnum default_nested_enum;
 
+    public Integer ext_opt_int32;
+
+    public Integer ext_opt_uint32;
+
+    public Integer ext_opt_sint32;
+
+    public Integer ext_opt_fixed32;
+
+    public Integer ext_opt_sfixed32;
+
+    public Long ext_opt_int64;
+
+    public Long ext_opt_uint64;
+
+    public Long ext_opt_sint64;
+
+    public Long ext_opt_fixed64;
+
+    public Long ext_opt_sfixed64;
+
+    public Boolean ext_opt_bool;
+
+    public Float ext_opt_float;
+
+    public Double ext_opt_double;
+
+    public String ext_opt_string;
+
+    public ByteString ext_opt_bytes;
+
+    public NestedEnum ext_opt_nested_enum;
+
+    public NestedMessage ext_opt_nested_message;
+
+    public List<Integer> ext_rep_int32;
+
+    public List<Integer> ext_rep_uint32;
+
+    public List<Integer> ext_rep_sint32;
+
+    public List<Integer> ext_rep_fixed32;
+
+    public List<Integer> ext_rep_sfixed32;
+
+    public List<Long> ext_rep_int64;
+
+    public List<Long> ext_rep_uint64;
+
+    public List<Long> ext_rep_sint64;
+
+    public List<Long> ext_rep_fixed64;
+
+    public List<Long> ext_rep_sfixed64;
+
+    public List<Boolean> ext_rep_bool;
+
+    public List<Float> ext_rep_float;
+
+    public List<Double> ext_rep_double;
+
+    public List<String> ext_rep_string;
+
+    public List<ByteString> ext_rep_bytes;
+
+    public List<NestedEnum> ext_rep_nested_enum;
+
+    public List<NestedMessage> ext_rep_nested_message;
+
+    public List<Integer> ext_pack_int32;
+
+    public List<Integer> ext_pack_uint32;
+
+    public List<Integer> ext_pack_sint32;
+
+    public List<Integer> ext_pack_fixed32;
+
+    public List<Integer> ext_pack_sfixed32;
+
+    public List<Long> ext_pack_int64;
+
+    public List<Long> ext_pack_uint64;
+
+    public List<Long> ext_pack_sint64;
+
+    public List<Long> ext_pack_fixed64;
+
+    public List<Long> ext_pack_sfixed64;
+
+    public List<Boolean> ext_pack_bool;
+
+    public List<Float> ext_pack_float;
+
+    public List<Double> ext_pack_double;
+
+    public List<NestedEnum> ext_pack_nested_enum;
+
     public Builder() {
       rep_int32 = newMutableList();
       rep_uint32 = newMutableList();
@@ -1118,6 +1709,37 @@ public final class AllTypes extends Message<AllTypes> {
       pack_float = newMutableList();
       pack_double = newMutableList();
       pack_nested_enum = newMutableList();
+      ext_rep_int32 = newMutableList();
+      ext_rep_uint32 = newMutableList();
+      ext_rep_sint32 = newMutableList();
+      ext_rep_fixed32 = newMutableList();
+      ext_rep_sfixed32 = newMutableList();
+      ext_rep_int64 = newMutableList();
+      ext_rep_uint64 = newMutableList();
+      ext_rep_sint64 = newMutableList();
+      ext_rep_fixed64 = newMutableList();
+      ext_rep_sfixed64 = newMutableList();
+      ext_rep_bool = newMutableList();
+      ext_rep_float = newMutableList();
+      ext_rep_double = newMutableList();
+      ext_rep_string = newMutableList();
+      ext_rep_bytes = newMutableList();
+      ext_rep_nested_enum = newMutableList();
+      ext_rep_nested_message = newMutableList();
+      ext_pack_int32 = newMutableList();
+      ext_pack_uint32 = newMutableList();
+      ext_pack_sint32 = newMutableList();
+      ext_pack_fixed32 = newMutableList();
+      ext_pack_sfixed32 = newMutableList();
+      ext_pack_int64 = newMutableList();
+      ext_pack_uint64 = newMutableList();
+      ext_pack_sint64 = newMutableList();
+      ext_pack_fixed64 = newMutableList();
+      ext_pack_sfixed64 = newMutableList();
+      ext_pack_bool = newMutableList();
+      ext_pack_float = newMutableList();
+      ext_pack_double = newMutableList();
+      ext_pack_nested_enum = newMutableList();
     }
 
     public Builder(AllTypes message) {
@@ -1204,6 +1826,54 @@ public final class AllTypes extends Message<AllTypes> {
       this.default_string = message.default_string;
       this.default_bytes = message.default_bytes;
       this.default_nested_enum = message.default_nested_enum;
+      this.ext_opt_int32 = message.ext_opt_int32;
+      this.ext_opt_uint32 = message.ext_opt_uint32;
+      this.ext_opt_sint32 = message.ext_opt_sint32;
+      this.ext_opt_fixed32 = message.ext_opt_fixed32;
+      this.ext_opt_sfixed32 = message.ext_opt_sfixed32;
+      this.ext_opt_int64 = message.ext_opt_int64;
+      this.ext_opt_uint64 = message.ext_opt_uint64;
+      this.ext_opt_sint64 = message.ext_opt_sint64;
+      this.ext_opt_fixed64 = message.ext_opt_fixed64;
+      this.ext_opt_sfixed64 = message.ext_opt_sfixed64;
+      this.ext_opt_bool = message.ext_opt_bool;
+      this.ext_opt_float = message.ext_opt_float;
+      this.ext_opt_double = message.ext_opt_double;
+      this.ext_opt_string = message.ext_opt_string;
+      this.ext_opt_bytes = message.ext_opt_bytes;
+      this.ext_opt_nested_enum = message.ext_opt_nested_enum;
+      this.ext_opt_nested_message = message.ext_opt_nested_message;
+      this.ext_rep_int32 = copyOf(message.ext_rep_int32);
+      this.ext_rep_uint32 = copyOf(message.ext_rep_uint32);
+      this.ext_rep_sint32 = copyOf(message.ext_rep_sint32);
+      this.ext_rep_fixed32 = copyOf(message.ext_rep_fixed32);
+      this.ext_rep_sfixed32 = copyOf(message.ext_rep_sfixed32);
+      this.ext_rep_int64 = copyOf(message.ext_rep_int64);
+      this.ext_rep_uint64 = copyOf(message.ext_rep_uint64);
+      this.ext_rep_sint64 = copyOf(message.ext_rep_sint64);
+      this.ext_rep_fixed64 = copyOf(message.ext_rep_fixed64);
+      this.ext_rep_sfixed64 = copyOf(message.ext_rep_sfixed64);
+      this.ext_rep_bool = copyOf(message.ext_rep_bool);
+      this.ext_rep_float = copyOf(message.ext_rep_float);
+      this.ext_rep_double = copyOf(message.ext_rep_double);
+      this.ext_rep_string = copyOf(message.ext_rep_string);
+      this.ext_rep_bytes = copyOf(message.ext_rep_bytes);
+      this.ext_rep_nested_enum = copyOf(message.ext_rep_nested_enum);
+      this.ext_rep_nested_message = copyOf(message.ext_rep_nested_message);
+      this.ext_pack_int32 = copyOf(message.ext_pack_int32);
+      this.ext_pack_uint32 = copyOf(message.ext_pack_uint32);
+      this.ext_pack_sint32 = copyOf(message.ext_pack_sint32);
+      this.ext_pack_fixed32 = copyOf(message.ext_pack_fixed32);
+      this.ext_pack_sfixed32 = copyOf(message.ext_pack_sfixed32);
+      this.ext_pack_int64 = copyOf(message.ext_pack_int64);
+      this.ext_pack_uint64 = copyOf(message.ext_pack_uint64);
+      this.ext_pack_sint64 = copyOf(message.ext_pack_sint64);
+      this.ext_pack_fixed64 = copyOf(message.ext_pack_fixed64);
+      this.ext_pack_sfixed64 = copyOf(message.ext_pack_sfixed64);
+      this.ext_pack_bool = copyOf(message.ext_pack_bool);
+      this.ext_pack_float = copyOf(message.ext_pack_float);
+      this.ext_pack_double = copyOf(message.ext_pack_double);
+      this.ext_pack_nested_enum = copyOf(message.ext_pack_nested_enum);
     }
 
     public Builder opt_int32(Integer opt_int32) {
@@ -1642,6 +2312,277 @@ public final class AllTypes extends Message<AllTypes> {
       return this;
     }
 
+    public Builder ext_opt_int32(Integer ext_opt_int32) {
+      this.ext_opt_int32 = ext_opt_int32;
+      return this;
+    }
+
+    public Builder ext_opt_uint32(Integer ext_opt_uint32) {
+      this.ext_opt_uint32 = ext_opt_uint32;
+      return this;
+    }
+
+    public Builder ext_opt_sint32(Integer ext_opt_sint32) {
+      this.ext_opt_sint32 = ext_opt_sint32;
+      return this;
+    }
+
+    public Builder ext_opt_fixed32(Integer ext_opt_fixed32) {
+      this.ext_opt_fixed32 = ext_opt_fixed32;
+      return this;
+    }
+
+    public Builder ext_opt_sfixed32(Integer ext_opt_sfixed32) {
+      this.ext_opt_sfixed32 = ext_opt_sfixed32;
+      return this;
+    }
+
+    public Builder ext_opt_int64(Long ext_opt_int64) {
+      this.ext_opt_int64 = ext_opt_int64;
+      return this;
+    }
+
+    public Builder ext_opt_uint64(Long ext_opt_uint64) {
+      this.ext_opt_uint64 = ext_opt_uint64;
+      return this;
+    }
+
+    public Builder ext_opt_sint64(Long ext_opt_sint64) {
+      this.ext_opt_sint64 = ext_opt_sint64;
+      return this;
+    }
+
+    public Builder ext_opt_fixed64(Long ext_opt_fixed64) {
+      this.ext_opt_fixed64 = ext_opt_fixed64;
+      return this;
+    }
+
+    public Builder ext_opt_sfixed64(Long ext_opt_sfixed64) {
+      this.ext_opt_sfixed64 = ext_opt_sfixed64;
+      return this;
+    }
+
+    public Builder ext_opt_bool(Boolean ext_opt_bool) {
+      this.ext_opt_bool = ext_opt_bool;
+      return this;
+    }
+
+    public Builder ext_opt_float(Float ext_opt_float) {
+      this.ext_opt_float = ext_opt_float;
+      return this;
+    }
+
+    public Builder ext_opt_double(Double ext_opt_double) {
+      this.ext_opt_double = ext_opt_double;
+      return this;
+    }
+
+    public Builder ext_opt_string(String ext_opt_string) {
+      this.ext_opt_string = ext_opt_string;
+      return this;
+    }
+
+    public Builder ext_opt_bytes(ByteString ext_opt_bytes) {
+      this.ext_opt_bytes = ext_opt_bytes;
+      return this;
+    }
+
+    public Builder ext_opt_nested_enum(NestedEnum ext_opt_nested_enum) {
+      this.ext_opt_nested_enum = ext_opt_nested_enum;
+      return this;
+    }
+
+    public Builder ext_opt_nested_message(NestedMessage ext_opt_nested_message) {
+      this.ext_opt_nested_message = ext_opt_nested_message;
+      return this;
+    }
+
+    public Builder ext_rep_int32(List<Integer> ext_rep_int32) {
+      checkElementsNotNull(ext_rep_int32);
+      this.ext_rep_int32 = ext_rep_int32;
+      return this;
+    }
+
+    public Builder ext_rep_uint32(List<Integer> ext_rep_uint32) {
+      checkElementsNotNull(ext_rep_uint32);
+      this.ext_rep_uint32 = ext_rep_uint32;
+      return this;
+    }
+
+    public Builder ext_rep_sint32(List<Integer> ext_rep_sint32) {
+      checkElementsNotNull(ext_rep_sint32);
+      this.ext_rep_sint32 = ext_rep_sint32;
+      return this;
+    }
+
+    public Builder ext_rep_fixed32(List<Integer> ext_rep_fixed32) {
+      checkElementsNotNull(ext_rep_fixed32);
+      this.ext_rep_fixed32 = ext_rep_fixed32;
+      return this;
+    }
+
+    public Builder ext_rep_sfixed32(List<Integer> ext_rep_sfixed32) {
+      checkElementsNotNull(ext_rep_sfixed32);
+      this.ext_rep_sfixed32 = ext_rep_sfixed32;
+      return this;
+    }
+
+    public Builder ext_rep_int64(List<Long> ext_rep_int64) {
+      checkElementsNotNull(ext_rep_int64);
+      this.ext_rep_int64 = ext_rep_int64;
+      return this;
+    }
+
+    public Builder ext_rep_uint64(List<Long> ext_rep_uint64) {
+      checkElementsNotNull(ext_rep_uint64);
+      this.ext_rep_uint64 = ext_rep_uint64;
+      return this;
+    }
+
+    public Builder ext_rep_sint64(List<Long> ext_rep_sint64) {
+      checkElementsNotNull(ext_rep_sint64);
+      this.ext_rep_sint64 = ext_rep_sint64;
+      return this;
+    }
+
+    public Builder ext_rep_fixed64(List<Long> ext_rep_fixed64) {
+      checkElementsNotNull(ext_rep_fixed64);
+      this.ext_rep_fixed64 = ext_rep_fixed64;
+      return this;
+    }
+
+    public Builder ext_rep_sfixed64(List<Long> ext_rep_sfixed64) {
+      checkElementsNotNull(ext_rep_sfixed64);
+      this.ext_rep_sfixed64 = ext_rep_sfixed64;
+      return this;
+    }
+
+    public Builder ext_rep_bool(List<Boolean> ext_rep_bool) {
+      checkElementsNotNull(ext_rep_bool);
+      this.ext_rep_bool = ext_rep_bool;
+      return this;
+    }
+
+    public Builder ext_rep_float(List<Float> ext_rep_float) {
+      checkElementsNotNull(ext_rep_float);
+      this.ext_rep_float = ext_rep_float;
+      return this;
+    }
+
+    public Builder ext_rep_double(List<Double> ext_rep_double) {
+      checkElementsNotNull(ext_rep_double);
+      this.ext_rep_double = ext_rep_double;
+      return this;
+    }
+
+    public Builder ext_rep_string(List<String> ext_rep_string) {
+      checkElementsNotNull(ext_rep_string);
+      this.ext_rep_string = ext_rep_string;
+      return this;
+    }
+
+    public Builder ext_rep_bytes(List<ByteString> ext_rep_bytes) {
+      checkElementsNotNull(ext_rep_bytes);
+      this.ext_rep_bytes = ext_rep_bytes;
+      return this;
+    }
+
+    public Builder ext_rep_nested_enum(List<NestedEnum> ext_rep_nested_enum) {
+      checkElementsNotNull(ext_rep_nested_enum);
+      this.ext_rep_nested_enum = ext_rep_nested_enum;
+      return this;
+    }
+
+    public Builder ext_rep_nested_message(List<NestedMessage> ext_rep_nested_message) {
+      checkElementsNotNull(ext_rep_nested_message);
+      this.ext_rep_nested_message = ext_rep_nested_message;
+      return this;
+    }
+
+    public Builder ext_pack_int32(List<Integer> ext_pack_int32) {
+      checkElementsNotNull(ext_pack_int32);
+      this.ext_pack_int32 = ext_pack_int32;
+      return this;
+    }
+
+    public Builder ext_pack_uint32(List<Integer> ext_pack_uint32) {
+      checkElementsNotNull(ext_pack_uint32);
+      this.ext_pack_uint32 = ext_pack_uint32;
+      return this;
+    }
+
+    public Builder ext_pack_sint32(List<Integer> ext_pack_sint32) {
+      checkElementsNotNull(ext_pack_sint32);
+      this.ext_pack_sint32 = ext_pack_sint32;
+      return this;
+    }
+
+    public Builder ext_pack_fixed32(List<Integer> ext_pack_fixed32) {
+      checkElementsNotNull(ext_pack_fixed32);
+      this.ext_pack_fixed32 = ext_pack_fixed32;
+      return this;
+    }
+
+    public Builder ext_pack_sfixed32(List<Integer> ext_pack_sfixed32) {
+      checkElementsNotNull(ext_pack_sfixed32);
+      this.ext_pack_sfixed32 = ext_pack_sfixed32;
+      return this;
+    }
+
+    public Builder ext_pack_int64(List<Long> ext_pack_int64) {
+      checkElementsNotNull(ext_pack_int64);
+      this.ext_pack_int64 = ext_pack_int64;
+      return this;
+    }
+
+    public Builder ext_pack_uint64(List<Long> ext_pack_uint64) {
+      checkElementsNotNull(ext_pack_uint64);
+      this.ext_pack_uint64 = ext_pack_uint64;
+      return this;
+    }
+
+    public Builder ext_pack_sint64(List<Long> ext_pack_sint64) {
+      checkElementsNotNull(ext_pack_sint64);
+      this.ext_pack_sint64 = ext_pack_sint64;
+      return this;
+    }
+
+    public Builder ext_pack_fixed64(List<Long> ext_pack_fixed64) {
+      checkElementsNotNull(ext_pack_fixed64);
+      this.ext_pack_fixed64 = ext_pack_fixed64;
+      return this;
+    }
+
+    public Builder ext_pack_sfixed64(List<Long> ext_pack_sfixed64) {
+      checkElementsNotNull(ext_pack_sfixed64);
+      this.ext_pack_sfixed64 = ext_pack_sfixed64;
+      return this;
+    }
+
+    public Builder ext_pack_bool(List<Boolean> ext_pack_bool) {
+      checkElementsNotNull(ext_pack_bool);
+      this.ext_pack_bool = ext_pack_bool;
+      return this;
+    }
+
+    public Builder ext_pack_float(List<Float> ext_pack_float) {
+      checkElementsNotNull(ext_pack_float);
+      this.ext_pack_float = ext_pack_float;
+      return this;
+    }
+
+    public Builder ext_pack_double(List<Double> ext_pack_double) {
+      checkElementsNotNull(ext_pack_double);
+      this.ext_pack_double = ext_pack_double;
+      return this;
+    }
+
+    public Builder ext_pack_nested_enum(List<NestedEnum> ext_pack_nested_enum) {
+      checkElementsNotNull(ext_pack_nested_enum);
+      this.ext_pack_nested_enum = ext_pack_nested_enum;
+      return this;
+    }
+
     @Override
     public AllTypes build() {
       if (req_int32 == null
@@ -1679,7 +2620,7 @@ public final class AllTypes extends Message<AllTypes> {
             req_nested_enum, "req_nested_enum",
             req_nested_message, "req_nested_message");
       }
-      return new AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, buildTagMap());
+      return new AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum, buildTagMap());
     }
   }
 

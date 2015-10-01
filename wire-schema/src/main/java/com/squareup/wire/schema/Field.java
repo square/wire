@@ -20,12 +20,14 @@ import com.squareup.wire.schema.internal.parser.FieldElement;
 public final class Field {
   private final String packageName;
   private final FieldElement element;
+  private final boolean extension;
   private final Options options;
   private ProtoType type;
 
-  Field(String packageName, FieldElement element) {
+  Field(String packageName, FieldElement element, boolean extension) {
     this.packageName = packageName;
     this.element = element;
+    this.extension = extension;
     this.options = new Options(Options.FIELD_OPTIONS, element.options());
   }
 
@@ -109,7 +111,7 @@ public final class Field {
     return name();
   }
 
-  void validate(Linker linker, boolean extension) {
+  void validate(Linker linker) {
     linker = linker.withContext(this);
     if (isPacked() && !isPackable(linker, type)) {
       linker.addError("packed=true not permitted on %s", type);
@@ -124,6 +126,10 @@ public final class Field {
     return !type.equals(ProtoType.STRING)
         && !type.equals(ProtoType.BYTES)
         && !(linker.get(type) instanceof MessageType);
+  }
+
+  public boolean isExtension() {
+    return extension;
   }
 
   public enum Label {

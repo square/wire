@@ -26,24 +26,24 @@ public final class FooBar extends Message<FooBar> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
-      .setExtension(Ext_custom_options.my_field_option_one, 17)
+      .my_field_option_one(17)
       .build();
 
   public static final FieldOptions FIELD_OPTIONS_BAR = new FieldOptions.Builder()
-      .setExtension(Ext_custom_options.my_field_option_two, 33.5f)
+      .my_field_option_two(33.5f)
       .build();
 
   public static final FieldOptions FIELD_OPTIONS_BAZ = new FieldOptions.Builder()
-      .setExtension(Ext_custom_options.my_field_option_three, FooBarBazEnum.BAR)
+      .my_field_option_three(FooBarBazEnum.BAR)
       .build();
 
   public static final FieldOptions FIELD_OPTIONS_QUX = new FieldOptions.Builder()
-      .setExtension(Ext_custom_options.my_field_option_one, 18)
-      .setExtension(Ext_custom_options.my_field_option_two, 34.5f)
+      .my_field_option_one(18)
+      .my_field_option_two(34.5f)
       .build();
 
   public static final FieldOptions FIELD_OPTIONS_FRED = new FieldOptions.Builder()
-      .setExtension(Ext_custom_options.my_field_option_four, new FooBar.Builder()
+      .my_field_option_four(new FooBar.Builder()
           .foo(11)
           .bar("22")
           .baz(new Nested.Builder()
@@ -60,11 +60,11 @@ public final class FooBar extends Message<FooBar> {
                       200.0f))
                   .build()))
           .build())
-      .setExtension(Ext_custom_options.my_field_option_two, 99.9f)
+      .my_field_option_two(99.9f)
       .build();
 
   public static final FieldOptions FIELD_OPTIONS_DAISY = new FieldOptions.Builder()
-      .setExtension(Ext_custom_options.my_field_option_four, new FooBar.Builder()
+      .my_field_option_four(new FooBar.Builder()
           .baz(new Nested.Builder()
               .value(FooBarBazEnum.FOO)
               .build())
@@ -78,6 +78,8 @@ public final class FooBar extends Message<FooBar> {
   public static final Long DEFAULT_QUX = 0L;
 
   public static final Double DEFAULT_DAISY = 0.0d;
+
+  public static final FooBarBazEnum DEFAULT_EXT = FooBarBazEnum.FOO;
 
   @WireField(
       tag = 1,
@@ -123,11 +125,24 @@ public final class FooBar extends Message<FooBar> {
   )
   public final List<FooBar> nested;
 
-  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested) {
-    this(foo, bar, baz, qux, fred, daisy, nested, TagMap.EMPTY);
+  @WireField(
+      tag = 101,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
+  )
+  public final FooBarBazEnum ext;
+
+  @WireField(
+      tag = 102,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
+  public final List<FooBarBazEnum> rep;
+
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep) {
+    this(foo, bar, baz, qux, fred, daisy, nested, ext, rep, TagMap.EMPTY);
   }
 
-  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, TagMap tagMap) {
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, TagMap tagMap) {
     super(tagMap);
     this.foo = foo;
     this.bar = bar;
@@ -136,6 +151,8 @@ public final class FooBar extends Message<FooBar> {
     this.fred = immutableCopyOf(fred);
     this.daisy = daisy;
     this.nested = immutableCopyOf(nested);
+    this.ext = ext;
+    this.rep = immutableCopyOf(rep);
   }
 
   @Override
@@ -150,7 +167,9 @@ public final class FooBar extends Message<FooBar> {
         && equals(qux, o.qux)
         && equals(fred, o.fred)
         && equals(daisy, o.daisy)
-        && equals(nested, o.nested);
+        && equals(nested, o.nested)
+        && equals(ext, o.ext)
+        && equals(rep, o.rep);
   }
 
   @Override
@@ -165,6 +184,8 @@ public final class FooBar extends Message<FooBar> {
       result = result * 37 + (fred != null ? fred.hashCode() : 1);
       result = result * 37 + (daisy != null ? daisy.hashCode() : 0);
       result = result * 37 + (nested != null ? nested.hashCode() : 1);
+      result = result * 37 + (ext != null ? ext.hashCode() : 0);
+      result = result * 37 + (rep != null ? rep.hashCode() : 1);
       super.hashCode = result;
     }
     return result;
@@ -185,9 +206,14 @@ public final class FooBar extends Message<FooBar> {
 
     public List<FooBar> nested;
 
+    public FooBarBazEnum ext;
+
+    public List<FooBarBazEnum> rep;
+
     public Builder() {
       fred = newMutableList();
       nested = newMutableList();
+      rep = newMutableList();
     }
 
     public Builder(FooBar message) {
@@ -200,6 +226,8 @@ public final class FooBar extends Message<FooBar> {
       this.fred = copyOf(message.fred);
       this.daisy = message.daisy;
       this.nested = copyOf(message.nested);
+      this.ext = message.ext;
+      this.rep = copyOf(message.rep);
     }
 
     public Builder foo(Integer foo) {
@@ -239,9 +267,20 @@ public final class FooBar extends Message<FooBar> {
       return this;
     }
 
+    public Builder ext(FooBarBazEnum ext) {
+      this.ext = ext;
+      return this;
+    }
+
+    public Builder rep(List<FooBarBazEnum> rep) {
+      checkElementsNotNull(rep);
+      this.rep = rep;
+      return this;
+    }
+
     @Override
     public FooBar build() {
-      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, buildTagMap());
+      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, buildTagMap());
     }
   }
 
@@ -392,7 +431,7 @@ public final class FooBar extends Message<FooBar> {
     public static final ProtoAdapter<FooBarBazEnum> ADAPTER = ProtoAdapter.newEnumAdapter(FooBarBazEnum.class);
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
-        .setExtension(Ext_custom_options.enum_option, true)
+        .enum_option(true)
         .build();
 
     private final int value;

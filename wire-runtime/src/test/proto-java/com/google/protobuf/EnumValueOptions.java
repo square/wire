@@ -6,6 +6,9 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
+import com.squareup.wire.protos.custom_options.FooBar;
+import java.lang.Boolean;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.List;
@@ -14,6 +17,10 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
   public static final ProtoAdapter<EnumValueOptions> ADAPTER = ProtoAdapter.newMessageAdapter(EnumValueOptions.class);
 
   private static final long serialVersionUID = 0L;
+
+  public static final Integer DEFAULT_ENUM_VALUE_OPTION = 0;
+
+  public static final Boolean DEFAULT_FOREIGN_ENUM_VALUE_OPTION = false;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
@@ -25,13 +32,34 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
   )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  public EnumValueOptions(List<UninterpretedOption> uninterpreted_option) {
-    this(uninterpreted_option, TagMap.EMPTY);
+  @WireField(
+      tag = 70000,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer enum_value_option;
+
+  @WireField(
+      tag = 70001,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$More#ADAPTER"
+  )
+  public final FooBar.More complex_enum_value_option;
+
+  @WireField(
+      tag = 70002,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean foreign_enum_value_option;
+
+  public EnumValueOptions(List<UninterpretedOption> uninterpreted_option, Integer enum_value_option, FooBar.More complex_enum_value_option, Boolean foreign_enum_value_option) {
+    this(uninterpreted_option, enum_value_option, complex_enum_value_option, foreign_enum_value_option, TagMap.EMPTY);
   }
 
-  public EnumValueOptions(List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
+  public EnumValueOptions(List<UninterpretedOption> uninterpreted_option, Integer enum_value_option, FooBar.More complex_enum_value_option, Boolean foreign_enum_value_option, TagMap tagMap) {
     super(tagMap);
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this.enum_value_option = enum_value_option;
+    this.complex_enum_value_option = complex_enum_value_option;
+    this.foreign_enum_value_option = foreign_enum_value_option;
   }
 
   @Override
@@ -40,7 +68,10 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
     if (!(other instanceof EnumValueOptions)) return false;
     EnumValueOptions o = (EnumValueOptions) other;
     return equals(tagMap(), o.tagMap())
-        && equals(uninterpreted_option, o.uninterpreted_option);
+        && equals(uninterpreted_option, o.uninterpreted_option)
+        && equals(enum_value_option, o.enum_value_option)
+        && equals(complex_enum_value_option, o.complex_enum_value_option)
+        && equals(foreign_enum_value_option, o.foreign_enum_value_option);
   }
 
   @Override
@@ -49,6 +80,9 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + (enum_value_option != null ? enum_value_option.hashCode() : 0);
+      result = result * 37 + (complex_enum_value_option != null ? complex_enum_value_option.hashCode() : 0);
+      result = result * 37 + (foreign_enum_value_option != null ? foreign_enum_value_option.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -56,6 +90,12 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
 
   public static final class Builder extends com.squareup.wire.Message.Builder<EnumValueOptions, Builder> {
     public List<UninterpretedOption> uninterpreted_option;
+
+    public Integer enum_value_option;
+
+    public FooBar.More complex_enum_value_option;
+
+    public Boolean foreign_enum_value_option;
 
     public Builder() {
       uninterpreted_option = newMutableList();
@@ -65,6 +105,9 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
       super(message);
       if (message == null) return;
       this.uninterpreted_option = copyOf(message.uninterpreted_option);
+      this.enum_value_option = message.enum_value_option;
+      this.complex_enum_value_option = message.complex_enum_value_option;
+      this.foreign_enum_value_option = message.foreign_enum_value_option;
     }
 
     /**
@@ -76,9 +119,24 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
       return this;
     }
 
+    public Builder enum_value_option(Integer enum_value_option) {
+      this.enum_value_option = enum_value_option;
+      return this;
+    }
+
+    public Builder complex_enum_value_option(FooBar.More complex_enum_value_option) {
+      this.complex_enum_value_option = complex_enum_value_option;
+      return this;
+    }
+
+    public Builder foreign_enum_value_option(Boolean foreign_enum_value_option) {
+      this.foreign_enum_value_option = foreign_enum_value_option;
+      return this;
+    }
+
     @Override
     public EnumValueOptions build() {
-      return new EnumValueOptions(uninterpreted_option, buildTagMap());
+      return new EnumValueOptions(uninterpreted_option, enum_value_option, complex_enum_value_option, foreign_enum_value_option, buildTagMap());
     }
   }
 }

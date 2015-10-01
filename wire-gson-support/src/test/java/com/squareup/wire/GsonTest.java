@@ -18,7 +18,6 @@ package com.squareup.wire;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.wire.protos.alltypes.AllTypes;
-import com.squareup.wire.protos.alltypes.Ext_all_types;
 import java.util.Arrays;
 import java.util.List;
 import okio.ByteString;
@@ -28,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
 
-  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry(Ext_all_types.EXTENSIONS);
+  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry();
 
   private static final String JSON_BASE = "\"opt_int32\":111,"
       + "\"opt_uint32\":112,"
@@ -94,41 +93,55 @@ public class GsonTest {
       + "\"pack_bool\":[true,true],"
       + "\"pack_float\":[122.0,122.0],"
       + "\"pack_double\":[123.0,123.0],"
-      + "\"pack_nested_enum\":[\"A\",\"A\"]";
-
-  private static final String JSON_EXTENSIONS =
-      ",\"squareup.protos.alltypes.ext_opt_int32\":2147483647,"
-          + "\"squareup.protos.alltypes.ext_opt_int64\":-4611686018427387726,"
-          + "\"squareup.protos.alltypes.ext_opt_uint64\":13835058055282163890,"
-          + "\"squareup.protos.alltypes.ext_opt_sint64\":-4611686018427387726,"
-          + "\"squareup.protos.alltypes.ext_opt_bool\":true,"
-          + "\"squareup.protos.alltypes.ext_opt_float\":1234500.0,"
-          + "\"squareup.protos.alltypes.ext_opt_double\":1.2345E67,"
-          + "\"squareup.protos.alltypes.ext_opt_nested_enum\":\"A\","
-          + "\"squareup.protos.alltypes.ext_opt_nested_message\":{\"a\":999},"
-          + "\"squareup.protos.alltypes.ext_rep_int32\":[2147483647,2147483647],"
-          + "\"squareup.protos.alltypes.ext_rep_uint64\":[13835058055282163890,13835058055282163890],"
-          + "\"squareup.protos.alltypes.ext_rep_sint64\":[-4611686018427387726,-4611686018427387726],"
-          + "\"squareup.protos.alltypes.ext_rep_bool\":[true,true],"
-          + "\"squareup.protos.alltypes.ext_rep_float\":[1234500.0,1234500.0],"
-          + "\"squareup.protos.alltypes.ext_rep_double\":[1.2345E67,1.2345E67],"
-          + "\"squareup.protos.alltypes.ext_rep_nested_enum\":[\"A\",\"A\"],"
-          + "\"squareup.protos.alltypes.ext_rep_nested_message\":[{\"a\":999},{\"a\":999}],"
-          + "\"squareup.protos.alltypes.ext_pack_int32\":[2147483647,2147483647],"
-          + "\"squareup.protos.alltypes.ext_pack_uint64\":[13835058055282163890,13835058055282163890],"
-          + "\"squareup.protos.alltypes.ext_pack_sint64\":[-4611686018427387726,-4611686018427387726],"
-          + "\"squareup.protos.alltypes.ext_pack_bool\":[true,true],"
-          + "\"squareup.protos.alltypes.ext_pack_float\":[1234500.0,1234500.0],"
-          + "\"squareup.protos.alltypes.ext_pack_double\":[1.2345E67,1.2345E67],"
-          + "\"squareup.protos.alltypes.ext_pack_nested_enum\":[\"A\",\"A\"]";
+      + "\"pack_nested_enum\":[\"A\",\"A\"],"
+      + "\"ext_opt_int32\":2147483647,"
+      + "\"ext_opt_int64\":-4611686018427387726,"
+      + "\"ext_opt_uint64\":13835058055282163890,"
+      + "\"ext_opt_sint64\":-4611686018427387726,"
+      + "\"ext_opt_bool\":true,"
+      + "\"ext_opt_float\":1234500.0,"
+      + "\"ext_opt_double\":1.2345E67,"
+      + "\"ext_opt_nested_enum\":\"A\","
+      + "\"ext_opt_nested_message\":{\"a\":999},"
+      + "\"ext_rep_int32\":[2147483647,2147483647],"
+      + "\"ext_rep_uint32\":[],"
+      + "\"ext_rep_sint32\":[],"
+      + "\"ext_rep_fixed32\":[],"
+      + "\"ext_rep_sfixed32\":[],"
+      + "\"ext_rep_int64\":[],"
+      + "\"ext_rep_uint64\":[13835058055282163890,13835058055282163890],"
+      + "\"ext_rep_sint64\":[-4611686018427387726,-4611686018427387726],"
+      + "\"ext_rep_fixed64\":[],"
+      + "\"ext_rep_sfixed64\":[],"
+      + "\"ext_rep_bool\":[true,true],"
+      + "\"ext_rep_float\":[1234500.0,1234500.0],"
+      + "\"ext_rep_double\":[1.2345E67,1.2345E67],"
+      + "\"ext_rep_string\":[],"
+      + "\"ext_rep_bytes\":[],"
+      + "\"ext_rep_nested_enum\":[\"A\",\"A\"],"
+      + "\"ext_rep_nested_message\":[{\"a\":999},{\"a\":999}],"
+      + "\"ext_pack_int32\":[2147483647,2147483647],"
+      + "\"ext_pack_uint32\":[],"
+      + "\"ext_pack_sint32\":[],"
+      + "\"ext_pack_fixed32\":[],"
+      + "\"ext_pack_sfixed32\":[],"
+      + "\"ext_pack_int64\":[],"
+      + "\"ext_pack_uint64\":[13835058055282163890,13835058055282163890],"
+      + "\"ext_pack_sint64\":[-4611686018427387726,-4611686018427387726],"
+      + "\"ext_pack_fixed64\":[],"
+      + "\"ext_pack_sfixed64\":[],"
+      + "\"ext_pack_bool\":[true,true],"
+      + "\"ext_pack_float\":[1234500.0,1234500.0],"
+      + "\"ext_pack_double\":[1.2345E67,1.2345E67],"
+      + "\"ext_pack_nested_enum\":[\"A\",\"A\"]";
 
   // There doesn't appear to be a standard for representing unknown proto fields in JSON,
   // so we use the format shown below.
-  private static final String JSON_UNKNOWN_FIELDS =
-      ",\"9000\":[\"fixed32\",9000],"
-          + "\"9001\":[\"fixed64\",9001],"
-          + "\"9002\":[\"length-delimited\",\"OTAwMg==\"],"
-          + "\"9003\":[\"varint\",9003]";
+  private static final String JSON_UNKNOWN_FIELDS = ""
+      + ",\"9000\":[\"fixed32\",9000],"
+      + "\"9001\":[\"fixed64\",9001],"
+      + "\"9002\":[\"length-delimited\",\"OTAwMg==\"],"
+      + "\"9003\":[\"varint\",9003]";
 
   // Return a two-element list with a given repeated value
   @SuppressWarnings("unchecked")
@@ -137,7 +150,7 @@ public class GsonTest {
   }
 
   private static AllTypes.Builder createBuilder() {
-    ByteString bytes = ByteString.of((byte) 123, (byte) 125);
+      ByteString bytes = ByteString.of((byte) 123, (byte) 125);
     AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
     return new AllTypes.Builder()
         .opt_int32(111)
@@ -204,36 +217,32 @@ public class GsonTest {
         .pack_bool(list(true))
         .pack_float(list(122.0F))
         .pack_double(list(123.0))
-        .pack_nested_enum(list(AllTypes.NestedEnum.A));
-  }
+        .pack_nested_enum(list(AllTypes.NestedEnum.A))
+        .ext_opt_int32(Integer.MAX_VALUE)
+        .ext_opt_int64(Long.MIN_VALUE / 2 + 178)
+        .ext_opt_uint64(Long.MIN_VALUE / 2 + 178)
+        .ext_opt_sint64(Long.MIN_VALUE / 2 + 178)
+        .ext_opt_bool(true)
+        .ext_opt_float(1.2345e6F)
+        .ext_opt_double(1.2345e67)
+        .ext_opt_nested_enum(AllTypes.NestedEnum.A)
+        .ext_opt_nested_message(nestedMessage)
+        .ext_rep_int32(list(Integer.MAX_VALUE))
+        .ext_rep_uint64(list(Long.MIN_VALUE / 2 + 178))
+        .ext_rep_sint64(list(Long.MIN_VALUE / 2 + 178))
+        .ext_rep_bool(list(true))
+        .ext_rep_float(list(1.2345e6F))
+        .ext_rep_double(list(1.2345e67))
+        .ext_rep_nested_enum(list(AllTypes.NestedEnum.A))
+        .ext_rep_nested_message(list(nestedMessage))
+        .ext_pack_int32(list(Integer.MAX_VALUE))
+        .ext_pack_uint64(list(Long.MIN_VALUE / 2 + 178))
+        .ext_pack_sint64(list(Long.MIN_VALUE / 2 + 178))
+        .ext_pack_bool(list(true))
+        .ext_pack_float(list(1.2345e6F))
+        .ext_pack_double(list(1.2345e67))
+        .ext_pack_nested_enum(list(AllTypes.NestedEnum.A));
 
-  private AllTypes.Builder setExtensions(AllTypes.Builder builder) {
-    AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
-    builder.setExtension(Ext_all_types.ext_opt_int32, Integer.MAX_VALUE)
-        .setExtension(Ext_all_types.ext_opt_int64, Long.MIN_VALUE / 2 + 178)
-        .setExtension(Ext_all_types.ext_opt_uint64, Long.MIN_VALUE / 2 + 178)
-        .setExtension(Ext_all_types.ext_opt_sint64, Long.MIN_VALUE / 2 + 178)
-        .setExtension(Ext_all_types.ext_opt_bool, true)
-        .setExtension(Ext_all_types.ext_opt_float, 1.2345e6F)
-        .setExtension(Ext_all_types.ext_opt_double, 1.2345e67)
-        .setExtension(Ext_all_types.ext_opt_nested_enum, AllTypes.NestedEnum.A)
-        .setExtension(Ext_all_types.ext_opt_nested_message, nestedMessage)
-        .setExtension(Ext_all_types.ext_rep_int32, list(Integer.MAX_VALUE))
-        .setExtension(Ext_all_types.ext_rep_uint64, list(Long.MIN_VALUE / 2 + 178))
-        .setExtension(Ext_all_types.ext_rep_sint64, list(Long.MIN_VALUE / 2 + 178))
-        .setExtension(Ext_all_types.ext_rep_bool, list(true))
-        .setExtension(Ext_all_types.ext_rep_float, list(1.2345e6F))
-        .setExtension(Ext_all_types.ext_rep_double, list(1.2345e67))
-        .setExtension(Ext_all_types.ext_rep_nested_enum, list(AllTypes.NestedEnum.A))
-        .setExtension(Ext_all_types.ext_rep_nested_message, list(nestedMessage))
-        .setExtension(Ext_all_types.ext_pack_int32, list(Integer.MAX_VALUE))
-        .setExtension(Ext_all_types.ext_pack_uint64, list(Long.MIN_VALUE / 2 + 178))
-        .setExtension(Ext_all_types.ext_pack_sint64, list(Long.MIN_VALUE / 2 + 178))
-        .setExtension(Ext_all_types.ext_pack_bool, list(true))
-        .setExtension(Ext_all_types.ext_pack_float, list(1.2345e6F))
-        .setExtension(Ext_all_types.ext_pack_double, list(1.2345e67))
-        .setExtension(Ext_all_types.ext_pack_nested_enum, list(AllTypes.NestedEnum.A));
-    return builder;
   }
 
   private Gson createGson() {
@@ -244,15 +253,12 @@ public class GsonTest {
   }
 
   @Test
-  public void testGsonNoExtensions() {
-    Gson gson = new GsonBuilder()
-        .registerTypeAdapterFactory(new WireTypeAdapterFactory(extensionRegistry))
-        .disableHtmlEscaping()
-        .create();
+  public void testGson() {
+    Gson gson = createGson();
 
     AllTypes allTypes = createBuilder().build();
     String json = gson.toJson(allTypes);
-    assertThat(json).isEqualTo("{" + JSON_BASE + "}");
+    assertThat(json).isEqualTo("{"+ JSON_BASE + "}");
 
     AllTypes parsed = gson.fromJson(json, AllTypes.class);
     assertThat(parsed).isEqualTo(allTypes);
@@ -260,22 +266,7 @@ public class GsonTest {
     assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
   }
 
-  @Test
-  public void testGsonWithExtensions() {
-    Gson gson = createGson();
-
-    AllTypes allTypes = setExtensions(createBuilder()).build();
-    String json = gson.toJson(allTypes);
-    assertThat(json).isEqualTo("{"+ JSON_BASE + JSON_EXTENSIONS + "}");
-
-    AllTypes parsed = gson.fromJson(json, AllTypes.class);
-    assertThat(parsed).isEqualTo(allTypes);
-    assertThat(parsed.toString()).isEqualTo(allTypes.toString());
-    assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
-  }
-
-  @Test
-  public void testGsonWithUnknownFields() {
+  @Test public void testGsonWithUnknownFields() {
     Gson gson = createGson();
 
     AllTypes.Builder builder = createBuilder();
@@ -283,31 +274,11 @@ public class GsonTest {
     builder.setExtension(Extension.unknown(AllTypes.class, 9001, FieldEncoding.FIXED64), 9001L);
     builder.setExtension(Extension.unknown(AllTypes.class, 9002, FieldEncoding.LENGTH_DELIMITED),
         ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
-    builder.setExtension(Extension.unknown(AllTypes.class, 9003, FieldEncoding.VARINT), 9003L);
+      builder.setExtension(Extension.unknown(AllTypes.class, 9003, FieldEncoding.VARINT), 9003L);
 
     AllTypes allTypes = builder.build();
     String json = gson.toJson(allTypes);
     assertThat(json).isEqualTo("{" + JSON_BASE + JSON_UNKNOWN_FIELDS + "}");
-
-    AllTypes parsed = gson.fromJson(json, AllTypes.class);
-    assertThat(parsed).isEqualTo(allTypes);
-    assertThat(parsed.toString()).isEqualTo(allTypes.toString());
-    assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
-  }
-
-  @Test public void testGsonWithUnknownFieldsAndExtensions() {
-    Gson gson = createGson();
-
-    AllTypes.Builder builder = createBuilder();
-    builder.setExtension(Extension.unknown(AllTypes.class, 9000, FieldEncoding.FIXED32), 9000);
-    builder.setExtension(Extension.unknown(AllTypes.class, 9001, FieldEncoding.FIXED64), 9001L);
-    builder.setExtension(Extension.unknown(AllTypes.class, 9002, FieldEncoding.LENGTH_DELIMITED),
-        ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
-    builder.setExtension(Extension.unknown(AllTypes.class, 9003, FieldEncoding.VARINT), 9003L);
-
-    AllTypes allTypes = setExtensions(builder).build();
-    String json = gson.toJson(allTypes);
-    assertThat(json).isEqualTo("{" + JSON_BASE + JSON_UNKNOWN_FIELDS + JSON_EXTENSIONS + "}");
 
     AllTypes parsed = gson.fromJson(json, AllTypes.class);
     assertThat(parsed).isEqualTo(allTypes);

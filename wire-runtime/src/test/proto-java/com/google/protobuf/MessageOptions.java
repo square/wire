@@ -6,7 +6,10 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
+import com.squareup.wire.protos.custom_options.FooBar;
+import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.lang.Boolean;
+import java.lang.Float;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.List;
@@ -19,6 +22,10 @@ public final class MessageOptions extends Message<MessageOptions> {
   public static final Boolean DEFAULT_MESSAGE_SET_WIRE_FORMAT = false;
 
   public static final Boolean DEFAULT_NO_STANDARD_DESCRIPTOR_ACCESSOR = false;
+
+  public static final Float DEFAULT_MY_MESSAGE_OPTION_TWO = 0.0f;
+
+  public static final FooBar.FooBarBazEnum DEFAULT_MY_MESSAGE_OPTION_FOUR = FooBar.FooBarBazEnum.FOO;
 
   /**
    * Set true to use the old proto1 MessageSet wire format for extensions.
@@ -67,15 +74,64 @@ public final class MessageOptions extends Message<MessageOptions> {
   )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option) {
-    this(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, TagMap.EMPTY);
+  @WireField(
+      tag = 50001,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
+  public final FooBar my_message_option_one;
+
+  @WireField(
+      tag = 50002,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
+  public final Float my_message_option_two;
+
+  @WireField(
+      tag = 50003,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
+  public final FooBar my_message_option_three;
+
+  @WireField(
+      tag = 50004,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
+  )
+  public final FooBar.FooBarBazEnum my_message_option_four;
+
+  @WireField(
+      tag = 50005,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
+  public final FooBar my_message_option_five;
+
+  @WireField(
+      tag = 50006,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
+  public final FooBar my_message_option_six;
+
+  @WireField(
+      tag = 50007,
+      adapter = "com.squareup.wire.protos.foreign.ForeignMessage#ADAPTER"
+  )
+  public final ForeignMessage foreign_message_option;
+
+  public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option, FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three, FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five, FooBar my_message_option_six, ForeignMessage foreign_message_option) {
+    this(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, TagMap.EMPTY);
   }
 
-  public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
+  public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option, FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three, FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five, FooBar my_message_option_six, ForeignMessage foreign_message_option, TagMap tagMap) {
     super(tagMap);
     this.message_set_wire_format = message_set_wire_format;
     this.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this.my_message_option_one = my_message_option_one;
+    this.my_message_option_two = my_message_option_two;
+    this.my_message_option_three = my_message_option_three;
+    this.my_message_option_four = my_message_option_four;
+    this.my_message_option_five = my_message_option_five;
+    this.my_message_option_six = my_message_option_six;
+    this.foreign_message_option = foreign_message_option;
   }
 
   @Override
@@ -86,7 +142,14 @@ public final class MessageOptions extends Message<MessageOptions> {
     return equals(tagMap(), o.tagMap())
         && equals(message_set_wire_format, o.message_set_wire_format)
         && equals(no_standard_descriptor_accessor, o.no_standard_descriptor_accessor)
-        && equals(uninterpreted_option, o.uninterpreted_option);
+        && equals(uninterpreted_option, o.uninterpreted_option)
+        && equals(my_message_option_one, o.my_message_option_one)
+        && equals(my_message_option_two, o.my_message_option_two)
+        && equals(my_message_option_three, o.my_message_option_three)
+        && equals(my_message_option_four, o.my_message_option_four)
+        && equals(my_message_option_five, o.my_message_option_five)
+        && equals(my_message_option_six, o.my_message_option_six)
+        && equals(foreign_message_option, o.foreign_message_option);
   }
 
   @Override
@@ -97,6 +160,13 @@ public final class MessageOptions extends Message<MessageOptions> {
       result = result * 37 + (message_set_wire_format != null ? message_set_wire_format.hashCode() : 0);
       result = result * 37 + (no_standard_descriptor_accessor != null ? no_standard_descriptor_accessor.hashCode() : 0);
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + (my_message_option_one != null ? my_message_option_one.hashCode() : 0);
+      result = result * 37 + (my_message_option_two != null ? my_message_option_two.hashCode() : 0);
+      result = result * 37 + (my_message_option_three != null ? my_message_option_three.hashCode() : 0);
+      result = result * 37 + (my_message_option_four != null ? my_message_option_four.hashCode() : 0);
+      result = result * 37 + (my_message_option_five != null ? my_message_option_five.hashCode() : 0);
+      result = result * 37 + (my_message_option_six != null ? my_message_option_six.hashCode() : 0);
+      result = result * 37 + (foreign_message_option != null ? foreign_message_option.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -109,6 +179,20 @@ public final class MessageOptions extends Message<MessageOptions> {
 
     public List<UninterpretedOption> uninterpreted_option;
 
+    public FooBar my_message_option_one;
+
+    public Float my_message_option_two;
+
+    public FooBar my_message_option_three;
+
+    public FooBar.FooBarBazEnum my_message_option_four;
+
+    public FooBar my_message_option_five;
+
+    public FooBar my_message_option_six;
+
+    public ForeignMessage foreign_message_option;
+
     public Builder() {
       uninterpreted_option = newMutableList();
     }
@@ -119,6 +203,13 @@ public final class MessageOptions extends Message<MessageOptions> {
       this.message_set_wire_format = message.message_set_wire_format;
       this.no_standard_descriptor_accessor = message.no_standard_descriptor_accessor;
       this.uninterpreted_option = copyOf(message.uninterpreted_option);
+      this.my_message_option_one = message.my_message_option_one;
+      this.my_message_option_two = message.my_message_option_two;
+      this.my_message_option_three = message.my_message_option_three;
+      this.my_message_option_four = message.my_message_option_four;
+      this.my_message_option_five = message.my_message_option_five;
+      this.my_message_option_six = message.my_message_option_six;
+      this.foreign_message_option = message.foreign_message_option;
     }
 
     /**
@@ -165,9 +256,44 @@ public final class MessageOptions extends Message<MessageOptions> {
       return this;
     }
 
+    public Builder my_message_option_one(FooBar my_message_option_one) {
+      this.my_message_option_one = my_message_option_one;
+      return this;
+    }
+
+    public Builder my_message_option_two(Float my_message_option_two) {
+      this.my_message_option_two = my_message_option_two;
+      return this;
+    }
+
+    public Builder my_message_option_three(FooBar my_message_option_three) {
+      this.my_message_option_three = my_message_option_three;
+      return this;
+    }
+
+    public Builder my_message_option_four(FooBar.FooBarBazEnum my_message_option_four) {
+      this.my_message_option_four = my_message_option_four;
+      return this;
+    }
+
+    public Builder my_message_option_five(FooBar my_message_option_five) {
+      this.my_message_option_five = my_message_option_five;
+      return this;
+    }
+
+    public Builder my_message_option_six(FooBar my_message_option_six) {
+      this.my_message_option_six = my_message_option_six;
+      return this;
+    }
+
+    public Builder foreign_message_option(ForeignMessage foreign_message_option) {
+      this.foreign_message_option = foreign_message_option;
+      return this;
+    }
+
     @Override
     public MessageOptions build() {
-      return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, buildTagMap());
+      return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, buildTagMap());
     }
   }
 }
