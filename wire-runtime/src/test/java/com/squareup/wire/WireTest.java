@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import okio.Buffer;
+import okio.ByteString;
 import org.junit.Test;
 
 import static java.util.Collections.singletonList;
@@ -192,7 +194,6 @@ public class WireTest {
         .required_int32(456)
         .build();
 
-    ExtensionRegistry simpleMessageExtensions = new ExtensionRegistry();
     ProtoAdapter<SimpleMessage> adapter = SimpleMessage.ADAPTER;
 
     byte[] data = adapter.encode(msg);
@@ -201,12 +202,16 @@ public class WireTest {
     data[4] = 17;
 
     // Parse the altered message.
-    SimpleMessage newMsg = adapter.decode(data, simpleMessageExtensions);
+    SimpleMessage newMsg = adapter.decode(data);
 
     // Original value shows up as an extension.
     assertThat(msg.toString()).contains("nested_enum_ext=BAZ");
     // New value is unknown in the tag map.
-    assertThat(newMsg.toString()).contains("ExternalMessage{fooext=[], 129=17}");
+    ProtoReader reader = new ProtoReader(new Buffer().write(
+        newMsg.optional_external_msg.unknownFields()));
+    reader.beginMessage();
+    assertThat(reader.nextTag()).isEqualTo(129);
+    assertThat(reader.peekFieldEncoding().rawProtoAdapter().decode(reader)).isEqualTo(17L);
 
     // Serialized outputs are the same.
     byte[] newData = adapter.encode(newMsg);
@@ -310,10 +315,14 @@ public class WireTest {
     assertThat(result.phone.get(0).type).isNull();
 
     // The value 17 will be stored as an unknown varint with tag number 2
-    TagMap tagMap = ((Message) result.phone.get(0)).tagMap;
-    assertThat(tagMap.size()).isEqualTo(1);
-    assertThat(tagMap.get(Extension.unknown(PhoneNumber.class, 2, FieldEncoding.VARINT)))
-        .isEqualTo(Arrays.asList(17L));
+    ByteString unknownFields = result.phone.get(0).unknownFields();
+    ProtoReader reader = new ProtoReader(new Buffer().write(unknownFields));
+    long token = reader.beginMessage();
+    assertThat(reader.nextTag()).isEqualTo(2);
+    assertThat(reader.peekFieldEncoding()).isEqualTo(FieldEncoding.VARINT);
+    assertThat(FieldEncoding.VARINT.rawProtoAdapter().decode(reader)).isEqualTo(17L);
+    assertThat(reader.nextTag()).isEqualTo(-1);
+    reader.endMessage(token);
 
     // Serialize again, value is preserved
     byte[] newData = adapter.encode(result);

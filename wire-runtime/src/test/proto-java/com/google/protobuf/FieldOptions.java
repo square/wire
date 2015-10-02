@@ -4,7 +4,6 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.custom_options.FooBar;
@@ -15,6 +14,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
+import okio.ByteString;
 
 public final class FieldOptions extends Message<FieldOptions> {
   public static final ProtoAdapter<FieldOptions> ADAPTER = ProtoAdapter.newMessageAdapter(FieldOptions.class);
@@ -137,11 +137,11 @@ public final class FieldOptions extends Message<FieldOptions> {
   public final Boolean redacted;
 
   public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, Boolean redacted) {
-    this(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, redacted, TagMap.EMPTY);
+    this(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, redacted, ByteString.EMPTY);
   }
 
-  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, Boolean redacted, TagMap tagMap) {
-    super(tagMap);
+  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, Boolean redacted, ByteString unknownFields) {
+    super(unknownFields);
     this.ctype = ctype;
     this.packed = packed;
     this.deprecated = deprecated;
@@ -159,7 +159,7 @@ public final class FieldOptions extends Message<FieldOptions> {
     if (other == this) return true;
     if (!(other instanceof FieldOptions)) return false;
     FieldOptions o = (FieldOptions) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(ctype, o.ctype)
         && equals(packed, o.packed)
         && equals(deprecated, o.deprecated)
@@ -176,7 +176,7 @@ public final class FieldOptions extends Message<FieldOptions> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (ctype != null ? ctype.hashCode() : 0);
       result = result * 37 + (packed != null ? packed.hashCode() : 0);
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
@@ -323,7 +323,7 @@ public final class FieldOptions extends Message<FieldOptions> {
 
     @Override
     public FieldOptions build() {
-      return new FieldOptions(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, redacted, buildTagMap());
+      return new FieldOptions(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, redacted, buildUnknownFields());
     }
   }
 

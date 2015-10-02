@@ -4,12 +4,12 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 /**
  * Describes a value within an enum.
@@ -53,11 +53,11 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   public final EnumValueOptions options;
 
   public EnumValueDescriptorProto(String name, String doc, Integer number, EnumValueOptions options) {
-    this(name, doc, number, options, TagMap.EMPTY);
+    this(name, doc, number, options, ByteString.EMPTY);
   }
 
-  public EnumValueDescriptorProto(String name, String doc, Integer number, EnumValueOptions options, TagMap tagMap) {
-    super(tagMap);
+  public EnumValueDescriptorProto(String name, String doc, Integer number, EnumValueOptions options, ByteString unknownFields) {
+    super(unknownFields);
     this.name = name;
     this.doc = doc;
     this.number = number;
@@ -69,7 +69,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
     if (other == this) return true;
     if (!(other instanceof EnumValueDescriptorProto)) return false;
     EnumValueDescriptorProto o = (EnumValueDescriptorProto) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(name, o.name)
         && equals(doc, o.doc)
         && equals(number, o.number)
@@ -80,7 +80,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (number != null ? number.hashCode() : 0);
@@ -136,7 +136,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
     @Override
     public EnumValueDescriptorProto build() {
-      return new EnumValueDescriptorProto(name, doc, number, options, buildTagMap());
+      return new EnumValueDescriptorProto(name, doc, number, options, buildUnknownFields());
     }
   }
 }

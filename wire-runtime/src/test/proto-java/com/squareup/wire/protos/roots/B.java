@@ -4,10 +4,10 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class B extends Message<B> {
   public static final ProtoAdapter<B> ADAPTER = ProtoAdapter.newMessageAdapter(B.class);
@@ -22,11 +22,11 @@ public final class B extends Message<B> {
   public final C c;
 
   public B(C c) {
-    this(c, TagMap.EMPTY);
+    this(c, ByteString.EMPTY);
   }
 
-  public B(C c, TagMap tagMap) {
-    super(tagMap);
+  public B(C c, ByteString unknownFields) {
+    super(unknownFields);
     this.c = c;
   }
 
@@ -35,7 +35,7 @@ public final class B extends Message<B> {
     if (other == this) return true;
     if (!(other instanceof B)) return false;
     B o = (B) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(c, o.c);
   }
 
@@ -43,7 +43,7 @@ public final class B extends Message<B> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (c != null ? c.hashCode() : 0);
       super.hashCode = result;
     }
@@ -72,7 +72,7 @@ public final class B extends Message<B> {
       if (c == null) {
         throw missingRequiredFields(c, "c");
       }
-      return new B(c, buildTagMap());
+      return new B(c, buildUnknownFields());
     }
   }
 }

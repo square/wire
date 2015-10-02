@@ -31,15 +31,12 @@ import com.squareup.javapoet.NameAllocator;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.WildcardTypeName;
-import com.squareup.wire.Extension;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoAdapter.EnumConstantNotFoundException;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.schema.EnumConstant;
@@ -86,8 +83,6 @@ public final class JavaGenerator {
   static final ClassName MESSAGE = ClassName.get(Message.class);
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
-  static final ClassName EXTENSION = ClassName.get(Extension.class);
-  static final ClassName TAG_MAP = ClassName.get(TagMap.class);
   static final TypeName MESSAGE_OPTIONS = ClassName.get("com.google.protobuf", "MessageOptions");
   static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
   static final TypeName ENUM_OPTIONS = ClassName.get("com.google.protobuf", "EnumOptions");
@@ -251,10 +246,6 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(BUILDER, messageType, builderType);
   }
 
-  static TypeName extensionOf(TypeName messageType, TypeName fieldType) {
-    return ParameterizedTypeName.get(EXTENSION, messageType, fieldType);
-  }
-
   static TypeName creatorOf(TypeName messageType) {
     return ParameterizedTypeName.get(CREATOR, messageType);
   }
@@ -385,7 +376,7 @@ public final class JavaGenerator {
     for (Field field : type.fieldsAndOneOfFields()) {
       nameAllocator.newName(field.name(), field);
     }
-    nameAllocator.newName("tagMap", "tagMap");
+    nameAllocator.newName("unknownFields", "unknownFields");
     nameAllocator.newName("result", "result");
     nameAllocator.newName("message", "message");
     nameAllocator.newName("other", "other");
@@ -456,7 +447,7 @@ public final class JavaGenerator {
     }
 
     builder.addMethod(messageFieldsConstructor(nameAllocator, type));
-    builder.addMethod(messageFieldsAndTagMapConstructor(nameAllocator, type));
+    builder.addMethod(messageFieldsAndUnknownFieldsConstructor(nameAllocator, type));
     builder.addMethod(messageEquals(nameAllocator, type));
     builder.addMethod(messageHashCode(nameAllocator, type));
 
@@ -562,7 +553,7 @@ public final class JavaGenerator {
       }
       leading = "\n+";
     }
-    result.addCode("$L value.tagMap().encodedSize();$]\n", leading);
+    result.addCode("$L value.unknownFields().size();$]\n", leading);
 
     return result.build();
   }
@@ -587,7 +578,7 @@ public final class JavaGenerator {
             adapter, fieldTag, fieldName);
       }
     }
-    result.addStatement("value.tagMap().encode(writer)");
+    result.addStatement("writer.writeBytes(value.unknownFields())");
 
     return result.build();
   }
@@ -620,9 +611,8 @@ public final class JavaGenerator {
           result.addStatement("builder.$L($L.decode(reader))", fieldName, adapter);
         }
         result.nextControlFlow("catch ($T e)", EnumConstantNotFoundException.class);
-        result.addStatement("$T unknown = $T.unknown($T.class, tag, $T.VARINT)",
-            extensionOf(javaType, TypeName.LONG.box()), EXTENSION, javaType, FieldEncoding.class);
-        result.addStatement("builder.tagMap().add(unknown, (long) e.value)");
+        result.addStatement("builder.addUnknownField(tag, $T.VARINT, (long) e.value)",
+            FieldEncoding.class);
         result.endControlFlow(); // try/catch
         result.addStatement("break");
         result.endControlFlow(); // case
@@ -638,16 +628,9 @@ public final class JavaGenerator {
     }
 
     result.beginControlFlow("default:");
-    result.beginControlFlow("try");
-    WildcardTypeName wildcard = WildcardTypeName.subtypeOf(Object.class);
-    result.addStatement("$T extension = reader.getExtension($T.class, tag)",
-        extensionOf(javaType, wildcard), javaType);
-    result.addStatement("builder.tagMap().add(extension, extension.getAdapter().decode(reader))");
-    result.nextControlFlow("catch ($T e)", EnumConstantNotFoundException.class);
-    result.addStatement("$T unknown = $T.unknown($T.class, tag, $T.VARINT)",
-        extensionOf(javaType, TypeName.LONG.box()), EXTENSION, javaType, FieldEncoding.class);
-    result.addStatement("builder.tagMap().add(unknown, (long) e.value)");
-    result.endControlFlow(); // try/catch
+    result.addStatement("$T fieldEncoding = reader.peekFieldEncoding()", FieldEncoding.class);
+    result.addStatement("$T value = fieldEncoding.rawProtoAdapter().decode(reader)", Object.class);
+    result.addStatement("builder.addUnknownField(tag, fieldEncoding, value);");
     result.endControlFlow(); // default
 
     result.endControlFlow(); // switch
@@ -701,7 +684,7 @@ public final class JavaGenerator {
       }
     }
 
-    result.addStatement("builder.tagMap().redact()");
+    result.addStatement("builder.clearUnknownFields()");
 
     result.addStatement("return builder.build()");
     return result.build();
@@ -815,24 +798,24 @@ public final class JavaGenerator {
       result.addParameter(javaType, fieldName);
       result.addCode("$L, ", fieldName);
     }
-    result.addCode("$T.EMPTY);\n", TAG_MAP);
+    result.addCode("$T.EMPTY);\n", BYTE_STRING);
     return result.build();
   }
 
   // Example:
   //
-  // public SimpleMessage(int optional_int32, long optional_int64, TagMap tagMap) {
-  //   super(tagMap);
+  // public SimpleMessage(int optional_int32, long optional_int64, ByteString unknownFields) {
+  //   super(unknownFields);
   //   this.optional_int32 = optional_int32;
   //   this.optional_int64 = optional_int64;
   // }
   //
-  private MethodSpec messageFieldsAndTagMapConstructor(
+  private MethodSpec messageFieldsAndUnknownFieldsConstructor(
       NameAllocator nameAllocator, MessageType type) {
-    String tagMapName = nameAllocator.get("tagMap");
+    String unknownFieldsName = nameAllocator.get("unknownFields");
     MethodSpec.Builder result = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addStatement("super($N)", tagMapName);
+        .addStatement("super($N)", unknownFieldsName);
 
     for (Field field : type.fieldsAndOneOfFields()) {
       TypeName javaType = fieldType(field);
@@ -845,7 +828,7 @@ public final class JavaGenerator {
       }
     }
 
-    result.addParameter(TAG_MAP, tagMapName);
+    result.addParameter(BYTE_STRING, unknownFieldsName);
 
     return result.build();
   }
@@ -857,7 +840,7 @@ public final class JavaGenerator {
   //   if (other == this) return true;
   //   if (!(other instanceof SimpleMessage)) return false;
   //   SimpleMessage o = (SimpleMessage) other;
-  //   return equals(tagMap(), o.tagMap())
+  //   return equals(unknownFields(), o.unknownFields())
   //       && equals(optional_int32, o.optional_int32);
   //
   private MethodSpec messageEquals(NameAllocator nameAllocator, MessageType type) {
@@ -872,7 +855,7 @@ public final class JavaGenerator {
         .addParameter(Object.class, otherName);
 
     List<Field> fields = type.fieldsAndOneOfFields();
-    if (fields.isEmpty() && type.extensions().isEmpty()) {
+    if (fields.isEmpty()) {
       result.addStatement("return $N instanceof $T", otherName, javaType);
       return result.build();
     }
@@ -881,7 +864,7 @@ public final class JavaGenerator {
     result.addStatement("if (!($N instanceof $T)) return false", otherName, javaType);
 
     result.addStatement("$T $N = ($T) $N", javaType, oName, javaType, otherName);
-    result.addCode("$[return equals(tagMap(), $N.tagMap())", oName);
+    result.addCode("$[return equals(unknownFields(), $N.unknownFields())", oName);
     for (Field field : fields) {
       String fieldName = nameAllocator.get(field);
       result.addCode("\n&& equals($L, $N.$L)", fieldName, oName, fieldName);
@@ -897,7 +880,7 @@ public final class JavaGenerator {
   // public int hashCode() {
   //   int result = hashCode;
   //   if (result == 0) {
-  //     result = tagMap().hashCode();
+  //     result = unknownFields().hashCode();
   //     result = result * 37 + (f != null ? f.hashCode() : 0);
   //     hashCode = result;
   //   }
@@ -916,13 +899,13 @@ public final class JavaGenerator {
 
     List<Field> fields = type.fieldsAndOneOfFields();
     if (fields.isEmpty()) {
-      result.addStatement("return tagMap().hashCode()");
+      result.addStatement("return unknownFields().hashCode()");
       return result.build();
     }
 
     result.addStatement("int $N = super.hashCode", resultName);
     result.beginControlFlow("if ($N == 0)", resultName);
-    result.addStatement("$N = tagMap().hashCode()", resultName);
+    result.addStatement("$N = unknownFields().hashCode()", resultName);
     for (Field field : fields) {
       String fieldName = nameAllocator.get(field);
       result.addStatement("$N = $N * 37 + ($L != null ? $L.hashCode() : $L)",
@@ -954,7 +937,6 @@ public final class JavaGenerator {
       }
     }
 
-    result.addStatement("tagMap().appendToString($N)", builderName);
     result.addStatement("return builder.replace(0, 2, \"$L{\").append('}').toString()",
         type.name().simpleName());
 
@@ -1118,7 +1100,7 @@ public final class JavaGenerator {
     for (Field field : message.fieldsAndOneOfFields()) {
       result.addCode("$L, ", nameAllocator.get(field));
     }
-    result.addCode("buildTagMap());\n");
+    result.addCode("buildUnknownFields());\n");
     return result.build();
   }
 

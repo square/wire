@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import okio.Buffer;
 import okio.ByteString;
 
 import static com.squareup.wire.FieldEncoding.FIXED32;
@@ -61,10 +62,9 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
   private final Gson gson;
   private final RuntimeMessageAdapter<M, B> messageAdapter;
   private final Map<String, FieldBinding<M, B>> fieldBindings;
-  private final Map<String, Extension<?, ?>> extensions;
 
   @SuppressWarnings("unchecked")
-  public MessageTypeAdapter(ExtensionRegistry extensionRegistry, Gson gson, TypeToken<M> type) {
+  public MessageTypeAdapter(Gson gson, TypeToken<M> type) {
     this.gson = gson;
     this.messageType = (Class<M>) type.getRawType();
     this.messageAdapter = RuntimeMessageAdapter.create(messageType);
@@ -74,12 +74,6 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
       fieldBindings.put(binding.name, binding);
     }
     this.fieldBindings = unmodifiableMap(fieldBindings);
-
-    Map<String, Extension<?, ?>> extensions = new LinkedHashMap<>();
-    for (Extension<?, ?> extension : extensionRegistry.extensions(messageType)) {
-      extensions.put(extension.getName(), extension);
-    }
-    this.extensions = extensions;
   }
 
   @SuppressWarnings("unchecked")
@@ -99,45 +93,32 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
       emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label);
     }
 
-    TagMap tagMap = message.tagMap;
-    if (tagMap != null) {
-      for (Extension<?, ?> extension : tagMap.extensions(true)) {
-        if (extension.isUnknown()) {
-          List<?> values = (List<?>) tagMap.get(extension);
-          if (values.isEmpty()) continue;
-
-          out.name(Integer.toString(extension.getTag()));
-          out.beginArray();
-          if (extension.getAdapter() == ProtoAdapter.UINT64) {
-            out.value("varint");
-            for (Object o : values) {
-              out.value((Long) o);
-            }
-          } else if (extension.getAdapter() == ProtoAdapter.FIXED32) {
-            out.value("fixed32");
-            for (Object o : values) {
-              out.value((Integer) o);
-            }
-          } else if (extension.getAdapter() == ProtoAdapter.FIXED64) {
-            out.value("fixed64");
-            for (Object o : values) {
-              out.value((Long) o);
-            }
-          } else if (extension.getAdapter() == ProtoAdapter.BYTES) {
-            out.value("length-delimited");
-            for (Object o : values) {
-              out.value(((ByteString) o).base64());
-            }
-          } else {
-            throw new AssertionError("Unknown wire type " + extension);
-          }
-          out.endArray();
+    if (message.unknownFields.size() > 0) {
+      ProtoReader reader = new ProtoReader(new Buffer().write(message.unknownFields));
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+        Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+        out.name(Integer.toString(tag));
+        out.beginArray();
+        if (fieldEncoding == FieldEncoding.VARINT) {
+          out.value("varint");
+          out.value((Long) value);
+        } else if (fieldEncoding == FieldEncoding.FIXED32) {
+          out.value("fixed32");
+          out.value((Integer) value);
+        } else if (fieldEncoding == FieldEncoding.FIXED64) {
+          out.value("fixed64");
+          out.value((Long) value);
+        } else if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
+          out.value("length-delimited");
+          out.value(((ByteString) value).base64());
         } else {
-          Object value = tagMap.get(extension);
-          out.name(extension.getName());
-          emitJson(out, value, extension.getAdapter(), extension.getLabel());
+          throw new AssertionError("Unknown field encoding " + fieldEncoding);
         }
+        out.endArray();
       }
+      reader.endMessage(token);
     }
 
     out.endObject();
@@ -191,13 +172,6 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
         continue;
       }
 
-      Extension<?, ?> extension = extensions.get(name);
-      if (extension != null) {
-        Object value = parseValue(extension.getLabel(), extension.getAdapter().javaType, parse(in));
-        builder.setExtension((Extension) extension, value);
-        continue;
-      }
-
       parseUnknownField(in, builder, Integer.parseInt(name));
     }
 
@@ -228,19 +202,19 @@ class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
       switch (type) {
         case VARINT:
           long varint = in.nextLong();
-          builder.setExtension(Extension.unknown(messageType, tag, VARINT), varint);
+          builder.addUnknownField(tag, VARINT, varint);
           break;
         case FIXED32:
           int fixed32 = in.nextInt();
-          builder.setExtension(Extension.unknown(messageType, tag, FIXED32), fixed32);
+          builder.addUnknownField(tag, FIXED32, fixed32);
           break;
         case FIXED64:
           long fixed64 = in.nextLong();
-          builder.setExtension(Extension.unknown(messageType, tag, FIXED64), fixed64);
+          builder.addUnknownField(tag, FIXED64, fixed64);
           break;
         case LENGTH_DELIMITED:
           ByteString byteString = ByteString.decodeBase64(in.nextString());
-          builder.setExtension(Extension.unknown(messageType, tag, LENGTH_DELIMITED), byteString);
+          builder.addUnknownField(tag, LENGTH_DELIMITED, byteString);
           break;
         default:
           throw new AssertionError("Unknown field type " + type);

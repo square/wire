@@ -4,9 +4,9 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class NoFields extends Message<NoFields> {
   public static final ProtoAdapter<NoFields> ADAPTER = ProtoAdapter.newMessageAdapter(NoFields.class);
@@ -14,11 +14,11 @@ public final class NoFields extends Message<NoFields> {
   private static final long serialVersionUID = 0L;
 
   public NoFields() {
-    this(TagMap.EMPTY);
+    this(ByteString.EMPTY);
   }
 
-  public NoFields(TagMap tagMap) {
-    super(tagMap);
+  public NoFields(ByteString unknownFields) {
+    super(unknownFields);
   }
 
   @Override
@@ -28,7 +28,7 @@ public final class NoFields extends Message<NoFields> {
 
   @Override
   public int hashCode() {
-    return tagMap().hashCode();
+    return unknownFields().hashCode();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<NoFields, Builder> {
@@ -41,7 +41,7 @@ public final class NoFields extends Message<NoFields> {
 
     @Override
     public NoFields build() {
-      return new NoFields(buildTagMap());
+      return new NoFields(buildUnknownFields());
     }
   }
 }

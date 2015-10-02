@@ -4,11 +4,11 @@ package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class RedactedChild extends Message<RedactedChild> {
   public static final ProtoAdapter<RedactedChild> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedChild.class);
@@ -36,11 +36,11 @@ public final class RedactedChild extends Message<RedactedChild> {
   public final NotRedacted c;
 
   public RedactedChild(String a, Redacted b, NotRedacted c) {
-    this(a, b, c, TagMap.EMPTY);
+    this(a, b, c, ByteString.EMPTY);
   }
 
-  public RedactedChild(String a, Redacted b, NotRedacted c, TagMap tagMap) {
-    super(tagMap);
+  public RedactedChild(String a, Redacted b, NotRedacted c, ByteString unknownFields) {
+    super(unknownFields);
     this.a = a;
     this.b = b;
     this.c = c;
@@ -51,7 +51,7 @@ public final class RedactedChild extends Message<RedactedChild> {
     if (other == this) return true;
     if (!(other instanceof RedactedChild)) return false;
     RedactedChild o = (RedactedChild) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(a, o.a)
         && equals(b, o.b)
         && equals(c, o.c);
@@ -61,7 +61,7 @@ public final class RedactedChild extends Message<RedactedChild> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);
@@ -105,7 +105,7 @@ public final class RedactedChild extends Message<RedactedChild> {
 
     @Override
     public RedactedChild build() {
-      return new RedactedChild(a, b, c, buildTagMap());
+      return new RedactedChild(a, b, c, buildUnknownFields());
     }
   }
 }

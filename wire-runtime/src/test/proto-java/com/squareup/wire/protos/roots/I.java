@@ -4,11 +4,11 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class I extends Message<I> {
   public static final ProtoAdapter<I> ADAPTER = ProtoAdapter.newMessageAdapter(I.class);
@@ -30,11 +30,11 @@ public final class I extends Message<I> {
   public final J j;
 
   public I(Integer i, J j) {
-    this(i, j, TagMap.EMPTY);
+    this(i, j, ByteString.EMPTY);
   }
 
-  public I(Integer i, J j, TagMap tagMap) {
-    super(tagMap);
+  public I(Integer i, J j, ByteString unknownFields) {
+    super(unknownFields);
     this.i = i;
     this.j = j;
   }
@@ -44,7 +44,7 @@ public final class I extends Message<I> {
     if (other == this) return true;
     if (!(other instanceof I)) return false;
     I o = (I) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(i, o.i)
         && equals(j, o.j);
   }
@@ -53,7 +53,7 @@ public final class I extends Message<I> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
       result = result * 37 + (j != null ? j.hashCode() : 0);
       super.hashCode = result;
@@ -88,7 +88,7 @@ public final class I extends Message<I> {
 
     @Override
     public I build() {
-      return new I(i, j, buildTagMap());
+      return new I(i, j, buildUnknownFields());
     }
   }
 }

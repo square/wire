@@ -5,11 +5,11 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class Redacted extends Message<Redacted> {
   public static final ProtoAdapter<Redacted> ADAPTER = ProtoAdapter.newMessageAdapter(Redacted.class);
@@ -56,11 +56,11 @@ public final class Redacted extends Message<Redacted> {
   public final RedactedExtension extension;
 
   public Redacted(String a, String b, String c, RedactedExtension extension) {
-    this(a, b, c, extension, TagMap.EMPTY);
+    this(a, b, c, extension, ByteString.EMPTY);
   }
 
-  public Redacted(String a, String b, String c, RedactedExtension extension, TagMap tagMap) {
-    super(tagMap);
+  public Redacted(String a, String b, String c, RedactedExtension extension, ByteString unknownFields) {
+    super(unknownFields);
     this.a = a;
     this.b = b;
     this.c = c;
@@ -72,7 +72,7 @@ public final class Redacted extends Message<Redacted> {
     if (other == this) return true;
     if (!(other instanceof Redacted)) return false;
     Redacted o = (Redacted) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(a, o.a)
         && equals(b, o.b)
         && equals(c, o.c)
@@ -83,7 +83,7 @@ public final class Redacted extends Message<Redacted> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);
@@ -136,7 +136,7 @@ public final class Redacted extends Message<Redacted> {
 
     @Override
     public Redacted build() {
-      return new Redacted(a, b, c, extension, buildTagMap());
+      return new Redacted(a, b, c, extension, buildUnknownFields());
     }
   }
 }

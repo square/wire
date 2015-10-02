@@ -4,11 +4,11 @@ package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class ChildPackage extends Message<ChildPackage> {
   public static final ProtoAdapter<ChildPackage> ADAPTER = ProtoAdapter.newMessageAdapter(ChildPackage.class);
@@ -24,11 +24,11 @@ public final class ChildPackage extends Message<ChildPackage> {
   public final ForeignEnum inner_foreign_enum;
 
   public ChildPackage(ForeignEnum inner_foreign_enum) {
-    this(inner_foreign_enum, TagMap.EMPTY);
+    this(inner_foreign_enum, ByteString.EMPTY);
   }
 
-  public ChildPackage(ForeignEnum inner_foreign_enum, TagMap tagMap) {
-    super(tagMap);
+  public ChildPackage(ForeignEnum inner_foreign_enum, ByteString unknownFields) {
+    super(unknownFields);
     this.inner_foreign_enum = inner_foreign_enum;
   }
 
@@ -37,7 +37,7 @@ public final class ChildPackage extends Message<ChildPackage> {
     if (other == this) return true;
     if (!(other instanceof ChildPackage)) return false;
     ChildPackage o = (ChildPackage) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(inner_foreign_enum, o.inner_foreign_enum);
   }
 
@@ -45,7 +45,7 @@ public final class ChildPackage extends Message<ChildPackage> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (inner_foreign_enum != null ? inner_foreign_enum.hashCode() : 0);
       super.hashCode = result;
     }
@@ -71,7 +71,7 @@ public final class ChildPackage extends Message<ChildPackage> {
 
     @Override
     public ChildPackage build() {
-      return new ChildPackage(inner_foreign_enum, buildTagMap());
+      return new ChildPackage(inner_foreign_enum, buildUnknownFields());
     }
   }
 }

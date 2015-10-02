@@ -15,18 +15,20 @@
  */
 package com.squareup.wire;
 
+import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import okio.Buffer;
+import okio.ByteString;
 
 /** A protocol buffer message. */
 public abstract class Message<T extends Message<T>> implements Serializable {
   private static final long serialVersionUID = 0L;
 
-  final transient TagMap tagMap;
+  final transient ByteString unknownFields;
 
   /** If not {@code 0} then the serialized size of this message. */
   transient int cachedSerializedSize = 0;
@@ -34,30 +36,19 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected transient int hashCode = 0;
 
-  protected Message(TagMap tagMap) {
-    if (tagMap == null) {
-      throw new NullPointerException("tagMap == null");
+  protected Message(ByteString unknownFields) {
+    if (unknownFields == null) {
+      throw new NullPointerException("unknownFields == null");
     }
-    this.tagMap = tagMap;
-  }
-
-  public final TagMap tagMap() {
-    return tagMap;
+    this.unknownFields = unknownFields;
   }
 
   /**
-   * Returns an immutable list of the extensions on this message in tag order.
+   * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
+   * an empty byte string if this message has no unknown fields.
    */
-  public final Set<Extension<?, ?>> getExtensions() {
-    return tagMap.extensions(false);
-  }
-
-  /**
-   * Returns the value for {@code extension} on this message, or null if no
-   * value is set.
-   */
-  public final <E> E getExtension(Extension<T, E> extension) {
-    return (E) tagMap.get(extension);
+  public final ByteString unknownFields() {
+    return unknownFields;
   }
 
   @SuppressWarnings("unchecked")
@@ -73,8 +64,9 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    * Superclass for protocol buffer message builders.
    */
   public abstract static class Builder<T extends Message<T>, B extends Builder<T, B>> {
-
-    TagMap.Builder tagMapBuilder;
+    // Lazily-instantiated buffer and writer of this message's unknown fields.
+    Buffer unknownFieldsBuffer;
+    ProtoWriter unknownFieldsWriter;
 
     /**
      * Constructs a Builder with no unknown field data.
@@ -87,52 +79,38 @@ public abstract class Message<T extends Message<T>> implements Serializable {
      * field data in the given {@link Message}.
      */
     public Builder(Message message) {
-      if (message != null && message.tagMap != TagMap.EMPTY) {
-        this.tagMapBuilder = new TagMap.Builder(message.tagMap);
+      if (message != null && message.unknownFields.size() > 0) {
+        unknownFieldsBuffer = new Buffer().write(message.unknownFields);
+        unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
       }
     }
 
-    /** The {@link TagMap} builder in which unknown fields and extensions are stored. */
-    public TagMap.Builder tagMap() {
-      if (tagMapBuilder == null) {
-        tagMapBuilder = new TagMap.Builder();
+    public void addUnknownField(int tag, FieldEncoding fieldEncoding, Object value) {
+      if (unknownFieldsWriter == null) {
+        unknownFieldsBuffer = new Buffer();
+        unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
       }
-      return tagMapBuilder;
+      try {
+        ProtoAdapter<Object> protoAdapter = (ProtoAdapter<Object>) fieldEncoding.rawProtoAdapter();
+        protoAdapter.encodeTagged(unknownFieldsWriter, tag, value);
+      } catch (IOException e) {
+        throw new AssertionError();
+      }
     }
 
-    /**
-     * Returns the value for {@code extension} on this message, or null if no
-     * value is set.
-     */
-    public final <E> E getExtension(Extension<T, E> extension) {
-      return tagMapBuilder != null ? (E) tagMapBuilder.get(extension) : null;
-    }
-
-    /**
-     * Sets the value of {@code extension} on this builder to {@code value}.
-     */
-    public final <E> B setExtension(Extension<T, E> extension, E value) {
-      if (tagMapBuilder == null) {
-        tagMapBuilder = new TagMap.Builder();
-      } else {
-        tagMapBuilder.removeAll(extension.getTag());
-      }
-      if (value instanceof List) {
-        for (Object o : (List) value) {
-          tagMapBuilder.add(extension, o);
-        }
-      } else {
-        tagMapBuilder.add(extension, value);
-      }
-      return (B) this;
+    public void clearUnknownFields() {
+      unknownFieldsWriter = null;
+      unknownFieldsBuffer = null;
     }
 
     /**
-     * Returns an immutable {@link TagMap} based on the unknown fields and extensions set in this
-     * builder, or null.
+     * Returns a byte string with this message's unknown fields. Returns an empty byte string if
+     * this message has no unknown fields.
      */
-    public TagMap buildTagMap() {
-      return tagMapBuilder != null ? tagMapBuilder.build() : TagMap.EMPTY;
+    public ByteString buildUnknownFields() {
+      return unknownFieldsBuffer != null
+          ? unknownFieldsBuffer.clone().readByteString()
+          : ByteString.EMPTY;
     }
 
     /** Returns an immutable {@link Message} based on the fields that set in this builder. */

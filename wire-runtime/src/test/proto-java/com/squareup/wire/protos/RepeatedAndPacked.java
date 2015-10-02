@@ -4,12 +4,12 @@ package com.squareup.wire.protos;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.List;
+import okio.ByteString;
 
 public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = ProtoAdapter.newMessageAdapter(RepeatedAndPacked.class);
@@ -31,11 +31,11 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   public final List<Integer> pack_int32;
 
   public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32) {
-    this(rep_int32, pack_int32, TagMap.EMPTY);
+    this(rep_int32, pack_int32, ByteString.EMPTY);
   }
 
-  public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32, TagMap tagMap) {
-    super(tagMap);
+  public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32, ByteString unknownFields) {
+    super(unknownFields);
     this.rep_int32 = immutableCopyOf(rep_int32);
     this.pack_int32 = immutableCopyOf(pack_int32);
   }
@@ -45,7 +45,7 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
     if (other == this) return true;
     if (!(other instanceof RepeatedAndPacked)) return false;
     RepeatedAndPacked o = (RepeatedAndPacked) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(rep_int32, o.rep_int32)
         && equals(pack_int32, o.pack_int32);
   }
@@ -54,7 +54,7 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 1);
       result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
       super.hashCode = result;
@@ -93,7 +93,7 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
 
     @Override
     public RepeatedAndPacked build() {
-      return new RepeatedAndPacked(rep_int32, pack_int32, buildTagMap());
+      return new RepeatedAndPacked(rep_int32, pack_int32, buildUnknownFields());
     }
   }
 }

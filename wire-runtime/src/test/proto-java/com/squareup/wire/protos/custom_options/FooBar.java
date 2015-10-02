@@ -6,7 +6,6 @@ import com.google.protobuf.EnumOptions;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
@@ -19,6 +18,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.util.Arrays;
 import java.util.List;
+import okio.ByteString;
 
 public final class FooBar extends Message<FooBar> {
   public static final ProtoAdapter<FooBar> ADAPTER = ProtoAdapter.newMessageAdapter(FooBar.class);
@@ -139,11 +139,11 @@ public final class FooBar extends Message<FooBar> {
   public final List<FooBarBazEnum> rep;
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep) {
-    this(foo, bar, baz, qux, fred, daisy, nested, ext, rep, TagMap.EMPTY);
+    this(foo, bar, baz, qux, fred, daisy, nested, ext, rep, ByteString.EMPTY);
   }
 
-  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, TagMap tagMap) {
-    super(tagMap);
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, ByteString unknownFields) {
+    super(unknownFields);
     this.foo = foo;
     this.bar = bar;
     this.baz = baz;
@@ -160,7 +160,7 @@ public final class FooBar extends Message<FooBar> {
     if (other == this) return true;
     if (!(other instanceof FooBar)) return false;
     FooBar o = (FooBar) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(foo, o.foo)
         && equals(bar, o.bar)
         && equals(baz, o.baz)
@@ -176,7 +176,7 @@ public final class FooBar extends Message<FooBar> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
       result = result * 37 + (baz != null ? baz.hashCode() : 0);
@@ -280,7 +280,7 @@ public final class FooBar extends Message<FooBar> {
 
     @Override
     public FooBar build() {
-      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, buildTagMap());
+      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, buildUnknownFields());
     }
   }
 
@@ -298,11 +298,11 @@ public final class FooBar extends Message<FooBar> {
     public final FooBarBazEnum value;
 
     public Nested(FooBarBazEnum value) {
-      this(value, TagMap.EMPTY);
+      this(value, ByteString.EMPTY);
     }
 
-    public Nested(FooBarBazEnum value, TagMap tagMap) {
-      super(tagMap);
+    public Nested(FooBarBazEnum value, ByteString unknownFields) {
+      super(unknownFields);
       this.value = value;
     }
 
@@ -311,7 +311,7 @@ public final class FooBar extends Message<FooBar> {
       if (other == this) return true;
       if (!(other instanceof Nested)) return false;
       Nested o = (Nested) other;
-      return equals(tagMap(), o.tagMap())
+      return equals(unknownFields(), o.unknownFields())
           && equals(value, o.value);
     }
 
@@ -319,7 +319,7 @@ public final class FooBar extends Message<FooBar> {
     public int hashCode() {
       int result = super.hashCode;
       if (result == 0) {
-        result = tagMap().hashCode();
+        result = unknownFields().hashCode();
         result = result * 37 + (value != null ? value.hashCode() : 0);
         super.hashCode = result;
       }
@@ -345,7 +345,7 @@ public final class FooBar extends Message<FooBar> {
 
       @Override
       public Nested build() {
-        return new Nested(value, buildTagMap());
+        return new Nested(value, buildUnknownFields());
       }
     }
   }
@@ -363,11 +363,11 @@ public final class FooBar extends Message<FooBar> {
     public final List<Integer> serial;
 
     public More(List<Integer> serial) {
-      this(serial, TagMap.EMPTY);
+      this(serial, ByteString.EMPTY);
     }
 
-    public More(List<Integer> serial, TagMap tagMap) {
-      super(tagMap);
+    public More(List<Integer> serial, ByteString unknownFields) {
+      super(unknownFields);
       this.serial = immutableCopyOf(serial);
     }
 
@@ -376,7 +376,7 @@ public final class FooBar extends Message<FooBar> {
       if (other == this) return true;
       if (!(other instanceof More)) return false;
       More o = (More) other;
-      return equals(tagMap(), o.tagMap())
+      return equals(unknownFields(), o.unknownFields())
           && equals(serial, o.serial);
     }
 
@@ -384,7 +384,7 @@ public final class FooBar extends Message<FooBar> {
     public int hashCode() {
       int result = super.hashCode;
       if (result == 0) {
-        result = tagMap().hashCode();
+        result = unknownFields().hashCode();
         result = result * 37 + (serial != null ? serial.hashCode() : 1);
         super.hashCode = result;
       }
@@ -412,7 +412,7 @@ public final class FooBar extends Message<FooBar> {
 
       @Override
       public More build() {
-        return new More(serial, buildTagMap());
+        return new More(serial, buildUnknownFields());
       }
     }
   }

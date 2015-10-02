@@ -4,12 +4,12 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.List;
+import okio.ByteString;
 
 public final class EnumOptions extends Message<EnumOptions> {
   public static final ProtoAdapter<EnumOptions> ADAPTER = ProtoAdapter.newMessageAdapter(EnumOptions.class);
@@ -35,11 +35,11 @@ public final class EnumOptions extends Message<EnumOptions> {
   public final Boolean enum_option;
 
   public EnumOptions(List<UninterpretedOption> uninterpreted_option, Boolean enum_option) {
-    this(uninterpreted_option, enum_option, TagMap.EMPTY);
+    this(uninterpreted_option, enum_option, ByteString.EMPTY);
   }
 
-  public EnumOptions(List<UninterpretedOption> uninterpreted_option, Boolean enum_option, TagMap tagMap) {
-    super(tagMap);
+  public EnumOptions(List<UninterpretedOption> uninterpreted_option, Boolean enum_option, ByteString unknownFields) {
+    super(unknownFields);
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
     this.enum_option = enum_option;
   }
@@ -49,7 +49,7 @@ public final class EnumOptions extends Message<EnumOptions> {
     if (other == this) return true;
     if (!(other instanceof EnumOptions)) return false;
     EnumOptions o = (EnumOptions) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(uninterpreted_option, o.uninterpreted_option)
         && equals(enum_option, o.enum_option);
   }
@@ -58,7 +58,7 @@ public final class EnumOptions extends Message<EnumOptions> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
       result = result * 37 + (enum_option != null ? enum_option.hashCode() : 0);
       super.hashCode = result;
@@ -98,7 +98,7 @@ public final class EnumOptions extends Message<EnumOptions> {
 
     @Override
     public EnumOptions build() {
-      return new EnumOptions(uninterpreted_option, enum_option, buildTagMap());
+      return new EnumOptions(uninterpreted_option, enum_option, buildUnknownFields());
     }
   }
 }

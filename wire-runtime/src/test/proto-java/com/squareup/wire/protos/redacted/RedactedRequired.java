@@ -5,11 +5,11 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class RedactedRequired extends Message<RedactedRequired> {
   public static final ProtoAdapter<RedactedRequired> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedRequired.class);
@@ -31,11 +31,11 @@ public final class RedactedRequired extends Message<RedactedRequired> {
   public final String a;
 
   public RedactedRequired(String a) {
-    this(a, TagMap.EMPTY);
+    this(a, ByteString.EMPTY);
   }
 
-  public RedactedRequired(String a, TagMap tagMap) {
-    super(tagMap);
+  public RedactedRequired(String a, ByteString unknownFields) {
+    super(unknownFields);
     this.a = a;
   }
 
@@ -44,7 +44,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
     if (other == this) return true;
     if (!(other instanceof RedactedRequired)) return false;
     RedactedRequired o = (RedactedRequired) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(a, o.a);
   }
 
@@ -52,7 +52,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       super.hashCode = result;
     }
@@ -81,7 +81,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
       if (a == null) {
         throw missingRequiredFields(a, "a");
       }
-      return new RedactedRequired(a, buildTagMap());
+      return new RedactedRequired(a, buildUnknownFields());
     }
   }
 }

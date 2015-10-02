@@ -4,7 +4,6 @@ package com.squareup.services;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -24,11 +23,11 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
   public final ByteString data;
 
   public HeresAllTheDataRequest(ByteString data) {
-    this(data, TagMap.EMPTY);
+    this(data, ByteString.EMPTY);
   }
 
-  public HeresAllTheDataRequest(ByteString data, TagMap tagMap) {
-    super(tagMap);
+  public HeresAllTheDataRequest(ByteString data, ByteString unknownFields) {
+    super(unknownFields);
     this.data = data;
   }
 
@@ -37,7 +36,7 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
     if (other == this) return true;
     if (!(other instanceof HeresAllTheDataRequest)) return false;
     HeresAllTheDataRequest o = (HeresAllTheDataRequest) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(data, o.data);
   }
 
@@ -45,7 +44,7 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (data != null ? data.hashCode() : 0);
       super.hashCode = result;
     }
@@ -71,7 +70,7 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
 
     @Override
     public HeresAllTheDataRequest build() {
-      return new HeresAllTheDataRequest(data, buildTagMap());
+      return new HeresAllTheDataRequest(data, buildUnknownFields());
     }
   }
 }

@@ -153,35 +153,20 @@ public abstract class ProtoAdapter<E> {
 
   /** Read an encoded message from {@code bytes}. */
   public final E decode(byte[] bytes) throws IOException {
-    return decode(bytes, ExtensionRegistry.NO_EXTENSIONS);
-  }
-
-  /** Read an encoded message from {@code bytes}. */
-  public final E decode(byte[] bytes, ExtensionRegistry extensionRegistry) throws IOException {
     checkNotNull(bytes, "bytes == null");
-    return decode(new Buffer().write(bytes), extensionRegistry);
+    return decode(new Buffer().write(bytes));
   }
 
   /** Read an encoded message from {@code stream}. */
   public final E decode(InputStream stream) throws IOException {
-    return decode(stream, ExtensionRegistry.NO_EXTENSIONS);
-  }
-
-  public final E decode(InputStream stream, ExtensionRegistry extensionRegistry)
-      throws IOException {
     checkNotNull(stream, "stream == null");
-    return decode(Okio.buffer(Okio.source(stream)), extensionRegistry);
+    return decode(Okio.buffer(Okio.source(stream)));
   }
 
   /** Read an encoded message from {@code source}. */
   public final E decode(BufferedSource source) throws IOException {
-    return decode(source, ExtensionRegistry.NO_EXTENSIONS);
-  }
-
-  public final E decode(BufferedSource source, ExtensionRegistry extensionRegistry)
-      throws IOException {
     checkNotNull(source, "source == null");
-    return decode(new ProtoReader(source, extensionRegistry));
+    return decode(new ProtoReader(source));
   }
 
   /** Returns a human-readable version of the given {@code value}. */

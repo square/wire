@@ -4,11 +4,11 @@ package com.squareup.wire.protos.one_extension;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class Foo extends Message<Foo> {
   public static final ProtoAdapter<Foo> ADAPTER = ProtoAdapter.newMessageAdapter(Foo.class);
@@ -24,11 +24,11 @@ public final class Foo extends Message<Foo> {
   public final String bar;
 
   public Foo(String bar) {
-    this(bar, TagMap.EMPTY);
+    this(bar, ByteString.EMPTY);
   }
 
-  public Foo(String bar, TagMap tagMap) {
-    super(tagMap);
+  public Foo(String bar, ByteString unknownFields) {
+    super(unknownFields);
     this.bar = bar;
   }
 
@@ -37,7 +37,7 @@ public final class Foo extends Message<Foo> {
     if (other == this) return true;
     if (!(other instanceof Foo)) return false;
     Foo o = (Foo) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(bar, o.bar);
   }
 
@@ -45,7 +45,7 @@ public final class Foo extends Message<Foo> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
       super.hashCode = result;
     }
@@ -71,7 +71,7 @@ public final class Foo extends Message<Foo> {
 
     @Override
     public Foo build() {
-      return new Foo(bar, buildTagMap());
+      return new Foo(bar, buildUnknownFields());
     }
   }
 }

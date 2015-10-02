@@ -4,7 +4,6 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import com.squareup.wire.protos.custom_options.FooBar;
 import com.squareup.wire.protos.foreign.ForeignMessage;
@@ -13,6 +12,7 @@ import java.lang.Float;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.List;
+import okio.ByteString;
 
 public final class MessageOptions extends Message<MessageOptions> {
   public static final ProtoAdapter<MessageOptions> ADAPTER = ProtoAdapter.newMessageAdapter(MessageOptions.class);
@@ -117,11 +117,11 @@ public final class MessageOptions extends Message<MessageOptions> {
   public final ForeignMessage foreign_message_option;
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option, FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three, FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five, FooBar my_message_option_six, ForeignMessage foreign_message_option) {
-    this(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, TagMap.EMPTY);
+    this(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, ByteString.EMPTY);
   }
 
-  public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option, FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three, FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five, FooBar my_message_option_six, ForeignMessage foreign_message_option, TagMap tagMap) {
-    super(tagMap);
+  public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, List<UninterpretedOption> uninterpreted_option, FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three, FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five, FooBar my_message_option_six, ForeignMessage foreign_message_option, ByteString unknownFields) {
+    super(unknownFields);
     this.message_set_wire_format = message_set_wire_format;
     this.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
@@ -139,7 +139,7 @@ public final class MessageOptions extends Message<MessageOptions> {
     if (other == this) return true;
     if (!(other instanceof MessageOptions)) return false;
     MessageOptions o = (MessageOptions) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(message_set_wire_format, o.message_set_wire_format)
         && equals(no_standard_descriptor_accessor, o.no_standard_descriptor_accessor)
         && equals(uninterpreted_option, o.uninterpreted_option)
@@ -156,7 +156,7 @@ public final class MessageOptions extends Message<MessageOptions> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (message_set_wire_format != null ? message_set_wire_format.hashCode() : 0);
       result = result * 37 + (no_standard_descriptor_accessor != null ? no_standard_descriptor_accessor.hashCode() : 0);
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
@@ -293,7 +293,7 @@ public final class MessageOptions extends Message<MessageOptions> {
 
     @Override
     public MessageOptions build() {
-      return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, buildTagMap());
+      return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, buildUnknownFields());
     }
   }
 }

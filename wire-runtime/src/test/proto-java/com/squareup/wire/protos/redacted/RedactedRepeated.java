@@ -5,12 +5,12 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
+import okio.ByteString;
 
 public final class RedactedRepeated extends Message<RedactedRepeated> {
   public static final ProtoAdapter<RedactedRepeated> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedRepeated.class);
@@ -40,11 +40,11 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   public final List<Redacted> b;
 
   public RedactedRepeated(List<String> a, List<Redacted> b) {
-    this(a, b, TagMap.EMPTY);
+    this(a, b, ByteString.EMPTY);
   }
 
-  public RedactedRepeated(List<String> a, List<Redacted> b, TagMap tagMap) {
-    super(tagMap);
+  public RedactedRepeated(List<String> a, List<Redacted> b, ByteString unknownFields) {
+    super(unknownFields);
     this.a = immutableCopyOf(a);
     this.b = immutableCopyOf(b);
   }
@@ -54,7 +54,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
     if (other == this) return true;
     if (!(other instanceof RedactedRepeated)) return false;
     RedactedRepeated o = (RedactedRepeated) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(a, o.a)
         && equals(b, o.b);
   }
@@ -63,7 +63,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 1);
       result = result * 37 + (b != null ? b.hashCode() : 1);
       super.hashCode = result;
@@ -105,7 +105,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
 
     @Override
     public RedactedRepeated build() {
-      return new RedactedRepeated(a, b, buildTagMap());
+      return new RedactedRepeated(a, b, buildUnknownFields());
     }
   }
 }

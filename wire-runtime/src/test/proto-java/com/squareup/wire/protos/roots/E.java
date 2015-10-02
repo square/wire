@@ -4,11 +4,11 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class E extends Message<E> {
   public static final ProtoAdapter<E> ADAPTER = ProtoAdapter.newMessageAdapter(E.class);
@@ -30,11 +30,11 @@ public final class E extends Message<E> {
   public final G g;
 
   public E(F f, G g) {
-    this(f, g, TagMap.EMPTY);
+    this(f, g, ByteString.EMPTY);
   }
 
-  public E(F f, G g, TagMap tagMap) {
-    super(tagMap);
+  public E(F f, G g, ByteString unknownFields) {
+    super(unknownFields);
     this.f = f;
     this.g = g;
   }
@@ -44,7 +44,7 @@ public final class E extends Message<E> {
     if (other == this) return true;
     if (!(other instanceof E)) return false;
     E o = (E) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(f, o.f)
         && equals(g, o.g);
   }
@@ -53,7 +53,7 @@ public final class E extends Message<E> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (f != null ? f.hashCode() : 0);
       result = result * 37 + (g != null ? g.hashCode() : 0);
       super.hashCode = result;
@@ -88,7 +88,7 @@ public final class E extends Message<E> {
 
     @Override
     public E build() {
-      return new E(f, g, buildTagMap());
+      return new E(f, g, buildUnknownFields());
     }
   }
 
@@ -106,11 +106,11 @@ public final class E extends Message<E> {
     public final Integer i;
 
     public F(Integer i) {
-      this(i, TagMap.EMPTY);
+      this(i, ByteString.EMPTY);
     }
 
-    public F(Integer i, TagMap tagMap) {
-      super(tagMap);
+    public F(Integer i, ByteString unknownFields) {
+      super(unknownFields);
       this.i = i;
     }
 
@@ -119,7 +119,7 @@ public final class E extends Message<E> {
       if (other == this) return true;
       if (!(other instanceof F)) return false;
       F o = (F) other;
-      return equals(tagMap(), o.tagMap())
+      return equals(unknownFields(), o.unknownFields())
           && equals(i, o.i);
     }
 
@@ -127,7 +127,7 @@ public final class E extends Message<E> {
     public int hashCode() {
       int result = super.hashCode;
       if (result == 0) {
-        result = tagMap().hashCode();
+        result = unknownFields().hashCode();
         result = result * 37 + (i != null ? i.hashCode() : 0);
         super.hashCode = result;
       }
@@ -153,7 +153,7 @@ public final class E extends Message<E> {
 
       @Override
       public F build() {
-        return new F(i, buildTagMap());
+        return new F(i, buildUnknownFields());
       }
     }
   }

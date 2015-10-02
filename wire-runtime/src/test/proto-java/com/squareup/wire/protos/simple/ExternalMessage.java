@@ -4,13 +4,13 @@ package com.squareup.wire.protos.simple;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Float;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.List;
+import okio.ByteString;
 
 public final class ExternalMessage extends Message<ExternalMessage> {
   public static final ProtoAdapter<ExternalMessage> ADAPTER = ProtoAdapter.newMessageAdapter(ExternalMessage.class);
@@ -63,11 +63,11 @@ public final class ExternalMessage extends Message<ExternalMessage> {
   public final SimpleMessage.NestedEnum nested_enum_ext;
 
   public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext) {
-    this(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, TagMap.EMPTY);
+    this(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, ByteString.EMPTY);
   }
 
-  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext, TagMap tagMap) {
-    super(tagMap);
+  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext, ByteString unknownFields) {
+    super(unknownFields);
     this.f = f;
     this.fooext = immutableCopyOf(fooext);
     this.barext = barext;
@@ -81,7 +81,7 @@ public final class ExternalMessage extends Message<ExternalMessage> {
     if (other == this) return true;
     if (!(other instanceof ExternalMessage)) return false;
     ExternalMessage o = (ExternalMessage) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(f, o.f)
         && equals(fooext, o.fooext)
         && equals(barext, o.barext)
@@ -94,7 +94,7 @@ public final class ExternalMessage extends Message<ExternalMessage> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (f != null ? f.hashCode() : 0);
       result = result * 37 + (fooext != null ? fooext.hashCode() : 1);
       result = result * 37 + (barext != null ? barext.hashCode() : 0);
@@ -167,7 +167,7 @@ public final class ExternalMessage extends Message<ExternalMessage> {
 
     @Override
     public ExternalMessage build() {
-      return new ExternalMessage(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, buildTagMap());
+      return new ExternalMessage(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, buildUnknownFields());
     }
   }
 }

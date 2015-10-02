@@ -113,7 +113,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       if (value == null) continue;
       size += fieldBinding.adapter().encodedSize(fieldBinding.tag, value);
     }
-    size += message.tagMap.encodedSize();
+    size += message.unknownFields.size();
 
     message.cachedSerializedSize = size;
     return size;
@@ -125,7 +125,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       if (value == null) continue;
       fieldBinding.adapter().encodeTagged(writer, fieldBinding.tag, value);
     }
-    message.tagMap.encode(writer);
+    writer.writeBytes(message.unknownFields);
   }
 
   @Override public M redact(M message) {
@@ -151,9 +151,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
         Message.redactElements(values, adapter);
       }
     }
-    if (builder.tagMapBuilder != null) {
-      builder.tagMapBuilder.redact();
-    }
+    builder.clearUnknownFields();
     return builder.build();
   }
 
@@ -177,7 +175,6 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
             .append(fieldBinding.redacted ? REDACTED : value);
       }
     }
-    message.tagMap.appendToString(sb);
 
     // Replace leading comma with class name and opening brace.
     sb.replace(0, 2, messageType.getSimpleName() + '{');
@@ -194,14 +191,13 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
           Object value = fieldBinding.singleAdapter().decode(reader);
           fieldBinding.value(builder, value);
         } else {
-          Extension<?, ?> extension = reader.getExtension(messageType, tag);
-          Object value = extension.getAdapter().decode(reader);
-          builder.tagMap().add(extension, value);
+          FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+          Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+          builder.addUnknownField(tag, fieldEncoding, value);
         }
       } catch (ProtoAdapter.EnumConstantNotFoundException e) {
         // An unknown Enum value was encountered, store it as an unknown field.
-        Extension<M, Long> unknown = Extension.unknown(messageType, tag, FieldEncoding.VARINT);
-        builder.setExtension(unknown, (long) e.value);
+        builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
       }
     }
     reader.endMessage(token);

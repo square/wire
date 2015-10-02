@@ -4,9 +4,9 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class TheRequest extends Message<TheRequest> {
   public static final ProtoAdapter<TheRequest> ADAPTER = ProtoAdapter.newMessageAdapter(TheRequest.class);
@@ -14,11 +14,11 @@ public final class TheRequest extends Message<TheRequest> {
   private static final long serialVersionUID = 0L;
 
   public TheRequest() {
-    this(TagMap.EMPTY);
+    this(ByteString.EMPTY);
   }
 
-  public TheRequest(TagMap tagMap) {
-    super(tagMap);
+  public TheRequest(ByteString unknownFields) {
+    super(unknownFields);
   }
 
   @Override
@@ -28,7 +28,7 @@ public final class TheRequest extends Message<TheRequest> {
 
   @Override
   public int hashCode() {
-    return tagMap().hashCode();
+    return unknownFields().hashCode();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<TheRequest, Builder> {
@@ -41,7 +41,7 @@ public final class TheRequest extends Message<TheRequest> {
 
     @Override
     public TheRequest build() {
-      return new TheRequest(buildTagMap());
+      return new TheRequest(buildUnknownFields());
     }
   }
 }

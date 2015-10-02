@@ -4,11 +4,11 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class C extends Message<C> {
   public static final ProtoAdapter<C> ADAPTER = ProtoAdapter.newMessageAdapter(C.class);
@@ -24,11 +24,11 @@ public final class C extends Message<C> {
   public final Integer i;
 
   public C(Integer i) {
-    this(i, TagMap.EMPTY);
+    this(i, ByteString.EMPTY);
   }
 
-  public C(Integer i, TagMap tagMap) {
-    super(tagMap);
+  public C(Integer i, ByteString unknownFields) {
+    super(unknownFields);
     this.i = i;
   }
 
@@ -37,7 +37,7 @@ public final class C extends Message<C> {
     if (other == this) return true;
     if (!(other instanceof C)) return false;
     C o = (C) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(i, o.i);
   }
 
@@ -45,7 +45,7 @@ public final class C extends Message<C> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
       super.hashCode = result;
     }
@@ -71,7 +71,7 @@ public final class C extends Message<C> {
 
     @Override
     public C build() {
-      return new C(i, buildTagMap());
+      return new C(i, buildUnknownFields());
     }
   }
 }

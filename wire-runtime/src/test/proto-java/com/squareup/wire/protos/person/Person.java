@@ -4,7 +4,6 @@ package com.squareup.wire.protos.person;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
@@ -12,6 +11,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
+import okio.ByteString;
 
 public final class Person extends Message<Person> {
   public static final ProtoAdapter<Person> ADAPTER = ProtoAdapter.newMessageAdapter(Person.class);
@@ -64,11 +64,11 @@ public final class Person extends Message<Person> {
   public final List<PhoneNumber> phone;
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
-    this(name, id, email, phone, TagMap.EMPTY);
+    this(name, id, email, phone, ByteString.EMPTY);
   }
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phone, TagMap tagMap) {
-    super(tagMap);
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone, ByteString unknownFields) {
+    super(unknownFields);
     this.name = name;
     this.id = id;
     this.email = email;
@@ -80,7 +80,7 @@ public final class Person extends Message<Person> {
     if (other == this) return true;
     if (!(other instanceof Person)) return false;
     Person o = (Person) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(name, o.name)
         && equals(id, o.id)
         && equals(email, o.email)
@@ -91,7 +91,7 @@ public final class Person extends Message<Person> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (id != null ? id.hashCode() : 0);
       result = result * 37 + (email != null ? email.hashCode() : 0);
@@ -163,7 +163,7 @@ public final class Person extends Message<Person> {
         throw missingRequiredFields(name, "name",
             id, "id");
       }
-      return new Person(name, id, email, phone, buildTagMap());
+      return new Person(name, id, email, phone, buildUnknownFields());
     }
   }
 
@@ -232,11 +232,11 @@ public final class Person extends Message<Person> {
     public final PhoneType type;
 
     public PhoneNumber(String number, PhoneType type) {
-      this(number, type, TagMap.EMPTY);
+      this(number, type, ByteString.EMPTY);
     }
 
-    public PhoneNumber(String number, PhoneType type, TagMap tagMap) {
-      super(tagMap);
+    public PhoneNumber(String number, PhoneType type, ByteString unknownFields) {
+      super(unknownFields);
       this.number = number;
       this.type = type;
     }
@@ -246,7 +246,7 @@ public final class Person extends Message<Person> {
       if (other == this) return true;
       if (!(other instanceof PhoneNumber)) return false;
       PhoneNumber o = (PhoneNumber) other;
-      return equals(tagMap(), o.tagMap())
+      return equals(unknownFields(), o.unknownFields())
           && equals(number, o.number)
           && equals(type, o.type);
     }
@@ -255,7 +255,7 @@ public final class Person extends Message<Person> {
     public int hashCode() {
       int result = super.hashCode;
       if (result == 0) {
-        result = tagMap().hashCode();
+        result = unknownFields().hashCode();
         result = result * 37 + (number != null ? number.hashCode() : 0);
         result = result * 37 + (type != null ? type.hashCode() : 0);
         super.hashCode = result;
@@ -299,7 +299,7 @@ public final class Person extends Message<Person> {
         if (number == null) {
           throw missingRequiredFields(number, "number");
         }
-        return new PhoneNumber(number, type, buildTagMap());
+        return new PhoneNumber(number, type, buildUnknownFields());
       }
     }
   }

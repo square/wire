@@ -18,7 +18,7 @@ package squareup.protos.namecollisions;
 option java_package = "com.squareup.wire.protos.namecollisions";
 
 message Message {
-  optional string tagMap = 1;
+  optional string unknownFields = 1;
   optional string other = 2;
   optional string o = 3;
   optional string result = 4;

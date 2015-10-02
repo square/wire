@@ -4,7 +4,6 @@ package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Long;
@@ -12,6 +11,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
+import okio.ByteString;
 
 public final class VersionTwo extends Message<VersionTwo> {
   public static final ProtoAdapter<VersionTwo> ADAPTER = ProtoAdapter.newMessageAdapter(VersionTwo.class);
@@ -66,11 +66,11 @@ public final class VersionTwo extends Message<VersionTwo> {
   public final List<String> v2_rs;
 
   public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs) {
-    this(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, TagMap.EMPTY);
+    this(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, ByteString.EMPTY);
   }
 
-  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs, TagMap tagMap) {
-    super(tagMap);
+  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs, ByteString unknownFields) {
+    super(unknownFields);
     this.i = i;
     this.v2_i = v2_i;
     this.v2_s = v2_s;
@@ -84,7 +84,7 @@ public final class VersionTwo extends Message<VersionTwo> {
     if (other == this) return true;
     if (!(other instanceof VersionTwo)) return false;
     VersionTwo o = (VersionTwo) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(i, o.i)
         && equals(v2_i, o.v2_i)
         && equals(v2_s, o.v2_s)
@@ -97,7 +97,7 @@ public final class VersionTwo extends Message<VersionTwo> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
       result = result * 37 + (v2_i != null ? v2_i.hashCode() : 0);
       result = result * 37 + (v2_s != null ? v2_s.hashCode() : 0);
@@ -170,7 +170,7 @@ public final class VersionTwo extends Message<VersionTwo> {
 
     @Override
     public VersionTwo build() {
-      return new VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, buildTagMap());
+      return new VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, buildUnknownFields());
     }
   }
 }

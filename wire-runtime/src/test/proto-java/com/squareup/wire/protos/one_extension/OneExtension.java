@@ -4,11 +4,11 @@ package com.squareup.wire.protos.one_extension;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class OneExtension extends Message<OneExtension> {
   public static final ProtoAdapter<OneExtension> ADAPTER = ProtoAdapter.newMessageAdapter(OneExtension.class);
@@ -30,11 +30,11 @@ public final class OneExtension extends Message<OneExtension> {
   public final Foo foo;
 
   public OneExtension(String id, Foo foo) {
-    this(id, foo, TagMap.EMPTY);
+    this(id, foo, ByteString.EMPTY);
   }
 
-  public OneExtension(String id, Foo foo, TagMap tagMap) {
-    super(tagMap);
+  public OneExtension(String id, Foo foo, ByteString unknownFields) {
+    super(unknownFields);
     this.id = id;
     this.foo = foo;
   }
@@ -44,7 +44,7 @@ public final class OneExtension extends Message<OneExtension> {
     if (other == this) return true;
     if (!(other instanceof OneExtension)) return false;
     OneExtension o = (OneExtension) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(id, o.id)
         && equals(foo, o.foo);
   }
@@ -53,7 +53,7 @@ public final class OneExtension extends Message<OneExtension> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (id != null ? id.hashCode() : 0);
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
       super.hashCode = result;
@@ -88,7 +88,7 @@ public final class OneExtension extends Message<OneExtension> {
 
     @Override
     public OneExtension build() {
-      return new OneExtension(id, foo, buildTagMap());
+      return new OneExtension(id, foo, buildUnknownFields());
     }
   }
 }
