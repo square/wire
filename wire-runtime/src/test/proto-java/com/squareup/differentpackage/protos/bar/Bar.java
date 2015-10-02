@@ -4,11 +4,11 @@ package com.squareup.differentpackage.protos.bar;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class Bar extends Message<Bar> {
   public static final ProtoAdapter<Bar> ADAPTER = ProtoAdapter.newMessageAdapter(Bar.class);
@@ -16,11 +16,11 @@ public final class Bar extends Message<Bar> {
   private static final long serialVersionUID = 0L;
 
   public Bar() {
-    this(TagMap.EMPTY);
+    this(ByteString.EMPTY);
   }
 
-  public Bar(TagMap tagMap) {
-    super(tagMap);
+  public Bar(ByteString unknownFields) {
+    super(unknownFields);
   }
 
   @Override
@@ -30,7 +30,7 @@ public final class Bar extends Message<Bar> {
 
   @Override
   public int hashCode() {
-    return tagMap().hashCode();
+    return unknownFields().hashCode();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Bar, Builder> {
@@ -43,7 +43,7 @@ public final class Bar extends Message<Bar> {
 
     @Override
     public Bar build() {
-      return new Bar(buildTagMap());
+      return new Bar(buildUnknownFields());
     }
   }
 
@@ -53,11 +53,11 @@ public final class Bar extends Message<Bar> {
     private static final long serialVersionUID = 0L;
 
     public Baz() {
-      this(TagMap.EMPTY);
+      this(ByteString.EMPTY);
     }
 
-    public Baz(TagMap tagMap) {
-      super(tagMap);
+    public Baz(ByteString unknownFields) {
+      super(unknownFields);
     }
 
     @Override
@@ -67,7 +67,7 @@ public final class Bar extends Message<Bar> {
 
     @Override
     public int hashCode() {
-      return tagMap().hashCode();
+      return unknownFields().hashCode();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Baz, Baz.Builder> {
@@ -80,7 +80,7 @@ public final class Bar extends Message<Bar> {
 
       @Override
       public Baz build() {
-        return new Baz(buildTagMap());
+        return new Baz(buildUnknownFields());
       }
     }
 
@@ -98,11 +98,11 @@ public final class Bar extends Message<Bar> {
       public final String boo;
 
       public Moo(String boo) {
-        this(boo, TagMap.EMPTY);
+        this(boo, ByteString.EMPTY);
       }
 
-      public Moo(String boo, TagMap tagMap) {
-        super(tagMap);
+      public Moo(String boo, ByteString unknownFields) {
+        super(unknownFields);
         this.boo = boo;
       }
 
@@ -111,7 +111,7 @@ public final class Bar extends Message<Bar> {
         if (other == this) return true;
         if (!(other instanceof Moo)) return false;
         Moo o = (Moo) other;
-        return equals(tagMap(), o.tagMap())
+        return equals(unknownFields(), o.unknownFields())
             && equals(boo, o.boo);
       }
 
@@ -119,7 +119,7 @@ public final class Bar extends Message<Bar> {
       public int hashCode() {
         int result = super.hashCode;
         if (result == 0) {
-          result = tagMap().hashCode();
+          result = unknownFields().hashCode();
           result = result * 37 + (boo != null ? boo.hashCode() : 0);
           super.hashCode = result;
         }
@@ -145,7 +145,7 @@ public final class Bar extends Message<Bar> {
 
         @Override
         public Moo build() {
-          return new Moo(boo, buildTagMap());
+          return new Moo(boo, buildUnknownFields());
         }
       }
     }

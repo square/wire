@@ -4,11 +4,11 @@ package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class NotRedacted extends Message<NotRedacted> {
   public static final ProtoAdapter<NotRedacted> ADAPTER = ProtoAdapter.newMessageAdapter(NotRedacted.class);
@@ -32,11 +32,11 @@ public final class NotRedacted extends Message<NotRedacted> {
   public final String b;
 
   public NotRedacted(String a, String b) {
-    this(a, b, TagMap.EMPTY);
+    this(a, b, ByteString.EMPTY);
   }
 
-  public NotRedacted(String a, String b, TagMap tagMap) {
-    super(tagMap);
+  public NotRedacted(String a, String b, ByteString unknownFields) {
+    super(unknownFields);
     this.a = a;
     this.b = b;
   }
@@ -46,7 +46,7 @@ public final class NotRedacted extends Message<NotRedacted> {
     if (other == this) return true;
     if (!(other instanceof NotRedacted)) return false;
     NotRedacted o = (NotRedacted) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(a, o.a)
         && equals(b, o.b);
   }
@@ -55,7 +55,7 @@ public final class NotRedacted extends Message<NotRedacted> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       super.hashCode = result;
@@ -90,7 +90,7 @@ public final class NotRedacted extends Message<NotRedacted> {
 
     @Override
     public NotRedacted build() {
-      return new NotRedacted(a, b, buildTagMap());
+      return new NotRedacted(a, b, buildUnknownFields());
     }
   }
 }

@@ -129,7 +129,6 @@ public class TestAllTypes {
   }
 
   private final AllTypes allTypes = createAllTypes();
-  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry();
   private final ProtoAdapter<AllTypes> adapter = AllTypes.ADAPTER;
 
   private AllTypes createAllTypes(int numRepeated) {
@@ -340,7 +339,7 @@ public class TestAllTypes {
     byte[] data = adapter.encode(allTypes);
     Buffer input = new Buffer().write(data);
 
-    AllTypes parsed = adapter.decode(input, extensionRegistry);
+    AllTypes parsed = adapter.decode(input);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
@@ -352,7 +351,7 @@ public class TestAllTypes {
   public void testReadBytes() throws IOException {
     byte[] data = adapter.encode(allTypes);
 
-    AllTypes parsed = adapter.decode(data, extensionRegistry);
+    AllTypes parsed = adapter.decode(data);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
@@ -365,7 +364,7 @@ public class TestAllTypes {
     byte[] data = adapter.encode(allTypes);
     InputStream stream = new ByteArrayInputStream(data);
 
-    AllTypes parsed = adapter.decode(stream, extensionRegistry);
+    AllTypes parsed = adapter.decode(stream);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
@@ -378,7 +377,7 @@ public class TestAllTypes {
     AllTypes allTypes = createAllTypes(50);
     byte[] data = adapter.encode(allTypes);
 
-    AllTypes parsed = adapter.decode(data, extensionRegistry);
+    AllTypes parsed = adapter.decode(data);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
@@ -406,7 +405,7 @@ public class TestAllTypes {
     byte[] data = adapter.encode(allTypes);
 
     Source input = new SlowSource(new Buffer().write(data));
-    AllTypes parsed = adapter.decode(Okio.buffer(input), extensionRegistry);
+    AllTypes parsed = adapter.decode(Okio.buffer(input));
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);
@@ -424,14 +423,14 @@ public class TestAllTypes {
   @Test
   public void testReadNonPacked() throws IOException {
     AllTypes parsed = adapter.decode(
-        new Buffer().write(TestAllTypesData.nonPacked), extensionRegistry);
+        new Buffer().write(TestAllTypesData.nonPacked));
     assertThat(parsed).isEqualTo(allTypes);
   }
 
   @Test
   public void testToString() throws IOException {
     byte[] data = adapter.encode(allTypes);
-    AllTypes parsed = adapter.decode(data, extensionRegistry);
+    AllTypes parsed = adapter.decode(data);
     assertThat(parsed.toString()).isEqualTo(TestAllTypesData.expectedToString);
   }
 
@@ -513,14 +512,14 @@ public class TestAllTypes {
     System.arraycopy(TestAllTypesData.expectedOutput.toByteArray(), 17, data, index,
         TestAllTypesData.expectedOutput.size() - 17);
 
-    AllTypes parsed = adapter.decode(data, extensionRegistry);
+    AllTypes parsed = adapter.decode(data);
     assertThat(parsed).isEqualTo(allTypes);
   }
 
   @Test
   public void testUnknownFields() {
     AllTypes.Builder builder = getBuilder();
-    builder.setExtension(Extension.unknown(AllTypes.class, 10000, FieldEncoding.VARINT), 1L);
+    builder.addUnknownField(10000, FieldEncoding.VARINT, 1L);
     AllTypes withUnknownField = builder.build();
     byte[] data = adapter.encode(withUnknownField);
     int count = TestAllTypesData.expectedOutput.size();
@@ -534,10 +533,10 @@ public class TestAllTypes {
   @Test @Ignore("we no longer enforce this constraint")
   public void testUnknownFieldsTypeMismatch() {
     AllTypes.Builder builder = getBuilder();
-    builder.setExtension(Extension.unknown(AllTypes.class, 10000, FieldEncoding.VARINT), 1);
+    builder.addUnknownField(10000, FieldEncoding.VARINT, 1);
     try {
       // Don't allow heterogeneous types for the same tag
-      builder.setExtension(Extension.unknown(AllTypes.class, 10000, FieldEncoding.FIXED32), 2);
+      builder.addUnknownField(10000, FieldEncoding.FIXED32, 2);
       fail();
     } catch (IllegalArgumentException expected) {
       assertThat(expected).hasMessage(

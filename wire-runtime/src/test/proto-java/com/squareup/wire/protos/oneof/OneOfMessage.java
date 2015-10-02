@@ -4,12 +4,12 @@ package com.squareup.wire.protos.oneof;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class OneOfMessage extends Message<OneOfMessage> {
   public static final ProtoAdapter<OneOfMessage> ADAPTER = ProtoAdapter.newMessageAdapter(OneOfMessage.class);
@@ -39,11 +39,11 @@ public final class OneOfMessage extends Message<OneOfMessage> {
   public final String bar;
 
   public OneOfMessage(Integer foo, String bar) {
-    this(foo, bar, TagMap.EMPTY);
+    this(foo, bar, ByteString.EMPTY);
   }
 
-  public OneOfMessage(Integer foo, String bar, TagMap tagMap) {
-    super(tagMap);
+  public OneOfMessage(Integer foo, String bar, ByteString unknownFields) {
+    super(unknownFields);
     this.foo = foo;
     this.bar = bar;
   }
@@ -53,7 +53,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
     if (other == this) return true;
     if (!(other instanceof OneOfMessage)) return false;
     OneOfMessage o = (OneOfMessage) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(foo, o.foo)
         && equals(bar, o.bar);
   }
@@ -62,7 +62,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
       super.hashCode = result;
@@ -105,7 +105,7 @@ public final class OneOfMessage extends Message<OneOfMessage> {
 
     @Override
     public OneOfMessage build() {
-      return new OneOfMessage(foo, bar, buildTagMap());
+      return new OneOfMessage(foo, bar, buildUnknownFields());
     }
   }
 }

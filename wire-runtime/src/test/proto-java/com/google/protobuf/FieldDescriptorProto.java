@@ -4,13 +4,13 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 /**
  * Describes a field within a message.
@@ -116,11 +116,11 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
   public final FieldOptions options;
 
   public FieldDescriptorProto(String name, String doc, Integer number, Label label, Type type, String type_name, String extendee, String default_value, FieldOptions options) {
-    this(name, doc, number, label, type, type_name, extendee, default_value, options, TagMap.EMPTY);
+    this(name, doc, number, label, type, type_name, extendee, default_value, options, ByteString.EMPTY);
   }
 
-  public FieldDescriptorProto(String name, String doc, Integer number, Label label, Type type, String type_name, String extendee, String default_value, FieldOptions options, TagMap tagMap) {
-    super(tagMap);
+  public FieldDescriptorProto(String name, String doc, Integer number, Label label, Type type, String type_name, String extendee, String default_value, FieldOptions options, ByteString unknownFields) {
+    super(unknownFields);
     this.name = name;
     this.doc = doc;
     this.number = number;
@@ -137,7 +137,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
     if (other == this) return true;
     if (!(other instanceof FieldDescriptorProto)) return false;
     FieldDescriptorProto o = (FieldDescriptorProto) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(name, o.name)
         && equals(doc, o.doc)
         && equals(number, o.number)
@@ -153,7 +153,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (doc != null ? doc.hashCode() : 0);
       result = result * 37 + (number != null ? number.hashCode() : 0);
@@ -276,7 +276,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
 
     @Override
     public FieldDescriptorProto build() {
-      return new FieldDescriptorProto(name, doc, number, label, type, type_name, extendee, default_value, options, buildTagMap());
+      return new FieldDescriptorProto(name, doc, number, label, type, type_name, extendee, default_value, options, buildUnknownFields());
     }
   }
 

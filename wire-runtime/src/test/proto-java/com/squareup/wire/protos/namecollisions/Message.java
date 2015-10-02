@@ -3,18 +3,18 @@
 package com.squareup.wire.protos.namecollisions;
 
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class Message extends com.squareup.wire.Message<Message> {
   public static final ProtoAdapter<Message> ADAPTER = ProtoAdapter.newMessageAdapter(Message.class);
 
   private static final long serialVersionUID = 0L;
 
-  public static final String DEFAULT_TAGMAP = "";
+  public static final String DEFAULT_UNKNOWNFIELDS = "";
 
   public static final String DEFAULT_OTHER = "";
 
@@ -38,7 +38,7 @@ public final class Message extends com.squareup.wire.Message<Message> {
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  public final String tagMap;
+  public final String unknownFields;
 
   @WireField(
       tag = 2,
@@ -94,13 +94,13 @@ public final class Message extends com.squareup.wire.Message<Message> {
   )
   public final String message;
 
-  public Message(String tagMap, String other, String o, String result, String hashCode, String serialVersionUID_, String ADAPTER_, String MESSAGE_OPTIONS_, String this_, String message) {
-    this(tagMap, other, o, result, hashCode, serialVersionUID_, ADAPTER_, MESSAGE_OPTIONS_, this_, message, TagMap.EMPTY);
+  public Message(String unknownFields, String other, String o, String result, String hashCode, String serialVersionUID_, String ADAPTER_, String MESSAGE_OPTIONS_, String this_, String message) {
+    this(unknownFields, other, o, result, hashCode, serialVersionUID_, ADAPTER_, MESSAGE_OPTIONS_, this_, message, ByteString.EMPTY);
   }
 
-  public Message(String tagMap, String other, String o, String result, String hashCode, String serialVersionUID_, String ADAPTER_, String MESSAGE_OPTIONS_, String this_, String message, TagMap tagMap_) {
-    super(tagMap_);
-    this.tagMap = tagMap;
+  public Message(String unknownFields, String other, String o, String result, String hashCode, String serialVersionUID_, String ADAPTER_, String MESSAGE_OPTIONS_, String this_, String message, ByteString unknownFields_) {
+    super(unknownFields_);
+    this.unknownFields = unknownFields;
     this.other = other;
     this.o = o;
     this.result = result;
@@ -117,8 +117,8 @@ public final class Message extends com.squareup.wire.Message<Message> {
     if (other_ == this) return true;
     if (!(other_ instanceof Message)) return false;
     Message o_ = (Message) other_;
-    return equals(tagMap(), o_.tagMap())
-        && equals(tagMap, o_.tagMap)
+    return equals(unknownFields(), o_.unknownFields())
+        && equals(unknownFields, o_.unknownFields)
         && equals(other, o_.other)
         && equals(o, o_.o)
         && equals(result, o_.result)
@@ -134,8 +134,8 @@ public final class Message extends com.squareup.wire.Message<Message> {
   public int hashCode() {
     int result_ = super.hashCode;
     if (result_ == 0) {
-      result_ = tagMap().hashCode();
-      result_ = result_ * 37 + (tagMap != null ? tagMap.hashCode() : 0);
+      result_ = unknownFields().hashCode();
+      result_ = result_ * 37 + (unknownFields != null ? unknownFields.hashCode() : 0);
       result_ = result_ * 37 + (other != null ? other.hashCode() : 0);
       result_ = result_ * 37 + (o != null ? o.hashCode() : 0);
       result_ = result_ * 37 + (result != null ? result.hashCode() : 0);
@@ -151,7 +151,7 @@ public final class Message extends com.squareup.wire.Message<Message> {
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Message, Builder> {
-    public String tagMap;
+    public String unknownFields;
 
     public String other;
 
@@ -177,7 +177,7 @@ public final class Message extends com.squareup.wire.Message<Message> {
     public Builder(Message message_) {
       super(message_);
       if (message_ == null) return;
-      this.tagMap = message_.tagMap;
+      this.unknownFields = message_.unknownFields;
       this.other = message_.other;
       this.o = message_.o;
       this.result = message_.result;
@@ -189,8 +189,8 @@ public final class Message extends com.squareup.wire.Message<Message> {
       this.message = message_.message;
     }
 
-    public Builder tagMap(String tagMap) {
-      this.tagMap = tagMap;
+    public Builder unknownFields(String unknownFields) {
+      this.unknownFields = unknownFields;
       return this;
     }
 
@@ -241,7 +241,7 @@ public final class Message extends com.squareup.wire.Message<Message> {
 
     @Override
     public Message build() {
-      return new Message(tagMap, other, o, result, hashCode, serialVersionUID_, ADAPTER_, MESSAGE_OPTIONS_, this_, message, buildTagMap());
+      return new Message(unknownFields, other, o, result, hashCode, serialVersionUID_, ADAPTER_, MESSAGE_OPTIONS_, this_, message, buildUnknownFields());
     }
   }
 }

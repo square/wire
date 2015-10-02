@@ -4,11 +4,11 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class OneField extends Message<OneField> {
   public static final ProtoAdapter<OneField> ADAPTER = ProtoAdapter.newMessageAdapter(OneField.class);
@@ -24,11 +24,11 @@ public final class OneField extends Message<OneField> {
   public final Integer opt_int32;
 
   public OneField(Integer opt_int32) {
-    this(opt_int32, TagMap.EMPTY);
+    this(opt_int32, ByteString.EMPTY);
   }
 
-  public OneField(Integer opt_int32, TagMap tagMap) {
-    super(tagMap);
+  public OneField(Integer opt_int32, ByteString unknownFields) {
+    super(unknownFields);
     this.opt_int32 = opt_int32;
   }
 
@@ -37,7 +37,7 @@ public final class OneField extends Message<OneField> {
     if (other == this) return true;
     if (!(other instanceof OneField)) return false;
     OneField o = (OneField) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(opt_int32, o.opt_int32);
   }
 
@@ -45,7 +45,7 @@ public final class OneField extends Message<OneField> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
       super.hashCode = result;
     }
@@ -71,7 +71,7 @@ public final class OneField extends Message<OneField> {
 
     @Override
     public OneField build() {
-      return new OneField(opt_int32, buildTagMap());
+      return new OneField(opt_int32, buildUnknownFields());
     }
   }
 }

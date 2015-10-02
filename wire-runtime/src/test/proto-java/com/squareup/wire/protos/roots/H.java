@@ -4,10 +4,10 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class H extends Message<H> {
   public static final ProtoAdapter<H> ADAPTER = ProtoAdapter.newMessageAdapter(H.class);
@@ -21,11 +21,11 @@ public final class H extends Message<H> {
   public final E.F ef;
 
   public H(E.F ef) {
-    this(ef, TagMap.EMPTY);
+    this(ef, ByteString.EMPTY);
   }
 
-  public H(E.F ef, TagMap tagMap) {
-    super(tagMap);
+  public H(E.F ef, ByteString unknownFields) {
+    super(unknownFields);
     this.ef = ef;
   }
 
@@ -34,7 +34,7 @@ public final class H extends Message<H> {
     if (other == this) return true;
     if (!(other instanceof H)) return false;
     H o = (H) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(ef, o.ef);
   }
 
@@ -42,7 +42,7 @@ public final class H extends Message<H> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (ef != null ? ef.hashCode() : 0);
       super.hashCode = result;
     }
@@ -68,7 +68,7 @@ public final class H extends Message<H> {
 
     @Override
     public H build() {
-      return new H(ef, buildTagMap());
+      return new H(ef, buildUnknownFields());
     }
   }
 }

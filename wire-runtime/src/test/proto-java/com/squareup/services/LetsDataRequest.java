@@ -4,7 +4,6 @@ package com.squareup.services;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
@@ -24,11 +23,11 @@ public final class LetsDataRequest extends Message<LetsDataRequest> {
   public final ByteString data;
 
   public LetsDataRequest(ByteString data) {
-    this(data, TagMap.EMPTY);
+    this(data, ByteString.EMPTY);
   }
 
-  public LetsDataRequest(ByteString data, TagMap tagMap) {
-    super(tagMap);
+  public LetsDataRequest(ByteString data, ByteString unknownFields) {
+    super(unknownFields);
     this.data = data;
   }
 
@@ -37,7 +36,7 @@ public final class LetsDataRequest extends Message<LetsDataRequest> {
     if (other == this) return true;
     if (!(other instanceof LetsDataRequest)) return false;
     LetsDataRequest o = (LetsDataRequest) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(data, o.data);
   }
 
@@ -45,7 +44,7 @@ public final class LetsDataRequest extends Message<LetsDataRequest> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (data != null ? data.hashCode() : 0);
       super.hashCode = result;
     }
@@ -71,7 +70,7 @@ public final class LetsDataRequest extends Message<LetsDataRequest> {
 
     @Override
     public LetsDataRequest build() {
-      return new LetsDataRequest(data, buildTagMap());
+      return new LetsDataRequest(data, buildUnknownFields());
     }
   }
 }

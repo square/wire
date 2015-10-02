@@ -4,10 +4,10 @@ package com.squareup.wire.protos.redacted;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class RedactedCycleB extends Message<RedactedCycleB> {
   public static final ProtoAdapter<RedactedCycleB> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedCycleB.class);
@@ -21,11 +21,11 @@ public final class RedactedCycleB extends Message<RedactedCycleB> {
   public final RedactedCycleA a;
 
   public RedactedCycleB(RedactedCycleA a) {
-    this(a, TagMap.EMPTY);
+    this(a, ByteString.EMPTY);
   }
 
-  public RedactedCycleB(RedactedCycleA a, TagMap tagMap) {
-    super(tagMap);
+  public RedactedCycleB(RedactedCycleA a, ByteString unknownFields) {
+    super(unknownFields);
     this.a = a;
   }
 
@@ -34,7 +34,7 @@ public final class RedactedCycleB extends Message<RedactedCycleB> {
     if (other == this) return true;
     if (!(other instanceof RedactedCycleB)) return false;
     RedactedCycleB o = (RedactedCycleB) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(a, o.a);
   }
 
@@ -42,7 +42,7 @@ public final class RedactedCycleB extends Message<RedactedCycleB> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (a != null ? a.hashCode() : 0);
       super.hashCode = result;
     }
@@ -68,7 +68,7 @@ public final class RedactedCycleB extends Message<RedactedCycleB> {
 
     @Override
     public RedactedCycleB build() {
-      return new RedactedCycleB(a, buildTagMap());
+      return new RedactedCycleB(a, buildUnknownFields());
     }
   }
 }

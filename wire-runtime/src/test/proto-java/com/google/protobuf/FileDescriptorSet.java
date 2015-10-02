@@ -4,11 +4,11 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.List;
+import okio.ByteString;
 
 /**
  * The protocol compiler can output a FileDescriptorSet containing the .proto
@@ -27,11 +27,11 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
   public final List<FileDescriptorProto> file;
 
   public FileDescriptorSet(List<FileDescriptorProto> file) {
-    this(file, TagMap.EMPTY);
+    this(file, ByteString.EMPTY);
   }
 
-  public FileDescriptorSet(List<FileDescriptorProto> file, TagMap tagMap) {
-    super(tagMap);
+  public FileDescriptorSet(List<FileDescriptorProto> file, ByteString unknownFields) {
+    super(unknownFields);
     this.file = immutableCopyOf(file);
   }
 
@@ -40,7 +40,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
     if (other == this) return true;
     if (!(other instanceof FileDescriptorSet)) return false;
     FileDescriptorSet o = (FileDescriptorSet) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(file, o.file);
   }
 
@@ -48,7 +48,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (file != null ? file.hashCode() : 1);
       super.hashCode = result;
     }
@@ -76,7 +76,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
 
     @Override
     public FileDescriptorSet build() {
-      return new FileDescriptorSet(file, buildTagMap());
+      return new FileDescriptorSet(file, buildUnknownFields());
     }
   }
 }

@@ -4,11 +4,11 @@ package com.squareup.wire.protos.edgecases;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 public final class Recursive extends Message<Recursive> {
   public static final ProtoAdapter<Recursive> ADAPTER = ProtoAdapter.newMessageAdapter(Recursive.class);
@@ -30,11 +30,11 @@ public final class Recursive extends Message<Recursive> {
   public final Recursive recursive;
 
   public Recursive(Integer value, Recursive recursive) {
-    this(value, recursive, TagMap.EMPTY);
+    this(value, recursive, ByteString.EMPTY);
   }
 
-  public Recursive(Integer value, Recursive recursive, TagMap tagMap) {
-    super(tagMap);
+  public Recursive(Integer value, Recursive recursive, ByteString unknownFields) {
+    super(unknownFields);
     this.value = value;
     this.recursive = recursive;
   }
@@ -44,7 +44,7 @@ public final class Recursive extends Message<Recursive> {
     if (other == this) return true;
     if (!(other instanceof Recursive)) return false;
     Recursive o = (Recursive) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(value, o.value)
         && equals(recursive, o.recursive);
   }
@@ -53,7 +53,7 @@ public final class Recursive extends Message<Recursive> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (value != null ? value.hashCode() : 0);
       result = result * 37 + (recursive != null ? recursive.hashCode() : 0);
       super.hashCode = result;
@@ -88,7 +88,7 @@ public final class Recursive extends Message<Recursive> {
 
     @Override
     public Recursive build() {
-      return new Recursive(value, recursive, buildTagMap());
+      return new Recursive(value, recursive, buildUnknownFields());
     }
   }
 }

@@ -4,12 +4,12 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
+import okio.ByteString;
 
 /**
  * Describes a complete .proto file.
@@ -101,11 +101,11 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   public final SourceCodeInfo source_code_info;
 
   public FileDescriptorProto(String name, String package_, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info) {
-    this(name, package_, dependency, message_type, enum_type, service, extension, options, source_code_info, TagMap.EMPTY);
+    this(name, package_, dependency, message_type, enum_type, service, extension, options, source_code_info, ByteString.EMPTY);
   }
 
-  public FileDescriptorProto(String name, String package_, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info, TagMap tagMap) {
-    super(tagMap);
+  public FileDescriptorProto(String name, String package_, List<String> dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info, ByteString unknownFields) {
+    super(unknownFields);
     this.name = name;
     this.package_ = package_;
     this.dependency = immutableCopyOf(dependency);
@@ -122,7 +122,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
     if (other == this) return true;
     if (!(other instanceof FileDescriptorProto)) return false;
     FileDescriptorProto o = (FileDescriptorProto) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(name, o.name)
         && equals(package_, o.package_)
         && equals(dependency, o.dependency)
@@ -138,7 +138,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (package_ != null ? package_.hashCode() : 0);
       result = result * 37 + (dependency != null ? dependency.hashCode() : 1);
@@ -264,7 +264,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
 
     @Override
     public FileDescriptorProto build() {
-      return new FileDescriptorProto(name, package_, dependency, message_type, enum_type, service, extension, options, source_code_info, buildTagMap());
+      return new FileDescriptorProto(name, package_, dependency, message_type, enum_type, service, extension, options, source_code_info, buildUnknownFields());
     }
   }
 }

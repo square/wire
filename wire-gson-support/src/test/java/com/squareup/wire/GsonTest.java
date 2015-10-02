@@ -26,9 +26,6 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
-
-  private final ExtensionRegistry extensionRegistry = new ExtensionRegistry();
-
   private static final String JSON_BASE = "\"opt_int32\":111,"
       + "\"opt_uint32\":112,"
       + "\"opt_sint32\":113,"
@@ -247,7 +244,7 @@ public class GsonTest {
 
   private Gson createGson() {
     return new GsonBuilder()
-        .registerTypeAdapterFactory(new WireTypeAdapterFactory(extensionRegistry))
+        .registerTypeAdapterFactory(new WireTypeAdapterFactory())
         .disableHtmlEscaping()
         .create();
   }
@@ -270,11 +267,11 @@ public class GsonTest {
     Gson gson = createGson();
 
     AllTypes.Builder builder = createBuilder();
-    builder.setExtension(Extension.unknown(AllTypes.class, 9000, FieldEncoding.FIXED32), 9000);
-    builder.setExtension(Extension.unknown(AllTypes.class, 9001, FieldEncoding.FIXED64), 9001L);
-    builder.setExtension(Extension.unknown(AllTypes.class, 9002, FieldEncoding.LENGTH_DELIMITED),
+    builder.addUnknownField(9000, FieldEncoding.FIXED32, 9000);
+    builder.addUnknownField(9001, FieldEncoding.FIXED64, 9001L);
+    builder.addUnknownField(9002, FieldEncoding.LENGTH_DELIMITED,
         ByteString.of((byte) '9', (byte) '0', (byte) '0', (byte) '2'));
-      builder.setExtension(Extension.unknown(AllTypes.class, 9003, FieldEncoding.VARINT), 9003L);
+    builder.addUnknownField(9003, FieldEncoding.VARINT, 9003L);
 
     AllTypes allTypes = builder.build();
     String json = gson.toJson(allTypes);

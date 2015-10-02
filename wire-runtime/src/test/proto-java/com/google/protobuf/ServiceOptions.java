@@ -4,11 +4,11 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.List;
+import okio.ByteString;
 
 public final class ServiceOptions extends Message<ServiceOptions> {
   public static final ProtoAdapter<ServiceOptions> ADAPTER = ProtoAdapter.newMessageAdapter(ServiceOptions.class);
@@ -30,11 +30,11 @@ public final class ServiceOptions extends Message<ServiceOptions> {
   public final List<UninterpretedOption> uninterpreted_option;
 
   public ServiceOptions(List<UninterpretedOption> uninterpreted_option) {
-    this(uninterpreted_option, TagMap.EMPTY);
+    this(uninterpreted_option, ByteString.EMPTY);
   }
 
-  public ServiceOptions(List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
-    super(tagMap);
+  public ServiceOptions(List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
+    super(unknownFields);
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
   }
 
@@ -43,7 +43,7 @@ public final class ServiceOptions extends Message<ServiceOptions> {
     if (other == this) return true;
     if (!(other instanceof ServiceOptions)) return false;
     ServiceOptions o = (ServiceOptions) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(uninterpreted_option, o.uninterpreted_option);
   }
 
@@ -51,7 +51,7 @@ public final class ServiceOptions extends Message<ServiceOptions> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
       super.hashCode = result;
     }
@@ -86,7 +86,7 @@ public final class ServiceOptions extends Message<ServiceOptions> {
 
     @Override
     public ServiceOptions build() {
-      return new ServiceOptions(uninterpreted_option, buildTagMap());
+      return new ServiceOptions(uninterpreted_option, buildUnknownFields());
     }
   }
 }

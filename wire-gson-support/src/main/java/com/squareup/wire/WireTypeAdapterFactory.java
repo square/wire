@@ -27,10 +27,8 @@ import okio.ByteString;
  * use the {@link com.google.gson.GsonBuilder} interface:
  *
  * <pre>
- * Wire wire = new Wire(...extension classes...)
- * WireTypeAdapterFactory wireTypeAdapterFactory = new WireTypeAdapterFactory(wire);
  * Gson gson = new GsonBuilder()
- *     .registerTypeAdapterFactory(wireTypeAdapterFactory)
+ *     .registerTypeAdapterFactory(new WireTypeAdapterFactory())
  *     .create();
  * </pre>
  *
@@ -43,29 +41,13 @@ import okio.ByteString;
  * in the way it serializes unknown fields, so we use our own approach for this case.
  */
 public final class WireTypeAdapterFactory implements TypeAdapterFactory {
-  private final ExtensionRegistry extensionRegistry;
-
-  /**
-   * Constructs an adapter that is capable of serializing and deserializing extension values
-   * that may have {@code Message} and {@code Enum} values belonging to the given whitelist. A
-   * shortened version of the class name will be used as a type marker in the JSON serialized
-   * form. It is not necessary to include non-extension classes in the whitelist.
-   */
-  public WireTypeAdapterFactory(ExtensionRegistry extensionRegistry) {
-    this.extensionRegistry = extensionRegistry;
-  }
-
-  public WireTypeAdapterFactory() {
-    this(ExtensionRegistry.NO_EXTENSIONS);
-  }
-
   @SuppressWarnings("unchecked")
   @Override public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
     if (type.getRawType().equals(ByteString.class)) {
       return (TypeAdapter<T>) new ByteStringTypeAdapter();
     }
     if (Message.class.isAssignableFrom(type.getRawType())) {
-      return (TypeAdapter<T>) new MessageTypeAdapter(extensionRegistry, gson, type);
+      return (TypeAdapter<T>) new MessageTypeAdapter(gson, type);
     }
     return null;
   }

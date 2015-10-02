@@ -4,10 +4,10 @@ package com.squareup.wire.protos.roots;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
+import okio.ByteString;
 
 /**
  * Used to test --roots flag of WireCompiler
@@ -42,11 +42,11 @@ public final class A extends Message<A> {
   public final D d;
 
   public A(B c, D d) {
-    this(c, d, TagMap.EMPTY);
+    this(c, d, ByteString.EMPTY);
   }
 
-  public A(B c, D d, TagMap tagMap) {
-    super(tagMap);
+  public A(B c, D d, ByteString unknownFields) {
+    super(unknownFields);
     this.c = c;
     this.d = d;
   }
@@ -56,7 +56,7 @@ public final class A extends Message<A> {
     if (other == this) return true;
     if (!(other instanceof A)) return false;
     A o = (A) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(c, o.c)
         && equals(d, o.d);
   }
@@ -65,7 +65,7 @@ public final class A extends Message<A> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (c != null ? c.hashCode() : 0);
       result = result * 37 + (d != null ? d.hashCode() : 0);
       super.hashCode = result;
@@ -100,7 +100,7 @@ public final class A extends Message<A> {
 
     @Override
     public A build() {
-      return new A(c, d, buildTagMap());
+      return new A(c, d, buildUnknownFields());
     }
   }
 }

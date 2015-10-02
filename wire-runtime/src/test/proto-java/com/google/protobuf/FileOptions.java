@@ -4,7 +4,6 @@ package com.google.protobuf;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import java.lang.Boolean;
@@ -12,6 +11,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
+import okio.ByteString;
 
 /**
  * ===================================================================
@@ -159,11 +159,11 @@ public final class FileOptions extends Message<FileOptions> {
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, OptimizeMode optimize_for, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, List<UninterpretedOption> uninterpreted_option) {
-    this(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, optimize_for, cc_generic_services, java_generic_services, py_generic_services, uninterpreted_option, TagMap.EMPTY);
+    this(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, optimize_for, cc_generic_services, java_generic_services, py_generic_services, uninterpreted_option, ByteString.EMPTY);
   }
 
-  public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, OptimizeMode optimize_for, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
-    super(tagMap);
+  public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, OptimizeMode optimize_for, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
+    super(unknownFields);
     this.java_package = java_package;
     this.java_outer_classname = java_outer_classname;
     this.java_multiple_files = java_multiple_files;
@@ -180,7 +180,7 @@ public final class FileOptions extends Message<FileOptions> {
     if (other == this) return true;
     if (!(other instanceof FileOptions)) return false;
     FileOptions o = (FileOptions) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(java_package, o.java_package)
         && equals(java_outer_classname, o.java_outer_classname)
         && equals(java_multiple_files, o.java_multiple_files)
@@ -196,7 +196,7 @@ public final class FileOptions extends Message<FileOptions> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (java_package != null ? java_package.hashCode() : 0);
       result = result * 37 + (java_outer_classname != null ? java_outer_classname.hashCode() : 0);
       result = result * 37 + (java_multiple_files != null ? java_multiple_files.hashCode() : 0);
@@ -338,7 +338,7 @@ public final class FileOptions extends Message<FileOptions> {
 
     @Override
     public FileOptions build() {
-      return new FileOptions(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, optimize_for, cc_generic_services, java_generic_services, py_generic_services, uninterpreted_option, buildTagMap());
+      return new FileOptions(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, optimize_for, cc_generic_services, java_generic_services, py_generic_services, uninterpreted_option, buildUnknownFields());
     }
   }
 

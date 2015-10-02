@@ -5,11 +5,11 @@ package com.squareup.wire.protos.redacted;
 import com.google.protobuf.FieldOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.TagMap;
 import com.squareup.wire.WireField;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import okio.ByteString;
 
 public final class RedactedExtension extends Message<RedactedExtension> {
   public static final ProtoAdapter<RedactedExtension> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedExtension.class);
@@ -38,11 +38,11 @@ public final class RedactedExtension extends Message<RedactedExtension> {
   public final String e;
 
   public RedactedExtension(String d, String e) {
-    this(d, e, TagMap.EMPTY);
+    this(d, e, ByteString.EMPTY);
   }
 
-  public RedactedExtension(String d, String e, TagMap tagMap) {
-    super(tagMap);
+  public RedactedExtension(String d, String e, ByteString unknownFields) {
+    super(unknownFields);
     this.d = d;
     this.e = e;
   }
@@ -52,7 +52,7 @@ public final class RedactedExtension extends Message<RedactedExtension> {
     if (other == this) return true;
     if (!(other instanceof RedactedExtension)) return false;
     RedactedExtension o = (RedactedExtension) other;
-    return equals(tagMap(), o.tagMap())
+    return equals(unknownFields(), o.unknownFields())
         && equals(d, o.d)
         && equals(e, o.e);
   }
@@ -61,7 +61,7 @@ public final class RedactedExtension extends Message<RedactedExtension> {
   public int hashCode() {
     int result = super.hashCode;
     if (result == 0) {
-      result = tagMap().hashCode();
+      result = unknownFields().hashCode();
       result = result * 37 + (d != null ? d.hashCode() : 0);
       result = result * 37 + (e != null ? e.hashCode() : 0);
       super.hashCode = result;
@@ -96,7 +96,7 @@ public final class RedactedExtension extends Message<RedactedExtension> {
 
     @Override
     public RedactedExtension build() {
-      return new RedactedExtension(d, e, buildTagMap());
+      return new RedactedExtension(d, e, buildUnknownFields());
     }
   }
 }
