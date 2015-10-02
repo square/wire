@@ -31,6 +31,14 @@ public final class Foo extends Message<Foo> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.moo = moo;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof Foo)) return false;
@@ -54,12 +62,6 @@ public final class Foo extends Message<Foo> {
     public Bar.Baz.Moo moo;
 
     public Builder() {
-    }
-
-    public Builder(Foo message) {
-      super(message);
-      if (message == null) return;
-      this.moo = message.moo;
     }
 
     public Builder moo(Bar.Baz.Moo moo) {

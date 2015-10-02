@@ -102,6 +102,20 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.name = copyOf(name);
+    builder.identifier_value = identifier_value;
+    builder.positive_int_value = positive_int_value;
+    builder.negative_int_value = negative_int_value;
+    builder.double_value = double_value;
+    builder.string_value = string_value;
+    builder.aggregate_value = aggregate_value;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof UninterpretedOption)) return false;
@@ -150,18 +164,6 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
 
     public Builder() {
       name = newMutableList();
-    }
-
-    public Builder(UninterpretedOption message) {
-      super(message);
-      if (message == null) return;
-      this.name = copyOf(message.name);
-      this.identifier_value = message.identifier_value;
-      this.positive_int_value = message.positive_int_value;
-      this.negative_int_value = message.negative_int_value;
-      this.double_value = message.double_value;
-      this.string_value = message.string_value;
-      this.aggregate_value = message.aggregate_value;
     }
 
     public Builder name(List<NamePart> name) {
@@ -251,6 +253,15 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
     }
 
     @Override
+    public NamePart.Builder newBuilder() {
+      NamePart.Builder builder = new NamePart.Builder();
+      builder.name_part = name_part;
+      builder.is_extension = is_extension;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof NamePart)) return false;
@@ -278,13 +289,6 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
       public Boolean is_extension;
 
       public Builder() {
-      }
-
-      public Builder(NamePart message) {
-        super(message);
-        if (message == null) return;
-        this.name_part = message.name_part;
-        this.is_extension = message.is_extension;
       }
 
       public Builder name_part(String name_part) {

@@ -32,6 +32,14 @@ public final class SendDataResponse extends Message<SendDataResponse> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.data = data;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof SendDataResponse)) return false;
@@ -55,12 +63,6 @@ public final class SendDataResponse extends Message<SendDataResponse> {
     public ByteString data;
 
     public Builder() {
-    }
-
-    public Builder(SendDataResponse message) {
-      super(message);
-      if (message == null) return;
-      this.data = message.data;
     }
 
     public Builder data(ByteString data) {

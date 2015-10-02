@@ -22,6 +22,13 @@ public final class TheRequest extends Message<TheRequest> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     return other instanceof TheRequest;
   }
@@ -33,10 +40,6 @@ public final class TheRequest extends Message<TheRequest> {
 
   public static final class Builder extends com.squareup.wire.Message.Builder<TheRequest, Builder> {
     public Builder() {
-    }
-
-    public Builder(TheRequest message) {
-      super(message);
     }
 
     @Override

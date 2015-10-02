@@ -64,6 +64,17 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.name = name;
+    builder.doc = doc;
+    builder.value = copyOf(value);
+    builder.options = options;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof EnumDescriptorProto)) return false;
@@ -100,15 +111,6 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto> {
 
     public Builder() {
       value = newMutableList();
-    }
-
-    public Builder(EnumDescriptorProto message) {
-      super(message);
-      if (message == null) return;
-      this.name = message.name;
-      this.doc = message.doc;
-      this.value = copyOf(message.value);
-      this.options = message.options;
     }
 
     public Builder name(String name) {

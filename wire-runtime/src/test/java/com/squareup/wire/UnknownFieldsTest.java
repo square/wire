@@ -73,7 +73,7 @@ public class UnknownFieldsTest {
     assertThat(v2B.v2_rs).containsExactly("1", "2");
 
     // "Modify" v1 via a merged builder, serialize, and re-parse
-    VersionOne v1Modified = new VersionOne.Builder(v1).i(777).build();
+    VersionOne v1Modified = v1.newBuilder().i(777).build();
     assertThat(v1Modified.i).isEqualTo(new Integer(777));
     byte[] v1ModifiedBytes = v1Adapter.encode(v1Modified);
 

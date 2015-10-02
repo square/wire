@@ -81,6 +81,13 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     return other instanceof MessageWithOptions;
   }
@@ -92,10 +99,6 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
 
   public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions, Builder> {
     public Builder() {
-    }
-
-    public Builder(MessageWithOptions message) {
-      super(message);
     }
 
     @Override

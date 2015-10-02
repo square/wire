@@ -24,6 +24,13 @@ public final class Bar extends Message<Bar> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     return other instanceof Bar;
   }
@@ -35,10 +42,6 @@ public final class Bar extends Message<Bar> {
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Bar, Builder> {
     public Builder() {
-    }
-
-    public Builder(Bar message) {
-      super(message);
     }
 
     @Override
@@ -61,6 +64,13 @@ public final class Bar extends Message<Bar> {
     }
 
     @Override
+    public Baz.Builder newBuilder() {
+      Baz.Builder builder = new Baz.Builder();
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       return other instanceof Baz;
     }
@@ -72,10 +82,6 @@ public final class Bar extends Message<Bar> {
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Baz, Baz.Builder> {
       public Builder() {
-      }
-
-      public Builder(Baz message) {
-        super(message);
       }
 
       @Override
@@ -107,6 +113,14 @@ public final class Bar extends Message<Bar> {
       }
 
       @Override
+      public Moo.Builder newBuilder() {
+        Moo.Builder builder = new Moo.Builder();
+        builder.boo = boo;
+        builder.addUnknownFields(unknownFields());
+        return builder;
+      }
+
+      @Override
       public boolean equals(Object other) {
         if (other == this) return true;
         if (!(other instanceof Moo)) return false;
@@ -130,12 +144,6 @@ public final class Bar extends Message<Bar> {
         public String boo;
 
         public Builder() {
-        }
-
-        public Builder(Moo message) {
-          super(message);
-          if (message == null) return;
-          this.boo = message.boo;
         }
 
         public Builder boo(String boo) {

@@ -16,9 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,7 +31,6 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   static <M extends Message<M>, B extends Builder<M, B>> RuntimeMessageAdapter<M, B> create(
       Class<M> messageType) {
     Class<B> builderType = getBuilderType(messageType);
-    Constructor<B> builderCopyConstructor = getBuilderCopyConstructor(builderType, messageType);
     Map<Integer, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<>();
 
     // Create tag bindings for fields annotated with '@WireField'
@@ -45,21 +42,19 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
       }
     }
 
-    return new RuntimeMessageAdapter<>(messageType, builderType, builderCopyConstructor,
+    return new RuntimeMessageAdapter<>(messageType, builderType,
         Collections.unmodifiableMap(fieldBindings));
   }
 
   private final Class<M> messageType;
   private final Class<B> builderType;
-  private final Constructor<B> builderCopyConstructor;
   private final Map<Integer, FieldBinding<M, B>> fieldBindings;
 
   RuntimeMessageAdapter(Class<M> messageType, Class<B> builderType,
-      Constructor<B> builderCopyConstructor, Map<Integer, FieldBinding<M, B>> fieldBindings) {
+      Map<Integer, FieldBinding<M, B>> fieldBindings) {
     super(FieldEncoding.LENGTH_DELIMITED, messageType);
     this.messageType = messageType;
     this.builderType = builderType;
-    this.builderCopyConstructor = builderCopyConstructor;
     this.fieldBindings = fieldBindings;
   }
 
@@ -75,14 +70,6 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     }
   }
 
-  B newBuilder(M value) {
-    try {
-      return builderCopyConstructor.newInstance(value);
-    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-      throw new AssertionError(e);
-    }
-  }
-
   @SuppressWarnings("unchecked")
   private static <M extends Message<M>, B extends Builder<M, B>> Class<B> getBuilderType(
       Class<M> messageType) {
@@ -91,15 +78,6 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException("No builder class found for message type "
           + messageType.getName());
-    }
-  }
-
-  private static <M extends Message<M>, B extends Builder<M, B>> Constructor<B>
-  getBuilderCopyConstructor(Class<B> builderType, Class<M> messageType) {
-    try {
-      return builderType.getConstructor(messageType);
-    } catch (NoSuchMethodException e) {
-      throw new AssertionError(e);
     }
   }
 
@@ -129,7 +107,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   }
 
   @Override public M redact(M message) {
-    B builder = newBuilder(message);
+    B builder = (B) message.newBuilder();
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
       if (fieldBinding.redacted && fieldBinding.label == WireField.Label.REQUIRED) {
         throw new UnsupportedOperationException(String.format(

@@ -64,6 +64,17 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.name = name;
+    builder.method = copyOf(method);
+    builder.doc = doc;
+    builder.options = options;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof ServiceDescriptorProto)) return false;
@@ -100,15 +111,6 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
     public Builder() {
       method = newMutableList();
-    }
-
-    public Builder(ServiceDescriptorProto message) {
-      super(message);
-      if (message == null) return;
-      this.name = message.name;
-      this.method = copyOf(message.method);
-      this.doc = message.doc;
-      this.options = message.options;
     }
 
     public Builder name(String name) {

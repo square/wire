@@ -40,6 +40,15 @@ public final class OneExtension extends Message<OneExtension> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.id = id;
+    builder.foo = foo;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof OneExtension)) return false;
@@ -67,13 +76,6 @@ public final class OneExtension extends Message<OneExtension> {
     public Foo foo;
 
     public Builder() {
-    }
-
-    public Builder(OneExtension message) {
-      super(message);
-      if (message == null) return;
-      this.id = message.id;
-      this.foo = message.foo;
     }
 
     public Builder id(String id) {

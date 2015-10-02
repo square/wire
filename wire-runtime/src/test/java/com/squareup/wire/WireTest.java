@@ -120,7 +120,7 @@ public class WireTest {
         .required_int32(10)
         .build();
 
-    SimpleMessage.Builder builder = new SimpleMessage.Builder(message);
+    SimpleMessage.Builder builder = message.newBuilder();
     builder.required_int32 = 20;
     builder.repeated_double.add(30.5);
     builder.optional_int32 = 40;
@@ -351,8 +351,8 @@ public class WireTest {
     assertThat(personNoPhone.phone).isSameAs(Collections.emptyList());
 
     // Round-trip these instances through the builder and ensure the lists are the same instances.
-    assertThat(new Person.Builder(personWithPhone).build().phone).isSameAs(personWithPhone.phone);
-    assertThat(new Person.Builder(personNoPhone).build().phone).isSameAs(personNoPhone.phone);
+    assertThat(personWithPhone.newBuilder().build().phone).isSameAs(personWithPhone.phone);
+    assertThat(personNoPhone.newBuilder().build().phone).isSameAs(personNoPhone.phone);
   }
 
   @Test public void builderListsAreAlwaysMutable() {
@@ -366,7 +366,7 @@ public class WireTest {
         .name("Joe Schmoe")
         .phone(singletonList(phone))
         .build();
-    Person.Builder copyBuilder = new Person.Builder(person);
+    Person.Builder copyBuilder = person.newBuilder();
     copyBuilder.phone.add(phone);
   }
 

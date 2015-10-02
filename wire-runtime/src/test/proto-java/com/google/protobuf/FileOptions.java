@@ -176,6 +176,22 @@ public final class FileOptions extends Message<FileOptions> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.java_package = java_package;
+    builder.java_outer_classname = java_outer_classname;
+    builder.java_multiple_files = java_multiple_files;
+    builder.java_generate_equals_and_hash = java_generate_equals_and_hash;
+    builder.optimize_for = optimize_for;
+    builder.cc_generic_services = cc_generic_services;
+    builder.java_generic_services = java_generic_services;
+    builder.py_generic_services = py_generic_services;
+    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FileOptions)) return false;
@@ -232,20 +248,6 @@ public final class FileOptions extends Message<FileOptions> {
 
     public Builder() {
       uninterpreted_option = newMutableList();
-    }
-
-    public Builder(FileOptions message) {
-      super(message);
-      if (message == null) return;
-      this.java_package = message.java_package;
-      this.java_outer_classname = message.java_outer_classname;
-      this.java_multiple_files = message.java_multiple_files;
-      this.java_generate_equals_and_hash = message.java_generate_equals_and_hash;
-      this.optimize_for = message.optimize_for;
-      this.cc_generic_services = message.cc_generic_services;
-      this.java_generic_services = message.java_generic_services;
-      this.py_generic_services = message.py_generic_services;
-      this.uninterpreted_option = copyOf(message.uninterpreted_option);
     }
 
     /**

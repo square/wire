@@ -51,6 +51,11 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     return unknownFields;
   }
 
+  /**
+   * Returns a new builder initialized with the data in this message.
+   */
+  public abstract Builder newBuilder();
+
   @SuppressWarnings("unchecked")
   @Override public String toString() {
     return ProtoAdapter.get((Class<Message>) getClass()).toString(this);
@@ -74,18 +79,22 @@ public abstract class Message<T extends Message<T>> implements Serializable {
     public Builder() {
     }
 
-    /**
-     * Constructs a Builder with unknown field data initialized to a copy of any unknown
-     * field data in the given {@link Message}.
-     */
-    public Builder(Message message) {
-      if (message != null && message.unknownFields.size() > 0) {
-        unknownFieldsBuffer = new Buffer().write(message.unknownFields);
-        unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
+    public Builder<T, B> addUnknownFields(ByteString unknownFields) {
+      if (unknownFields.size() > 0) {
+        if (unknownFieldsWriter == null) {
+          unknownFieldsBuffer = new Buffer();
+          unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
+        }
+        try {
+          unknownFieldsWriter.writeBytes(unknownFields);
+        } catch (IOException e) {
+          throw new AssertionError();
+        }
       }
+      return this;
     }
 
-    public void addUnknownField(int tag, FieldEncoding fieldEncoding, Object value) {
+    public Builder<T, B> addUnknownField(int tag, FieldEncoding fieldEncoding, Object value) {
       if (unknownFieldsWriter == null) {
         unknownFieldsBuffer = new Buffer();
         unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
@@ -96,11 +105,13 @@ public abstract class Message<T extends Message<T>> implements Serializable {
       } catch (IOException e) {
         throw new AssertionError();
       }
+      return this;
     }
 
-    public void clearUnknownFields() {
+    public Builder<T, B> clearUnknownFields() {
       unknownFieldsWriter = null;
       unknownFieldsBuffer = null;
+      return this;
     }
 
     /**

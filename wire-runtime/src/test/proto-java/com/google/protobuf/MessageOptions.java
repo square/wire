@@ -135,6 +135,23 @@ public final class MessageOptions extends Message<MessageOptions> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.message_set_wire_format = message_set_wire_format;
+    builder.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
+    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.my_message_option_one = my_message_option_one;
+    builder.my_message_option_two = my_message_option_two;
+    builder.my_message_option_three = my_message_option_three;
+    builder.my_message_option_four = my_message_option_four;
+    builder.my_message_option_five = my_message_option_five;
+    builder.my_message_option_six = my_message_option_six;
+    builder.foreign_message_option = foreign_message_option;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof MessageOptions)) return false;
@@ -195,21 +212,6 @@ public final class MessageOptions extends Message<MessageOptions> {
 
     public Builder() {
       uninterpreted_option = newMutableList();
-    }
-
-    public Builder(MessageOptions message) {
-      super(message);
-      if (message == null) return;
-      this.message_set_wire_format = message.message_set_wire_format;
-      this.no_standard_descriptor_accessor = message.no_standard_descriptor_accessor;
-      this.uninterpreted_option = copyOf(message.uninterpreted_option);
-      this.my_message_option_one = message.my_message_option_one;
-      this.my_message_option_two = message.my_message_option_two;
-      this.my_message_option_three = message.my_message_option_three;
-      this.my_message_option_four = message.my_message_option_four;
-      this.my_message_option_five = message.my_message_option_five;
-      this.my_message_option_six = message.my_message_option_six;
-      this.foreign_message_option = message.foreign_message_option;
     }
 
     /**

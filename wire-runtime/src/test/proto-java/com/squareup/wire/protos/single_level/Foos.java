@@ -32,6 +32,14 @@ public final class Foos extends Message<Foos> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.foos = copyOf(foos);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof Foos)) return false;
@@ -56,12 +64,6 @@ public final class Foos extends Message<Foos> {
 
     public Builder() {
       foos = newMutableList();
-    }
-
-    public Builder(Foos message) {
-      super(message);
-      if (message == null) return;
-      this.foos = copyOf(message.foos);
     }
 
     public Builder foos(List<Foo> foos) {

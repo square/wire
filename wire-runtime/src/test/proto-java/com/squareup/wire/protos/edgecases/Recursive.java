@@ -40,6 +40,15 @@ public final class Recursive extends Message<Recursive> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.value = value;
+    builder.recursive = recursive;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof Recursive)) return false;
@@ -67,13 +76,6 @@ public final class Recursive extends Message<Recursive> {
     public Recursive recursive;
 
     public Builder() {
-    }
-
-    public Builder(Recursive message) {
-      super(message);
-      if (message == null) return;
-      this.value = message.value;
-      this.recursive = message.recursive;
     }
 
     public Builder value(Integer value) {

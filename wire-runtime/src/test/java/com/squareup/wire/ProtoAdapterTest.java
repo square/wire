@@ -36,7 +36,11 @@ public final class ProtoAdapterTest {
   }
 
   @Test public void getFromClassWrongType() throws Exception {
-    Message nonGeneratedMessage = new Message(ByteString.EMPTY) {};
+    Message nonGeneratedMessage = new Message(ByteString.EMPTY) {
+      @Override public Builder newBuilder() {
+        throw new AssertionError();
+      }
+    };
     try {
       ProtoAdapter.get(nonGeneratedMessage.getClass());
       fail();

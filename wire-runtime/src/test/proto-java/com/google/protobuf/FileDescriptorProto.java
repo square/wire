@@ -118,6 +118,22 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.name = name;
+    builder.package_ = package_;
+    builder.dependency = copyOf(dependency);
+    builder.message_type = copyOf(message_type);
+    builder.enum_type = copyOf(enum_type);
+    builder.service = copyOf(service);
+    builder.extension = copyOf(extension);
+    builder.options = options;
+    builder.source_code_info = source_code_info;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FileDescriptorProto)) return false;
@@ -178,20 +194,6 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto> {
       enum_type = newMutableList();
       service = newMutableList();
       extension = newMutableList();
-    }
-
-    public Builder(FileDescriptorProto message) {
-      super(message);
-      if (message == null) return;
-      this.name = message.name;
-      this.package_ = message.package_;
-      this.dependency = copyOf(message.dependency);
-      this.message_type = copyOf(message.message_type);
-      this.enum_type = copyOf(message.enum_type);
-      this.service = copyOf(message.service);
-      this.extension = copyOf(message.extension);
-      this.options = message.options;
-      this.source_code_info = message.source_code_info;
     }
 
     /**

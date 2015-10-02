@@ -33,6 +33,14 @@ public final class OneField extends Message<OneField> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.opt_int32 = opt_int32;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof OneField)) return false;
@@ -56,12 +64,6 @@ public final class OneField extends Message<OneField> {
     public Integer opt_int32;
 
     public Builder() {
-    }
-
-    public Builder(OneField message) {
-      super(message);
-      if (message == null) return;
-      this.opt_int32 = message.opt_int32;
     }
 
     public Builder opt_int32(Integer opt_int32) {

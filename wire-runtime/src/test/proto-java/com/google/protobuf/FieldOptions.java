@@ -155,6 +155,23 @@ public final class FieldOptions extends Message<FieldOptions> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.ctype = ctype;
+    builder.packed = packed;
+    builder.deprecated = deprecated;
+    builder.experimental_map_key = experimental_map_key;
+    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.my_field_option_one = my_field_option_one;
+    builder.my_field_option_two = my_field_option_two;
+    builder.my_field_option_three = my_field_option_three;
+    builder.my_field_option_four = my_field_option_four;
+    builder.redacted = redacted;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FieldOptions)) return false;
@@ -215,21 +232,6 @@ public final class FieldOptions extends Message<FieldOptions> {
 
     public Builder() {
       uninterpreted_option = newMutableList();
-    }
-
-    public Builder(FieldOptions message) {
-      super(message);
-      if (message == null) return;
-      this.ctype = message.ctype;
-      this.packed = message.packed;
-      this.deprecated = message.deprecated;
-      this.experimental_map_key = message.experimental_map_key;
-      this.uninterpreted_option = copyOf(message.uninterpreted_option);
-      this.my_field_option_one = message.my_field_option_one;
-      this.my_field_option_two = message.my_field_option_two;
-      this.my_field_option_three = message.my_field_option_three;
-      this.my_field_option_four = message.my_field_option_four;
-      this.redacted = message.redacted;
     }
 
     /**

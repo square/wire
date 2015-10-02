@@ -42,6 +42,15 @@ public final class NotRedacted extends Message<NotRedacted> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.a = a;
+    builder.b = b;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof NotRedacted)) return false;
@@ -69,13 +78,6 @@ public final class NotRedacted extends Message<NotRedacted> {
     public String b;
 
     public Builder() {
-    }
-
-    public Builder(NotRedacted message) {
-      super(message);
-      if (message == null) return;
-      this.a = message.a;
-      this.b = message.b;
     }
 
     public Builder a(String a) {

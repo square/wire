@@ -76,6 +76,17 @@ public final class Person extends Message<Person> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.name = name;
+    builder.id = id;
+    builder.email = email;
+    builder.phone = copyOf(phone);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof Person)) return false;
@@ -112,15 +123,6 @@ public final class Person extends Message<Person> {
 
     public Builder() {
       phone = newMutableList();
-    }
-
-    public Builder(Person message) {
-      super(message);
-      if (message == null) return;
-      this.name = message.name;
-      this.id = message.id;
-      this.email = message.email;
-      this.phone = copyOf(message.phone);
     }
 
     /**
@@ -242,6 +244,15 @@ public final class Person extends Message<Person> {
     }
 
     @Override
+    public PhoneNumber.Builder newBuilder() {
+      PhoneNumber.Builder builder = new PhoneNumber.Builder();
+      builder.number = number;
+      builder.type = type;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof PhoneNumber)) return false;
@@ -269,13 +280,6 @@ public final class Person extends Message<Person> {
       public PhoneType type;
 
       public Builder() {
-      }
-
-      public Builder(PhoneNumber message) {
-        super(message);
-        if (message == null) return;
-        this.number = message.number;
-        this.type = message.type;
       }
 
       /**

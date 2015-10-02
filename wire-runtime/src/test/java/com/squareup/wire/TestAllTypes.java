@@ -298,7 +298,7 @@ public class TestAllTypes {
 
   @Test
   public void testInitBuilder() {
-    AllTypes.Builder builder = new AllTypes.Builder(allTypes);
+    AllTypes.Builder builder = allTypes.newBuilder();
     assertThat(builder.build()).isEqualTo(allTypes);
     builder.opt_bool = false;
     assertThat(builder.build()).isNotSameAs(allTypes);

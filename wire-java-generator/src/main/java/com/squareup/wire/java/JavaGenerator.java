@@ -448,6 +448,7 @@ public final class JavaGenerator {
 
     builder.addMethod(messageFieldsConstructor(nameAllocator, type));
     builder.addMethod(messageFieldsAndUnknownFieldsConstructor(nameAllocator, type));
+    builder.addMethod(newBuilder(nameAllocator, type));
     builder.addMethod(messageEquals(nameAllocator, type));
     builder.addMethod(messageHashCode(nameAllocator, type));
 
@@ -630,7 +631,7 @@ public final class JavaGenerator {
     result.beginControlFlow("default:");
     result.addStatement("$T fieldEncoding = reader.peekFieldEncoding()", FieldEncoding.class);
     result.addStatement("$T value = fieldEncoding.rawProtoAdapter().decode(reader)", Object.class);
-    result.addStatement("builder.addUnknownField(tag, fieldEncoding, value);");
+    result.addStatement("builder.addUnknownField(tag, fieldEncoding, value)");
     result.endControlFlow(); // default
 
     result.endControlFlow(); // switch
@@ -662,7 +663,7 @@ public final class JavaGenerator {
       return result.build();
     }
 
-    result.addStatement("$1T builder = new $1T(value)", builderJavaType);
+    result.addStatement("$1T builder = value.newBuilder()", builderJavaType);
 
     for (Field field : type.fieldsAndOneOfFields()) {
       String fieldName = nameAllocator.get(field);
@@ -956,7 +957,6 @@ public final class JavaGenerator {
     }
 
     result.addMethod(builderNoArgsConstructor(nameAllocator, type));
-    result.addMethod(builderCopyConstructor(nameAllocator, type));
 
     for (Field field : type.fields()) {
       result.addMethod(setter(nameAllocator, builderType, null, field));
@@ -991,36 +991,37 @@ public final class JavaGenerator {
 
   // Example:
   //
-  // public Builder(SimpleMessage message) {
-  //   super(message);
-  //   if (message == null) return;
-  //   this.optional_int32 = message.optional_int32;
+  // @Override
+  // public Message.Builder newBuilder() {
+  //   Builder builder = new Builder();
+  //   builder.optional_int32 = optional_int32;
   //   ...
+  //   builder.addUnknownFields(unknownFields());
+  //   return builder;
   // }
-  //
-  private MethodSpec builderCopyConstructor(NameAllocator nameAllocator, MessageType message) {
-    String messageName = nameAllocator.get("message");
-    TypeName javaType = typeName(message.name());
+  private MethodSpec newBuilder(NameAllocator nameAllocator, MessageType message) {
+    String builderName = nameAllocator.get("builder");
+    ClassName javaType = (ClassName) typeName(message.name());
+    ClassName builderJavaType = javaType.nestedClass("Builder");
 
-    MethodSpec.Builder result = MethodSpec.constructorBuilder()
+    MethodSpec.Builder result = MethodSpec.methodBuilder("newBuilder")
+        .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
-        .addParameter(javaType, messageName);
-    result.addStatement("super($N)", messageName);
+        .returns(builderJavaType)
+        .addStatement("$1T $2L = new $1T()", builderJavaType, builderName);
 
     List<Field> fields = message.fieldsAndOneOfFields();
-    if (!fields.isEmpty()) {
-      result.addStatement("if ($N == null) return", messageName);
-    }
-
     for (Field field : fields) {
       String fieldName = nameAllocator.get(field);
       if (field.isRepeated()) {
-        result.addStatement("this.$L = copyOf($N.$L)", fieldName, messageName, fieldName);
+        result.addStatement("$1L.$2L = copyOf($2L)", builderName, fieldName);
       } else {
-        result.addStatement("this.$L = $N.$L", fieldName, messageName, fieldName);
+        result.addStatement("$1L.$2L = $2L", builderName, fieldName);
       }
     }
 
+    result.addStatement("$L.addUnknownFields(unknownFields())", builderName);
+    result.addStatement("return $L", builderName);
     return result.build();
   }
 

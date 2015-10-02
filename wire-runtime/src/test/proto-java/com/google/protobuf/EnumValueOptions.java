@@ -63,6 +63,17 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.enum_value_option = enum_value_option;
+    builder.complex_enum_value_option = complex_enum_value_option;
+    builder.foreign_enum_value_option = foreign_enum_value_option;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof EnumValueOptions)) return false;
@@ -99,15 +110,6 @@ public final class EnumValueOptions extends Message<EnumValueOptions> {
 
     public Builder() {
       uninterpreted_option = newMutableList();
-    }
-
-    public Builder(EnumValueOptions message) {
-      super(message);
-      if (message == null) return;
-      this.uninterpreted_option = copyOf(message.uninterpreted_option);
-      this.enum_value_option = message.enum_value_option;
-      this.complex_enum_value_option = message.complex_enum_value_option;
-      this.foreign_enum_value_option = message.foreign_enum_value_option;
     }
 
     /**

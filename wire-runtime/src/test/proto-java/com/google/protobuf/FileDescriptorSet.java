@@ -36,6 +36,14 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.file = copyOf(file);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FileDescriptorSet)) return false;
@@ -60,12 +68,6 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet> {
 
     public Builder() {
       file = newMutableList();
-    }
-
-    public Builder(FileDescriptorSet message) {
-      super(message);
-      if (message == null) return;
-      this.file = copyOf(message.file);
     }
 
     public Builder file(List<FileDescriptorProto> file) {

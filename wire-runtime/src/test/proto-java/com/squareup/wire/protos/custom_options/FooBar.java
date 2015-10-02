@@ -156,6 +156,22 @@ public final class FooBar extends Message<FooBar> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.foo = foo;
+    builder.bar = bar;
+    builder.baz = baz;
+    builder.qux = qux;
+    builder.fred = copyOf(fred);
+    builder.daisy = daisy;
+    builder.nested = copyOf(nested);
+    builder.ext = ext;
+    builder.rep = copyOf(rep);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FooBar)) return false;
@@ -214,20 +230,6 @@ public final class FooBar extends Message<FooBar> {
       fred = newMutableList();
       nested = newMutableList();
       rep = newMutableList();
-    }
-
-    public Builder(FooBar message) {
-      super(message);
-      if (message == null) return;
-      this.foo = message.foo;
-      this.bar = message.bar;
-      this.baz = message.baz;
-      this.qux = message.qux;
-      this.fred = copyOf(message.fred);
-      this.daisy = message.daisy;
-      this.nested = copyOf(message.nested);
-      this.ext = message.ext;
-      this.rep = copyOf(message.rep);
     }
 
     public Builder foo(Integer foo) {
@@ -307,6 +309,14 @@ public final class FooBar extends Message<FooBar> {
     }
 
     @Override
+    public Nested.Builder newBuilder() {
+      Nested.Builder builder = new Nested.Builder();
+      builder.value = value;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof Nested)) return false;
@@ -330,12 +340,6 @@ public final class FooBar extends Message<FooBar> {
       public FooBarBazEnum value;
 
       public Builder() {
-      }
-
-      public Builder(Nested message) {
-        super(message);
-        if (message == null) return;
-        this.value = message.value;
       }
 
       public Builder value(FooBarBazEnum value) {
@@ -372,6 +376,14 @@ public final class FooBar extends Message<FooBar> {
     }
 
     @Override
+    public More.Builder newBuilder() {
+      More.Builder builder = new More.Builder();
+      builder.serial = copyOf(serial);
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof More)) return false;
@@ -396,12 +408,6 @@ public final class FooBar extends Message<FooBar> {
 
       public Builder() {
         serial = newMutableList();
-      }
-
-      public Builder(More message) {
-        super(message);
-        if (message == null) return;
-        this.serial = copyOf(message.serial);
       }
 
       public Builder serial(List<Integer> serial) {

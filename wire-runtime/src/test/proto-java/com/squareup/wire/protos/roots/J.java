@@ -30,6 +30,14 @@ public final class J extends Message<J> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.k = k;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof J)) return false;
@@ -53,12 +61,6 @@ public final class J extends Message<J> {
     public K k;
 
     public Builder() {
-    }
-
-    public Builder(J message) {
-      super(message);
-      if (message == null) return;
-      this.k = message.k;
     }
 
     public Builder k(K k) {

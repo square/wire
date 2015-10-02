@@ -22,6 +22,13 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     return other instanceof UnnecessaryResponse;
   }
@@ -33,10 +40,6 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse> {
 
   public static final class Builder extends com.squareup.wire.Message.Builder<UnnecessaryResponse, Builder> {
     public Builder() {
-    }
-
-    public Builder(UnnecessaryResponse message) {
-      super(message);
     }
 
     @Override

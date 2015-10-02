@@ -30,6 +30,14 @@ public final class H extends Message<H> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.ef = ef;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof H)) return false;
@@ -53,12 +61,6 @@ public final class H extends Message<H> {
     public E.F ef;
 
     public Builder() {
-    }
-
-    public Builder(H message) {
-      super(message);
-      if (message == null) return;
-      this.ef = message.ef;
     }
 
     public Builder ef(E.F ef) {

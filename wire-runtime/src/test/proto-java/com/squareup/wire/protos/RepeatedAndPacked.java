@@ -41,6 +41,15 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.rep_int32 = copyOf(rep_int32);
+    builder.pack_int32 = copyOf(pack_int32);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof RepeatedAndPacked)) return false;
@@ -70,13 +79,6 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
     public Builder() {
       rep_int32 = newMutableList();
       pack_int32 = newMutableList();
-    }
-
-    public Builder(RepeatedAndPacked message) {
-      super(message);
-      if (message == null) return;
-      this.rep_int32 = copyOf(message.rep_int32);
-      this.pack_int32 = copyOf(message.pack_int32);
     }
 
     public Builder rep_int32(List<Integer> rep_int32) {

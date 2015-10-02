@@ -80,6 +80,19 @@ public final class VersionTwo extends Message<VersionTwo> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.i = i;
+    builder.v2_i = v2_i;
+    builder.v2_s = v2_s;
+    builder.v2_f32 = v2_f32;
+    builder.v2_f64 = v2_f64;
+    builder.v2_rs = copyOf(v2_rs);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof VersionTwo)) return false;
@@ -124,17 +137,6 @@ public final class VersionTwo extends Message<VersionTwo> {
 
     public Builder() {
       v2_rs = newMutableList();
-    }
-
-    public Builder(VersionTwo message) {
-      super(message);
-      if (message == null) return;
-      this.i = message.i;
-      this.v2_i = message.v2_i;
-      this.v2_s = message.v2_s;
-      this.v2_f32 = message.v2_f32;
-      this.v2_f64 = message.v2_f64;
-      this.v2_rs = copyOf(message.v2_rs);
     }
 
     public Builder i(Integer i) {

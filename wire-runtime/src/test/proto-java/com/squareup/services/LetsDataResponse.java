@@ -32,6 +32,14 @@ public final class LetsDataResponse extends Message<LetsDataResponse> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.data = data;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof LetsDataResponse)) return false;
@@ -55,12 +63,6 @@ public final class LetsDataResponse extends Message<LetsDataResponse> {
     public ByteString data;
 
     public Builder() {
-    }
-
-    public Builder(LetsDataResponse message) {
-      super(message);
-      if (message == null) return;
-      this.data = message.data;
     }
 
     public Builder data(ByteString data) {

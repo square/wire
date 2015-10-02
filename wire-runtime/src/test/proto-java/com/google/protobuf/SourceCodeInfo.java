@@ -84,6 +84,14 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.location = copyOf(location);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof SourceCodeInfo)) return false;
@@ -108,12 +116,6 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
 
     public Builder() {
       location = newMutableList();
-    }
-
-    public Builder(SourceCodeInfo message) {
-      super(message);
-      if (message == null) return;
-      this.location = copyOf(message.location);
     }
 
     /**
@@ -235,6 +237,15 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     }
 
     @Override
+    public Location.Builder newBuilder() {
+      Location.Builder builder = new Location.Builder();
+      builder.path = copyOf(path);
+      builder.span = copyOf(span);
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof Location)) return false;
@@ -264,13 +275,6 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
       public Builder() {
         path = newMutableList();
         span = newMutableList();
-      }
-
-      public Builder(Location message) {
-        super(message);
-        if (message == null) return;
-        this.path = copyOf(message.path);
-        this.span = copyOf(message.span);
       }
 
       /**

@@ -42,6 +42,15 @@ public final class ForeignMessage extends Message<ForeignMessage> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.i = i;
+    builder.j = j;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof ForeignMessage)) return false;
@@ -69,13 +78,6 @@ public final class ForeignMessage extends Message<ForeignMessage> {
     public Integer j;
 
     public Builder() {
-    }
-
-    public Builder(ForeignMessage message) {
-      super(message);
-      if (message == null) return;
-      this.i = message.i;
-      this.j = message.j;
     }
 
     public Builder i(Integer i) {
