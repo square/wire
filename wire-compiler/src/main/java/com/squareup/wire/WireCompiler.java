@@ -100,18 +100,6 @@ public final class WireCompiler {
             : javaGenerator.generateEnum((EnumType) type);
         writeJavaFile(javaTypeName, typeSpec, type.location());
       }
-
-      if (!protoFile.extendList().isEmpty()) {
-        ClassName javaTypeName = javaGenerator.extensionsClass(protoFile);
-        TypeSpec typeSpec = javaGenerator.generateExtensionsClass(javaTypeName, protoFile);
-        writeJavaFile(javaTypeName, typeSpec, protoFile.location());
-      }
-    }
-
-    if (options.registryClass != null) {
-      ClassName className = ClassName.bestGuess(options.registryClass);
-      TypeSpec typeSpec = javaGenerator.generateRegistry(className);
-      writeJavaFile(className, typeSpec, null);
     }
   }
 

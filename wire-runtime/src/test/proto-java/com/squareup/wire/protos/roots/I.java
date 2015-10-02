@@ -23,13 +23,20 @@ public final class I extends Message<I> {
   )
   public final Integer i;
 
-  public I(Integer i) {
-    this(i, TagMap.EMPTY);
+  @WireField(
+      tag = 1000,
+      adapter = "com.squareup.wire.protos.roots.J#ADAPTER"
+  )
+  public final J j;
+
+  public I(Integer i, J j) {
+    this(i, j, TagMap.EMPTY);
   }
 
-  public I(Integer i, TagMap tagMap) {
+  public I(Integer i, J j, TagMap tagMap) {
     super(tagMap);
     this.i = i;
+    this.j = j;
   }
 
   @Override
@@ -38,7 +45,8 @@ public final class I extends Message<I> {
     if (!(other instanceof I)) return false;
     I o = (I) other;
     return equals(tagMap(), o.tagMap())
-        && equals(i, o.i);
+        && equals(i, o.i)
+        && equals(j, o.j);
   }
 
   @Override
@@ -47,6 +55,7 @@ public final class I extends Message<I> {
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
+      result = result * 37 + (j != null ? j.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -55,6 +64,8 @@ public final class I extends Message<I> {
   public static final class Builder extends com.squareup.wire.Message.Builder<I, Builder> {
     public Integer i;
 
+    public J j;
+
     public Builder() {
     }
 
@@ -62,6 +73,7 @@ public final class I extends Message<I> {
       super(message);
       if (message == null) return;
       this.i = message.i;
+      this.j = message.j;
     }
 
     public Builder i(Integer i) {
@@ -69,9 +81,14 @@ public final class I extends Message<I> {
       return this;
     }
 
+    public Builder j(J j) {
+      this.j = j;
+      return this;
+    }
+
     @Override
     public I build() {
-      return new I(i, buildTagMap());
+      return new I(i, j, buildTagMap());
     }
   }
 }

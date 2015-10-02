@@ -17,7 +17,7 @@ public final class RedactedRequired extends Message<RedactedRequired> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
-      .setExtension(Ext_redacted_test.redacted, true)
+      .redacted(true)
       .build();
 
   public static final String DEFAULT_A = "";

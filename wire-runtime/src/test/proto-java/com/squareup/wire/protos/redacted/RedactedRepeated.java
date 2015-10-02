@@ -18,7 +18,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
-      .setExtension(Ext_redacted_test.redacted, true)
+      .redacted(true)
       .build();
 
   @WireField(

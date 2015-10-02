@@ -407,6 +407,13 @@ public abstract class ProtoAdapter<E> {
       throw new IllegalArgumentException("Unable to pack a length-delimited type.");
     }
     return new ProtoAdapter<List<E>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
+      @Override public void encodeTagged(ProtoWriter writer, int tag, List<E> value)
+          throws IOException {
+        if (!value.isEmpty()) {
+          super.encodeTagged(writer, tag, value);
+        }
+      }
+
       @Override public int encodedSize(List<E> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {

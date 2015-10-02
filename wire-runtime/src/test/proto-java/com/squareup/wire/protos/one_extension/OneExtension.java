@@ -23,13 +23,20 @@ public final class OneExtension extends Message<OneExtension> {
   )
   public final String id;
 
-  public OneExtension(String id) {
-    this(id, TagMap.EMPTY);
+  @WireField(
+      tag = 1000,
+      adapter = "com.squareup.wire.protos.one_extension.Foo#ADAPTER"
+  )
+  public final Foo foo;
+
+  public OneExtension(String id, Foo foo) {
+    this(id, foo, TagMap.EMPTY);
   }
 
-  public OneExtension(String id, TagMap tagMap) {
+  public OneExtension(String id, Foo foo, TagMap tagMap) {
     super(tagMap);
     this.id = id;
+    this.foo = foo;
   }
 
   @Override
@@ -38,7 +45,8 @@ public final class OneExtension extends Message<OneExtension> {
     if (!(other instanceof OneExtension)) return false;
     OneExtension o = (OneExtension) other;
     return equals(tagMap(), o.tagMap())
-        && equals(id, o.id);
+        && equals(id, o.id)
+        && equals(foo, o.foo);
   }
 
   @Override
@@ -47,6 +55,7 @@ public final class OneExtension extends Message<OneExtension> {
     if (result == 0) {
       result = tagMap().hashCode();
       result = result * 37 + (id != null ? id.hashCode() : 0);
+      result = result * 37 + (foo != null ? foo.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -55,6 +64,8 @@ public final class OneExtension extends Message<OneExtension> {
   public static final class Builder extends com.squareup.wire.Message.Builder<OneExtension, Builder> {
     public String id;
 
+    public Foo foo;
+
     public Builder() {
     }
 
@@ -62,6 +73,7 @@ public final class OneExtension extends Message<OneExtension> {
       super(message);
       if (message == null) return;
       this.id = message.id;
+      this.foo = message.foo;
     }
 
     public Builder id(String id) {
@@ -69,9 +81,14 @@ public final class OneExtension extends Message<OneExtension> {
       return this;
     }
 
+    public Builder foo(Foo foo) {
+      this.foo = foo;
+      return this;
+    }
+
     @Override
     public OneExtension build() {
-      return new OneExtension(id, buildTagMap());
+      return new OneExtension(id, foo, buildTagMap());
     }
   }
 }

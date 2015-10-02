@@ -110,10 +110,11 @@ public final class Options {
 
   Map<Field, Object> canonicalizeOption(
       Linker linker, ProtoType extensionType, OptionElement option) {
-    Map<String, Field> extensionsForType = linker.extensions(extensionType);
-    if (extensionsForType == null) {
+    Type type = linker.get(extensionType);
+    if (!(type instanceof MessageType)) {
       return null; // No known extensions for the given extension type.
     }
+    Map<String, Field> extensionsForType = ((MessageType) type).extensionFieldsMap();
 
     String[] path = resolveFieldPath(option.name(), extensionsForType.keySet());
     String packageName = linker.packageName();

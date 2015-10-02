@@ -6,7 +6,6 @@ import com.google.protobuf.MessageOptions;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
-import com.squareup.wire.protos.foreign.Ext_foreign;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.lang.Object;
 import java.lang.Override;
@@ -18,7 +17,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
   private static final long serialVersionUID = 0L;
 
   public static final MessageOptions MESSAGE_OPTIONS = new MessageOptions.Builder()
-      .setExtension(Ext_custom_options.my_message_option_one, new FooBar.Builder()
+      .my_message_option_one(new FooBar.Builder()
           .foo(1234)
           .bar("5678")
           .baz(new FooBar.Nested.Builder()
@@ -30,8 +29,8 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
               321.0f))
           .daisy(456.0d)
           .build())
-      .setExtension(Ext_custom_options.my_message_option_two, 91011.0f)
-      .setExtension(Ext_custom_options.my_message_option_three, new FooBar.Builder()
+      .my_message_option_two(91011.0f)
+      .my_message_option_three(new FooBar.Builder()
           .foo(11)
           .bar("22")
           .baz(new FooBar.Nested.Builder()
@@ -48,24 +47,24 @@ public final class MessageWithOptions extends Message<MessageWithOptions> {
                       200.0f))
                   .build()))
           .build())
-      .setExtension(Ext_custom_options.my_message_option_four, FooBar.FooBarBazEnum.FOO)
-      .setExtension(Ext_foreign.foreign_message_option, new ForeignMessage.Builder()
+      .my_message_option_four(FooBar.FooBarBazEnum.FOO)
+      .foreign_message_option(new ForeignMessage.Builder()
           .i(9876)
           .build())
-      .setExtension(Ext_custom_options.my_message_option_five, new FooBar.Builder()
-          .setExtension(Ext_custom_options.ext, FooBar.FooBarBazEnum.BAZ)
-          .setExtension(Ext_custom_options.rep, Arrays.asList(
+      .my_message_option_five(new FooBar.Builder()
+          .ext(FooBar.FooBarBazEnum.BAZ)
+          .rep(Arrays.asList(
               FooBar.FooBarBazEnum.FOO,
               FooBar.FooBarBazEnum.BAZ))
           .build())
-      .setExtension(Ext_custom_options.my_message_option_six, new FooBar.Builder()
-          .setExtension(Ext_custom_options.rep, Arrays.asList(
+      .my_message_option_six(new FooBar.Builder()
+          .rep(Arrays.asList(
               FooBar.FooBarBazEnum.FOO,
               FooBar.FooBarBazEnum.BAR))
           .nested(Arrays.asList(
               new FooBar.Builder()
                   .foo(44)
-                  .setExtension(Ext_custom_options.ext, FooBar.FooBarBazEnum.BAR)
+                  .ext(FooBar.FooBarBazEnum.BAR)
                   .build(),
               new FooBar.Builder()
                   .foo(55)

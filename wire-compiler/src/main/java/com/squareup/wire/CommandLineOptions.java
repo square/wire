@@ -29,7 +29,6 @@ final class CommandLineOptions {
   public static final String JAVA_OUT_FLAG = "--java_out=";
   public static final String FILES_FLAG = "--files=";
   public static final String ROOTS_FLAG = "--roots=";
-  public static final String REGISTRY_CLASS_FLAG = "--registry_class=";
   public static final String NO_OPTIONS_FLAG = "--no_options";
   public static final String ENUM_OPTIONS_FLAG = "--enum_options=";
   public static final String QUIET_FLAG = "--quiet";
@@ -41,7 +40,6 @@ final class CommandLineOptions {
   final String javaOut;
   final List<String> sourceFileNames;
   final List<String> roots;
-  final String registryClass;
   final boolean emitOptions;
   final Set<String> enumOptions;
   final boolean quiet;
@@ -50,14 +48,13 @@ final class CommandLineOptions {
   final boolean emitFull;
 
   CommandLineOptions(String protoPath, String javaOut, List<String> sourceFileNames,
-      List<String> roots, String registryClass, boolean emitOptions, Set<String> enumOptions,
-      boolean quiet, boolean dryRun, boolean emitAndroid, boolean emitFull) {
+      List<String> roots, boolean emitOptions, Set<String> enumOptions, boolean quiet,
+      boolean dryRun, boolean emitAndroid, boolean emitFull) {
     this.emitFull = emitFull;
     this.protoPaths = Arrays.asList(protoPath);
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
     this.roots = roots;
-    this.registryClass = registryClass;
     this.emitOptions = emitOptions;
     this.enumOptions = enumOptions;
     this.quiet = quiet;
@@ -70,12 +67,17 @@ final class CommandLineOptions {
    *
    * <pre>
    * java WireCompiler --proto_path=&lt;path&gt; --java_out=&lt;path&gt;
-   *     [--files=&lt;protos.include&gt;] [--roots=&lt;message_name&gt;[,&lt;message_name&gt;...]]
-   *     [--registry_class=&lt;class_name&gt;] [--no_options]
+   *     [--files=&lt;protos.include&gt;]
+   *     [--roots=&lt;message_name&gt;[,&lt;message_name&gt;...]]
+   *     [--no_options]
    *     [--enum_options=&lt;option_name&gt;[,&lt;option_name&gt;...]]
    *     [--service_factory=&lt;class_name&gt;]
-   *     [--service_factory_opt=&lt;value&gt;] [--service_factory_opt=&lt;value&gt;]...]
-   *     [--quiet] [--dry_run] [--android] [--full]
+   *     [--service_factory_opt=&lt;value&gt;]
+   *     [--service_factory_opt=&lt;value&gt;]...]
+   *     [--quiet]
+   *     [--dry_run]
+   *     [--android]
+   *     [--full]
    *     [file [file...]]
    * </pre>
    *
@@ -141,8 +143,6 @@ final class CommandLineOptions {
         sourceFileNames.addAll(Arrays.asList(fileNames));
       } else if (arg.startsWith(ROOTS_FLAG)) {
         roots.addAll(splitArg(arg, ROOTS_FLAG.length()));
-      } else if (arg.startsWith(REGISTRY_CLASS_FLAG)) {
-        registryClass = arg.substring(REGISTRY_CLASS_FLAG.length());
       } else if (arg.equals(NO_OPTIONS_FLAG)) {
         emitOptions = false;
       } else if (arg.startsWith(ENUM_OPTIONS_FLAG)) {
@@ -164,7 +164,6 @@ final class CommandLineOptions {
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
     this.roots = roots;
-    this.registryClass = registryClass;
     this.emitOptions = emitOptions;
     this.enumOptions = new LinkedHashSet<>(enumOptionsList);
     this.quiet = quiet;

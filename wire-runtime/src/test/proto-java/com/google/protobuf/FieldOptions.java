@@ -7,7 +7,10 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.TagMap;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
+import com.squareup.wire.protos.custom_options.FooBar;
 import java.lang.Boolean;
+import java.lang.Float;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -25,6 +28,14 @@ public final class FieldOptions extends Message<FieldOptions> {
   public static final Boolean DEFAULT_DEPRECATED = false;
 
   public static final String DEFAULT_EXPERIMENTAL_MAP_KEY = "";
+
+  public static final Integer DEFAULT_MY_FIELD_OPTION_ONE = 0;
+
+  public static final Float DEFAULT_MY_FIELD_OPTION_TWO = 0.0f;
+
+  public static final FooBar.FooBarBazEnum DEFAULT_MY_FIELD_OPTION_THREE = FooBar.FooBarBazEnum.FOO;
+
+  public static final Boolean DEFAULT_REDACTED = false;
 
   /**
    * The ctype option instructs the C++ code generator to use a different
@@ -92,17 +103,55 @@ public final class FieldOptions extends Message<FieldOptions> {
   )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option) {
-    this(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, TagMap.EMPTY);
+  @WireField(
+      tag = 60001,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer my_field_option_one;
+
+  @WireField(
+      tag = 60002,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
+  public final Float my_field_option_two;
+
+  @WireField(
+      tag = 60003,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
+  )
+  public final FooBar.FooBarBazEnum my_field_option_three;
+
+  @WireField(
+      tag = 60004,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
+  public final FooBar my_field_option_four;
+
+  /**
+   * Fields marked with redacted are not to be logged, generally for PCI or PII.
+   */
+  @WireField(
+      tag = 22200,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean redacted;
+
+  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, Boolean redacted) {
+    this(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, redacted, TagMap.EMPTY);
   }
 
-  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, TagMap tagMap) {
+  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, Boolean redacted, TagMap tagMap) {
     super(tagMap);
     this.ctype = ctype;
     this.packed = packed;
     this.deprecated = deprecated;
     this.experimental_map_key = experimental_map_key;
     this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this.my_field_option_one = my_field_option_one;
+    this.my_field_option_two = my_field_option_two;
+    this.my_field_option_three = my_field_option_three;
+    this.my_field_option_four = my_field_option_four;
+    this.redacted = redacted;
   }
 
   @Override
@@ -115,7 +164,12 @@ public final class FieldOptions extends Message<FieldOptions> {
         && equals(packed, o.packed)
         && equals(deprecated, o.deprecated)
         && equals(experimental_map_key, o.experimental_map_key)
-        && equals(uninterpreted_option, o.uninterpreted_option);
+        && equals(uninterpreted_option, o.uninterpreted_option)
+        && equals(my_field_option_one, o.my_field_option_one)
+        && equals(my_field_option_two, o.my_field_option_two)
+        && equals(my_field_option_three, o.my_field_option_three)
+        && equals(my_field_option_four, o.my_field_option_four)
+        && equals(redacted, o.redacted);
   }
 
   @Override
@@ -128,6 +182,11 @@ public final class FieldOptions extends Message<FieldOptions> {
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
       result = result * 37 + (experimental_map_key != null ? experimental_map_key.hashCode() : 0);
       result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + (my_field_option_one != null ? my_field_option_one.hashCode() : 0);
+      result = result * 37 + (my_field_option_two != null ? my_field_option_two.hashCode() : 0);
+      result = result * 37 + (my_field_option_three != null ? my_field_option_three.hashCode() : 0);
+      result = result * 37 + (my_field_option_four != null ? my_field_option_four.hashCode() : 0);
+      result = result * 37 + (redacted != null ? redacted.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -144,6 +203,16 @@ public final class FieldOptions extends Message<FieldOptions> {
 
     public List<UninterpretedOption> uninterpreted_option;
 
+    public Integer my_field_option_one;
+
+    public Float my_field_option_two;
+
+    public FooBar.FooBarBazEnum my_field_option_three;
+
+    public FooBar my_field_option_four;
+
+    public Boolean redacted;
+
     public Builder() {
       uninterpreted_option = newMutableList();
     }
@@ -156,6 +225,11 @@ public final class FieldOptions extends Message<FieldOptions> {
       this.deprecated = message.deprecated;
       this.experimental_map_key = message.experimental_map_key;
       this.uninterpreted_option = copyOf(message.uninterpreted_option);
+      this.my_field_option_one = message.my_field_option_one;
+      this.my_field_option_two = message.my_field_option_two;
+      this.my_field_option_three = message.my_field_option_three;
+      this.my_field_option_four = message.my_field_option_four;
+      this.redacted = message.redacted;
     }
 
     /**
@@ -219,9 +293,37 @@ public final class FieldOptions extends Message<FieldOptions> {
       return this;
     }
 
+    public Builder my_field_option_one(Integer my_field_option_one) {
+      this.my_field_option_one = my_field_option_one;
+      return this;
+    }
+
+    public Builder my_field_option_two(Float my_field_option_two) {
+      this.my_field_option_two = my_field_option_two;
+      return this;
+    }
+
+    public Builder my_field_option_three(FooBar.FooBarBazEnum my_field_option_three) {
+      this.my_field_option_three = my_field_option_three;
+      return this;
+    }
+
+    public Builder my_field_option_four(FooBar my_field_option_four) {
+      this.my_field_option_four = my_field_option_four;
+      return this;
+    }
+
+    /**
+     * Fields marked with redacted are not to be logged, generally for PCI or PII.
+     */
+    public Builder redacted(Boolean redacted) {
+      this.redacted = redacted;
+      return this;
+    }
+
     @Override
     public FieldOptions build() {
-      return new FieldOptions(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, buildTagMap());
+      return new FieldOptions(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, redacted, buildTagMap());
     }
   }
 

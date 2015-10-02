@@ -55,9 +55,6 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.serviceFactory")
   private String serviceFactory;
 
-  @Parameter(property = "wire.registryClass")
-  private String registryClass;
-
   /** List of proto files to compile relative to ${protoPaths}. */
   @Parameter(property = "wire.protoFiles", required = true)
   private String[] protoFiles;
@@ -110,22 +107,6 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           writeJavaFile(javaTypeName, typeSpec, type.location());
           getLog().info(String.format("Generated %s in %s", javaTypeName, stopwatch));
         }
-
-        if (!protoFile.extendList().isEmpty()) {
-          Stopwatch stopwatch = Stopwatch.createStarted();
-          ClassName javaTypeName = javaGenerator.extensionsClass(protoFile);
-          TypeSpec typeSpec = javaGenerator.generateExtensionsClass(javaTypeName, protoFile);
-          writeJavaFile(javaTypeName, typeSpec, protoFile.location());
-          getLog().info(String.format("Generated extensions %s in %s", javaTypeName, stopwatch));
-        }
-      }
-
-      if (registryClass != null) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        ClassName className = ClassName.bestGuess(registryClass);
-        TypeSpec typeSpec = javaGenerator.generateRegistry(className);
-        writeJavaFile(className, typeSpec, null);
-        getLog().info(String.format("Generated registry %s in %s", className, stopwatch));
       }
     } catch (Exception e) {
       throw new MojoExecutionException("Wire Plugin: Failure compiling proto sources.", e);

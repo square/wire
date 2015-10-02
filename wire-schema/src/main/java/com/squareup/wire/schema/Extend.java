@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.ExtendElement;
 import com.squareup.wire.schema.internal.parser.FieldElement;
 
-public final class Extend {
+final class Extend {
   private final ExtendElement element;
   private final ImmutableList<Field> fields;
   private ProtoType protoType;
@@ -29,7 +29,7 @@ public final class Extend {
 
     ImmutableList.Builder<Field> fields = ImmutableList.builder();
     for (FieldElement field : element.fields()) {
-      fields.add(new Field(packageName, field));
+      fields.add(new Field(packageName, field, true));
     }
     this.fields = fields.build();
   }
@@ -52,17 +52,15 @@ public final class Extend {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    protoType = linker.resolveNamedType(element.name());
-    for (Field field : fields) {
-      field.link(linker);
+    protoType = linker.resolveMessageType(element.name());
+    Type type = linker.get(protoType);
+    if (type != null) {
+      ((MessageType) type).addExtensionFields(fields);
     }
   }
 
   void validate(Linker linker) {
     linker = linker.withContext(this);
-    for (Field field : fields) {
-      field.validate(linker, true);
-    }
     linker.validateImport(location(), type());
   }
 }

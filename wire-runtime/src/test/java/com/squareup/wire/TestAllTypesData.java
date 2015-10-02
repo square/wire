@@ -38,9 +38,14 @@ class TestAllTypesData {
       "pack_uint64=[117, 117], pack_sint64=[118, 118], pack_fixed64=[119, 119], " +
       "pack_sfixed64=[120, 120], pack_bool=[true, true], pack_float=[122.0, 122.0], " +
       "pack_double=[123.0, 123.0], pack_nested_enum=[A, A], " +
-      "squareup.protos.alltypes.ext_opt_bool=true, " +
-      "squareup.protos.alltypes.ext_rep_bool=[true, true], " +
-      "squareup.protos.alltypes.ext_pack_bool=[true, true]}";
+      "ext_opt_bool=true, ext_rep_int32=[], ext_rep_uint32=[], ext_rep_sint32=[], ext_rep_fixed32=[], " +
+      "ext_rep_sfixed32=[], ext_rep_int64=[], ext_rep_uint64=[], ext_rep_sint64=[], ext_rep_fixed64=[], " +
+      "ext_rep_sfixed64=[], ext_rep_bool=[true, true], ext_rep_float=[], ext_rep_double=[], " +
+      "ext_rep_string=[], ext_rep_bytes=[], ext_rep_nested_enum=[], ext_rep_nested_message=[], " +
+      "ext_pack_int32=[], ext_pack_uint32=[], ext_pack_sint32=[], ext_pack_fixed32=[], " +
+      "ext_pack_sfixed32=[], ext_pack_int64=[], ext_pack_uint64=[], ext_pack_sint64=[], " +
+      "ext_pack_fixed64=[], ext_pack_sfixed64=[], ext_pack_bool=[true, true], ext_pack_float=[]," +
+      " ext_pack_double=[], ext_pack_nested_enum=[]}";
 
     public static final ByteString expectedOutput = ByteString.decodeHex(""
       // optional

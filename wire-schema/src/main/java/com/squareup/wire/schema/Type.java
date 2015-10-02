@@ -23,6 +23,8 @@ import com.squareup.wire.schema.internal.parser.FieldElement;
 import com.squareup.wire.schema.internal.parser.MessageElement;
 import com.squareup.wire.schema.internal.parser.OneOfElement;
 import com.squareup.wire.schema.internal.parser.TypeElement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NavigableSet;
 
 public abstract class Type {
@@ -52,10 +54,13 @@ public abstract class Type {
     } else if (type instanceof MessageElement) {
       MessageElement messageElement = (MessageElement) type;
 
-      ImmutableList.Builder<Field> fields = ImmutableList.builder();
+      ImmutableList.Builder<Field> declaredFields = ImmutableList.builder();
       for (FieldElement field : messageElement.fields()) {
-        fields.add(new Field(packageName, field));
+        declaredFields.add(new Field(packageName, field, false));
       }
+
+      // Extension fields be populated during linking.
+      List<Field> extensionFields = new ArrayList<>();
 
       ImmutableList.Builder<OneOf> oneOfs = ImmutableList.builder();
       for (OneOfElement oneOf : messageElement.oneOfs()) {
@@ -74,8 +79,8 @@ public abstract class Type {
 
       Options options = new Options(Options.MESSAGE_OPTIONS, messageElement.options());
 
-      return new MessageType(protoType, messageElement, fields.build(), oneOfs.build(),
-          nestedTypes.build(), extensionsList.build(), options);
+      return new MessageType(protoType, messageElement, declaredFields.build(), extensionFields,
+          oneOfs.build(), nestedTypes.build(), extensionsList.build(), options);
 
     } else {
       throw new IllegalArgumentException("unexpected type: " + type.getClass());

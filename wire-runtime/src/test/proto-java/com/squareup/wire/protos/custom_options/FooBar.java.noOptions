@@ -29,6 +29,8 @@ public final class FooBar extends Message<FooBar> {
 
   public static final Double DEFAULT_DAISY = 0.0d;
 
+  public static final FooBarBazEnum DEFAULT_EXT = FooBarBazEnum.FOO;
+
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
@@ -73,11 +75,24 @@ public final class FooBar extends Message<FooBar> {
   )
   public final List<FooBar> nested;
 
-  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested) {
-    this(foo, bar, baz, qux, fred, daisy, nested, TagMap.EMPTY);
+  @WireField(
+      tag = 101,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
+  )
+  public final FooBarBazEnum ext;
+
+  @WireField(
+      tag = 102,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
+  public final List<FooBarBazEnum> rep;
+
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep) {
+    this(foo, bar, baz, qux, fred, daisy, nested, ext, rep, TagMap.EMPTY);
   }
 
-  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, TagMap tagMap) {
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, TagMap tagMap) {
     super(tagMap);
     this.foo = foo;
     this.bar = bar;
@@ -86,6 +101,8 @@ public final class FooBar extends Message<FooBar> {
     this.fred = immutableCopyOf(fred);
     this.daisy = daisy;
     this.nested = immutableCopyOf(nested);
+    this.ext = ext;
+    this.rep = immutableCopyOf(rep);
   }
 
   @Override
@@ -100,7 +117,9 @@ public final class FooBar extends Message<FooBar> {
         && equals(qux, o.qux)
         && equals(fred, o.fred)
         && equals(daisy, o.daisy)
-        && equals(nested, o.nested);
+        && equals(nested, o.nested)
+        && equals(ext, o.ext)
+        && equals(rep, o.rep);
   }
 
   @Override
@@ -115,6 +134,8 @@ public final class FooBar extends Message<FooBar> {
       result = result * 37 + (fred != null ? fred.hashCode() : 1);
       result = result * 37 + (daisy != null ? daisy.hashCode() : 0);
       result = result * 37 + (nested != null ? nested.hashCode() : 1);
+      result = result * 37 + (ext != null ? ext.hashCode() : 0);
+      result = result * 37 + (rep != null ? rep.hashCode() : 1);
       super.hashCode = result;
     }
     return result;
@@ -135,9 +156,14 @@ public final class FooBar extends Message<FooBar> {
 
     public List<FooBar> nested;
 
+    public FooBarBazEnum ext;
+
+    public List<FooBarBazEnum> rep;
+
     public Builder() {
       fred = newMutableList();
       nested = newMutableList();
+      rep = newMutableList();
     }
 
     public Builder(FooBar message) {
@@ -150,6 +176,8 @@ public final class FooBar extends Message<FooBar> {
       this.fred = copyOf(message.fred);
       this.daisy = message.daisy;
       this.nested = copyOf(message.nested);
+      this.ext = message.ext;
+      this.rep = copyOf(message.rep);
     }
 
     public Builder foo(Integer foo) {
@@ -189,9 +217,20 @@ public final class FooBar extends Message<FooBar> {
       return this;
     }
 
+    public Builder ext(FooBarBazEnum ext) {
+      this.ext = ext;
+      return this;
+    }
+
+    public Builder rep(List<FooBarBazEnum> rep) {
+      checkElementsNotNull(rep);
+      this.rep = rep;
+      return this;
+    }
+
     @Override
     public FooBar build() {
-      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, buildTagMap());
+      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, buildTagMap());
     }
   }
 

@@ -28,7 +28,7 @@ public final class OneOf {
 
     ImmutableList.Builder<Field> fields = ImmutableList.builder();
     for (FieldElement field : element.fields()) {
-      fields.add(new Field(packageName, field));
+      fields.add(new Field(packageName, field, false));
     }
     this.fields = fields.build();
   }

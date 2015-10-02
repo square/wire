@@ -88,13 +88,6 @@ public class CommandLineOptionsTest {
     assertThat(options.roots).isEqualTo(expected);
   }
 
-  @Test public void registryClass() throws Exception {
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.registryClass).isNull();
-    options = new CommandLineOptions("--registry_class=com.example.RegistryClass");
-    assertThat(options.registryClass).isEqualTo("com.example.RegistryClass");
-  }
-
   @Test public void  emitOptions() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
     assertThat(options.emitOptions).isTrue();

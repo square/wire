@@ -17,11 +17,11 @@ public final class Redacted extends Message<Redacted> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
-      .setExtension(Ext_redacted_test.redacted, true)
+      .redacted(true)
       .build();
 
   public static final FieldOptions FIELD_OPTIONS_B = new FieldOptions.Builder()
-      .setExtension(Ext_redacted_test.redacted, false)
+      .redacted(false)
       .build();
 
   public static final String DEFAULT_A = "";
@@ -49,15 +49,22 @@ public final class Redacted extends Message<Redacted> {
   )
   public final String c;
 
-  public Redacted(String a, String b, String c) {
-    this(a, b, c, TagMap.EMPTY);
+  @WireField(
+      tag = 10,
+      adapter = "com.squareup.wire.protos.redacted.RedactedExtension#ADAPTER"
+  )
+  public final RedactedExtension extension;
+
+  public Redacted(String a, String b, String c, RedactedExtension extension) {
+    this(a, b, c, extension, TagMap.EMPTY);
   }
 
-  public Redacted(String a, String b, String c, TagMap tagMap) {
+  public Redacted(String a, String b, String c, RedactedExtension extension, TagMap tagMap) {
     super(tagMap);
     this.a = a;
     this.b = b;
     this.c = c;
+    this.extension = extension;
   }
 
   @Override
@@ -68,7 +75,8 @@ public final class Redacted extends Message<Redacted> {
     return equals(tagMap(), o.tagMap())
         && equals(a, o.a)
         && equals(b, o.b)
-        && equals(c, o.c);
+        && equals(c, o.c)
+        && equals(extension, o.extension);
   }
 
   @Override
@@ -79,6 +87,7 @@ public final class Redacted extends Message<Redacted> {
       result = result * 37 + (a != null ? a.hashCode() : 0);
       result = result * 37 + (b != null ? b.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);
+      result = result * 37 + (extension != null ? extension.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -91,6 +100,8 @@ public final class Redacted extends Message<Redacted> {
 
     public String c;
 
+    public RedactedExtension extension;
+
     public Builder() {
     }
 
@@ -100,6 +111,7 @@ public final class Redacted extends Message<Redacted> {
       this.a = message.a;
       this.b = message.b;
       this.c = message.c;
+      this.extension = message.extension;
     }
 
     public Builder a(String a) {
@@ -117,9 +129,14 @@ public final class Redacted extends Message<Redacted> {
       return this;
     }
 
+    public Builder extension(RedactedExtension extension) {
+      this.extension = extension;
+      return this;
+    }
+
     @Override
     public Redacted build() {
-      return new Redacted(a, b, c, buildTagMap());
+      return new Redacted(a, b, c, extension, buildTagMap());
     }
   }
 }

@@ -42,7 +42,7 @@ public class WireCompilerErrorTest {
    */
   private void compile(String source) throws Exception {
     CommandLineOptions options = new CommandLineOptions("/source",  "/target",
-        singletonList("test.proto"), new ArrayList<String>(), null, true,
+        singletonList("test.proto"), new ArrayList<String>(), true,
         Collections.<String>emptySet(), false, false, false, false);
 
     Path test = fileSystem.getPath("/source/test.proto");
