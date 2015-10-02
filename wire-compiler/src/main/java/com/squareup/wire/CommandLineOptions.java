@@ -155,6 +155,8 @@ final class CommandLineOptions {
         emitAndroid = true;
       } else if (arg.equals(FULL)) {
         emitFull = true;
+      } else if (arg.startsWith("--")) {
+        throw new IllegalArgumentException("Unknown argument '" + arg + "'.");
       } else {
         sourceFileNames.add(arg);
       }

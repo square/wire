@@ -12,8 +12,18 @@ import java.util.Set;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class CommandLineOptionsTest {
+
+  @Test public void unknownArgumentFails() throws WireException {
+    try {
+      new CommandLineOptions("--do-work");
+      fail();
+    } catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("Unknown argument '--do-work'.");
+    }
+  }
 
   @Test public void protoPaths() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
