@@ -32,6 +32,14 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.data = data;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof HeresAllTheDataResponse)) return false;
@@ -55,12 +63,6 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
     public ByteString data;
 
     public Builder() {
-    }
-
-    public Builder(HeresAllTheDataResponse message) {
-      super(message);
-      if (message == null) return;
-      this.data = message.data;
     }
 
     public Builder data(ByteString data) {

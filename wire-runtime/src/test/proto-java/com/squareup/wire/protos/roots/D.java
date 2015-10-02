@@ -33,6 +33,14 @@ public final class D extends Message<D> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.i = i;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof D)) return false;
@@ -56,12 +64,6 @@ public final class D extends Message<D> {
     public Integer i;
 
     public Builder() {
-    }
-
-    public Builder(D message) {
-      super(message);
-      if (message == null) return;
-      this.i = message.i;
     }
 
     public Builder i(Integer i) {

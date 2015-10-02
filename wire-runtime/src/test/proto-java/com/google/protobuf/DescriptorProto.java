@@ -97,6 +97,21 @@ public final class DescriptorProto extends Message<DescriptorProto> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.name = name;
+    builder.doc = doc;
+    builder.field = copyOf(field);
+    builder.extension = copyOf(extension);
+    builder.nested_type = copyOf(nested_type);
+    builder.enum_type = copyOf(enum_type);
+    builder.extension_range = copyOf(extension_range);
+    builder.options = options;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof DescriptorProto)) return false;
@@ -153,19 +168,6 @@ public final class DescriptorProto extends Message<DescriptorProto> {
       nested_type = newMutableList();
       enum_type = newMutableList();
       extension_range = newMutableList();
-    }
-
-    public Builder(DescriptorProto message) {
-      super(message);
-      if (message == null) return;
-      this.name = message.name;
-      this.doc = message.doc;
-      this.field = copyOf(message.field);
-      this.extension = copyOf(message.extension);
-      this.nested_type = copyOf(message.nested_type);
-      this.enum_type = copyOf(message.enum_type);
-      this.extension_range = copyOf(message.extension_range);
-      this.options = message.options;
     }
 
     public Builder name(String name) {
@@ -254,6 +256,15 @@ public final class DescriptorProto extends Message<DescriptorProto> {
     }
 
     @Override
+    public ExtensionRange.Builder newBuilder() {
+      ExtensionRange.Builder builder = new ExtensionRange.Builder();
+      builder.start = start;
+      builder.end = end;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof ExtensionRange)) return false;
@@ -281,13 +292,6 @@ public final class DescriptorProto extends Message<DescriptorProto> {
       public Integer end;
 
       public Builder() {
-      }
-
-      public Builder(ExtensionRange message) {
-        super(message);
-        if (message == null) return;
-        this.start = message.start;
-        this.end = message.end;
       }
 
       public Builder start(Integer start) {

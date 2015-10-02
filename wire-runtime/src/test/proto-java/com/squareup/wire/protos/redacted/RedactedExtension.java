@@ -48,6 +48,15 @@ public final class RedactedExtension extends Message<RedactedExtension> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.d = d;
+    builder.e = e;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof RedactedExtension)) return false;
@@ -75,13 +84,6 @@ public final class RedactedExtension extends Message<RedactedExtension> {
     public String e;
 
     public Builder() {
-    }
-
-    public Builder(RedactedExtension message) {
-      super(message);
-      if (message == null) return;
-      this.d = message.d;
-      this.e = message.e;
     }
 
     public Builder d(String d) {

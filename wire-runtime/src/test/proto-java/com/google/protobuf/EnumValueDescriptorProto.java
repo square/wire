@@ -65,6 +65,17 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.name = name;
+    builder.doc = doc;
+    builder.number = number;
+    builder.options = options;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof EnumValueDescriptorProto)) return false;
@@ -100,15 +111,6 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
     public EnumValueOptions options;
 
     public Builder() {
-    }
-
-    public Builder(EnumValueDescriptorProto message) {
-      super(message);
-      if (message == null) return;
-      this.name = message.name;
-      this.doc = message.doc;
-      this.number = message.number;
-      this.options = message.options;
     }
 
     public Builder name(String name) {

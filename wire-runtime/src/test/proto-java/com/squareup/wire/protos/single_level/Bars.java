@@ -32,6 +32,14 @@ public final class Bars extends Message<Bars> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.bars = copyOf(bars);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof Bars)) return false;
@@ -56,12 +64,6 @@ public final class Bars extends Message<Bars> {
 
     public Builder() {
       bars = newMutableList();
-    }
-
-    public Builder(Bars message) {
-      super(message);
-      if (message == null) return;
-      this.bars = copyOf(message.bars);
     }
 
     public Builder bars(List<Bar> bars) {

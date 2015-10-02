@@ -77,6 +77,19 @@ public final class ExternalMessage extends Message<ExternalMessage> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.f = f;
+    builder.fooext = copyOf(fooext);
+    builder.barext = barext;
+    builder.bazext = bazext;
+    builder.nested_message_ext = nested_message_ext;
+    builder.nested_enum_ext = nested_enum_ext;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof ExternalMessage)) return false;
@@ -121,17 +134,6 @@ public final class ExternalMessage extends Message<ExternalMessage> {
 
     public Builder() {
       fooext = newMutableList();
-    }
-
-    public Builder(ExternalMessage message) {
-      super(message);
-      if (message == null) return;
-      this.f = message.f;
-      this.fooext = copyOf(message.fooext);
-      this.barext = message.barext;
-      this.bazext = message.bazext;
-      this.nested_message_ext = message.nested_message_ext;
-      this.nested_enum_ext = message.nested_enum_ext;
     }
 
     public Builder f(Float f) {

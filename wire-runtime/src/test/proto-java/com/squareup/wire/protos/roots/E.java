@@ -40,6 +40,15 @@ public final class E extends Message<E> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.f = f;
+    builder.g = g;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof E)) return false;
@@ -67,13 +76,6 @@ public final class E extends Message<E> {
     public G g;
 
     public Builder() {
-    }
-
-    public Builder(E message) {
-      super(message);
-      if (message == null) return;
-      this.f = message.f;
-      this.g = message.g;
     }
 
     public Builder f(F f) {
@@ -115,6 +117,14 @@ public final class E extends Message<E> {
     }
 
     @Override
+    public F.Builder newBuilder() {
+      F.Builder builder = new F.Builder();
+      builder.i = i;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof F)) return false;
@@ -138,12 +148,6 @@ public final class E extends Message<E> {
       public Integer i;
 
       public Builder() {
-      }
-
-      public Builder(F message) {
-        super(message);
-        if (message == null) return;
-        this.i = message.i;
       }
 
       public Builder i(Integer i) {

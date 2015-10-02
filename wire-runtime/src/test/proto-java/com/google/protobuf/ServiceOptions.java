@@ -39,6 +39,14 @@ public final class ServiceOptions extends Message<ServiceOptions> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof ServiceOptions)) return false;
@@ -63,12 +71,6 @@ public final class ServiceOptions extends Message<ServiceOptions> {
 
     public Builder() {
       uninterpreted_option = newMutableList();
-    }
-
-    public Builder(ServiceOptions message) {
-      super(message);
-      if (message == null) return;
-      this.uninterpreted_option = copyOf(message.uninterpreted_option);
     }
 
     /**

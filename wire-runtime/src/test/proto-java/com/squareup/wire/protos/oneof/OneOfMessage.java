@@ -49,6 +49,15 @@ public final class OneOfMessage extends Message<OneOfMessage> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.foo = foo;
+    builder.bar = bar;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof OneOfMessage)) return false;
@@ -76,13 +85,6 @@ public final class OneOfMessage extends Message<OneOfMessage> {
     public String bar;
 
     public Builder() {
-    }
-
-    public Builder(OneOfMessage message) {
-      super(message);
-      if (message == null) return;
-      this.foo = message.foo;
-      this.bar = message.bar;
     }
 
     /**

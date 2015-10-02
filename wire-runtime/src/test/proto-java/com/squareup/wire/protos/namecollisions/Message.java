@@ -113,6 +113,23 @@ public final class Message extends com.squareup.wire.Message<Message> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.unknownFields = unknownFields;
+    builder.other = other;
+    builder.o = o;
+    builder.result = result;
+    builder.hashCode = hashCode;
+    builder.serialVersionUID_ = serialVersionUID_;
+    builder.ADAPTER_ = ADAPTER_;
+    builder.MESSAGE_OPTIONS_ = MESSAGE_OPTIONS_;
+    builder.this_ = this_;
+    builder.message = message;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other_) {
     if (other_ == this) return true;
     if (!(other_ instanceof Message)) return false;
@@ -172,21 +189,6 @@ public final class Message extends com.squareup.wire.Message<Message> {
     public String message;
 
     public Builder() {
-    }
-
-    public Builder(Message message_) {
-      super(message_);
-      if (message_ == null) return;
-      this.unknownFields = message_.unknownFields;
-      this.other = message_.other;
-      this.o = message_.o;
-      this.result = message_.result;
-      this.hashCode = message_.hashCode;
-      this.serialVersionUID_ = message_.serialVersionUID_;
-      this.ADAPTER_ = message_.ADAPTER_;
-      this.MESSAGE_OPTIONS_ = message_.MESSAGE_OPTIONS_;
-      this.this_ = message_.this_;
-      this.message = message_.message;
     }
 
     public Builder unknownFields(String unknownFields) {

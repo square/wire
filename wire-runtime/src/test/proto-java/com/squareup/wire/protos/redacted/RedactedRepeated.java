@@ -50,6 +50,15 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.a = copyOf(a);
+    builder.b = copyOf(b);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof RedactedRepeated)) return false;
@@ -79,13 +88,6 @@ public final class RedactedRepeated extends Message<RedactedRepeated> {
     public Builder() {
       a = newMutableList();
       b = newMutableList();
-    }
-
-    public Builder(RedactedRepeated message) {
-      super(message);
-      if (message == null) return;
-      this.a = copyOf(message.a);
-      this.b = copyOf(message.b);
     }
 
     public Builder a(List<String> a) {

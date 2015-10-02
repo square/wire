@@ -22,6 +22,13 @@ public final class NoFields extends Message<NoFields> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     return other instanceof NoFields;
   }
@@ -33,10 +40,6 @@ public final class NoFields extends Message<NoFields> {
 
   public static final class Builder extends com.squareup.wire.Message.Builder<NoFields, Builder> {
     public Builder() {
-    }
-
-    public Builder(NoFields message) {
-      super(message);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void message() {
     Redacted message = new Redacted.Builder().a("a").b("b").c("c").build();
-    Redacted expected = new Redacted.Builder(message).a(null).build();
+    Redacted expected = message.newBuilder().a(null).build();
     assertThat(Redacted.ADAPTER.redact(message)).isEqualTo(expected);
   }
 
@@ -59,8 +59,8 @@ public class RuntimeMessageAdapterRedactTest {
         .b(new Redacted.Builder().a("a").b("b").c("c").build())
         .c(new NotRedacted.Builder().a("a").b("b").build())
         .build();
-    RedactedChild expected = new RedactedChild.Builder(message)
-        .b(new Redacted.Builder(message.b).a(null).build())
+    RedactedChild expected = message.newBuilder()
+        .b(message.b.newBuilder().a(null).build())
         .build();
     assertThat(RedactedChild.ADAPTER.redact(message)).isEqualTo(expected);
   }

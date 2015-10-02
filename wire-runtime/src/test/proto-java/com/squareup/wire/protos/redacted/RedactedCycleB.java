@@ -30,6 +30,14 @@ public final class RedactedCycleB extends Message<RedactedCycleB> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.a = a;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof RedactedCycleB)) return false;
@@ -53,12 +61,6 @@ public final class RedactedCycleB extends Message<RedactedCycleB> {
     public RedactedCycleA a;
 
     public Builder() {
-    }
-
-    public Builder(RedactedCycleB message) {
-      super(message);
-      if (message == null) return;
-      this.a = message.a;
     }
 
     public Builder a(RedactedCycleA a) {

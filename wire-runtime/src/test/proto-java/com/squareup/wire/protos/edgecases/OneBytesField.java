@@ -32,6 +32,14 @@ public final class OneBytesField extends Message<OneBytesField> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.opt_bytes = opt_bytes;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof OneBytesField)) return false;
@@ -55,12 +63,6 @@ public final class OneBytesField extends Message<OneBytesField> {
     public ByteString opt_bytes;
 
     public Builder() {
-    }
-
-    public Builder(OneBytesField message) {
-      super(message);
-      if (message == null) return;
-      this.opt_bytes = message.opt_bytes;
     }
 
     public Builder opt_bytes(ByteString opt_bytes) {

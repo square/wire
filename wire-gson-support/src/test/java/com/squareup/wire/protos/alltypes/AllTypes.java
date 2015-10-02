@@ -1142,6 +1142,142 @@ public final class AllTypes extends Message<AllTypes> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.opt_int32 = opt_int32;
+    builder.opt_uint32 = opt_uint32;
+    builder.opt_sint32 = opt_sint32;
+    builder.opt_fixed32 = opt_fixed32;
+    builder.opt_sfixed32 = opt_sfixed32;
+    builder.opt_int64 = opt_int64;
+    builder.opt_uint64 = opt_uint64;
+    builder.opt_sint64 = opt_sint64;
+    builder.opt_fixed64 = opt_fixed64;
+    builder.opt_sfixed64 = opt_sfixed64;
+    builder.opt_bool = opt_bool;
+    builder.opt_float = opt_float;
+    builder.opt_double = opt_double;
+    builder.opt_string = opt_string;
+    builder.opt_bytes = opt_bytes;
+    builder.opt_nested_enum = opt_nested_enum;
+    builder.opt_nested_message = opt_nested_message;
+    builder.req_int32 = req_int32;
+    builder.req_uint32 = req_uint32;
+    builder.req_sint32 = req_sint32;
+    builder.req_fixed32 = req_fixed32;
+    builder.req_sfixed32 = req_sfixed32;
+    builder.req_int64 = req_int64;
+    builder.req_uint64 = req_uint64;
+    builder.req_sint64 = req_sint64;
+    builder.req_fixed64 = req_fixed64;
+    builder.req_sfixed64 = req_sfixed64;
+    builder.req_bool = req_bool;
+    builder.req_float = req_float;
+    builder.req_double = req_double;
+    builder.req_string = req_string;
+    builder.req_bytes = req_bytes;
+    builder.req_nested_enum = req_nested_enum;
+    builder.req_nested_message = req_nested_message;
+    builder.rep_int32 = copyOf(rep_int32);
+    builder.rep_uint32 = copyOf(rep_uint32);
+    builder.rep_sint32 = copyOf(rep_sint32);
+    builder.rep_fixed32 = copyOf(rep_fixed32);
+    builder.rep_sfixed32 = copyOf(rep_sfixed32);
+    builder.rep_int64 = copyOf(rep_int64);
+    builder.rep_uint64 = copyOf(rep_uint64);
+    builder.rep_sint64 = copyOf(rep_sint64);
+    builder.rep_fixed64 = copyOf(rep_fixed64);
+    builder.rep_sfixed64 = copyOf(rep_sfixed64);
+    builder.rep_bool = copyOf(rep_bool);
+    builder.rep_float = copyOf(rep_float);
+    builder.rep_double = copyOf(rep_double);
+    builder.rep_string = copyOf(rep_string);
+    builder.rep_bytes = copyOf(rep_bytes);
+    builder.rep_nested_enum = copyOf(rep_nested_enum);
+    builder.rep_nested_message = copyOf(rep_nested_message);
+    builder.pack_int32 = copyOf(pack_int32);
+    builder.pack_uint32 = copyOf(pack_uint32);
+    builder.pack_sint32 = copyOf(pack_sint32);
+    builder.pack_fixed32 = copyOf(pack_fixed32);
+    builder.pack_sfixed32 = copyOf(pack_sfixed32);
+    builder.pack_int64 = copyOf(pack_int64);
+    builder.pack_uint64 = copyOf(pack_uint64);
+    builder.pack_sint64 = copyOf(pack_sint64);
+    builder.pack_fixed64 = copyOf(pack_fixed64);
+    builder.pack_sfixed64 = copyOf(pack_sfixed64);
+    builder.pack_bool = copyOf(pack_bool);
+    builder.pack_float = copyOf(pack_float);
+    builder.pack_double = copyOf(pack_double);
+    builder.pack_nested_enum = copyOf(pack_nested_enum);
+    builder.default_int32 = default_int32;
+    builder.default_uint32 = default_uint32;
+    builder.default_sint32 = default_sint32;
+    builder.default_fixed32 = default_fixed32;
+    builder.default_sfixed32 = default_sfixed32;
+    builder.default_int64 = default_int64;
+    builder.default_uint64 = default_uint64;
+    builder.default_sint64 = default_sint64;
+    builder.default_fixed64 = default_fixed64;
+    builder.default_sfixed64 = default_sfixed64;
+    builder.default_bool = default_bool;
+    builder.default_float = default_float;
+    builder.default_double = default_double;
+    builder.default_string = default_string;
+    builder.default_bytes = default_bytes;
+    builder.default_nested_enum = default_nested_enum;
+    builder.ext_opt_int32 = ext_opt_int32;
+    builder.ext_opt_uint32 = ext_opt_uint32;
+    builder.ext_opt_sint32 = ext_opt_sint32;
+    builder.ext_opt_fixed32 = ext_opt_fixed32;
+    builder.ext_opt_sfixed32 = ext_opt_sfixed32;
+    builder.ext_opt_int64 = ext_opt_int64;
+    builder.ext_opt_uint64 = ext_opt_uint64;
+    builder.ext_opt_sint64 = ext_opt_sint64;
+    builder.ext_opt_fixed64 = ext_opt_fixed64;
+    builder.ext_opt_sfixed64 = ext_opt_sfixed64;
+    builder.ext_opt_bool = ext_opt_bool;
+    builder.ext_opt_float = ext_opt_float;
+    builder.ext_opt_double = ext_opt_double;
+    builder.ext_opt_string = ext_opt_string;
+    builder.ext_opt_bytes = ext_opt_bytes;
+    builder.ext_opt_nested_enum = ext_opt_nested_enum;
+    builder.ext_opt_nested_message = ext_opt_nested_message;
+    builder.ext_rep_int32 = copyOf(ext_rep_int32);
+    builder.ext_rep_uint32 = copyOf(ext_rep_uint32);
+    builder.ext_rep_sint32 = copyOf(ext_rep_sint32);
+    builder.ext_rep_fixed32 = copyOf(ext_rep_fixed32);
+    builder.ext_rep_sfixed32 = copyOf(ext_rep_sfixed32);
+    builder.ext_rep_int64 = copyOf(ext_rep_int64);
+    builder.ext_rep_uint64 = copyOf(ext_rep_uint64);
+    builder.ext_rep_sint64 = copyOf(ext_rep_sint64);
+    builder.ext_rep_fixed64 = copyOf(ext_rep_fixed64);
+    builder.ext_rep_sfixed64 = copyOf(ext_rep_sfixed64);
+    builder.ext_rep_bool = copyOf(ext_rep_bool);
+    builder.ext_rep_float = copyOf(ext_rep_float);
+    builder.ext_rep_double = copyOf(ext_rep_double);
+    builder.ext_rep_string = copyOf(ext_rep_string);
+    builder.ext_rep_bytes = copyOf(ext_rep_bytes);
+    builder.ext_rep_nested_enum = copyOf(ext_rep_nested_enum);
+    builder.ext_rep_nested_message = copyOf(ext_rep_nested_message);
+    builder.ext_pack_int32 = copyOf(ext_pack_int32);
+    builder.ext_pack_uint32 = copyOf(ext_pack_uint32);
+    builder.ext_pack_sint32 = copyOf(ext_pack_sint32);
+    builder.ext_pack_fixed32 = copyOf(ext_pack_fixed32);
+    builder.ext_pack_sfixed32 = copyOf(ext_pack_sfixed32);
+    builder.ext_pack_int64 = copyOf(ext_pack_int64);
+    builder.ext_pack_uint64 = copyOf(ext_pack_uint64);
+    builder.ext_pack_sint64 = copyOf(ext_pack_sint64);
+    builder.ext_pack_fixed64 = copyOf(ext_pack_fixed64);
+    builder.ext_pack_sfixed64 = copyOf(ext_pack_sfixed64);
+    builder.ext_pack_bool = copyOf(ext_pack_bool);
+    builder.ext_pack_float = copyOf(ext_pack_float);
+    builder.ext_pack_double = copyOf(ext_pack_double);
+    builder.ext_pack_nested_enum = copyOf(ext_pack_nested_enum);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof AllTypes)) return false;
@@ -1739,140 +1875,6 @@ public final class AllTypes extends Message<AllTypes> {
       ext_pack_float = newMutableList();
       ext_pack_double = newMutableList();
       ext_pack_nested_enum = newMutableList();
-    }
-
-    public Builder(AllTypes message) {
-      super(message);
-      if (message == null) return;
-      this.opt_int32 = message.opt_int32;
-      this.opt_uint32 = message.opt_uint32;
-      this.opt_sint32 = message.opt_sint32;
-      this.opt_fixed32 = message.opt_fixed32;
-      this.opt_sfixed32 = message.opt_sfixed32;
-      this.opt_int64 = message.opt_int64;
-      this.opt_uint64 = message.opt_uint64;
-      this.opt_sint64 = message.opt_sint64;
-      this.opt_fixed64 = message.opt_fixed64;
-      this.opt_sfixed64 = message.opt_sfixed64;
-      this.opt_bool = message.opt_bool;
-      this.opt_float = message.opt_float;
-      this.opt_double = message.opt_double;
-      this.opt_string = message.opt_string;
-      this.opt_bytes = message.opt_bytes;
-      this.opt_nested_enum = message.opt_nested_enum;
-      this.opt_nested_message = message.opt_nested_message;
-      this.req_int32 = message.req_int32;
-      this.req_uint32 = message.req_uint32;
-      this.req_sint32 = message.req_sint32;
-      this.req_fixed32 = message.req_fixed32;
-      this.req_sfixed32 = message.req_sfixed32;
-      this.req_int64 = message.req_int64;
-      this.req_uint64 = message.req_uint64;
-      this.req_sint64 = message.req_sint64;
-      this.req_fixed64 = message.req_fixed64;
-      this.req_sfixed64 = message.req_sfixed64;
-      this.req_bool = message.req_bool;
-      this.req_float = message.req_float;
-      this.req_double = message.req_double;
-      this.req_string = message.req_string;
-      this.req_bytes = message.req_bytes;
-      this.req_nested_enum = message.req_nested_enum;
-      this.req_nested_message = message.req_nested_message;
-      this.rep_int32 = copyOf(message.rep_int32);
-      this.rep_uint32 = copyOf(message.rep_uint32);
-      this.rep_sint32 = copyOf(message.rep_sint32);
-      this.rep_fixed32 = copyOf(message.rep_fixed32);
-      this.rep_sfixed32 = copyOf(message.rep_sfixed32);
-      this.rep_int64 = copyOf(message.rep_int64);
-      this.rep_uint64 = copyOf(message.rep_uint64);
-      this.rep_sint64 = copyOf(message.rep_sint64);
-      this.rep_fixed64 = copyOf(message.rep_fixed64);
-      this.rep_sfixed64 = copyOf(message.rep_sfixed64);
-      this.rep_bool = copyOf(message.rep_bool);
-      this.rep_float = copyOf(message.rep_float);
-      this.rep_double = copyOf(message.rep_double);
-      this.rep_string = copyOf(message.rep_string);
-      this.rep_bytes = copyOf(message.rep_bytes);
-      this.rep_nested_enum = copyOf(message.rep_nested_enum);
-      this.rep_nested_message = copyOf(message.rep_nested_message);
-      this.pack_int32 = copyOf(message.pack_int32);
-      this.pack_uint32 = copyOf(message.pack_uint32);
-      this.pack_sint32 = copyOf(message.pack_sint32);
-      this.pack_fixed32 = copyOf(message.pack_fixed32);
-      this.pack_sfixed32 = copyOf(message.pack_sfixed32);
-      this.pack_int64 = copyOf(message.pack_int64);
-      this.pack_uint64 = copyOf(message.pack_uint64);
-      this.pack_sint64 = copyOf(message.pack_sint64);
-      this.pack_fixed64 = copyOf(message.pack_fixed64);
-      this.pack_sfixed64 = copyOf(message.pack_sfixed64);
-      this.pack_bool = copyOf(message.pack_bool);
-      this.pack_float = copyOf(message.pack_float);
-      this.pack_double = copyOf(message.pack_double);
-      this.pack_nested_enum = copyOf(message.pack_nested_enum);
-      this.default_int32 = message.default_int32;
-      this.default_uint32 = message.default_uint32;
-      this.default_sint32 = message.default_sint32;
-      this.default_fixed32 = message.default_fixed32;
-      this.default_sfixed32 = message.default_sfixed32;
-      this.default_int64 = message.default_int64;
-      this.default_uint64 = message.default_uint64;
-      this.default_sint64 = message.default_sint64;
-      this.default_fixed64 = message.default_fixed64;
-      this.default_sfixed64 = message.default_sfixed64;
-      this.default_bool = message.default_bool;
-      this.default_float = message.default_float;
-      this.default_double = message.default_double;
-      this.default_string = message.default_string;
-      this.default_bytes = message.default_bytes;
-      this.default_nested_enum = message.default_nested_enum;
-      this.ext_opt_int32 = message.ext_opt_int32;
-      this.ext_opt_uint32 = message.ext_opt_uint32;
-      this.ext_opt_sint32 = message.ext_opt_sint32;
-      this.ext_opt_fixed32 = message.ext_opt_fixed32;
-      this.ext_opt_sfixed32 = message.ext_opt_sfixed32;
-      this.ext_opt_int64 = message.ext_opt_int64;
-      this.ext_opt_uint64 = message.ext_opt_uint64;
-      this.ext_opt_sint64 = message.ext_opt_sint64;
-      this.ext_opt_fixed64 = message.ext_opt_fixed64;
-      this.ext_opt_sfixed64 = message.ext_opt_sfixed64;
-      this.ext_opt_bool = message.ext_opt_bool;
-      this.ext_opt_float = message.ext_opt_float;
-      this.ext_opt_double = message.ext_opt_double;
-      this.ext_opt_string = message.ext_opt_string;
-      this.ext_opt_bytes = message.ext_opt_bytes;
-      this.ext_opt_nested_enum = message.ext_opt_nested_enum;
-      this.ext_opt_nested_message = message.ext_opt_nested_message;
-      this.ext_rep_int32 = copyOf(message.ext_rep_int32);
-      this.ext_rep_uint32 = copyOf(message.ext_rep_uint32);
-      this.ext_rep_sint32 = copyOf(message.ext_rep_sint32);
-      this.ext_rep_fixed32 = copyOf(message.ext_rep_fixed32);
-      this.ext_rep_sfixed32 = copyOf(message.ext_rep_sfixed32);
-      this.ext_rep_int64 = copyOf(message.ext_rep_int64);
-      this.ext_rep_uint64 = copyOf(message.ext_rep_uint64);
-      this.ext_rep_sint64 = copyOf(message.ext_rep_sint64);
-      this.ext_rep_fixed64 = copyOf(message.ext_rep_fixed64);
-      this.ext_rep_sfixed64 = copyOf(message.ext_rep_sfixed64);
-      this.ext_rep_bool = copyOf(message.ext_rep_bool);
-      this.ext_rep_float = copyOf(message.ext_rep_float);
-      this.ext_rep_double = copyOf(message.ext_rep_double);
-      this.ext_rep_string = copyOf(message.ext_rep_string);
-      this.ext_rep_bytes = copyOf(message.ext_rep_bytes);
-      this.ext_rep_nested_enum = copyOf(message.ext_rep_nested_enum);
-      this.ext_rep_nested_message = copyOf(message.ext_rep_nested_message);
-      this.ext_pack_int32 = copyOf(message.ext_pack_int32);
-      this.ext_pack_uint32 = copyOf(message.ext_pack_uint32);
-      this.ext_pack_sint32 = copyOf(message.ext_pack_sint32);
-      this.ext_pack_fixed32 = copyOf(message.ext_pack_fixed32);
-      this.ext_pack_sfixed32 = copyOf(message.ext_pack_sfixed32);
-      this.ext_pack_int64 = copyOf(message.ext_pack_int64);
-      this.ext_pack_uint64 = copyOf(message.ext_pack_uint64);
-      this.ext_pack_sint64 = copyOf(message.ext_pack_sint64);
-      this.ext_pack_fixed64 = copyOf(message.ext_pack_fixed64);
-      this.ext_pack_sfixed64 = copyOf(message.ext_pack_sfixed64);
-      this.ext_pack_bool = copyOf(message.ext_pack_bool);
-      this.ext_pack_float = copyOf(message.ext_pack_float);
-      this.ext_pack_double = copyOf(message.ext_pack_double);
-      this.ext_pack_nested_enum = copyOf(message.ext_pack_nested_enum);
     }
 
     public Builder opt_int32(Integer opt_int32) {
@@ -2673,6 +2675,14 @@ public final class AllTypes extends Message<AllTypes> {
     }
 
     @Override
+    public NestedMessage.Builder newBuilder() {
+      NestedMessage.Builder builder = new NestedMessage.Builder();
+      builder.a = a;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
@@ -2696,12 +2706,6 @@ public final class AllTypes extends Message<AllTypes> {
       public Integer a;
 
       public Builder() {
-      }
-
-      public Builder(NestedMessage message) {
-        super(message);
-        if (message == null) return;
-        this.a = message.a;
       }
 
       public Builder a(Integer a) {

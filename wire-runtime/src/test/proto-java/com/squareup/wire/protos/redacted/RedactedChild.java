@@ -47,6 +47,16 @@ public final class RedactedChild extends Message<RedactedChild> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.a = a;
+    builder.b = b;
+    builder.c = c;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof RedactedChild)) return false;
@@ -78,14 +88,6 @@ public final class RedactedChild extends Message<RedactedChild> {
     public NotRedacted c;
 
     public Builder() {
-    }
-
-    public Builder(RedactedChild message) {
-      super(message);
-      if (message == null) return;
-      this.a = message.a;
-      this.b = message.b;
-      this.c = message.c;
     }
 
     public Builder a(String a) {

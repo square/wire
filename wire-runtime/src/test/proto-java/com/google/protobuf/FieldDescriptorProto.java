@@ -133,6 +133,22 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.name = name;
+    builder.doc = doc;
+    builder.number = number;
+    builder.label = label;
+    builder.type = type;
+    builder.type_name = type_name;
+    builder.extendee = extendee;
+    builder.default_value = default_value;
+    builder.options = options;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof FieldDescriptorProto)) return false;
@@ -188,20 +204,6 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
     public FieldOptions options;
 
     public Builder() {
-    }
-
-    public Builder(FieldDescriptorProto message) {
-      super(message);
-      if (message == null) return;
-      this.name = message.name;
-      this.doc = message.doc;
-      this.number = message.number;
-      this.label = message.label;
-      this.type = message.type;
-      this.type_name = message.type_name;
-      this.extendee = message.extendee;
-      this.default_value = message.default_value;
-      this.options = message.options;
     }
 
     public Builder name(String name) {

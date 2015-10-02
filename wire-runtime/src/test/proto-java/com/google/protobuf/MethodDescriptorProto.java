@@ -77,6 +77,18 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.name = name;
+    builder.doc = doc;
+    builder.input_type = input_type;
+    builder.output_type = output_type;
+    builder.options = options;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof MethodDescriptorProto)) return false;
@@ -116,16 +128,6 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto> 
     public MethodOptions options;
 
     public Builder() {
-    }
-
-    public Builder(MethodDescriptorProto message) {
-      super(message);
-      if (message == null) return;
-      this.name = message.name;
-      this.doc = message.doc;
-      this.input_type = message.input_type;
-      this.output_type = message.output_type;
-      this.options = message.options;
     }
 
     public Builder name(String name) {

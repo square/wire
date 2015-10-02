@@ -33,6 +33,14 @@ public final class ChildPackage extends Message<ChildPackage> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.inner_foreign_enum = inner_foreign_enum;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof ChildPackage)) return false;
@@ -56,12 +64,6 @@ public final class ChildPackage extends Message<ChildPackage> {
     public ForeignEnum inner_foreign_enum;
 
     public Builder() {
-    }
-
-    public Builder(ChildPackage message) {
-      super(message);
-      if (message == null) return;
-      this.inner_foreign_enum = message.inner_foreign_enum;
     }
 
     public Builder inner_foreign_enum(ForeignEnum inner_foreign_enum) {

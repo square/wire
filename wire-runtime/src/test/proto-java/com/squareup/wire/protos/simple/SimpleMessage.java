@@ -174,6 +174,25 @@ public final class SimpleMessage extends Message<SimpleMessage> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.optional_int32 = optional_int32;
+    builder.optional_nested_msg = optional_nested_msg;
+    builder.optional_external_msg = optional_external_msg;
+    builder.default_nested_enum = default_nested_enum;
+    builder.required_int32 = required_int32;
+    builder.repeated_double = copyOf(repeated_double);
+    builder.default_foreign_enum = default_foreign_enum;
+    builder.no_default_foreign_enum = no_default_foreign_enum;
+    builder.package_ = package_;
+    builder.result = result;
+    builder.other = other;
+    builder.o = o;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other_) {
     if (other_ == this) return true;
     if (!(other_ instanceof SimpleMessage)) return false;
@@ -242,23 +261,6 @@ public final class SimpleMessage extends Message<SimpleMessage> {
 
     public Builder() {
       repeated_double = newMutableList();
-    }
-
-    public Builder(SimpleMessage message) {
-      super(message);
-      if (message == null) return;
-      this.optional_int32 = message.optional_int32;
-      this.optional_nested_msg = message.optional_nested_msg;
-      this.optional_external_msg = message.optional_external_msg;
-      this.default_nested_enum = message.default_nested_enum;
-      this.required_int32 = message.required_int32;
-      this.repeated_double = copyOf(message.repeated_double);
-      this.default_foreign_enum = message.default_foreign_enum;
-      this.no_default_foreign_enum = message.no_default_foreign_enum;
-      this.package_ = message.package_;
-      this.result = message.result;
-      this.other = message.other;
-      this.o = message.o;
     }
 
     /**
@@ -392,6 +394,14 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     }
 
     @Override
+    public NestedMessage.Builder newBuilder() {
+      NestedMessage.Builder builder = new NestedMessage.Builder();
+      builder.bb = bb;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
     public boolean equals(Object other) {
       if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
@@ -415,12 +425,6 @@ public final class SimpleMessage extends Message<SimpleMessage> {
       public Integer bb;
 
       public Builder() {
-      }
-
-      public Builder(NestedMessage message) {
-        super(message);
-        if (message == null) return;
-        this.bb = message.bb;
       }
 
       /**

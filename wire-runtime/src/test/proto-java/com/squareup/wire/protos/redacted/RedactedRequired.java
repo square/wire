@@ -40,6 +40,14 @@ public final class RedactedRequired extends Message<RedactedRequired> {
   }
 
   @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.a = a;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == this) return true;
     if (!(other instanceof RedactedRequired)) return false;
@@ -63,12 +71,6 @@ public final class RedactedRequired extends Message<RedactedRequired> {
     public String a;
 
     public Builder() {
-    }
-
-    public Builder(RedactedRequired message) {
-      super(message);
-      if (message == null) return;
-      this.a = message.a;
     }
 
     public Builder a(String a) {
