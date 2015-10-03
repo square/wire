@@ -56,6 +56,12 @@ public abstract class Message<T extends Message<T>> implements Serializable {
    */
   public abstract Builder newBuilder();
 
+  /** Returns this message with any unknown fields removed. */
+  public final T withoutUnknownFields() {
+    //noinspection unchecked
+    return (T) newBuilder().clearUnknownFields().build();
+  }
+
   @SuppressWarnings("unchecked")
   @Override public String toString() {
     return ProtoAdapter.get((Class<Message>) getClass()).toString(this);
