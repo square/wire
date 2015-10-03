@@ -29,13 +29,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class ParseTest {
-  @Ignore("https://github.com/square/wire/issues/398")
   @Test public void unknownTagIgnored() throws Exception {
     // tag 1 / type 0: 456
     // tag 2 / type 0: 789
     ByteString data = ByteString.decodeHex("08c803109506");
     OneField oneField = OneField.ADAPTER.decode(data.toByteArray());
-    assertThat(oneField).isEqualTo(new OneField.Builder().opt_int32(456).build());
+    OneField expected = new OneField.Builder().opt_int32(456).build();
+    assertThat(oneField).isNotEqualTo(expected);
+    assertThat(oneField.withoutUnknownFields()).isEqualTo(expected);
   }
 
   @Test public void unknownTypeThrowsIOException() throws Exception {
