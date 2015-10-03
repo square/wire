@@ -24,11 +24,11 @@ import java.util.Map;
 
 import static com.squareup.wire.Message.Builder;
 
-final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
+final class RuntimeMessageAdapter<M extends Message<M, B>, B extends Builder<M, B>>
     extends ProtoAdapter<M> {
   private static final String REDACTED = "\u2588\u2588";
 
-  static <M extends Message<M>, B extends Builder<M, B>> RuntimeMessageAdapter<M, B> create(
+  static <M extends Message<M, B>, B extends Builder<M, B>> RuntimeMessageAdapter<M, B> create(
       Class<M> messageType) {
     Class<B> builderType = getBuilderType(messageType);
     Map<Integer, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<>();
@@ -71,7 +71,7 @@ final class RuntimeMessageAdapter<M extends Message<M>, B extends Builder<M, B>>
   }
 
   @SuppressWarnings("unchecked")
-  private static <M extends Message<M>, B extends Builder<M, B>> Class<B> getBuilderType(
+  private static <M extends Message<M, B>, B extends Builder<M, B>> Class<B> getBuilderType(
       Class<M> messageType) {
     try {
       return (Class<B>) Class.forName(messageType.getName() + "$Builder");

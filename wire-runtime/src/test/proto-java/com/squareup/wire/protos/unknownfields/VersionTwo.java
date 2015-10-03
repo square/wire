@@ -13,7 +13,7 @@ import java.lang.String;
 import java.util.List;
 import okio.ByteString;
 
-public final class VersionTwo extends Message<VersionTwo> {
+public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
   public static final ProtoAdapter<VersionTwo> ADAPTER = ProtoAdapter.newMessageAdapter(VersionTwo.class);
 
   private static final long serialVersionUID = 0L;

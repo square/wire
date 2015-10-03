@@ -40,7 +40,7 @@ import okio.ByteString;
  *   use them.  If this turns out to be popular, a web service will be set up
  *   to automatically assign option numbers.
  */
-public final class FileOptions extends Message<FileOptions> {
+public final class FileOptions extends Message<FileOptions, FileOptions.Builder> {
   public static final ProtoAdapter<FileOptions> ADAPTER = ProtoAdapter.newMessageAdapter(FileOptions.class);
 
   private static final long serialVersionUID = 0L;

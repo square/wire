@@ -20,13 +20,14 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
 
-final class MessageSerializedForm<T extends Message<T>> implements Serializable {
+final class MessageSerializedForm<M extends Message<M, B>, B extends Message.Builder<M, B>>
+    implements Serializable {
   private static final long serialVersionUID = 0L;
 
   private final byte[] bytes;
-  private final Class<T> messageClass;
+  private final Class<M> messageClass;
 
-  public MessageSerializedForm(T message, Class<T> messageClass) {
+  public MessageSerializedForm(M message, Class<M> messageClass) {
     //noinspection unchecked
     this.bytes = ProtoAdapter.get(messageClass).encode(message);
     this.messageClass = messageClass;

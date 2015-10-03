@@ -16,7 +16,7 @@ import java.lang.String;
 import java.util.List;
 import okio.ByteString;
 
-public final class FieldOptions extends Message<FieldOptions> {
+public final class FieldOptions extends Message<FieldOptions, FieldOptions.Builder> {
   public static final ProtoAdapter<FieldOptions> ADAPTER = ProtoAdapter.newMessageAdapter(FieldOptions.class);
 
   private static final long serialVersionUID = 0L;

@@ -14,7 +14,7 @@ import okio.ByteString;
 /**
  * Describes a service.
  */
-public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto> {
+public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto, ServiceDescriptorProto.Builder> {
   public static final ProtoAdapter<ServiceDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(ServiceDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;

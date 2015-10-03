@@ -13,7 +13,7 @@ import java.lang.Override;
 import java.util.List;
 import okio.ByteString;
 
-public final class EnumValueOptions extends Message<EnumValueOptions> {
+public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueOptions.Builder> {
   public static final ProtoAdapter<EnumValueOptions> ADAPTER = ProtoAdapter.newMessageAdapter(EnumValueOptions.class);
 
   private static final long serialVersionUID = 0L;

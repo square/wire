@@ -14,7 +14,7 @@ import okio.ByteString;
  * The protocol compiler can output a FileDescriptorSet containing the .proto
  * files it parses.
  */
-public final class FileDescriptorSet extends Message<FileDescriptorSet> {
+public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDescriptorSet.Builder> {
   public static final ProtoAdapter<FileDescriptorSet> ADAPTER = ProtoAdapter.newMessageAdapter(FileDescriptorSet.class);
 
   private static final long serialVersionUID = 0L;

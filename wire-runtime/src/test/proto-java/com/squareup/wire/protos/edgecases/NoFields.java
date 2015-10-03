@@ -8,7 +8,7 @@ import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
 
-public final class NoFields extends Message<NoFields> {
+public final class NoFields extends Message<NoFields, NoFields.Builder> {
   public static final ProtoAdapter<NoFields> ADAPTER = ProtoAdapter.newMessageAdapter(NoFields.class);
 
   private static final long serialVersionUID = 0L;

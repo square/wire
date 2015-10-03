@@ -11,7 +11,7 @@ import java.lang.Override;
 import java.util.List;
 import okio.ByteString;
 
-public final class RepeatedAndPacked extends Message<RepeatedAndPacked> {
+public final class RepeatedAndPacked extends Message<RepeatedAndPacked, RepeatedAndPacked.Builder> {
   public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = ProtoAdapter.newMessageAdapter(RepeatedAndPacked.class);
 
   private static final long serialVersionUID = 0L;

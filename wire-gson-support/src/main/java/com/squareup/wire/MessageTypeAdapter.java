@@ -39,7 +39,7 @@ import static com.squareup.wire.FieldEncoding.VARINT;
 import static com.squareup.wire.WireField.Label;
 import static java.util.Collections.unmodifiableMap;
 
-class MessageTypeAdapter<M extends Message<M>, B extends Message.Builder<M, B>>
+class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B>>
     extends TypeAdapter<M> {
 
   private final Class<M> messageType;

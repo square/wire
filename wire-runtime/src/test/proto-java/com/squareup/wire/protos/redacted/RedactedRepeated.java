@@ -12,7 +12,7 @@ import java.lang.String;
 import java.util.List;
 import okio.ByteString;
 
-public final class RedactedRepeated extends Message<RedactedRepeated> {
+public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRepeated.Builder> {
   public static final ProtoAdapter<RedactedRepeated> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedRepeated.class);
 
   private static final long serialVersionUID = 0L;

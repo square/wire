@@ -8,7 +8,7 @@ import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
 
-public final class UnnecessaryResponse extends Message<UnnecessaryResponse> {
+public final class UnnecessaryResponse extends Message<UnnecessaryResponse, UnnecessaryResponse.Builder> {
   public static final ProtoAdapter<UnnecessaryResponse> ADAPTER = ProtoAdapter.newMessageAdapter(UnnecessaryResponse.class);
 
   private static final long serialVersionUID = 0L;

@@ -24,7 +24,7 @@ import okio.ByteString;
  *
  * I -> nothing
  */
-public final class A extends Message<A> {
+public final class A extends Message<A, A.Builder> {
   public static final ProtoAdapter<A> ADAPTER = ProtoAdapter.newMessageAdapter(A.class);
 
   private static final long serialVersionUID = 0L;

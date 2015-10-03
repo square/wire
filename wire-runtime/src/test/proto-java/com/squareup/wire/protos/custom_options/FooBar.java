@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import okio.ByteString;
 
-public final class FooBar extends Message<FooBar> {
+public final class FooBar extends Message<FooBar, FooBar.Builder> {
   public static final ProtoAdapter<FooBar> ADAPTER = ProtoAdapter.newMessageAdapter(FooBar.class);
 
   private static final long serialVersionUID = 0L;
@@ -286,7 +286,7 @@ public final class FooBar extends Message<FooBar> {
     }
   }
 
-  public static final class Nested extends Message<Nested> {
+  public static final class Nested extends Message<Nested, Nested.Builder> {
     public static final ProtoAdapter<Nested> ADAPTER = ProtoAdapter.newMessageAdapter(Nested.class);
 
     private static final long serialVersionUID = 0L;
@@ -354,7 +354,7 @@ public final class FooBar extends Message<FooBar> {
     }
   }
 
-  public static final class More extends Message<More> {
+  public static final class More extends Message<More, More.Builder> {
     public static final ProtoAdapter<More> ADAPTER = ProtoAdapter.newMessageAdapter(More.class);
 
     private static final long serialVersionUID = 0L;

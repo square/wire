@@ -19,7 +19,7 @@ import okio.ByteString;
 /**
  * A message for testing.
  */
-public final class SimpleMessage extends Message<SimpleMessage> {
+public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Builder> {
   public static final ProtoAdapter<SimpleMessage> ADAPTER = ProtoAdapter.newMessageAdapter(SimpleMessage.class);
 
   private static final long serialVersionUID = 0L;
@@ -368,7 +368,7 @@ public final class SimpleMessage extends Message<SimpleMessage> {
     }
   }
 
-  public static final class NestedMessage extends Message<NestedMessage> {
+  public static final class NestedMessage extends Message<NestedMessage, NestedMessage.Builder> {
     public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class);
 
     private static final long serialVersionUID = 0L;

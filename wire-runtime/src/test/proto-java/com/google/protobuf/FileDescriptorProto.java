@@ -14,7 +14,7 @@ import okio.ByteString;
 /**
  * Describes a complete .proto file.
  */
-public final class FileDescriptorProto extends Message<FileDescriptorProto> {
+public final class FileDescriptorProto extends Message<FileDescriptorProto, FileDescriptorProto.Builder> {
   public static final ProtoAdapter<FileDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(FileDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;
