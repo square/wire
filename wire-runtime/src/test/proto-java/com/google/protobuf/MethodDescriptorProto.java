@@ -13,7 +13,7 @@ import okio.ByteString;
 /**
  * Describes a method of a service.
  */
-public final class MethodDescriptorProto extends Message<MethodDescriptorProto> {
+public final class MethodDescriptorProto extends Message<MethodDescriptorProto, MethodDescriptorProto.Builder> {
   public static final ProtoAdapter<MethodDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(MethodDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;

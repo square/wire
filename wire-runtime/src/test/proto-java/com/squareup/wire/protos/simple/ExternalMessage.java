@@ -12,7 +12,7 @@ import java.lang.Override;
 import java.util.List;
 import okio.ByteString;
 
-public final class ExternalMessage extends Message<ExternalMessage> {
+public final class ExternalMessage extends Message<ExternalMessage, ExternalMessage.Builder> {
   public static final ProtoAdapter<ExternalMessage> ADAPTER = ProtoAdapter.newMessageAdapter(ExternalMessage.class);
 
   private static final long serialVersionUID = 0L;

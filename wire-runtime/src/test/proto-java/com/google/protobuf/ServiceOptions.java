@@ -10,7 +10,7 @@ import java.lang.Override;
 import java.util.List;
 import okio.ByteString;
 
-public final class ServiceOptions extends Message<ServiceOptions> {
+public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions.Builder> {
   public static final ProtoAdapter<ServiceOptions> ADAPTER = ProtoAdapter.newMessageAdapter(ServiceOptions.class);
 
   private static final long serialVersionUID = 0L;

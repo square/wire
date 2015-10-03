@@ -11,7 +11,7 @@ import java.lang.Override;
 import java.lang.String;
 import okio.ByteString;
 
-public final class RedactedRequired extends Message<RedactedRequired> {
+public final class RedactedRequired extends Message<RedactedRequired, RedactedRequired.Builder> {
   public static final ProtoAdapter<RedactedRequired> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedRequired.class);
 
   private static final long serialVersionUID = 0L;

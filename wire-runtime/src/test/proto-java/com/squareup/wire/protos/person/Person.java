@@ -13,7 +13,7 @@ import java.lang.String;
 import java.util.List;
 import okio.ByteString;
 
-public final class Person extends Message<Person> {
+public final class Person extends Message<Person, Person.Builder> {
   public static final ProtoAdapter<Person> ADAPTER = ProtoAdapter.newMessageAdapter(Person.class);
 
   private static final long serialVersionUID = 0L;
@@ -205,7 +205,7 @@ public final class Person extends Message<Person> {
     }
   }
 
-  public static final class PhoneNumber extends Message<PhoneNumber> {
+  public static final class PhoneNumber extends Message<PhoneNumber, PhoneNumber.Builder> {
     public static final ProtoAdapter<PhoneNumber> ADAPTER = ProtoAdapter.newMessageAdapter(PhoneNumber.class);
 
     private static final long serialVersionUID = 0L;

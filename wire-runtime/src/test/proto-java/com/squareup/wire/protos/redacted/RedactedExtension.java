@@ -11,7 +11,7 @@ import java.lang.Override;
 import java.lang.String;
 import okio.ByteString;
 
-public final class RedactedExtension extends Message<RedactedExtension> {
+public final class RedactedExtension extends Message<RedactedExtension, RedactedExtension.Builder> {
   public static final ProtoAdapter<RedactedExtension> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedExtension.class);
 
   private static final long serialVersionUID = 0L;

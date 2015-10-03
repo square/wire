@@ -17,7 +17,7 @@ import java.lang.String;
 import java.util.List;
 import okio.ByteString;
 
-public final class AllTypes extends Message<AllTypes> {
+public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.newMessageAdapter(AllTypes.class);
 
   private static final long serialVersionUID = 0L;
@@ -2652,7 +2652,7 @@ public final class AllTypes extends Message<AllTypes> {
     }
   }
 
-  public static final class NestedMessage extends Message<NestedMessage> {
+  public static final class NestedMessage extends Message<NestedMessage, NestedMessage.Builder> {
     public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class);
 
     private static final long serialVersionUID = 0L;

@@ -10,7 +10,7 @@ import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
 
-public final class K extends Message<K> {
+public final class K extends Message<K, K.Builder> {
   public static final ProtoAdapter<K> ADAPTER = ProtoAdapter.newMessageAdapter(K.class);
 
   private static final long serialVersionUID = 0L;

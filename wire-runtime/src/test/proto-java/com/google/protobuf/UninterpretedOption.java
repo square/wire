@@ -22,7 +22,7 @@ import okio.ByteString;
  * or produced by Descriptor::CopyTo()) will never have UninterpretedOptions
  * in them.
  */
-public final class UninterpretedOption extends Message<UninterpretedOption> {
+public final class UninterpretedOption extends Message<UninterpretedOption, UninterpretedOption.Builder> {
   public static final ProtoAdapter<UninterpretedOption> ADAPTER = ProtoAdapter.newMessageAdapter(UninterpretedOption.class);
 
   private static final long serialVersionUID = 0L;
@@ -219,7 +219,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption> {
    * E.g.,{ ["foo", false], ["bar.baz", true], ["qux", false] } represents
    * "foo.(bar.baz).qux".
    */
-  public static final class NamePart extends Message<NamePart> {
+  public static final class NamePart extends Message<NamePart, NamePart.Builder> {
     public static final ProtoAdapter<NamePart> ADAPTER = ProtoAdapter.newMessageAdapter(NamePart.class);
 
     private static final long serialVersionUID = 0L;

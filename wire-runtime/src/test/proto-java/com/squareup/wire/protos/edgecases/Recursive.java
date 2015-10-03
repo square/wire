@@ -10,7 +10,7 @@ import java.lang.Object;
 import java.lang.Override;
 import okio.ByteString;
 
-public final class Recursive extends Message<Recursive> {
+public final class Recursive extends Message<Recursive, Recursive.Builder> {
   public static final ProtoAdapter<Recursive> ADAPTER = ProtoAdapter.newMessageAdapter(Recursive.class);
 
   private static final long serialVersionUID = 0L;

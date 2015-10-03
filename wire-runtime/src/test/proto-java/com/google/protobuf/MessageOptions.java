@@ -14,7 +14,7 @@ import java.lang.Override;
 import java.util.List;
 import okio.ByteString;
 
-public final class MessageOptions extends Message<MessageOptions> {
+public final class MessageOptions extends Message<MessageOptions, MessageOptions.Builder> {
   public static final ProtoAdapter<MessageOptions> ADAPTER = ProtoAdapter.newMessageAdapter(MessageOptions.class);
 
   private static final long serialVersionUID = 0L;

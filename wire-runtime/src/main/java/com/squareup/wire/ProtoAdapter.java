@@ -15,6 +15,7 @@
  */
 package com.squareup.wire;
 
+import com.squareup.wire.Message.Builder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,7 +56,8 @@ public abstract class ProtoAdapter<E> {
   }
 
   /** Creates a new proto adapter for {@code type}. */
-  public static <M extends Message<M>> ProtoAdapter<M> newMessageAdapter(Class<M> type) {
+  public static <M extends Message<M, B>, B extends Builder<M, B>> ProtoAdapter<M>
+      newMessageAdapter(Class<M> type) {
     return RuntimeMessageAdapter.create(type);
   }
 
@@ -65,7 +67,8 @@ public abstract class ProtoAdapter<E> {
   }
 
   /** Returns the default adapter for {@code type}. */
-  public static <M extends Message<M>> ProtoAdapter<M> get(Class<M> type) {
+  public static <M extends Message<M, B>, B extends Builder<M, B>> ProtoAdapter<M> get(
+      Class<M> type) {
     try {
       return (ProtoAdapter<M>) type.getField("ADAPTER").get(null);
     } catch (IllegalAccessException | NoSuchFieldException e) {

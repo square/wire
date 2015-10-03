@@ -59,7 +59,8 @@ public class WireCompilerErrorTest {
         + "  optional int32 f = 1;\n"
         + "}\n");
     String generatedSource = readFile("/target/com/squareup/protos/test/Simple.java");
-    assertThat(generatedSource).contains("public final class Simple extends Message<Simple> {");
+    assertThat(generatedSource).contains(
+        "public final class Simple extends Message<Simple, Simple.Builder> {");
   }
 
   @Test public void testZeroTag() throws Exception {

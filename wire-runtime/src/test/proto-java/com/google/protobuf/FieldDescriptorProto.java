@@ -15,7 +15,7 @@ import okio.ByteString;
 /**
  * Describes a field within a message.
  */
-public final class FieldDescriptorProto extends Message<FieldDescriptorProto> {
+public final class FieldDescriptorProto extends Message<FieldDescriptorProto, FieldDescriptorProto.Builder> {
   public static final ProtoAdapter<FieldDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(FieldDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;

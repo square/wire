@@ -17,7 +17,7 @@ import okio.ByteString;
  * Encapsulates information about the original source file from which a
  * FileDescriptorProto was generated.
  */
-public final class SourceCodeInfo extends Message<SourceCodeInfo> {
+public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo.Builder> {
   public static final ProtoAdapter<SourceCodeInfo> ADAPTER = ProtoAdapter.newMessageAdapter(SourceCodeInfo.class);
 
   private static final long serialVersionUID = 0L;
@@ -175,7 +175,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo> {
     }
   }
 
-  public static final class Location extends Message<Location> {
+  public static final class Location extends Message<Location, Location.Builder> {
     public static final ProtoAdapter<Location> ADAPTER = ProtoAdapter.newMessageAdapter(Location.class);
 
     private static final long serialVersionUID = 0L;

@@ -234,8 +234,8 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(LIST, type);
   }
 
-  static TypeName messageOf(TypeName type) {
-    return ParameterizedTypeName.get(MESSAGE, type);
+  static TypeName messageOf(TypeName type, ClassName builderType) {
+    return ParameterizedTypeName.get(MESSAGE, type, builderType);
   }
 
   static TypeName adapterOf(TypeName messageType) {
@@ -397,7 +397,7 @@ public final class JavaGenerator {
       builder.addJavadoc("$L\n", sanitizeJavadoc(type.documentation()));
     }
 
-    builder.superclass(messageOf(javaType));
+    builder.superclass(messageOf(javaType, builderJavaType));
 
     builder.addField(messageAdapter(nameAllocator, type, javaType, builderJavaType));
 

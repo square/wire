@@ -25,7 +25,8 @@ import okio.Buffer;
 import okio.ByteString;
 
 /** A protocol buffer message. */
-public abstract class Message<T extends Message<T>> implements Serializable {
+public abstract class Message<M extends Message<M, B>, B extends Message.Builder<M, B>>
+    implements Serializable {
   private static final long serialVersionUID = 0L;
 
   final transient ByteString unknownFields;
@@ -54,12 +55,11 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   /**
    * Returns a new builder initialized with the data in this message.
    */
-  public abstract Builder newBuilder();
+  public abstract Builder<M, B> newBuilder();
 
   /** Returns this message with any unknown fields removed. */
-  public final T withoutUnknownFields() {
-    //noinspection unchecked
-    return (T) newBuilder().clearUnknownFields().build();
+  public final M withoutUnknownFields() {
+    return newBuilder().clearUnknownFields().build();
   }
 
   @SuppressWarnings("unchecked")
@@ -68,13 +68,13 @@ public abstract class Message<T extends Message<T>> implements Serializable {
   }
 
   protected final Object writeReplace() throws ObjectStreamException {
-    return new MessageSerializedForm<>(this, (Class<Message>) getClass());
+    return new MessageSerializedForm(this, getClass());
   }
 
   /**
    * Superclass for protocol buffer message builders.
    */
-  public abstract static class Builder<T extends Message<T>, B extends Builder<T, B>> {
+  public abstract static class Builder<T extends Message<T, B>, B extends Builder<T, B>> {
     // Lazily-instantiated buffer and writer of this message's unknown fields.
     Buffer unknownFieldsBuffer;
     ProtoWriter unknownFieldsWriter;

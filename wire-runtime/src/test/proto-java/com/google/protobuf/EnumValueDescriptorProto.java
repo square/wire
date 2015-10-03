@@ -14,7 +14,7 @@ import okio.ByteString;
 /**
  * Describes a value within an enum.
  */
-public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorProto> {
+public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorProto, EnumValueDescriptorProto.Builder> {
   public static final ProtoAdapter<EnumValueDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(EnumValueDescriptorProto.class);
 
   private static final long serialVersionUID = 0L;

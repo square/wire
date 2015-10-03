@@ -11,7 +11,7 @@ import java.lang.Override;
 import java.util.List;
 import okio.ByteString;
 
-public final class EnumOptions extends Message<EnumOptions> {
+public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder> {
   public static final ProtoAdapter<EnumOptions> ADAPTER = ProtoAdapter.newMessageAdapter(EnumOptions.class);
 
   private static final long serialVersionUID = 0L;
