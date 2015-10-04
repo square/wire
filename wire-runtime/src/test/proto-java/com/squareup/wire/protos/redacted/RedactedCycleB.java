@@ -2,22 +2,61 @@
 // Source file: ../wire-runtime/src/test/proto/redacted_test.proto at 44:1
 package com.squareup.wire.protos.redacted;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB.Builder> {
-  public static final ProtoAdapter<RedactedCycleB> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedCycleB.class);
+  public static final ProtoAdapter<RedactedCycleB> ADAPTER = new ProtoAdapter<RedactedCycleB>(FieldEncoding.LENGTH_DELIMITED, RedactedCycleB.class) {
+    @Override
+    public int encodedSize(RedactedCycleB value) {
+      return (value.a != null ? RedactedCycleA.ADAPTER.encodedSize(1, value.a) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, RedactedCycleB value) throws IOException {
+      if (value.a != null) RedactedCycleA.ADAPTER.encodeTagged(writer, 1, value.a);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public RedactedCycleB decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.a(RedactedCycleA.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public RedactedCycleB redact(RedactedCycleB value) {
+      Builder builder = value.newBuilder();
+      if (builder.a != null) builder.a = RedactedCycleA.ADAPTER.redact(builder.a);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.protos.redacted.RedactedCycleA#ADAPTER"
-  )
   public final RedactedCycleA a;
 
   public RedactedCycleB(RedactedCycleA a) {
@@ -55,6 +94,13 @@ public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (a != null) builder.append(", a=").append(a);
+    return builder.replace(0, 2, "RedactedCycleB{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedCycleB, Builder> {

@@ -2,25 +2,63 @@
 // Source file: ../wire-runtime/src/test/proto/edge_cases.proto at 23:1
 package com.squareup.wire.protos.edgecases;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class OneField extends Message<OneField, OneField.Builder> {
-  public static final ProtoAdapter<OneField> ADAPTER = ProtoAdapter.newMessageAdapter(OneField.class);
+  public static final ProtoAdapter<OneField> ADAPTER = new ProtoAdapter<OneField>(FieldEncoding.LENGTH_DELIMITED, OneField.class) {
+    @Override
+    public int encodedSize(OneField value) {
+      return (value.opt_int32 != null ? ProtoAdapter.INT32.encodedSize(1, value.opt_int32) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, OneField value) throws IOException {
+      if (value.opt_int32 != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.opt_int32);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public OneField decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.opt_int32(ProtoAdapter.INT32.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public OneField redact(OneField value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_OPT_INT32 = 0;
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer opt_int32;
 
   public OneField(Integer opt_int32) {
@@ -58,6 +96,13 @@ public final class OneField extends Message<OneField, OneField.Builder> {
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (opt_int32 != null) builder.append(", opt_int32=").append(opt_int32);
+    return builder.replace(0, 2, "OneField{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<OneField, Builder> {

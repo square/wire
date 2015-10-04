@@ -2,13 +2,17 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 79:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
@@ -16,7 +20,71 @@ import okio.ByteString;
  * Describes a message type.
  */
 public final class DescriptorProto extends Message<DescriptorProto, DescriptorProto.Builder> {
-  public static final ProtoAdapter<DescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(DescriptorProto.class);
+  public static final ProtoAdapter<DescriptorProto> ADAPTER = new ProtoAdapter<DescriptorProto>(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class) {
+    @Override
+    public int encodedSize(DescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSize(1, value.name) : 0)
+          + (value.doc != null ? ProtoAdapter.STRING.encodedSize(8, value.doc) : 0)
+          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSize(2, value.field)
+          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSize(6, value.extension)
+          + DescriptorProto.ADAPTER.asRepeated().encodedSize(3, value.nested_type)
+          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSize(4, value.enum_type)
+          + ExtensionRange.ADAPTER.asRepeated().encodedSize(5, value.extension_range)
+          + (value.options != null ? MessageOptions.ADAPTER.encodedSize(7, value.options) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, DescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
+      if (value.doc != null) ProtoAdapter.STRING.encodeTagged(writer, 8, value.doc);
+      if (value.field != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 2, value.field);
+      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 6, value.extension);
+      if (value.nested_type != null) DescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 3, value.nested_type);
+      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 4, value.enum_type);
+      if (value.extension_range != null) ExtensionRange.ADAPTER.asRepeated().encodeTagged(writer, 5, value.extension_range);
+      if (value.options != null) MessageOptions.ADAPTER.encodeTagged(writer, 7, value.options);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public DescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 8: builder.doc(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.field.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
+          case 6: builder.extension.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
+          case 3: builder.nested_type.add(DescriptorProto.ADAPTER.decode(reader)); break;
+          case 4: builder.enum_type.add(EnumDescriptorProto.ADAPTER.decode(reader)); break;
+          case 5: builder.extension_range.add(ExtensionRange.ADAPTER.decode(reader)); break;
+          case 7: builder.options(MessageOptions.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public DescriptorProto redact(DescriptorProto value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.field, FieldDescriptorProto.ADAPTER);
+      redactElements(builder.extension, FieldDescriptorProto.ADAPTER);
+      redactElements(builder.nested_type, DescriptorProto.ADAPTER);
+      redactElements(builder.enum_type, EnumDescriptorProto.ADAPTER);
+      redactElements(builder.extension_range, ExtensionRange.ADAPTER);
+      if (builder.options != null) builder.options = MessageOptions.ADAPTER.redact(builder.options);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -24,60 +92,23 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
   public static final String DEFAULT_DOC = "";
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String name;
 
   /**
    * Doc string for generated code.
    */
-  @WireField(
-      tag = 8,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String doc;
 
-  @WireField(
-      tag = 2,
-      adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<FieldDescriptorProto> field;
 
-  @WireField(
-      tag = 6,
-      adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<FieldDescriptorProto> extension;
 
-  @WireField(
-      tag = 3,
-      adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<DescriptorProto> nested_type;
 
-  @WireField(
-      tag = 4,
-      adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<EnumDescriptorProto> enum_type;
 
-  @WireField(
-      tag = 5,
-      adapter = "com.google.protobuf.DescriptorProto$ExtensionRange#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<ExtensionRange> extension_range;
 
-  @WireField(
-      tag = 7,
-      adapter = "com.google.protobuf.MessageOptions#ADAPTER"
-  )
   public final MessageOptions options;
 
   public DescriptorProto(String name, String doc, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, MessageOptions options) {
@@ -143,6 +174,20 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (name != null) builder.append(", name=").append(name);
+    if (doc != null) builder.append(", doc=").append(doc);
+    if (field != null) builder.append(", field=").append(field);
+    if (extension != null) builder.append(", extension=").append(extension);
+    if (nested_type != null) builder.append(", nested_type=").append(nested_type);
+    if (enum_type != null) builder.append(", enum_type=").append(enum_type);
+    if (extension_range != null) builder.append(", extension_range=").append(extension_range);
+    if (options != null) builder.append(", options=").append(options);
+    return builder.replace(0, 2, "DescriptorProto{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<DescriptorProto, Builder> {
@@ -225,7 +270,47 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   }
 
   public static final class ExtensionRange extends Message<ExtensionRange, ExtensionRange.Builder> {
-    public static final ProtoAdapter<ExtensionRange> ADAPTER = ProtoAdapter.newMessageAdapter(ExtensionRange.class);
+    public static final ProtoAdapter<ExtensionRange> ADAPTER = new ProtoAdapter<ExtensionRange>(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class) {
+      @Override
+      public int encodedSize(ExtensionRange value) {
+        return (value.start != null ? ProtoAdapter.INT32.encodedSize(1, value.start) : 0)
+            + (value.end != null ? ProtoAdapter.INT32.encodedSize(2, value.end) : 0)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, ExtensionRange value) throws IOException {
+        if (value.start != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.start);
+        if (value.end != null) ProtoAdapter.INT32.encodeTagged(writer, 2, value.end);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public ExtensionRange decode(ProtoReader reader) throws IOException {
+        ExtensionRange.Builder builder = new ExtensionRange.Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.start(ProtoAdapter.INT32.decode(reader)); break;
+            case 2: builder.end(ProtoAdapter.INT32.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public ExtensionRange redact(ExtensionRange value) {
+        ExtensionRange.Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    };
 
     private static final long serialVersionUID = 0L;
 
@@ -233,16 +318,8 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     public static final Integer DEFAULT_END = 0;
 
-    @WireField(
-        tag = 1,
-        adapter = "com.squareup.wire.ProtoAdapter#INT32"
-    )
     public final Integer start;
 
-    @WireField(
-        tag = 2,
-        adapter = "com.squareup.wire.ProtoAdapter#INT32"
-    )
     public final Integer end;
 
     public ExtensionRange(Integer start, Integer end) {
@@ -284,6 +361,14 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
         super.hashCode = result;
       }
       return result;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      if (start != null) builder.append(", start=").append(start);
+      if (end != null) builder.append(", end=").append(end);
+      return builder.replace(0, 2, "ExtensionRange{").append('}').toString();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<ExtensionRange, ExtensionRange.Builder> {

@@ -2,11 +2,16 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 51:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
@@ -15,15 +20,48 @@ import okio.ByteString;
  * files it parses.
  */
 public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDescriptorSet.Builder> {
-  public static final ProtoAdapter<FileDescriptorSet> ADAPTER = ProtoAdapter.newMessageAdapter(FileDescriptorSet.class);
+  public static final ProtoAdapter<FileDescriptorSet> ADAPTER = new ProtoAdapter<FileDescriptorSet>(FieldEncoding.LENGTH_DELIMITED, FileDescriptorSet.class) {
+    @Override
+    public int encodedSize(FileDescriptorSet value) {
+      return FileDescriptorProto.ADAPTER.asRepeated().encodedSize(1, value.file)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, FileDescriptorSet value) throws IOException {
+      if (value.file != null) FileDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 1, value.file);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public FileDescriptorSet decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.file.add(FileDescriptorProto.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public FileDescriptorSet redact(FileDescriptorSet value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.file, FileDescriptorProto.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
-  @WireField(
-      tag = 1,
-      adapter = "com.google.protobuf.FileDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<FileDescriptorProto> file;
 
   public FileDescriptorSet(List<FileDescriptorProto> file) {
@@ -61,6 +99,13 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (file != null) builder.append(", file=").append(file);
+    return builder.replace(0, 2, "FileDescriptorSet{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorSet, Builder> {

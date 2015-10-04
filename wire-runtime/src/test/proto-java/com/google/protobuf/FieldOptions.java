@@ -2,22 +2,106 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 332:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
-import com.squareup.wire.WireField;
 import com.squareup.wire.protos.custom_options.FooBar;
+import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Float;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
 public final class FieldOptions extends Message<FieldOptions, FieldOptions.Builder> {
-  public static final ProtoAdapter<FieldOptions> ADAPTER = ProtoAdapter.newMessageAdapter(FieldOptions.class);
+  public static final ProtoAdapter<FieldOptions> ADAPTER = new ProtoAdapter<FieldOptions>(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class) {
+    @Override
+    public int encodedSize(FieldOptions value) {
+      return (value.ctype != null ? CType.ADAPTER.encodedSize(1, value.ctype) : 0)
+          + (value.packed != null ? ProtoAdapter.BOOL.encodedSize(2, value.packed) : 0)
+          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSize(3, value.deprecated) : 0)
+          + (value.experimental_map_key != null ? ProtoAdapter.STRING.encodedSize(9, value.experimental_map_key) : 0)
+          + UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
+          + (value.my_field_option_one != null ? ProtoAdapter.INT32.encodedSize(60001, value.my_field_option_one) : 0)
+          + (value.my_field_option_two != null ? ProtoAdapter.FLOAT.encodedSize(60002, value.my_field_option_two) : 0)
+          + (value.my_field_option_three != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSize(60003, value.my_field_option_three) : 0)
+          + (value.my_field_option_four != null ? FooBar.ADAPTER.encodedSize(60004, value.my_field_option_four) : 0)
+          + (value.redacted != null ? ProtoAdapter.BOOL.encodedSize(22200, value.redacted) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, FieldOptions value) throws IOException {
+      if (value.ctype != null) CType.ADAPTER.encodeTagged(writer, 1, value.ctype);
+      if (value.packed != null) ProtoAdapter.BOOL.encodeTagged(writer, 2, value.packed);
+      if (value.deprecated != null) ProtoAdapter.BOOL.encodeTagged(writer, 3, value.deprecated);
+      if (value.experimental_map_key != null) ProtoAdapter.STRING.encodeTagged(writer, 9, value.experimental_map_key);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
+      if (value.my_field_option_one != null) ProtoAdapter.INT32.encodeTagged(writer, 60001, value.my_field_option_one);
+      if (value.my_field_option_two != null) ProtoAdapter.FLOAT.encodeTagged(writer, 60002, value.my_field_option_two);
+      if (value.my_field_option_three != null) FooBar.FooBarBazEnum.ADAPTER.encodeTagged(writer, 60003, value.my_field_option_three);
+      if (value.my_field_option_four != null) FooBar.ADAPTER.encodeTagged(writer, 60004, value.my_field_option_four);
+      if (value.redacted != null) ProtoAdapter.BOOL.encodeTagged(writer, 22200, value.redacted);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public FieldOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: {
+            try {
+              builder.ctype(CType.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 2: builder.packed(ProtoAdapter.BOOL.decode(reader)); break;
+          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
+          case 9: builder.experimental_map_key(ProtoAdapter.STRING.decode(reader)); break;
+          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 60001: builder.my_field_option_one(ProtoAdapter.INT32.decode(reader)); break;
+          case 60002: builder.my_field_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 60003: {
+            try {
+              builder.my_field_option_three(FooBar.FooBarBazEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 60004: builder.my_field_option_four(FooBar.ADAPTER.decode(reader)); break;
+          case 22200: builder.redacted(ProtoAdapter.BOOL.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public FieldOptions redact(FieldOptions value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      if (builder.my_field_option_four != null) builder.my_field_option_four = FooBar.ADAPTER.redact(builder.my_field_option_four);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -43,10 +127,6 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    * options below.  This option is not yet implemented in the open source
    * release -- sorry, we'll try to include it in a future version!
    */
-  @WireField(
-      tag = 1,
-      adapter = "com.google.protobuf.FieldOptions$CType#ADAPTER"
-  )
   public final CType ctype;
 
   /**
@@ -55,10 +135,6 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    * writing the tag and type for each element, the entire array is encoded as
    * a single length-delimited blob.
    */
-  @WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
-  )
   public final Boolean packed;
 
   /**
@@ -67,10 +143,6 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    * for accessors, or it will be completely ignored; in the very least, this
    * is a formalization for deprecating fields.
    */
-  @WireField(
-      tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
-  )
   public final Boolean deprecated;
 
   /**
@@ -87,53 +159,24 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    * In this situation, the map key for Item will be set to "name".
    * TODO: Fully-implement this, then remove the "experimental_" prefix.
    */
-  @WireField(
-      tag = 9,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String experimental_map_key;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @WireField(
-      tag = 999,
-      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  @WireField(
-      tag = 60001,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer my_field_option_one;
 
-  @WireField(
-      tag = 60002,
-      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
-  )
   public final Float my_field_option_two;
 
-  @WireField(
-      tag = 60003,
-      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
-  )
   public final FooBar.FooBarBazEnum my_field_option_three;
 
-  @WireField(
-      tag = 60004,
-      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
-  )
   public final FooBar my_field_option_four;
 
   /**
    * Fields marked with redacted are not to be logged, generally for PCI or PII.
    */
-  @WireField(
-      tag = 22200,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
-  )
   public final Boolean redacted;
 
   public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, Boolean redacted) {
@@ -207,6 +250,22 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (ctype != null) builder.append(", ctype=").append(ctype);
+    if (packed != null) builder.append(", packed=").append(packed);
+    if (deprecated != null) builder.append(", deprecated=").append(deprecated);
+    if (experimental_map_key != null) builder.append(", experimental_map_key=").append(experimental_map_key);
+    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (my_field_option_one != null) builder.append(", my_field_option_one=").append(my_field_option_one);
+    if (my_field_option_two != null) builder.append(", my_field_option_two=").append(my_field_option_two);
+    if (my_field_option_three != null) builder.append(", my_field_option_three=").append(my_field_option_three);
+    if (my_field_option_four != null) builder.append(", my_field_option_four=").append(my_field_option_four);
+    if (redacted != null) builder.append(", redacted=").append(redacted);
+    return builder.replace(0, 2, "FieldOptions{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FieldOptions, Builder> {

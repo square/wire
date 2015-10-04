@@ -116,32 +116,32 @@ public final class JavaGenerator {
   private final boolean emitOptions;
   private final ImmutableSet<String> enumOptions;
   private final boolean emitAndroid;
-  private final boolean emitFull;
+  private final boolean emitCompact;
 
   private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToJavaName,
       boolean emitOptions, ImmutableSet<String> enumOptions, boolean emitAndroid,
-      boolean emitFull) {
+      boolean emitCompact) {
     this.schema = schema;
     this.nameToJavaName = nameToJavaName;
     this.emitOptions = emitOptions;
     this.enumOptions = enumOptions;
     this.emitAndroid = emitAndroid;
-    this.emitFull = emitFull;
+    this.emitCompact = emitCompact;
   }
 
   public JavaGenerator withOptions(boolean emitOptions, Collection<String> enumOptions) {
     return new JavaGenerator(schema, nameToJavaName, emitOptions,
-        ImmutableSet.copyOf(enumOptions), emitAndroid, emitFull);
+        ImmutableSet.copyOf(enumOptions), emitAndroid, emitCompact);
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
     return new JavaGenerator(schema, nameToJavaName, emitOptions, enumOptions,
-        emitAndroid, emitFull);
+        emitAndroid, emitCompact);
   }
 
-  public JavaGenerator withFull(boolean fullGeneration) {
+  public JavaGenerator withCompact(boolean compactGeneration) {
     return new JavaGenerator(schema, nameToJavaName, emitOptions, enumOptions,
-        emitAndroid, fullGeneration);
+        emitAndroid, compactGeneration);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -434,7 +434,7 @@ public final class JavaGenerator {
 
       String fieldName = nameAllocator.get(field);
       FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldJavaType, fieldName, PUBLIC, FINAL);
-      if (!emitFull) {
+      if (emitCompact) {
         fieldBuilder.addAnnotation(wireFieldAnnotation(field));
       }
       if (!field.documentation().isEmpty()) {
@@ -495,7 +495,7 @@ public final class JavaGenerator {
               .build());
     }
 
-    if (emitFull) {
+    if (!emitCompact) {
       builder.addMethod(messageToString(nameAllocator, type));
     }
 
@@ -515,7 +515,7 @@ public final class JavaGenerator {
       ClassName javaType, ClassName builderJavaType) {
     FieldSpec.Builder result = FieldSpec.builder(adapterOf(javaType), nameAllocator.get("ADAPTER"))
         .addModifiers(PUBLIC, STATIC, FINAL);
-    if (!emitFull) {
+    if (emitCompact) {
       result.initializer("$T.newMessageAdapter($T.class)", ProtoAdapter.class, javaType);
     } else {
       TypeSpec.Builder adapter =

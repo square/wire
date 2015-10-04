@@ -2,12 +2,16 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 187:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
@@ -15,7 +19,55 @@ import okio.ByteString;
  * Describes a service.
  */
 public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto, ServiceDescriptorProto.Builder> {
-  public static final ProtoAdapter<ServiceDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(ServiceDescriptorProto.class);
+  public static final ProtoAdapter<ServiceDescriptorProto> ADAPTER = new ProtoAdapter<ServiceDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, ServiceDescriptorProto.class) {
+    @Override
+    public int encodedSize(ServiceDescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSize(1, value.name) : 0)
+          + MethodDescriptorProto.ADAPTER.asRepeated().encodedSize(2, value.method)
+          + (value.doc != null ? ProtoAdapter.STRING.encodedSize(4, value.doc) : 0)
+          + (value.options != null ? ServiceOptions.ADAPTER.encodedSize(3, value.options) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, ServiceDescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
+      if (value.method != null) MethodDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 2, value.method);
+      if (value.doc != null) ProtoAdapter.STRING.encodeTagged(writer, 4, value.doc);
+      if (value.options != null) ServiceOptions.ADAPTER.encodeTagged(writer, 3, value.options);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public ServiceDescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.method.add(MethodDescriptorProto.ADAPTER.decode(reader)); break;
+          case 4: builder.doc(ProtoAdapter.STRING.decode(reader)); break;
+          case 3: builder.options(ServiceOptions.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public ServiceDescriptorProto redact(ServiceDescriptorProto value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.method, MethodDescriptorProto.ADAPTER);
+      if (builder.options != null) builder.options = ServiceOptions.ADAPTER.redact(builder.options);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -23,32 +75,15 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   public static final String DEFAULT_DOC = "";
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String name;
 
-  @WireField(
-      tag = 2,
-      adapter = "com.google.protobuf.MethodDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<MethodDescriptorProto> method;
 
   /**
    * Doc string for generated code.
    */
-  @WireField(
-      tag = 4,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String doc;
 
-  @WireField(
-      tag = 3,
-      adapter = "com.google.protobuf.ServiceOptions#ADAPTER"
-  )
   public final ServiceOptions options;
 
   public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, String doc, ServiceOptions options) {
@@ -98,6 +133,16 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (name != null) builder.append(", name=").append(name);
+    if (method != null) builder.append(", method=").append(method);
+    if (doc != null) builder.append(", doc=").append(doc);
+    if (options != null) builder.append(", options=").append(options);
+    return builder.replace(0, 2, "ServiceDescriptorProto{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<ServiceDescriptorProto, Builder> {

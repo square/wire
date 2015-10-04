@@ -2,10 +2,13 @@
 // Source file: ../wire-runtime/src/test/proto/custom_options.proto at 23:1
 package com.squareup.wire.protos.custom_options;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
-import com.squareup.wire.WireField;
+import java.io.IOException;
 import java.lang.Double;
 import java.lang.Float;
 import java.lang.Integer;
@@ -13,11 +16,89 @@ import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
 public final class FooBar extends Message<FooBar, FooBar.Builder> {
-  public static final ProtoAdapter<FooBar> ADAPTER = ProtoAdapter.newMessageAdapter(FooBar.class);
+  public static final ProtoAdapter<FooBar> ADAPTER = new ProtoAdapter<FooBar>(FieldEncoding.LENGTH_DELIMITED, FooBar.class) {
+    @Override
+    public int encodedSize(FooBar value) {
+      return (value.foo != null ? ProtoAdapter.INT32.encodedSize(1, value.foo) : 0)
+          + (value.bar != null ? ProtoAdapter.STRING.encodedSize(2, value.bar) : 0)
+          + (value.baz != null ? Nested.ADAPTER.encodedSize(3, value.baz) : 0)
+          + (value.qux != null ? ProtoAdapter.UINT64.encodedSize(4, value.qux) : 0)
+          + ProtoAdapter.FLOAT.asRepeated().encodedSize(5, value.fred)
+          + (value.daisy != null ? ProtoAdapter.DOUBLE.encodedSize(6, value.daisy) : 0)
+          + FooBar.ADAPTER.asRepeated().encodedSize(7, value.nested)
+          + (value.ext != null ? FooBarBazEnum.ADAPTER.encodedSize(101, value.ext) : 0)
+          + FooBarBazEnum.ADAPTER.asRepeated().encodedSize(102, value.rep)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, FooBar value) throws IOException {
+      if (value.foo != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.foo);
+      if (value.bar != null) ProtoAdapter.STRING.encodeTagged(writer, 2, value.bar);
+      if (value.baz != null) Nested.ADAPTER.encodeTagged(writer, 3, value.baz);
+      if (value.qux != null) ProtoAdapter.UINT64.encodeTagged(writer, 4, value.qux);
+      if (value.fred != null) ProtoAdapter.FLOAT.asRepeated().encodeTagged(writer, 5, value.fred);
+      if (value.daisy != null) ProtoAdapter.DOUBLE.encodeTagged(writer, 6, value.daisy);
+      if (value.nested != null) FooBar.ADAPTER.asRepeated().encodeTagged(writer, 7, value.nested);
+      if (value.ext != null) FooBarBazEnum.ADAPTER.encodeTagged(writer, 101, value.ext);
+      if (value.rep != null) FooBarBazEnum.ADAPTER.asRepeated().encodeTagged(writer, 102, value.rep);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public FooBar decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.foo(ProtoAdapter.INT32.decode(reader)); break;
+          case 2: builder.bar(ProtoAdapter.STRING.decode(reader)); break;
+          case 3: builder.baz(Nested.ADAPTER.decode(reader)); break;
+          case 4: builder.qux(ProtoAdapter.UINT64.decode(reader)); break;
+          case 5: builder.fred.add(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 6: builder.daisy(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 7: builder.nested.add(FooBar.ADAPTER.decode(reader)); break;
+          case 101: {
+            try {
+              builder.ext(FooBarBazEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 102: {
+            try {
+              builder.rep.add(FooBarBazEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public FooBar redact(FooBar value) {
+      Builder builder = value.newBuilder();
+      if (builder.baz != null) builder.baz = Nested.ADAPTER.redact(builder.baz);
+      redactElements(builder.nested, FooBar.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -31,61 +112,22 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   public static final FooBarBazEnum DEFAULT_EXT = FooBarBazEnum.FOO;
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer foo;
 
-  @WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String bar;
 
-  @WireField(
-      tag = 3,
-      adapter = "com.squareup.wire.protos.custom_options.FooBar$Nested#ADAPTER"
-  )
   public final Nested baz;
 
-  @WireField(
-      tag = 4,
-      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
-  )
   public final Long qux;
 
-  @WireField(
-      tag = 5,
-      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      label = WireField.Label.REPEATED
-  )
   public final List<Float> fred;
 
-  @WireField(
-      tag = 6,
-      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
-  )
   public final Double daisy;
 
-  @WireField(
-      tag = 7,
-      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<FooBar> nested;
 
-  @WireField(
-      tag = 101,
-      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
-  )
   public final FooBarBazEnum ext;
 
-  @WireField(
-      tag = 102,
-      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<FooBarBazEnum> rep;
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep) {
@@ -155,6 +197,21 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (foo != null) builder.append(", foo=").append(foo);
+    if (bar != null) builder.append(", bar=").append(bar);
+    if (baz != null) builder.append(", baz=").append(baz);
+    if (qux != null) builder.append(", qux=").append(qux);
+    if (fred != null) builder.append(", fred=").append(fred);
+    if (daisy != null) builder.append(", daisy=").append(daisy);
+    if (nested != null) builder.append(", nested=").append(nested);
+    if (ext != null) builder.append(", ext=").append(ext);
+    if (rep != null) builder.append(", rep=").append(rep);
+    return builder.replace(0, 2, "FooBar{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FooBar, Builder> {
@@ -237,16 +294,56 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   }
 
   public static final class Nested extends Message<Nested, Nested.Builder> {
-    public static final ProtoAdapter<Nested> ADAPTER = ProtoAdapter.newMessageAdapter(Nested.class);
+    public static final ProtoAdapter<Nested> ADAPTER = new ProtoAdapter<Nested>(FieldEncoding.LENGTH_DELIMITED, Nested.class) {
+      @Override
+      public int encodedSize(Nested value) {
+        return (value.value != null ? FooBarBazEnum.ADAPTER.encodedSize(1, value.value) : 0)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, Nested value) throws IOException {
+        if (value.value != null) FooBarBazEnum.ADAPTER.encodeTagged(writer, 1, value.value);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public Nested decode(ProtoReader reader) throws IOException {
+        Nested.Builder builder = new Nested.Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: {
+              try {
+                builder.value(FooBarBazEnum.ADAPTER.decode(reader));
+              } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+                builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+              }
+              break;
+            }
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public Nested redact(Nested value) {
+        Nested.Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    };
 
     private static final long serialVersionUID = 0L;
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
 
-    @WireField(
-        tag = 1,
-        adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
-    )
     public final FooBarBazEnum value;
 
     public Nested(FooBarBazEnum value) {
@@ -286,6 +383,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       return result;
     }
 
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      if (value != null) builder.append(", value=").append(value);
+      return builder.replace(0, 2, "Nested{").append('}').toString();
+    }
+
     public static final class Builder extends com.squareup.wire.Message.Builder<Nested, Nested.Builder> {
       public FooBarBazEnum value;
 
@@ -305,15 +409,47 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   }
 
   public static final class More extends Message<More, More.Builder> {
-    public static final ProtoAdapter<More> ADAPTER = ProtoAdapter.newMessageAdapter(More.class);
+    public static final ProtoAdapter<More> ADAPTER = new ProtoAdapter<More>(FieldEncoding.LENGTH_DELIMITED, More.class) {
+      @Override
+      public int encodedSize(More value) {
+        return ProtoAdapter.INT32.asRepeated().encodedSize(1, value.serial)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, More value) throws IOException {
+        if (value.serial != null) ProtoAdapter.INT32.asRepeated().encodeTagged(writer, 1, value.serial);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public More decode(ProtoReader reader) throws IOException {
+        More.Builder builder = new More.Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.serial.add(ProtoAdapter.INT32.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public More redact(More value) {
+        More.Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    };
 
     private static final long serialVersionUID = 0L;
 
-    @WireField(
-        tag = 1,
-        adapter = "com.squareup.wire.ProtoAdapter#INT32",
-        label = WireField.Label.REPEATED
-    )
     public final List<Integer> serial;
 
     public More(List<Integer> serial) {
@@ -351,6 +487,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
         super.hashCode = result;
       }
       return result;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      if (serial != null) builder.append(", serial=").append(serial);
+      return builder.replace(0, 2, "More{").append('}').toString();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<More, More.Builder> {

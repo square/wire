@@ -2,19 +2,70 @@
 // Source file: ../wire-runtime/src/test/proto/person.proto at 21:1
 package com.squareup.wire.protos.person;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
-import com.squareup.wire.WireField;
+import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
 public final class Person extends Message<Person, Person.Builder> {
-  public static final ProtoAdapter<Person> ADAPTER = ProtoAdapter.newMessageAdapter(Person.class);
+  public static final ProtoAdapter<Person> ADAPTER = new ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person.class) {
+    @Override
+    public int encodedSize(Person value) {
+      return ProtoAdapter.STRING.encodedSize(1, value.name)
+          + ProtoAdapter.INT32.encodedSize(2, value.id)
+          + (value.email != null ? ProtoAdapter.STRING.encodedSize(3, value.email) : 0)
+          + PhoneNumber.ADAPTER.asRepeated().encodedSize(4, value.phone)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Person value) throws IOException {
+      ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
+      ProtoAdapter.INT32.encodeTagged(writer, 2, value.id);
+      if (value.email != null) ProtoAdapter.STRING.encodeTagged(writer, 3, value.email);
+      if (value.phone != null) PhoneNumber.ADAPTER.asRepeated().encodeTagged(writer, 4, value.phone);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Person decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.id(ProtoAdapter.INT32.decode(reader)); break;
+          case 3: builder.email(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.phone.add(PhoneNumber.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Person redact(Person value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.phone, PhoneNumber.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -27,40 +78,21 @@ public final class Person extends Message<Person, Person.Builder> {
   /**
    * The customer's full name.
    */
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REQUIRED
-  )
   public final String name;
 
   /**
    * The customer's ID number.
    */
-  @WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REQUIRED
-  )
   public final Integer id;
 
   /**
    * Email address for the customer.
    */
-  @WireField(
-      tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String email;
 
   /**
    * A list of the customer's phone numbers.
    */
-  @WireField(
-      tag = 4,
-      adapter = "com.squareup.wire.protos.person.Person$PhoneNumber#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<PhoneNumber> phone;
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
@@ -110,6 +142,16 @@ public final class Person extends Message<Person, Person.Builder> {
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (name != null) builder.append(", name=").append(name);
+    if (id != null) builder.append(", id=").append(id);
+    if (email != null) builder.append(", email=").append(email);
+    if (phone != null) builder.append(", phone=").append(phone);
+    return builder.replace(0, 2, "Person{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Person, Builder> {
@@ -206,7 +248,54 @@ public final class Person extends Message<Person, Person.Builder> {
   }
 
   public static final class PhoneNumber extends Message<PhoneNumber, PhoneNumber.Builder> {
-    public static final ProtoAdapter<PhoneNumber> ADAPTER = ProtoAdapter.newMessageAdapter(PhoneNumber.class);
+    public static final ProtoAdapter<PhoneNumber> ADAPTER = new ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class) {
+      @Override
+      public int encodedSize(PhoneNumber value) {
+        return ProtoAdapter.STRING.encodedSize(1, value.number)
+            + (value.type != null ? PhoneType.ADAPTER.encodedSize(2, value.type) : 0)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, PhoneNumber value) throws IOException {
+        ProtoAdapter.STRING.encodeTagged(writer, 1, value.number);
+        if (value.type != null) PhoneType.ADAPTER.encodeTagged(writer, 2, value.type);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public PhoneNumber decode(ProtoReader reader) throws IOException {
+        PhoneNumber.Builder builder = new PhoneNumber.Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.number(ProtoAdapter.STRING.decode(reader)); break;
+            case 2: {
+              try {
+                builder.type(PhoneType.ADAPTER.decode(reader));
+              } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+                builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+              }
+              break;
+            }
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public PhoneNumber redact(PhoneNumber value) {
+        PhoneNumber.Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    };
 
     private static final long serialVersionUID = 0L;
 
@@ -217,20 +306,11 @@ public final class Person extends Message<Person, Person.Builder> {
     /**
      * The customer's phone number.
      */
-    @WireField(
-        tag = 1,
-        adapter = "com.squareup.wire.ProtoAdapter#STRING",
-        label = WireField.Label.REQUIRED
-    )
     public final String number;
 
     /**
      * The type of phone stored here.
      */
-    @WireField(
-        tag = 2,
-        adapter = "com.squareup.wire.protos.person.Person$PhoneType#ADAPTER"
-    )
     public final PhoneType type;
 
     public PhoneNumber(String number, PhoneType type) {
@@ -272,6 +352,14 @@ public final class Person extends Message<Person, Person.Builder> {
         super.hashCode = result;
       }
       return result;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      if (number != null) builder.append(", number=").append(number);
+      if (type != null) builder.append(", type=").append(type);
+      return builder.replace(0, 2, "PhoneNumber{").append('}').toString();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<PhoneNumber, PhoneNumber.Builder> {

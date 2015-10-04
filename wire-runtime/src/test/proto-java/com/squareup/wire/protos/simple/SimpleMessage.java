@@ -2,17 +2,21 @@
 // Source file: ../wire-runtime/src/test/proto/simple_message.proto at 24:1
 package com.squareup.wire.protos.simple;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
-import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
+import java.io.IOException;
 import java.lang.Deprecated;
 import java.lang.Double;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
@@ -20,7 +24,100 @@ import okio.ByteString;
  * A message for testing.
  */
 public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Builder> {
-  public static final ProtoAdapter<SimpleMessage> ADAPTER = ProtoAdapter.newMessageAdapter(SimpleMessage.class);
+  public static final ProtoAdapter<SimpleMessage> ADAPTER = new ProtoAdapter<SimpleMessage>(FieldEncoding.LENGTH_DELIMITED, SimpleMessage.class) {
+    @Override
+    public int encodedSize(SimpleMessage value) {
+      return (value.optional_int32 != null ? ProtoAdapter.INT32.encodedSize(1, value.optional_int32) : 0)
+          + (value.optional_nested_msg != null ? NestedMessage.ADAPTER.encodedSize(2, value.optional_nested_msg) : 0)
+          + (value.optional_external_msg != null ? ExternalMessage.ADAPTER.encodedSize(3, value.optional_external_msg) : 0)
+          + (value.default_nested_enum != null ? NestedEnum.ADAPTER.encodedSize(4, value.default_nested_enum) : 0)
+          + ProtoAdapter.INT32.encodedSize(5, value.required_int32)
+          + ProtoAdapter.DOUBLE.asRepeated().encodedSize(6, value.repeated_double)
+          + (value.default_foreign_enum != null ? ForeignEnum.ADAPTER.encodedSize(7, value.default_foreign_enum) : 0)
+          + (value.no_default_foreign_enum != null ? ForeignEnum.ADAPTER.encodedSize(8, value.no_default_foreign_enum) : 0)
+          + (value.package_ != null ? ProtoAdapter.STRING.encodedSize(9, value.package_) : 0)
+          + (value.result != null ? ProtoAdapter.STRING.encodedSize(10, value.result) : 0)
+          + (value.other != null ? ProtoAdapter.STRING.encodedSize(11, value.other) : 0)
+          + (value.o != null ? ProtoAdapter.STRING.encodedSize(12, value.o) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, SimpleMessage value) throws IOException {
+      if (value.optional_int32 != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.optional_int32);
+      if (value.optional_nested_msg != null) NestedMessage.ADAPTER.encodeTagged(writer, 2, value.optional_nested_msg);
+      if (value.optional_external_msg != null) ExternalMessage.ADAPTER.encodeTagged(writer, 3, value.optional_external_msg);
+      if (value.default_nested_enum != null) NestedEnum.ADAPTER.encodeTagged(writer, 4, value.default_nested_enum);
+      ProtoAdapter.INT32.encodeTagged(writer, 5, value.required_int32);
+      if (value.repeated_double != null) ProtoAdapter.DOUBLE.asRepeated().encodeTagged(writer, 6, value.repeated_double);
+      if (value.default_foreign_enum != null) ForeignEnum.ADAPTER.encodeTagged(writer, 7, value.default_foreign_enum);
+      if (value.no_default_foreign_enum != null) ForeignEnum.ADAPTER.encodeTagged(writer, 8, value.no_default_foreign_enum);
+      if (value.package_ != null) ProtoAdapter.STRING.encodeTagged(writer, 9, value.package_);
+      if (value.result != null) ProtoAdapter.STRING.encodeTagged(writer, 10, value.result);
+      if (value.other != null) ProtoAdapter.STRING.encodeTagged(writer, 11, value.other);
+      if (value.o != null) ProtoAdapter.STRING.encodeTagged(writer, 12, value.o);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public SimpleMessage decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.optional_int32(ProtoAdapter.INT32.decode(reader)); break;
+          case 2: builder.optional_nested_msg(NestedMessage.ADAPTER.decode(reader)); break;
+          case 3: builder.optional_external_msg(ExternalMessage.ADAPTER.decode(reader)); break;
+          case 4: {
+            try {
+              builder.default_nested_enum(NestedEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 5: builder.required_int32(ProtoAdapter.INT32.decode(reader)); break;
+          case 6: builder.repeated_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 7: {
+            try {
+              builder.default_foreign_enum(ForeignEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 8: {
+            try {
+              builder.no_default_foreign_enum(ForeignEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 9: builder.package_(ProtoAdapter.STRING.decode(reader)); break;
+          case 10: builder.result(ProtoAdapter.STRING.decode(reader)); break;
+          case 11: builder.other(ProtoAdapter.STRING.decode(reader)); break;
+          case 12: builder.o(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public SimpleMessage redact(SimpleMessage value) {
+      Builder builder = value.newBuilder();
+      if (builder.optional_nested_msg != null) builder.optional_nested_msg = NestedMessage.ADAPTER.redact(builder.optional_nested_msg);
+      if (builder.optional_external_msg != null) builder.optional_external_msg = ExternalMessage.ADAPTER.redact(builder.optional_external_msg);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -45,112 +142,60 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
   /**
    * An optional int32
    */
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer optional_int32;
 
   /**
    * An optional NestedMessage, deprecated
    */
-  @WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedMessage#ADAPTER",
-      deprecated = true
-  )
   @Deprecated
   public final NestedMessage optional_nested_msg;
 
   /**
    * An optional ExternalMessage
    */
-  @WireField(
-      tag = 3,
-      adapter = "com.squareup.wire.protos.simple.ExternalMessage#ADAPTER"
-  )
   public final ExternalMessage optional_external_msg;
 
-  @WireField(
-      tag = 4,
-      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedEnum#ADAPTER"
-  )
   public final NestedEnum default_nested_enum;
 
   /**
    * A required int32
    */
-  @WireField(
-      tag = 5,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REQUIRED
-  )
   public final Integer required_int32;
 
   /**
    * A repeated double, deprecated
    */
-  @WireField(
-      tag = 6,
-      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      label = WireField.Label.REPEATED,
-      deprecated = true
-  )
   @Deprecated
   public final List<Double> repeated_double;
 
   /**
    * enum from another package with an explicit default
    */
-  @WireField(
-      tag = 7,
-      adapter = "com.squareup.wire.protos.foreign.ForeignEnum#ADAPTER"
-  )
   public final ForeignEnum default_foreign_enum;
 
   /**
    * enum from another package without an explicit default
    */
-  @WireField(
-      tag = 8,
-      adapter = "com.squareup.wire.protos.foreign.ForeignEnum#ADAPTER"
-  )
   public final ForeignEnum no_default_foreign_enum;
 
   /**
    * field with the same name as a Java keyword
    */
-  @WireField(
-      tag = 9,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String package_;
 
   /**
    * field with the name "result"
    */
-  @WireField(
-      tag = 10,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String result;
 
   /**
    * field with the name "other"
    */
-  @WireField(
-      tag = 11,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String other;
 
   /**
    * field with the name "o"
    */
-  @WireField(
-      tag = 12,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String o;
 
   public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String package_, String result, String other, String o) {
@@ -232,6 +277,24 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       super.hashCode = result_;
     }
     return result_;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (optional_int32 != null) builder.append(", optional_int32=").append(optional_int32);
+    if (optional_nested_msg != null) builder.append(", optional_nested_msg=").append(optional_nested_msg);
+    if (optional_external_msg != null) builder.append(", optional_external_msg=").append(optional_external_msg);
+    if (default_nested_enum != null) builder.append(", default_nested_enum=").append(default_nested_enum);
+    if (required_int32 != null) builder.append(", required_int32=").append(required_int32);
+    if (repeated_double != null) builder.append(", repeated_double=").append(repeated_double);
+    if (default_foreign_enum != null) builder.append(", default_foreign_enum=").append(default_foreign_enum);
+    if (no_default_foreign_enum != null) builder.append(", no_default_foreign_enum=").append(no_default_foreign_enum);
+    if (package_ != null) builder.append(", package=").append(package_);
+    if (result != null) builder.append(", result=").append(result);
+    if (other != null) builder.append(", other=").append(other);
+    if (o != null) builder.append(", o=").append(o);
+    return builder.replace(0, 2, "SimpleMessage{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<SimpleMessage, Builder> {
@@ -369,7 +432,44 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
   }
 
   public static final class NestedMessage extends Message<NestedMessage, NestedMessage.Builder> {
-    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class);
+    public static final ProtoAdapter<NestedMessage> ADAPTER = new ProtoAdapter<NestedMessage>(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class) {
+      @Override
+      public int encodedSize(NestedMessage value) {
+        return (value.bb != null ? ProtoAdapter.INT32.encodedSize(1, value.bb) : 0)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, NestedMessage value) throws IOException {
+        if (value.bb != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.bb);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public NestedMessage decode(ProtoReader reader) throws IOException {
+        NestedMessage.Builder builder = new NestedMessage.Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.bb(ProtoAdapter.INT32.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public NestedMessage redact(NestedMessage value) {
+        NestedMessage.Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    };
 
     private static final long serialVersionUID = 0L;
 
@@ -378,10 +478,6 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     /**
      * An optional int32
      */
-    @WireField(
-        tag = 1,
-        adapter = "com.squareup.wire.ProtoAdapter#INT32"
-    )
     public final Integer bb;
 
     public NestedMessage(Integer bb) {
@@ -419,6 +515,13 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
         super.hashCode = result;
       }
       return result;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      if (bb != null) builder.append(", bb=").append(bb);
+      return builder.replace(0, 2, "NestedMessage{").append('}').toString();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, NestedMessage.Builder> {

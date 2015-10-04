@@ -2,14 +2,54 @@
 // Source file: ../wire-runtime/src/test/proto/service_root.proto at 7:1
 package com.squareup.wire.protos.roots;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class UnnecessaryResponse extends Message<UnnecessaryResponse, UnnecessaryResponse.Builder> {
-  public static final ProtoAdapter<UnnecessaryResponse> ADAPTER = ProtoAdapter.newMessageAdapter(UnnecessaryResponse.class);
+  public static final ProtoAdapter<UnnecessaryResponse> ADAPTER = new ProtoAdapter<UnnecessaryResponse>(FieldEncoding.LENGTH_DELIMITED, UnnecessaryResponse.class) {
+    @Override
+    public int encodedSize(UnnecessaryResponse value) {
+      return value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, UnnecessaryResponse value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public UnnecessaryResponse decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public UnnecessaryResponse redact(UnnecessaryResponse value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -36,6 +76,12 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
   @Override
   public int hashCode() {
     return unknownFields().hashCode();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    return builder.replace(0, 2, "UnnecessaryResponse{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<UnnecessaryResponse, Builder> {

@@ -2,15 +2,19 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 431:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
@@ -23,7 +27,63 @@ import okio.ByteString;
  * in them.
  */
 public final class UninterpretedOption extends Message<UninterpretedOption, UninterpretedOption.Builder> {
-  public static final ProtoAdapter<UninterpretedOption> ADAPTER = ProtoAdapter.newMessageAdapter(UninterpretedOption.class);
+  public static final ProtoAdapter<UninterpretedOption> ADAPTER = new ProtoAdapter<UninterpretedOption>(FieldEncoding.LENGTH_DELIMITED, UninterpretedOption.class) {
+    @Override
+    public int encodedSize(UninterpretedOption value) {
+      return NamePart.ADAPTER.asRepeated().encodedSize(2, value.name)
+          + (value.identifier_value != null ? ProtoAdapter.STRING.encodedSize(3, value.identifier_value) : 0)
+          + (value.positive_int_value != null ? ProtoAdapter.UINT64.encodedSize(4, value.positive_int_value) : 0)
+          + (value.negative_int_value != null ? ProtoAdapter.INT64.encodedSize(5, value.negative_int_value) : 0)
+          + (value.double_value != null ? ProtoAdapter.DOUBLE.encodedSize(6, value.double_value) : 0)
+          + (value.string_value != null ? ProtoAdapter.BYTES.encodedSize(7, value.string_value) : 0)
+          + (value.aggregate_value != null ? ProtoAdapter.STRING.encodedSize(8, value.aggregate_value) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, UninterpretedOption value) throws IOException {
+      if (value.name != null) NamePart.ADAPTER.asRepeated().encodeTagged(writer, 2, value.name);
+      if (value.identifier_value != null) ProtoAdapter.STRING.encodeTagged(writer, 3, value.identifier_value);
+      if (value.positive_int_value != null) ProtoAdapter.UINT64.encodeTagged(writer, 4, value.positive_int_value);
+      if (value.negative_int_value != null) ProtoAdapter.INT64.encodeTagged(writer, 5, value.negative_int_value);
+      if (value.double_value != null) ProtoAdapter.DOUBLE.encodeTagged(writer, 6, value.double_value);
+      if (value.string_value != null) ProtoAdapter.BYTES.encodeTagged(writer, 7, value.string_value);
+      if (value.aggregate_value != null) ProtoAdapter.STRING.encodeTagged(writer, 8, value.aggregate_value);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public UninterpretedOption decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 2: builder.name.add(NamePart.ADAPTER.decode(reader)); break;
+          case 3: builder.identifier_value(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.positive_int_value(ProtoAdapter.UINT64.decode(reader)); break;
+          case 5: builder.negative_int_value(ProtoAdapter.INT64.decode(reader)); break;
+          case 6: builder.double_value(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 7: builder.string_value(ProtoAdapter.BYTES.decode(reader)); break;
+          case 8: builder.aggregate_value(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public UninterpretedOption redact(UninterpretedOption value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.name, NamePart.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -39,51 +99,22 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
   public static final String DEFAULT_AGGREGATE_VALUE = "";
 
-  @WireField(
-      tag = 2,
-      adapter = "com.google.protobuf.UninterpretedOption$NamePart#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<NamePart> name;
 
   /**
    * The value of the uninterpreted option, in whatever type the tokenizer
    * identified it as during parsing. Exactly one of these should be set.
    */
-  @WireField(
-      tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String identifier_value;
 
-  @WireField(
-      tag = 4,
-      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
-  )
   public final Long positive_int_value;
 
-  @WireField(
-      tag = 5,
-      adapter = "com.squareup.wire.ProtoAdapter#INT64"
-  )
   public final Long negative_int_value;
 
-  @WireField(
-      tag = 6,
-      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
-  )
   public final Double double_value;
 
-  @WireField(
-      tag = 7,
-      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
-  )
   public final ByteString string_value;
 
-  @WireField(
-      tag = 8,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String aggregate_value;
 
   public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value) {
@@ -145,6 +176,19 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (name != null) builder.append(", name=").append(name);
+    if (identifier_value != null) builder.append(", identifier_value=").append(identifier_value);
+    if (positive_int_value != null) builder.append(", positive_int_value=").append(positive_int_value);
+    if (negative_int_value != null) builder.append(", negative_int_value=").append(negative_int_value);
+    if (double_value != null) builder.append(", double_value=").append(double_value);
+    if (string_value != null) builder.append(", string_value=").append(string_value);
+    if (aggregate_value != null) builder.append(", aggregate_value=").append(aggregate_value);
+    return builder.replace(0, 2, "UninterpretedOption{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<UninterpretedOption, Builder> {
@@ -220,7 +264,47 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
    * "foo.(bar.baz).qux".
    */
   public static final class NamePart extends Message<NamePart, NamePart.Builder> {
-    public static final ProtoAdapter<NamePart> ADAPTER = ProtoAdapter.newMessageAdapter(NamePart.class);
+    public static final ProtoAdapter<NamePart> ADAPTER = new ProtoAdapter<NamePart>(FieldEncoding.LENGTH_DELIMITED, NamePart.class) {
+      @Override
+      public int encodedSize(NamePart value) {
+        return ProtoAdapter.STRING.encodedSize(1, value.name_part)
+            + ProtoAdapter.BOOL.encodedSize(2, value.is_extension)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, NamePart value) throws IOException {
+        ProtoAdapter.STRING.encodeTagged(writer, 1, value.name_part);
+        ProtoAdapter.BOOL.encodeTagged(writer, 2, value.is_extension);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public NamePart decode(ProtoReader reader) throws IOException {
+        NamePart.Builder builder = new NamePart.Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.name_part(ProtoAdapter.STRING.decode(reader)); break;
+            case 2: builder.is_extension(ProtoAdapter.BOOL.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public NamePart redact(NamePart value) {
+        NamePart.Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    };
 
     private static final long serialVersionUID = 0L;
 
@@ -228,18 +312,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
     public static final Boolean DEFAULT_IS_EXTENSION = false;
 
-    @WireField(
-        tag = 1,
-        adapter = "com.squareup.wire.ProtoAdapter#STRING",
-        label = WireField.Label.REQUIRED
-    )
     public final String name_part;
 
-    @WireField(
-        tag = 2,
-        adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-        label = WireField.Label.REQUIRED
-    )
     public final Boolean is_extension;
 
     public NamePart(String name_part, Boolean is_extension) {
@@ -281,6 +355,14 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
         super.hashCode = result;
       }
       return result;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      if (name_part != null) builder.append(", name_part=").append(name_part);
+      if (is_extension != null) builder.append(", is_extension=").append(is_extension);
+      return builder.replace(0, 2, "NamePart{").append('}').toString();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<NamePart, NamePart.Builder> {

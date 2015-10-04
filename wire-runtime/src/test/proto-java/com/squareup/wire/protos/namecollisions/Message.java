@@ -2,15 +2,83 @@
 // Source file: ../wire-runtime/src/test/proto/name_collisions.proto at 20:1
 package com.squareup.wire.protos.namecollisions;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class Message extends com.squareup.wire.Message<Message, Message.Builder> {
-  public static final ProtoAdapter<Message> ADAPTER = ProtoAdapter.newMessageAdapter(Message.class);
+  public static final ProtoAdapter<Message> ADAPTER = new ProtoAdapter<Message>(FieldEncoding.LENGTH_DELIMITED, Message.class) {
+    @Override
+    public int encodedSize(Message value) {
+      return (value.unknownFields != null ? ProtoAdapter.STRING.encodedSize(1, value.unknownFields) : 0)
+          + (value.other != null ? ProtoAdapter.STRING.encodedSize(2, value.other) : 0)
+          + (value.o != null ? ProtoAdapter.STRING.encodedSize(3, value.o) : 0)
+          + (value.result != null ? ProtoAdapter.STRING.encodedSize(4, value.result) : 0)
+          + (value.hashCode != null ? ProtoAdapter.STRING.encodedSize(5, value.hashCode) : 0)
+          + (value.serialVersionUID_ != null ? ProtoAdapter.STRING.encodedSize(6, value.serialVersionUID_) : 0)
+          + (value.ADAPTER_ != null ? ProtoAdapter.STRING.encodedSize(7, value.ADAPTER_) : 0)
+          + (value.MESSAGE_OPTIONS_ != null ? ProtoAdapter.STRING.encodedSize(8, value.MESSAGE_OPTIONS_) : 0)
+          + (value.this_ != null ? ProtoAdapter.STRING.encodedSize(9, value.this_) : 0)
+          + (value.message != null ? ProtoAdapter.STRING.encodedSize(10, value.message) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Message value) throws IOException {
+      if (value.unknownFields != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.unknownFields);
+      if (value.other != null) ProtoAdapter.STRING.encodeTagged(writer, 2, value.other);
+      if (value.o != null) ProtoAdapter.STRING.encodeTagged(writer, 3, value.o);
+      if (value.result != null) ProtoAdapter.STRING.encodeTagged(writer, 4, value.result);
+      if (value.hashCode != null) ProtoAdapter.STRING.encodeTagged(writer, 5, value.hashCode);
+      if (value.serialVersionUID_ != null) ProtoAdapter.STRING.encodeTagged(writer, 6, value.serialVersionUID_);
+      if (value.ADAPTER_ != null) ProtoAdapter.STRING.encodeTagged(writer, 7, value.ADAPTER_);
+      if (value.MESSAGE_OPTIONS_ != null) ProtoAdapter.STRING.encodeTagged(writer, 8, value.MESSAGE_OPTIONS_);
+      if (value.this_ != null) ProtoAdapter.STRING.encodeTagged(writer, 9, value.this_);
+      if (value.message != null) ProtoAdapter.STRING.encodeTagged(writer, 10, value.message);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Message decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.unknownFields(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.other(ProtoAdapter.STRING.decode(reader)); break;
+          case 3: builder.o(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.result(ProtoAdapter.STRING.decode(reader)); break;
+          case 5: builder.hashCode(ProtoAdapter.STRING.decode(reader)); break;
+          case 6: builder.serialVersionUID_(ProtoAdapter.STRING.decode(reader)); break;
+          case 7: builder.ADAPTER_(ProtoAdapter.STRING.decode(reader)); break;
+          case 8: builder.MESSAGE_OPTIONS_(ProtoAdapter.STRING.decode(reader)); break;
+          case 9: builder.this_(ProtoAdapter.STRING.decode(reader)); break;
+          case 10: builder.message(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Message redact(Message value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -34,64 +102,24 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
   public static final String DEFAULT_MESSAGE = "";
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String unknownFields;
 
-  @WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String other;
 
-  @WireField(
-      tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String o;
 
-  @WireField(
-      tag = 4,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String result;
 
-  @WireField(
-      tag = 5,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String hashCode;
 
-  @WireField(
-      tag = 6,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String serialVersionUID_;
 
-  @WireField(
-      tag = 7,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String ADAPTER_;
 
-  @WireField(
-      tag = 8,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String MESSAGE_OPTIONS_;
 
-  @WireField(
-      tag = 9,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String this_;
 
-  @WireField(
-      tag = 10,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String message;
 
   public Message(String unknownFields, String other, String o, String result, String hashCode, String serialVersionUID_, String ADAPTER_, String MESSAGE_OPTIONS_, String this_, String message) {
@@ -165,6 +193,22 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
       super.hashCode = result_;
     }
     return result_;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (unknownFields != null) builder.append(", unknownFields=").append(unknownFields);
+    if (other != null) builder.append(", other=").append(other);
+    if (o != null) builder.append(", o=").append(o);
+    if (result != null) builder.append(", result=").append(result);
+    if (hashCode != null) builder.append(", hashCode=").append(hashCode);
+    if (serialVersionUID_ != null) builder.append(", serialVersionUID=").append(serialVersionUID_);
+    if (ADAPTER_ != null) builder.append(", ADAPTER=").append(ADAPTER_);
+    if (MESSAGE_OPTIONS_ != null) builder.append(", MESSAGE_OPTIONS=").append(MESSAGE_OPTIONS_);
+    if (this_ != null) builder.append(", this=").append(this_);
+    if (message != null) builder.append(", message=").append(message);
+    return builder.replace(0, 2, "Message{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Message, Builder> {

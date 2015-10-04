@@ -97,11 +97,11 @@ public class WireCompilerTest {
     }
   }
 
-  private void testProtoFull(String[] sources, String[] outputs) throws Exception {
+  private void testProtoCompact(String[] sources, String[] outputs) throws Exception {
     List<String> args = new ArrayList<>();
     args.add("--proto_path=../wire-runtime/src/test/proto");
     args.add("--java_out=" + testDir.getAbsolutePath());
-    args.add("--full");
+    args.add("--compact");
     args.addAll(Arrays.asList(sources));
     invokeCompiler(args.toArray(new String[args.size()]));
 
@@ -111,7 +111,7 @@ public class WireCompilerTest {
         .isEqualTo(outputs.length);
 
     for (String output : outputs) {
-      assertFilesMatchFull(testDir, output);
+      assertFilesMatchCompact(testDir, output);
     }
   }
 
@@ -210,14 +210,14 @@ public class WireCompilerTest {
     testProtoAndroid(sources, outputs);
   }
 
-  @Test public void testPersonFull() throws Exception {
+  @Test public void testPersonCompact() throws Exception {
     String[] sources = {
         "all_types.proto"
     };
     String[] outputs = {
         "com/squareup/wire/protos/alltypes/AllTypes.java"
     };
-    testProtoFull(sources, outputs);
+    testProtoCompact(sources, outputs);
   }
 
   @Test public void testSimple() throws Exception {
@@ -548,9 +548,9 @@ public class WireCompilerTest {
     assertFilesMatch(expectedFile, actualFile);
   }
 
-  private void assertFilesMatchFull(File outputDir, String path) throws IOException {
-    // Compare against file with .full suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".full");
+  private void assertFilesMatchCompact(File outputDir, String path) throws IOException {
+    // Compare against file with .compact suffix if present
+    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".compact");
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {

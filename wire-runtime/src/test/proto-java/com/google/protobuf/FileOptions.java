@@ -2,14 +2,18 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 236:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
-import com.squareup.wire.WireField;
+import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
@@ -41,7 +45,76 @@ import okio.ByteString;
  *   to automatically assign option numbers.
  */
 public final class FileOptions extends Message<FileOptions, FileOptions.Builder> {
-  public static final ProtoAdapter<FileOptions> ADAPTER = ProtoAdapter.newMessageAdapter(FileOptions.class);
+  public static final ProtoAdapter<FileOptions> ADAPTER = new ProtoAdapter<FileOptions>(FieldEncoding.LENGTH_DELIMITED, FileOptions.class) {
+    @Override
+    public int encodedSize(FileOptions value) {
+      return (value.java_package != null ? ProtoAdapter.STRING.encodedSize(1, value.java_package) : 0)
+          + (value.java_outer_classname != null ? ProtoAdapter.STRING.encodedSize(8, value.java_outer_classname) : 0)
+          + (value.java_multiple_files != null ? ProtoAdapter.BOOL.encodedSize(10, value.java_multiple_files) : 0)
+          + (value.java_generate_equals_and_hash != null ? ProtoAdapter.BOOL.encodedSize(20, value.java_generate_equals_and_hash) : 0)
+          + (value.optimize_for != null ? OptimizeMode.ADAPTER.encodedSize(9, value.optimize_for) : 0)
+          + (value.cc_generic_services != null ? ProtoAdapter.BOOL.encodedSize(16, value.cc_generic_services) : 0)
+          + (value.java_generic_services != null ? ProtoAdapter.BOOL.encodedSize(17, value.java_generic_services) : 0)
+          + (value.py_generic_services != null ? ProtoAdapter.BOOL.encodedSize(18, value.py_generic_services) : 0)
+          + UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, FileOptions value) throws IOException {
+      if (value.java_package != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.java_package);
+      if (value.java_outer_classname != null) ProtoAdapter.STRING.encodeTagged(writer, 8, value.java_outer_classname);
+      if (value.java_multiple_files != null) ProtoAdapter.BOOL.encodeTagged(writer, 10, value.java_multiple_files);
+      if (value.java_generate_equals_and_hash != null) ProtoAdapter.BOOL.encodeTagged(writer, 20, value.java_generate_equals_and_hash);
+      if (value.optimize_for != null) OptimizeMode.ADAPTER.encodeTagged(writer, 9, value.optimize_for);
+      if (value.cc_generic_services != null) ProtoAdapter.BOOL.encodeTagged(writer, 16, value.cc_generic_services);
+      if (value.java_generic_services != null) ProtoAdapter.BOOL.encodeTagged(writer, 17, value.java_generic_services);
+      if (value.py_generic_services != null) ProtoAdapter.BOOL.encodeTagged(writer, 18, value.py_generic_services);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public FileOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.java_package(ProtoAdapter.STRING.decode(reader)); break;
+          case 8: builder.java_outer_classname(ProtoAdapter.STRING.decode(reader)); break;
+          case 10: builder.java_multiple_files(ProtoAdapter.BOOL.decode(reader)); break;
+          case 20: builder.java_generate_equals_and_hash(ProtoAdapter.BOOL.decode(reader)); break;
+          case 9: {
+            try {
+              builder.optimize_for(OptimizeMode.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 16: builder.cc_generic_services(ProtoAdapter.BOOL.decode(reader)); break;
+          case 17: builder.java_generic_services(ProtoAdapter.BOOL.decode(reader)); break;
+          case 18: builder.py_generic_services(ProtoAdapter.BOOL.decode(reader)); break;
+          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public FileOptions redact(FileOptions value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -67,10 +140,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * inappropriate because proto packages do not normally start with backwards
    * domain names.
    */
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String java_package;
 
   /**
@@ -80,10 +149,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * a .proto always translates to a single class, but you may want to
    * explicitly choose the class name).
    */
-  @WireField(
-      tag = 8,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String java_outer_classname;
 
   /**
@@ -94,10 +159,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * generated to contain the file's getDescriptor() method as well as any
    * top-level extensions defined in the file.
    */
-  @WireField(
-      tag = 10,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
-  )
   public final Boolean java_multiple_files;
 
   /**
@@ -106,16 +167,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * purely a speed optimization, as the AbstractMessage base class includes
    * reflection-based implementations of these methods.
    */
-  @WireField(
-      tag = 20,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
-  )
   public final Boolean java_generate_equals_and_hash;
 
-  @WireField(
-      tag = 9,
-      adapter = "com.google.protobuf.FileOptions$OptimizeMode#ADAPTER"
-  )
   public final OptimizeMode optimize_for;
 
   /**
@@ -130,32 +183,15 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * these default to false.  Old code which depends on generic services should
    * explicitly set them to true.
    */
-  @WireField(
-      tag = 16,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
-  )
   public final Boolean cc_generic_services;
 
-  @WireField(
-      tag = 17,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
-  )
   public final Boolean java_generic_services;
 
-  @WireField(
-      tag = 18,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
-  )
   public final Boolean py_generic_services;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @WireField(
-      tag = 999,
-      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, OptimizeMode optimize_for, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, List<UninterpretedOption> uninterpreted_option) {
@@ -225,6 +261,21 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (java_package != null) builder.append(", java_package=").append(java_package);
+    if (java_outer_classname != null) builder.append(", java_outer_classname=").append(java_outer_classname);
+    if (java_multiple_files != null) builder.append(", java_multiple_files=").append(java_multiple_files);
+    if (java_generate_equals_and_hash != null) builder.append(", java_generate_equals_and_hash=").append(java_generate_equals_and_hash);
+    if (optimize_for != null) builder.append(", optimize_for=").append(optimize_for);
+    if (cc_generic_services != null) builder.append(", cc_generic_services=").append(cc_generic_services);
+    if (java_generic_services != null) builder.append(", java_generic_services=").append(java_generic_services);
+    if (py_generic_services != null) builder.append(", py_generic_services=").append(py_generic_services);
+    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    return builder.replace(0, 2, "FileOptions{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<FileOptions, Builder> {

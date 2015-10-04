@@ -2,31 +2,69 @@
 // Source file: ../wire-runtime/src/test/proto/edge_cases.proto at 31:1
 package com.squareup.wire.protos.edgecases;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class Recursive extends Message<Recursive, Recursive.Builder> {
-  public static final ProtoAdapter<Recursive> ADAPTER = ProtoAdapter.newMessageAdapter(Recursive.class);
+  public static final ProtoAdapter<Recursive> ADAPTER = new ProtoAdapter<Recursive>(FieldEncoding.LENGTH_DELIMITED, Recursive.class) {
+    @Override
+    public int encodedSize(Recursive value) {
+      return (value.value != null ? ProtoAdapter.INT32.encodedSize(1, value.value) : 0)
+          + (value.recursive != null ? Recursive.ADAPTER.encodedSize(2, value.recursive) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Recursive value) throws IOException {
+      if (value.value != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.value);
+      if (value.recursive != null) Recursive.ADAPTER.encodeTagged(writer, 2, value.recursive);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Recursive decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.value(ProtoAdapter.INT32.decode(reader)); break;
+          case 2: builder.recursive(Recursive.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Recursive redact(Recursive value) {
+      Builder builder = value.newBuilder();
+      if (builder.recursive != null) builder.recursive = Recursive.ADAPTER.redact(builder.recursive);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_VALUE = 0;
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer value;
 
-  @WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.protos.edgecases.Recursive#ADAPTER"
-  )
   public final Recursive recursive;
 
   public Recursive(Integer value, Recursive recursive) {
@@ -68,6 +106,14 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (value != null) builder.append(", value=").append(value);
+    if (recursive != null) builder.append(", recursive=").append(recursive);
+    return builder.replace(0, 2, "Recursive{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Recursive, Builder> {
