@@ -93,8 +93,8 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
       emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label);
     }
 
-    if (message.unknownFields.size() > 0) {
-      ProtoReader reader = new ProtoReader(new Buffer().write(message.unknownFields));
+    if (message.unknownFields().size() > 0) {
+      ProtoReader reader = new ProtoReader(new Buffer().write(message.unknownFields()));
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
         FieldEncoding fieldEncoding = reader.peekFieldEncoding();

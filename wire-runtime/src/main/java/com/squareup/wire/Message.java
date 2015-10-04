@@ -29,7 +29,8 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     implements Serializable {
   private static final long serialVersionUID = 0L;
 
-  final transient ByteString unknownFields;
+  /** Unknown fields, proto-encoded. We permit null to support magic deserialization. */
+  private final transient ByteString unknownFields;
 
   /** If not {@code 0} then the serialized size of this message. */
   transient int cachedSerializedSize = 0;
@@ -49,7 +50,8 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
    * an empty byte string if this message has no unknown fields.
    */
   public final ByteString unknownFields() {
-    return unknownFields;
+    ByteString result = this.unknownFields;
+    return result != null ? result : ByteString.EMPTY;
   }
 
   /**

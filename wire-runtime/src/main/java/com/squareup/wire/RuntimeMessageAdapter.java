@@ -91,7 +91,7 @@ final class RuntimeMessageAdapter<M extends Message<M, B>, B extends Builder<M, 
       if (value == null) continue;
       size += fieldBinding.adapter().encodedSize(fieldBinding.tag, value);
     }
-    size += message.unknownFields.size();
+    size += message.unknownFields().size();
 
     message.cachedSerializedSize = size;
     return size;
@@ -103,7 +103,7 @@ final class RuntimeMessageAdapter<M extends Message<M, B>, B extends Builder<M, 
       if (value == null) continue;
       fieldBinding.adapter().encodeTagged(writer, fieldBinding.tag, value);
     }
-    writer.writeBytes(message.unknownFields);
+    writer.writeBytes(message.unknownFields());
   }
 
   @Override public M redact(M message) {
