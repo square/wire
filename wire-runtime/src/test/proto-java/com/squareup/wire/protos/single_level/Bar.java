@@ -2,25 +2,63 @@
 // Source file: ../wire-runtime/src/test/proto/samebasename/single_level.proto at 20:1
 package com.squareup.wire.protos.single_level;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class Bar extends Message<Bar, Bar.Builder> {
-  public static final ProtoAdapter<Bar> ADAPTER = ProtoAdapter.newMessageAdapter(Bar.class);
+  public static final ProtoAdapter<Bar> ADAPTER = new ProtoAdapter<Bar>(FieldEncoding.LENGTH_DELIMITED, Bar.class) {
+    @Override
+    public int encodedSize(Bar value) {
+      return (value.baz != null ? ProtoAdapter.INT32.encodedSize(1, value.baz) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Bar value) throws IOException {
+      if (value.baz != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.baz);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Bar decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.baz(ProtoAdapter.INT32.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Bar redact(Bar value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_BAZ = 0;
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer baz;
 
   public Bar(Integer baz) {
@@ -58,6 +96,13 @@ public final class Bar extends Message<Bar, Bar.Builder> {
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (baz != null) builder.append(", baz=").append(baz);
+    return builder.replace(0, 2, "Bar{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Bar, Builder> {

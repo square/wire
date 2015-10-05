@@ -2,31 +2,68 @@
 // Source file: ../wire-runtime/src/test/proto/one_extension.proto at 20:1
 package com.squareup.wire.protos.one_extension;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class OneExtension extends Message<OneExtension, OneExtension.Builder> {
-  public static final ProtoAdapter<OneExtension> ADAPTER = ProtoAdapter.newMessageAdapter(OneExtension.class);
+  public static final ProtoAdapter<OneExtension> ADAPTER = new ProtoAdapter<OneExtension>(FieldEncoding.LENGTH_DELIMITED, OneExtension.class) {
+    @Override
+    public int encodedSize(OneExtension value) {
+      return (value.id != null ? ProtoAdapter.STRING.encodedSize(1, value.id) : 0)
+          + (value.foo != null ? Foo.ADAPTER.encodedSize(1000, value.foo) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, OneExtension value) throws IOException {
+      if (value.id != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.id);
+      if (value.foo != null) Foo.ADAPTER.encodeTagged(writer, 1000, value.foo);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public OneExtension decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.id(ProtoAdapter.STRING.decode(reader)); break;
+          case 1000: builder.foo(Foo.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public OneExtension redact(OneExtension value) {
+      Builder builder = value.newBuilder();
+      if (builder.foo != null) builder.foo = Foo.ADAPTER.redact(builder.foo);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_ID = "";
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String id;
 
-  @WireField(
-      tag = 1000,
-      adapter = "com.squareup.wire.protos.one_extension.Foo#ADAPTER"
-  )
   public final Foo foo;
 
   public OneExtension(String id, Foo foo) {
@@ -68,6 +105,14 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (id != null) builder.append(", id=").append(id);
+    if (foo != null) builder.append(", foo=").append(foo);
+    return builder.replace(0, 2, "OneExtension{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<OneExtension, Builder> {

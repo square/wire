@@ -2,16 +2,54 @@
 // Source file: ../wire-runtime/src/test/proto/bar.proto at 5:1
 package com.squareup.foobar.protos.bar;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class Bar extends Message<Bar, Bar.Builder> {
-  public static final ProtoAdapter<Bar> ADAPTER = ProtoAdapter.newMessageAdapter(Bar.class);
+  public static final ProtoAdapter<Bar> ADAPTER = new ProtoAdapter<Bar>(FieldEncoding.LENGTH_DELIMITED, Bar.class) {
+    @Override
+    public int encodedSize(Bar value) {
+      return value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Bar value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Bar decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Bar redact(Bar value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -40,6 +78,12 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     return unknownFields().hashCode();
   }
 
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    return builder.replace(0, 2, "Bar{").append('}').toString();
+  }
+
   public static final class Builder extends com.squareup.wire.Message.Builder<Bar, Builder> {
     public Builder() {
     }
@@ -51,7 +95,41 @@ public final class Bar extends Message<Bar, Bar.Builder> {
   }
 
   public static final class Baz extends Message<Baz, Baz.Builder> {
-    public static final ProtoAdapter<Baz> ADAPTER = ProtoAdapter.newMessageAdapter(Baz.class);
+    public static final ProtoAdapter<Baz> ADAPTER = new ProtoAdapter<Baz>(FieldEncoding.LENGTH_DELIMITED, Baz.class) {
+      @Override
+      public int encodedSize(Baz value) {
+        return value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, Baz value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public Baz decode(ProtoReader reader) throws IOException {
+        Baz.Builder builder = new Baz.Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public Baz redact(Baz value) {
+        Baz.Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    };
 
     private static final long serialVersionUID = 0L;
 
@@ -80,6 +158,12 @@ public final class Bar extends Message<Bar, Bar.Builder> {
       return unknownFields().hashCode();
     }
 
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      return builder.replace(0, 2, "Baz{").append('}').toString();
+    }
+
     public static final class Builder extends com.squareup.wire.Message.Builder<Baz, Baz.Builder> {
       public Builder() {
       }
@@ -91,16 +175,49 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     }
 
     public static final class Moo extends Message<Moo, Moo.Builder> {
-      public static final ProtoAdapter<Moo> ADAPTER = ProtoAdapter.newMessageAdapter(Moo.class);
+      public static final ProtoAdapter<Moo> ADAPTER = new ProtoAdapter<Moo>(FieldEncoding.LENGTH_DELIMITED, Moo.class) {
+        @Override
+        public int encodedSize(Moo value) {
+          return (value.boo != null ? ProtoAdapter.STRING.encodedSize(1, value.boo) : 0)
+              + value.unknownFields().size();
+        }
+
+        @Override
+        public void encode(ProtoWriter writer, Moo value) throws IOException {
+          if (value.boo != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.boo);
+          writer.writeBytes(value.unknownFields());
+        }
+
+        @Override
+        public Moo decode(ProtoReader reader) throws IOException {
+          Moo.Builder builder = new Moo.Builder();
+          long token = reader.beginMessage();
+          for (int tag; (tag = reader.nextTag()) != -1;) {
+            switch (tag) {
+              case 1: builder.boo(ProtoAdapter.STRING.decode(reader)); break;
+              default: {
+                FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+                Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+                builder.addUnknownField(tag, fieldEncoding, value);
+              }
+            }
+          }
+          reader.endMessage(token);
+          return builder.build();
+        }
+
+        @Override
+        public Moo redact(Moo value) {
+          Moo.Builder builder = value.newBuilder();
+          builder.clearUnknownFields();
+          return builder.build();
+        }
+      };
 
       private static final long serialVersionUID = 0L;
 
       public static final String DEFAULT_BOO = "";
 
-      @WireField(
-          tag = 1,
-          adapter = "com.squareup.wire.ProtoAdapter#STRING"
-      )
       public final String boo;
 
       public Moo(String boo) {
@@ -138,6 +255,13 @@ public final class Bar extends Message<Bar, Bar.Builder> {
           super.hashCode = result;
         }
         return result;
+      }
+
+      @Override
+      public String toString() {
+        StringBuilder builder = new StringBuilder();
+        if (boo != null) builder.append(", boo=").append(boo);
+        return builder.replace(0, 2, "Moo{").append('}').toString();
       }
 
       public static final class Builder extends com.squareup.wire.Message.Builder<Moo, Moo.Builder> {

@@ -2,20 +2,71 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 178:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 /**
  * Describes a value within an enum.
  */
 public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorProto, EnumValueDescriptorProto.Builder> {
-  public static final ProtoAdapter<EnumValueDescriptorProto> ADAPTER = ProtoAdapter.newMessageAdapter(EnumValueDescriptorProto.class);
+  public static final ProtoAdapter<EnumValueDescriptorProto> ADAPTER = new ProtoAdapter<EnumValueDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, EnumValueDescriptorProto.class) {
+    @Override
+    public int encodedSize(EnumValueDescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSize(1, value.name) : 0)
+          + (value.doc != null ? ProtoAdapter.STRING.encodedSize(4, value.doc) : 0)
+          + (value.number != null ? ProtoAdapter.INT32.encodedSize(2, value.number) : 0)
+          + (value.options != null ? EnumValueOptions.ADAPTER.encodedSize(3, value.options) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, EnumValueDescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
+      if (value.doc != null) ProtoAdapter.STRING.encodeTagged(writer, 4, value.doc);
+      if (value.number != null) ProtoAdapter.INT32.encodeTagged(writer, 2, value.number);
+      if (value.options != null) EnumValueOptions.ADAPTER.encodeTagged(writer, 3, value.options);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public EnumValueDescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.doc(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.number(ProtoAdapter.INT32.decode(reader)); break;
+          case 3: builder.options(EnumValueOptions.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public EnumValueDescriptorProto redact(EnumValueDescriptorProto value) {
+      Builder builder = value.newBuilder();
+      if (builder.options != null) builder.options = EnumValueOptions.ADAPTER.redact(builder.options);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -25,31 +76,15 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
   public static final Integer DEFAULT_NUMBER = 0;
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String name;
 
   /**
    * Doc string for generated code.
    */
-  @WireField(
-      tag = 4,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String doc;
 
-  @WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer number;
 
-  @WireField(
-      tag = 3,
-      adapter = "com.google.protobuf.EnumValueOptions#ADAPTER"
-  )
   public final EnumValueOptions options;
 
   public EnumValueDescriptorProto(String name, String doc, Integer number, EnumValueOptions options) {
@@ -99,6 +134,16 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (name != null) builder.append(", name=").append(name);
+    if (doc != null) builder.append(", doc=").append(doc);
+    if (number != null) builder.append(", number=").append(number);
+    if (options != null) builder.append(", options=").append(options);
+    return builder.replace(0, 2, "EnumValueDescriptorProto{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<EnumValueDescriptorProto, Builder> {

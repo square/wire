@@ -2,19 +2,75 @@
 // Source file: ../wire-runtime/src/test/proto/unknown_fields.proto at 24:1
 package com.squareup.wire.protos.unknownfields;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
 public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
-  public static final ProtoAdapter<VersionTwo> ADAPTER = ProtoAdapter.newMessageAdapter(VersionTwo.class);
+  public static final ProtoAdapter<VersionTwo> ADAPTER = new ProtoAdapter<VersionTwo>(FieldEncoding.LENGTH_DELIMITED, VersionTwo.class) {
+    @Override
+    public int encodedSize(VersionTwo value) {
+      return (value.i != null ? ProtoAdapter.INT32.encodedSize(1, value.i) : 0)
+          + (value.v2_i != null ? ProtoAdapter.INT32.encodedSize(2, value.v2_i) : 0)
+          + (value.v2_s != null ? ProtoAdapter.STRING.encodedSize(3, value.v2_s) : 0)
+          + (value.v2_f32 != null ? ProtoAdapter.FIXED32.encodedSize(4, value.v2_f32) : 0)
+          + (value.v2_f64 != null ? ProtoAdapter.FIXED64.encodedSize(5, value.v2_f64) : 0)
+          + ProtoAdapter.STRING.asRepeated().encodedSize(6, value.v2_rs)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, VersionTwo value) throws IOException {
+      if (value.i != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.i);
+      if (value.v2_i != null) ProtoAdapter.INT32.encodeTagged(writer, 2, value.v2_i);
+      if (value.v2_s != null) ProtoAdapter.STRING.encodeTagged(writer, 3, value.v2_s);
+      if (value.v2_f32 != null) ProtoAdapter.FIXED32.encodeTagged(writer, 4, value.v2_f32);
+      if (value.v2_f64 != null) ProtoAdapter.FIXED64.encodeTagged(writer, 5, value.v2_f64);
+      if (value.v2_rs != null) ProtoAdapter.STRING.asRepeated().encodeTagged(writer, 6, value.v2_rs);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public VersionTwo decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
+          case 2: builder.v2_i(ProtoAdapter.INT32.decode(reader)); break;
+          case 3: builder.v2_s(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.v2_f32(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 5: builder.v2_f64(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 6: builder.v2_rs.add(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public VersionTwo redact(VersionTwo value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -28,41 +84,16 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
 
   public static final Long DEFAULT_V2_F64 = 0L;
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer i;
 
-  @WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer v2_i;
 
-  @WireField(
-      tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String v2_s;
 
-  @WireField(
-      tag = 4,
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
-  )
   public final Integer v2_f32;
 
-  @WireField(
-      tag = 5,
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
-  )
   public final Long v2_f64;
 
-  @WireField(
-      tag = 6,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED
-  )
   public final List<String> v2_rs;
 
   public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs) {
@@ -120,6 +151,18 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (i != null) builder.append(", i=").append(i);
+    if (v2_i != null) builder.append(", v2_i=").append(v2_i);
+    if (v2_s != null) builder.append(", v2_s=").append(v2_s);
+    if (v2_f32 != null) builder.append(", v2_f32=").append(v2_f32);
+    if (v2_f64 != null) builder.append(", v2_f64=").append(v2_f64);
+    if (v2_rs != null) builder.append(", v2_rs=").append(v2_rs);
+    return builder.replace(0, 2, "VersionTwo{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<VersionTwo, Builder> {

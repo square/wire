@@ -2,16 +2,59 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 397:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
 public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions.Builder> {
-  public static final ProtoAdapter<ServiceOptions> ADAPTER = ProtoAdapter.newMessageAdapter(ServiceOptions.class);
+  public static final ProtoAdapter<ServiceOptions> ADAPTER = new ProtoAdapter<ServiceOptions>(FieldEncoding.LENGTH_DELIMITED, ServiceOptions.class) {
+    @Override
+    public int encodedSize(ServiceOptions value) {
+      return UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, ServiceOptions value) throws IOException {
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public ServiceOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public ServiceOptions redact(ServiceOptions value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -22,11 +65,6 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
    *   Buffers.
    * The parser stores options it doesn't recognize here. See above.
    */
-  @WireField(
-      tag = 999,
-      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public ServiceOptions(List<UninterpretedOption> uninterpreted_option) {
@@ -64,6 +102,13 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    return builder.replace(0, 2, "ServiceOptions{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<ServiceOptions, Builder> {

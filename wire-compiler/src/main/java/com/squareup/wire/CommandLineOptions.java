@@ -34,7 +34,7 @@ final class CommandLineOptions {
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
   public static final String ANDROID = "--android";
-  public static final String FULL = "--full";
+  public static final String COMPACT = "--compact";
 
   final List<String> protoPaths;
   final String javaOut;
@@ -45,12 +45,12 @@ final class CommandLineOptions {
   final boolean quiet;
   final boolean dryRun;
   final boolean emitAndroid;
-  final boolean emitFull;
+  final boolean emitCompact;
 
   CommandLineOptions(String protoPath, String javaOut, List<String> sourceFileNames,
       List<String> roots, boolean emitOptions, Set<String> enumOptions, boolean quiet,
-      boolean dryRun, boolean emitAndroid, boolean emitFull) {
-    this.emitFull = emitFull;
+      boolean dryRun, boolean emitAndroid, boolean emitCompact) {
+    this.emitCompact = emitCompact;
     this.protoPaths = Arrays.asList(protoPath);
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
@@ -77,7 +77,7 @@ final class CommandLineOptions {
    *     [--quiet]
    *     [--dry_run]
    *     [--android]
-   *     [--full]
+   *     [--compact]
    *     [file [file...]]
    * </pre>
    *
@@ -111,8 +111,8 @@ final class CommandLineOptions {
    * The {@code --android} flag will cause all messages to implement the {@code Parcelable}
    * interface.
    * <p>
-   * The {@code --full} flag will emit implementations of reading, writing, and toString methods
-   * which are normally implemented with reflection.
+   * The {@code --compact} flag will emit code that uses reflection for reading, writing, and
+   * toString methods which are normally implemented with code generation.
    */
   CommandLineOptions(String... args) throws WireException {
     List<String> sourceFileNames = new ArrayList<>();
@@ -125,7 +125,7 @@ final class CommandLineOptions {
     boolean quiet = false;
     boolean dryRun = false;
     boolean emitAndroid = false;
-    boolean emitFull = false;
+    boolean emitCompact = false;
 
     for (String arg : args) {
       if (arg.startsWith(PROTO_PATH_FLAG)) {
@@ -153,8 +153,8 @@ final class CommandLineOptions {
         dryRun = true;
       } else if (arg.equals(ANDROID)) {
         emitAndroid = true;
-      } else if (arg.equals(FULL)) {
-        emitFull = true;
+      } else if (arg.equals(COMPACT)) {
+        emitCompact = true;
       } else if (arg.startsWith("--")) {
         throw new IllegalArgumentException("Unknown argument '" + arg + "'.");
       } else {
@@ -171,7 +171,7 @@ final class CommandLineOptions {
     this.quiet = quiet;
     this.dryRun = dryRun;
     this.emitAndroid = emitAndroid;
-    this.emitFull = emitFull;
+    this.emitCompact = emitCompact;
   }
 
   private static List<String> splitArg(String arg, int flagLength) {

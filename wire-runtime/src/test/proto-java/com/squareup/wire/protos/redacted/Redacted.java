@@ -3,16 +3,68 @@
 package com.squareup.wire.protos.redacted;
 
 import com.google.protobuf.FieldOptions;
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class Redacted extends Message<Redacted, Redacted.Builder> {
-  public static final ProtoAdapter<Redacted> ADAPTER = ProtoAdapter.newMessageAdapter(Redacted.class);
+  public static final ProtoAdapter<Redacted> ADAPTER = new ProtoAdapter<Redacted>(FieldEncoding.LENGTH_DELIMITED, Redacted.class) {
+    @Override
+    public int encodedSize(Redacted value) {
+      return (value.a != null ? ProtoAdapter.STRING.encodedSize(1, value.a) : 0)
+          + (value.b != null ? ProtoAdapter.STRING.encodedSize(2, value.b) : 0)
+          + (value.c != null ? ProtoAdapter.STRING.encodedSize(3, value.c) : 0)
+          + (value.extension != null ? RedactedExtension.ADAPTER.encodedSize(10, value.extension) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Redacted value) throws IOException {
+      if (value.a != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.a);
+      if (value.b != null) ProtoAdapter.STRING.encodeTagged(writer, 2, value.b);
+      if (value.c != null) ProtoAdapter.STRING.encodeTagged(writer, 3, value.c);
+      if (value.extension != null) RedactedExtension.ADAPTER.encodeTagged(writer, 10, value.extension);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Redacted decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.a(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.b(ProtoAdapter.STRING.decode(reader)); break;
+          case 3: builder.c(ProtoAdapter.STRING.decode(reader)); break;
+          case 10: builder.extension(RedactedExtension.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Redacted redact(Redacted value) {
+      Builder builder = value.newBuilder();
+      builder.a = null;
+      if (builder.extension != null) builder.extension = RedactedExtension.ADAPTER.redact(builder.extension);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -30,29 +82,12 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
 
   public static final String DEFAULT_C = "";
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      redacted = true
-  )
   public final String a;
 
-  @WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String b;
 
-  @WireField(
-      tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
   public final String c;
 
-  @WireField(
-      tag = 10,
-      adapter = "com.squareup.wire.protos.redacted.RedactedExtension#ADAPTER"
-  )
   public final RedactedExtension extension;
 
   public Redacted(String a, String b, String c, RedactedExtension extension) {
@@ -102,6 +137,16 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (a != null) builder.append(", a=██");
+    if (b != null) builder.append(", b=").append(b);
+    if (c != null) builder.append(", c=").append(c);
+    if (extension != null) builder.append(", extension=").append(extension);
+    return builder.replace(0, 2, "Redacted{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<Redacted, Builder> {

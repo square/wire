@@ -2,19 +2,72 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 389:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.protos.custom_options.FooBar;
+import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
 public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueOptions.Builder> {
-  public static final ProtoAdapter<EnumValueOptions> ADAPTER = ProtoAdapter.newMessageAdapter(EnumValueOptions.class);
+  public static final ProtoAdapter<EnumValueOptions> ADAPTER = new ProtoAdapter<EnumValueOptions>(FieldEncoding.LENGTH_DELIMITED, EnumValueOptions.class) {
+    @Override
+    public int encodedSize(EnumValueOptions value) {
+      return UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
+          + (value.enum_value_option != null ? ProtoAdapter.INT32.encodedSize(70000, value.enum_value_option) : 0)
+          + (value.complex_enum_value_option != null ? FooBar.More.ADAPTER.encodedSize(70001, value.complex_enum_value_option) : 0)
+          + (value.foreign_enum_value_option != null ? ProtoAdapter.BOOL.encodedSize(70002, value.foreign_enum_value_option) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, EnumValueOptions value) throws IOException {
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
+      if (value.enum_value_option != null) ProtoAdapter.INT32.encodeTagged(writer, 70000, value.enum_value_option);
+      if (value.complex_enum_value_option != null) FooBar.More.ADAPTER.encodeTagged(writer, 70001, value.complex_enum_value_option);
+      if (value.foreign_enum_value_option != null) ProtoAdapter.BOOL.encodeTagged(writer, 70002, value.foreign_enum_value_option);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public EnumValueOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 70000: builder.enum_value_option(ProtoAdapter.INT32.decode(reader)); break;
+          case 70001: builder.complex_enum_value_option(FooBar.More.ADAPTER.decode(reader)); break;
+          case 70002: builder.foreign_enum_value_option(ProtoAdapter.BOOL.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public EnumValueOptions redact(EnumValueOptions value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      if (builder.complex_enum_value_option != null) builder.complex_enum_value_option = FooBar.More.ADAPTER.redact(builder.complex_enum_value_option);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -25,29 +78,12 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
-  @WireField(
-      tag = 999,
-      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  @WireField(
-      tag = 70000,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
   public final Integer enum_value_option;
 
-  @WireField(
-      tag = 70001,
-      adapter = "com.squareup.wire.protos.custom_options.FooBar$More#ADAPTER"
-  )
   public final FooBar.More complex_enum_value_option;
 
-  @WireField(
-      tag = 70002,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
-  )
   public final Boolean foreign_enum_value_option;
 
   public EnumValueOptions(List<UninterpretedOption> uninterpreted_option, Integer enum_value_option, FooBar.More complex_enum_value_option, Boolean foreign_enum_value_option) {
@@ -97,6 +133,16 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (enum_value_option != null) builder.append(", enum_value_option=").append(enum_value_option);
+    if (complex_enum_value_option != null) builder.append(", complex_enum_value_option=").append(complex_enum_value_option);
+    if (foreign_enum_value_option != null) builder.append(", foreign_enum_value_option=").append(foreign_enum_value_option);
+    return builder.replace(0, 2, "EnumValueOptions{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<EnumValueOptions, Builder> {

@@ -86,7 +86,7 @@ public final class WireCompiler {
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
         .withOptions(options.emitOptions, options.enumOptions)
         .withAndroid(options.emitAndroid)
-        .withFull(options.emitFull);
+        .withCompact(options.emitCompact);
 
     for (ProtoFile protoFile : schema.protoFiles()) {
       if (!options.sourceFileNames.contains(protoFile.location().path())) {

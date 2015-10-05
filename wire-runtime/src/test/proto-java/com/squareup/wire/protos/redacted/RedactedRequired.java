@@ -3,16 +3,56 @@
 package com.squareup.wire.protos.redacted;
 
 import com.google.protobuf.FieldOptions;
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
+import java.lang.UnsupportedOperationException;
 import okio.ByteString;
 
 public final class RedactedRequired extends Message<RedactedRequired, RedactedRequired.Builder> {
-  public static final ProtoAdapter<RedactedRequired> ADAPTER = ProtoAdapter.newMessageAdapter(RedactedRequired.class);
+  public static final ProtoAdapter<RedactedRequired> ADAPTER = new ProtoAdapter<RedactedRequired>(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class) {
+    @Override
+    public int encodedSize(RedactedRequired value) {
+      return ProtoAdapter.STRING.encodedSize(1, value.a)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, RedactedRequired value) throws IOException {
+      ProtoAdapter.STRING.encodeTagged(writer, 1, value.a);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public RedactedRequired decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.a(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public RedactedRequired redact(RedactedRequired value) {
+      throw new UnsupportedOperationException("Field 'a' is required and cannot be redacted.");
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -22,12 +62,6 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
 
   public static final String DEFAULT_A = "";
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REQUIRED,
-      redacted = true
-  )
   public final String a;
 
   public RedactedRequired(String a) {
@@ -65,6 +99,13 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (a != null) builder.append(", a=██");
+    return builder.replace(0, 2, "RedactedRequired{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRequired, Builder> {

@@ -2,12 +2,17 @@
 // Source file: ../wire-runtime/src/test/proto/google/protobuf/descriptor.proto at 458:1
 package com.google.protobuf;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
@@ -18,7 +23,45 @@ import okio.ByteString;
  * FileDescriptorProto was generated.
  */
 public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo.Builder> {
-  public static final ProtoAdapter<SourceCodeInfo> ADAPTER = ProtoAdapter.newMessageAdapter(SourceCodeInfo.class);
+  public static final ProtoAdapter<SourceCodeInfo> ADAPTER = new ProtoAdapter<SourceCodeInfo>(FieldEncoding.LENGTH_DELIMITED, SourceCodeInfo.class) {
+    @Override
+    public int encodedSize(SourceCodeInfo value) {
+      return Location.ADAPTER.asRepeated().encodedSize(1, value.location)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, SourceCodeInfo value) throws IOException {
+      if (value.location != null) Location.ADAPTER.asRepeated().encodeTagged(writer, 1, value.location);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public SourceCodeInfo decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.location.add(Location.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public SourceCodeInfo redact(SourceCodeInfo value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.location, Location.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
@@ -67,11 +110,6 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
    *   ignore those that it doesn't understand, as more types of locations could
    *   be recorded in the future.
    */
-  @WireField(
-      tag = 1,
-      adapter = "com.google.protobuf.SourceCodeInfo$Location#ADAPTER",
-      label = WireField.Label.REPEATED
-  )
   public final List<Location> location;
 
   public SourceCodeInfo(List<Location> location) {
@@ -109,6 +147,13 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (location != null) builder.append(", location=").append(location);
+    return builder.replace(0, 2, "SourceCodeInfo{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<SourceCodeInfo, Builder> {
@@ -176,7 +221,47 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
   }
 
   public static final class Location extends Message<Location, Location.Builder> {
-    public static final ProtoAdapter<Location> ADAPTER = ProtoAdapter.newMessageAdapter(Location.class);
+    public static final ProtoAdapter<Location> ADAPTER = new ProtoAdapter<Location>(FieldEncoding.LENGTH_DELIMITED, Location.class) {
+      @Override
+      public int encodedSize(Location value) {
+        return ProtoAdapter.INT32.asPacked().encodedSize(1, value.path)
+            + ProtoAdapter.INT32.asPacked().encodedSize(2, value.span)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, Location value) throws IOException {
+        if (value.path != null) ProtoAdapter.INT32.asPacked().encodeTagged(writer, 1, value.path);
+        if (value.span != null) ProtoAdapter.INT32.asPacked().encodeTagged(writer, 2, value.span);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public Location decode(ProtoReader reader) throws IOException {
+        Location.Builder builder = new Location.Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.path.add(ProtoAdapter.INT32.decode(reader)); break;
+            case 2: builder.span.add(ProtoAdapter.INT32.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public Location redact(Location value) {
+        Location.Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    };
 
     private static final long serialVersionUID = 0L;
 
@@ -205,11 +290,6 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
      * this path refers to the whole field declaration (from the beginning
      * of the label to the terminating semicolon).
      */
-    @WireField(
-        tag = 1,
-        adapter = "com.squareup.wire.ProtoAdapter#INT32",
-        label = WireField.Label.PACKED
-    )
     public final List<Integer> path;
 
     /**
@@ -219,11 +299,6 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
      * and column numbers are zero-based -- typically you will want to add
      * 1 to each before displaying to a user.
      */
-    @WireField(
-        tag = 2,
-        adapter = "com.squareup.wire.ProtoAdapter#INT32",
-        label = WireField.Label.PACKED
-    )
     public final List<Integer> span;
 
     public Location(List<Integer> path, List<Integer> span) {
@@ -265,6 +340,14 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
         super.hashCode = result;
       }
       return result;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      if (path != null) builder.append(", path=").append(path);
+      if (span != null) builder.append(", span=").append(span);
+      return builder.replace(0, 2, "Location{").append('}').toString();
     }
 
     public static final class Builder extends com.squareup.wire.Message.Builder<Location, Location.Builder> {

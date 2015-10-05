@@ -2,24 +2,62 @@
 // Source file: ../wire-runtime/src/test/proto/simple_service2.proto at 17:1
 package com.squareup.services;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.WireField;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataResponse.Builder> {
-  public static final ProtoAdapter<LetsDataResponse> ADAPTER = ProtoAdapter.newMessageAdapter(LetsDataResponse.class);
+  public static final ProtoAdapter<LetsDataResponse> ADAPTER = new ProtoAdapter<LetsDataResponse>(FieldEncoding.LENGTH_DELIMITED, LetsDataResponse.class) {
+    @Override
+    public int encodedSize(LetsDataResponse value) {
+      return (value.data != null ? ProtoAdapter.BYTES.encodedSize(1, value.data) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, LetsDataResponse value) throws IOException {
+      if (value.data != null) ProtoAdapter.BYTES.encodeTagged(writer, 1, value.data);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public LetsDataResponse decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.data(ProtoAdapter.BYTES.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public LetsDataResponse redact(LetsDataResponse value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
   public static final ByteString DEFAULT_DATA = ByteString.EMPTY;
 
-  @WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
-  )
   public final ByteString data;
 
   public LetsDataResponse(ByteString data) {
@@ -57,6 +95,13 @@ public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataRe
       super.hashCode = result;
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (data != null) builder.append(", data=").append(data);
+    return builder.replace(0, 2, "LetsDataResponse{").append('}').toString();
   }
 
   public static final class Builder extends com.squareup.wire.Message.Builder<LetsDataResponse, Builder> {
