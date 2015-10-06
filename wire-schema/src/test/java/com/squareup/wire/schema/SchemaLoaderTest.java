@@ -35,14 +35,22 @@ public final class SchemaLoaderTest {
   @Rule public final TemporaryFolder tempFolder2 = new TemporaryFolder();
 
   @Test public void loadAllFilesWhenNoneSpecified() throws IOException {
-    writeFile(tempFolder1.newFile(), "message Message1 {}");
-    writeFile(tempFolder1.newFile(), "message Message2 {}");
+    writeFile(tempFolder1.newFile("message1.proto"), "message Message1 {}");
+    writeFile(tempFolder1.newFile("message2.proto"), "message Message2 {}");
 
     Schema schema = new SchemaLoader()
         .addSource(tempFolder1.getRoot())
         .load();
-    assertThat(schema.getType("Message1")).isNotNull();
-    assertThat(schema.getType("Message2")).isNotNull();
+
+    Type message1 = schema.getType("Message1");
+    assertThat(message1).isNotNull();
+    assertThat(message1.location().base()).isEqualTo(tempFolder1.getRoot().getPath());
+    assertThat(message1.location().path()).isEqualTo("message1.proto");
+
+    Type message2 = schema.getType("Message2");
+    assertThat(message2).isNotNull();
+    assertThat(message2.location().base()).isEqualTo(tempFolder1.getRoot().getPath());
+    assertThat(message2.location().path()).isEqualTo("message2.proto");
   }
 
   @Test public void locateInMultiplePaths() throws IOException {
@@ -81,7 +89,11 @@ public final class SchemaLoaderTest {
         .addSource(file)
         .addProto("a/b/message.proto")
         .load();
-    assertThat(schema.getType("Message")).isNotNull();
+
+    Type message = schema.getType("Message");
+    assertThat(message).isNotNull();
+    assertThat(message.location().base()).isEqualTo(file.getPath());
+    assertThat(message.location().path()).isEqualTo("a/b/message.proto");
   }
 
   @Test public void failLocateInZipFile() throws IOException {
