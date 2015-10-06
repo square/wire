@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema;
 
-import com.google.common.collect.Iterables;
 import com.google.common.io.Closer;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ProtoParser;
@@ -85,28 +84,33 @@ public final class SchemaLoader {
     }
 
     try (Closer closer = Closer.create()) {
-      List<Path> directories = new ArrayList<>();
+      // Map the physical path to the file system root. For regular directories the key and the
+      // value are equal. For ZIP files the key is the path to the .zip, and the value is the root
+      // of the file system within it.
+      Map<Path, Path> directories = new LinkedHashMap<>();
       for (Path source : sources) {
         if (Files.isRegularFile(source)) {
           FileSystem sourceFs = FileSystems.newFileSystem(source, getClass().getClassLoader());
           closer.register(sourceFs);
-          Iterables.addAll(directories, sourceFs.getRootDirectories());
+          for (Path root : sourceFs.getRootDirectories()) {
+            directories.put(source, root);
+          }
         } else {
-          directories.add(source);
+          directories.put(source, source);
         }
       }
       return loadFromDirectories(directories);
     }
   }
 
-  private Schema loadFromDirectories(List<Path> directories) throws IOException {
+  private Schema loadFromDirectories(Map<Path, Path> directories) throws IOException {
     final Deque<String> protos = new ArrayDeque<>(this.protos);
     if (protos.isEmpty()) {
-      for (final Path directory : directories) {
-        Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+      for (final Map.Entry<Path, Path> entry : directories.entrySet()) {
+        Files.walkFileTree(entry.getValue(), new SimpleFileVisitor<Path>() {
           @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
               throws IOException {
-            protos.add(directory.relativize(file).toString());
+            protos.add(entry.getValue().relativize(file).toString());
             return FileVisitResult.CONTINUE;
           }
         });
@@ -121,19 +125,20 @@ public final class SchemaLoader {
       }
 
       ProtoFileElement element = null;
-      for (Path directory : directories) {
-        Source source = source(proto, directory);
+      for (Map.Entry<Path, Path> entry : directories.entrySet()) {
+        Source source = source(proto, entry.getValue());
         if (source == null) {
           continue;
         }
 
+        Path base = entry.getKey();
         try {
-          Location location = Location.get(directory.toString(), proto);
+          Location location = Location.get(base.toString(), proto);
           String data = Okio.buffer(source).readUtf8();
           element = ProtoParser.parse(location, data);
           break;
         } catch (IOException e) {
-          throw new IOException("Failed to load " + proto + " from " + directory, e);
+          throw new IOException("Failed to load " + proto + " from " + base, e);
         } finally {
           source.close();
         }
