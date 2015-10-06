@@ -35,10 +35,8 @@ public final class SchemaLoaderTest {
   @Rule public final TemporaryFolder tempFolder2 = new TemporaryFolder();
 
   @Test public void loadAllFilesWhenNoneSpecified() throws IOException {
-    File file1 = tempFolder1.newFile();
-    Files.write(file1.toPath(), "message Message1 {}".getBytes(UTF_8));
-    File file2 = tempFolder1.newFile();
-    Files.write(file2.toPath(), "message Message2 {}".getBytes(UTF_8));
+    writeFile(tempFolder1.newFile(), "message Message1 {}");
+    writeFile(tempFolder1.newFile(), "message Message2 {}");
 
     Schema schema = new SchemaLoader()
         .addSource(tempFolder1.getRoot())
@@ -101,5 +99,29 @@ public final class SchemaLoaderTest {
       fail();
     } catch (FileNotFoundException expected) {
     }
+  }
+
+  @Test public void earlierSourcesTakePrecedenceOverLaterSources() throws IOException {
+    File message1 = tempFolder1.newFile("message.proto");
+    writeFile(message1, ""
+        + "message Message {\n"
+        + "  optional string a = 1;\n"
+        + "}");
+    File message2 = tempFolder2.newFile("message.proto");
+    writeFile(message2, ""
+        + "message Message {\n"
+        + "  optional string b = 2;\n"
+        + "}");
+
+    Schema schema = new SchemaLoader()
+        .addSource(tempFolder1.getRoot())
+        .addSource(tempFolder2.getRoot())
+        .load();
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.field("a")).isNotNull();
+  }
+
+  private void writeFile(File file, String content) throws IOException {
+    Files.write(file.toPath(), content.getBytes(UTF_8));
   }
 }
