@@ -131,6 +131,7 @@ public final class SchemaLoader {
           Location location = Location.get(directory.toString(), proto);
           String data = Okio.buffer(source).readUtf8();
           element = ProtoParser.parse(location, data);
+          break;
         } catch (IOException e) {
           throw new IOException("Failed to load " + proto + " from " + directory, e);
         } finally {
