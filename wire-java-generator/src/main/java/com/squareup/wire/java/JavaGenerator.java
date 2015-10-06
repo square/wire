@@ -761,10 +761,6 @@ public final class JavaGenerator {
       }
     }
 
-    if (field.isDeprecated()) {
-      result.addMember("deprecated", "true");
-    }
-
     // We allow any package name to be used as long as it ends with '.redacted'.
     if (isRedacted(field)) {
       result.addMember("redacted", "true");
