@@ -18,15 +18,15 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
   public static final ProtoAdapter<NotRedacted> ADAPTER = new ProtoAdapter<NotRedacted>(FieldEncoding.LENGTH_DELIMITED, NotRedacted.class) {
     @Override
     public int encodedSize(NotRedacted value) {
-      return (value.a != null ? ProtoAdapter.STRING.encodedSize(1, value.a) : 0)
-          + (value.b != null ? ProtoAdapter.STRING.encodedSize(2, value.b) : 0)
+      return (value.a != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) : 0)
+          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, NotRedacted value) throws IOException {
-      if (value.a != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.a);
-      if (value.b != null) ProtoAdapter.STRING.encodeTagged(writer, 2, value.b);
+      if (value.a != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
+      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b);
       writer.writeBytes(value.unknownFields());
     }
 

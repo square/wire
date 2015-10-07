@@ -19,13 +19,13 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   public static final ProtoAdapter<MethodOptions> ADAPTER = new ProtoAdapter<MethodOptions>(FieldEncoding.LENGTH_DELIMITED, MethodOptions.class) {
     @Override
     public int encodedSize(MethodOptions value) {
-      return UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
+      return UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, MethodOptions value) throws IOException {
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }
 

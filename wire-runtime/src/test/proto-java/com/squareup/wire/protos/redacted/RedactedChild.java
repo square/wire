@@ -18,17 +18,17 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
   public static final ProtoAdapter<RedactedChild> ADAPTER = new ProtoAdapter<RedactedChild>(FieldEncoding.LENGTH_DELIMITED, RedactedChild.class) {
     @Override
     public int encodedSize(RedactedChild value) {
-      return (value.a != null ? ProtoAdapter.STRING.encodedSize(1, value.a) : 0)
-          + (value.b != null ? Redacted.ADAPTER.encodedSize(2, value.b) : 0)
-          + (value.c != null ? NotRedacted.ADAPTER.encodedSize(3, value.c) : 0)
+      return (value.a != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) : 0)
+          + (value.b != null ? Redacted.ADAPTER.encodedSizeWithTag(2, value.b) : 0)
+          + (value.c != null ? NotRedacted.ADAPTER.encodedSizeWithTag(3, value.c) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, RedactedChild value) throws IOException {
-      if (value.a != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.a);
-      if (value.b != null) Redacted.ADAPTER.encodeTagged(writer, 2, value.b);
-      if (value.c != null) NotRedacted.ADAPTER.encodeTagged(writer, 3, value.c);
+      if (value.a != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
+      if (value.b != null) Redacted.ADAPTER.encodeWithTag(writer, 2, value.b);
+      if (value.c != null) NotRedacted.ADAPTER.encodeWithTag(writer, 3, value.c);
       writer.writeBytes(value.unknownFields());
     }
 

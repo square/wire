@@ -22,19 +22,19 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   public static final ProtoAdapter<EnumValueOptions> ADAPTER = new ProtoAdapter<EnumValueOptions>(FieldEncoding.LENGTH_DELIMITED, EnumValueOptions.class) {
     @Override
     public int encodedSize(EnumValueOptions value) {
-      return UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
-          + (value.enum_value_option != null ? ProtoAdapter.INT32.encodedSize(70000, value.enum_value_option) : 0)
-          + (value.complex_enum_value_option != null ? FooBar.More.ADAPTER.encodedSize(70001, value.complex_enum_value_option) : 0)
-          + (value.foreign_enum_value_option != null ? ProtoAdapter.BOOL.encodedSize(70002, value.foreign_enum_value_option) : 0)
+      return UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
+          + (value.enum_value_option != null ? ProtoAdapter.INT32.encodedSizeWithTag(70000, value.enum_value_option) : 0)
+          + (value.complex_enum_value_option != null ? FooBar.More.ADAPTER.encodedSizeWithTag(70001, value.complex_enum_value_option) : 0)
+          + (value.foreign_enum_value_option != null ? ProtoAdapter.BOOL.encodedSizeWithTag(70002, value.foreign_enum_value_option) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, EnumValueOptions value) throws IOException {
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
-      if (value.enum_value_option != null) ProtoAdapter.INT32.encodeTagged(writer, 70000, value.enum_value_option);
-      if (value.complex_enum_value_option != null) FooBar.More.ADAPTER.encodeTagged(writer, 70001, value.complex_enum_value_option);
-      if (value.foreign_enum_value_option != null) ProtoAdapter.BOOL.encodeTagged(writer, 70002, value.foreign_enum_value_option);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      if (value.enum_value_option != null) ProtoAdapter.INT32.encodeWithTag(writer, 70000, value.enum_value_option);
+      if (value.complex_enum_value_option != null) FooBar.More.ADAPTER.encodeWithTag(writer, 70001, value.complex_enum_value_option);
+      if (value.foreign_enum_value_option != null) ProtoAdapter.BOOL.encodeWithTag(writer, 70002, value.foreign_enum_value_option);
       writer.writeBytes(value.unknownFields());
     }
 

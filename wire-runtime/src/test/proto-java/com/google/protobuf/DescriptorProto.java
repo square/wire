@@ -23,27 +23,27 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   public static final ProtoAdapter<DescriptorProto> ADAPTER = new ProtoAdapter<DescriptorProto>(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class) {
     @Override
     public int encodedSize(DescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSize(1, value.name) : 0)
-          + (value.doc != null ? ProtoAdapter.STRING.encodedSize(8, value.doc) : 0)
-          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSize(2, value.field)
-          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSize(6, value.extension)
-          + DescriptorProto.ADAPTER.asRepeated().encodedSize(3, value.nested_type)
-          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSize(4, value.enum_type)
-          + ExtensionRange.ADAPTER.asRepeated().encodedSize(5, value.extension_range)
-          + (value.options != null ? MessageOptions.ADAPTER.encodedSize(7, value.options) : 0)
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + (value.doc != null ? ProtoAdapter.STRING.encodedSizeWithTag(8, value.doc) : 0)
+          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.field)
+          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.extension)
+          + DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(3, value.nested_type)
+          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.enum_type)
+          + ExtensionRange.ADAPTER.asRepeated().encodedSizeWithTag(5, value.extension_range)
+          + (value.options != null ? MessageOptions.ADAPTER.encodedSizeWithTag(7, value.options) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, DescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
-      if (value.doc != null) ProtoAdapter.STRING.encodeTagged(writer, 8, value.doc);
-      if (value.field != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 2, value.field);
-      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 6, value.extension);
-      if (value.nested_type != null) DescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 3, value.nested_type);
-      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 4, value.enum_type);
-      if (value.extension_range != null) ExtensionRange.ADAPTER.asRepeated().encodeTagged(writer, 5, value.extension_range);
-      if (value.options != null) MessageOptions.ADAPTER.encodeTagged(writer, 7, value.options);
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.doc != null) ProtoAdapter.STRING.encodeWithTag(writer, 8, value.doc);
+      if (value.field != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.field);
+      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension);
+      if (value.nested_type != null) DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.nested_type);
+      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.enum_type);
+      if (value.extension_range != null) ExtensionRange.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.extension_range);
+      if (value.options != null) MessageOptions.ADAPTER.encodeWithTag(writer, 7, value.options);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -273,15 +273,15 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     public static final ProtoAdapter<ExtensionRange> ADAPTER = new ProtoAdapter<ExtensionRange>(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class) {
       @Override
       public int encodedSize(ExtensionRange value) {
-        return (value.start != null ? ProtoAdapter.INT32.encodedSize(1, value.start) : 0)
-            + (value.end != null ? ProtoAdapter.INT32.encodedSize(2, value.end) : 0)
+        return (value.start != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) : 0)
+            + (value.end != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.end) : 0)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, ExtensionRange value) throws IOException {
-        if (value.start != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.start);
-        if (value.end != null) ProtoAdapter.INT32.encodeTagged(writer, 2, value.end);
+        if (value.start != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start);
+        if (value.end != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.end);
         writer.writeBytes(value.unknownFields());
       }
 

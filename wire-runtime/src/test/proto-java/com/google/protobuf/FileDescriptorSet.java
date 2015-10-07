@@ -23,13 +23,13 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
   public static final ProtoAdapter<FileDescriptorSet> ADAPTER = new ProtoAdapter<FileDescriptorSet>(FieldEncoding.LENGTH_DELIMITED, FileDescriptorSet.class) {
     @Override
     public int encodedSize(FileDescriptorSet value) {
-      return FileDescriptorProto.ADAPTER.asRepeated().encodedSize(1, value.file)
+      return FileDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(1, value.file)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, FileDescriptorSet value) throws IOException {
-      if (value.file != null) FileDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 1, value.file);
+      if (value.file != null) FileDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.file);
       writer.writeBytes(value.unknownFields());
     }
 

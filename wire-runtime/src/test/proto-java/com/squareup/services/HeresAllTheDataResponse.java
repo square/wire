@@ -18,13 +18,13 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
   public static final ProtoAdapter<HeresAllTheDataResponse> ADAPTER = new ProtoAdapter<HeresAllTheDataResponse>(FieldEncoding.LENGTH_DELIMITED, HeresAllTheDataResponse.class) {
     @Override
     public int encodedSize(HeresAllTheDataResponse value) {
-      return (value.data != null ? ProtoAdapter.BYTES.encodedSize(1, value.data) : 0)
+      return (value.data != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, HeresAllTheDataResponse value) throws IOException {
-      if (value.data != null) ProtoAdapter.BYTES.encodeTagged(writer, 1, value.data);
+      if (value.data != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
       writer.writeBytes(value.unknownFields());
     }
 

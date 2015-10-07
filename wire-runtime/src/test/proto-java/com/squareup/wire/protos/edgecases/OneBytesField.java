@@ -18,13 +18,13 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
   public static final ProtoAdapter<OneBytesField> ADAPTER = new ProtoAdapter<OneBytesField>(FieldEncoding.LENGTH_DELIMITED, OneBytesField.class) {
     @Override
     public int encodedSize(OneBytesField value) {
-      return (value.opt_bytes != null ? ProtoAdapter.BYTES.encodedSize(1, value.opt_bytes) : 0)
+      return (value.opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneBytesField value) throws IOException {
-      if (value.opt_bytes != null) ProtoAdapter.BYTES.encodeTagged(writer, 1, value.opt_bytes);
+      if (value.opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes);
       writer.writeBytes(value.unknownFields());
     }
 

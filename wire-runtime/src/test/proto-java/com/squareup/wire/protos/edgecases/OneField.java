@@ -19,13 +19,13 @@ public final class OneField extends Message<OneField, OneField.Builder> {
   public static final ProtoAdapter<OneField> ADAPTER = new ProtoAdapter<OneField>(FieldEncoding.LENGTH_DELIMITED, OneField.class) {
     @Override
     public int encodedSize(OneField value) {
-      return (value.opt_int32 != null ? ProtoAdapter.INT32.encodedSize(1, value.opt_int32) : 0)
+      return (value.opt_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneField value) throws IOException {
-      if (value.opt_int32 != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.opt_int32);
+      if (value.opt_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32);
       writer.writeBytes(value.unknownFields());
     }
 

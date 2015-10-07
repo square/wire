@@ -21,15 +21,15 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
   public static final ProtoAdapter<RedactedRepeated> ADAPTER = new ProtoAdapter<RedactedRepeated>(FieldEncoding.LENGTH_DELIMITED, RedactedRepeated.class) {
     @Override
     public int encodedSize(RedactedRepeated value) {
-      return ProtoAdapter.STRING.asRepeated().encodedSize(1, value.a)
-          + Redacted.ADAPTER.asRepeated().encodedSize(2, value.b)
+      return ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
+          + Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, RedactedRepeated value) throws IOException {
-      if (value.a != null) ProtoAdapter.STRING.asRepeated().encodeTagged(writer, 1, value.a);
-      if (value.b != null) Redacted.ADAPTER.asRepeated().encodeTagged(writer, 2, value.b);
+      if (value.a != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a);
+      if (value.b != null) Redacted.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b);
       writer.writeBytes(value.unknownFields());
     }
 

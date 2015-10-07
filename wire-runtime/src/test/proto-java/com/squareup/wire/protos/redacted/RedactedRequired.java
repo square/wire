@@ -20,13 +20,13 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
   public static final ProtoAdapter<RedactedRequired> ADAPTER = new ProtoAdapter<RedactedRequired>(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class) {
     @Override
     public int encodedSize(RedactedRequired value) {
-      return ProtoAdapter.STRING.encodedSize(1, value.a)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, RedactedRequired value) throws IOException {
-      ProtoAdapter.STRING.encodeTagged(writer, 1, value.a);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
       writer.writeBytes(value.unknownFields());
     }
 

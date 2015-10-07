@@ -22,19 +22,19 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   public static final ProtoAdapter<EnumValueDescriptorProto> ADAPTER = new ProtoAdapter<EnumValueDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, EnumValueDescriptorProto.class) {
     @Override
     public int encodedSize(EnumValueDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSize(1, value.name) : 0)
-          + (value.doc != null ? ProtoAdapter.STRING.encodedSize(4, value.doc) : 0)
-          + (value.number != null ? ProtoAdapter.INT32.encodedSize(2, value.number) : 0)
-          + (value.options != null ? EnumValueOptions.ADAPTER.encodedSize(3, value.options) : 0)
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + (value.doc != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.doc) : 0)
+          + (value.number != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.number) : 0)
+          + (value.options != null ? EnumValueOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, EnumValueDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
-      if (value.doc != null) ProtoAdapter.STRING.encodeTagged(writer, 4, value.doc);
-      if (value.number != null) ProtoAdapter.INT32.encodeTagged(writer, 2, value.number);
-      if (value.options != null) EnumValueOptions.ADAPTER.encodeTagged(writer, 3, value.options);
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.doc != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.doc);
+      if (value.number != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.number);
+      if (value.options != null) EnumValueOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
       writer.writeBytes(value.unknownFields());
     }
 

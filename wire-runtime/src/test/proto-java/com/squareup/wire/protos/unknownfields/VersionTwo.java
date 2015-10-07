@@ -21,23 +21,23 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
   public static final ProtoAdapter<VersionTwo> ADAPTER = new ProtoAdapter<VersionTwo>(FieldEncoding.LENGTH_DELIMITED, VersionTwo.class) {
     @Override
     public int encodedSize(VersionTwo value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSize(1, value.i) : 0)
-          + (value.v2_i != null ? ProtoAdapter.INT32.encodedSize(2, value.v2_i) : 0)
-          + (value.v2_s != null ? ProtoAdapter.STRING.encodedSize(3, value.v2_s) : 0)
-          + (value.v2_f32 != null ? ProtoAdapter.FIXED32.encodedSize(4, value.v2_f32) : 0)
-          + (value.v2_f64 != null ? ProtoAdapter.FIXED64.encodedSize(5, value.v2_f64) : 0)
-          + ProtoAdapter.STRING.asRepeated().encodedSize(6, value.v2_rs)
+      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
+          + (value.v2_i != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i) : 0)
+          + (value.v2_s != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.v2_s) : 0)
+          + (value.v2_f32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.v2_f32) : 0)
+          + (value.v2_f64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(5, value.v2_f64) : 0)
+          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.v2_rs)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, VersionTwo value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.i);
-      if (value.v2_i != null) ProtoAdapter.INT32.encodeTagged(writer, 2, value.v2_i);
-      if (value.v2_s != null) ProtoAdapter.STRING.encodeTagged(writer, 3, value.v2_s);
-      if (value.v2_f32 != null) ProtoAdapter.FIXED32.encodeTagged(writer, 4, value.v2_f32);
-      if (value.v2_f64 != null) ProtoAdapter.FIXED64.encodeTagged(writer, 5, value.v2_f64);
-      if (value.v2_rs != null) ProtoAdapter.STRING.asRepeated().encodeTagged(writer, 6, value.v2_rs);
+      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      if (value.v2_i != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i);
+      if (value.v2_s != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s);
+      if (value.v2_f32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.v2_f32);
+      if (value.v2_f64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64);
+      if (value.v2_rs != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs);
       writer.writeBytes(value.unknownFields());
     }
 

@@ -142,10 +142,10 @@ final class SchemaProtoAdapterFactory {
         ProtoAdapter<Object> protoAdapter = (ProtoAdapter<Object>) field.protoAdapter;
         if (field.repeated) {
           for (Object o : (List<?>) entry.getValue()) {
-            size += protoAdapter.encodedSize(field.tag, o);
+            size += protoAdapter.encodedSizeWithTag(field.tag, o);
           }
         } else {
-          size += protoAdapter.encodedSize(field.tag, entry.getValue());
+          size += protoAdapter.encodedSizeWithTag(field.tag, entry.getValue());
         }
       }
       return size;
@@ -159,10 +159,10 @@ final class SchemaProtoAdapterFactory {
         ProtoAdapter<Object> protoAdapter = (ProtoAdapter<Object>) field.protoAdapter;
         if (field.repeated) {
           for (Object o : (List<?>) entry.getValue()) {
-            protoAdapter.encodeTagged(writer, field.tag, o);
+            protoAdapter.encodeWithTag(writer, field.tag, o);
           }
         } else {
-          protoAdapter.encodeTagged(writer, field.tag, entry.getValue());
+          protoAdapter.encodeWithTag(writer, field.tag, entry.getValue());
         }
       }
     }

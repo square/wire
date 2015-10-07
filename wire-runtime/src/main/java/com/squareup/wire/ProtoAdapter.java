@@ -103,7 +103,7 @@ public abstract class ProtoAdapter<E> {
    * The size of {@code tag} and non-null {@code value} in the wire format. This size includes the
    * tag, type, length-delimited prefix (should the type require one), and value.
    */
-  public int encodedSize(int tag, E value) {
+  public int encodedSizeWithTag(int tag, E value) {
     int size = encodedSize(value);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       size += varint32Size(size);
@@ -115,7 +115,7 @@ public abstract class ProtoAdapter<E> {
   public abstract void encode(ProtoWriter writer, E value) throws IOException;
 
   /** Write {@code tag} and non-null {@code value} to {@code writer}. */
-  public void encodeTagged(ProtoWriter writer, int tag, E value) throws IOException {
+  public void encodeWithTag(ProtoWriter writer, int tag, E value) throws IOException {
     writer.writeTag(tag, fieldEncoding);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       writer.writeVarint32(encodedSize(value));
@@ -395,10 +395,10 @@ public abstract class ProtoAdapter<E> {
       throw new IllegalArgumentException("Unable to pack a length-delimited type.");
     }
     return new ProtoAdapter<List<E>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
-      @Override public void encodeTagged(ProtoWriter writer, int tag, List<E> value)
+      @Override public void encodeWithTag(ProtoWriter writer, int tag, List<E> value)
           throws IOException {
         if (!value.isEmpty()) {
-          super.encodeTagged(writer, tag, value);
+          super.encodeWithTag(writer, tag, value);
         }
       }
 
@@ -433,10 +433,10 @@ public abstract class ProtoAdapter<E> {
         throw new UnsupportedOperationException("Repeated values can only be sized with a tag.");
       }
 
-      @Override public int encodedSize(int tag, List<E> value) {
+      @Override public int encodedSizeWithTag(int tag, List<E> value) {
         int size = 0;
         for (int i = 0, count = value.size(); i < count; i++) {
-          size += ProtoAdapter.this.encodedSize(tag, value.get(i));
+          size += ProtoAdapter.this.encodedSizeWithTag(tag, value.get(i));
         }
         return size;
       }
@@ -445,10 +445,10 @@ public abstract class ProtoAdapter<E> {
         throw new UnsupportedOperationException("Repeated values can only be encoded with a tag.");
       }
 
-      @Override public void encodeTagged(ProtoWriter writer, int tag, List<E> value)
+      @Override public void encodeWithTag(ProtoWriter writer, int tag, List<E> value)
           throws IOException {
         for (int i = 0, count = value.size(); i < count; i++) {
-          ProtoAdapter.this.encodeTagged(writer, tag, value.get(i));
+          ProtoAdapter.this.encodeWithTag(writer, tag, value.get(i));
         }
       }
 

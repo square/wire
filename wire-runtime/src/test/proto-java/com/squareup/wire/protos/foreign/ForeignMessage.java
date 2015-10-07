@@ -19,15 +19,15 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
   public static final ProtoAdapter<ForeignMessage> ADAPTER = new ProtoAdapter<ForeignMessage>(FieldEncoding.LENGTH_DELIMITED, ForeignMessage.class) {
     @Override
     public int encodedSize(ForeignMessage value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSize(1, value.i) : 0)
-          + (value.j != null ? ProtoAdapter.INT32.encodedSize(100, value.j) : 0)
+      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
+          + (value.j != null ? ProtoAdapter.INT32.encodedSizeWithTag(100, value.j) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, ForeignMessage value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.i);
-      if (value.j != null) ProtoAdapter.INT32.encodeTagged(writer, 100, value.j);
+      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      if (value.j != null) ProtoAdapter.INT32.encodeWithTag(writer, 100, value.j);
       writer.writeBytes(value.unknownFields());
     }
 

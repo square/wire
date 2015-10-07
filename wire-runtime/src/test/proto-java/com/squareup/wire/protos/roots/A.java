@@ -33,15 +33,15 @@ public final class A extends Message<A, A.Builder> {
   public static final ProtoAdapter<A> ADAPTER = new ProtoAdapter<A>(FieldEncoding.LENGTH_DELIMITED, A.class) {
     @Override
     public int encodedSize(A value) {
-      return (value.c != null ? B.ADAPTER.encodedSize(1, value.c) : 0)
-          + (value.d != null ? D.ADAPTER.encodedSize(2, value.d) : 0)
+      return (value.c != null ? B.ADAPTER.encodedSizeWithTag(1, value.c) : 0)
+          + (value.d != null ? D.ADAPTER.encodedSizeWithTag(2, value.d) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, A value) throws IOException {
-      if (value.c != null) B.ADAPTER.encodeTagged(writer, 1, value.c);
-      if (value.d != null) D.ADAPTER.encodeTagged(writer, 2, value.d);
+      if (value.c != null) B.ADAPTER.encodeWithTag(writer, 1, value.c);
+      if (value.d != null) D.ADAPTER.encodeWithTag(writer, 2, value.d);
       writer.writeBytes(value.unknownFields());
     }
 

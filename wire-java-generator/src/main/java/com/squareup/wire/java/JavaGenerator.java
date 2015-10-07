@@ -547,10 +547,11 @@ public final class JavaGenerator {
       String fieldName = nameAllocator.get(field);
       CodeBlock adapter = adapterFor(field);
       if (field.isRequired() || field.isRepeated()) {
-        result.addCode("$L $L.encodedSize($L, value.$L)", leading, adapter, fieldTag, fieldName);
+        result.addCode("$L $L.encodedSizeWithTag($L, value.$L)",
+            leading, adapter, fieldTag, fieldName);
       } else {
-        result.addCode("$1L (value.$4L != null ? $2L.encodedSize($3L, value.$4L) : 0)", leading,
-            adapter, fieldTag, fieldName);
+        result.addCode("$1L (value.$4L != null ? $2L.encodedSizeWithTag($3L, value.$4L) : 0)",
+            leading, adapter, fieldTag, fieldName);
       }
       leading = "\n+";
     }
@@ -573,9 +574,9 @@ public final class JavaGenerator {
       String fieldName = nameAllocator.get(field);
       CodeBlock adapter = adapterFor(field);
       if (field.isRequired()) {
-        result.addStatement("$L.encodeTagged(writer, $L, value.$L)", adapter, fieldTag, fieldName);
+        result.addStatement("$L.encodeWithTag(writer, $L, value.$L)", adapter, fieldTag, fieldName);
       } else {
-        result.addStatement("if (value.$3L != null) $1L.encodeTagged(writer, $2L, value.$3L)",
+        result.addStatement("if (value.$3L != null) $1L.encodeWithTag(writer, $2L, value.$3L)",
             adapter, fieldTag, fieldName);
       }
     }

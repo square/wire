@@ -18,13 +18,13 @@ public final class H extends Message<H, H.Builder> {
   public static final ProtoAdapter<H> ADAPTER = new ProtoAdapter<H>(FieldEncoding.LENGTH_DELIMITED, H.class) {
     @Override
     public int encodedSize(H value) {
-      return (value.ef != null ? E.F.ADAPTER.encodedSize(1, value.ef) : 0)
+      return (value.ef != null ? E.F.ADAPTER.encodedSizeWithTag(1, value.ef) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, H value) throws IOException {
-      if (value.ef != null) E.F.ADAPTER.encodeTagged(writer, 1, value.ef);
+      if (value.ef != null) E.F.ADAPTER.encodeWithTag(writer, 1, value.ef);
       writer.writeBytes(value.unknownFields());
     }
 

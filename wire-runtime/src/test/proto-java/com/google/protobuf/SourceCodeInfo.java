@@ -26,13 +26,13 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
   public static final ProtoAdapter<SourceCodeInfo> ADAPTER = new ProtoAdapter<SourceCodeInfo>(FieldEncoding.LENGTH_DELIMITED, SourceCodeInfo.class) {
     @Override
     public int encodedSize(SourceCodeInfo value) {
-      return Location.ADAPTER.asRepeated().encodedSize(1, value.location)
+      return Location.ADAPTER.asRepeated().encodedSizeWithTag(1, value.location)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, SourceCodeInfo value) throws IOException {
-      if (value.location != null) Location.ADAPTER.asRepeated().encodeTagged(writer, 1, value.location);
+      if (value.location != null) Location.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.location);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -224,15 +224,15 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     public static final ProtoAdapter<Location> ADAPTER = new ProtoAdapter<Location>(FieldEncoding.LENGTH_DELIMITED, Location.class) {
       @Override
       public int encodedSize(Location value) {
-        return ProtoAdapter.INT32.asPacked().encodedSize(1, value.path)
-            + ProtoAdapter.INT32.asPacked().encodedSize(2, value.span)
+        return ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path)
+            + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(2, value.span)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, Location value) throws IOException {
-        if (value.path != null) ProtoAdapter.INT32.asPacked().encodeTagged(writer, 1, value.path);
-        if (value.span != null) ProtoAdapter.INT32.asPacked().encodeTagged(writer, 2, value.span);
+        if (value.path != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.path);
+        if (value.span != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value.span);
         writer.writeBytes(value.unknownFields());
       }
 

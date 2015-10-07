@@ -109,7 +109,7 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
       }
       try {
         ProtoAdapter<Object> protoAdapter = (ProtoAdapter<Object>) fieldEncoding.rawProtoAdapter();
-        protoAdapter.encodeTagged(unknownFieldsWriter, tag, value);
+        protoAdapter.encodeWithTag(unknownFieldsWriter, tag, value);
       } catch (IOException e) {
         throw new AssertionError();
       }
