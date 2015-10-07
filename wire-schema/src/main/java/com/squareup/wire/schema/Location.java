@@ -39,6 +39,11 @@ public abstract class Location {
     return new AutoValue_Location(base(), path(), line, column);
   }
 
+  /** Returns a copy of this location with an empty base. */
+  public Location withoutBase() {
+    return new AutoValue_Location("", path(), line(), column());
+  }
+
   /** Returns the base of this location; typically a directory or .jar file. */
   public abstract String base();
 
