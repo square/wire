@@ -24,31 +24,31 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   public static final ProtoAdapter<FieldOptions> ADAPTER = new ProtoAdapter<FieldOptions>(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class) {
     @Override
     public int encodedSize(FieldOptions value) {
-      return (value.ctype != null ? CType.ADAPTER.encodedSize(1, value.ctype) : 0)
-          + (value.packed != null ? ProtoAdapter.BOOL.encodedSize(2, value.packed) : 0)
-          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSize(3, value.deprecated) : 0)
-          + (value.experimental_map_key != null ? ProtoAdapter.STRING.encodedSize(9, value.experimental_map_key) : 0)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
-          + (value.my_field_option_one != null ? ProtoAdapter.INT32.encodedSize(60001, value.my_field_option_one) : 0)
-          + (value.my_field_option_two != null ? ProtoAdapter.FLOAT.encodedSize(60002, value.my_field_option_two) : 0)
-          + (value.my_field_option_three != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSize(60003, value.my_field_option_three) : 0)
-          + (value.my_field_option_four != null ? FooBar.ADAPTER.encodedSize(60004, value.my_field_option_four) : 0)
-          + (value.redacted != null ? ProtoAdapter.BOOL.encodedSize(22200, value.redacted) : 0)
+      return (value.ctype != null ? CType.ADAPTER.encodedSizeWithTag(1, value.ctype) : 0)
+          + (value.packed != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed) : 0)
+          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
+          + (value.experimental_map_key != null ? ProtoAdapter.STRING.encodedSizeWithTag(9, value.experimental_map_key) : 0)
+          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
+          + (value.my_field_option_one != null ? ProtoAdapter.INT32.encodedSizeWithTag(60001, value.my_field_option_one) : 0)
+          + (value.my_field_option_two != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(60002, value.my_field_option_two) : 0)
+          + (value.my_field_option_three != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(60003, value.my_field_option_three) : 0)
+          + (value.my_field_option_four != null ? FooBar.ADAPTER.encodedSizeWithTag(60004, value.my_field_option_four) : 0)
+          + (value.redacted != null ? ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, FieldOptions value) throws IOException {
-      if (value.ctype != null) CType.ADAPTER.encodeTagged(writer, 1, value.ctype);
-      if (value.packed != null) ProtoAdapter.BOOL.encodeTagged(writer, 2, value.packed);
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeTagged(writer, 3, value.deprecated);
-      if (value.experimental_map_key != null) ProtoAdapter.STRING.encodeTagged(writer, 9, value.experimental_map_key);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
-      if (value.my_field_option_one != null) ProtoAdapter.INT32.encodeTagged(writer, 60001, value.my_field_option_one);
-      if (value.my_field_option_two != null) ProtoAdapter.FLOAT.encodeTagged(writer, 60002, value.my_field_option_two);
-      if (value.my_field_option_three != null) FooBar.FooBarBazEnum.ADAPTER.encodeTagged(writer, 60003, value.my_field_option_three);
-      if (value.my_field_option_four != null) FooBar.ADAPTER.encodeTagged(writer, 60004, value.my_field_option_four);
-      if (value.redacted != null) ProtoAdapter.BOOL.encodeTagged(writer, 22200, value.redacted);
+      if (value.ctype != null) CType.ADAPTER.encodeWithTag(writer, 1, value.ctype);
+      if (value.packed != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.packed);
+      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
+      if (value.experimental_map_key != null) ProtoAdapter.STRING.encodeWithTag(writer, 9, value.experimental_map_key);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      if (value.my_field_option_one != null) ProtoAdapter.INT32.encodeWithTag(writer, 60001, value.my_field_option_one);
+      if (value.my_field_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 60002, value.my_field_option_two);
+      if (value.my_field_option_three != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 60003, value.my_field_option_three);
+      if (value.my_field_option_four != null) FooBar.ADAPTER.encodeWithTag(writer, 60004, value.my_field_option_four);
+      if (value.redacted != null) ProtoAdapter.BOOL.encodeWithTag(writer, 22200, value.redacted);
       writer.writeBytes(value.unknownFields());
     }
 

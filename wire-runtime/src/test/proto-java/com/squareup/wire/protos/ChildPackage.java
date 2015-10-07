@@ -19,13 +19,13 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
   public static final ProtoAdapter<ChildPackage> ADAPTER = new ProtoAdapter<ChildPackage>(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class) {
     @Override
     public int encodedSize(ChildPackage value) {
-      return (value.inner_foreign_enum != null ? ForeignEnum.ADAPTER.encodedSize(1, value.inner_foreign_enum) : 0)
+      return (value.inner_foreign_enum != null ? ForeignEnum.ADAPTER.encodedSizeWithTag(1, value.inner_foreign_enum) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, ChildPackage value) throws IOException {
-      if (value.inner_foreign_enum != null) ForeignEnum.ADAPTER.encodeTagged(writer, 1, value.inner_foreign_enum);
+      if (value.inner_foreign_enum != null) ForeignEnum.ADAPTER.encodeWithTag(writer, 1, value.inner_foreign_enum);
       writer.writeBytes(value.unknownFields());
     }
 

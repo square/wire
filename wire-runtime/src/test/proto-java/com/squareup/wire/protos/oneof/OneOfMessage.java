@@ -19,15 +19,15 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
   public static final ProtoAdapter<OneOfMessage> ADAPTER = new ProtoAdapter<OneOfMessage>(FieldEncoding.LENGTH_DELIMITED, OneOfMessage.class) {
     @Override
     public int encodedSize(OneOfMessage value) {
-      return (value.foo != null ? ProtoAdapter.INT32.encodedSize(1, value.foo) : 0)
-          + (value.bar != null ? ProtoAdapter.STRING.encodedSize(3, value.bar) : 0)
+      return (value.foo != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) : 0)
+          + (value.bar != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneOfMessage value) throws IOException {
-      if (value.foo != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.foo);
-      if (value.bar != null) ProtoAdapter.STRING.encodeTagged(writer, 3, value.bar);
+      if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
+      if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar);
       writer.writeBytes(value.unknownFields());
     }
 

@@ -19,15 +19,15 @@ public final class E extends Message<E, E.Builder> {
   public static final ProtoAdapter<E> ADAPTER = new ProtoAdapter<E>(FieldEncoding.LENGTH_DELIMITED, E.class) {
     @Override
     public int encodedSize(E value) {
-      return (value.f != null ? F.ADAPTER.encodedSize(1, value.f) : 0)
-          + (value.g != null ? G.ADAPTER.encodedSize(2, value.g) : 0)
+      return (value.f != null ? F.ADAPTER.encodedSizeWithTag(1, value.f) : 0)
+          + (value.g != null ? G.ADAPTER.encodedSizeWithTag(2, value.g) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, E value) throws IOException {
-      if (value.f != null) F.ADAPTER.encodeTagged(writer, 1, value.f);
-      if (value.g != null) G.ADAPTER.encodeTagged(writer, 2, value.g);
+      if (value.f != null) F.ADAPTER.encodeWithTag(writer, 1, value.f);
+      if (value.g != null) G.ADAPTER.encodeWithTag(writer, 2, value.g);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -151,13 +151,13 @@ public final class E extends Message<E, E.Builder> {
     public static final ProtoAdapter<F> ADAPTER = new ProtoAdapter<F>(FieldEncoding.LENGTH_DELIMITED, F.class) {
       @Override
       public int encodedSize(F value) {
-        return (value.i != null ? ProtoAdapter.INT32.encodedSize(1, value.i) : 0)
+        return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, F value) throws IOException {
-        if (value.i != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.i);
+        if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
         writer.writeBytes(value.unknownFields());
       }
 

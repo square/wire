@@ -89,7 +89,7 @@ final class RuntimeMessageAdapter<M extends Message<M, B>, B extends Builder<M, 
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
       Object value = fieldBinding.get(message);
       if (value == null) continue;
-      size += fieldBinding.adapter().encodedSize(fieldBinding.tag, value);
+      size += fieldBinding.adapter().encodedSizeWithTag(fieldBinding.tag, value);
     }
     size += message.unknownFields().size();
 
@@ -101,7 +101,7 @@ final class RuntimeMessageAdapter<M extends Message<M, B>, B extends Builder<M, 
     for (FieldBinding<M, B> fieldBinding : fieldBindings.values()) {
       Object value = fieldBinding.get(message);
       if (value == null) continue;
-      fieldBinding.adapter().encodeTagged(writer, fieldBinding.tag, value);
+      fieldBinding.adapter().encodeWithTag(writer, fieldBinding.tag, value);
     }
     writer.writeBytes(message.unknownFields());
   }

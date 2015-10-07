@@ -19,15 +19,15 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
   public static final ProtoAdapter<RedactedExtension> ADAPTER = new ProtoAdapter<RedactedExtension>(FieldEncoding.LENGTH_DELIMITED, RedactedExtension.class) {
     @Override
     public int encodedSize(RedactedExtension value) {
-      return (value.d != null ? ProtoAdapter.STRING.encodedSize(1, value.d) : 0)
-          + (value.e != null ? ProtoAdapter.STRING.encodedSize(2, value.e) : 0)
+      return (value.d != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.d) : 0)
+          + (value.e != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.e) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, RedactedExtension value) throws IOException {
-      if (value.d != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.d);
-      if (value.e != null) ProtoAdapter.STRING.encodeTagged(writer, 2, value.e);
+      if (value.d != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d);
+      if (value.e != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e);
       writer.writeBytes(value.unknownFields());
     }
 

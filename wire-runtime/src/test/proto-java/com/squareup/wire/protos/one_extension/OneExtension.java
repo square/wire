@@ -18,15 +18,15 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
   public static final ProtoAdapter<OneExtension> ADAPTER = new ProtoAdapter<OneExtension>(FieldEncoding.LENGTH_DELIMITED, OneExtension.class) {
     @Override
     public int encodedSize(OneExtension value) {
-      return (value.id != null ? ProtoAdapter.STRING.encodedSize(1, value.id) : 0)
-          + (value.foo != null ? Foo.ADAPTER.encodedSize(1000, value.foo) : 0)
+      return (value.id != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.id) : 0)
+          + (value.foo != null ? Foo.ADAPTER.encodedSizeWithTag(1000, value.foo) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneExtension value) throws IOException {
-      if (value.id != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.id);
-      if (value.foo != null) Foo.ADAPTER.encodeTagged(writer, 1000, value.foo);
+      if (value.id != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.id);
+      if (value.foo != null) Foo.ADAPTER.encodeWithTag(writer, 1000, value.foo);
       writer.writeBytes(value.unknownFields());
     }
 

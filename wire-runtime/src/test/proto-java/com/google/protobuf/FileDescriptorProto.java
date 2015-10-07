@@ -22,29 +22,29 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
   public static final ProtoAdapter<FileDescriptorProto> ADAPTER = new ProtoAdapter<FileDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, FileDescriptorProto.class) {
     @Override
     public int encodedSize(FileDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSize(1, value.name) : 0)
-          + (value.package_ != null ? ProtoAdapter.STRING.encodedSize(2, value.package_) : 0)
-          + ProtoAdapter.STRING.asRepeated().encodedSize(3, value.dependency)
-          + DescriptorProto.ADAPTER.asRepeated().encodedSize(4, value.message_type)
-          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSize(5, value.enum_type)
-          + ServiceDescriptorProto.ADAPTER.asRepeated().encodedSize(6, value.service)
-          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSize(7, value.extension)
-          + (value.options != null ? FileOptions.ADAPTER.encodedSize(8, value.options) : 0)
-          + (value.source_code_info != null ? SourceCodeInfo.ADAPTER.encodedSize(9, value.source_code_info) : 0)
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + (value.package_ != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.package_) : 0)
+          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(3, value.dependency)
+          + DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.message_type)
+          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enum_type)
+          + ServiceDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.service)
+          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(7, value.extension)
+          + (value.options != null ? FileOptions.ADAPTER.encodedSizeWithTag(8, value.options) : 0)
+          + (value.source_code_info != null ? SourceCodeInfo.ADAPTER.encodedSizeWithTag(9, value.source_code_info) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, FileDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
-      if (value.package_ != null) ProtoAdapter.STRING.encodeTagged(writer, 2, value.package_);
-      if (value.dependency != null) ProtoAdapter.STRING.asRepeated().encodeTagged(writer, 3, value.dependency);
-      if (value.message_type != null) DescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 4, value.message_type);
-      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 5, value.enum_type);
-      if (value.service != null) ServiceDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 6, value.service);
-      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 7, value.extension);
-      if (value.options != null) FileOptions.ADAPTER.encodeTagged(writer, 8, value.options);
-      if (value.source_code_info != null) SourceCodeInfo.ADAPTER.encodeTagged(writer, 9, value.source_code_info);
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.package_ != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.package_);
+      if (value.dependency != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 3, value.dependency);
+      if (value.message_type != null) DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.message_type);
+      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enum_type);
+      if (value.service != null) ServiceDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.service);
+      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.extension);
+      if (value.options != null) FileOptions.ADAPTER.encodeWithTag(writer, 8, value.options);
+      if (value.source_code_info != null) SourceCodeInfo.ADAPTER.encodeWithTag(writer, 9, value.source_code_info);
       writer.writeBytes(value.unknownFields());
     }
 

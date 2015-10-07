@@ -19,13 +19,13 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
   public static final ProtoAdapter<ServiceOptions> ADAPTER = new ProtoAdapter<ServiceOptions>(FieldEncoding.LENGTH_DELIMITED, ServiceOptions.class) {
     @Override
     public int encodedSize(ServiceOptions value) {
-      return UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
+      return UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, ServiceOptions value) throws IOException {
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }
 

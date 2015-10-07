@@ -178,13 +178,13 @@ public final class Bar extends Message<Bar, Bar.Builder> {
       public static final ProtoAdapter<Moo> ADAPTER = new ProtoAdapter<Moo>(FieldEncoding.LENGTH_DELIMITED, Moo.class) {
         @Override
         public int encodedSize(Moo value) {
-          return (value.boo != null ? ProtoAdapter.STRING.encodedSize(1, value.boo) : 0)
+          return (value.boo != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.boo) : 0)
               + value.unknownFields().size();
         }
 
         @Override
         public void encode(ProtoWriter writer, Moo value) throws IOException {
-          if (value.boo != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.boo);
+          if (value.boo != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.boo);
           writer.writeBytes(value.unknownFields());
         }
 

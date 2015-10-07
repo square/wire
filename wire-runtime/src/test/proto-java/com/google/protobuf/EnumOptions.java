@@ -20,15 +20,15 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
   public static final ProtoAdapter<EnumOptions> ADAPTER = new ProtoAdapter<EnumOptions>(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class) {
     @Override
     public int encodedSize(EnumOptions value) {
-      return UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
-          + (value.enum_option != null ? ProtoAdapter.BOOL.encodedSize(71000, value.enum_option) : 0)
+      return UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
+          + (value.enum_option != null ? ProtoAdapter.BOOL.encodedSizeWithTag(71000, value.enum_option) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, EnumOptions value) throws IOException {
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
-      if (value.enum_option != null) ProtoAdapter.BOOL.encodeTagged(writer, 71000, value.enum_option);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      if (value.enum_option != null) ProtoAdapter.BOOL.encodeWithTag(writer, 71000, value.enum_option);
       writer.writeBytes(value.unknownFields());
     }
 

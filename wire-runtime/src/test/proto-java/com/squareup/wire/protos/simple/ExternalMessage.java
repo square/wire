@@ -21,23 +21,23 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   public static final ProtoAdapter<ExternalMessage> ADAPTER = new ProtoAdapter<ExternalMessage>(FieldEncoding.LENGTH_DELIMITED, ExternalMessage.class) {
     @Override
     public int encodedSize(ExternalMessage value) {
-      return (value.f != null ? ProtoAdapter.FLOAT.encodedSize(1, value.f) : 0)
-          + ProtoAdapter.INT32.asRepeated().encodedSize(125, value.fooext)
-          + (value.barext != null ? ProtoAdapter.INT32.encodedSize(126, value.barext) : 0)
-          + (value.bazext != null ? ProtoAdapter.INT32.encodedSize(127, value.bazext) : 0)
-          + (value.nested_message_ext != null ? SimpleMessage.NestedMessage.ADAPTER.encodedSize(128, value.nested_message_ext) : 0)
-          + (value.nested_enum_ext != null ? SimpleMessage.NestedEnum.ADAPTER.encodedSize(129, value.nested_enum_ext) : 0)
+      return (value.f != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f) : 0)
+          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext)
+          + (value.barext != null ? ProtoAdapter.INT32.encodedSizeWithTag(126, value.barext) : 0)
+          + (value.bazext != null ? ProtoAdapter.INT32.encodedSizeWithTag(127, value.bazext) : 0)
+          + (value.nested_message_ext != null ? SimpleMessage.NestedMessage.ADAPTER.encodedSizeWithTag(128, value.nested_message_ext) : 0)
+          + (value.nested_enum_ext != null ? SimpleMessage.NestedEnum.ADAPTER.encodedSizeWithTag(129, value.nested_enum_ext) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, ExternalMessage value) throws IOException {
-      if (value.f != null) ProtoAdapter.FLOAT.encodeTagged(writer, 1, value.f);
-      if (value.fooext != null) ProtoAdapter.INT32.asRepeated().encodeTagged(writer, 125, value.fooext);
-      if (value.barext != null) ProtoAdapter.INT32.encodeTagged(writer, 126, value.barext);
-      if (value.bazext != null) ProtoAdapter.INT32.encodeTagged(writer, 127, value.bazext);
-      if (value.nested_message_ext != null) SimpleMessage.NestedMessage.ADAPTER.encodeTagged(writer, 128, value.nested_message_ext);
-      if (value.nested_enum_ext != null) SimpleMessage.NestedEnum.ADAPTER.encodeTagged(writer, 129, value.nested_enum_ext);
+      if (value.f != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f);
+      if (value.fooext != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 125, value.fooext);
+      if (value.barext != null) ProtoAdapter.INT32.encodeWithTag(writer, 126, value.barext);
+      if (value.bazext != null) ProtoAdapter.INT32.encodeWithTag(writer, 127, value.bazext);
+      if (value.nested_message_ext != null) SimpleMessage.NestedMessage.ADAPTER.encodeWithTag(writer, 128, value.nested_message_ext);
+      if (value.nested_enum_ext != null) SimpleMessage.NestedEnum.ADAPTER.encodeWithTag(writer, 129, value.nested_enum_ext);
       writer.writeBytes(value.unknownFields());
     }
 

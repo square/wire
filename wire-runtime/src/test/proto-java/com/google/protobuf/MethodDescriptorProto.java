@@ -21,21 +21,21 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
   public static final ProtoAdapter<MethodDescriptorProto> ADAPTER = new ProtoAdapter<MethodDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, MethodDescriptorProto.class) {
     @Override
     public int encodedSize(MethodDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSize(1, value.name) : 0)
-          + (value.doc != null ? ProtoAdapter.STRING.encodedSize(5, value.doc) : 0)
-          + (value.input_type != null ? ProtoAdapter.STRING.encodedSize(2, value.input_type) : 0)
-          + (value.output_type != null ? ProtoAdapter.STRING.encodedSize(3, value.output_type) : 0)
-          + (value.options != null ? MethodOptions.ADAPTER.encodedSize(4, value.options) : 0)
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + (value.doc != null ? ProtoAdapter.STRING.encodedSizeWithTag(5, value.doc) : 0)
+          + (value.input_type != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.input_type) : 0)
+          + (value.output_type != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.output_type) : 0)
+          + (value.options != null ? MethodOptions.ADAPTER.encodedSizeWithTag(4, value.options) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, MethodDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
-      if (value.doc != null) ProtoAdapter.STRING.encodeTagged(writer, 5, value.doc);
-      if (value.input_type != null) ProtoAdapter.STRING.encodeTagged(writer, 2, value.input_type);
-      if (value.output_type != null) ProtoAdapter.STRING.encodeTagged(writer, 3, value.output_type);
-      if (value.options != null) MethodOptions.ADAPTER.encodeTagged(writer, 4, value.options);
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.doc != null) ProtoAdapter.STRING.encodeWithTag(writer, 5, value.doc);
+      if (value.input_type != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.input_type);
+      if (value.output_type != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.output_type);
+      if (value.options != null) MethodOptions.ADAPTER.encodeWithTag(writer, 4, value.options);
       writer.writeBytes(value.unknownFields());
     }
 

@@ -20,15 +20,15 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
   public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = new ProtoAdapter<RepeatedAndPacked>(FieldEncoding.LENGTH_DELIMITED, RepeatedAndPacked.class) {
     @Override
     public int encodedSize(RepeatedAndPacked value) {
-      return ProtoAdapter.INT32.asRepeated().encodedSize(201, value.rep_int32)
-          + ProtoAdapter.INT32.asPacked().encodedSize(301, value.pack_int32)
+      return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
+          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, RepeatedAndPacked value) throws IOException {
-      if (value.rep_int32 != null) ProtoAdapter.INT32.asRepeated().encodeTagged(writer, 201, value.rep_int32);
-      if (value.pack_int32 != null) ProtoAdapter.INT32.asPacked().encodeTagged(writer, 301, value.pack_int32);
+      if (value.rep_int32 != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
+      if (value.pack_int32 != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
       writer.writeBytes(value.unknownFields());
     }
 

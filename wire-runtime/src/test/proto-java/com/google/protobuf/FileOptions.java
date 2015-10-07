@@ -48,29 +48,29 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   public static final ProtoAdapter<FileOptions> ADAPTER = new ProtoAdapter<FileOptions>(FieldEncoding.LENGTH_DELIMITED, FileOptions.class) {
     @Override
     public int encodedSize(FileOptions value) {
-      return (value.java_package != null ? ProtoAdapter.STRING.encodedSize(1, value.java_package) : 0)
-          + (value.java_outer_classname != null ? ProtoAdapter.STRING.encodedSize(8, value.java_outer_classname) : 0)
-          + (value.java_multiple_files != null ? ProtoAdapter.BOOL.encodedSize(10, value.java_multiple_files) : 0)
-          + (value.java_generate_equals_and_hash != null ? ProtoAdapter.BOOL.encodedSize(20, value.java_generate_equals_and_hash) : 0)
-          + (value.optimize_for != null ? OptimizeMode.ADAPTER.encodedSize(9, value.optimize_for) : 0)
-          + (value.cc_generic_services != null ? ProtoAdapter.BOOL.encodedSize(16, value.cc_generic_services) : 0)
-          + (value.java_generic_services != null ? ProtoAdapter.BOOL.encodedSize(17, value.java_generic_services) : 0)
-          + (value.py_generic_services != null ? ProtoAdapter.BOOL.encodedSize(18, value.py_generic_services) : 0)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSize(999, value.uninterpreted_option)
+      return (value.java_package != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.java_package) : 0)
+          + (value.java_outer_classname != null ? ProtoAdapter.STRING.encodedSizeWithTag(8, value.java_outer_classname) : 0)
+          + (value.java_multiple_files != null ? ProtoAdapter.BOOL.encodedSizeWithTag(10, value.java_multiple_files) : 0)
+          + (value.java_generate_equals_and_hash != null ? ProtoAdapter.BOOL.encodedSizeWithTag(20, value.java_generate_equals_and_hash) : 0)
+          + (value.optimize_for != null ? OptimizeMode.ADAPTER.encodedSizeWithTag(9, value.optimize_for) : 0)
+          + (value.cc_generic_services != null ? ProtoAdapter.BOOL.encodedSizeWithTag(16, value.cc_generic_services) : 0)
+          + (value.java_generic_services != null ? ProtoAdapter.BOOL.encodedSizeWithTag(17, value.java_generic_services) : 0)
+          + (value.py_generic_services != null ? ProtoAdapter.BOOL.encodedSizeWithTag(18, value.py_generic_services) : 0)
+          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, FileOptions value) throws IOException {
-      if (value.java_package != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.java_package);
-      if (value.java_outer_classname != null) ProtoAdapter.STRING.encodeTagged(writer, 8, value.java_outer_classname);
-      if (value.java_multiple_files != null) ProtoAdapter.BOOL.encodeTagged(writer, 10, value.java_multiple_files);
-      if (value.java_generate_equals_and_hash != null) ProtoAdapter.BOOL.encodeTagged(writer, 20, value.java_generate_equals_and_hash);
-      if (value.optimize_for != null) OptimizeMode.ADAPTER.encodeTagged(writer, 9, value.optimize_for);
-      if (value.cc_generic_services != null) ProtoAdapter.BOOL.encodeTagged(writer, 16, value.cc_generic_services);
-      if (value.java_generic_services != null) ProtoAdapter.BOOL.encodeTagged(writer, 17, value.java_generic_services);
-      if (value.py_generic_services != null) ProtoAdapter.BOOL.encodeTagged(writer, 18, value.py_generic_services);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeTagged(writer, 999, value.uninterpreted_option);
+      if (value.java_package != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.java_package);
+      if (value.java_outer_classname != null) ProtoAdapter.STRING.encodeWithTag(writer, 8, value.java_outer_classname);
+      if (value.java_multiple_files != null) ProtoAdapter.BOOL.encodeWithTag(writer, 10, value.java_multiple_files);
+      if (value.java_generate_equals_and_hash != null) ProtoAdapter.BOOL.encodeWithTag(writer, 20, value.java_generate_equals_and_hash);
+      if (value.optimize_for != null) OptimizeMode.ADAPTER.encodeWithTag(writer, 9, value.optimize_for);
+      if (value.cc_generic_services != null) ProtoAdapter.BOOL.encodeWithTag(writer, 16, value.cc_generic_services);
+      if (value.java_generic_services != null) ProtoAdapter.BOOL.encodeWithTag(writer, 17, value.java_generic_services);
+      if (value.py_generic_services != null) ProtoAdapter.BOOL.encodeWithTag(writer, 18, value.py_generic_services);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }
 

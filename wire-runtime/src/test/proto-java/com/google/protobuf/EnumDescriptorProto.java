@@ -22,19 +22,19 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   public static final ProtoAdapter<EnumDescriptorProto> ADAPTER = new ProtoAdapter<EnumDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, EnumDescriptorProto.class) {
     @Override
     public int encodedSize(EnumDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSize(1, value.name) : 0)
-          + (value.doc != null ? ProtoAdapter.STRING.encodedSize(4, value.doc) : 0)
-          + EnumValueDescriptorProto.ADAPTER.asRepeated().encodedSize(2, value.value)
-          + (value.options != null ? EnumOptions.ADAPTER.encodedSize(3, value.options) : 0)
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + (value.doc != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.doc) : 0)
+          + EnumValueDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.value)
+          + (value.options != null ? EnumOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, EnumDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
-      if (value.doc != null) ProtoAdapter.STRING.encodeTagged(writer, 4, value.doc);
-      if (value.value != null) EnumValueDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 2, value.value);
-      if (value.options != null) EnumOptions.ADAPTER.encodeTagged(writer, 3, value.options);
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.doc != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.doc);
+      if (value.value != null) EnumValueDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.value);
+      if (value.options != null) EnumOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
       writer.writeBytes(value.unknownFields());
     }
 

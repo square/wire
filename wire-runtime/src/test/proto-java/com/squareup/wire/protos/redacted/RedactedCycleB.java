@@ -18,13 +18,13 @@ public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB
   public static final ProtoAdapter<RedactedCycleB> ADAPTER = new ProtoAdapter<RedactedCycleB>(FieldEncoding.LENGTH_DELIMITED, RedactedCycleB.class) {
     @Override
     public int encodedSize(RedactedCycleB value) {
-      return (value.a != null ? RedactedCycleA.ADAPTER.encodedSize(1, value.a) : 0)
+      return (value.a != null ? RedactedCycleA.ADAPTER.encodedSizeWithTag(1, value.a) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, RedactedCycleB value) throws IOException {
-      if (value.a != null) RedactedCycleA.ADAPTER.encodeTagged(writer, 1, value.a);
+      if (value.a != null) RedactedCycleA.ADAPTER.encodeWithTag(writer, 1, value.a);
       writer.writeBytes(value.unknownFields());
     }
 

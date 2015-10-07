@@ -17,31 +17,31 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
   public static final ProtoAdapter<Message> ADAPTER = new ProtoAdapter<Message>(FieldEncoding.LENGTH_DELIMITED, Message.class) {
     @Override
     public int encodedSize(Message value) {
-      return (value.unknownFields != null ? ProtoAdapter.STRING.encodedSize(1, value.unknownFields) : 0)
-          + (value.other != null ? ProtoAdapter.STRING.encodedSize(2, value.other) : 0)
-          + (value.o != null ? ProtoAdapter.STRING.encodedSize(3, value.o) : 0)
-          + (value.result != null ? ProtoAdapter.STRING.encodedSize(4, value.result) : 0)
-          + (value.hashCode != null ? ProtoAdapter.STRING.encodedSize(5, value.hashCode) : 0)
-          + (value.serialVersionUID_ != null ? ProtoAdapter.STRING.encodedSize(6, value.serialVersionUID_) : 0)
-          + (value.ADAPTER_ != null ? ProtoAdapter.STRING.encodedSize(7, value.ADAPTER_) : 0)
-          + (value.MESSAGE_OPTIONS_ != null ? ProtoAdapter.STRING.encodedSize(8, value.MESSAGE_OPTIONS_) : 0)
-          + (value.this_ != null ? ProtoAdapter.STRING.encodedSize(9, value.this_) : 0)
-          + (value.message != null ? ProtoAdapter.STRING.encodedSize(10, value.message) : 0)
+      return (value.unknownFields != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.unknownFields) : 0)
+          + (value.other != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.other) : 0)
+          + (value.o != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.o) : 0)
+          + (value.result != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.result) : 0)
+          + (value.hashCode != null ? ProtoAdapter.STRING.encodedSizeWithTag(5, value.hashCode) : 0)
+          + (value.serialVersionUID_ != null ? ProtoAdapter.STRING.encodedSizeWithTag(6, value.serialVersionUID_) : 0)
+          + (value.ADAPTER_ != null ? ProtoAdapter.STRING.encodedSizeWithTag(7, value.ADAPTER_) : 0)
+          + (value.MESSAGE_OPTIONS_ != null ? ProtoAdapter.STRING.encodedSizeWithTag(8, value.MESSAGE_OPTIONS_) : 0)
+          + (value.this_ != null ? ProtoAdapter.STRING.encodedSizeWithTag(9, value.this_) : 0)
+          + (value.message != null ? ProtoAdapter.STRING.encodedSizeWithTag(10, value.message) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, Message value) throws IOException {
-      if (value.unknownFields != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.unknownFields);
-      if (value.other != null) ProtoAdapter.STRING.encodeTagged(writer, 2, value.other);
-      if (value.o != null) ProtoAdapter.STRING.encodeTagged(writer, 3, value.o);
-      if (value.result != null) ProtoAdapter.STRING.encodeTagged(writer, 4, value.result);
-      if (value.hashCode != null) ProtoAdapter.STRING.encodeTagged(writer, 5, value.hashCode);
-      if (value.serialVersionUID_ != null) ProtoAdapter.STRING.encodeTagged(writer, 6, value.serialVersionUID_);
-      if (value.ADAPTER_ != null) ProtoAdapter.STRING.encodeTagged(writer, 7, value.ADAPTER_);
-      if (value.MESSAGE_OPTIONS_ != null) ProtoAdapter.STRING.encodeTagged(writer, 8, value.MESSAGE_OPTIONS_);
-      if (value.this_ != null) ProtoAdapter.STRING.encodeTagged(writer, 9, value.this_);
-      if (value.message != null) ProtoAdapter.STRING.encodeTagged(writer, 10, value.message);
+      if (value.unknownFields != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.unknownFields);
+      if (value.other != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.other);
+      if (value.o != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.o);
+      if (value.result != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.result);
+      if (value.hashCode != null) ProtoAdapter.STRING.encodeWithTag(writer, 5, value.hashCode);
+      if (value.serialVersionUID_ != null) ProtoAdapter.STRING.encodeWithTag(writer, 6, value.serialVersionUID_);
+      if (value.ADAPTER_ != null) ProtoAdapter.STRING.encodeWithTag(writer, 7, value.ADAPTER_);
+      if (value.MESSAGE_OPTIONS_ != null) ProtoAdapter.STRING.encodeWithTag(writer, 8, value.MESSAGE_OPTIONS_);
+      if (value.this_ != null) ProtoAdapter.STRING.encodeWithTag(writer, 9, value.this_);
+      if (value.message != null) ProtoAdapter.STRING.encodeWithTag(writer, 10, value.message);
       writer.writeBytes(value.unknownFields());
     }
 

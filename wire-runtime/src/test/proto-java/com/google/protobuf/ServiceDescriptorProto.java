@@ -22,19 +22,19 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public static final ProtoAdapter<ServiceDescriptorProto> ADAPTER = new ProtoAdapter<ServiceDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, ServiceDescriptorProto.class) {
     @Override
     public int encodedSize(ServiceDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSize(1, value.name) : 0)
-          + MethodDescriptorProto.ADAPTER.asRepeated().encodedSize(2, value.method)
-          + (value.doc != null ? ProtoAdapter.STRING.encodedSize(4, value.doc) : 0)
-          + (value.options != null ? ServiceOptions.ADAPTER.encodedSize(3, value.options) : 0)
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + MethodDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.method)
+          + (value.doc != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.doc) : 0)
+          + (value.options != null ? ServiceOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, ServiceDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeTagged(writer, 1, value.name);
-      if (value.method != null) MethodDescriptorProto.ADAPTER.asRepeated().encodeTagged(writer, 2, value.method);
-      if (value.doc != null) ProtoAdapter.STRING.encodeTagged(writer, 4, value.doc);
-      if (value.options != null) ServiceOptions.ADAPTER.encodeTagged(writer, 3, value.options);
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.method != null) MethodDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.method);
+      if (value.doc != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.doc);
+      if (value.options != null) ServiceOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
       writer.writeBytes(value.unknownFields());
     }
 

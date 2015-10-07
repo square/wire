@@ -28,29 +28,29 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   public static final ProtoAdapter<FooBar> ADAPTER = new ProtoAdapter<FooBar>(FieldEncoding.LENGTH_DELIMITED, FooBar.class) {
     @Override
     public int encodedSize(FooBar value) {
-      return (value.foo != null ? ProtoAdapter.INT32.encodedSize(1, value.foo) : 0)
-          + (value.bar != null ? ProtoAdapter.STRING.encodedSize(2, value.bar) : 0)
-          + (value.baz != null ? Nested.ADAPTER.encodedSize(3, value.baz) : 0)
-          + (value.qux != null ? ProtoAdapter.UINT64.encodedSize(4, value.qux) : 0)
-          + ProtoAdapter.FLOAT.asRepeated().encodedSize(5, value.fred)
-          + (value.daisy != null ? ProtoAdapter.DOUBLE.encodedSize(6, value.daisy) : 0)
-          + FooBar.ADAPTER.asRepeated().encodedSize(7, value.nested)
-          + (value.ext != null ? FooBarBazEnum.ADAPTER.encodedSize(101, value.ext) : 0)
-          + FooBarBazEnum.ADAPTER.asRepeated().encodedSize(102, value.rep)
+      return (value.foo != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) : 0)
+          + (value.bar != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar) : 0)
+          + (value.baz != null ? Nested.ADAPTER.encodedSizeWithTag(3, value.baz) : 0)
+          + (value.qux != null ? ProtoAdapter.UINT64.encodedSizeWithTag(4, value.qux) : 0)
+          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(5, value.fred)
+          + (value.daisy != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy) : 0)
+          + FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested)
+          + (value.ext != null ? FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext) : 0)
+          + FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, FooBar value) throws IOException {
-      if (value.foo != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.foo);
-      if (value.bar != null) ProtoAdapter.STRING.encodeTagged(writer, 2, value.bar);
-      if (value.baz != null) Nested.ADAPTER.encodeTagged(writer, 3, value.baz);
-      if (value.qux != null) ProtoAdapter.UINT64.encodeTagged(writer, 4, value.qux);
-      if (value.fred != null) ProtoAdapter.FLOAT.asRepeated().encodeTagged(writer, 5, value.fred);
-      if (value.daisy != null) ProtoAdapter.DOUBLE.encodeTagged(writer, 6, value.daisy);
-      if (value.nested != null) FooBar.ADAPTER.asRepeated().encodeTagged(writer, 7, value.nested);
-      if (value.ext != null) FooBarBazEnum.ADAPTER.encodeTagged(writer, 101, value.ext);
-      if (value.rep != null) FooBarBazEnum.ADAPTER.asRepeated().encodeTagged(writer, 102, value.rep);
+      if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
+      if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar);
+      if (value.baz != null) Nested.ADAPTER.encodeWithTag(writer, 3, value.baz);
+      if (value.qux != null) ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.qux);
+      if (value.fred != null) ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 5, value.fred);
+      if (value.daisy != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.daisy);
+      if (value.nested != null) FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested);
+      if (value.ext != null) FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
+      if (value.rep != null) FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -347,13 +347,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     public static final ProtoAdapter<Nested> ADAPTER = new ProtoAdapter<Nested>(FieldEncoding.LENGTH_DELIMITED, Nested.class) {
       @Override
       public int encodedSize(Nested value) {
-        return (value.value != null ? FooBarBazEnum.ADAPTER.encodedSize(1, value.value) : 0)
+        return (value.value != null ? FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value) : 0)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, Nested value) throws IOException {
-        if (value.value != null) FooBarBazEnum.ADAPTER.encodeTagged(writer, 1, value.value);
+        if (value.value != null) FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -462,13 +462,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     public static final ProtoAdapter<More> ADAPTER = new ProtoAdapter<More>(FieldEncoding.LENGTH_DELIMITED, More.class) {
       @Override
       public int encodedSize(More value) {
-        return ProtoAdapter.INT32.asRepeated().encodedSize(1, value.serial)
+        return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, More value) throws IOException {
-        if (value.serial != null) ProtoAdapter.INT32.asRepeated().encodeTagged(writer, 1, value.serial);
+        if (value.serial != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial);
         writer.writeBytes(value.unknownFields());
       }
 

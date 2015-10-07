@@ -19,15 +19,15 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
   public static final ProtoAdapter<Recursive> ADAPTER = new ProtoAdapter<Recursive>(FieldEncoding.LENGTH_DELIMITED, Recursive.class) {
     @Override
     public int encodedSize(Recursive value) {
-      return (value.value != null ? ProtoAdapter.INT32.encodedSize(1, value.value) : 0)
-          + (value.recursive != null ? Recursive.ADAPTER.encodedSize(2, value.recursive) : 0)
+      return (value.value != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.value) : 0)
+          + (value.recursive != null ? Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, Recursive value) throws IOException {
-      if (value.value != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.value);
-      if (value.recursive != null) Recursive.ADAPTER.encodeTagged(writer, 2, value.recursive);
+      if (value.value != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value);
+      if (value.recursive != null) Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive);
       writer.writeBytes(value.unknownFields());
     }
 

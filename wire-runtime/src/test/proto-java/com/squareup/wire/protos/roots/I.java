@@ -19,15 +19,15 @@ public final class I extends Message<I, I.Builder> {
   public static final ProtoAdapter<I> ADAPTER = new ProtoAdapter<I>(FieldEncoding.LENGTH_DELIMITED, I.class) {
     @Override
     public int encodedSize(I value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSize(1, value.i) : 0)
-          + (value.j != null ? J.ADAPTER.encodedSize(1000, value.j) : 0)
+      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
+          + (value.j != null ? J.ADAPTER.encodedSizeWithTag(1000, value.j) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, I value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeTagged(writer, 1, value.i);
-      if (value.j != null) J.ADAPTER.encodeTagged(writer, 1000, value.j);
+      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      if (value.j != null) J.ADAPTER.encodeWithTag(writer, 1000, value.j);
       writer.writeBytes(value.unknownFields());
     }
 

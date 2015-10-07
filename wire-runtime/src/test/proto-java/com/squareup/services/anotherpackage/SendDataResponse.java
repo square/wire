@@ -18,13 +18,13 @@ public final class SendDataResponse extends Message<SendDataResponse, SendDataRe
   public static final ProtoAdapter<SendDataResponse> ADAPTER = new ProtoAdapter<SendDataResponse>(FieldEncoding.LENGTH_DELIMITED, SendDataResponse.class) {
     @Override
     public int encodedSize(SendDataResponse value) {
-      return (value.data != null ? ProtoAdapter.BYTES.encodedSize(1, value.data) : 0)
+      return (value.data != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data) : 0)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, SendDataResponse value) throws IOException {
-      if (value.data != null) ProtoAdapter.BYTES.encodeTagged(writer, 1, value.data);
+      if (value.data != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
       writer.writeBytes(value.unknownFields());
     }
 
