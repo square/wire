@@ -74,6 +74,9 @@ final class Pruner {
         Type type = schema.getType(typeOrServiceName);
         if (type instanceof MessageType) {
           Field field = ((MessageType) type).field(member);
+          if (field == null) {
+            field = ((MessageType) type).extensionField(member);
+          }
           if (field != null) {
             markOptions(type.options());
             markField(field);

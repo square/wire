@@ -363,25 +363,7 @@ public final class JavaGenerator {
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateMessage(MessageType type) {
-    // Preallocate all of the names we'll need for this type. Names are allocated in precedence
-    // order, so names we're stuck with (serialVersionUID etc.) occur before proto field names are
-    // assigned. Names we aren't stuck with (typically for locals) yield to message fields.
-    NameAllocator nameAllocator = new NameAllocator();
-    nameAllocator.newName("serialVersionUID", "serialVersionUID");
-    nameAllocator.newName("ADAPTER", "ADAPTER");
-    nameAllocator.newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS");
-    if (emitAndroid) {
-      nameAllocator.newName("CREATOR", "CREATOR");
-    }
-    for (Field field : type.fieldsAndOneOfFields()) {
-      nameAllocator.newName(field.name(), field);
-    }
-    nameAllocator.newName("unknownFields", "unknownFields");
-    nameAllocator.newName("result", "result");
-    nameAllocator.newName("message", "message");
-    nameAllocator.newName("other", "other");
-    nameAllocator.newName("o", "o");
-    nameAllocator.newName("builder", "builder");
+    NameAllocator nameAllocator = allocateNames(type);
 
     ClassName javaType = (ClassName) typeName(type.name());
     ClassName builderJavaType = javaType.nestedClass("Builder");
@@ -429,7 +411,7 @@ public final class JavaGenerator {
       if ((field.type().isScalar() || isEnum(field.type()))
           && !field.isRepeated()
           && !field.isPacked()) {
-        builder.addField(defaultField(field, fieldJavaType));
+        builder.addField(defaultField(nameAllocator, field, fieldJavaType));
       }
 
       String fieldName = nameAllocator.get(field);
@@ -509,6 +491,47 @@ public final class JavaGenerator {
     }
 
     return builder.build();
+  }
+
+  /**
+   * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
+   * order, so names we're stuck with (serialVersionUID etc.) occur before proto field names are
+   * assigned. Names we aren't stuck with (typically for locals) yield to message fields.
+   */
+  private NameAllocator allocateNames(MessageType type) {
+    NameAllocator nameAllocator = new NameAllocator();
+    nameAllocator.newName("serialVersionUID", "serialVersionUID");
+    nameAllocator.newName("ADAPTER", "ADAPTER");
+    nameAllocator.newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS");
+    if (emitAndroid) {
+      nameAllocator.newName("CREATOR", "CREATOR");
+    }
+    Set<String> collidingNames = collidingFieldNames(type.fieldsAndOneOfFields());
+    for (Field field : type.fieldsAndOneOfFields()) {
+      String suggestion = collidingNames.contains(field.name())
+          ? field.qualifiedName()
+          : field.name();
+      nameAllocator.newName(suggestion, field);
+    }
+    nameAllocator.newName("unknownFields", "unknownFields");
+    nameAllocator.newName("result", "result");
+    nameAllocator.newName("message", "message");
+    nameAllocator.newName("other", "other");
+    nameAllocator.newName("o", "o");
+    nameAllocator.newName("builder", "builder");
+    return nameAllocator;
+  }
+
+  /** Returns the set of names that are not unique within {@code fields}. */
+  private Set<String> collidingFieldNames(ImmutableList<Field> fields) {
+    Set<String> fieldNames = new LinkedHashSet<>();
+    Set<String> collidingNames = new LinkedHashSet<>();
+    for (Field field : fields) {
+      if (!fieldNames.add(field.name())) {
+        collidingNames.add(field.name());
+      }
+    }
+    return collidingNames;
   }
 
   private FieldSpec messageAdapter(NameAllocator nameAllocator, MessageType type,
@@ -733,8 +756,8 @@ public final class JavaGenerator {
   //
   // public static final Integer DEFAULT_OPT_INT32 = 123;
   //
-  private FieldSpec defaultField(Field field, TypeName fieldType) {
-    String defaultFieldName = "DEFAULT_" + field.name().toUpperCase(Locale.US);
+  private FieldSpec defaultField(NameAllocator nameAllocator, Field field, TypeName fieldType) {
+    String defaultFieldName = "DEFAULT_" + nameAllocator.get(field).toUpperCase(Locale.US);
     return FieldSpec.builder(fieldType, defaultFieldName, PUBLIC, STATIC, FINAL)
         .initializer(defaultValue(field))
         .build();

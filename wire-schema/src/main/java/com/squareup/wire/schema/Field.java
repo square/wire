@@ -67,7 +67,7 @@ public final class Field {
    * Returns this field's name, prefixed with its package name. Uniquely identifies extension
    * fields, such as in options.
    */
-  String qualifiedName() {
+  public String qualifiedName() {
     return packageName != null
         ? packageName + '.' + element.name()
         : element.name();

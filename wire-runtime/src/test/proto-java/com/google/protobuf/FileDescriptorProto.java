@@ -92,7 +92,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
 
   public static final String DEFAULT_NAME = "";
 
-  public static final String DEFAULT_PACKAGE = "";
+  public static final String DEFAULT_PACKAGE_ = "";
 
   /**
    * file name, relative to root of source tree

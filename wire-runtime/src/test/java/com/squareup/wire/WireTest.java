@@ -30,6 +30,7 @@ import java.util.List;
 import okio.Buffer;
 import okio.ByteString;
 import org.junit.Test;
+import squareup.protos.extension_collision.CollisionSubject;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -373,5 +374,18 @@ public class WireTest {
   @Test public void emptyMessageToString() {
     NoFields empty = new NoFields();
     assertThat(empty.toString()).isEqualTo("NoFields{}");
+  }
+
+  @Test
+  public void extensionNameCollisions() throws Exception {
+    CollisionSubject collisionSubject = new CollisionSubject.Builder()
+        .squareup_protos_extension_collision_1_a("1a")
+        .b("b")
+        .squareup_protos_extension_collision_2_a("2a")
+        .c("c")
+        .build();
+    byte[] encoded = CollisionSubject.ADAPTER.encode(collisionSubject);
+    assertThat(ByteString.of(encoded))
+        .isEqualTo(ByteString.decodeBase64("qgYCMWGyBgFiugYCMmHCBgFj"));
   }
 }

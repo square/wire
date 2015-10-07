@@ -538,29 +538,26 @@ public final class SchemaTest {
     }
   }
 
-  @Test public void messageAndExtensionNameCollisionDisallowed() throws Exception {
-    try {
-      new SchemaBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  optional string a = 1;\n"
-              + "}\n")
-          .add("extend.proto", ""
-              + "import \"message.proto\";\n"
-              + "extend Message {\n"
-              + "  optional string a = 2;\n"
-              + "}\n")
-          .build();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("multiple fields share name a:\n"
-          + "  1. a (message.proto at 2:3)\n"
-          + "  2. a (extend.proto at 3:3)\n"
-          + "  for message Message (message.proto at 1:1)");
-    }
+  @Test public void messsageAndExtensionNameCollision() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  optional string a = 1;\n"
+            + "}\n")
+        .add("extend.proto", ""
+            + "package p;\n"
+            + "import \"message.proto\";\n"
+            + "extend Message {\n"
+            + "  optional string a = 2;\n"
+            + "}\n")
+        .build();
+    MessageType messageType = (MessageType) schema.getType("Message");
+
+    assertThat(messageType.field("a").tag()).isEqualTo(1);
+    assertThat(messageType.extensionField("p.a").tag()).isEqualTo(2);
   }
 
-  @Test public void extendNameCollisionDisallowed() throws Exception {
+  @Test public void extendNameCollisionInSamePackageDisallowed() throws Exception {
     try {
       new SchemaBuilder()
           .add("message.proto", ""
@@ -584,6 +581,31 @@ public final class SchemaTest {
           + "  2. a (extend2.proto at 3:3)\n"
           + "  for message Message (message.proto at 1:1)");
     }
+  }
+
+  @Test public void extendNameCollisionInDifferentPackagesAllowed() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "}\n")
+        .add("extend1.proto", ""
+            + "package p1;\n"
+            + "import \"message.proto\";\n"
+            + "extend Message {\n"
+            + "  optional string a = 1;\n"
+            + "}\n")
+        .add("extend2.proto", ""
+            + "package p2;\n"
+            + "import \"message.proto\";\n"
+            + "extend Message {\n"
+            + "  optional string a = 2;\n"
+            + "}\n")
+        .build();
+    MessageType messageType = (MessageType) schema.getType("Message");
+
+    assertThat(messageType.field("a")).isNull();
+    assertThat(messageType.extensionField("p1.a").packageName()).isEqualTo("p1");
+    assertThat(messageType.extensionField("p2.a").packageName()).isEqualTo("p2");
   }
 
   @Test public void extendEnumDisallowed() throws Exception {
