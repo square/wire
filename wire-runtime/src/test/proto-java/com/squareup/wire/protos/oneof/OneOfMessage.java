@@ -21,6 +21,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     public int encodedSize(OneOfMessage value) {
       return (value.foo != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) : 0)
           + (value.bar != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) : 0)
+          + (value.baz != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) : 0)
           + value.unknownFields().size();
     }
 
@@ -28,6 +29,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     public void encode(ProtoWriter writer, OneOfMessage value) throws IOException {
       if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
       if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar);
+      if (value.baz != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -39,6 +41,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
         switch (tag) {
           case 1: builder.foo(ProtoAdapter.INT32.decode(reader)); break;
           case 3: builder.bar(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.baz(ProtoAdapter.STRING.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
             Object value = fieldEncoding.rawProtoAdapter().decode(reader);
@@ -64,6 +67,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
 
   public static final String DEFAULT_BAR = "";
 
+  public static final String DEFAULT_BAZ = "";
+
   /**
    * What foo.
    */
@@ -74,14 +79,23 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
    */
   public final String bar;
 
-  public OneOfMessage(Integer foo, String bar) {
-    this(foo, bar, ByteString.EMPTY);
+  /**
+   * Nice baz.
+   */
+  public final String baz;
+
+  public OneOfMessage(Integer foo, String bar, String baz) {
+    this(foo, bar, baz, ByteString.EMPTY);
   }
 
-  public OneOfMessage(Integer foo, String bar, ByteString unknownFields) {
+  public OneOfMessage(Integer foo, String bar, String baz, ByteString unknownFields) {
     super(unknownFields);
+    if (countNonNull(foo, bar, baz) > 1) {
+      throw new IllegalArgumentException("at most one of foo, bar, baz may be non-null");
+    }
     this.foo = foo;
     this.bar = bar;
+    this.baz = baz;
   }
 
   @Override
@@ -89,6 +103,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     Builder builder = new Builder();
     builder.foo = foo;
     builder.bar = bar;
+    builder.baz = baz;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -100,7 +115,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     OneOfMessage o = (OneOfMessage) other;
     return equals(unknownFields(), o.unknownFields())
         && equals(foo, o.foo)
-        && equals(bar, o.bar);
+        && equals(bar, o.bar)
+        && equals(baz, o.baz);
   }
 
   @Override
@@ -110,6 +126,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
       result = unknownFields().hashCode();
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
+      result = result * 37 + (baz != null ? baz.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -120,6 +137,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     StringBuilder builder = new StringBuilder();
     if (foo != null) builder.append(", foo=").append(foo);
     if (bar != null) builder.append(", bar=").append(bar);
+    if (baz != null) builder.append(", baz=").append(baz);
     return builder.replace(0, 2, "OneOfMessage{").append('}').toString();
   }
 
@@ -127,6 +145,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     public Integer foo;
 
     public String bar;
+
+    public String baz;
 
     public Builder() {
     }
@@ -137,6 +157,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     public Builder foo(Integer foo) {
       this.foo = foo;
       this.bar = null;
+      this.baz = null;
       return this;
     }
 
@@ -146,12 +167,23 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     public Builder bar(String bar) {
       this.bar = bar;
       this.foo = null;
+      this.baz = null;
+      return this;
+    }
+
+    /**
+     * Nice baz.
+     */
+    public Builder baz(String baz) {
+      this.baz = baz;
+      this.foo = null;
+      this.bar = null;
       return this;
     }
 
     @Override
     public OneOfMessage build() {
-      return new OneOfMessage(foo, bar, buildUnknownFields());
+      return new OneOfMessage(foo, bar, baz, buildUnknownFields());
     }
   }
 }

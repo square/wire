@@ -25,5 +25,7 @@ message OneOfMessage {
     int32 foo = 1;
     // Such bar.
     string bar = 3;
+    // Nice baz.
+    string baz = 4;
   }
 }

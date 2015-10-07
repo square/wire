@@ -838,6 +838,21 @@ public final class JavaGenerator {
         .addModifiers(PUBLIC)
         .addStatement("super($N)", unknownFieldsName);
 
+    for (OneOf oneOf : type.oneOfs()) {
+      if (oneOf.fields().size() < 2) continue;
+      CodeBlock.Builder fieldNamesBuilder = CodeBlock.builder();
+      boolean first = true;
+      for (Field field : oneOf.fields()) {
+        if (!first) fieldNamesBuilder.add(", ");
+        fieldNamesBuilder.add("$N", nameAllocator.get(field));
+        first = false;
+      }
+      CodeBlock fieldNames = fieldNamesBuilder.build();
+      result.beginControlFlow("if (countNonNull($L) > 1)", fieldNames);
+      result.addStatement("throw new IllegalArgumentException($S)",
+          "at most one of " + fieldNames + " may be non-null");
+      result.endControlFlow();
+    }
     for (Field field : type.fieldsAndOneOfFields()) {
       TypeName javaType = fieldType(field);
       String fieldName = nameAllocator.get(field);

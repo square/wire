@@ -207,4 +207,30 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
       }
     }
   }
+
+  /** Returns the number of non-null values in {@code a, b}. */
+  protected static int countNonNull(Object a, Object b) {
+    return (a != null ? 1 : 0)
+        + (b != null ? 1 : 0);
+  }
+
+  /** Returns the number of non-null values in {@code a, b, c}. */
+  protected static int countNonNull(Object a, Object b, Object c) {
+    return (a != null ? 1 : 0)
+        + (b != null ? 1 : 0)
+        + (c != null ? 1 : 0);
+  }
+
+  /** Returns the number of non-null values in {@code a, b, c, d, rest}. */
+  protected static int countNonNull(Object a, Object b, Object c, Object d, Object... rest) {
+    int result = 0;
+    if (a != null) result++;
+    if (b != null) result++;
+    if (c != null) result++;
+    if (d != null) result++;
+    for (Object o : rest) {
+      if (o != null) result++;
+    }
+    return result;
+  }
 }
