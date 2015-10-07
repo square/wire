@@ -1,0 +1,4 @@
+package squareup.protos.extension_collision;
+
+message CollisionSubject {
+}

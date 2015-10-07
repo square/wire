@@ -92,13 +92,13 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
   public static final String DEFAULT_HASHCODE = "";
 
-  public static final String DEFAULT_SERIALVERSIONUID = "";
+  public static final String DEFAULT_SERIALVERSIONUID_ = "";
 
-  public static final String DEFAULT_ADAPTER = "";
+  public static final String DEFAULT_ADAPTER_ = "";
 
-  public static final String DEFAULT_MESSAGE_OPTIONS = "";
+  public static final String DEFAULT_MESSAGE_OPTIONS_ = "";
 
-  public static final String DEFAULT_THIS = "";
+  public static final String DEFAULT_THIS_ = "";
 
   public static final String DEFAULT_MESSAGE = "";
 

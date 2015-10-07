@@ -254,7 +254,7 @@ final class Linker {
         withContext(field).addError("tag is out of range: %s", tag);
       } else {
         tagToField.put(tag, field);
-        nameToField.put(field.name(), field);
+        nameToField.put(field.qualifiedName(), field);
       }
     }
 
@@ -271,12 +271,13 @@ final class Linker {
       }
     }
 
-    for (Map.Entry<String, Collection<Field>> entry : nameToField.asMap().entrySet()) {
-      if (entry.getValue().size() > 1) {
+    for (Collection<Field> collidingFields : nameToField.asMap().values()) {
+      if (collidingFields.size() > 1) {
+        Field first = collidingFields.iterator().next();
         StringBuilder error = new StringBuilder();
-        error.append(String.format("multiple fields share name %s:", entry.getKey()));
+        error.append(String.format("multiple fields share name %s:", first.name()));
         int index = 1;
-        for (Field field : entry.getValue()) {
+        for (Field field : collidingFields) {
           error.append(String.format("\n  %s. %s (%s)",
               index++, field.name(), field.location()));
         }

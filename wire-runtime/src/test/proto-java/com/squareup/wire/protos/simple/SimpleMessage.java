@@ -131,7 +131,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
   public static final ForeignEnum DEFAULT_NO_DEFAULT_FOREIGN_ENUM = ForeignEnum.BAV;
 
-  public static final String DEFAULT_PACKAGE = "";
+  public static final String DEFAULT_PACKAGE_ = "";
 
   public static final String DEFAULT_RESULT = "";
 

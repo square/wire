@@ -106,8 +106,16 @@ public final class MessageType extends Type {
         return field;
       }
     }
+    return null;
+  }
+
+  /**
+   * Returns the field with the qualified name {@code qualifiedName}, or null if this type has no
+   * such field.
+   */
+  public Field extensionField(String qualifiedName) {
     for (Field field : extensionFields) {
-      if (field.name().equals(name)) {
+      if (field.qualifiedName().equals(qualifiedName)) {
         return field;
       }
     }

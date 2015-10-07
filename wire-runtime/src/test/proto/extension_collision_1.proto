@@ -1,0 +1,8 @@
+package squareup.protos.extension_collision_1;
+
+import "extension_collision.proto";
+
+extend squareup.protos.extension_collision.CollisionSubject {
+  optional string a = 101;
+  optional string b = 102;
+}
