@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
+import java.lang.RuntimeException;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
@@ -80,7 +81,11 @@ public final class Person extends Message<Person, Person.Builder> implements Par
   public static final Parcelable.Creator<Person> CREATOR = new Parcelable.Creator<Person>() {
     @Override
     public Person createFromParcel(Parcel in) {
-      return ADAPTER.decode(in.createByteArray());
+      try {
+        return ADAPTER.decode(in.createByteArray());
+      } catch(IOException e) {
+        throw new RuntimeException(e);
+      }
     }
 
     @Override
@@ -330,7 +335,11 @@ public final class Person extends Message<Person, Person.Builder> implements Par
     public static final Parcelable.Creator<PhoneNumber> CREATOR = new Parcelable.Creator<PhoneNumber>() {
       @Override
       public PhoneNumber createFromParcel(Parcel in) {
-        return ADAPTER.decode(in.createByteArray());
+        try {
+          return ADAPTER.decode(in.createByteArray());
+        } catch(IOException e) {
+          throw new RuntimeException(e);
+        }
       }
 
       @Override
