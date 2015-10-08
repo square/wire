@@ -10,7 +10,6 @@ PROTOS=`find src/test/proto -name '*.proto' | sed 's|^src/test/proto/||'`
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java \
-  --enum_options=squareup.protos.custom_options.enum_value_option,squareup.protos.custom_options.complex_enum_value_option,squareup.protos.foreign.foreign_enum_value_option \
   ${PROTOS}
 
 # NO OPTIONS
@@ -19,7 +18,6 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.noOptions \
   --no_options \
-  --enum_options=squareup.protos.custom_options.enum_value_option \
   ${PROTOS}
 
 cp src/test/proto-java.noOptions/com/squareup/wire/protos/custom_options/FooBar.java \

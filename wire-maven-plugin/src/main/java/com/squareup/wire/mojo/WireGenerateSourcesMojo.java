@@ -46,9 +46,6 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.noOptions")
   private boolean noOptions;
 
-  @Parameter(property = "wire.enumOptions")
-  private String[] enumOptions;
-
   @Parameter(property = "wire.roots")
   private String[] roots;
 
@@ -85,11 +82,8 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
         schema = retainRoots(schema);
       }
 
-      List<String> enumOptionsList = enumOptions != null
-          ? Arrays.asList(enumOptions)
-          : Collections.<String>emptyList();
       JavaGenerator javaGenerator = JavaGenerator.get(schema)
-          .withOptions(!noOptions, enumOptionsList)
+          .withOptions(!noOptions)
           .withAndroid(emitAndroid)
           .withCompact(emitCompact);
 

@@ -63,9 +63,6 @@ public class WireCompilerTest {
     List<String> args = new ArrayList<>();
     args.add("--proto_path=../wire-runtime/src/test/proto");
     args.add("--java_out=" + testDir.getAbsolutePath());
-    args.add("--enum_options=squareup.protos.custom_options.enum_value_option,"
-        + "squareup.protos.custom_options.complex_enum_value_option,"
-        + "squareup.protos.foreign.foreign_enum_value_option");
     args.addAll(Arrays.asList(sources));
     invokeCompiler(args.toArray(new String[args.size()]));
 
@@ -116,13 +113,11 @@ public class WireCompilerTest {
   }
 
   private void testProtoNoOptions(String[] sources, String[] outputs) throws Exception {
-    int numFlags = 4;
+    int numFlags = 3;
     String[] args = new String[numFlags + sources.length];
     args[0] = "--proto_path=../wire-runtime/src/test/proto";
     args[1] = "--no_options";
-    // Emit one of the enum options anyway.
-    args[2] = "--enum_options=squareup.protos.custom_options.enum_value_option";
-    args[3] = "--java_out=" + testDir.getAbsolutePath();
+    args[2] = "--java_out=" + testDir.getAbsolutePath();
     System.arraycopy(sources, 0, args, numFlags, sources.length);
 
     invokeCompiler(args);

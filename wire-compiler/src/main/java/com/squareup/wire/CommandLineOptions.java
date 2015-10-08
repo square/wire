@@ -19,10 +19,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 final class CommandLineOptions {
   public static final String PROTO_PATH_FLAG = "--proto_path=";
@@ -30,7 +28,6 @@ final class CommandLineOptions {
   public static final String FILES_FLAG = "--files=";
   public static final String ROOTS_FLAG = "--roots=";
   public static final String NO_OPTIONS_FLAG = "--no_options";
-  public static final String ENUM_OPTIONS_FLAG = "--enum_options=";
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
   public static final String ANDROID = "--android";
@@ -41,22 +38,20 @@ final class CommandLineOptions {
   final List<String> sourceFileNames;
   final List<String> roots;
   final boolean emitOptions;
-  final Set<String> enumOptions;
   final boolean quiet;
   final boolean dryRun;
   final boolean emitAndroid;
   final boolean emitCompact;
 
   CommandLineOptions(String protoPath, String javaOut, List<String> sourceFileNames,
-      List<String> roots, boolean emitOptions, Set<String> enumOptions, boolean quiet,
-      boolean dryRun, boolean emitAndroid, boolean emitCompact) {
+      List<String> roots, boolean emitOptions, boolean quiet, boolean dryRun, boolean emitAndroid,
+      boolean emitCompact) {
     this.emitCompact = emitCompact;
     this.protoPaths = Arrays.asList(protoPath);
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
     this.roots = roots;
     this.emitOptions = emitOptions;
-    this.enumOptions = enumOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;
     this.emitAndroid = emitAndroid;
@@ -70,7 +65,6 @@ final class CommandLineOptions {
    *     [--files=&lt;protos.include&gt;]
    *     [--roots=&lt;message_name&gt;[,&lt;message_name&gt;...]]
    *     [--no_options]
-   *     [--enum_options=&lt;option_name&gt;[,&lt;option_name&gt;...]]
    *     [--service_factory=&lt;class_name&gt;]
    *     [--service_factory_opt=&lt;value&gt;]
    *     [--service_factory_opt=&lt;value&gt;]...]
@@ -99,10 +93,6 @@ final class CommandLineOptions {
    * a static member named "FIELD_OPTIONS_&lt;field name&gt;" in the generated code, initialized
    * with the field option values.
    * <p>
-   * Regardless of the value of the {@code --no_options} flag, code will be emitted for all
-   * enum value options listed in the {@code --enum_options} flag. The resulting code will contain
-   * a public static field for each option used within a particular enum type.
-   * <p>
    * If {@code --quiet} is specified, diagnostic messages to stdout are suppressed.
    * <p>
    * The {@code --dry_run} flag causes the compile to just emit the names of the source files that
@@ -120,8 +110,6 @@ final class CommandLineOptions {
     boolean emitOptions = true;
     List<String> protoPaths = new ArrayList<>();
     String javaOut = null;
-    String registryClass = null;
-    List<String> enumOptionsList = new ArrayList<>();
     boolean quiet = false;
     boolean dryRun = false;
     boolean emitAndroid = false;
@@ -145,8 +133,6 @@ final class CommandLineOptions {
         roots.addAll(splitArg(arg, ROOTS_FLAG.length()));
       } else if (arg.equals(NO_OPTIONS_FLAG)) {
         emitOptions = false;
-      } else if (arg.startsWith(ENUM_OPTIONS_FLAG)) {
-        enumOptionsList.addAll(splitArg(arg, ENUM_OPTIONS_FLAG.length()));
       } else if (arg.equals(QUIET_FLAG)) {
         quiet = true;
       } else if (arg.equals(DRY_RUN_FLAG)) {
@@ -167,7 +153,6 @@ final class CommandLineOptions {
     this.sourceFileNames = sourceFileNames;
     this.roots = roots;
     this.emitOptions = emitOptions;
-    this.enumOptions = new LinkedHashSet<>(enumOptionsList);
     this.quiet = quiet;
     this.dryRun = dryRun;
     this.emitAndroid = emitAndroid;

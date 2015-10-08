@@ -84,7 +84,7 @@ public final class WireCompiler {
     }
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
-        .withOptions(options.emitOptions, options.enumOptions)
+        .withOptions(options.emitOptions)
         .withAndroid(options.emitAndroid)
         .withCompact(options.emitCompact);
 

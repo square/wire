@@ -523,21 +523,18 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   }
 
   public enum FooBarBazEnum implements WireEnum {
-    FOO(1, 17),
+    FOO(1),
 
-    BAR(2, null),
+    BAR(2),
 
-    BAZ(3, 18);
+    BAZ(3);
 
     public static final ProtoAdapter<FooBarBazEnum> ADAPTER = ProtoAdapter.newEnumAdapter(FooBarBazEnum.class);
 
     private final int value;
 
-    public final Integer enum_value_option;
-
-    FooBarBazEnum(int value, Integer enum_value_option) {
+    FooBarBazEnum(int value) {
       this.value = value;
-      this.enum_value_option = enum_value_option;
     }
 
     /**
