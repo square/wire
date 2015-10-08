@@ -33,6 +33,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
           + (value.my_field_option_two != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(60002, value.my_field_option_two) : 0)
           + (value.my_field_option_three != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(60003, value.my_field_option_three) : 0)
           + (value.my_field_option_four != null ? FooBar.ADAPTER.encodedSizeWithTag(60004, value.my_field_option_four) : 0)
+          + (value.squareup_protos_extension_collision_1_a != null ? ProtoAdapter.STRING.encodedSizeWithTag(22101, value.squareup_protos_extension_collision_1_a) : 0)
+          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(22102, value.b) : 0)
+          + (value.squareup_protos_extension_collision_2_a != null ? ProtoAdapter.STRING.encodedSizeWithTag(22103, value.squareup_protos_extension_collision_2_a) : 0)
+          + (value.c != null ? ProtoAdapter.STRING.encodedSizeWithTag(22104, value.c) : 0)
           + (value.redacted != null ? ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted) : 0)
           + value.unknownFields().size();
     }
@@ -48,6 +52,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       if (value.my_field_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 60002, value.my_field_option_two);
       if (value.my_field_option_three != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 60003, value.my_field_option_three);
       if (value.my_field_option_four != null) FooBar.ADAPTER.encodeWithTag(writer, 60004, value.my_field_option_four);
+      if (value.squareup_protos_extension_collision_1_a != null) ProtoAdapter.STRING.encodeWithTag(writer, 22101, value.squareup_protos_extension_collision_1_a);
+      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 22102, value.b);
+      if (value.squareup_protos_extension_collision_2_a != null) ProtoAdapter.STRING.encodeWithTag(writer, 22103, value.squareup_protos_extension_collision_2_a);
+      if (value.c != null) ProtoAdapter.STRING.encodeWithTag(writer, 22104, value.c);
       if (value.redacted != null) ProtoAdapter.BOOL.encodeWithTag(writer, 22200, value.redacted);
       writer.writeBytes(value.unknownFields());
     }
@@ -81,6 +89,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
             break;
           }
           case 60004: builder.my_field_option_four(FooBar.ADAPTER.decode(reader)); break;
+          case 22101: builder.squareup_protos_extension_collision_1_a(ProtoAdapter.STRING.decode(reader)); break;
+          case 22102: builder.b(ProtoAdapter.STRING.decode(reader)); break;
+          case 22103: builder.squareup_protos_extension_collision_2_a(ProtoAdapter.STRING.decode(reader)); break;
+          case 22104: builder.c(ProtoAdapter.STRING.decode(reader)); break;
           case 22200: builder.redacted(ProtoAdapter.BOOL.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
@@ -118,6 +130,14 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   public static final Float DEFAULT_MY_FIELD_OPTION_TWO = 0.0f;
 
   public static final FooBar.FooBarBazEnum DEFAULT_MY_FIELD_OPTION_THREE = FooBar.FooBarBazEnum.FOO;
+
+  public static final String DEFAULT_SQUAREUP_PROTOS_EXTENSION_COLLISION_1_A = "";
+
+  public static final String DEFAULT_B = "";
+
+  public static final String DEFAULT_SQUAREUP_PROTOS_EXTENSION_COLLISION_2_A = "";
+
+  public static final String DEFAULT_C = "";
 
   public static final Boolean DEFAULT_REDACTED = false;
 
@@ -187,16 +207,36 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   public final FooBar my_field_option_four;
 
   /**
+   * Extension source: extension_collision_1.proto at 6:3
+   */
+  public final String squareup_protos_extension_collision_1_a;
+
+  /**
+   * Extension source: extension_collision_1.proto at 7:3
+   */
+  public final String b;
+
+  /**
+   * Extension source: extension_collision_2.proto at 6:3
+   */
+  public final String squareup_protos_extension_collision_2_a;
+
+  /**
+   * Extension source: extension_collision_2.proto at 7:3
+   */
+  public final String c;
+
+  /**
    * Fields marked with redacted are not to be logged, generally for PCI or PII.
    * Extension source: redacted_test.proto at 62:3
    */
   public final Boolean redacted;
 
-  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, Boolean redacted) {
-    this(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, redacted, ByteString.EMPTY);
+  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, String squareup_protos_extension_collision_1_a, String b, String squareup_protos_extension_collision_2_a, String c, Boolean redacted) {
+    this(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, squareup_protos_extension_collision_1_a, b, squareup_protos_extension_collision_2_a, c, redacted, ByteString.EMPTY);
   }
 
-  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, Boolean redacted, ByteString unknownFields) {
+  public FieldOptions(CType ctype, Boolean packed, Boolean deprecated, String experimental_map_key, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, String squareup_protos_extension_collision_1_a, String b, String squareup_protos_extension_collision_2_a, String c, Boolean redacted, ByteString unknownFields) {
     super(unknownFields);
     this.ctype = ctype;
     this.packed = packed;
@@ -207,6 +247,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     this.my_field_option_two = my_field_option_two;
     this.my_field_option_three = my_field_option_three;
     this.my_field_option_four = my_field_option_four;
+    this.squareup_protos_extension_collision_1_a = squareup_protos_extension_collision_1_a;
+    this.b = b;
+    this.squareup_protos_extension_collision_2_a = squareup_protos_extension_collision_2_a;
+    this.c = c;
     this.redacted = redacted;
   }
 
@@ -222,6 +266,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     builder.my_field_option_two = my_field_option_two;
     builder.my_field_option_three = my_field_option_three;
     builder.my_field_option_four = my_field_option_four;
+    builder.squareup_protos_extension_collision_1_a = squareup_protos_extension_collision_1_a;
+    builder.b = b;
+    builder.squareup_protos_extension_collision_2_a = squareup_protos_extension_collision_2_a;
+    builder.c = c;
     builder.redacted = redacted;
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -242,6 +290,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
         && equals(my_field_option_two, o.my_field_option_two)
         && equals(my_field_option_three, o.my_field_option_three)
         && equals(my_field_option_four, o.my_field_option_four)
+        && equals(squareup_protos_extension_collision_1_a, o.squareup_protos_extension_collision_1_a)
+        && equals(b, o.b)
+        && equals(squareup_protos_extension_collision_2_a, o.squareup_protos_extension_collision_2_a)
+        && equals(c, o.c)
         && equals(redacted, o.redacted);
   }
 
@@ -259,6 +311,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       result = result * 37 + (my_field_option_two != null ? my_field_option_two.hashCode() : 0);
       result = result * 37 + (my_field_option_three != null ? my_field_option_three.hashCode() : 0);
       result = result * 37 + (my_field_option_four != null ? my_field_option_four.hashCode() : 0);
+      result = result * 37 + (squareup_protos_extension_collision_1_a != null ? squareup_protos_extension_collision_1_a.hashCode() : 0);
+      result = result * 37 + (b != null ? b.hashCode() : 0);
+      result = result * 37 + (squareup_protos_extension_collision_2_a != null ? squareup_protos_extension_collision_2_a.hashCode() : 0);
+      result = result * 37 + (c != null ? c.hashCode() : 0);
       result = result * 37 + (redacted != null ? redacted.hashCode() : 0);
       super.hashCode = result;
     }
@@ -277,6 +333,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     if (my_field_option_two != null) builder.append(", my_field_option_two=").append(my_field_option_two);
     if (my_field_option_three != null) builder.append(", my_field_option_three=").append(my_field_option_three);
     if (my_field_option_four != null) builder.append(", my_field_option_four=").append(my_field_option_four);
+    if (squareup_protos_extension_collision_1_a != null) builder.append(", a=").append(squareup_protos_extension_collision_1_a);
+    if (b != null) builder.append(", b=").append(b);
+    if (squareup_protos_extension_collision_2_a != null) builder.append(", a=").append(squareup_protos_extension_collision_2_a);
+    if (c != null) builder.append(", c=").append(c);
     if (redacted != null) builder.append(", redacted=").append(redacted);
     return builder.replace(0, 2, "FieldOptions{").append('}').toString();
   }
@@ -299,6 +359,14 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     public FooBar.FooBarBazEnum my_field_option_three;
 
     public FooBar my_field_option_four;
+
+    public String squareup_protos_extension_collision_1_a;
+
+    public String b;
+
+    public String squareup_protos_extension_collision_2_a;
+
+    public String c;
 
     public Boolean redacted;
 
@@ -387,6 +455,26 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       return this;
     }
 
+    public Builder squareup_protos_extension_collision_1_a(String squareup_protos_extension_collision_1_a) {
+      this.squareup_protos_extension_collision_1_a = squareup_protos_extension_collision_1_a;
+      return this;
+    }
+
+    public Builder b(String b) {
+      this.b = b;
+      return this;
+    }
+
+    public Builder squareup_protos_extension_collision_2_a(String squareup_protos_extension_collision_2_a) {
+      this.squareup_protos_extension_collision_2_a = squareup_protos_extension_collision_2_a;
+      return this;
+    }
+
+    public Builder c(String c) {
+      this.c = c;
+      return this;
+    }
+
     /**
      * Fields marked with redacted are not to be logged, generally for PCI or PII.
      */
@@ -397,7 +485,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     @Override
     public FieldOptions build() {
-      return new FieldOptions(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, redacted, buildUnknownFields());
+      return new FieldOptions(ctype, packed, deprecated, experimental_map_key, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, squareup_protos_extension_collision_1_a, b, squareup_protos_extension_collision_2_a, c, redacted, buildUnknownFields());
     }
   }
 

@@ -404,14 +404,13 @@ public class WireTest {
 
   @Test
   public void extensionNameCollisions() throws Exception {
-    CollisionSubject collisionSubject = new CollisionSubject.Builder()
-        .squareup_protos_extension_collision_1_a("1a")
-        .b("b")
-        .squareup_protos_extension_collision_2_a("2a")
-        .c("c")
-        .build();
-    byte[] encoded = CollisionSubject.ADAPTER.encode(collisionSubject);
-    assertThat(ByteString.of(encoded))
-        .isEqualTo(ByteString.decodeBase64("qgYCMWGyBgFiugYCMmHCBgFj"));
+    assertThat(CollisionSubject.FIELD_OPTIONS_F.squareup_protos_extension_collision_1_a)
+        .isEqualTo("1a");
+    assertThat(CollisionSubject.FIELD_OPTIONS_F.b)
+        .isEqualTo("1b");
+    assertThat(CollisionSubject.FIELD_OPTIONS_F.squareup_protos_extension_collision_2_a)
+        .isEqualTo("2a");
+    assertThat(CollisionSubject.FIELD_OPTIONS_F.c)
+        .isEqualTo("2c");
   }
 }
