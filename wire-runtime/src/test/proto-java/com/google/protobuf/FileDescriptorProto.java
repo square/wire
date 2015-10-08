@@ -138,11 +138,11 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     super(unknownFields);
     this.name = name;
     this.package_ = package_;
-    this.dependency = immutableCopyOf(dependency);
-    this.message_type = immutableCopyOf(message_type);
-    this.enum_type = immutableCopyOf(enum_type);
-    this.service = immutableCopyOf(service);
-    this.extension = immutableCopyOf(extension);
+    this.dependency = immutableCopyOf("dependency", dependency);
+    this.message_type = immutableCopyOf("message_type", message_type);
+    this.enum_type = immutableCopyOf("enum_type", enum_type);
+    this.service = immutableCopyOf("service", service);
+    this.extension = immutableCopyOf("extension", extension);
     this.options = options;
     this.source_code_info = source_code_info;
   }
@@ -152,11 +152,11 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     Builder builder = new Builder();
     builder.name = name;
     builder.package_ = package_;
-    builder.dependency = copyOf(dependency);
-    builder.message_type = copyOf(message_type);
-    builder.enum_type = copyOf(enum_type);
-    builder.service = copyOf(service);
-    builder.extension = copyOf(extension);
+    builder.dependency = copyOf("dependency", dependency);
+    builder.message_type = copyOf("message_type", message_type);
+    builder.enum_type = copyOf("enum_type", enum_type);
+    builder.service = copyOf("service", service);
+    builder.extension = copyOf("extension", extension);
     builder.options = options;
     builder.source_code_info = source_code_info;
     builder.addUnknownFields(unknownFields());

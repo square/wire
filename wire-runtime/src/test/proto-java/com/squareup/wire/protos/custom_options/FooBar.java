@@ -196,11 +196,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     this.bar = bar;
     this.baz = baz;
     this.qux = qux;
-    this.fred = immutableCopyOf(fred);
+    this.fred = immutableCopyOf("fred", fred);
     this.daisy = daisy;
-    this.nested = immutableCopyOf(nested);
+    this.nested = immutableCopyOf("nested", nested);
     this.ext = ext;
-    this.rep = immutableCopyOf(rep);
+    this.rep = immutableCopyOf("rep", rep);
   }
 
   @Override
@@ -210,11 +210,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     builder.bar = bar;
     builder.baz = baz;
     builder.qux = qux;
-    builder.fred = copyOf(fred);
+    builder.fred = copyOf("fred", fred);
     builder.daisy = daisy;
-    builder.nested = copyOf(nested);
+    builder.nested = copyOf("nested", nested);
     builder.ext = ext;
-    builder.rep = copyOf(rep);
+    builder.rep = copyOf("rep", rep);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -514,13 +514,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     public More(List<Integer> serial, ByteString unknownFields) {
       super(unknownFields);
-      this.serial = immutableCopyOf(serial);
+      this.serial = immutableCopyOf("serial", serial);
     }
 
     @Override
     public More.Builder newBuilder() {
       More.Builder builder = new More.Builder();
-      builder.serial = copyOf(serial);
+      builder.serial = copyOf("serial", serial);
       builder.addUnknownFields(unknownFields());
       return builder;
     }

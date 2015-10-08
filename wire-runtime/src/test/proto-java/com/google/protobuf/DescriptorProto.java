@@ -119,11 +119,11 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     super(unknownFields);
     this.name = name;
     this.doc = doc;
-    this.field = immutableCopyOf(field);
-    this.extension = immutableCopyOf(extension);
-    this.nested_type = immutableCopyOf(nested_type);
-    this.enum_type = immutableCopyOf(enum_type);
-    this.extension_range = immutableCopyOf(extension_range);
+    this.field = immutableCopyOf("field", field);
+    this.extension = immutableCopyOf("extension", extension);
+    this.nested_type = immutableCopyOf("nested_type", nested_type);
+    this.enum_type = immutableCopyOf("enum_type", enum_type);
+    this.extension_range = immutableCopyOf("extension_range", extension_range);
     this.options = options;
   }
 
@@ -132,11 +132,11 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     Builder builder = new Builder();
     builder.name = name;
     builder.doc = doc;
-    builder.field = copyOf(field);
-    builder.extension = copyOf(extension);
-    builder.nested_type = copyOf(nested_type);
-    builder.enum_type = copyOf(enum_type);
-    builder.extension_range = copyOf(extension_range);
+    builder.field = copyOf("field", field);
+    builder.extension = copyOf("extension", extension);
+    builder.nested_type = copyOf("nested_type", nested_type);
+    builder.enum_type = copyOf("enum_type", enum_type);
+    builder.extension_range = copyOf("extension_range", extension_range);
     builder.options = options;
     builder.addUnknownFields(unknownFields());
     return builder;

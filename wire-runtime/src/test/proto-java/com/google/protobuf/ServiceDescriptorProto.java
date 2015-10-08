@@ -93,7 +93,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, String doc, ServiceOptions options, ByteString unknownFields) {
     super(unknownFields);
     this.name = name;
-    this.method = immutableCopyOf(method);
+    this.method = immutableCopyOf("method", method);
     this.doc = doc;
     this.options = options;
   }
@@ -102,7 +102,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.name = name;
-    builder.method = copyOf(method);
+    builder.method = copyOf("method", method);
     builder.doc = doc;
     builder.options = options;
     builder.addUnknownFields(unknownFields());

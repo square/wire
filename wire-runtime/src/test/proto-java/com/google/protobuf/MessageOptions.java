@@ -186,7 +186,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     super(unknownFields);
     this.message_set_wire_format = message_set_wire_format;
     this.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
-    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.my_message_option_one = my_message_option_one;
     this.my_message_option_two = my_message_option_two;
     this.my_message_option_three = my_message_option_three;
@@ -201,7 +201,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     Builder builder = new Builder();
     builder.message_set_wire_format = message_set_wire_format;
     builder.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
-    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
     builder.my_message_option_one = my_message_option_one;
     builder.my_message_option_two = my_message_option_two;
     builder.my_message_option_three = my_message_option_three;

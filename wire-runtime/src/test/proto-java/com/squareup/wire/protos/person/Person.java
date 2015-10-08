@@ -104,7 +104,7 @@ public final class Person extends Message<Person, Person.Builder> {
     this.name = name;
     this.id = id;
     this.email = email;
-    this.phone = immutableCopyOf(phone);
+    this.phone = immutableCopyOf("phone", phone);
   }
 
   @Override
@@ -113,7 +113,7 @@ public final class Person extends Message<Person, Person.Builder> {
     builder.name = name;
     builder.id = id;
     builder.email = email;
-    builder.phone = copyOf(phone);
+    builder.phone = copyOf("phone", phone);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

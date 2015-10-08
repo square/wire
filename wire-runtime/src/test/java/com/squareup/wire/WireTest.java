@@ -356,6 +356,32 @@ public class WireTest {
     assertThat(personNoPhone.newBuilder().build().phone).isSameAs(personNoPhone.phone);
   }
 
+  @Test public void listMustBeNonNull() {
+    Person.Builder builder = new Person.Builder();
+    builder.id = 1;
+    builder.name = "Joe Schmoe";
+    builder.phone = null;
+    try {
+      builder.build();
+      fail();
+    } catch (NullPointerException expected) {
+      assertThat(expected).hasMessage("phone == null");
+    }
+  }
+
+  @Test public void listElementsMustBeNonNull() {
+    Person.Builder builder = new Person.Builder();
+    builder.id = 1;
+    builder.name = "Joe Schmoe";
+    builder.phone.add(null);
+    try {
+      builder.build();
+      fail();
+    } catch (IllegalArgumentException expected) {
+      assertThat(expected).hasMessage("phone.contains(null)");
+    }
+  }
+
   @Test public void builderListsAreAlwaysMutable() {
     PhoneNumber phone = new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build();
 

@@ -118,13 +118,13 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
   public SourceCodeInfo(List<Location> location, ByteString unknownFields) {
     super(unknownFields);
-    this.location = immutableCopyOf(location);
+    this.location = immutableCopyOf("location", location);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.location = copyOf(location);
+    builder.location = copyOf("location", location);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -307,15 +307,15 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
     public Location(List<Integer> path, List<Integer> span, ByteString unknownFields) {
       super(unknownFields);
-      this.path = immutableCopyOf(path);
-      this.span = immutableCopyOf(span);
+      this.path = immutableCopyOf("path", path);
+      this.span = immutableCopyOf("span", span);
     }
 
     @Override
     public Location.Builder newBuilder() {
       Location.Builder builder = new Location.Builder();
-      builder.path = copyOf(path);
-      builder.span = copyOf(span);
+      builder.path = copyOf("path", path);
+      builder.span = copyOf("span", span);
       builder.addUnknownFields(unknownFields());
       return builder;
     }

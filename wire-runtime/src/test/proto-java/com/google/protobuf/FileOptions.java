@@ -208,7 +208,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     this.cc_generic_services = cc_generic_services;
     this.java_generic_services = java_generic_services;
     this.py_generic_services = py_generic_services;
-    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
   @Override
@@ -222,7 +222,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     builder.cc_generic_services = cc_generic_services;
     builder.java_generic_services = java_generic_services;
     builder.py_generic_services = py_generic_services;
-    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

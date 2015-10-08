@@ -71,15 +71,15 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
 
   public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32, ByteString unknownFields) {
     super(unknownFields);
-    this.rep_int32 = immutableCopyOf(rep_int32);
-    this.pack_int32 = immutableCopyOf(pack_int32);
+    this.rep_int32 = immutableCopyOf("rep_int32", rep_int32);
+    this.pack_int32 = immutableCopyOf("pack_int32", pack_int32);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.rep_int32 = copyOf(rep_int32);
-    builder.pack_int32 = copyOf(pack_int32);
+    builder.rep_int32 = copyOf("rep_int32", rep_int32);
+    builder.pack_int32 = copyOf("pack_int32", pack_int32);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

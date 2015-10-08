@@ -123,7 +123,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
   public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value, ByteString unknownFields) {
     super(unknownFields);
-    this.name = immutableCopyOf(name);
+    this.name = immutableCopyOf("name", name);
     this.identifier_value = identifier_value;
     this.positive_int_value = positive_int_value;
     this.negative_int_value = negative_int_value;
@@ -135,7 +135,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.name = copyOf(name);
+    builder.name = copyOf("name", name);
     builder.identifier_value = identifier_value;
     builder.positive_int_value = positive_int_value;
     builder.negative_int_value = negative_int_value;

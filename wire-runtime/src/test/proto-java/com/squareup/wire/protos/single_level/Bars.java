@@ -66,13 +66,13 @@ public final class Bars extends Message<Bars, Bars.Builder> {
 
   public Bars(List<Bar> bars, ByteString unknownFields) {
     super(unknownFields);
-    this.bars = immutableCopyOf(bars);
+    this.bars = immutableCopyOf("bars", bars);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.bars = copyOf(bars);
+    builder.bars = copyOf("bars", bars);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

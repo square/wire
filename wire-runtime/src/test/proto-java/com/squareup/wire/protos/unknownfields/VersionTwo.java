@@ -107,7 +107,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     this.v2_s = v2_s;
     this.v2_f32 = v2_f32;
     this.v2_f64 = v2_f64;
-    this.v2_rs = immutableCopyOf(v2_rs);
+    this.v2_rs = immutableCopyOf("v2_rs", v2_rs);
   }
 
   @Override
@@ -118,7 +118,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     builder.v2_s = v2_s;
     builder.v2_f32 = v2_f32;
     builder.v2_f64 = v2_f64;
-    builder.v2_rs = copyOf(v2_rs);
+    builder.v2_rs = copyOf("v2_rs", v2_rs);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

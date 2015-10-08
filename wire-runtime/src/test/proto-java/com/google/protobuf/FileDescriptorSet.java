@@ -70,13 +70,13 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
 
   public FileDescriptorSet(List<FileDescriptorProto> file, ByteString unknownFields) {
     super(unknownFields);
-    this.file = immutableCopyOf(file);
+    this.file = immutableCopyOf("file", file);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.file = copyOf(file);
+    builder.file = copyOf("file", file);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

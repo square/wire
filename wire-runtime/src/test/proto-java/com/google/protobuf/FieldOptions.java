@@ -202,7 +202,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     this.packed = packed;
     this.deprecated = deprecated;
     this.experimental_map_key = experimental_map_key;
-    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.my_field_option_one = my_field_option_one;
     this.my_field_option_two = my_field_option_two;
     this.my_field_option_three = my_field_option_three;
@@ -217,7 +217,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     builder.packed = packed;
     builder.deprecated = deprecated;
     builder.experimental_map_key = experimental_map_key;
-    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
     builder.my_field_option_one = my_field_option_one;
     builder.my_field_option_two = my_field_option_two;
     builder.my_field_option_three = my_field_option_three;

@@ -81,15 +81,15 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
 
   public RedactedRepeated(List<String> a, List<Redacted> b, ByteString unknownFields) {
     super(unknownFields);
-    this.a = immutableCopyOf(a);
-    this.b = immutableCopyOf(b);
+    this.a = immutableCopyOf("a", a);
+    this.b = immutableCopyOf("b", b);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.a = copyOf(a);
-    builder.b = copyOf(b);
+    builder.a = copyOf("a", a);
+    builder.b = copyOf("b", b);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
