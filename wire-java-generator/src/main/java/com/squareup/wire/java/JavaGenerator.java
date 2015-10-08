@@ -20,7 +20,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
@@ -54,7 +53,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -114,34 +112,28 @@ public final class JavaGenerator {
   private final Schema schema;
   private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
   private final boolean emitOptions;
-  private final ImmutableSet<String> enumOptions;
   private final boolean emitAndroid;
   private final boolean emitCompact;
 
   private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToJavaName,
-      boolean emitOptions, ImmutableSet<String> enumOptions, boolean emitAndroid,
-      boolean emitCompact) {
+      boolean emitOptions, boolean emitAndroid, boolean emitCompact) {
     this.schema = schema;
     this.nameToJavaName = nameToJavaName;
     this.emitOptions = emitOptions;
-    this.enumOptions = enumOptions;
     this.emitAndroid = emitAndroid;
     this.emitCompact = emitCompact;
   }
 
-  public JavaGenerator withOptions(boolean emitOptions, Collection<String> enumOptions) {
-    return new JavaGenerator(schema, nameToJavaName, emitOptions,
-        ImmutableSet.copyOf(enumOptions), emitAndroid, emitCompact);
+  public JavaGenerator withOptions(boolean emitOptions) {
+    return new JavaGenerator(schema, nameToJavaName, emitOptions, emitAndroid, emitCompact);
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToJavaName, emitOptions, enumOptions,
-        emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToJavaName, emitOptions, emitAndroid, emitCompact);
   }
 
   public JavaGenerator withCompact(boolean compactGeneration) {
-    return new JavaGenerator(schema, nameToJavaName, emitOptions, enumOptions,
-        emitAndroid, compactGeneration);
+    return new JavaGenerator(schema, nameToJavaName, emitOptions, emitAndroid, compactGeneration);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -159,7 +151,7 @@ public final class JavaGenerator {
     }
 
     return new JavaGenerator(schema, nameToJavaName.build(), false,
-        ImmutableSet.<String>of(), false, false);
+        false, false);
   }
 
   private static void putAll(ImmutableMap.Builder<ProtoType, TypeName> wireToJava,
@@ -285,23 +277,21 @@ public final class JavaGenerator {
     constructorBuilder.addParameter(TypeName.INT, "value");
 
     // Enum constant options, each of which requires a constructor parameter and a field.
-    Set<Field> allOptionFieldsBuilder = new LinkedHashSet<>();
-    for (EnumConstant constant : type.constants()) {
-      for (Field optionField : constant.options().map().keySet()) {
-        String fullyQualifiedName = optionField.packageName() + "." + optionField.name();
-        if (!enumOptions.contains(fullyQualifiedName)) {
-          continue;
-        }
-
-        if (allOptionFieldsBuilder.add(optionField)) {
-          TypeName optionJavaType = typeName(optionField.type());
-          builder.addField(optionJavaType, optionField.name(), PUBLIC, FINAL);
-          constructorBuilder.addParameter(optionJavaType, optionField.name());
-          constructorBuilder.addStatement("this.$L = $L", optionField.name(), optionField.name());
+    ImmutableList<Field> allOptionFields = ImmutableList.of();
+    if (emitOptions) {
+      Set<Field> allOptionFieldsBuilder = new LinkedHashSet<>();
+      for (EnumConstant constant : type.constants()) {
+        for (Field optionField : constant.options().map().keySet()) {
+          if (allOptionFieldsBuilder.add(optionField)) {
+            TypeName optionJavaType = typeName(optionField.type());
+            builder.addField(optionJavaType, optionField.name(), PUBLIC, FINAL);
+            constructorBuilder.addParameter(optionJavaType, optionField.name());
+            constructorBuilder.addStatement("this.$L = $L", optionField.name(), optionField.name());
+          }
         }
       }
+      allOptionFields = ImmutableList.copyOf(allOptionFieldsBuilder);
     }
-    ImmutableList<Field> allOptionFields = ImmutableList.copyOf(allOptionFieldsBuilder);
     String enumArgsFormat = "$L" + Strings.repeat(", $L", allOptionFields.size());
     builder.addMethod(constructorBuilder.build());
 

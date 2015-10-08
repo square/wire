@@ -23,7 +23,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import okio.Okio;
 import okio.Source;
 import org.junit.Test;
@@ -43,7 +42,7 @@ public class WireCompilerErrorTest {
   private void compile(String source) throws Exception {
     CommandLineOptions options = new CommandLineOptions("/source",  "/target",
         singletonList("test.proto"), new ArrayList<String>(), true,
-        Collections.<String>emptySet(), false, false, false, false);
+        false, false, false, false);
 
     Path test = fileSystem.getPath("/source/test.proto");
     Files.createDirectory(fileSystem.getPath("/source"));

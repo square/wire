@@ -6,9 +6,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,18 +102,5 @@ public class CommandLineOptionsTest {
 
     options = new CommandLineOptions("--no_options");
     assertThat(options.emitOptions).isFalse();
-  }
-
-  @Test public void enumOptions() throws Exception {
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.enumOptions).isEmpty();
-
-    options = new CommandLineOptions("--enum_options=foo");
-    Set<String> expected = new HashSet<>();
-    expected.add("foo");
-    assertThat(options.enumOptions).isEqualTo(expected);
-    options = new CommandLineOptions("--enum_options=foo,bar");
-    expected.add("bar");
-    assertThat(options.enumOptions).isEqualTo(expected);
   }
 }
