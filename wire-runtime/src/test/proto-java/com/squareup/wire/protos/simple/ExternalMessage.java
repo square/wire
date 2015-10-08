@@ -124,7 +124,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext, ByteString unknownFields) {
     super(unknownFields);
     this.f = f;
-    this.fooext = immutableCopyOf(fooext);
+    this.fooext = immutableCopyOf("fooext", fooext);
     this.barext = barext;
     this.bazext = bazext;
     this.nested_message_ext = nested_message_ext;
@@ -135,7 +135,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.f = f;
-    builder.fooext = copyOf(fooext);
+    builder.fooext = copyOf("fooext", fooext);
     builder.barext = barext;
     builder.bazext = bazext;
     builder.nested_message_ext = nested_message_ext;

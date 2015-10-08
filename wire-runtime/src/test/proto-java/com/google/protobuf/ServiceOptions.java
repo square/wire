@@ -73,13 +73,13 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
 
   public ServiceOptions(List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
     super(unknownFields);
-    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

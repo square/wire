@@ -142,8 +142,8 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
   }
 
   /** <b>For generated code only.</b> Utility method to return a mutable copy of {@code list}. */
-  protected static <T> List<T> copyOf(List<T> list) {
-    if (list == null) throw new NullPointerException("list == null");
+  protected static <T> List<T> copyOf(String name, List<T> list) {
+    if (list == null) throw new NullPointerException(name + " == null");
     if (list == Collections.emptyList() || list instanceof ImmutableList) {
       return new MutableOnWriteList<>(list);
     }
@@ -151,15 +151,20 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
   }
 
   /** <b>For generated code only.</b> Utility method to return an immutable copy of {@code list}. */
-  protected static <T> List<T> immutableCopyOf(List<T> list) {
-    if (list == null) throw new NullPointerException("list == null");
+  protected static <T> List<T> immutableCopyOf(String name, List<T> list) {
+    if (list == null) throw new NullPointerException(name + " == null");
     if (list instanceof MutableOnWriteList) {
       list = ((MutableOnWriteList<T>) list).mutableList;
     }
     if (list == Collections.emptyList() || list instanceof ImmutableList) {
       return list;
     }
-    return new ImmutableList<>(list);
+    ImmutableList<T> result = new ImmutableList<>(list);
+    // Check after the list has been copied to defend against races.
+    if (result.contains(null)) {
+      throw new IllegalArgumentException(name + ".contains(null)");
+    }
+    return result;
   }
 
   /** <b>For generated code only.</b> */

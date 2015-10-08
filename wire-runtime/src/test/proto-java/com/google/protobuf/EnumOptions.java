@@ -80,14 +80,14 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
 
   public EnumOptions(List<UninterpretedOption> uninterpreted_option, Boolean enum_option, ByteString unknownFields) {
     super(unknownFields);
-    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.enum_option = enum_option;
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
     builder.enum_option = enum_option;
     builder.addUnknownFields(unknownFields());
     return builder;

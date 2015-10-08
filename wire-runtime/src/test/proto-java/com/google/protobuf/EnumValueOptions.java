@@ -101,7 +101,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
 
   public EnumValueOptions(List<UninterpretedOption> uninterpreted_option, Integer enum_value_option, FooBar.More complex_enum_value_option, Boolean foreign_enum_value_option, ByteString unknownFields) {
     super(unknownFields);
-    this.uninterpreted_option = immutableCopyOf(uninterpreted_option);
+    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.enum_value_option = enum_value_option;
     this.complex_enum_value_option = complex_enum_value_option;
     this.foreign_enum_value_option = foreign_enum_value_option;
@@ -110,7 +110,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.uninterpreted_option = copyOf(uninterpreted_option);
+    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
     builder.enum_value_option = enum_value_option;
     builder.complex_enum_value_option = complex_enum_value_option;
     builder.foreign_enum_value_option = foreign_enum_value_option;

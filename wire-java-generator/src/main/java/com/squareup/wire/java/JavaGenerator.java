@@ -865,9 +865,9 @@ public final class JavaGenerator {
       String fieldName = nameAllocator.get(field);
       result.addParameter(javaType, fieldName);
       if (field.isRepeated()) {
-        result.addStatement("this.$L = immutableCopyOf($L)", fieldName, fieldName);
+        result.addStatement("this.$1L = immutableCopyOf($1S, $1L)", fieldName);
       } else {
-        result.addStatement("this.$L = $L", fieldName, fieldName);
+        result.addStatement("this.$1L = $1L", fieldName);
       }
     }
 
@@ -1056,7 +1056,7 @@ public final class JavaGenerator {
     for (Field field : fields) {
       String fieldName = nameAllocator.get(field);
       if (field.isRepeated()) {
-        result.addStatement("$1L.$2L = copyOf($2L)", builderName, fieldName);
+        result.addStatement("$1L.$2L = copyOf($2S, $2L)", builderName, fieldName);
       } else {
         result.addStatement("$1L.$2L = $2L", builderName, fieldName);
       }

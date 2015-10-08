@@ -94,7 +94,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     super(unknownFields);
     this.name = name;
     this.doc = doc;
-    this.value = immutableCopyOf(value);
+    this.value = immutableCopyOf("value", value);
     this.options = options;
   }
 
@@ -103,7 +103,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     Builder builder = new Builder();
     builder.name = name;
     builder.doc = doc;
-    builder.value = copyOf(value);
+    builder.value = copyOf("value", value);
     builder.options = options;
     builder.addUnknownFields(unknownFields());
     return builder;
