@@ -18,6 +18,9 @@ package com.squareup.wire.java;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.AnnotationSpec;
@@ -54,6 +57,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -75,20 +79,20 @@ import static javax.lang.model.element.Modifier.STATIC;
  * java.lang.String}, or {@code com.squareup.protos.person.Person}).
  */
 public final class JavaGenerator {
+  static final ProtoType FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions");
+  static final ProtoType ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions");
+  static final ProtoType MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions");
   static final ClassName BYTE_STRING = ClassName.get(ByteString.class);
   static final ClassName STRING = ClassName.get(String.class);
   static final ClassName LIST = ClassName.get(List.class);
   static final ClassName MESSAGE = ClassName.get(Message.class);
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
-  static final TypeName MESSAGE_OPTIONS = ClassName.get("com.google.protobuf", "MessageOptions");
-  static final TypeName FIELD_OPTIONS = ClassName.get("com.google.protobuf", "FieldOptions");
-  static final TypeName ENUM_OPTIONS = ClassName.get("com.google.protobuf", "EnumOptions");
   static final ClassName PARCEL = ClassName.get("android.os", "Parcel");
   static final ClassName PARCELABLE = ClassName.get("android.os", "Parcelable");
   static final ClassName CREATOR = PARCELABLE.nestedClass("Creator");
 
-  private static final Map<ProtoType, TypeName> SCALAR_TYPES_MAP =
+  private static final Map<ProtoType, TypeName> BUILT_IN_TYPES_MAP =
       ImmutableMap.<ProtoType, TypeName>builder()
           .put(ProtoType.BOOL, TypeName.BOOLEAN.box())
           .put(ProtoType.BYTES, ClassName.get(ByteString.class))
@@ -105,9 +109,47 @@ public final class JavaGenerator {
           .put(ProtoType.STRING, ClassName.get(String.class))
           .put(ProtoType.UINT32, TypeName.INT.box())
           .put(ProtoType.UINT64, TypeName.LONG.box())
+          .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
+          .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
+          .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
           .build();
 
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
+
+  /**
+   * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
+   * order, so names we're stuck with (serialVersionUID etc.) occur before proto field names are
+   * assigned. Names we aren't stuck with (typically for locals) yield to message fields.
+   *
+   * <p>Name allocations are computed once and reused because some types may be needed when
+   * generating other types.
+   */
+  private final LoadingCache<MessageType, NameAllocator> typeToNameAllocator
+      = CacheBuilder.newBuilder().build(new CacheLoader<MessageType, NameAllocator>() {
+    @Override public NameAllocator load(MessageType type) throws Exception {
+      NameAllocator nameAllocator = new NameAllocator();
+      nameAllocator.newName("serialVersionUID", "serialVersionUID");
+      nameAllocator.newName("ADAPTER", "ADAPTER");
+      nameAllocator.newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS");
+      if (emitAndroid) {
+        nameAllocator.newName("CREATOR", "CREATOR");
+      }
+      Set<String> collidingNames = collidingFieldNames(type.fieldsAndOneOfFields());
+      for (Field field : type.fieldsAndOneOfFields()) {
+        String suggestion = collidingNames.contains(field.name())
+            ? field.qualifiedName()
+            : field.name();
+        nameAllocator.newName(suggestion, field);
+      }
+      nameAllocator.newName("unknownFields", "unknownFields");
+      nameAllocator.newName("result", "result");
+      nameAllocator.newName("message", "message");
+      nameAllocator.newName("other", "other");
+      nameAllocator.newName("o", "o");
+      nameAllocator.newName("builder", "builder");
+      return nameAllocator;
+    }
+  });
 
   private final Schema schema;
   private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
@@ -137,8 +179,8 @@ public final class JavaGenerator {
   }
 
   public static JavaGenerator get(Schema schema) {
-    ImmutableMap.Builder<ProtoType, TypeName> nameToJavaName = ImmutableMap.builder();
-    nameToJavaName.putAll(SCALAR_TYPES_MAP);
+    Map<ProtoType, TypeName> nameToJavaName = new LinkedHashMap<>();
+    nameToJavaName.putAll(BUILT_IN_TYPES_MAP);
 
     for (ProtoFile protoFile : schema.protoFiles()) {
       String javaPackage = javaPackage(protoFile);
@@ -150,12 +192,11 @@ public final class JavaGenerator {
       }
     }
 
-    return new JavaGenerator(schema, nameToJavaName.build(), false,
-        false, false);
+    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToJavaName), false, false, false);
   }
 
-  private static void putAll(ImmutableMap.Builder<ProtoType, TypeName> wireToJava,
-      String javaPackage, ClassName enclosingClassName, List<Type> types) {
+  private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
+      ClassName enclosingClassName, List<Type> types) {
     for (Type type : types) {
       ClassName className = enclosingClassName != null
           ? enclosingClassName.nestedClass(type.name().simpleName())
@@ -353,7 +394,7 @@ public final class JavaGenerator {
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateMessage(MessageType type) {
-    NameAllocator nameAllocator = allocateNames(type);
+    NameAllocator nameAllocator = typeToNameAllocator.getUnchecked(type);
 
     ClassName javaType = (ClassName) typeName(type.name());
     ClassName builderJavaType = javaType.nestedClass("Builder");
@@ -488,35 +529,6 @@ public final class JavaGenerator {
     }
 
     return builder.build();
-  }
-
-  /**
-   * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
-   * order, so names we're stuck with (serialVersionUID etc.) occur before proto field names are
-   * assigned. Names we aren't stuck with (typically for locals) yield to message fields.
-   */
-  private NameAllocator allocateNames(MessageType type) {
-    NameAllocator nameAllocator = new NameAllocator();
-    nameAllocator.newName("serialVersionUID", "serialVersionUID");
-    nameAllocator.newName("ADAPTER", "ADAPTER");
-    nameAllocator.newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS");
-    if (emitAndroid) {
-      nameAllocator.newName("CREATOR", "CREATOR");
-    }
-    Set<String> collidingNames = collidingFieldNames(type.fieldsAndOneOfFields());
-    for (Field field : type.fieldsAndOneOfFields()) {
-      String suggestion = collidingNames.contains(field.name())
-          ? field.qualifiedName()
-          : field.name();
-      nameAllocator.newName(suggestion, field);
-    }
-    nameAllocator.newName("unknownFields", "unknownFields");
-    nameAllocator.newName("result", "result");
-    nameAllocator.newName("message", "message");
-    nameAllocator.newName("other", "other");
-    nameAllocator.newName("o", "o");
-    nameAllocator.newName("builder", "builder");
-    return nameAllocator;
   }
 
   /** Returns the set of names that are not unique within {@code fields}. */
@@ -718,9 +730,11 @@ public final class JavaGenerator {
   //     .setExtension(Ext_custom_options.count, 42)
   //     .build();
   //
-  private FieldSpec optionsField(TypeName optionsType, String fieldName, Options options) {
+  private FieldSpec optionsField(ProtoType optionsType, String fieldName, Options options) {
+    TypeName optionsJavaType = typeName(optionsType);
+
     CodeBlock.Builder initializer = CodeBlock.builder();
-    initializer.add("$[new $T.Builder()", optionsType);
+    initializer.add("$[new $T.Builder()", optionsJavaType);
 
     boolean empty = true;
     for (Map.Entry<Field, ?> entry : options.map().entrySet()) {
@@ -731,17 +745,23 @@ public final class JavaGenerator {
         continue; // TODO(jwilson): also check that the declaring types match.
       }
 
-      initializer.add("\n.$L($L)", extensionRoot.name(),
+      initializer.add("\n.$L($L)", fieldName(optionsType, extensionRoot),
           fieldInitializer(extensionRoot.type(), entry.getValue()));
       empty = false;
     }
     initializer.add("\n.build()$]");
     if (empty) return null;
 
-    return FieldSpec.builder(optionsType, fieldName)
+    return FieldSpec.builder(optionsJavaType, fieldName)
         .addModifiers(PUBLIC, STATIC, FINAL)
         .initializer(initializer.build())
         .build();
+  }
+
+  private String fieldName(ProtoType type, Field field) {
+    MessageType messageType = (MessageType) schema.getType(type);
+    NameAllocator names = typeToNameAllocator.getUnchecked(messageType);
+    return names.get(field);
   }
 
   private TypeName fieldType(Field field) {
@@ -1172,7 +1192,7 @@ public final class JavaGenerator {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
         Field field = (Field) entry.getKey();
         CodeBlock valueInitializer = fieldInitializer(field.type(), entry.getValue());
-        builder.add("\n$>$>.$L($L)$<$<", field.name(), valueInitializer);
+        builder.add("\n$>$>.$L($L)$<$<", fieldName(type, field), valueInitializer);
       }
       builder.add("\n$>$>.build()$<$<");
       return builder.build();
