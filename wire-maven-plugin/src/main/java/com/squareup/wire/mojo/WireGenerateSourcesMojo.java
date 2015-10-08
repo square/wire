@@ -104,7 +104,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           TypeSpec typeSpec = type instanceof MessageType
               ? javaGenerator.generateMessage((MessageType) type)
               : javaGenerator.generateEnum((EnumType) type);
-          writeJavaFile(javaTypeName, typeSpec, type.location());
+          writeJavaFile(javaTypeName, typeSpec, type.location().withoutBase());
           getLog().info(String.format("Generated %s in %s", javaTypeName, stopwatch));
         }
       }

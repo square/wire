@@ -422,6 +422,9 @@ public final class JavaGenerator {
       if (!field.documentation().isEmpty()) {
         fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(field.documentation()));
       }
+      if (field.isExtension()) {
+        fieldBuilder.addJavadoc("Extension source: $L\n", field.location().withoutBase());
+      }
       if (field.isDeprecated()) {
         fieldBuilder.addAnnotation(Deprecated.class);
       }

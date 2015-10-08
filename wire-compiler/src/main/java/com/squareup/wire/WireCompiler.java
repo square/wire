@@ -108,7 +108,7 @@ public final class WireCompiler {
     JavaFile.Builder builder = JavaFile.builder(javaTypeName.packageName(), typeSpec)
         .addFileComment("$L", CODE_GENERATED_BY_WIRE);
     if (location != null) {
-      builder.addFileComment("\nSource file: $L", location);
+      builder.addFileComment("\nSource file: $L", location.withoutBase());
     }
     JavaFile javaFile = builder.build();
 
