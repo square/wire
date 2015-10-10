@@ -17,7 +17,8 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import com.squareup.wire.schema.internal.parser.OptionElement;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -253,21 +254,22 @@ public final class Options {
     return ImmutableList.builder().addAll(a).addAll(b).build();
   }
 
-  public ImmutableSet<Field> fields() {
-    ImmutableSet.Builder<Field> result = ImmutableSet.builder();
-    gatherFields(result, map);
-    return result.build();
+  Multimap<ProtoType, Field> fields() {
+    Multimap<ProtoType, Field> result = LinkedHashMultimap.create();
+    gatherFields(result, optionType, map);
+    return result;
   }
 
-  private void gatherFields(ImmutableSet.Builder<Field> sink, Object o) {
+  private void gatherFields(Multimap<ProtoType, Field> sink, ProtoType type, Object o) {
     if (o instanceof Map) {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) o).entrySet()) {
-        sink.add((Field) entry.getKey());
-        gatherFields(sink, entry.getValue());
+        Field field = (Field) entry.getKey();
+        sink.put(type, field);
+        gatherFields(sink, field.type(), entry.getValue());
       }
     } else if (o instanceof List) {
       for (Object e : (List) o) {
-        gatherFields(sink, e);
+        gatherFields(sink, type, e);
       }
     }
   }

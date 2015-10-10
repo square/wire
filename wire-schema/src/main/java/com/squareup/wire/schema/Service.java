@@ -18,7 +18,6 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.RpcElement;
 import com.squareup.wire.schema.internal.parser.ServiceElement;
-import java.util.NavigableSet;
 
 public final class Service {
   private final ProtoType protoType;
@@ -97,21 +96,19 @@ public final class Service {
     }
   }
 
-  Service retainAll(NavigableSet<String> identifiers) {
-    String serviceName = protoType.toString();
-
+  Service retainAll(IdentifierSet identifiers) {
     // If this service is not retained, prune it.
-    if (!identifiers.contains(serviceName)) {
+    if (!identifiers.contains(protoType)) {
       return null;
     }
 
     ImmutableList<Rpc> retainedRpcs = rpcs;
 
     // If any of our RPCs are specifically retained, retain only that set.
-    if (Pruner.hasMarkedMember(identifiers, protoType)) {
+    if (!identifiers.containsAllMembers(protoType)) {
       ImmutableList.Builder<Rpc> retainedRpcsBuilder = ImmutableList.builder();
       for (Rpc rpc : rpcs) {
-        if (identifiers.contains(serviceName + '#' + rpc.name())) {
+        if (identifiers.contains(protoType, rpc.name())) {
           retainedRpcsBuilder.add(rpc);
         }
       }

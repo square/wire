@@ -34,6 +34,25 @@ public final class PrunerTest {
     assertThat(pruned.getType("MessageB")).isNull();
   }
 
+  @Test public void retainTypeDoesRetainsEnclosingButNotNested() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message A {\n"
+            + "  message B {\n"
+            + "    message C {\n"
+            + "    }\n"
+            + "  }\n"
+            + "  message D {\n"
+            + "  }\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("A.B"));
+    assertThat(pruned.getType("A")).isNotNull();
+    assertThat(pruned.getType("A.B")).isNotNull();
+    assertThat(pruned.getType("A.B.C")).isNull();
+    assertThat(pruned.getType("A.D")).isNull();
+  }
+
   @Test public void retainTypeRetainsFieldTypesTransitively() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""
@@ -179,5 +198,121 @@ public final class PrunerTest {
     assertThat(((EnumType) pruned.getType("Roshambo")).constant("ROCK")).isNull();
     assertThat(((EnumType) pruned.getType("Roshambo")).constant("SCISSORS")).isNotNull();
     assertThat(((EnumType) pruned.getType("Roshambo")).constant("PAPER")).isNull();
+  }
+
+  @Test public void retainedOptionRetainsOptionsType() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional string a = 22001;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  optional string f = 1 [a = \"a\"];\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("Message#f"));
+    assertThat(((MessageType) pruned.getType("Message")).field("f")).isNotNull();
+    assertThat(((MessageType) pruned.getType("google.protobuf.FieldOptions"))).isNotNull();
+  }
+
+  @Test public void prunedOptionDoesNotRetainOptionsType() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional string a = 22001;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  optional string f = 1 [a = \"a\"];\n"
+            + "  optional string g = 2;\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("Message#g"));
+    assertThat(((MessageType) pruned.getType("google.protobuf.FieldOptions"))).isNull();
+  }
+
+  @Test public void optionRetainsField() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "message SomeFieldOptions {\n"
+            + "  optional string a = 1;\n" // Retained via option use.
+            + "  optional string b = 2;\n" // Retained explicitly.
+            + "  optional string c = 3;\n" // Should be pruned.
+            + "}\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional SomeFieldOptions some_field_options = 22001;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  optional string f = 1 [some_field_options.a = \"a\"];\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("Message", "SomeFieldOptions#b"));
+    assertThat(((MessageType) pruned.getType("Message")).field("f")).isNotNull();
+    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("a")).isNotNull();
+    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("b")).isNotNull();
+    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("c")).isNull();
+  }
+
+  @Test public void optionRetainsType() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "message SomeFieldOptions {\n"
+            + "  optional string a = 1;\n" // Retained via option use.
+            + "  optional string b = 2;\n" // Retained because 'a' is retained.
+            + "  optional string c = 3;\n" // Retained because 'a' is retained.
+            + "}\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional SomeFieldOptions some_field_options = 22001;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  optional string f = 1 [some_field_options.a = \"a\"];\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("Message"));
+    assertThat(((MessageType) pruned.getType("Message")).field("f")).isNotNull();
+    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("a")).isNotNull();
+    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("b")).isNotNull();
+    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("c")).isNotNull();
+  }
+
+  @Test public void retainExtension() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message Message {\n"
+            + "  optional string a = 1;\n"
+            + "}\n"
+            + "extend Message {\n"
+            + "  optional string b = 2;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("Message"));
+    assertThat(((MessageType) pruned.getType("Message")).field("a")).isNotNull();
+    assertThat(((MessageType) pruned.getType("Message")).extensionField("b")).isNotNull();
+  }
+
+  @Test public void retainExtensionMembers() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message Message {\n"
+            + "  optional string a = 1;\n"
+            + "  optional string b = 2;\n"
+            + "}\n"
+            + "extend Message {\n"
+            + "  optional string c = 3;\n"
+            + "  optional string d = 4;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.retainRoots(ImmutableList.of("Message#a", "Message#c"));
+    assertThat(((MessageType) pruned.getType("Message")).field("a")).isNotNull();
+    assertThat(((MessageType) pruned.getType("Message")).field("b")).isNull();
+    assertThat(((MessageType) pruned.getType("Message")).extensionField("c")).isNotNull();
+    assertThat(((MessageType) pruned.getType("Message")).extensionField("d")).isNull();
   }
 }

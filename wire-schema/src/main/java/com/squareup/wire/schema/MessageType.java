@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableSet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -202,7 +201,7 @@ public final class MessageType extends Type {
     options.link(linker);
   }
 
-  @Override Type retainAll(NavigableSet<String> identifiers) {
+  @Override Type retainAll(IdentifierSet identifiers) {
     ImmutableList.Builder<Type> retainedNestedTypesBuilder = ImmutableList.builder();
     for (Type nestedType : nestedTypes) {
       Type retainedNestedType = nestedType.retainAll(identifiers);
@@ -211,18 +210,16 @@ public final class MessageType extends Type {
       }
     }
 
-    String typeName = protoType.toString();
-
     // If this type is not retained, and none of its nested types are retained, prune it.
     ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
-    if (!identifiers.contains(typeName) && retainedNestedTypes.isEmpty()) {
+    if (!identifiers.contains(protoType) && retainedNestedTypes.isEmpty()) {
       return null;
     }
 
     // If any of our fields are specifically retained, retain only that set.
     ImmutableList<Field> retainedFields = declaredFields;
     ImmutableList<Field> retainedExtensionFields = ImmutableList.copyOf(extensionFields);
-    if (Pruner.hasMarkedMember(identifiers, protoType)) {
+    if (!identifiers.containsAllMembers(protoType)) {
       retainedFields = retainFields(identifiers, declaredFields);
       retainedExtensionFields = retainFields(identifiers, extensionFields);
     }
@@ -231,11 +228,10 @@ public final class MessageType extends Type {
         retainedNestedTypes, extensionsList, options);
   }
 
-  private ImmutableList<Field> retainFields(
-      NavigableSet<String> identifiers, Collection<Field> fields) {
+  private ImmutableList<Field> retainFields(IdentifierSet identifiers, Collection<Field> fields) {
     ImmutableList.Builder<Field> retainedFieldsBuilder = ImmutableList.builder();
     for (Field field : fields) {
-      if (identifiers.contains(protoType + "#" + field.name())) {
+      if (identifiers.contains(protoType, field.name())) {
         retainedFieldsBuilder.add(field);
       }
     }
