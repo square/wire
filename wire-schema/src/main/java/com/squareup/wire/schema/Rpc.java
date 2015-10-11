@@ -68,4 +68,8 @@ public final class Rpc {
     linker.validateImport(location(), requestType);
     linker.validateImport(location(), responseType);
   }
+
+  Rpc retainAll(MarkSet markSet) {
+    return markSet.contains(requestType) && markSet.contains(responseType) ? this : null;
+  }
 }

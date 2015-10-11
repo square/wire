@@ -17,35 +17,42 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.Map;
 
-/** Removes unused types and services. */
+/**
+ * Creates a new schema that contains only the types selected by an identifier set, including their
+ * transitive dependencies.
+ */
 final class Pruner {
-  final IdentifierSet marks = new IdentifierSet();
+  final Schema schema;
+  final IdentifierSet identifierSet;
+  final MarkSet marks;
 
-  /** Identifiers whose immediate dependencies have not yet been marked. */
-  final Deque<String> queue = new ArrayDeque<>();
+  /** Identifiers whose immediate dependencies have not yet been visited. */
+  final Deque<String> queue;
 
-  /**
-   * Returns a new root set that contains only the types in {@code roots} and their transitive
-   * dependencies.
-   *
-   * @param roots a set of identifiers to retain, which may be fully qualified type names, fully
-   *     qualified service names, or service RPCs like {@code package.ServiceName#MethodName}.
-   */
-  public Schema retainRoots(Schema schema, Collection<String> roots) {
-    if (roots.isEmpty()) throw new IllegalArgumentException();
-    if (!marks.isEmpty()) throw new IllegalStateException();
+  public Pruner(Schema schema, IdentifierSet identifierSet) {
+    this.schema = schema;
+    this.identifierSet = identifierSet;
+    this.marks = new MarkSet(identifierSet);
+    this.queue = new ArrayDeque<>(identifierSet.includes);
+  }
 
-    // Mark and enqueue the roots.
-    for (String s : roots) {
-      if (marks.add(s)) {
-        queue.add(s);
-      }
+  public Schema prune() {
+    if (!identifierSet.includes.isEmpty()) {
+      mark();
     }
 
+    ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
+    for (ProtoFile protoFile : schema.protoFiles()) {
+      retained.add(protoFile.retainAll(marks));
+    }
+
+    return new Schema(retained.build());
+  }
+
+  private void mark() {
     // File options are also roots.
     for (ProtoFile protoFile : schema.protoFiles()) {
       markOptions(protoFile.options());
@@ -102,7 +109,7 @@ final class Pruner {
 
         Type type = schema.getType(root);
         if (type != null) {
-          markType(schema, type);
+          markType(type);
           continue;
         }
 
@@ -115,29 +122,22 @@ final class Pruner {
         throw new IllegalArgumentException("Unexpected type: " + root);
       }
     }
-
-    ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
-    for (ProtoFile protoFile : schema.protoFiles()) {
-      retained.add(protoFile.retainAll(marks));
-    }
-
-    return new Schema(retained.build());
   }
 
   private void mark(ProtoType type) {
-    if (marks.add(type)) {
+    if (marks.mark(type)) {
       queue.add(type.toString()); // The transitive dependencies of this type must be visited.
     }
   }
 
   private void mark(ProtoType type, String member) {
     mark(type);
-    if (marks.addIfAbsent(type, member)) {
+    if (marks.mark(type, member)) {
       queue.add(type + "#" + member); // The transitive dependencies of this member must be visited.
     }
   }
 
-  private void markType(Schema schema, Type type) {
+  private void markType(Type type) {
     markOptions(type.options());
 
     String enclosingTypeOrPackage = type.name().enclosingTypeOrPackage();

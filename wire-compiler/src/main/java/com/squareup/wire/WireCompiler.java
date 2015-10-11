@@ -78,9 +78,9 @@ public final class WireCompiler {
     }
     Schema schema = schemaLoader.load();
 
-    if (!options.roots.isEmpty()) {
+    if (!options.identifierSet.includesEverything() || !options.identifierSet.excludesNothing()) {
       log.info("Analyzing dependencies of root types.");
-      schema = schema.retainRoots(options.roots);
+      schema = schema.prune(options.identifierSet);
     }
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)

@@ -118,21 +118,17 @@ public final class EnumType extends Type {
     }
   }
 
-  @Override Type retainAll(IdentifierSet identifiers) {
+  @Override Type retainAll(MarkSet markSet) {
     // If this type is not retained, prune it.
-    if (!identifiers.contains(protoType)) return null;
+    if (!markSet.contains(protoType)) return null;
 
-    ImmutableList<EnumConstant> retainedConstants = constants;
-    if (!identifiers.containsAllMembers(protoType)) {
-      ImmutableList.Builder<EnumConstant> retainedConstantsBuilder = ImmutableList.builder();
-      for (EnumConstant constant : constants) {
-        if (identifiers.contains(protoType, constant.name())) {
-          retainedConstantsBuilder.add(constant);
-        }
+    ImmutableList.Builder<EnumConstant> retainedConstants = ImmutableList.builder();
+    for (EnumConstant constant : constants) {
+      if (markSet.contains(protoType, constant.name())) {
+        retainedConstants.add(constant);
       }
-      retainedConstants = retainedConstantsBuilder.build();
     }
 
-    return new EnumType(protoType, element, retainedConstants, options);
+    return new EnumType(protoType, element, retainedConstants.build(), options);
   }
 }

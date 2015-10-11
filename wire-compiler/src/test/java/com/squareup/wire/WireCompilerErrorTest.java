@@ -17,12 +17,12 @@ package com.squareup.wire;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.SchemaException;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import okio.Okio;
 import okio.Source;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class WireCompilerErrorTest {
    */
   private void compile(String source) throws Exception {
     CommandLineOptions options = new CommandLineOptions("/source",  "/target",
-        singletonList("test.proto"), new ArrayList<String>(), true,
+        singletonList("test.proto"), new IdentifierSet.Builder().build(), true,
         false, false, false, false);
 
     Path test = fileSystem.getPath("/source/test.proto");

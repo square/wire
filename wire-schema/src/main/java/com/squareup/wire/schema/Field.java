@@ -132,6 +132,10 @@ public final class Field {
     return extension;
   }
 
+  Field retainAll(MarkSet markSet) {
+    return markSet.contains(type) ? this : null;
+  }
+
   public enum Label {
     OPTIONAL, REQUIRED, REPEATED,
     /** Indicates the field is a member of a {@code oneof} block. */

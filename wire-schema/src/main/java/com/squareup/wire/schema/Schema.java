@@ -19,7 +19,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
 import com.squareup.wire.ProtoAdapter;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -51,18 +50,11 @@ public final class Schema {
   }
 
   /**
-   * Returns a copy of this schema that retains only the types and services in {@code roots}, plus
-   * their transitive dependencies. Names in {@code roots} should be of the following forms:
-   *
-   * <ul>
-   *   <li>Fully qualified message names, like {@code squareup.protos.person.Person}.
-   *   <li>Fully qualified service names, like {@code com.squareup.services.ExampleService}.
-   *   <li>Fully qualified service names, followed by a '#', followed by an RPC name, like
-   *       {@code com.squareup.services.ExampleService#SendSomeData}.
-   * </ul>
+   * Returns a copy of this schema that retains only the types and services selected by {@code
+   * identifierSet}, plus their transitive dependencies.
    */
-  public Schema retainRoots(Collection<String> roots) {
-    return new Pruner().retainRoots(this, roots);
+  public Schema prune(IdentifierSet identifierSet) {
+    return new Pruner(this, identifierSet).prune();
   }
 
   /**

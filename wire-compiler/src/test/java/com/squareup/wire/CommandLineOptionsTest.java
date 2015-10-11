@@ -85,15 +85,15 @@ public class CommandLineOptionsTest {
 
   @Test public void roots() throws Exception {
     CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.roots).isEmpty();
+    assertThat(options.identifierSet.includesEverything()).isTrue();
+    assertThat(options.identifierSet.excludesNothing()).isTrue();
 
     options = new CommandLineOptions("--roots=com.example.foo");
-    List<String> expected = new ArrayList<>();
-    expected.add("com.example.foo");
-    assertThat(options.roots).isEqualTo(expected);
+    assertThat(options.identifierSet.includes).containsExactly("com.example.foo");
+
     options = new CommandLineOptions("--roots=com.example.foo,com.example.bar");
-    expected.add("com.example.bar");
-    assertThat(options.roots).isEqualTo(expected);
+    assertThat(options.identifierSet.includes)
+        .containsExactly("com.example.foo", "com.example.bar");
   }
 
   @Test public void  emitOptions() throws Exception {
