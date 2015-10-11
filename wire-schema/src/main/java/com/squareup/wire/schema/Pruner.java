@@ -19,21 +19,11 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.NavigableSet;
-import java.util.TreeSet;
+import java.util.Map;
 
 /** Removes unused types and services. */
 final class Pruner {
-  /**
-   * Homogeneous identifiers including type names, service names, field names, enum constants, and
-   * RPC names. This uses a navigable set so that we can easily check for the presence of member
-   * fields.
-   *
-   * <p>Member names are omitted unless a specific subset is being retained. That is, if a type name
-   * {@code Foo} is present, all of Foo's members are retained unless some member name {@code
-   * Foo#Bar} is in the set.
-   */
-  final NavigableSet<String> marks = new TreeSet<>();
+  final IdentifierSet marks = new IdentifierSet();
 
   /** Identifiers whose immediate dependencies have not yet been marked. */
   final Deque<String> queue = new ArrayDeque<>();
@@ -51,14 +41,13 @@ final class Pruner {
 
     // Mark and enqueue the roots.
     for (String s : roots) {
-      mark(s);
+      if (marks.add(s)) {
+        queue.add(s);
+      }
     }
 
-    // Extensions and options are also roots.
+    // File options are also roots.
     for (ProtoFile protoFile : schema.protoFiles()) {
-      for (Extend extend : protoFile.extendList()) {
-        markExtend(extend);
-      }
       markOptions(protoFile.options());
     }
 
@@ -135,27 +124,17 @@ final class Pruner {
     return new Schema(retained.build());
   }
 
-  /** Returns true if any RPC, enum constant or field of {@code identifier} is in marks. */
-  static boolean hasMarkedMember(NavigableSet<String> marks, ProtoType typeName) {
-    // If there's a member field, it will sort immediately after <Name># in the marks set.
-    String prefix = typeName + "#";
-    String ceiling = marks.ceiling(prefix);
-    return ceiling != null && ceiling.startsWith(prefix);
-  }
-
-  private void mark(ProtoType protoType) {
-    mark(protoType.toString());
-  }
-
-  private void mark(String identifier) {
-    if (marks.add(identifier)) {
-      queue.add(identifier); // The transitive dependencies of this identifier must be visited.
+  private void mark(ProtoType type) {
+    if (marks.add(type)) {
+      queue.add(type.toString()); // The transitive dependencies of this type must be visited.
     }
   }
 
-  private void markExtend(Extend extend) {
-    mark(extend.type());
-    markFields(extend.fields());
+  private void mark(ProtoType type, String member) {
+    mark(type);
+    if (marks.addIfAbsent(type, member)) {
+      queue.add(type + "#" + member); // The transitive dependencies of this member must be visited.
+    }
   }
 
   private void markType(Schema schema, Type type) {
@@ -164,14 +143,10 @@ final class Pruner {
     String enclosingTypeOrPackage = type.name().enclosingTypeOrPackage();
     Type enclosingType = schema.getType(enclosingTypeOrPackage);
     if (enclosingType != null) {
-      mark(enclosingTypeOrPackage);
+      mark(enclosingType.name());
     }
 
-    if (!hasMarkedMember(marks, type.name())) {
-      for (Type nestedType : type.nestedTypes()) {
-        mark(nestedType.name());
-      }
-
+    if (marks.containsAllMembers(type.name())) {
       if (type instanceof MessageType) {
         markMessage((MessageType) type);
       } else if (type instanceof EnumType) {
@@ -189,7 +164,7 @@ final class Pruner {
 
   private void markEnum(EnumType wireEnum) {
     markOptions(wireEnum.options());
-    if (!hasMarkedMember(marks, wireEnum.name())) {
+    if (marks.containsAllMembers(wireEnum.name())) {
       for (EnumConstant constant : wireEnum.constants()) {
         markOptions(constant.options());
       }
@@ -208,14 +183,14 @@ final class Pruner {
   }
 
   private void markOptions(Options options) {
-    for (Field field : options.fields()) {
-      markField(field);
+    for (Map.Entry<ProtoType, Field> entry : options.fields().entries()) {
+      mark(entry.getKey(), entry.getValue().name());
     }
   }
 
   private void markService(Service service) {
     markOptions(service.options());
-    if (!hasMarkedMember(marks, service.type())) {
+    if (marks.containsAllMembers(service.type())) {
       for (Rpc rpc : service.rpcs()) {
         markRpc(rpc);
       }

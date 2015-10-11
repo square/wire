@@ -25,7 +25,6 @@ import com.squareup.wire.schema.internal.parser.OneOfElement;
 import com.squareup.wire.schema.internal.parser.TypeElement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NavigableSet;
 
 public abstract class Type {
   public abstract Location location();
@@ -36,7 +35,7 @@ public abstract class Type {
   abstract void validate(Linker linker);
   abstract void link(Linker linker);
   abstract void linkOptions(Linker linker);
-  abstract Type retainAll(NavigableSet<String> identifiers);
+  abstract Type retainAll(IdentifierSet identifiers);
 
   static Type get(String packageName, ProtoType protoType, TypeElement type) {
     if (type instanceof EnumElement) {

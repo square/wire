@@ -21,7 +21,6 @@ import com.google.common.collect.Multimap;
 import com.squareup.wire.schema.internal.parser.EnumElement;
 import java.util.Collection;
 import java.util.Map;
-import java.util.NavigableSet;
 
 public final class EnumType extends Type {
   private final ProtoType protoType;
@@ -119,17 +118,15 @@ public final class EnumType extends Type {
     }
   }
 
-  @Override Type retainAll(NavigableSet<String> identifiers) {
-    String typeName = protoType.toString();
-
+  @Override Type retainAll(IdentifierSet identifiers) {
     // If this type is not retained, prune it.
-    if (!identifiers.contains(typeName)) return null;
+    if (!identifiers.contains(protoType)) return null;
 
     ImmutableList<EnumConstant> retainedConstants = constants;
-    if (Pruner.hasMarkedMember(identifiers, protoType)) {
+    if (!identifiers.containsAllMembers(protoType)) {
       ImmutableList.Builder<EnumConstant> retainedConstantsBuilder = ImmutableList.builder();
       for (EnumConstant constant : constants) {
-        if (identifiers.contains(typeName + '#' + constant.name())) {
+        if (identifiers.contains(protoType, constant.name())) {
           retainedConstantsBuilder.add(constant);
         }
       }

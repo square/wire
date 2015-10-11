@@ -20,7 +20,6 @@ import com.squareup.wire.schema.internal.parser.ExtendElement;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ServiceElement;
 import com.squareup.wire.schema.internal.parser.TypeElement;
-import java.util.NavigableSet;
 
 public final class ProtoFile {
   private final ProtoFileElement element;
@@ -116,7 +115,7 @@ public final class ProtoFile {
   }
 
   /** Returns a new proto file that omits types and services not in {@code identifiers}. */
-  ProtoFile retainAll(NavigableSet<String> identifiers) {
+  ProtoFile retainAll(IdentifierSet identifiers) {
     ImmutableList.Builder<Type> retainedTypes = ImmutableList.builder();
     for (Type type : types) {
       Type retainedType = type.retainAll(identifiers);
