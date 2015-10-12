@@ -69,16 +69,16 @@ public final class Options {
   public Object get(String name) {
     checkNotNull(name, "name");
 
-    OptionElement found = null;
-    for (OptionElement option : optionElements) {
-      if (option.name().equals(name)) {
+    Object found = null;
+    for (Map.Entry<Field, Object> entry : map.entrySet()) {
+      if (entry.getKey().name().equals(name)) {
         if (found != null) {
           throw new IllegalStateException("Multiple options match name: " + name);
         }
-        found = option;
+        found = entry.getValue();
       }
     }
-    return found != null ? found.value() : null;
+    return found;
   }
 
   /**
@@ -88,9 +88,9 @@ public final class Options {
   public boolean optionMatches(String namePattern, String valuePattern) {
     Matcher nameMatcher = Pattern.compile(namePattern).matcher("");
     Matcher valueMatcher = Pattern.compile(valuePattern).matcher("");
-    for (OptionElement option : optionElements) {
-      if (nameMatcher.reset(option.name()).matches()
-          && valueMatcher.reset(String.valueOf(option.value())).matches()) {
+    for (Map.Entry<Field, Object> entry : map.entrySet()) {
+      if (nameMatcher.reset(entry.getKey().qualifiedName()).matches()
+          && valueMatcher.reset(String.valueOf(entry.getValue())).matches()) {
         return true;
       }
     }
@@ -115,22 +115,32 @@ public final class Options {
     if (!(type instanceof MessageType)) {
       return null; // No known extensions for the given extension type.
     }
-    Map<String, Field> extensionsForType = ((MessageType) type).extensionFieldsMap();
+    MessageType messageType = (MessageType) type;
 
-    String[] path = resolveFieldPath(option.name(), extensionsForType.keySet());
-    String packageName = linker.packageName();
-    if (path == null && packageName != null) {
-      // If the path couldn't be resolved, attempt again by prefixing it with the package name.
-      path = resolveFieldPath(packageName + "." + option.name(), extensionsForType.keySet());
-    }
-    if (path == null) {
-      return null; // Unable to find the root of this field path.
+    String[] path;
+    Field field = messageType.field(option.name());
+    if (field != null) {
+      // This is an option declared by descriptor.proto.
+      path = new String[] {option.name()};
+    } else {
+      // This is an option declared by an extension.
+      Map<String, Field> extensionsForType = messageType.extensionFieldsMap();
+
+      path = resolveFieldPath(option.name(), extensionsForType.keySet());
+      String packageName = linker.packageName();
+      if (path == null && packageName != null) {
+        // If the path couldn't be resolved, attempt again by prefixing it with the package name.
+        path = resolveFieldPath(packageName + "." + option.name(), extensionsForType.keySet());
+      }
+      if (path == null) {
+        return null; // Unable to find the root of this field path.
+      }
+
+      field = extensionsForType.get(path[0]);
     }
 
     Map<Field, Object> result = new LinkedHashMap<>();
     Map<Field, Object> last = result;
-
-    Field field = extensionsForType.get(path[0]);
     for (int i = 1; i < path.length; i++) {
       Map<Field, Object> nested = new LinkedHashMap<>();
       last.put(field, nested);
@@ -271,6 +281,50 @@ public final class Options {
       for (Object e : (List) o) {
         gatherFields(sink, type, e);
       }
+    }
+  }
+
+  Options retainAll(MarkSet markSet) {
+    if (map.isEmpty()) return this; // Nothing to prune.
+    Options result = new Options(optionType, optionElements);
+    Object mapOrNull = retainAll(markSet, optionType, map);
+    result.map = mapOrNull != null
+        ? (ImmutableMap<Field, Object>) mapOrNull
+        : ImmutableMap.<Field, Object>of();
+    return result;
+  }
+
+  /** Returns an object of the same type as {@code o}, or null if it is not retained. */
+  private Object retainAll(MarkSet markSet, ProtoType type, Object o) {
+    if (!markSet.contains(type)) {
+      return null; // Prune this type.
+
+    } else if (o instanceof Map) {
+      ImmutableMap.Builder<Field, Object> builder = ImmutableMap.builder();
+      for (Map.Entry<?, ?> entry : ((Map<?, ?>) o).entrySet()) {
+        Field field = (Field) entry.getKey();
+        if (!markSet.contains(type, field.name())) continue; // Prune this field.
+        Object retainedValue = retainAll(markSet, field.type(), entry.getValue());
+        if (retainedValue != null) {
+          builder.put(field, retainedValue); // This retained field is non-empty.
+        }
+      }
+      ImmutableMap<Field, Object> map = builder.build();
+      return !map.isEmpty() ? map : null;
+
+    } else if (o instanceof List) {
+      ImmutableList.Builder<Object> builder = ImmutableList.builder();
+      for (Object value : ((List) o)) {
+        Object retainedValue = retainAll(markSet, type, value);
+        if (retainedValue != null) {
+          builder.add(retainedValue); // This retained value is non-empty.
+        }
+      }
+      ImmutableList<Object> list = builder.build();
+      return !list.isEmpty() ? list : null;
+
+    } else {
+      return o;
     }
   }
 }

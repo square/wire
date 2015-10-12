@@ -15,7 +15,9 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.FieldElement;
+import java.util.Collection;
 
 public final class Field {
   private final String packageName;
@@ -24,11 +26,11 @@ public final class Field {
   private final Options options;
   private ProtoType type;
 
-  Field(String packageName, FieldElement element, boolean extension) {
+  Field(String packageName, FieldElement element, Options options, boolean extension) {
     this.packageName = packageName;
     this.element = element;
     this.extension = extension;
-    this.options = new Options(Options.FIELD_OPTIONS, element.options());
+    this.options = options;
   }
 
   public Location location() {
@@ -93,8 +95,8 @@ public final class Field {
     return "true".equals(options().get("packed"));
   }
 
-  public Object getDefault() {
-    return options.get("default");
+  public String getDefault() {
+    return element.defaultValue();
   }
 
   void link(Linker linker) {
@@ -133,7 +135,23 @@ public final class Field {
   }
 
   Field retainAll(MarkSet markSet) {
-    return markSet.contains(type) ? this : null;
+    if (!markSet.contains(type)) return null;
+
+    Field result = new Field(packageName, element, options.retainAll(markSet), extension);
+    result.type = type;
+    return result;
+  }
+
+  static ImmutableList<Field> retainAll(
+      MarkSet markSet, ProtoType enclosingType, Collection<Field> fields) {
+    ImmutableList.Builder<Field> result = ImmutableList.builder();
+    for (Field field : fields) {
+      Field retainedField = field.retainAll(markSet);
+      if (retainedField != null && markSet.contains(enclosingType, field.name())) {
+        result.add(retainedField);
+      }
+    }
+    return result.build();
   }
 
   public enum Label {

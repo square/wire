@@ -43,7 +43,8 @@ public abstract class Type {
 
       ImmutableList.Builder<EnumConstant> constants = ImmutableList.builder();
       for (EnumConstantElement constant : enumElement.constants()) {
-        constants.add(new EnumConstant(constant));
+        constants.add(new EnumConstant(constant,
+            new Options(Options.ENUM_VALUE_OPTIONS, constant.options())));
       }
 
       Options options = new Options(Options.ENUM_OPTIONS, enumElement.options());
@@ -55,7 +56,8 @@ public abstract class Type {
 
       ImmutableList.Builder<Field> declaredFields = ImmutableList.builder();
       for (FieldElement field : messageElement.fields()) {
-        declaredFields.add(new Field(packageName, field, false));
+        declaredFields.add(new Field(packageName, field,
+            new Options(Options.FIELD_OPTIONS, field.options()), false));
       }
 
       // Extension fields be populated during linking.
@@ -63,7 +65,12 @@ public abstract class Type {
 
       ImmutableList.Builder<OneOf> oneOfs = ImmutableList.builder();
       for (OneOfElement oneOf : messageElement.oneOfs()) {
-        oneOfs.add(new OneOf(packageName, oneOf));
+        ImmutableList.Builder<Field> fields = ImmutableList.builder();
+        for (FieldElement field : oneOf.fields()) {
+          fields.add(new Field(packageName, field,
+              new Options(Options.FIELD_OPTIONS, field.options()), false));
+        }
+        oneOfs.add(new OneOf(oneOf, fields.build()));
       }
 
       ImmutableList.Builder<Type> nestedTypes = ImmutableList.builder();

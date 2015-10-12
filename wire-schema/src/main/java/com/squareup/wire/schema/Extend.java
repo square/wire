@@ -29,7 +29,8 @@ final class Extend {
 
     ImmutableList.Builder<Field> fields = ImmutableList.builder();
     for (FieldElement field : element.fields()) {
-      fields.add(new Field(packageName, field, true));
+      fields.add(new Field(packageName, field,
+          new Options(Options.FIELD_OPTIONS, field.options()), true));
     }
     this.fields = fields.build();
   }

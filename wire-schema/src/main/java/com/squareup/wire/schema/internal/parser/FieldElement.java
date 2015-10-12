@@ -37,6 +37,7 @@ public abstract class FieldElement {
   @Nullable public abstract Field.Label label();
   public abstract String type();
   public abstract String name();
+  @Nullable public abstract String defaultValue();
   public abstract int tag();
   public abstract String documentation();
   public abstract ImmutableList<OptionElement> options();
@@ -68,6 +69,7 @@ public abstract class FieldElement {
     Builder label(@Nullable Field.Label label);
     Builder type(String type);
     Builder name(String name);
+    Builder defaultValue(@Nullable String value);
     Builder tag(int tag);
     Builder documentation(String documentation);
     Builder options(ImmutableList<OptionElement> options);

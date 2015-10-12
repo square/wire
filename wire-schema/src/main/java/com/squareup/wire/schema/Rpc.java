@@ -23,9 +23,9 @@ public final class Rpc {
   private ProtoType requestType;
   private ProtoType responseType;
 
-  Rpc(RpcElement element) {
+  Rpc(RpcElement element, Options options) {
     this.element = element;
-    this.options = new Options(Options.METHOD_OPTIONS, element.options());
+    this.options = options;
   }
 
   public Location location() {
@@ -70,6 +70,10 @@ public final class Rpc {
   }
 
   Rpc retainAll(MarkSet markSet) {
-    return markSet.contains(requestType) && markSet.contains(responseType) ? this : null;
+    if (!markSet.contains(requestType) || !markSet.contains(responseType)) return null;
+    Rpc result = new Rpc(element, options.retainAll(markSet));
+    result.requestType = requestType;
+    result.responseType = responseType;
+    return result;
   }
 }

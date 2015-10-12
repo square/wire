@@ -15,8 +15,11 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.collect.ImmutableList;
+import java.util.Map;
 import org.junit.Test;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class PrunerTest {
@@ -148,6 +151,45 @@ public final class PrunerTest {
     assertThat(pruned.getType("MessageB")).isNotNull();
     assertThat(pruned.getType("MessageC")).isNotNull();
     assertThat(pruned.getType("MessageD")).isNull();
+  }
+
+  @Test public void retainFieldPrunesOneOf() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message Message {\n"
+            + "  oneof selection {\n"
+            + "    string a = 1;\n"
+            + "    string b = 2;\n"
+            + "  }\n"
+            + "  optional string c = 3;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Message#c")
+        .build());
+    assertThat(((MessageType) pruned.getType("Message")).oneOfs()).isEmpty();
+  }
+
+  @Test public void retainFieldRetainsOneOf() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message Message {\n"
+            + "  oneof selection {\n"
+            + "    string a = 1;\n"
+            + "    string b = 2;\n"
+            + "  }\n"
+            + "  optional string c = 3;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Message#b")
+        .build());
+    MessageType message = (MessageType) pruned.getType("Message");
+    OneOf onlyOneOf = getOnlyElement(message.oneOfs());
+    assertThat(onlyOneOf.name()).isEqualTo("selection");
+    assertThat(getOnlyElement(onlyOneOf.fields()).name()).isEqualTo("b");
+    assertThat(message.field("a")).isNull();
+    assertThat(message.field("c")).isNull();
   }
 
   @Test public void typeWithRetainedMembersOnlyHasThoseMembersRetained() throws Exception {
@@ -423,5 +465,158 @@ public final class PrunerTest {
     assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull();
     assertThat(pruned.getType("MessageC")).isNull();
     assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull();
+  }
+
+  @Test public void excludedFieldPrunesTopLevelOption() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional string a = 22001;\n"
+            + "  optional string b = 22002;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  optional string f = 1 [a = \"a\", b = \"b\"];\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .exclude("google.protobuf.FieldOptions#b")
+        .build());
+    Field field = ((MessageType) pruned.getType("Message")).field("f");
+    assertThat(field.options().get("a")).isEqualTo("a");
+    assertThat(field.options().get("b")).isNull();
+  }
+
+  @Test public void excludedTypePrunesTopLevelOption() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "message SomeFieldOptions {\n"
+            + "  optional string a = 1;\n"
+            + "}\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional SomeFieldOptions some_field_options = 22001;\n"
+            + "  optional string b = 22002;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  optional string f = 1 [some_field_options.a = \"a\", b = \"b\"];\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .exclude("SomeFieldOptions")
+        .build());
+    Field field = ((MessageType) pruned.getType("Message")).field("f");
+    Map<Field, Object> map = field.options().map();
+    Map.Entry<?, ?> onlyOption = getOnlyElement(map.entrySet());
+    assertThat(((Field) onlyOption.getKey()).name()).isEqualTo("b");
+    assertThat(onlyOption.getValue()).isEqualTo("b");
+  }
+
+  @Test public void excludedFieldPrunesNestedOption() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "message SomeFieldOptions {\n"
+            + "  optional string a = 1;\n"
+            + "  optional string b = 2;\n"
+            + "}\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional SomeFieldOptions some_field_options = 22001;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  optional string f = 1 [some_field_options = { a: \"a\", b: \"b\" }];\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .exclude("SomeFieldOptions#b")
+        .build());
+    Field field = ((MessageType) pruned.getType("Message")).field("f");
+    Map<?, ?> map = (Map<?, ?>) field.options().get("some_field_options");
+    Map.Entry<?, ?> onlyOption = getOnlyElement(map.entrySet());
+    assertThat(((Field) onlyOption.getKey()).name()).isEqualTo("a");
+    assertThat(onlyOption.getValue()).isEqualTo("a");
+  }
+
+  @Test public void excludedTypePrunesNestedOption() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "message SomeFieldOptions {\n"
+            + "  optional Dimensions dimensions = 1;\n"
+            + "}\n"
+            + "message Dimensions {\n"
+            + "  optional string length = 1;\n"
+            + "  optional string width = 2;\n"
+            + "}\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional SomeFieldOptions some_field_options = 22001;\n"
+            + "  optional string b = 22002;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  optional string f = 1 [\n"
+            + "      some_field_options = {\n"
+            + "          dimensions: { length: \"100\" }\n"
+            + "      },\n"
+            + "      b = \"b\"\n"
+            + "  ];\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .exclude("Dimensions")
+        .build());
+    Field field = ((MessageType) pruned.getType("Message")).field("f");
+    Map<Field, Object> map = field.options().map();
+    Map.Entry<?, ?> onlyOption = getOnlyElement(map.entrySet());
+    assertThat(((Field) onlyOption.getKey()).name()).isEqualTo("b");
+    assertThat(onlyOption.getValue()).isEqualTo("b");
+  }
+
+  @Test public void excludeOptions() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional string a = 22001;\n"
+            + "  optional string b = 22002;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  optional string f = 1 [ a = \"a\", b = \"b\" ];\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .exclude("google.protobuf.FieldOptions")
+        .build());
+    Field field = ((MessageType) pruned.getType("Message")).field("f");
+    assertThat(field.options().map()).isEmpty();
+  }
+
+  @Test public void excludeRepeatedOptions() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "extend google.protobuf.MessageOptions {\n"
+            + "  repeated string a = 22001;\n"
+            + "  repeated string b = 22002;\n"
+            + "}\n"
+            + "message Message {\n"
+            + "  option (a) = \"a1\";\n"
+            + "  option (a) = \"a2\";\n"
+            + "  option (b) = \"b1\";\n"
+            + "  option (b) = \"b2\";\n"
+            + "  optional string f = 1;\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .exclude("google.protobuf.MessageOptions#a")
+        .build());
+    MessageType message = (MessageType) pruned.getType("Message");
+    assertThat(message.options().get("a")).isNull();
+    assertThat(message.options().get("b")).isEqualTo(ImmutableList.of("b1", "b2"));
   }
 }
