@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +28,9 @@ public final class PrunerTest {
             + "message MessageB {\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("MessageA"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA")
+        .build());
     assertThat(pruned.getType("MessageA")).isNotNull();
     assertThat(pruned.getType("MessageB")).isNull();
   }
@@ -46,7 +47,9 @@ public final class PrunerTest {
             + "  }\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("A.B"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("A.B")
+        .build());
     assertThat(pruned.getType("A")).isNotNull();
     assertThat(pruned.getType("A.B")).isNotNull();
     assertThat(pruned.getType("A.B.C")).isNull();
@@ -67,7 +70,9 @@ public final class PrunerTest {
             + "message MessageD {\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("MessageA"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA")
+        .build());
     assertThat(pruned.getType("MessageA")).isNotNull();
     assertThat(pruned.getType("MessageB")).isNotNull();
     assertThat(pruned.getType("MessageC")).isNotNull();
@@ -90,7 +95,9 @@ public final class PrunerTest {
             + "  rpc CallB (RequestB) returns (ResponseB);\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("Service#CallA"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Service#CallA")
+        .build());
     assertThat(pruned.getService("Service").rpc("CallA")).isNotNull();
     assertThat(pruned.getType("RequestA")).isNotNull();
     assertThat(pruned.getType("ResponseA")).isNotNull();
@@ -109,7 +116,9 @@ public final class PrunerTest {
             + "message MessageB {\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("MessageA#b"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA#b")
+        .build());
     assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
     assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
     assertThat(pruned.getType("MessageB")).isNull();
@@ -130,7 +139,9 @@ public final class PrunerTest {
             + "message MessageD {\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("MessageA#b"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA#b")
+        .build());
     assertThat(pruned.getType("MessageA")).isNotNull();
     assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
     assertThat(((MessageType) pruned.getType("MessageA")).field("d")).isNull();
@@ -154,7 +165,10 @@ public final class PrunerTest {
             + "message MessageD {\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("MessageA#b", "MessageB#c"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA#b")
+        .include("MessageB#c")
+        .build());
     assertThat(pruned.getType("MessageA")).isNotNull();
     assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
     assertThat(pruned.getType("MessageB")).isNotNull();
@@ -173,7 +187,9 @@ public final class PrunerTest {
             + "  PAPER = 2;\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("Roshambo#SCISSORS"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Roshambo#SCISSORS")
+        .build());
     assertThat(((EnumType) pruned.getType("Roshambo")).constant("ROCK")).isNull();
     assertThat(((EnumType) pruned.getType("Roshambo")).constant("SCISSORS")).isNotNull();
     assertThat(((EnumType) pruned.getType("Roshambo")).constant("PAPER")).isNull();
@@ -191,7 +207,10 @@ public final class PrunerTest {
             + "  PAPER = 2;\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("Message", "Roshambo#SCISSORS"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Message")
+        .include("Roshambo#SCISSORS")
+        .build());
     assertThat(pruned.getType("Message")).isNotNull();
     assertThat(((MessageType) pruned.getType("Message")).field("roshambo")).isNotNull();
     assertThat(pruned.getType("Roshambo")).isNotNull();
@@ -212,7 +231,9 @@ public final class PrunerTest {
             + "}\n")
         .add("google/protobuf/descriptor.proto")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("Message#f"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Message#f")
+        .build());
     assertThat(((MessageType) pruned.getType("Message")).field("f")).isNotNull();
     assertThat(((MessageType) pruned.getType("google.protobuf.FieldOptions"))).isNotNull();
   }
@@ -230,7 +251,9 @@ public final class PrunerTest {
             + "}\n")
         .add("google/protobuf/descriptor.proto")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("Message#g"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Message#g")
+        .build());
     assertThat(((MessageType) pruned.getType("google.protobuf.FieldOptions"))).isNull();
   }
 
@@ -251,7 +274,10 @@ public final class PrunerTest {
             + "}\n")
         .add("google/protobuf/descriptor.proto")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("Message", "SomeFieldOptions#b"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Message")
+        .include("SomeFieldOptions#b")
+        .build());
     assertThat(((MessageType) pruned.getType("Message")).field("f")).isNotNull();
     assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("a")).isNotNull();
     assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("b")).isNotNull();
@@ -275,7 +301,9 @@ public final class PrunerTest {
             + "}\n")
         .add("google/protobuf/descriptor.proto")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("Message"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Message")
+        .build());
     assertThat(((MessageType) pruned.getType("Message")).field("f")).isNotNull();
     assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("a")).isNotNull();
     assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("b")).isNotNull();
@@ -292,7 +320,9 @@ public final class PrunerTest {
             + "  optional string b = 2;\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("Message"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Message")
+        .build());
     assertThat(((MessageType) pruned.getType("Message")).field("a")).isNotNull();
     assertThat(((MessageType) pruned.getType("Message")).extensionField("b")).isNotNull();
   }
@@ -309,10 +339,89 @@ public final class PrunerTest {
             + "  optional string d = 4;\n"
             + "}\n")
         .build();
-    Schema pruned = schema.retainRoots(ImmutableList.of("Message#a", "Message#c"));
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Message#a")
+        .include("Message#c")
+        .build());
     assertThat(((MessageType) pruned.getType("Message")).field("a")).isNotNull();
     assertThat(((MessageType) pruned.getType("Message")).field("b")).isNull();
     assertThat(((MessageType) pruned.getType("Message")).extensionField("c")).isNotNull();
     assertThat(((MessageType) pruned.getType("Message")).extensionField("d")).isNull();
+  }
+
+  /** When we include excludes only, the mark phase is skipped. */
+  @Test public void excludeWithoutInclude() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message MessageA {\n"
+            + "  optional string b = 1;\n"
+            + "  optional string c = 2;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .exclude("MessageA#c")
+        .build());
+    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
+  }
+
+  @Test public void excludeField() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message MessageA {\n"
+            + "  optional string b = 1;\n"
+            + "  optional string c = 2;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA")
+        .exclude("MessageA#c")
+        .build());
+    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
+  }
+
+  @Test public void excludeTypeExcludesField() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "message MessageA {\n"
+            + "  optional MessageB b = 1;\n"
+            + "  optional MessageC c = 2;\n"
+            + "}\n"
+            + "message MessageB {\n"
+            + "}\n"
+            + "message MessageC {\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA")
+        .exclude("MessageC")
+        .build());
+    assertThat(pruned.getType("MessageB")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
+    assertThat(pruned.getType("MessageC")).isNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
+  }
+
+  @Test public void excludeTypeExcludesRpc() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "service ServiceA {\n"
+            + "  rpc CallB (MessageB) returns (MessageB);\n"
+            + "  rpc CallC (MessageC) returns (MessageC);\n"
+            + "}\n"
+            + "message MessageB {\n"
+            + "}\n"
+            + "message MessageC {\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("ServiceA")
+        .exclude("MessageC")
+        .build());
+    assertThat(pruned.getType("MessageB")).isNotNull();
+    assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull();
+    assertThat(pruned.getType("MessageC")).isNull();
+    assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull();
   }
 }

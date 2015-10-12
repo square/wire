@@ -15,73 +15,100 @@
  */
 package com.squareup.wire.schema;
 
-import java.util.NavigableSet;
-import java.util.TreeSet;
+import com.google.common.collect.ImmutableSet;
 
 /**
- * A heterogeneous set of type names and type members. If a member is added to the set, its type is
- * implicitly also added. A type that is added without a specific member implicitly contains all
- * of that type's members.
+ * A heterogeneous set of type names and type members. If a member is included in the set, its type
+ * is implicitly also included. A type that is included without a specific member implicitly
+ * includes all of that type's members.
  *
- * <p>For example, an identifiers set populated with {@code Movie} and {@code Actor#name} contains
- * all members of {@code Movie} (such as {@code Movie#name} and {@code Movie#release_date}). It
- * contains the type {@code Actor} and one member {@code Actor#name}, but not {@code
- * Actor#birth_date} or {@code Actor#oscar_count}.
+ * <p>Identifiers in this set may be in the following forms:
+ * <ul>
+ *   <li>Fully qualified type names, like {@code squareup.protos.person.Person}.
+ *   <li>Fully qualified type names, followed by a '#', followed by a member name, like
+ *       {@code squareup.protos.person.Person#address}.
+ *   <li>Fully qualified service names, like {@code com.squareup.services.ExampleService}.
+ *   <li>Fully qualified service names, followed by a '#', followed by an RPC name, like
+ *       {@code com.squareup.services.ExampleService#SendSomeData}.
+ * </ul>
+ *
+ * <p>An identifiers set populated with {@code Movie} and {@code Actor#name} contains all members of
+ * {@code Movie} (such as {@code Movie#name} and {@code Movie#release_date}). It contains the type
+ * {@code Actor} and one member {@code Actor#name}, but not {@code Actor#birth_date} or {@code
+ * Actor#oscar_count}.
+ *
+ * <p>This set is initialized with <i>included identifiers</i> and <i>excluded identifiers</i>, with
+ * excludes taking precedence over includes. That is, if a type {@code Movie} is in both the
+ * includes and the excludes, it is not contained in the set. Any attempt to mark an excluded
+ * identifier will return false, preventing the identifier's transitive dependencies from also being
+ * marked.
+ *
+ * <p>If the includes set is empty, that implies that all elements should be included. Use this to
+ * exclude unwanted types and members without also including everything else.
  */
 public final class IdentifierSet {
-  final NavigableSet<String> set = new TreeSet<>();
+  public final ImmutableSet<String> includes;
+  public final ImmutableSet<String> excludes;
 
-  public boolean isEmpty() {
-    return set.isEmpty();
+  private IdentifierSet(Builder builder) {
+    this.includes = builder.includes.build();
+    this.excludes = builder.excludes.build();
+
+    StringBuilder errors = new StringBuilder();
+    for (String include : includes) {
+      if (excludes.contains(include)) {
+        errors.append(String.format("\n  include %s conflicts with exclude %s",
+            include, include));
+      }
+      int hash = include.indexOf('#');
+      if (hash != -1) {
+        String type = include.substring(0, hash);
+        if (excludes.contains(type)) {
+          errors.append(String.format("\n  include %s conflicts with exclude %s",
+              include, type));
+        }
+      }
+    }
+    if (errors.length() > 0) {
+      throw new IllegalArgumentException("identifier set is inconsistent: " + errors);
+    }
   }
 
-  /** Adds a type name or member name. Returns true if the set was modified. */
-  public boolean add(String identifier) {
-    if (identifier == null) throw new NullPointerException("identifier == null");
-
-    int hash = identifier.indexOf('#');
-    if (hash != -1) set.add(identifier.substring(0, hash));
-    return set.add(identifier);
+  public boolean includesEverything() {
+    return includes.isEmpty();
   }
 
-  /** Adds a type. Returns true if the set was modified. */
-  public boolean add(ProtoType type) {
-    if (type == null) throw new NullPointerException("type == null");
-    return set.add(type.toString());
+  public boolean excludesNothing() {
+    return excludes.isEmpty();
   }
 
-  /**
-   * Adds a member, without constraining {@code type} to a specific subset of members unless is is
-   * already. Prefer this over {@link #add} when a member is reachable implicitly, since this method
-   * won't have the side effect of causing sibling members to be excluded.
-   */
-  public boolean addIfAbsent(ProtoType type, String member) {
-    if (!contains(type)) throw new IllegalStateException();
-    if (contains(type, member)) return false;
-    return set.add(type + "#" + member);
+  boolean excludes(ProtoType type) {
+    return excludes.contains(type.toString());
   }
 
-  public boolean contains(ProtoType type, String member) {
-    if (type == null) throw new NullPointerException("type == null");
-    if (member == null) throw new NullPointerException("member == null");
-
-    return containsAllMembers(type) || set.contains(type + "#" + member);
+  boolean excludes(ProtoType type, String member) {
+    return excludes.contains(type.toString())
+        || excludes.contains(type + "#" + member);
   }
 
-  public boolean contains(ProtoType type) {
-    if (type == null) throw new NullPointerException("type == null");
+  public static final class Builder {
+    final ImmutableSet.Builder<String> includes = ImmutableSet.builder();
+    final ImmutableSet.Builder<String> excludes = ImmutableSet.builder();
 
-    return set.contains(type.toString());
-  }
+    public Builder include(String identifier) {
+      if (identifier == null) throw new NullPointerException("identifier == null");
+      includes.add(identifier);
+      return this;
+    }
 
-  public boolean containsAllMembers(ProtoType type) {
-    return contains(type) && !containsAnyMember(type);
-  }
+    public Builder exclude(String identifier) {
+      if (identifier == null) throw new NullPointerException("identifier == null");
+      excludes.add(identifier);
+      return this;
+    }
 
-  private boolean containsAnyMember(ProtoType typeName) {
-    // If there's a member field, it will sort immediately after <Name># in the marks set.
-    String prefix = typeName + "#";
-    String ceiling = set.ceiling(prefix);
-    return ceiling != null && ceiling.startsWith(prefix);
+    public IdentifierSet build() {
+      return new IdentifierSet(this);
+    }
   }
 }

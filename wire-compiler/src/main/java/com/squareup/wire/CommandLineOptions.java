@@ -15,6 +15,7 @@
  */
 package com.squareup.wire;
 
+import com.squareup.wire.schema.IdentifierSet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ final class CommandLineOptions {
   final List<String> protoPaths;
   final String javaOut;
   final List<String> sourceFileNames;
-  final List<String> roots;
+  final IdentifierSet identifierSet;
   final boolean emitOptions;
   final boolean quiet;
   final boolean dryRun;
@@ -44,13 +45,13 @@ final class CommandLineOptions {
   final boolean emitCompact;
 
   CommandLineOptions(String protoPath, String javaOut, List<String> sourceFileNames,
-      List<String> roots, boolean emitOptions, boolean quiet, boolean dryRun, boolean emitAndroid,
-      boolean emitCompact) {
+      IdentifierSet identifierSet, boolean emitOptions, boolean quiet, boolean dryRun,
+      boolean emitAndroid, boolean emitCompact) {
     this.emitCompact = emitCompact;
     this.protoPaths = Arrays.asList(protoPath);
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
-    this.roots = roots;
+    this.identifierSet = identifierSet;
     this.emitOptions = emitOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;
@@ -106,7 +107,7 @@ final class CommandLineOptions {
    */
   CommandLineOptions(String... args) throws WireException {
     List<String> sourceFileNames = new ArrayList<>();
-    List<String> roots = new ArrayList<>();
+    IdentifierSet.Builder identifierSetBuilder = new IdentifierSet.Builder();
     boolean emitOptions = true;
     List<String> protoPaths = new ArrayList<>();
     String javaOut = null;
@@ -130,7 +131,9 @@ final class CommandLineOptions {
         }
         sourceFileNames.addAll(Arrays.asList(fileNames));
       } else if (arg.startsWith(ROOTS_FLAG)) {
-        roots.addAll(splitArg(arg, ROOTS_FLAG.length()));
+        for (String root : splitArg(arg, ROOTS_FLAG.length())) {
+          identifierSetBuilder.include(root);
+        }
       } else if (arg.equals(NO_OPTIONS_FLAG)) {
         emitOptions = false;
       } else if (arg.equals(QUIET_FLAG)) {
@@ -151,7 +154,7 @@ final class CommandLineOptions {
     this.protoPaths = protoPaths;
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
-    this.roots = roots;
+    this.identifierSet = identifierSetBuilder.build();
     this.emitOptions = emitOptions;
     this.quiet = quiet;
     this.dryRun = dryRun;

@@ -18,98 +18,54 @@ package com.squareup.wire.schema;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public final class IdentifierSetTest {
-  @Test public void empty() throws Exception {
-    IdentifierSet set = new IdentifierSet();
-    assertThat(set.contains(ProtoType.get("a.b.Message"))).isFalse();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "member")).isFalse();
+  @Test public void excludeTypeIncludeTypeThrows() throws Exception {
+    try {
+      new IdentifierSet.Builder()
+          .exclude("a.b.Message")
+          .include("a.b.Message")
+          .build();
+      fail();
+    } catch (IllegalArgumentException expected) {
+      assertThat(expected).hasMessage("identifier set is inconsistent: \n"
+          + "  include a.b.Message conflicts with exclude a.b.Message");
+    }
   }
 
-  @Test public void typesOnly() throws Exception {
-    IdentifierSet set = new IdentifierSet();
-    set.add("a.b.Message");
-    set.add("a.b.MessageWithSuffix");
-
-    assertThat(set.contains(ProtoType.get("a.b.Message"))).isTrue();
-    assertThat(set.containsAllMembers(ProtoType.get("a.b.Message"))).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "member")).isTrue();
-
-    assertThat(set.contains(ProtoType.get("a.b.Other"))).isFalse();
-    assertThat(set.containsAllMembers(ProtoType.get("a.b.Other"))).isFalse();
-    assertThat(set.contains(ProtoType.get("a.b.Other"), "member")).isFalse();
+  @Test public void excludeMemberIncludeMemberThrows() throws Exception {
+    try {
+      new IdentifierSet.Builder()
+          .exclude("a.b.Message#member")
+          .include("a.b.Message#member")
+          .build();
+      fail();
+    } catch (IllegalArgumentException expected) {
+      assertThat(expected).hasMessage("identifier set is inconsistent: \n"
+          + "  include a.b.Message#member conflicts with exclude a.b.Message#member");
+    }
   }
 
-  @Test public void membersOnly() throws Exception {
-    IdentifierSet set = new IdentifierSet();
-    set.add("a.b.Message#member");
-
-    assertThat(set.contains(ProtoType.get("a.b.Message"))).isTrue();
-    assertThat(set.containsAllMembers(ProtoType.get("a.b.Message"))).isFalse();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "member")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "other")).isFalse();
-
-    assertThat(set.contains(ProtoType.get("a.b.Other"))).isFalse();
-    assertThat(set.containsAllMembers(ProtoType.get("a.b.Other"))).isFalse();
-    assertThat(set.contains(ProtoType.get("a.b.Other"), "member")).isFalse();
+  @Test public void excludeTypeIncludeMemberThrows() throws Exception {
+    try {
+      new IdentifierSet.Builder()
+          .exclude("a.b.Message")
+          .include("a.b.Message#member")
+          .build();
+      fail();
+    } catch (IllegalArgumentException expected) {
+      assertThat(expected).hasMessage("identifier set is inconsistent: \n"
+          + "  include a.b.Message#member conflicts with exclude a.b.Message");
+    }
   }
 
-  @Test public void membersAndMessages() throws Exception {
-    IdentifierSet set = new IdentifierSet();
-    set.add("a.b.Message");
-    set.add("a.b.AnotherMessage#member");
-
-    assertThat(set.contains(ProtoType.get("a.b.Message"))).isTrue();
-    assertThat(set.containsAllMembers(ProtoType.get("a.b.Message"))).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "member")).isTrue();
-
-    assertThat(set.contains(ProtoType.get("a.b.AnotherMessage"))).isTrue();
-    assertThat(set.containsAllMembers(ProtoType.get("a.b.AnotherMessage"))).isFalse();
-    assertThat(set.contains(ProtoType.get("a.b.AnotherMessage"), "member")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.AnotherMessage"), "other")).isFalse();
-
-    assertThat(set.contains(ProtoType.get("a.b.Other"))).isFalse();
-    assertThat(set.containsAllMembers(ProtoType.get("a.b.Other"))).isFalse();
-    assertThat(set.contains(ProtoType.get("a.b.Other"), "member")).isFalse();
-  }
-
-  @Test public void addIfAbsentAddsIfAbsent() throws Exception {
-    IdentifierSet set = new IdentifierSet();
-    set.add("a.b.Message#member");
-    assertThat(set.addIfAbsent(ProtoType.get("a.b.Message"), "another")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "member")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "another")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "other")).isFalse(); // Omitted.
-  }
-
-  @Test public void addIfAbsentDoesNotConstrain() throws Exception {
-    IdentifierSet set = new IdentifierSet();
-    set.add("a.b.Message");
-    assertThat(set.addIfAbsent(ProtoType.get("a.b.Message"), "another")).isFalse();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "member")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "another")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "other")).isTrue(); // Retained!
-  }
-
-  @Test public void addIfAbsentMultipleMembers() throws Exception {
-    IdentifierSet set = new IdentifierSet();
-    ProtoType message = ProtoType.get("a.b.Message");
-    assertThat(set.add(message)).isTrue();
-    assertThat(set.addIfAbsent(message, "member")).isFalse();
-    assertThat(set.addIfAbsent(message, "another")).isFalse();
-    assertThat(set.contains(message)).isTrue();
-    assertThat(set.contains(message, "member")).isTrue();
-    assertThat(set.contains(message, "another")).isTrue();
-    assertThat(set.contains(message, "other")).isTrue();
-  }
-
-  @Test public void addMultipleMembers() throws Exception {
-    IdentifierSet set = new IdentifierSet();
-    assertThat(set.add("a.b.Message#member")).isTrue();
-    assertThat(set.add("a.b.Message#another")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"))).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "member")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "another")).isTrue();
-    assertThat(set.contains(ProtoType.get("a.b.Message"), "other")).isFalse();
+  @Test public void includeTypeExcludeMemberIsOkay() throws Exception {
+    IdentifierSet identifierSet = new IdentifierSet.Builder()
+        .include("a.b.Message")
+        .exclude("a.b.Message#member")
+        .build();
+    assertThat(identifierSet.includes).containsExactly("a.b.Message");
+    assertThat(identifierSet.excludes).containsExactly("a.b.Message#member");
   }
 }

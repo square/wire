@@ -115,10 +115,10 @@ public final class ProtoFile {
   }
 
   /** Returns a new proto file that omits types and services not in {@code identifiers}. */
-  ProtoFile retainAll(IdentifierSet identifiers) {
+  ProtoFile retainAll(MarkSet markSet) {
     ImmutableList.Builder<Type> retainedTypes = ImmutableList.builder();
     for (Type type : types) {
-      Type retainedType = type.retainAll(identifiers);
+      Type retainedType = type.retainAll(markSet);
       if (retainedType != null) {
         retainedTypes.add(retainedType);
       }
@@ -126,7 +126,7 @@ public final class ProtoFile {
 
     ImmutableList.Builder<Service> retainedServices = ImmutableList.builder();
     for (Service service : services) {
-      Service retainedService = service.retainAll(identifiers);
+      Service retainedService = service.retainAll(markSet);
       if (retainedService != null) {
         retainedServices.add(retainedService);
       }

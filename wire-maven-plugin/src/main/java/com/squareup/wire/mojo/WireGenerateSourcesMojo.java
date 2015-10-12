@@ -6,6 +6,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.EnumType;
+import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.ProtoFile;
@@ -111,7 +112,13 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     Stopwatch stopwatch = Stopwatch.createStarted();
     int oldSize = countTypes(schema);
 
-    Schema prunedSchema = schema.retainRoots(Arrays.asList(roots));
+    IdentifierSet.Builder identifierSetBuilder = new IdentifierSet.Builder();
+    for (String root : roots) {
+      identifierSetBuilder.include(root);
+    }
+    IdentifierSet identifierSet = identifierSetBuilder.build();
+
+    Schema prunedSchema = schema.prune(identifierSet);
     int newSize = countTypes(prunedSchema);
 
     getLog().info(String.format("Pruned schema from %s types to %s types in %s",

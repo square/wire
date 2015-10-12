@@ -201,10 +201,10 @@ public final class MessageType extends Type {
     options.link(linker);
   }
 
-  @Override Type retainAll(IdentifierSet identifiers) {
+  @Override Type retainAll(MarkSet markSet) {
     ImmutableList.Builder<Type> retainedNestedTypesBuilder = ImmutableList.builder();
     for (Type nestedType : nestedTypes) {
-      Type retainedNestedType = nestedType.retainAll(identifiers);
+      Type retainedNestedType = nestedType.retainAll(markSet);
       if (retainedNestedType != null) {
         retainedNestedTypesBuilder.add(retainedNestedType);
       }
@@ -212,30 +212,24 @@ public final class MessageType extends Type {
 
     // If this type is not retained, and none of its nested types are retained, prune it.
     ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
-    if (!identifiers.contains(protoType) && retainedNestedTypes.isEmpty()) {
+    if (!markSet.contains(protoType) && retainedNestedTypes.isEmpty()) {
       return null;
     }
 
-    // If any of our fields are specifically retained, retain only that set.
-    ImmutableList<Field> retainedFields = declaredFields;
-    ImmutableList<Field> retainedExtensionFields = ImmutableList.copyOf(extensionFields);
-    if (!identifiers.containsAllMembers(protoType)) {
-      retainedFields = retainFields(identifiers, declaredFields);
-      retainedExtensionFields = retainFields(identifiers, extensionFields);
-    }
-
-    return new MessageType(protoType, element, retainedFields, retainedExtensionFields, oneOfs,
-        retainedNestedTypes, extensionsList, options);
+    return new MessageType(protoType, element, retainFields(markSet, declaredFields),
+        retainFields(markSet, extensionFields), oneOfs, retainedNestedTypes, extensionsList,
+        options);
   }
 
-  private ImmutableList<Field> retainFields(IdentifierSet identifiers, Collection<Field> fields) {
-    ImmutableList.Builder<Field> retainedFieldsBuilder = ImmutableList.builder();
+  private ImmutableList<Field> retainFields(MarkSet markSet, Collection<Field> fields) {
+    ImmutableList.Builder<Field> result = ImmutableList.builder();
     for (Field field : fields) {
-      if (identifiers.contains(protoType, field.name())) {
-        retainedFieldsBuilder.add(field);
+      Field retainedField = field.retainAll(markSet);
+      if (retainedField != null && markSet.contains(protoType, field.name())) {
+        result.add(field);
       }
     }
-    return retainedFieldsBuilder.build();
+    return result.build();
   }
 
   void addExtensionFields(ImmutableList<Field> fields) {

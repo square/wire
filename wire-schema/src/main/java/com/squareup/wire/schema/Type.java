@@ -35,7 +35,7 @@ public abstract class Type {
   abstract void validate(Linker linker);
   abstract void link(Linker linker);
   abstract void linkOptions(Linker linker);
-  abstract Type retainAll(IdentifierSet identifiers);
+  abstract Type retainAll(MarkSet markSet);
 
   static Type get(String packageName, ProtoType protoType, TypeElement type) {
     if (type instanceof EnumElement) {
