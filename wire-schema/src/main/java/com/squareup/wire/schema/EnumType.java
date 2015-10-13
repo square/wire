@@ -125,10 +125,10 @@ public final class EnumType extends Type {
     ImmutableList.Builder<EnumConstant> retainedConstants = ImmutableList.builder();
     for (EnumConstant constant : constants) {
       if (markSet.contains(protoType, constant.name())) {
-        retainedConstants.add(constant);
+        retainedConstants.add(constant.retainAll(markSet));
       }
     }
 
-    return new EnumType(protoType, element, retainedConstants.build(), options);
+    return new EnumType(protoType, element, retainedConstants.build(), options.retainAll(markSet));
   }
 }

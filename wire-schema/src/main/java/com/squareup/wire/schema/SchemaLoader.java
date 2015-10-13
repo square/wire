@@ -21,6 +21,7 @@ import com.squareup.wire.schema.internal.parser.ProtoParser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -34,6 +35,7 @@ import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import okio.BufferedSource;
 import okio.Okio;
 import okio.Source;
 
@@ -45,6 +47,8 @@ import okio.Source;
  * relative to the root of the archive.
  */
 public final class SchemaLoader {
+  private static final String DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto";
+
   private final List<Path> sources = new ArrayList<>();
   private final List<String> protos = new ArrayList<>();
 
@@ -156,7 +160,27 @@ public final class SchemaLoader {
       }
     }
 
+    ProtoFile descriptor = loaded.get(DESCRIPTOR_PROTO);
+    if (descriptor == null) {
+      loaded.put(DESCRIPTOR_PROTO, loadDescriptorProto());
+    }
+
     return new Linker(loaded.values()).link();
+  }
+
+  /**
+   * Returns Google's protobuf descriptor, which defines standard options like default, deprecated,
+   * and java_package. If the user has provided their own version of the descriptor proto, that is
+   * preferred.
+   */
+  private ProtoFile loadDescriptorProto() throws IOException {
+    InputStream resourceAsStream = SchemaLoader.class.getResourceAsStream("/" + DESCRIPTOR_PROTO);
+    try (BufferedSource buffer = Okio.buffer(Okio.source(resourceAsStream))) {
+      String data = buffer.readUtf8();
+      Location location = Location.get("", DESCRIPTOR_PROTO);
+      ProtoFileElement element = ProtoParser.parse(location, data);
+      return ProtoFile.get(element);
+    }
   }
 
   private static Source source(String proto, Path directory) throws IOException {

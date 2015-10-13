@@ -132,8 +132,8 @@ public final class ProtoFile {
       }
     }
 
-    return new ProtoFile(
-        element, retainedTypes.build(), retainedServices.build(), extendList, options);
+    return new ProtoFile(element, retainedTypes.build(), retainedServices.build(),
+        extendList, options.retainAll(markSet));
   }
 
   @Override public String toString() {

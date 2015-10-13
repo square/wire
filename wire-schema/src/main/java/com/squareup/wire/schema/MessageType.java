@@ -17,7 +17,6 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.MessageElement;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +102,13 @@ public final class MessageType extends Type {
     for (Field field : declaredFields) {
       if (field.name().equals(name)) {
         return field;
+      }
+    }
+    for (OneOf oneOf : oneOfs) {
+      for (Field field : oneOf.fields()) {
+        if (field.name().equals(name)) {
+          return field;
+        }
       }
     }
     return null;
@@ -216,20 +222,18 @@ public final class MessageType extends Type {
       return null;
     }
 
-    return new MessageType(protoType, element, retainFields(markSet, declaredFields),
-        retainFields(markSet, extensionFields), oneOfs, retainedNestedTypes, extensionsList,
-        options);
-  }
-
-  private ImmutableList<Field> retainFields(MarkSet markSet, Collection<Field> fields) {
-    ImmutableList.Builder<Field> result = ImmutableList.builder();
-    for (Field field : fields) {
-      Field retainedField = field.retainAll(markSet);
-      if (retainedField != null && markSet.contains(protoType, field.name())) {
-        result.add(field);
+    ImmutableList.Builder<OneOf> retainedOneOfsBuilder = ImmutableList.builder();
+    for (OneOf oneOf : oneOfs) {
+      OneOf retainedOneOf = oneOf.retainAll(markSet, protoType);
+      if (retainedOneOf != null) {
+        retainedOneOfsBuilder.add(retainedOneOf);
       }
     }
-    return result.build();
+    ImmutableList<OneOf> retainedOneOfs = retainedOneOfsBuilder.build();
+
+    return new MessageType(protoType, element, Field.retainAll(markSet, protoType, declaredFields),
+        Field.retainAll(markSet, protoType, extensionFields), retainedOneOfs, retainedNestedTypes,
+        extensionsList, options.retainAll(markSet));
   }
 
   void addExtensionFields(ImmutableList<Field> fields) {

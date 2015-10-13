@@ -372,7 +372,12 @@ public final class ProtoParser {
     if (peekChar() == '[') {
       pos++;
       while (true) {
-        options.add(readOption('='));
+        OptionElement option = readOption('=');
+        if (option.name().equals("default")) {
+          builder.defaultValue(String.valueOf(option.value())); // Defaults aren't options!
+        } else {
+          options.add(option);
+        }
 
         // Check for optional ',' or closing ']'
         char c = peekChar();

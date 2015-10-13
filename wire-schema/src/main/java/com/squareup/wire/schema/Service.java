@@ -36,7 +36,7 @@ public final class Service {
   public static Service get(ProtoType protoType, ServiceElement element) {
     ImmutableList.Builder<Rpc> rpcs = ImmutableList.builder();
     for (RpcElement rpc : element.rpcs()) {
-      rpcs.add(new Rpc(rpc));
+      rpcs.add(new Rpc(rpc, new Options(Options.METHOD_OPTIONS, rpc.options())));
     }
 
     Options options = new Options(Options.SERVICE_OPTIONS, element.options());
@@ -110,6 +110,6 @@ public final class Service {
       }
     }
 
-    return new Service(protoType, element, retainedRpcs.build(), options);
+    return new Service(protoType, element, retainedRpcs.build(), options.retainAll(markSet));
   }
 }

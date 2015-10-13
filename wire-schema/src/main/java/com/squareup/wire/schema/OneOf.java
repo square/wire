@@ -16,21 +16,15 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.FieldElement;
 import com.squareup.wire.schema.internal.parser.OneOfElement;
 
 public final class OneOf {
   private final OneOfElement element;
   private final ImmutableList<Field> fields;
 
-  OneOf(String packageName, OneOfElement element) {
+  public OneOf(OneOfElement element, ImmutableList<Field> fields) {
     this.element = element;
-
-    ImmutableList.Builder<Field> fields = ImmutableList.builder();
-    for (FieldElement field : element.fields()) {
-      fields.add(new Field(packageName, field, false));
-    }
-    this.fields = fields.build();
+    this.fields = fields;
   }
 
   public String name() {
@@ -55,5 +49,11 @@ public final class OneOf {
     for (Field field : fields) {
       field.linkOptions(linker);
     }
+  }
+
+  OneOf retainAll(MarkSet markSet, ProtoType enclosingType) {
+    ImmutableList<Field> retainedFields = Field.retainAll(markSet, enclosingType, fields);
+    if (retainedFields.isEmpty()) return null;
+    return new OneOf(element, retainedFields);
   }
 }

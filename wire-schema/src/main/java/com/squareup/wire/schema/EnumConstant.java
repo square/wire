@@ -21,9 +21,9 @@ public final class EnumConstant {
   private final EnumConstantElement element;
   private final Options options;
 
-  EnumConstant(EnumConstantElement element) {
+  EnumConstant(EnumConstantElement element, Options options) {
     this.element = element;
-    this.options = new Options(Options.ENUM_VALUE_OPTIONS, element.options());
+    this.options = options;
   }
 
   public Location location() {
@@ -48,5 +48,9 @@ public final class EnumConstant {
 
   void linkOptions(Linker linker) {
     options.link(linker);
+  }
+
+  EnumConstant retainAll(MarkSet markSet) {
+    return new EnumConstant(element, options.retainAll(markSet));
   }
 }

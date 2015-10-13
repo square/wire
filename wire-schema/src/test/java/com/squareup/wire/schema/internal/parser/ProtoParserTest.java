@@ -17,10 +17,10 @@ package com.squareup.wire.schema.internal.parser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.squareup.wire.schema.internal.Util;
-import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
+import com.squareup.wire.schema.internal.Util;
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -184,6 +184,31 @@ public final class ProtoParserTest {
                         .type("nested.nested")
                         .name("f20")
                         .tag(20)
+                        .build()))
+                .build()))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
+  /** It looks like an option, but 'default' is special. It's missing from descriptor.proto! */
+  @Test public void defaultFieldOptionIsSpecial() {
+    String proto = ""
+        + "message Message {\n"
+        + "  required string a = 1 [default = \"b\", faulted = \"c\"];\n"
+        + "}\n";
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("Message")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("a")
+                        .defaultValue("b")
+                        .options(ImmutableList.of(
+                            OptionElement.create("faulted", Kind.STRING, "c")))
+                        .tag(1)
                         .build()))
                 .build()))
         .build();
@@ -855,7 +880,7 @@ public final class ProtoParserTest {
   @Test public void nestingInMessage() throws Exception {
     String proto = ""
         + "message FieldOptions {\n"
-        + "  optional CType ctype = 1 [default = STRING, deprecated=true];\n"
+        + "  optional CType ctype = 1 [old_default = STRING, deprecated=true];\n"
         + "  enum CType {\n"
         + "    STRING = 0[(opt_a) = 1, (opt_b) = 2];\n"
         + "  };\n"
@@ -879,11 +904,11 @@ public final class ProtoParserTest {
         .name("ctype")
         .tag(1)
         .options(ImmutableList.of(
-            OptionElement.create("default", Kind.ENUM, "STRING"),
+            OptionElement.create("old_default", Kind.ENUM, "STRING"),
             OptionElement.create("deprecated", Kind.BOOLEAN, "true")))
         .build();
     assertThat(field.options()).containsOnly( //
-        OptionElement.create("default", Kind.ENUM, "STRING"), //
+        OptionElement.create("old_default", Kind.ENUM, "STRING"), //
         OptionElement.create("deprecated", Kind.BOOLEAN, "true"));
 
     TypeElement messageElement = MessageElement.builder(location.at(1, 1))
@@ -905,9 +930,9 @@ public final class ProtoParserTest {
   @Test public void optionParentheses() throws Exception {
     String proto = ""
         + "message Chickens {\n"
-        + "  optional bool koka_ko_koka_ko = 1 [default = true];\n"
-        + "  optional bool coodle_doodle_do = 2 [(delay) = 100, default = false];\n"
-        + "  optional bool coo_coo_ca_cha = 3 [default = true, (delay) = 200];\n"
+        + "  optional bool koka_ko_koka_ko = 1 [old_default = true];\n"
+        + "  optional bool coodle_doodle_do = 2 [(delay) = 100, old_default = false];\n"
+        + "  optional bool coo_coo_ca_cha = 3 [old_default = true, (delay) = 200];\n"
         + "  optional bool cha_chee_cha = 4;\n"
         + "}\n";
 
@@ -922,7 +947,7 @@ public final class ProtoParserTest {
                         .name("koka_ko_koka_ko")
                         .tag(1)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.BOOLEAN, "true")))
+                            OptionElement.create("old_default", Kind.BOOLEAN, "true")))
                         .build(),
                     FieldElement.builder(location.at(3, 3))
                         .label(OPTIONAL)
@@ -931,7 +956,7 @@ public final class ProtoParserTest {
                         .tag(2)
                         .options(ImmutableList.of(
                             OptionElement.create("delay", Kind.NUMBER, "100", true),
-                            OptionElement.create("default", Kind.BOOLEAN, "false")))
+                            OptionElement.create("old_default", Kind.BOOLEAN, "false")))
                         .build(),
                     FieldElement.builder(location.at(4, 3))
                         .label(OPTIONAL)
@@ -939,7 +964,7 @@ public final class ProtoParserTest {
                         .name("coo_coo_ca_cha")
                         .tag(3)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.BOOLEAN, "true"),
+                            OptionElement.create("old_default", Kind.BOOLEAN, "true"),
                             OptionElement.create("delay", Kind.NUMBER, "200", true)))
                         .build(),
                     FieldElement.builder(location.at(5, 3))
@@ -1133,18 +1158,19 @@ public final class ProtoParserTest {
   @Test public void defaultFieldWithStringEscapes() throws Exception {
     String proto = ""
         + "message Foo {\n"
-        + "  optional string name = 1 "
-        + "[default = \"\\a\\b\\f\\n\\r\\t\\v\1f\01\001\11\011\111\\xe\\Xe\\xE\\xE\\x41\\X41\"];\n"
+        + "  optional string name = 1 [\n"
+        + "    x = \"\\a\\b\\f\\n\\r\\t\\v\1f\01\001\11\011\111\\xe\\Xe\\xE\\xE\\x41\\X41\"\n"
+        + "  ];\n"
         + "}";
     FieldElement field = FieldElement.builder(location.at(2, 3))
         .label(OPTIONAL)
         .type("string")
         .name("name")
         .tag(1)
-        .options(ImmutableList.of(OptionElement.create("default", Kind.STRING,
+        .options(ImmutableList.of(OptionElement.create("x", Kind.STRING,
             "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA")))
         .build();
-    assertThat(field.options()).containsOnly(OptionElement.create("default", Kind.STRING,
+    assertThat(field.options()).containsOnly(OptionElement.create("x", Kind.STRING,
         "\u0007\b\f\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"));
 
     TypeElement messageElement = MessageElement.builder(location.at(1, 1))
@@ -1330,22 +1356,22 @@ public final class ProtoParserTest {
   @Test public void optionNumericalBounds() {
     String proto = ""
         + "message Test {\n"
-        + "  optional int32 default_int32 = 401 [default = 2147483647 ];\n"
-        + "  optional uint32 default_uint32 = 402 [default = 4294967295 ];\n"
-        + "  optional sint32 default_sint32 = 403 [default = -2147483648 ];\n"
-        + "  optional fixed32 default_fixed32 = 404 [default = 4294967295 ];\n"
-        + "  optional sfixed32 default_sfixed32 = 405 [default = -2147483648 ];\n"
-        + "  optional int64 default_int64 = 406 [default = 9223372036854775807 ];\n"
-        + "  optional uint64 default_uint64 = 407 [default = 18446744073709551615 ];\n"
-        + "  optional sint64 default_sint64 = 408 [default = -9223372036854775808 ];\n"
-        + "  optional fixed64 default_fixed64 = 409 [default = 18446744073709551615 ];\n"
-        + "  optional sfixed64 default_sfixed64 = 410 [default = -9223372036854775808 ];\n"
-        + "  optional bool default_bool = 411 [default = true ];\n"
-        + "  optional float default_float = 412 [default = 123.456e7 ];\n"
-        + "  optional double default_double = 413 [default = 123.456e78 ];\n"
-        + "  optional string default_string = 414 [default = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
-        + "  optional bytes default_bytes = 415 [default = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
-        + "  optional NestedEnum default_nested_enum = 416 [default = A ];"
+        + "  optional int32 default_int32 = 401 [x = 2147483647 ];\n"
+        + "  optional uint32 default_uint32 = 402 [x = 4294967295 ];\n"
+        + "  optional sint32 default_sint32 = 403 [x = -2147483648 ];\n"
+        + "  optional fixed32 default_fixed32 = 404 [x = 4294967295 ];\n"
+        + "  optional sfixed32 default_sfixed32 = 405 [x = -2147483648 ];\n"
+        + "  optional int64 default_int64 = 406 [x = 9223372036854775807 ];\n"
+        + "  optional uint64 default_uint64 = 407 [x = 18446744073709551615 ];\n"
+        + "  optional sint64 default_sint64 = 408 [x = -9223372036854775808 ];\n"
+        + "  optional fixed64 default_fixed64 = 409 [x = 18446744073709551615 ];\n"
+        + "  optional sfixed64 default_sfixed64 = 410 [x = -9223372036854775808 ];\n"
+        + "  optional bool default_bool = 411 [x = true ];\n"
+        + "  optional float default_float = 412 [x = 123.456e7 ];\n"
+        + "  optional double default_double = 413 [x = 123.456e78 ];\n"
+        + "  optional string default_string = 414 [x = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
+        + "  optional bytes default_bytes = 415 [x = \"çok\\a\\b\\f\\n\\r\\t\\v\\1\\01\\001\\17\\017\\176\\x1\\x01\\x11\\X1\\X01\\X11güzel\" ];\n"
+        + "  optional NestedEnum default_nested_enum = 416 [x = A ];"
         + "}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
         .types(ImmutableList.<TypeElement>of(
@@ -1357,7 +1383,7 @@ public final class ProtoParserTest {
                         .name("default_int32")
                         .tag(401)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "2147483647")))
+                            OptionElement.create("x", Kind.NUMBER, "2147483647")))
                         .build(),
                     FieldElement.builder(location.at(3, 3))
                         .label(OPTIONAL)
@@ -1365,7 +1391,7 @@ public final class ProtoParserTest {
                         .name("default_uint32")
                         .tag(402)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "4294967295")))
+                            OptionElement.create("x", Kind.NUMBER, "4294967295")))
                         .build(),
                     FieldElement.builder(location.at(4, 3))
                         .label(OPTIONAL)
@@ -1373,7 +1399,7 @@ public final class ProtoParserTest {
                         .name("default_sint32")
                         .tag(403)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "-2147483648")))
+                            OptionElement.create("x", Kind.NUMBER, "-2147483648")))
                         .build(),
                     FieldElement.builder(location.at(5, 3))
                         .label(OPTIONAL)
@@ -1381,7 +1407,7 @@ public final class ProtoParserTest {
                         .name("default_fixed32")
                         .tag(404)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "4294967295")))
+                            OptionElement.create("x", Kind.NUMBER, "4294967295")))
                         .build(),
                     FieldElement.builder(location.at(6, 3))
                         .label(OPTIONAL)
@@ -1389,7 +1415,7 @@ public final class ProtoParserTest {
                         .name("default_sfixed32")
                         .tag(405)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "-2147483648")))
+                            OptionElement.create("x", Kind.NUMBER, "-2147483648")))
                         .build(),
                     FieldElement.builder(location.at(7, 3))
                         .label(OPTIONAL)
@@ -1397,7 +1423,7 @@ public final class ProtoParserTest {
                         .name("default_int64")
                         .tag(406)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "9223372036854775807")))
+                            OptionElement.create("x", Kind.NUMBER, "9223372036854775807")))
                         .build(),
                     FieldElement.builder(location.at(8, 3))
                         .label(OPTIONAL)
@@ -1405,7 +1431,7 @@ public final class ProtoParserTest {
                         .name("default_uint64")
                         .tag(407)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "18446744073709551615")))
+                            OptionElement.create("x", Kind.NUMBER, "18446744073709551615")))
                         .build(),
                     FieldElement.builder(location.at(9, 3))
                         .label(OPTIONAL)
@@ -1413,7 +1439,7 @@ public final class ProtoParserTest {
                         .name("default_sint64")
                         .tag(408)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "-9223372036854775808")))
+                            OptionElement.create("x", Kind.NUMBER, "-9223372036854775808")))
                         .build(),
                     FieldElement.builder(location.at(10, 3))
                         .label(OPTIONAL)
@@ -1421,7 +1447,7 @@ public final class ProtoParserTest {
                         .name("default_fixed64")
                         .tag(409)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "18446744073709551615")))
+                            OptionElement.create("x", Kind.NUMBER, "18446744073709551615")))
                         .build(),
                     FieldElement.builder(location.at(11, 3))
                         .label(OPTIONAL)
@@ -1429,7 +1455,7 @@ public final class ProtoParserTest {
                         .name("default_sfixed64")
                         .tag(410)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "-9223372036854775808")))
+                            OptionElement.create("x", Kind.NUMBER, "-9223372036854775808")))
                         .build(),
                     FieldElement.builder(location.at(12, 3))
                         .label(OPTIONAL)
@@ -1437,7 +1463,7 @@ public final class ProtoParserTest {
                         .name("default_bool")
                         .tag(411)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.BOOLEAN, "true")))
+                            OptionElement.create("x", Kind.BOOLEAN, "true")))
                         .build(),
                     FieldElement.builder(location.at(13, 3))
                         .label(OPTIONAL)
@@ -1445,7 +1471,7 @@ public final class ProtoParserTest {
                         .name("default_float")
                         .tag(412)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "123.456e7")))
+                            OptionElement.create("x", Kind.NUMBER, "123.456e7")))
                         .build(),
                     FieldElement.builder(location.at(14, 3))
                         .label(OPTIONAL)
@@ -1453,7 +1479,7 @@ public final class ProtoParserTest {
                         .name("default_double")
                         .tag(413)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.NUMBER, "123.456e78")))
+                            OptionElement.create("x", Kind.NUMBER, "123.456e78")))
                         .build(),
                     FieldElement.builder(location.at(15, 3))
                         .label(OPTIONAL)
@@ -1461,7 +1487,7 @@ public final class ProtoParserTest {
                         .name("default_string")
                         .tag(414)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.STRING, "çok\u0007\b\f\n\r\t\u000b"
+                            OptionElement.create("x", Kind.STRING, "çok\u0007\b\f\n\r\t\u000b"
                                 + "\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
                                 + "\u0011güzel")))
                         .build(),
@@ -1471,7 +1497,7 @@ public final class ProtoParserTest {
                         .name("default_bytes")
                         .tag(415)
                         .options(ImmutableList.of(
-                            OptionElement.create("default", Kind.STRING, "çok\u0007\b\f\n\r\t\u000b"
+                            OptionElement.create("x", Kind.STRING, "çok\u0007\b\f\n\r\t\u000b"
                                 + "\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
                                 + "\u0011güzel")))
                         .build(),
@@ -1480,7 +1506,7 @@ public final class ProtoParserTest {
                         .type("NestedEnum")
                         .name("default_nested_enum")
                         .tag(416)
-                        .options(ImmutableList.of(OptionElement.create("default", Kind.ENUM, "A")))
+                        .options(ImmutableList.of(OptionElement.create("x", Kind.ENUM, "A")))
                         .build()))
                 .build()))
         .build();
@@ -1493,7 +1519,7 @@ public final class ProtoParserTest {
         + "  optional int32 bar = 1 [\n"
         + "      (validation.range).min = 1,\n"
         + "      (validation.range).max = 100,\n"
-        + "      default = 20\n"
+        + "      old_default = 20\n"
         + "  ];\n"
         + "}";
     FieldElement field = FieldElement.builder(location.at(2, 3))
@@ -1506,14 +1532,14 @@ public final class ProtoParserTest {
                 OptionElement.create("min", Kind.NUMBER, "1"), true),
             OptionElement.create("validation.range", Kind.OPTION,
                 OptionElement.create("max", Kind.NUMBER, "100"), true),
-            OptionElement.create("default", Kind.NUMBER, "20")))
+            OptionElement.create("old_default", Kind.NUMBER, "20")))
         .build();
     assertThat(field.options()).containsOnly( //
         OptionElement.create("validation.range", Kind.OPTION,
             OptionElement.create("min", Kind.NUMBER, "1"), true), //
         OptionElement.create("validation.range", Kind.OPTION,
             OptionElement.create("max", Kind.NUMBER, "100"), true), //
-        OptionElement.create("default", Kind.NUMBER, "20"));
+        OptionElement.create("old_default", Kind.NUMBER, "20"));
 
     TypeElement expected = MessageElement.builder(location.at(1, 1))
         .name("Foo").fields(ImmutableList.of(field))
