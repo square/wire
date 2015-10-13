@@ -89,6 +89,16 @@ public final class Schema {
     return getType(protoType.toString());
   }
 
+  public Field getField(ProtoMember protoMember) {
+    Type type = getType(protoMember.type());
+    if (!(type instanceof MessageType)) return null;
+    Field field = ((MessageType) type).field(protoMember.member());
+    if (field == null) {
+      field = ((MessageType) type).extensionField(protoMember.member());
+    }
+    return field;
+  }
+
   private static ImmutableMap<String, Type> buildTypesIndex(Iterable<ProtoFile> protoFiles) {
     Map<String, Type> result = new LinkedHashMap<>();
     for (ProtoFile protoFile : protoFiles) {

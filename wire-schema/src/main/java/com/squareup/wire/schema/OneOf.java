@@ -51,8 +51,8 @@ public final class OneOf {
     }
   }
 
-  OneOf retainAll(MarkSet markSet, ProtoType enclosingType) {
-    ImmutableList<Field> retainedFields = Field.retainAll(markSet, enclosingType, fields);
+  OneOf retainAll(Schema schema, MarkSet markSet, ProtoType enclosingType) {
+    ImmutableList<Field> retainedFields = Field.retainAll(schema, markSet, enclosingType, fields);
     if (retainedFields.isEmpty()) return null;
     return new OneOf(element, retainedFields);
   }

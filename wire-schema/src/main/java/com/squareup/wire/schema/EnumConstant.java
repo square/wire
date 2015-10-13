@@ -50,7 +50,7 @@ public final class EnumConstant {
     options.link(linker);
   }
 
-  EnumConstant retainAll(MarkSet markSet) {
-    return new EnumConstant(element, options.retainAll(markSet));
+  EnumConstant retainAll(Schema schema, MarkSet markSet) {
+    return new EnumConstant(element, options.retainAll(schema, markSet));
   }
 }

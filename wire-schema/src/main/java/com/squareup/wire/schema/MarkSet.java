@@ -43,6 +43,10 @@ final class MarkSet {
     return marks.add(type.toString());
   }
 
+  boolean mark(ProtoMember protoMember) {
+    return mark(protoMember.type(), protoMember.member());
+  }
+
   /**
    * Marks a member as transitively reachable by the includes set. Returns true if the mark is new,
    * the member will be retained, and its own dependencies should be traversed.
@@ -83,5 +87,9 @@ final class MarkSet {
     String prefix = typeName + "#";
     String ceiling = marks.ceiling(prefix);
     return ceiling != null && ceiling.startsWith(prefix);
+  }
+
+  public boolean contains(ProtoMember protoMember) {
+    return contains(protoMember.type(), protoMember.member());
   }
 }

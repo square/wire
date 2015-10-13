@@ -48,7 +48,7 @@ public final class Options {
 
   private final ProtoType optionType;
   private final ImmutableList<OptionElement> optionElements;
-  private ImmutableMap<Field, Object> map;
+  private ImmutableMap<ProtoMember, Object> map;
 
   public Options(ProtoType optionType, List<OptionElement> elements) {
     this.optionType = optionType;
@@ -57,28 +57,18 @@ public final class Options {
 
   /**
    * Returns a map with the values for these options. Map values may be either a single entry, like
-   * {@code {default: "5"}}, or more sophisticated, with nested maps and lists.
+   * {@code {deprecated: "true"}}, or more sophisticated, with nested maps and lists.
    *
-   * <p>The map keys are always {@link Field} instances, even for nested maps. The values are
+   * <p>The map keys are always {@link ProtoMember} instances, even for nested maps. The values are
    * always either lists, maps, or strings.
    */
-  public Map<Field, Object> map() {
+  public Map<ProtoMember, Object> map() {
     return map;
   }
 
-  public Object get(String name) {
-    checkNotNull(name, "name");
-
-    Object found = null;
-    for (Map.Entry<Field, Object> entry : map.entrySet()) {
-      if (entry.getKey().name().equals(name)) {
-        if (found != null) {
-          throw new IllegalStateException("Multiple options match name: " + name);
-        }
-        found = entry.getValue();
-      }
-    }
-    return found;
+  public Object get(ProtoMember protoMember) {
+    checkNotNull(protoMember, "protoMember");
+    return map.get(protoMember);
   }
 
   /**
@@ -88,8 +78,8 @@ public final class Options {
   public boolean optionMatches(String namePattern, String valuePattern) {
     Matcher nameMatcher = Pattern.compile(namePattern).matcher("");
     Matcher valueMatcher = Pattern.compile(valuePattern).matcher("");
-    for (Map.Entry<Field, Object> entry : map.entrySet()) {
-      if (nameMatcher.reset(entry.getKey().qualifiedName()).matches()
+    for (Map.Entry<ProtoMember, Object> entry : map.entrySet()) {
+      if (nameMatcher.reset(entry.getKey().member()).matches()
           && valueMatcher.reset(String.valueOf(entry.getValue())).matches()) {
         return true;
       }
@@ -98,9 +88,9 @@ public final class Options {
   }
 
   void link(Linker linker) {
-    ImmutableMap<Field, Object> map = ImmutableMap.of();
+    ImmutableMap<ProtoMember, Object> map = ImmutableMap.of();
     for (OptionElement option : optionElements) {
-      Map<Field, Object> canonicalOption = canonicalizeOption(linker, optionType, option);
+      Map<ProtoMember, Object> canonicalOption = canonicalizeOption(linker, optionType, option);
       if (canonicalOption != null) {
         map = union(linker, map, canonicalOption);
       }
@@ -109,7 +99,7 @@ public final class Options {
     this.map = map;
   }
 
-  Map<Field, Object> canonicalizeOption(
+  Map<ProtoMember, Object> canonicalizeOption(
       Linker linker, ProtoType extensionType, OptionElement option) {
     Type type = linker.get(extensionType);
     if (!(type instanceof MessageType)) {
@@ -139,11 +129,13 @@ public final class Options {
       field = extensionsForType.get(path[0]);
     }
 
-    Map<Field, Object> result = new LinkedHashMap<>();
-    Map<Field, Object> last = result;
+    Map<ProtoMember, Object> result = new LinkedHashMap<>();
+    Map<ProtoMember, Object> last = result;
+    ProtoType lastProtoType = messageType.name();
     for (int i = 1; i < path.length; i++) {
-      Map<Field, Object> nested = new LinkedHashMap<>();
-      last.put(field, nested);
+      Map<ProtoMember, Object> nested = new LinkedHashMap<>();
+      last.put(ProtoMember.get(lastProtoType, field), nested);
+      lastProtoType = field.type();
       last = nested;
       field = linker.dereference(field, path[i]);
       if (field == null) {
@@ -151,7 +143,8 @@ public final class Options {
       }
     }
 
-    last.put(field, canonicalizeValue(linker, field, option.value()));
+    last.put(ProtoMember.get(lastProtoType, field),
+        canonicalizeValue(linker, field, option.value()));
     return result;
   }
 
@@ -187,26 +180,28 @@ public final class Options {
 
   private Object canonicalizeValue(Linker linker, Field context, Object value) {
     if (value instanceof OptionElement) {
-      ImmutableMap.Builder<Field, Object> result = ImmutableMap.builder();
+      ImmutableMap.Builder<ProtoMember, Object> result = ImmutableMap.builder();
       OptionElement option = (OptionElement) value;
       Field field = linker.dereference(context, option.name());
       if (field == null) {
         linker.addError("unable to resolve option %s on %s", option.name(), context.type());
       } else {
-        result.put(field, canonicalizeValue(linker, field, option.value()));
+        ProtoMember protoMember = ProtoMember.get(context.type(), field);
+        result.put(protoMember, canonicalizeValue(linker, field, option.value()));
       }
       return coerceValueForField(context, result.build());
     }
 
     if (value instanceof Map) {
-      ImmutableMap.Builder<Field, Object> result = ImmutableMap.builder();
+      ImmutableMap.Builder<ProtoMember, Object> result = ImmutableMap.builder();
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
         String name = (String) entry.getKey();
         Field field = linker.dereference(context, name);
         if (field == null) {
           linker.addError("unable to resolve option %s on %s", name, context.type());
         } else {
-          result.put(field, canonicalizeValue(linker, field, entry.getValue()));
+          ProtoMember protoMember = ProtoMember.get(context.type(), field);
+          result.put(protoMember, canonicalizeValue(linker, field, entry.getValue()));
         }
       }
       return coerceValueForField(context, result.build());
@@ -241,17 +236,17 @@ public final class Options {
     if (a instanceof List) {
       return union((List<?>) a, (List<?>) b);
     } else if (a instanceof Map) {
-      return union(linker, (Map<Field, Object>) a, (Map<Field, Object>) b);
+      return union(linker, (Map<ProtoMember, Object>) a, (Map<ProtoMember, Object>) b);
     } else {
       linker.addError("conflicting options: %s, %s", a, b);
       return a; // Just return any placeholder.
     }
   }
 
-  private ImmutableMap<Field, Object> union(
-      Linker linker, Map<Field, Object> a, Map<Field, Object> b) {
-    Map<Field, Object> result = new LinkedHashMap<>(a);
-    for (Map.Entry<Field, Object> entry : b.entrySet()) {
+  private ImmutableMap<ProtoMember, Object> union(
+      Linker linker, Map<ProtoMember, Object> a, Map<ProtoMember, Object> b) {
+    Map<ProtoMember, Object> result = new LinkedHashMap<>(a);
+    for (Map.Entry<ProtoMember, Object> entry : b.entrySet()) {
       Object aValue = result.get(entry.getKey());
       Object bValue = entry.getValue();
       Object union = aValue != null ? union(linker, aValue, bValue) : bValue;
@@ -264,18 +259,18 @@ public final class Options {
     return ImmutableList.builder().addAll(a).addAll(b).build();
   }
 
-  Multimap<ProtoType, Field> fields() {
-    Multimap<ProtoType, Field> result = LinkedHashMultimap.create();
+  Multimap<ProtoType, ProtoMember> fields() {
+    Multimap<ProtoType, ProtoMember> result = LinkedHashMultimap.create();
     gatherFields(result, optionType, map);
     return result;
   }
 
-  private void gatherFields(Multimap<ProtoType, Field> sink, ProtoType type, Object o) {
+  private void gatherFields(Multimap<ProtoType, ProtoMember> sink, ProtoType type, Object o) {
     if (o instanceof Map) {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) o).entrySet()) {
-        Field field = (Field) entry.getKey();
-        sink.put(type, field);
-        gatherFields(sink, field.type(), entry.getValue());
+        ProtoMember protoMember = (ProtoMember) entry.getKey();
+        sink.put(type, protoMember);
+        gatherFields(sink, protoMember.type(), entry.getValue());
       }
     } else if (o instanceof List) {
       for (Object e : (List) o) {
@@ -284,38 +279,39 @@ public final class Options {
     }
   }
 
-  Options retainAll(MarkSet markSet) {
+  Options retainAll(Schema schema, MarkSet markSet) {
     if (map.isEmpty()) return this; // Nothing to prune.
     Options result = new Options(optionType, optionElements);
-    Object mapOrNull = retainAll(markSet, optionType, map);
+    Object mapOrNull = retainAll(schema, markSet, optionType, map);
     result.map = mapOrNull != null
-        ? (ImmutableMap<Field, Object>) mapOrNull
-        : ImmutableMap.<Field, Object>of();
+        ? (ImmutableMap<ProtoMember, Object>) mapOrNull
+        : ImmutableMap.<ProtoMember, Object>of();
     return result;
   }
 
   /** Returns an object of the same type as {@code o}, or null if it is not retained. */
-  private Object retainAll(MarkSet markSet, ProtoType type, Object o) {
+  private Object retainAll(Schema schema, MarkSet markSet, ProtoType type, Object o) {
     if (!markSet.contains(type)) {
       return null; // Prune this type.
 
     } else if (o instanceof Map) {
-      ImmutableMap.Builder<Field, Object> builder = ImmutableMap.builder();
+      ImmutableMap.Builder<ProtoMember, Object> builder = ImmutableMap.builder();
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) o).entrySet()) {
-        Field field = (Field) entry.getKey();
-        if (!markSet.contains(type, field.name())) continue; // Prune this field.
-        Object retainedValue = retainAll(markSet, field.type(), entry.getValue());
+        ProtoMember protoMember = (ProtoMember) entry.getKey();
+        if (!markSet.contains(protoMember)) continue; // Prune this field.
+        Field field = schema.getField(protoMember);
+        Object retainedValue = retainAll(schema, markSet, field.type(), entry.getValue());
         if (retainedValue != null) {
-          builder.put(field, retainedValue); // This retained field is non-empty.
+          builder.put(protoMember, retainedValue); // This retained field is non-empty.
         }
       }
-      ImmutableMap<Field, Object> map = builder.build();
+      ImmutableMap<ProtoMember, Object> map = builder.build();
       return !map.isEmpty() ? map : null;
 
     } else if (o instanceof List) {
       ImmutableList.Builder<Object> builder = ImmutableList.builder();
       for (Object value : ((List) o)) {
-        Object retainedValue = retainAll(markSet, type, value);
+        Object retainedValue = retainAll(schema, markSet, type, value);
         if (retainedValue != null) {
           builder.add(retainedValue); // This retained value is non-empty.
         }

@@ -96,7 +96,7 @@ public final class Service {
     }
   }
 
-  Service retainAll(MarkSet markSet) {
+  Service retainAll(Schema schema, MarkSet markSet) {
     // If this service is not retained, prune it.
     if (!markSet.contains(protoType)) {
       return null;
@@ -104,12 +104,13 @@ public final class Service {
 
     ImmutableList.Builder<Rpc> retainedRpcs = ImmutableList.builder();
     for (Rpc rpc : rpcs) {
-      Rpc retainedRpc = rpc.retainAll(markSet);
+      Rpc retainedRpc = rpc.retainAll(schema, markSet);
       if (retainedRpc != null && markSet.contains(protoType, rpc.name())) {
         retainedRpcs.add(retainedRpc);
       }
     }
 
-    return new Service(protoType, element, retainedRpcs.build(), options.retainAll(markSet));
+    return new Service(protoType, element, retainedRpcs.build(),
+        options.retainAll(schema, markSet));
   }
 }

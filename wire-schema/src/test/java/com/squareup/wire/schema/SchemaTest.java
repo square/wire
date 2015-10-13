@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.squareup.wire.schema.internal.Util;
 import org.junit.Test;
 
+import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -260,14 +261,14 @@ public final class SchemaTest {
     MessageType message = (MessageType) schema.getType("Message");
 
     Options aOptions = message.field("a").options();
-    assertThat(aOptions.get("color")).isNull();
-    assertThat(aOptions.get("deprecated")).isNull();
-    assertThat(aOptions.get("packed")).isNull();
+    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isNull();
+    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isNull();
+    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isNull();
 
     Options bOptions = message.field("b").options();
-    assertThat(bOptions.get("color")).isEqualTo("red");
-    assertThat(bOptions.get("deprecated")).isEqualTo("true");
-    assertThat(bOptions.get("packed")).isEqualTo("true");
+    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isEqualTo("red");
+    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isEqualTo("true");
+    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isEqualTo("true");
   }
 
   @Test public void duplicateOption() throws Exception {

@@ -115,10 +115,10 @@ public final class ProtoFile {
   }
 
   /** Returns a new proto file that omits types and services not in {@code identifiers}. */
-  ProtoFile retainAll(MarkSet markSet) {
+  ProtoFile retainAll(Schema schema, MarkSet markSet) {
     ImmutableList.Builder<Type> retainedTypes = ImmutableList.builder();
     for (Type type : types) {
-      Type retainedType = type.retainAll(markSet);
+      Type retainedType = type.retainAll(schema, markSet);
       if (retainedType != null) {
         retainedTypes.add(retainedType);
       }
@@ -126,14 +126,14 @@ public final class ProtoFile {
 
     ImmutableList.Builder<Service> retainedServices = ImmutableList.builder();
     for (Service service : services) {
-      Service retainedService = service.retainAll(markSet);
+      Service retainedService = service.retainAll(schema, markSet);
       if (retainedService != null) {
         retainedServices.add(retainedService);
       }
     }
 
     return new ProtoFile(element, retainedTypes.build(), retainedServices.build(),
-        extendList, options.retainAll(markSet));
+        extendList, options.retainAll(schema, markSet));
   }
 
   @Override public String toString() {
