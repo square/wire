@@ -45,11 +45,9 @@ public final class OptionsTest {
         .add("google/protobuf/descriptor.proto")
         .build();
 
-    Field fooOptions = extensionField(schema, "foo_options");
-
-    MessageType fooOptionsType = (MessageType) schema.getType("FooOptions");
-    Field opt1 = fooOptionsType.field("opt1");
-    Field opt2 = fooOptionsType.field("opt2");
+    ProtoMember fooOptions = ProtoMember.get(Options.FIELD_OPTIONS, "foo_options");
+    ProtoMember opt1 = ProtoMember.get(ProtoType.get("FooOptions"), "opt1");
+    ProtoMember opt2 = ProtoMember.get(ProtoType.get("FooOptions"), "opt2");
 
     MessageType bar = (MessageType) schema.getType("Bar");
     assertThat(bar.field("a").options().map()).isEqualTo(ImmutableMap.of(
@@ -100,10 +98,11 @@ public final class OptionsTest {
             + "}\n")
         .add("google/protobuf/descriptor.proto")
         .build();
-    Field moreOptions = extensionField(schema, "a.b.more_options");
-    Field evenMoreOptions = extensionField(schema, "a.c.even_more_options");
-    Field stringOption = ((MessageType) schema.getType("a.c.EvenMoreOptions"))
-        .field("string_option");
+    ProtoType moreOptionsType = ProtoType.get("a.b.MoreOptions");
+    ProtoType evenMoreOptionsType = ProtoType.get("a.c.EvenMoreOptions");
+    ProtoMember moreOptions = ProtoMember.get(Options.MESSAGE_OPTIONS, "a.b.more_options");
+    ProtoMember evenMoreOptions = ProtoMember.get(moreOptionsType, "a.c.even_more_options");
+    ProtoMember stringOption = ProtoMember.get(evenMoreOptionsType, "string_option");
     MessageType message = (MessageType) schema.getType("a.d.Message");
     assertThat(message.options().map()).isEqualTo(
         ImmutableMap.of(moreOptions, ImmutableMap.of(
@@ -135,16 +134,5 @@ public final class OptionsTest {
 
   private Set<String> set(String... elements) {
     return new LinkedHashSet<>(asList(elements));
-  }
-
-  private Field extensionField(Schema schema, String qualifiedName) {
-    for (ProtoFile protoFile : schema.protoFiles()) {
-      for (Extend extend : protoFile.extendList()) {
-        for (Field field : extend.fields()) {
-          if (field.qualifiedName().equals(qualifiedName)) return field;
-        }
-      }
-    }
-    return null;
   }
 }

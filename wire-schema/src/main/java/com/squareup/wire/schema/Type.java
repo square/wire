@@ -32,10 +32,10 @@ public abstract class Type {
   public abstract String documentation();
   public abstract Options options();
   public abstract ImmutableList<Type> nestedTypes();
-  abstract void validate(Linker linker);
   abstract void link(Linker linker);
   abstract void linkOptions(Linker linker);
-  abstract Type retainAll(MarkSet markSet);
+  abstract void validate(Linker linker);
+  abstract Type retainAll(Schema schema, MarkSet markSet);
 
   static Type get(String packageName, ProtoType protoType, TypeElement type) {
     if (type instanceof EnumElement) {

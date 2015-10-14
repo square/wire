@@ -20,6 +20,8 @@ import java.util.Map;
 import org.junit.Test;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
+import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
+import static com.squareup.wire.schema.Options.MESSAGE_OPTIONS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class PrunerTest {
@@ -484,8 +486,8 @@ public final class PrunerTest {
         .exclude("google.protobuf.FieldOptions#b")
         .build());
     Field field = ((MessageType) pruned.getType("Message")).field("f");
-    assertThat(field.options().get("a")).isEqualTo("a");
-    assertThat(field.options().get("b")).isNull();
+    assertThat(field.options().get(ProtoMember.get(FIELD_OPTIONS, "a"))).isEqualTo("a");
+    assertThat(field.options().get(ProtoMember.get(FIELD_OPTIONS, "b"))).isNull();
   }
 
   @Test public void excludedTypePrunesTopLevelOption() throws Exception {
@@ -508,9 +510,9 @@ public final class PrunerTest {
         .exclude("SomeFieldOptions")
         .build());
     Field field = ((MessageType) pruned.getType("Message")).field("f");
-    Map<Field, Object> map = field.options().map();
+    Map<ProtoMember, Object> map = field.options().map();
     Map.Entry<?, ?> onlyOption = getOnlyElement(map.entrySet());
-    assertThat(((Field) onlyOption.getKey()).name()).isEqualTo("b");
+    assertThat(((ProtoMember) onlyOption.getKey()).member()).isEqualTo("b");
     assertThat(onlyOption.getValue()).isEqualTo("b");
   }
 
@@ -534,9 +536,10 @@ public final class PrunerTest {
         .exclude("SomeFieldOptions#b")
         .build());
     Field field = ((MessageType) pruned.getType("Message")).field("f");
-    Map<?, ?> map = (Map<?, ?>) field.options().get("some_field_options");
+    Map<?, ?> map = (Map<?, ?>) field.options().get(
+        ProtoMember.get(FIELD_OPTIONS, "some_field_options"));
     Map.Entry<?, ?> onlyOption = getOnlyElement(map.entrySet());
-    assertThat(((Field) onlyOption.getKey()).name()).isEqualTo("a");
+    assertThat(((ProtoMember) onlyOption.getKey()).member()).isEqualTo("a");
     assertThat(onlyOption.getValue()).isEqualTo("a");
   }
 
@@ -569,9 +572,9 @@ public final class PrunerTest {
         .exclude("Dimensions")
         .build());
     Field field = ((MessageType) pruned.getType("Message")).field("f");
-    Map<Field, Object> map = field.options().map();
+    Map<ProtoMember, Object> map = field.options().map();
     Map.Entry<?, ?> onlyOption = getOnlyElement(map.entrySet());
-    assertThat(((Field) onlyOption.getKey()).name()).isEqualTo("b");
+    assertThat(((ProtoMember) onlyOption.getKey()).member()).isEqualTo("b");
     assertThat(onlyOption.getValue()).isEqualTo("b");
   }
 
@@ -616,7 +619,8 @@ public final class PrunerTest {
         .exclude("google.protobuf.MessageOptions#a")
         .build());
     MessageType message = (MessageType) pruned.getType("Message");
-    assertThat(message.options().get("a")).isNull();
-    assertThat(message.options().get("b")).isEqualTo(ImmutableList.of("b1", "b2"));
+    assertThat(message.options().get(ProtoMember.get(MESSAGE_OPTIONS, "a"))).isNull();
+    assertThat(message.options().get(ProtoMember.get(MESSAGE_OPTIONS, "b")))
+        .isEqualTo(ImmutableList.of("b1", "b2"));
   }
 }

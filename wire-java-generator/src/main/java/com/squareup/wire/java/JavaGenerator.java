@@ -48,6 +48,7 @@ import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
 import com.squareup.wire.schema.Options;
 import com.squareup.wire.schema.ProtoFile;
+import com.squareup.wire.schema.ProtoMember;
 import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
@@ -66,6 +67,10 @@ import java.util.Set;
 import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.squareup.wire.schema.Options.ENUM_OPTIONS;
+import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
+import static com.squareup.wire.schema.Options.FILE_OPTIONS;
+import static com.squareup.wire.schema.Options.MESSAGE_OPTIONS;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -79,9 +84,10 @@ import static javax.lang.model.element.Modifier.STATIC;
  * java.lang.String}, or {@code com.squareup.protos.person.Person}).
  */
 public final class JavaGenerator {
-  static final ProtoType FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions");
-  static final ProtoType ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions");
-  static final ProtoType MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions");
+  static final ProtoMember JAVA_PACKAGE = ProtoMember.get(FILE_OPTIONS, "java_package");
+  static final ProtoMember DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated");
+  static final ProtoMember PACKED = ProtoMember.get(FIELD_OPTIONS, "packed");
+
   static final ClassName BYTE_STRING = ClassName.get(ByteString.class);
   static final ClassName STRING = ClassName.get(String.class);
   static final ClassName LIST = ClassName.get(List.class);
@@ -244,7 +250,7 @@ public final class JavaGenerator {
   }
 
   private static String javaPackage(ProtoFile protoFile) {
-    Object javaPackageOption = protoFile.options().get("java_package");
+    Object javaPackageOption = protoFile.options().get(JAVA_PACKAGE);
     if (javaPackageOption != null) {
       return String.valueOf(javaPackageOption);
     } else if (protoFile.packageName() != null) {
@@ -318,12 +324,13 @@ public final class JavaGenerator {
     constructorBuilder.addParameter(TypeName.INT, "value");
 
     // Enum constant options, each of which requires a constructor parameter and a field.
-    ImmutableList<Field> allOptionFields = ImmutableList.of();
+    ImmutableList<ProtoMember> allOptionMembers = ImmutableList.of();
     if (emitOptions) {
-      Set<Field> allOptionFieldsBuilder = new LinkedHashSet<>();
+      Set<ProtoMember> allOptionFieldsBuilder = new LinkedHashSet<>();
       for (EnumConstant constant : type.constants()) {
-        for (Field optionField : constant.options().map().keySet()) {
-          if (allOptionFieldsBuilder.add(optionField)) {
+        for (ProtoMember protoMember : constant.options().map().keySet()) {
+          Field optionField = schema.getField(protoMember);
+          if (allOptionFieldsBuilder.add(protoMember)) {
             TypeName optionJavaType = typeName(optionField.type());
             builder.addField(optionJavaType, optionField.name(), PUBLIC, FINAL);
             constructorBuilder.addParameter(optionJavaType, optionField.name());
@@ -331,9 +338,9 @@ public final class JavaGenerator {
           }
         }
       }
-      allOptionFields = ImmutableList.copyOf(allOptionFieldsBuilder);
+      allOptionMembers = ImmutableList.copyOf(allOptionFieldsBuilder);
     }
-    String enumArgsFormat = "$L" + Strings.repeat(", $L", allOptionFields.size());
+    String enumArgsFormat = "$L" + Strings.repeat(", $L", allOptionMembers.size());
     builder.addMethod(constructorBuilder.build());
 
     MethodSpec.Builder fromValueBuilder = MethodSpec.methodBuilder("fromValue")
@@ -344,13 +351,14 @@ public final class JavaGenerator {
         .beginControlFlow("switch (value)");
 
     for (EnumConstant constant : type.constants()) {
-      Object[] enumArgs = new Object[allOptionFields.size() + 1];
+      Object[] enumArgs = new Object[allOptionMembers.size() + 1];
       enumArgs[0] = constant.tag();
-      for (int i = 0; i < allOptionFields.size(); i++) {
-        Field key = allOptionFields.get(i);
-        Object value = constant.options().map().get(key);
+      for (int i = 0; i < allOptionMembers.size(); i++) {
+        ProtoMember protoMember = allOptionMembers.get(i);
+        Field field = schema.getField(protoMember);
+        Object value = constant.options().map().get(protoMember);
         enumArgs[i + 1] = value != null
-            ? fieldInitializer(key.type(), value)
+            ? fieldInitializer(field.type(), value)
             : null;
       }
 
@@ -737,16 +745,14 @@ public final class JavaGenerator {
     initializer.add("$[new $T.Builder()", optionsJavaType);
 
     boolean empty = true;
-    for (Map.Entry<Field, ?> entry : options.map().entrySet()) {
-      Field extensionRoot = entry.getKey();
-      if (extensionRoot.name().equals("default")
-          || extensionRoot.name().equals("deprecated")
-          || extensionRoot.name().equals("packed")) {
-        continue; // TODO(jwilson): also check that the declaring types match.
+    for (Map.Entry<ProtoMember, ?> entry : options.map().entrySet()) {
+      if (entry.getKey().equals(DEPRECATED) || entry.getKey().equals(PACKED)) {
+        continue;
       }
 
-      initializer.add("\n.$L($L)", fieldName(optionsType, extensionRoot),
-          fieldInitializer(extensionRoot.type(), entry.getValue()));
+      Field optionField = schema.getField(entry.getKey());
+      initializer.add("\n.$L($L)", fieldName(optionsType, optionField),
+          fieldInitializer(optionField.type(), entry.getValue()));
       empty = false;
     }
     initializer.add("\n.build()$]");
@@ -1190,7 +1196,8 @@ public final class JavaGenerator {
       CodeBlock.Builder builder = CodeBlock.builder();
       builder.add("new $T.Builder()", javaType);
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-        Field field = (Field) entry.getKey();
+        ProtoMember protoMember = (ProtoMember) entry.getKey();
+        Field field = schema.getField(protoMember);
         CodeBlock valueInitializer = fieldInitializer(field.type(), entry.getValue());
         builder.add("\n$>$>.$L($L)$<$<", fieldName(type, field), valueInitializer);
       }

@@ -19,7 +19,12 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.FieldElement;
 import java.util.Collection;
 
+import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
+
 public final class Field {
+  static final ProtoMember DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated");
+  static final ProtoMember PACKED = ProtoMember.get(FIELD_OPTIONS, "packed");
+
   private final String packageName;
   private final FieldElement element;
   private final boolean extension;
@@ -88,15 +93,25 @@ public final class Field {
   }
 
   public boolean isDeprecated() {
-    return "true".equals(options().get("deprecated"));
+    return "true".equals(options().get(DEPRECATED));
   }
 
   public boolean isPacked() {
-    return "true".equals(options().get("packed"));
+    return "true".equals(options().get(PACKED));
   }
 
   public String getDefault() {
     return element.defaultValue();
+  }
+
+  private boolean isPackable(Linker linker, ProtoType type) {
+    return !type.equals(ProtoType.STRING)
+        && !type.equals(ProtoType.BYTES)
+        && !(linker.get(type) instanceof MessageType);
+  }
+
+  public boolean isExtension() {
+    return extension;
   }
 
   void link(Linker linker) {
@@ -107,10 +122,6 @@ public final class Field {
   void linkOptions(Linker linker) {
     linker = linker.withContext(this);
     options.link(linker);
-  }
-
-  @Override public String toString() {
-    return name();
   }
 
   void validate(Linker linker) {
@@ -124,34 +135,28 @@ public final class Field {
     linker.validateImport(location(), type);
   }
 
-  private boolean isPackable(Linker linker, ProtoType type) {
-    return !type.equals(ProtoType.STRING)
-        && !type.equals(ProtoType.BYTES)
-        && !(linker.get(type) instanceof MessageType);
-  }
-
-  public boolean isExtension() {
-    return extension;
-  }
-
-  Field retainAll(MarkSet markSet) {
+  Field retainAll(Schema schema, MarkSet markSet) {
     if (!markSet.contains(type)) return null;
 
-    Field result = new Field(packageName, element, options.retainAll(markSet), extension);
+    Field result = new Field(packageName, element, options.retainAll(schema, markSet), extension);
     result.type = type;
     return result;
   }
 
   static ImmutableList<Field> retainAll(
-      MarkSet markSet, ProtoType enclosingType, Collection<Field> fields) {
+      Schema schema, MarkSet markSet, ProtoType enclosingType, Collection<Field> fields) {
     ImmutableList.Builder<Field> result = ImmutableList.builder();
     for (Field field : fields) {
-      Field retainedField = field.retainAll(markSet);
+      Field retainedField = field.retainAll(schema, markSet);
       if (retainedField != null && markSet.contains(enclosingType, field.name())) {
         result.add(retainedField);
       }
     }
     return result.build();
+  }
+
+  @Override public String toString() {
+    return name();
   }
 
   public enum Label {

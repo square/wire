@@ -159,19 +159,8 @@ public final class MessageType extends Type {
     return extensionsForType;
   }
 
-  void validate(Linker linker) {
-    linker = linker.withContext(this);
-    linker.validateFields(fieldsAndOneOfFields());
-    linker.validateEnumConstantNameUniqueness(nestedTypes);
-    for (Field field : fieldsAndOneOfFields()) {
-      field.validate(linker);
-    }
-    for (Type type : nestedTypes) {
-      type.validate(linker);
-    }
-    for (Extensions extensions : extensionsList) {
-      extensions.validate(linker);
-    }
+  void addExtensionFields(ImmutableList<Field> fields) {
+    extensionFields.addAll(fields);
   }
 
   void link(Linker linker) {
@@ -207,10 +196,25 @@ public final class MessageType extends Type {
     options.link(linker);
   }
 
-  @Override Type retainAll(MarkSet markSet) {
+  void validate(Linker linker) {
+    linker = linker.withContext(this);
+    linker.validateFields(fieldsAndOneOfFields());
+    linker.validateEnumConstantNameUniqueness(nestedTypes);
+    for (Field field : fieldsAndOneOfFields()) {
+      field.validate(linker);
+    }
+    for (Type type : nestedTypes) {
+      type.validate(linker);
+    }
+    for (Extensions extensions : extensionsList) {
+      extensions.validate(linker);
+    }
+  }
+
+  @Override Type retainAll(Schema schema, MarkSet markSet) {
     ImmutableList.Builder<Type> retainedNestedTypesBuilder = ImmutableList.builder();
     for (Type nestedType : nestedTypes) {
-      Type retainedNestedType = nestedType.retainAll(markSet);
+      Type retainedNestedType = nestedType.retainAll(schema, markSet);
       if (retainedNestedType != null) {
         retainedNestedTypesBuilder.add(retainedNestedType);
       }
@@ -224,19 +228,16 @@ public final class MessageType extends Type {
 
     ImmutableList.Builder<OneOf> retainedOneOfsBuilder = ImmutableList.builder();
     for (OneOf oneOf : oneOfs) {
-      OneOf retainedOneOf = oneOf.retainAll(markSet, protoType);
+      OneOf retainedOneOf = oneOf.retainAll(schema, markSet, protoType);
       if (retainedOneOf != null) {
         retainedOneOfsBuilder.add(retainedOneOf);
       }
     }
     ImmutableList<OneOf> retainedOneOfs = retainedOneOfsBuilder.build();
 
-    return new MessageType(protoType, element, Field.retainAll(markSet, protoType, declaredFields),
-        Field.retainAll(markSet, protoType, extensionFields), retainedOneOfs, retainedNestedTypes,
-        extensionsList, options.retainAll(markSet));
-  }
-
-  void addExtensionFields(ImmutableList<Field> fields) {
-    extensionFields.addAll(fields);
+    return new MessageType(protoType, element,
+        Field.retainAll(schema, markSet, protoType, declaredFields),
+        Field.retainAll(schema, markSet, protoType, extensionFields), retainedOneOfs,
+        retainedNestedTypes, extensionsList, options.retainAll(schema, markSet));
   }
 }

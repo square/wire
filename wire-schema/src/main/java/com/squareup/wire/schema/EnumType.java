@@ -22,7 +22,11 @@ import com.squareup.wire.schema.internal.parser.EnumElement;
 import java.util.Collection;
 import java.util.Map;
 
+import static com.squareup.wire.schema.Options.ENUM_OPTIONS;
+
 public final class EnumType extends Type {
+  static final ProtoMember ALLOW_ALIAS = ProtoMember.get(ENUM_OPTIONS, "allow_alias");
+
   private final ProtoType protoType;
   private final EnumElement element;
   private final ImmutableList<EnumConstant> constants;
@@ -80,10 +84,20 @@ public final class EnumType extends Type {
     return constants;
   }
 
+  @Override void link(Linker linker) {
+  }
+
+  @Override void linkOptions(Linker linker) {
+    options.link(linker);
+    for (EnumConstant constant : constants) {
+      constant.linkOptions(linker);
+    }
+  }
+
   @Override void validate(Linker linker) {
     linker = linker.withContext(this);
 
-    if (!"true".equals(options.get("allow_alias"))) {
+    if (!"true".equals(options.get(ALLOW_ALIAS))) {
       validateTagUniqueness(linker);
     }
   }
@@ -108,27 +122,18 @@ public final class EnumType extends Type {
     }
   }
 
-  @Override void link(Linker linker) {
-  }
-
-  @Override void linkOptions(Linker linker) {
-    options.link(linker);
-    for (EnumConstant constant : constants) {
-      constant.linkOptions(linker);
-    }
-  }
-
-  @Override Type retainAll(MarkSet markSet) {
+  @Override Type retainAll(Schema schema, MarkSet markSet) {
     // If this type is not retained, prune it.
     if (!markSet.contains(protoType)) return null;
 
     ImmutableList.Builder<EnumConstant> retainedConstants = ImmutableList.builder();
     for (EnumConstant constant : constants) {
       if (markSet.contains(protoType, constant.name())) {
-        retainedConstants.add(constant.retainAll(markSet));
+        retainedConstants.add(constant.retainAll(schema, markSet));
       }
     }
 
-    return new EnumType(protoType, element, retainedConstants.build(), options.retainAll(markSet));
+    return new EnumType(protoType, element, retainedConstants.build(),
+        options.retainAll(schema, markSet));
   }
 }

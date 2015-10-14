@@ -69,9 +69,9 @@ public final class Rpc {
     linker.validateImport(location(), responseType);
   }
 
-  Rpc retainAll(MarkSet markSet) {
+  Rpc retainAll(Schema schema, MarkSet markSet) {
     if (!markSet.contains(requestType) || !markSet.contains(responseType)) return null;
-    Rpc result = new Rpc(element, options.retainAll(markSet));
+    Rpc result = new Rpc(element, options.retainAll(schema, markSet));
     result.requestType = requestType;
     result.responseType = responseType;
     return result;
