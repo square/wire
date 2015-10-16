@@ -19,6 +19,7 @@ import com.squareup.javapoet.JavaFile;
 import java.nio.file.Path;
 
 interface WireLogger {
+  void setQuiet(boolean quiet);
   void artifact(Path outputPath, JavaFile javaFile);
   void info(String message);
 }

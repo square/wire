@@ -1,11 +1,9 @@
 package com.squareup.wire;
 
-import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 
@@ -16,7 +14,7 @@ public class CommandLineOptionsTest {
 
   @Test public void unknownArgumentFails() throws WireException {
     try {
-      new CommandLineOptions("--do-work");
+      WireCompiler.forArgs("--do-work");
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Unknown argument '--do-work'.");
@@ -24,40 +22,37 @@ public class CommandLineOptionsTest {
   }
 
   @Test public void protoPaths() throws Exception {
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.protoPaths).isEmpty();
+    WireCompiler compiler = WireCompiler.forArgs("--java_out=.");
+    assertThat(compiler.protoPaths).isEmpty();
 
-    options = new CommandLineOptions("--proto_path=foo/bar");
-    assertThat(options.protoPaths).containsOnly("foo/bar");
+    compiler = WireCompiler.forArgs("--java_out=.", "--proto_path=foo/bar");
+    assertThat(compiler.protoPaths).containsOnly("foo/bar");
 
-    List<String> paths = Arrays.asList("foo/bar", "one/two", "three/four");
-    String[] args = Lists.transform(paths, new com.google.common.base.Function<String, String>() {
-      @Override
-      public String apply(String s) {
-        return "--proto_path=" + s;
-      }
-    }).toArray(new String[0]);
-    options = new CommandLineOptions(args);
-    assertThat(options.protoPaths).containsExactlyElementsOf(paths);
+    compiler = WireCompiler.forArgs(
+        "--java_out=.", "--proto_path=foo/bar", "--proto_path=one/two", "--proto_path=three/four");
+    assertThat(compiler.protoPaths).containsExactly("foo/bar", "one/two", "three/four");
   }
 
   @Test public void javaOut() throws Exception{
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.javaOut).isNull();
+    try {
+      WireCompiler.forArgs();
+      fail();
+    } catch (WireException expected) {
+    }
 
-    options = new CommandLineOptions("--java_out=baz/qux");
-    assertThat(options.javaOut).isEqualTo("baz/qux");
+    WireCompiler compiler = WireCompiler.forArgs("--java_out=baz/qux");
+    assertThat(compiler.javaOut).isEqualTo("baz/qux");
   }
 
   @Test public void sourceFileNames() throws Exception {
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.sourceFileNames).isEmpty();
+    WireCompiler compiler = WireCompiler.forArgs("--java_out=.");
+    assertThat(compiler.sourceFileNames).isEmpty();
 
     List<String> expected = new ArrayList<>();
-    options = new CommandLineOptions("baz", "qux");
+    compiler = WireCompiler.forArgs("--java_out=.", "baz", "qux");
     expected.add("baz");
     expected.add("qux");
-    assertThat(options.sourceFileNames).isEqualTo(expected);
+    assertThat(compiler.sourceFileNames).isEqualTo(expected);
   }
 
   @Test public void sourceFileNamesFromInclude() throws Exception {
@@ -68,39 +63,41 @@ public class CommandLineOptionsTest {
       out.println("bar");
       out.close();
 
-      CommandLineOptions options = new CommandLineOptions("--files=" + tmpFile.getAbsolutePath());
+      WireCompiler compiler = WireCompiler.forArgs(
+          "--java_out=.", "--files=" + tmpFile.getAbsolutePath());
       List<String> expected = new ArrayList<>();
       expected.add("foo");
       expected.add("bar");
-      assertThat(options.sourceFileNames).isEqualTo(expected);
+      assertThat(compiler.sourceFileNames).isEqualTo(expected);
 
       // Test both --files and bare filenames together
-      options = new CommandLineOptions("--files=" + tmpFile.getAbsolutePath(), "baz");
+      compiler = WireCompiler.forArgs(
+          "--java_out=.", "--files=" + tmpFile.getAbsolutePath(), "baz");
       expected.add("baz");
-      assertThat(options.sourceFileNames).isEqualTo(expected);
+      assertThat(compiler.sourceFileNames).isEqualTo(expected);
     } finally {
       tmpFile.delete();
     }
   }
 
   @Test public void roots() throws Exception {
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.identifierSet.includesEverything()).isTrue();
-    assertThat(options.identifierSet.excludesNothing()).isTrue();
+    WireCompiler compiler = WireCompiler.forArgs("--java_out=.");
+    assertThat(compiler.identifierSet.includesEverything()).isTrue();
+    assertThat(compiler.identifierSet.excludesNothing()).isTrue();
 
-    options = new CommandLineOptions("--roots=com.example.foo");
-    assertThat(options.identifierSet.includes).containsExactly("com.example.foo");
+    compiler = WireCompiler.forArgs("--java_out=.", "--roots=com.example.foo");
+    assertThat(compiler.identifierSet.includes).containsExactly("com.example.foo");
 
-    options = new CommandLineOptions("--roots=com.example.foo,com.example.bar");
-    assertThat(options.identifierSet.includes)
+    compiler = WireCompiler.forArgs("--java_out=.", "--roots=com.example.foo,com.example.bar");
+    assertThat(compiler.identifierSet.includes)
         .containsExactly("com.example.foo", "com.example.bar");
   }
 
   @Test public void  emitOptions() throws Exception {
-    CommandLineOptions options = new CommandLineOptions();
-    assertThat(options.emitOptions).isTrue();
+    WireCompiler compiler = WireCompiler.forArgs("--java_out=.");
+    assertThat(compiler.emitOptions).isTrue();
 
-    options = new CommandLineOptions("--no_options");
-    assertThat(options.emitOptions).isFalse();
+    compiler = WireCompiler.forArgs("--java_out=.", "--no_options");
+    assertThat(compiler.emitOptions).isFalse();
   }
 }

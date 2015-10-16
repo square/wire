@@ -17,7 +17,6 @@ package com.squareup.wire;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
-import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.SchemaException;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -28,7 +27,6 @@ import okio.Source;
 import org.junit.Test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -40,16 +38,14 @@ public class WireCompilerErrorTest {
    * indexed by class name.
    */
   private void compile(String source) throws Exception {
-    CommandLineOptions options = new CommandLineOptions("/source",  "/target",
-        singletonList("test.proto"), new IdentifierSet.Builder().build(), true,
-        false, false, false, false);
-
     Path test = fileSystem.getPath("/source/test.proto");
     Files.createDirectory(fileSystem.getPath("/source"));
     Files.createDirectory(fileSystem.getPath("/target"));
     Files.write(test, source.getBytes(UTF_8));
 
-    new WireCompiler(options, fileSystem, new StringWireLogger(true)).compile();
+    WireCompiler compiler = WireCompiler.forArgs(fileSystem, new StringWireLogger(),
+        "--proto_path=/source", "--java_out=/target", "test.proto");
+    compiler.compile();
   }
 
   @Test public void testCorrect() throws Exception {
