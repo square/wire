@@ -451,7 +451,10 @@ public final class ProtoParser {
       subName = readName();
       c = readChar();
     }
-    if (c != keyValueSeparator) {
+    if (keyValueSeparator == ':' && c == '{') {
+      // In text format, values which are maps can omit a separator. Backtrack so it can be re-read.
+      pos--;
+    } else if (c != keyValueSeparator) {
       throw unexpected("expected '" + keyValueSeparator + "' in option");
     }
     OptionKindAndValue kindAndValue = readKindAndValue();
