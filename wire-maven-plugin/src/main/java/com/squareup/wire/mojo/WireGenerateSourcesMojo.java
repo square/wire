@@ -47,8 +47,11 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.noOptions")
   private boolean noOptions;
 
-  @Parameter(property = "wire.roots")
-  private String[] roots;
+  @Parameter(property = "wire.includes")
+  private String[] includes;
+
+  @Parameter(property = "wire.excludes")
+  private String[] excludes;
 
   @Parameter(property = "wire.serviceFactory")
   private String serviceFactory;
@@ -79,8 +82,9 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
       List<String> protoFilesList = Arrays.asList(protoFiles);
       Schema schema = loadSchema(directories, protoFilesList);
 
-      if (roots != null && roots.length > 0) {
-        schema = retainRoots(schema);
+      IdentifierSet identifierSet = identifierSet();
+      if (!identifierSet.includesEverything() || !identifierSet.excludesNothing()) {
+        schema = retainRoots(identifierSet, schema);
       }
 
       JavaGenerator javaGenerator = JavaGenerator.get(schema)
@@ -108,15 +112,24 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     }
   }
 
-  private Schema retainRoots(Schema schema) {
+  private IdentifierSet identifierSet() {
+    IdentifierSet.Builder identifierSetBuilder = new IdentifierSet.Builder();
+    if (includes != null) {
+      for (String identifier : includes) {
+        identifierSetBuilder.include(identifier);
+      }
+    }
+    if (excludes != null) {
+      for (String identifier : excludes) {
+        identifierSetBuilder.exclude(identifier);
+      }
+    }
+    return identifierSetBuilder.build();
+  }
+
+  private Schema retainRoots(IdentifierSet identifierSet, Schema schema) {
     Stopwatch stopwatch = Stopwatch.createStarted();
     int oldSize = countTypes(schema);
-
-    IdentifierSet.Builder identifierSetBuilder = new IdentifierSet.Builder();
-    for (String root : roots) {
-      identifierSetBuilder.include(root);
-    }
-    IdentifierSet identifierSet = identifierSetBuilder.build();
 
     Schema prunedSchema = schema.prune(identifierSet);
     int newSize = countTypes(prunedSchema);
