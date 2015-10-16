@@ -56,6 +56,36 @@ public final class OptionsTest {
         fooOptions, ImmutableMap.of(opt1, "456", opt2, "quux")));
   }
 
+  @Test public void textFormatCanOmitMapValueSeparator() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("foo.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "message FooOptions {\n"
+            + "  optional BarOptions bar = 2;\n"
+            + "}\n"
+            + "message BarOptions {\n"
+            + "  optional int32 baz = 2;\n"
+            + "}\n"
+            + "\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional FooOptions foo = 1234;\n"
+            + "}\n"
+            + "\n"
+            + "message Message {\n"
+            + "  optional int32 b = 2 [(foo) = { bar { baz: 123 } }];\n"
+            + "}\n")
+        .add("google/protobuf/descriptor.proto")
+        .build();
+
+    ProtoMember foo = ProtoMember.get(Options.FIELD_OPTIONS, "foo");
+    ProtoMember bar = ProtoMember.get(ProtoType.get("FooOptions"), "bar");
+    ProtoMember baz = ProtoMember.get(ProtoType.get("BarOptions"), "baz");
+
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.field("b").options().map()).isEqualTo(ImmutableMap.of(
+        foo, ImmutableMap.of(bar, ImmutableMap.of(baz, "123"))));
+  }
+
   @Test public void fullyQualifiedOptionFields() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("a/b/more_options.proto", ""
