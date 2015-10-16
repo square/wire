@@ -114,7 +114,9 @@ public final class SchemaLoader {
         Files.walkFileTree(entry.getValue(), new SimpleFileVisitor<Path>() {
           @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
               throws IOException {
-            protos.add(entry.getValue().relativize(file).toString());
+            if (file.getFileName().toString().endsWith(".proto")) {
+              protos.add(entry.getValue().relativize(file).toString());
+            }
             return FileVisitResult.CONTINUE;
           }
         });
