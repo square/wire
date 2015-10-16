@@ -37,6 +37,7 @@ public final class SchemaLoaderTest {
   @Test public void loadAllFilesWhenNoneSpecified() throws IOException {
     writeFile(tempFolder1.newFile("message1.proto"), "message Message1 {}");
     writeFile(tempFolder1.newFile("message2.proto"), "message Message2 {}");
+    writeFile(tempFolder1.newFile("readme.txt"), "Here be protos!");
 
     Schema schema = new SchemaLoader()
         .addSource(tempFolder1.getRoot())
