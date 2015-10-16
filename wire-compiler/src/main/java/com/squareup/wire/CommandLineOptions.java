@@ -28,6 +28,8 @@ final class CommandLineOptions {
   public static final String JAVA_OUT_FLAG = "--java_out=";
   public static final String FILES_FLAG = "--files=";
   public static final String ROOTS_FLAG = "--roots=";
+  public static final String INCLUDES_FLAG = "--includes=";
+  public static final String EXCLUDES_FLAG = "--excludes=";
   public static final String NO_OPTIONS_FLAG = "--no_options";
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
@@ -64,7 +66,8 @@ final class CommandLineOptions {
    * <pre>
    * java WireCompiler --proto_path=&lt;path&gt; --java_out=&lt;path&gt;
    *     [--files=&lt;protos.include&gt;]
-   *     [--roots=&lt;message_name&gt;[,&lt;message_name&gt;...]]
+   *     [--includes=&lt;message_name&gt;[,&lt;message_name&gt;...]]
+   *     [--excludes=&lt;message_name&gt;[,&lt;message_name&gt;...]]
    *     [--no_options]
    *     [--service_factory=&lt;class_name&gt;]
    *     [--service_factory_opt=&lt;value&gt;]
@@ -76,11 +79,10 @@ final class CommandLineOptions {
    *     [file [file...]]
    * </pre>
    *
-   * If the {@code --roots} flag is present, its argument must be a comma-separated list
+   * If the {@code --includes} flag is present, its argument must be a comma-separated list
    * of fully-qualified message or enum names. The output will be limited to those messages
-   * and enums that are (transitive) dependencies of the listed names.  If you are using
-   * {@code --service_factory} to generate an interface for a Service, your roots can also take the
-   * form 'fully.qualified.Service#MethodName` to limit what endpoints are generated.
+   * and enums that are (transitive) dependencies of the listed names. The {@code --excludes} flag
+   * excludes types, and takes precedence over {@code --includes}.
    * <p>
    * If the {@code --registry_class} flag is present, its argument must be a Java class name. A
    * class with the given name will be generated, containing a constant list of all extension
@@ -130,9 +132,14 @@ final class CommandLineOptions {
           throw new WireException("Error processing argument " + arg, ex);
         }
         sourceFileNames.addAll(Arrays.asList(fileNames));
-      } else if (arg.startsWith(ROOTS_FLAG)) {
-        for (String root : splitArg(arg, ROOTS_FLAG.length())) {
-          identifierSetBuilder.include(root);
+      } else if (arg.startsWith(INCLUDES_FLAG) || arg.startsWith(ROOTS_FLAG)) {
+        String prefix = arg.startsWith(INCLUDES_FLAG) ? INCLUDES_FLAG : ROOTS_FLAG;
+        for (String identifier : splitArg(arg, prefix.length())) {
+          identifierSetBuilder.include(identifier);
+        }
+      } else if (arg.startsWith(EXCLUDES_FLAG)) {
+        for (String identifier : splitArg(arg, EXCLUDES_FLAG.length())) {
+          identifierSetBuilder.exclude(identifier);
         }
       } else if (arg.equals(NO_OPTIONS_FLAG)) {
         emitOptions = false;
