@@ -459,8 +459,8 @@ public class WireCompilerTest {
     };
     testProtoWithRoots(sources, roots, outputs, extraArgs);
     assertThat(logger.getLog()).isEqualTo(""
-            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
-            + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
+        + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
+        + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
   }
 
   private void cleanup(File dir) {
@@ -513,10 +513,10 @@ public class WireCompilerTest {
   }
 
   private void invokeCompiler(String... args) throws Exception {
-    CommandLineOptions options = new CommandLineOptions(args);
-    logger = new StringWireLogger(options.quiet);
+    logger = new StringWireLogger();
     FileSystem fs = FileSystems.getDefault();
-    new WireCompiler(options, fs, logger).compile();
+    WireCompiler compiler = WireCompiler.forArgs(fs, logger, args);
+    compiler.compile();
   }
 
   private void assertFilesMatch(File outputDir, String path) throws IOException {
