@@ -35,7 +35,6 @@ public class WireCompilerTest {
   private File testDir;
 
   @Before public void setUp() {
-    System.out.println("cwd = " + new File(".").getAbsolutePath());
     testDir = makeTestDirectory("WireCompilerTest");
   }
 
@@ -43,7 +42,7 @@ public class WireCompilerTest {
     File dir = new File(path);
     dir.mkdir();
     cleanup(dir);
-    List<String> filesBefore = getAllFiles(dir);
+    List<String> filesBefore = getPaths(dir);
     assertThat(filesBefore).hasSize(0);
     return dir;
   }
@@ -66,7 +65,7 @@ public class WireCompilerTest {
     args.addAll(Arrays.asList(sources));
     invokeCompiler(args.toArray(new String[args.size()]));
 
-    List<String> filesAfter = getAllFiles(testDir);
+    List<String> filesAfter = getPaths(testDir);
     assertThat(filesAfter.size())
         .overridingErrorMessage(filesAfter.toString())
         .isEqualTo(outputs.length);
@@ -84,13 +83,13 @@ public class WireCompilerTest {
     args.addAll(Arrays.asList(sources));
     invokeCompiler(args.toArray(new String[args.size()]));
 
-    List<String> filesAfter = getAllFiles(testDir);
+    List<String> filesAfter = getPaths(testDir);
     assertThat(filesAfter.size())
         .overridingErrorMessage(filesAfter.toString())
         .isEqualTo(outputs.length);
 
     for (String output : outputs) {
-      assertFilesMatchAndroid(testDir, output);
+      assertFilesMatch(testDir, output, ".android");
     }
   }
 
@@ -102,13 +101,13 @@ public class WireCompilerTest {
     args.addAll(Arrays.asList(sources));
     invokeCompiler(args.toArray(new String[args.size()]));
 
-    List<String> filesAfter = getAllFiles(testDir);
+    List<String> filesAfter = getPaths(testDir);
     assertThat(filesAfter.size())
         .overridingErrorMessage(filesAfter.toString())
         .isEqualTo(outputs.length);
 
     for (String output : outputs) {
-      assertFilesMatchCompact(testDir, output);
+      assertFilesMatch(testDir, output, ".compact");
     }
   }
 
@@ -122,11 +121,11 @@ public class WireCompilerTest {
 
     invokeCompiler(args);
 
-    List<String> filesAfter = getAllFiles(testDir);
+    List<String> filesAfter = getPaths(testDir);
     assertThat(filesAfter).hasSize(outputs.length);
 
     for (String output : outputs) {
-      assertFilesMatchNoOptions(testDir, output);
+      assertFilesMatch(testDir, output, ".noOptions");
     }
   }
 
@@ -151,7 +150,7 @@ public class WireCompilerTest {
 
     invokeCompiler(args);
 
-    List<String> filesAfter = getAllFiles(testDir);
+    List<String> filesAfter = getPaths(testDir);
     assertThat(filesAfter.size())
         .overridingErrorMessage("Wrong number of files written")
         .isEqualTo(outputs.length);
@@ -367,6 +366,20 @@ public class WireCompilerTest {
     testProto(sources, outputs);
   }
 
+  @Test public void testExcludes() throws Exception {
+    invokeCompiler(
+        "--proto_path=../wire-runtime/src/test/proto",
+        "--java_out=" + testDir.getAbsolutePath(),
+        "--includes=" + "squareup.protos.roots.A",
+        "--excludes=" + "squareup.protos.roots.B",
+        "roots.proto");
+
+    List<String> filesAfter = getPaths(testDir);
+    assertThat(filesAfter).containsExactly(
+        "com/squareup/wire/protos/roots/A.java",
+        "com/squareup/wire/protos/roots/D.java");
+  }
+
   @Test public void testRootsA() throws Exception {
     String[] sources = {
         "roots.proto"
@@ -476,25 +489,30 @@ public class WireCompilerTest {
     }
   }
 
-  private List<String> getAllFiles(File root) {
-    List<String> files = new ArrayList<>();
-    getAllFilesHelper(root, files);
-    return files;
+  /** Returns all paths within {@code root}, and relative to {@code root}. */
+  private List<String> getPaths(File root) {
+    List<String> paths = new ArrayList<>();
+    getPathsRecursive(root.getAbsoluteFile(), "", paths);
+    return paths;
   }
 
-  private void getAllFilesHelper(File root, List<String> files) {
-    if (root.isFile()) {
-      files.add(root.getAbsolutePath());
-    }
-    File[] allFiles = root.listFiles();
-    if (allFiles != null) {
-      for (File f : allFiles) {
-        getAllFilesHelper(f, files);
+  private void getPathsRecursive(File base, String path, List<String> paths) {
+    File file = new File(base, path);
+
+    String[] children = file.list();
+    if (children == null) return;
+
+    for (String child : children) {
+      File childFile = new File(file, child);
+      if (childFile.isFile()) {
+        paths.add(path + child);
+      } else {
+        getPathsRecursive(base, path + child + "/", paths);
       }
     }
   }
 
-  private void invokeCompiler(String[] args) throws Exception {
+  private void invokeCompiler(String... args) throws Exception {
     CommandLineOptions options = new CommandLineOptions(args);
     logger = new StringWireLogger(options.quiet);
     FileSystem fs = FileSystems.getDefault();
@@ -507,33 +525,9 @@ public class WireCompilerTest {
     assertFilesMatch(expectedFile, actualFile);
   }
 
-  private void assertFilesMatchNoOptions(File outputDir, String path) throws IOException {
-    // Compare against file with .noOptions suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".noOptions");
-    if (expectedFile.exists()) {
-      System.out.println("Comparing against expected output " + expectedFile.getName());
-    } else {
-      expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
-    }
-    File actualFile = new File(outputDir, path);
-    assertFilesMatch(expectedFile, actualFile);
-  }
-
-  private void assertFilesMatchAndroid(File outputDir, String path) throws IOException {
-    // Compare against file with .android suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".android");
-    if (expectedFile.exists()) {
-      System.out.println("Comparing against expected output " + expectedFile.getName());
-    } else {
-      expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
-    }
-    File actualFile = new File(outputDir, path);
-    assertFilesMatch(expectedFile, actualFile);
-  }
-
-  private void assertFilesMatchCompact(File outputDir, String path) throws IOException {
+  private void assertFilesMatch(File outputDir, String path, String suffix) throws IOException {
     // Compare against file with .compact suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + ".compact");
+    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + suffix);
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
     } else {
