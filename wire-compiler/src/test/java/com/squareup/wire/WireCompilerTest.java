@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import okio.Okio;
 import okio.Source;
@@ -41,118 +41,18 @@ public class WireCompilerTest {
     testDir = temp.getRoot();
   }
 
-  private void testProto(String[] sources, String[] outputs) throws Exception {
-    List<String> args = new ArrayList<>();
-    args.add("--proto_path=../wire-runtime/src/test/proto");
-    args.add("--java_out=" + testDir.getAbsolutePath());
-    args.addAll(Arrays.asList(sources));
-    invokeCompiler(args.toArray(new String[args.size()]));
-
-    List<String> filesAfter = getPaths(testDir);
-    assertThat(filesAfter.size())
-        .overridingErrorMessage(filesAfter.toString())
-        .isEqualTo(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatch(testDir, output);
-    }
-  }
-
-  private void testProtoAndroid(String[] sources, String[] outputs) throws Exception {
-    List<String> args = new ArrayList<>();
-    args.add("--proto_path=../wire-runtime/src/test/proto");
-    args.add("--java_out=" + testDir.getAbsolutePath());
-    args.add("--android");
-    args.addAll(Arrays.asList(sources));
-    invokeCompiler(args.toArray(new String[args.size()]));
-
-    List<String> filesAfter = getPaths(testDir);
-    assertThat(filesAfter.size())
-        .overridingErrorMessage(filesAfter.toString())
-        .isEqualTo(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatch(testDir, output, ".android");
-    }
-  }
-
-  private void testProtoCompact(String[] sources, String[] outputs) throws Exception {
-    List<String> args = new ArrayList<>();
-    args.add("--proto_path=../wire-runtime/src/test/proto");
-    args.add("--java_out=" + testDir.getAbsolutePath());
-    args.add("--compact");
-    args.addAll(Arrays.asList(sources));
-    invokeCompiler(args.toArray(new String[args.size()]));
-
-    List<String> filesAfter = getPaths(testDir);
-    assertThat(filesAfter.size())
-        .overridingErrorMessage(filesAfter.toString())
-        .isEqualTo(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatch(testDir, output, ".compact");
-    }
-  }
-
-  private void testProtoNoOptions(String[] sources, String[] outputs) throws Exception {
-    int numFlags = 3;
-    String[] args = new String[numFlags + sources.length];
-    args[0] = "--proto_path=../wire-runtime/src/test/proto";
-    args[1] = "--no_options";
-    args[2] = "--java_out=" + testDir.getAbsolutePath();
-    System.arraycopy(sources, 0, args, numFlags, sources.length);
-
-    invokeCompiler(args);
-
-    List<String> filesAfter = getPaths(testDir);
-    assertThat(filesAfter).hasSize(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatch(testDir, output, ".noOptions");
-    }
-  }
-
-  private void testProtoWithRoots(String[] sources, String roots, String[] outputs)
-      throws Exception {
-    String[] extraArgs = {};
-    this.testProtoWithRoots(sources, roots, outputs, extraArgs);
-  }
-
-  private void testProtoWithRoots(
-      String[] sources, String roots, String[] outputs, String[] extraArgs) throws Exception {
-    int numFlags = 3;
-    String[] args = new String[numFlags + sources.length + extraArgs.length];
-    int index = 0;
-    args[index++] = "--proto_path=../wire-runtime/src/test/proto";
-    args[index++] = "--java_out=" + testDir.getAbsolutePath();
-    args[index++] = "--roots=" + roots;
-    for (int i = 0; i < extraArgs.length; i++) {
-      args[index++] = extraArgs[i];
-    }
-    System.arraycopy(sources, 0, args, index, sources.length);
-
-    invokeCompiler(args);
-
-    List<String> filesAfter = getPaths(testDir);
-    assertThat(filesAfter.size())
-        .overridingErrorMessage("Wrong number of files written")
-        .isEqualTo(outputs.length);
-
-    for (String output : outputs) {
-      assertFilesMatch(testDir, output);
-    }
-  }
-
   @Test public void testFooBar() throws Exception {
     String[] sources = {
         "foo.proto",
         "bar.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/foobar/protos/bar/Bar.java",
         "com/squareup/foobar/protos/foo/Foo.java"
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testDifferentPackageFooBar() throws Exception {
@@ -160,41 +60,49 @@ public class WireCompilerTest {
         "differentpackage/foo.proto",
         "differentpackage/bar.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/differentpackage/protos/bar/Bar.java",
         "com/squareup/differentpackage/protos/foo/Foo.java"
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testPerson() throws Exception {
     String[] sources = {
         "person.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/person/Person.java"
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testPersonAndroid() throws Exception {
     String[] sources = {
         "person.proto"
     };
+    invokeCompiler(sources, "--android");
+
     String[] outputs = {
         "com/squareup/wire/protos/person/Person.java"
     };
-    testProtoAndroid(sources, outputs);
+    assertOutputs(outputs, ".android");
   }
 
   @Test public void testPersonCompact() throws Exception {
     String[] sources = {
         "all_types.proto"
     };
+    invokeCompiler(sources, "--compact");
+
     String[] outputs = {
         "com/squareup/wire/protos/alltypes/AllTypes.java"
     };
-    testProtoCompact(sources, outputs);
+    assertOutputs(outputs, ".compact");
   }
 
   @Test public void testSimple() throws Exception {
@@ -203,120 +111,141 @@ public class WireCompilerTest {
         "external_message.proto",
         "foreign.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/simple/SimpleMessage.java",
         "com/squareup/wire/protos/simple/ExternalMessage.java",
         "com/squareup/wire/protos/foreign/ForeignEnum.java",
         "com/squareup/wire/protos/foreign/ForeignMessage.java"
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testOneOf() throws Exception {
     String[] sources = {
         "one_of.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/oneof/OneOfMessage.java"
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testSingleLevel() throws Exception {
     String[] sources = {
         "single_level.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/single_level/Foo.java",
         "com/squareup/wire/protos/single_level/Foos.java",
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testSameBasename() throws Exception {
     String[] sources = {
         "single_level.proto",
         "samebasename/single_level.proto" };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/single_level/Foo.java",
         "com/squareup/wire/protos/single_level/Foos.java",
         "com/squareup/wire/protos/single_level/Bar.java",
         "com/squareup/wire/protos/single_level/Bars.java",
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testChildPackage() throws Exception {
     String[] sources = {
         "child_pkg.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/ChildPackage.java",
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testAllTypes() throws Exception {
     String[] sources = {
         "all_types.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/alltypes/AllTypes.java"
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testEdgeCases() throws Exception {
     String[] sources = {
         "edge_cases.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/edgecases/NoFields.java",
         "com/squareup/wire/protos/edgecases/OneField.java",
         "com/squareup/wire/protos/edgecases/OneBytesField.java",
         "com/squareup/wire/protos/edgecases/Recursive.java"
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testUnknownFields() throws Exception {
     String[] sources = {
         "unknown_fields.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/unknownfields/VersionOne.java",
         "com/squareup/wire/protos/unknownfields/VersionTwo.java"
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testCustomOptions() throws Exception {
     String[] sources = {
         "custom_options.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/custom_options/FooBar.java",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testCustomOptionsNoOptions() throws Exception {
     String[] sources = {
         "custom_options.proto"
     };
+    invokeCompiler(sources, "--no_options");
+
     String[] outputs = {
         "com/squareup/wire/protos/custom_options/FooBar.java",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
     };
-
-    testProtoNoOptions(sources, outputs);
+    assertOutputs(outputs, ".noOptions");
   }
 
   @Test public void testRedacted() throws Exception {
     String[] sources = {
         "redacted_test.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/redacted/NotRedacted.java",
         "com/squareup/wire/protos/redacted/Redacted.java",
@@ -327,13 +256,15 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/redacted/RedactedRepeated.java",
         "com/squareup/wire/protos/redacted/RedactedRequired.java",
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testNoRoots() throws Exception {
     String[] sources = {
         "roots.proto"
     };
+    invokeCompiler(sources);
+
     String[] outputs = {
         "com/squareup/wire/protos/roots/A.java",
         "com/squareup/wire/protos/roots/B.java",
@@ -346,104 +277,130 @@ public class WireCompilerTest {
         "com/squareup/wire/protos/roots/J.java",
         "com/squareup/wire/protos/roots/K.java",
     };
-    testProto(sources, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testExcludes() throws Exception {
-    invokeCompiler(
-        "--proto_path=../wire-runtime/src/test/proto",
-        "--java_out=" + testDir.getAbsolutePath(),
-        "--includes=" + "squareup.protos.roots.A",
-        "--excludes=" + "squareup.protos.roots.B",
-        "roots.proto");
+    String[] sources = {
+        "roots.proto"
+    };
+    invokeCompiler(sources,
+        "--includes=squareup.protos.roots.A",
+        "--excludes=squareup.protos.roots.B");
 
-    List<String> filesAfter = getPaths(testDir);
-    assertThat(filesAfter).containsExactly(
+    String[] outputs = {
         "com/squareup/wire/protos/roots/A.java",
-        "com/squareup/wire/protos/roots/D.java");
+        "com/squareup/wire/protos/roots/D.java"
+    };
+    assertOutputs(outputs, ".pruned");
   }
 
   @Test public void testRootsA() throws Exception {
     String[] sources = {
         "roots.proto"
     };
+    invokeCompiler(sources, "--roots=squareup.protos.roots.A");
+
     String[] outputs = {
         "com/squareup/wire/protos/roots/A.java",
         "com/squareup/wire/protos/roots/B.java",
         "com/squareup/wire/protos/roots/C.java",
         "com/squareup/wire/protos/roots/D.java"
     };
-    String roots = "squareup.protos.roots.A";
-    testProtoWithRoots(sources, roots, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testRootsB() throws Exception {
     String[] sources = {
         "roots.proto"
     };
+    invokeCompiler(sources, "--roots=squareup.protos.roots.B");
+
     String[] outputs = {
         "com/squareup/wire/protos/roots/B.java",
         "com/squareup/wire/protos/roots/C.java"
     };
-    String roots = "squareup.protos.roots.B";
-    testProtoWithRoots(sources, roots, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testRootsE() throws Exception {
     String[] sources = {
         "roots.proto"
     };
+    invokeCompiler(sources, "--roots=squareup.protos.roots.E");
+
     String[] outputs = {
         "com/squareup/wire/protos/roots/E.java",
         "com/squareup/wire/protos/roots/G.java"
     };
-    String roots = "squareup.protos.roots.E";
-    testProtoWithRoots(sources, roots, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testRootsH() throws Exception {
     String[] sources = {
         "roots.proto"
     };
+    invokeCompiler(sources, "--roots=squareup.protos.roots.H");
+
     String[] outputs = {
         "com/squareup/wire/protos/roots/E.java",
         "com/squareup/wire/protos/roots/G.java",
         "com/squareup/wire/protos/roots/H.java"
     };
-    String roots = "squareup.protos.roots.H";
-    testProtoWithRoots(sources, roots, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testRootsI() throws Exception {
     String[] sources = {
         "roots.proto"
     };
+    invokeCompiler(sources, "--roots=squareup.protos.roots.I");
+
     String[] outputs = {
         "com/squareup/wire/protos/roots/I.java",
         "com/squareup/wire/protos/roots/J.java",
         "com/squareup/wire/protos/roots/K.java"
     };
-    String roots = "squareup.protos.roots.I";
-    testProtoWithRoots(sources, roots, outputs);
+    assertOutputs(outputs);
   }
 
   @Test public void testDryRun() throws Exception {
     String[] sources = {
         "service_root.proto"
     };
+    invokeCompiler(sources, "--roots=squareup.wire.protos.roots.TheService", "--dry_run", "--quiet");
 
-    String[] outputs = { };
-    String roots = "squareup.wire.protos.roots.TheService";
-    // When running with the --dry_run flag and --quiet, only the names of the output
-    // files should be printed to the log.
-    String[] extraArgs = {
-        "--dry_run",
-        "--quiet"
-    };
-    testProtoWithRoots(sources, roots, outputs, extraArgs);
     assertThat(logger.getLog()).isEqualTo(""
         + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
         + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
+  }
+
+  private void invokeCompiler(String[] sources, String... extraArgs) throws Exception {
+    List<String> args = new ArrayList<>();
+    args.add("--proto_path=../wire-runtime/src/test/proto");
+    args.add("--java_out=" + testDir.getAbsolutePath());
+    Collections.addAll(args, extraArgs);
+    Collections.addAll(args, sources);
+
+    logger = new StringWireLogger();
+    FileSystem fs = FileSystems.getDefault();
+    WireCompiler compiler = WireCompiler.forArgs(fs, logger, args.toArray(new String[args.size()]));
+    compiler.compile();
+  }
+
+  private void assertOutputs(String[] outputs) throws IOException {
+    assertOutputs(outputs, "");
+  }
+
+  private void assertOutputs(String[] outputs, String suffix) throws IOException {
+    List<String> filesAfter = getPaths(testDir);
+    assertThat(filesAfter.size())
+        .overridingErrorMessage(filesAfter.toString())
+        .isEqualTo(outputs.length);
+
+    for (String output : outputs) {
+      assertFilesMatch(testDir, output, suffix);
+    }
   }
 
   /** Returns all paths within {@code root}, and relative to {@code root}. */
@@ -469,21 +426,8 @@ public class WireCompilerTest {
     }
   }
 
-  private void invokeCompiler(String... args) throws Exception {
-    logger = new StringWireLogger();
-    FileSystem fs = FileSystems.getDefault();
-    WireCompiler compiler = WireCompiler.forArgs(fs, logger, args);
-    compiler.compile();
-  }
-
-  private void assertFilesMatch(File outputDir, String path) throws IOException {
-    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
-    File actualFile = new File(outputDir, path);
-    assertFilesMatch(expectedFile, actualFile);
-  }
-
   private void assertFilesMatch(File outputDir, String path, String suffix) throws IOException {
-    // Compare against file with .compact suffix if present
+    // Compare against file with suffix if present
     File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + suffix);
     if (expectedFile.exists()) {
       System.out.println("Comparing against expected output " + expectedFile.getName());
