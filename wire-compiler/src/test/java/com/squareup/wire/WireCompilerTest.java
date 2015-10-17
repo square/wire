@@ -375,6 +375,13 @@ public class WireCompilerTest {
         + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
   }
 
+  @Test public void noFiles() throws Exception {
+    String[] sources = new String[0];
+    invokeCompiler(sources);
+
+    assertThat(getPaths()).isNotEmpty();
+  }
+
   private void invokeCompiler(String[] sources, String... extraArgs) throws Exception {
     List<String> args = new ArrayList<>();
     args.add("--proto_path=../wire-runtime/src/test/proto");
@@ -393,7 +400,7 @@ public class WireCompilerTest {
   }
 
   private void assertOutputs(String[] outputs, String suffix) throws IOException {
-    List<String> filesAfter = getPaths(testDir);
+    List<String> filesAfter = getPaths();
     assertThat(filesAfter.size())
         .overridingErrorMessage(filesAfter.toString())
         .isEqualTo(outputs.length);
@@ -404,9 +411,9 @@ public class WireCompilerTest {
   }
 
   /** Returns all paths within {@code root}, and relative to {@code root}. */
-  private List<String> getPaths(File root) {
+  private List<String> getPaths() {
     List<String> paths = new ArrayList<>();
-    getPathsRecursive(root.getAbsoluteFile(), "", paths);
+    getPathsRecursive(testDir.getAbsoluteFile(), "", paths);
     return paths;
   }
 
