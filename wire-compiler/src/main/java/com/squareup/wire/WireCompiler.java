@@ -232,7 +232,7 @@ public final class WireCompiler {
         .withCompact(emitCompact);
 
     for (ProtoFile protoFile : schema.protoFiles()) {
-      if (!sourceFileNames.contains(protoFile.location().path())) {
+      if (!sourceFileNames.isEmpty() && !sourceFileNames.contains(protoFile.location().path())) {
         continue; // Don't emit anything for files not explicitly compiled.
       }
 
