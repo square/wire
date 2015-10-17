@@ -105,7 +105,7 @@ public final class Service {
     ImmutableList.Builder<Rpc> retainedRpcs = ImmutableList.builder();
     for (Rpc rpc : rpcs) {
       Rpc retainedRpc = rpc.retainAll(schema, markSet);
-      if (retainedRpc != null && markSet.contains(protoType, rpc.name())) {
+      if (retainedRpc != null && markSet.contains(ProtoMember.get(protoType, rpc.name()))) {
         retainedRpcs.add(retainedRpc);
       }
     }

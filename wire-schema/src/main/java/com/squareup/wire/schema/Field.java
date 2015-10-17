@@ -148,7 +148,7 @@ public final class Field {
     ImmutableList.Builder<Field> result = ImmutableList.builder();
     for (Field field : fields) {
       Field retainedField = field.retainAll(schema, markSet);
-      if (retainedField != null && markSet.contains(enclosingType, field.name())) {
+      if (retainedField != null && markSet.contains(ProtoMember.get(enclosingType, field.name()))) {
         result.add(retainedField);
       }
     }

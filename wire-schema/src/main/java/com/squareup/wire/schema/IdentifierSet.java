@@ -47,48 +47,34 @@ import com.google.common.collect.ImmutableSet;
  * exclude unwanted types and members without also including everything else.
  */
 public final class IdentifierSet {
-  public final ImmutableSet<String> includes;
-  public final ImmutableSet<String> excludes;
+  private final ImmutableSet<String> includes;
+  private final ImmutableSet<String> excludes;
 
   private IdentifierSet(Builder builder) {
     this.includes = builder.includes.build();
     this.excludes = builder.excludes.build();
-
-    StringBuilder errors = new StringBuilder();
-    for (String include : includes) {
-      if (excludes.contains(include)) {
-        errors.append(String.format("\n  include %s conflicts with exclude %s",
-            include, include));
-      }
-      int hash = include.indexOf('#');
-      if (hash != -1) {
-        String type = include.substring(0, hash);
-        if (excludes.contains(type)) {
-          errors.append(String.format("\n  include %s conflicts with exclude %s",
-              include, type));
-        }
-      }
-    }
-    if (errors.length() > 0) {
-      throw new IllegalArgumentException("identifier set is inconsistent: " + errors);
-    }
   }
 
-  public boolean includesEverything() {
-    return includes.isEmpty();
+  public boolean isEmpty() {
+    return includes.isEmpty() && excludes.isEmpty();
   }
 
-  public boolean excludesNothing() {
-    return excludes.isEmpty();
-  }
-
-  boolean excludes(ProtoType type) {
+  public boolean excludes(ProtoType type) {
     return excludes.contains(type.toString());
   }
 
-  boolean excludes(ProtoType type, String member) {
-    return excludes.contains(type.toString())
-        || excludes.contains(type + "#" + member);
+  public boolean excludes(ProtoMember protoMember) {
+    return excludes.contains(protoMember.toString());
+  }
+
+  public boolean include(ProtoType type) {
+    if (excludes.contains(type.toString())) return false;
+    return includes.isEmpty() || includes.contains(type.toString());
+  }
+
+  public boolean include(ProtoMember protoMember) {
+    if (excludes.contains(protoMember.toString())) return false;
+    return includes.isEmpty() || includes.contains(protoMember.toString());
   }
 
   public static final class Builder {

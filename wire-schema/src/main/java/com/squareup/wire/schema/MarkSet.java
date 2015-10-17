@@ -15,22 +15,55 @@
  */
 package com.squareup.wire.schema;
 
-import java.util.NavigableSet;
-import java.util.TreeSet;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+/**
+ * A mark set is used in three phases:
+ *
+ * <ol>
+ *   <li>Marking root types and root members. These are the identifiers specifically identified by
+ *       the user in the includes set. In this phase it is an error to mark a type that is excluded,
+ *       or to both a type and one of its members.
+ *   <li>Marking members transitively reachable by those roots. In this phase if a member is
+ *       visited, the member's enclosing type is marked instead, unless it is of a type that has a
+ *       specific member already marked.
+ *   <li>Retaining which members and types have been marked.
+ * </ol>
+ */
 final class MarkSet {
   final IdentifierSet identifierSet;
-  final NavigableSet<String> marks;
+  final Set<ProtoType> types = new LinkedHashSet<>();
+  final Multimap<ProtoType, ProtoMember> members = LinkedHashMultimap.create();
 
   public MarkSet(IdentifierSet identifierSet) {
     this.identifierSet = identifierSet;
-    this.marks = new TreeSet<>();
+  }
 
-    for (String include : identifierSet.includes) {
-      marks.add(include);
-      int hash = include.indexOf('#');
-      if (hash != -1) marks.add(include.substring(0, hash));
-    }
+  /**
+   * Marks {@code protoMember}, throwing if it is explicitly excluded, or if its enclosing type is
+   * also specifically included. This implicitly excludes other members of the same type.
+   */
+  void root(ProtoMember protoMember) {
+    if (protoMember == null) throw new NullPointerException("protoMember == null");
+    checkArgument(!identifierSet.excludes(protoMember));
+    checkArgument(!types.contains(protoMember.type()));
+    members.put(protoMember.type(), protoMember);
+  }
+
+  /**
+   * Marks {@code type}, throwing if it is explicitly excluded, or if any of its members are also
+   * specifically included.
+   */
+  void root(ProtoType type) {
+    if (type == null) throw new NullPointerException("type == null");
+    checkArgument(!identifierSet.excludes(type));
+    checkArgument(!members.containsKey(type));
+    types.add(type);
   }
 
   /**
@@ -40,56 +73,39 @@ final class MarkSet {
   boolean mark(ProtoType type) {
     if (type == null) throw new NullPointerException("type == null");
     if (identifierSet.excludes(type)) return false;
-    return marks.add(type.toString());
-  }
-
-  boolean mark(ProtoMember protoMember) {
-    return mark(protoMember.type(), protoMember.member());
+    return types.add(type);
   }
 
   /**
    * Marks a member as transitively reachable by the includes set. Returns true if the mark is new,
    * the member will be retained, and its own dependencies should be traversed.
    */
-  boolean mark(ProtoType type, String member) {
-    if (identifierSet.excludes(type, member)) return false;
-    if (!contains(type)) throw new IllegalStateException();
-    if (contains(type, member)) return false;
-    return marks.add(type + "#" + member);
+  boolean mark(ProtoMember protoMember) {
+    if (protoMember == null) throw new NullPointerException("type == null");
+    if (identifierSet.excludes(protoMember)) return false;
+    return members.containsKey(protoMember.type())
+        ? members.put(protoMember.type(), protoMember)
+        : types.add(protoMember.type());
   }
 
-  /** Returns true if {@code member} is marked and should be retained. */
-  boolean contains(ProtoType type, String member) {
+  /** Returns true if all members of {@code type} are marked and should be retained. */
+  boolean containsAllMembers(ProtoType type) {
     if (type == null) throw new NullPointerException("type == null");
-    if (member == null) throw new NullPointerException("member == null");
-    if (identifierSet.excludes(type, member)) return false;
-    if (identifierSet.includesEverything()) return true;
-
-    return containsAllMembers(type) || marks.contains(type + "#" + member);
+    return types.contains(type) && !members.containsKey(type);
   }
 
   /** Returns true if {@code type} is marked and should be retained. */
   boolean contains(ProtoType type) {
     if (type == null) throw new NullPointerException("type == null");
-    if (identifierSet.excludes(type)) return false;
-    if (identifierSet.includesEverything()) return true;
-
-    return marks.contains(type.toString());
+    return types.contains(type);
   }
 
-  /** Returns true if all members of {@code type} are marked and should be retained. */
-  boolean containsAllMembers(ProtoType type) {
-    return contains(type) && !containsAnyMember(type);
-  }
-
-  private boolean containsAnyMember(ProtoType typeName) {
-    // If there's a member field, it will sort immediately after <Name># in the marks set.
-    String prefix = typeName + "#";
-    String ceiling = marks.ceiling(prefix);
-    return ceiling != null && ceiling.startsWith(prefix);
-  }
-
-  public boolean contains(ProtoMember protoMember) {
-    return contains(protoMember.type(), protoMember.member());
+  /** Returns true if {@code member} is marked and should be retained. */
+  boolean contains(ProtoMember protoMember) {
+    if (protoMember == null) throw new NullPointerException("protoMember == null");
+    if (identifierSet.excludes(protoMember)) return false;
+    return members.containsKey(protoMember.type())
+        ? members.containsEntry(protoMember.type(), protoMember)
+        : types.contains(protoMember.type());
   }
 }
