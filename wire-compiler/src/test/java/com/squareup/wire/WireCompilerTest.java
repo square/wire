@@ -24,38 +24,21 @@ import java.util.Arrays;
 import java.util.List;
 import okio.Okio;
 import okio.Source;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WireCompilerTest {
+  @Rule public final TemporaryFolder temp = new TemporaryFolder();
+
   private StringWireLogger logger;
   private File testDir;
 
   @Before public void setUp() {
-    testDir = makeTestDirectory("WireCompilerTest");
-  }
-
-  private File makeTestDirectory(String path) {
-    File dir = new File(path);
-    dir.mkdir();
-    cleanup(dir);
-    List<String> filesBefore = getPaths(dir);
-    assertThat(filesBefore).hasSize(0);
-    return dir;
-  }
-
-  @After public void tearDown() {
-    cleanupAndDelete(testDir);
-  }
-
-  private void cleanupAndDelete(File dir) {
-    cleanup(dir);
-    if (!dir.delete()) {
-      System.err.println("Couldn't delete " + dir.getAbsolutePath());
-    }
+    testDir = temp.getRoot();
   }
 
   private void testProto(String[] sources, String[] outputs) throws Exception {
@@ -461,32 +444,6 @@ public class WireCompilerTest {
     assertThat(logger.getLog()).isEqualTo(""
         + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
         + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
-  }
-
-  private void cleanup(File dir) {
-    assertThat(dir).isNotNull();
-    assertThat(dir.isDirectory()).isTrue();
-    File[] files = dir.listFiles();
-    if (files != null) {
-      for (File f : files) {
-        cleanupHelper(f);
-      }
-    }
-  }
-
-  private void cleanupHelper(File f) {
-    assertThat(f).isNotNull();
-    if (f.isDirectory()) {
-      File[] files = f.listFiles();
-      if (files != null) {
-        for (File ff : files) {
-          cleanupHelper(ff);
-        }
-      }
-      f.delete();
-    } else {
-      f.delete();
-    }
   }
 
   /** Returns all paths within {@code root}, and relative to {@code root}. */
