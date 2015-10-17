@@ -40,16 +40,11 @@ final class Pruner {
     this.identifierSet = identifierSet;
     this.marks = new MarkSet(identifierSet);
     this.queue = new ArrayDeque<>();
-
-    for (String identifier : identifierSet.includes) {
-      queue.add(identifier.contains("#") ? ProtoMember.get(identifier) : ProtoType.get(identifier));
-    }
   }
 
   public Schema prune() {
-    if (!identifierSet.includes.isEmpty()) {
-      mark();
-    }
+    markRoots();
+    markReachable();
 
     ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
     for (ProtoFile protoFile : schema.protoFiles()) {
@@ -59,18 +54,76 @@ final class Pruner {
     return new Schema(retained.build());
   }
 
-  private void mark() {
-    // File options are also roots.
+  private void markRoots() {
+    for (ProtoFile protoFile : schema.protoFiles()) {
+      markRoots(protoFile);
+    }
+
+    // File options are also marked, though not as roots.
     for (ProtoFile protoFile : schema.protoFiles()) {
       markOptions(protoFile.options());
     }
+  }
 
+  private void markRoots(ProtoFile protoFile) {
+    for (Type type : protoFile.types()) {
+      markRoots(type);
+    }
+    for (Service service : protoFile.services()) {
+      markRoots(service);
+    }
+  }
+
+  private void markRoots(Type type) {
+    ProtoType protoType = type.name();
+    if (identifierSet.include(protoType)) {
+      marks.root(protoType);
+      queue.add(protoType);
+    } else {
+      if (type instanceof MessageType) {
+        for (Field field : ((MessageType) type).fieldsAndOneOfFields()) {
+          markRoots(ProtoMember.get(protoType, field.name()));
+        }
+      } else if (type instanceof EnumType) {
+        for (EnumConstant enumConstant : ((EnumType) type).constants()) {
+          markRoots(ProtoMember.get(protoType, enumConstant.name()));
+        }
+      } else {
+        throw new AssertionError();
+      }
+    }
+
+    for (Type nested : type.nestedTypes()) {
+      markRoots(nested);
+    }
+  }
+
+  private void markRoots(Service service) {
+    ProtoType protoType = service.type();
+    if (identifierSet.include(protoType)) {
+      marks.root(protoType);
+      queue.add(protoType);
+    } else {
+      for (Rpc rpc : service.rpcs()) {
+        markRoots(ProtoMember.get(protoType, rpc.name()));
+      }
+    }
+  }
+
+  private void markRoots(ProtoMember protoMember) {
+    if (identifierSet.include(protoMember)) {
+      marks.root(protoMember);
+      queue.add(protoMember);
+    }
+  }
+
+  private void markReachable() {
     // Mark everything reachable by what's enqueued, queueing new things as we go.
     for (Object root; (root = queue.poll()) != null;) {
       if (root instanceof ProtoMember) {
         ProtoMember protoMember = (ProtoMember) root;
+        mark(protoMember.type());
         String member = ((ProtoMember) root).member();
-
         Type type = schema.getType(protoMember.type());
         if (type instanceof MessageType) {
           Field field = ((MessageType) type).field(member);
@@ -78,17 +131,13 @@ final class Pruner {
             field = ((MessageType) type).extensionField(member);
           }
           if (field != null) {
-            markOptions(type.options());
             markField(field);
-            mark(type.name());
             continue;
           }
         } else if (type instanceof EnumType) {
           EnumConstant constant = ((EnumType) type).constant(member);
           if (constant != null) {
-            markOptions(type.options());
             markOptions(constant.options());
-            mark(type.name());
             continue;
           }
         }
@@ -97,9 +146,7 @@ final class Pruner {
         if (service != null) {
           Rpc rpc = service.rpc(member);
           if (rpc != null) {
-            markOptions(service.options());
             markRpc(rpc);
-            mark(service.type());
             continue;
           }
         }
@@ -139,7 +186,6 @@ final class Pruner {
   }
 
   private void mark(ProtoMember protoMember) {
-    mark(protoMember.type());
     if (marks.mark(protoMember)) {
       queue.add(protoMember); // The transitive dependencies of this member must be visited.
     }

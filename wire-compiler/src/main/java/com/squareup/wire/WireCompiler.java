@@ -221,7 +221,7 @@ public final class WireCompiler {
     }
     Schema schema = schemaLoader.load();
 
-    if (!identifierSet.includesEverything() || !identifierSet.excludesNothing()) {
+    if (!identifierSet.isEmpty()) {
       log.info("Analyzing dependencies of root types.");
       schema = schema.prune(identifierSet);
     }

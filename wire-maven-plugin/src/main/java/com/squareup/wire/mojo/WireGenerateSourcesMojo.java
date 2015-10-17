@@ -83,7 +83,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
       Schema schema = loadSchema(directories, protoFilesList);
 
       IdentifierSet identifierSet = identifierSet();
-      if (!identifierSet.includesEverything() || !identifierSet.excludesNothing()) {
+      if (!identifierSet.isEmpty()) {
         schema = retainRoots(identifierSet, schema);
       }
 

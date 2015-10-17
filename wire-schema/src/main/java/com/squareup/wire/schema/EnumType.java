@@ -128,7 +128,7 @@ public final class EnumType extends Type {
 
     ImmutableList.Builder<EnumConstant> retainedConstants = ImmutableList.builder();
     for (EnumConstant constant : constants) {
-      if (markSet.contains(protoType, constant.name())) {
+      if (markSet.contains(ProtoMember.get(protoType, constant.name()))) {
         retainedConstants.add(constant.retainAll(schema, markSet));
       }
     }

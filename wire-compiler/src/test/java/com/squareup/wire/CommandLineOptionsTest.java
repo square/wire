@@ -1,5 +1,7 @@
 package com.squareup.wire;
 
+import com.squareup.wire.schema.ProtoMember;
+import com.squareup.wire.schema.ProtoType;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -82,15 +84,15 @@ public class CommandLineOptionsTest {
 
   @Test public void roots() throws Exception {
     WireCompiler compiler = WireCompiler.forArgs("--java_out=.");
-    assertThat(compiler.identifierSet.includesEverything()).isTrue();
-    assertThat(compiler.identifierSet.excludesNothing()).isTrue();
+    assertThat(compiler.identifierSet.isEmpty()).isTrue();
 
-    compiler = WireCompiler.forArgs("--java_out=.", "--roots=com.example.foo");
-    assertThat(compiler.identifierSet.includes).containsExactly("com.example.foo");
+    compiler = WireCompiler.forArgs("--java_out=.", "--roots=com.example.Foo");
+    assertThat(compiler.identifierSet.include(ProtoType.get("com.example.Foo"))).isTrue();
+    assertThat(compiler.identifierSet.include(ProtoType.get("com.example.Bar"))).isFalse();
 
-    compiler = WireCompiler.forArgs("--java_out=.", "--roots=com.example.foo,com.example.bar");
-    assertThat(compiler.identifierSet.includes)
-        .containsExactly("com.example.foo", "com.example.bar");
+    compiler = WireCompiler.forArgs("--java_out=.", "--roots=com.example.Foo,com.example.Bar");
+    assertThat(compiler.identifierSet.include(ProtoType.get("com.example.Foo"))).isTrue();
+    assertThat(compiler.identifierSet.include(ProtoType.get("com.example.Bar"))).isTrue();
   }
 
   @Test public void  emitOptions() throws Exception {
