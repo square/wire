@@ -76,7 +76,7 @@ final class Pruner {
 
   private void markRoots(Type type) {
     ProtoType protoType = type.name();
-    if (identifierSet.include(protoType)) {
+    if (identifierSet.includes(protoType)) {
       marks.root(protoType);
       queue.add(protoType);
     } else {
@@ -100,7 +100,7 @@ final class Pruner {
 
   private void markRoots(Service service) {
     ProtoType protoType = service.type();
-    if (identifierSet.include(protoType)) {
+    if (identifierSet.includes(protoType)) {
       marks.root(protoType);
       queue.add(protoType);
     } else {
@@ -111,7 +111,7 @@ final class Pruner {
   }
 
   private void markRoots(ProtoMember protoMember) {
-    if (identifierSet.include(protoMember)) {
+    if (identifierSet.includes(protoMember)) {
       marks.root(protoMember);
       queue.add(protoMember);
     }

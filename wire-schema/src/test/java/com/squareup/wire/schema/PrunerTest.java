@@ -40,7 +40,7 @@ public final class PrunerTest {
     assertThat(pruned.getType("MessageB")).isNull();
   }
 
-  @Test public void retainTypeDoesRetainsEnclosingButNotNested() throws Exception {
+  @Test public void retainTypeRetainsEnclosingButNotNested() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""
             + "message A {\n"
@@ -622,5 +622,41 @@ public final class PrunerTest {
     assertThat(message.options().get(ProtoMember.get(MESSAGE_OPTIONS, "a"))).isNull();
     assertThat(message.options().get(ProtoMember.get(MESSAGE_OPTIONS, "b")))
         .isEqualTo(ImmutableList.of("b1", "b2"));
+  }
+
+  @Test public void includePackage() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a/b/messages.proto", ""
+            + "package a.b;\n"
+            + "message MessageAB {\n"
+            + "}\n")
+        .add("a/c/messages.proto", ""
+            + "package a.c;\n"
+            + "message MessageAC {\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("a.b.*")
+        .build());
+    assertThat(pruned.getType("a.b.MessageAB")).isNotNull();
+    assertThat(pruned.getType("a.c.MessageAC")).isNull();
+  }
+
+  @Test public void excludePackage() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a/b/messages.proto", ""
+            + "package a.b;\n"
+            + "message MessageAB {\n"
+            + "}\n")
+        .add("a/c/messages.proto", ""
+            + "package a.c;\n"
+            + "message MessageAC {\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .exclude("a.c.*")
+        .build());
+    assertThat(pruned.getType("a.b.MessageAB")).isNotNull();
+    assertThat(pruned.getType("a.c.MessageAC")).isNull();
   }
 }
