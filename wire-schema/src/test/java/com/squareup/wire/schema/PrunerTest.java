@@ -659,4 +659,34 @@ public final class PrunerTest {
     assertThat(pruned.getType("a.b.MessageAB")).isNotNull();
     assertThat(pruned.getType("a.c.MessageAC")).isNull();
   }
+
+  @Test public void specialOptionsNotPruned() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "option java_package = \"p\";\n"
+            + "\n"
+            + "message Message {\n"
+            + "  optional int32 a = 1 [packed = true, deprecated = true, default = 5];\n"
+            + "}\n"
+            + "enum Enum {\n"
+            + "  option allow_alias = true;\n"
+            + "  A = 1;\n"
+            + "  B = 1;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .exclude("google.protobuf.*")
+        .build());
+    ProtoFile protoFile = pruned.protoFile("message.proto");
+    assertThat(protoFile.javaPackage()).isEqualTo("p");
+
+    MessageType message = (MessageType) pruned.getType("Message");
+    Field field = message.field("a");
+    assertThat(field.getDefault()).isEqualTo("5");
+    assertThat(field.isDeprecated()).isTrue();
+    assertThat(field.isPacked()).isTrue();
+
+    EnumType enumType = (EnumType) pruned.getType("Enum");
+    assertThat(enumType.allowAlias()).isTrue();
+  }
 }

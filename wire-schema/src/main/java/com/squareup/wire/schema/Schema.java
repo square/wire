@@ -49,6 +49,16 @@ public final class Schema {
     return protoFiles;
   }
 
+  /** Returns the proto file at {@code path}, or null if this schema has no such file. */
+  public ProtoFile protoFile(String path) {
+    for (ProtoFile protoFile : protoFiles) {
+      if (protoFile.location().path().equals(path)) {
+        return protoFile;
+      }
+    }
+    return null;
+  }
+
   /**
    * Returns a copy of this schema that retains only the types and services selected by {@code
    * identifierSet}, plus their transitive dependencies.

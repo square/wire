@@ -21,12 +21,17 @@ import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ServiceElement;
 import com.squareup.wire.schema.internal.parser.TypeElement;
 
+import static com.squareup.wire.schema.Options.FILE_OPTIONS;
+
 public final class ProtoFile {
+  static final ProtoMember JAVA_PACKAGE = ProtoMember.get(FILE_OPTIONS, "java_package");
+
   private final ProtoFileElement element;
   private final ImmutableList<Type> types;
   private final ImmutableList<Service> services;
   private final ImmutableList<Extend> extendList;
   private final Options options;
+  private Object javaPackage;
 
   private ProtoFile(ProtoFileElement element, ImmutableList<Type> types,
       ImmutableList<Service> services, ImmutableList<Extend> extendList, Options options) {
@@ -98,6 +103,10 @@ public final class ProtoFile {
     return element.packageName();
   }
 
+  public String javaPackage() {
+    return javaPackage != null ? String.valueOf(javaPackage) : null;
+  }
+
   public ImmutableList<Type> types() {
     return types;
   }
@@ -132,8 +141,15 @@ public final class ProtoFile {
       }
     }
 
-    return new ProtoFile(element, retainedTypes.build(), retainedServices.build(),
+    ProtoFile result = new ProtoFile(element, retainedTypes.build(), retainedServices.build(),
         extendList, options.retainAll(schema, markSet));
+    result.javaPackage = javaPackage;
+    return result;
+  }
+
+  void linkOptions(Linker linker) {
+    options.link(linker);
+    javaPackage = options().get(JAVA_PACKAGE);
   }
 
   @Override public String toString() {
