@@ -30,6 +30,8 @@ public final class Field {
   private final boolean extension;
   private final Options options;
   private ProtoType type;
+  private Object deprecated;
+  private Object packed;
 
   Field(String packageName, FieldElement element, Options options, boolean extension) {
     this.packageName = packageName;
@@ -93,11 +95,11 @@ public final class Field {
   }
 
   public boolean isDeprecated() {
-    return "true".equals(options().get(DEPRECATED));
+    return "true".equals(deprecated);
   }
 
   public boolean isPacked() {
-    return "true".equals(options().get(PACKED));
+    return "true".equals(packed);
   }
 
   public String getDefault() {
@@ -122,6 +124,8 @@ public final class Field {
   void linkOptions(Linker linker) {
     linker = linker.withContext(this);
     options.link(linker);
+    deprecated = options().get(DEPRECATED);
+    packed = options().get(PACKED);
   }
 
   void validate(Linker linker) {
@@ -140,6 +144,8 @@ public final class Field {
 
     Field result = new Field(packageName, element, options.retainAll(schema, markSet), extension);
     result.type = type;
+    result.deprecated = deprecated;
+    result.packed = packed;
     return result;
   }
 

@@ -69,7 +69,6 @@ import okio.ByteString;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.squareup.wire.schema.Options.ENUM_OPTIONS;
 import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
-import static com.squareup.wire.schema.Options.FILE_OPTIONS;
 import static com.squareup.wire.schema.Options.MESSAGE_OPTIONS;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -84,7 +83,6 @@ import static javax.lang.model.element.Modifier.STATIC;
  * java.lang.String}, or {@code com.squareup.protos.person.Person}).
  */
 public final class JavaGenerator {
-  static final ProtoMember JAVA_PACKAGE = ProtoMember.get(FILE_OPTIONS, "java_package");
   static final ProtoMember DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated");
   static final ProtoMember PACKED = ProtoMember.get(FIELD_OPTIONS, "packed");
 
@@ -250,9 +248,9 @@ public final class JavaGenerator {
   }
 
   private static String javaPackage(ProtoFile protoFile) {
-    Object javaPackageOption = protoFile.options().get(JAVA_PACKAGE);
-    if (javaPackageOption != null) {
-      return String.valueOf(javaPackageOption);
+    String javaPackage = protoFile.javaPackage();
+    if (javaPackage != null) {
+      return javaPackage;
     } else if (protoFile.packageName() != null) {
       return protoFile.packageName();
     } else {

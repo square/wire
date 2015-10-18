@@ -80,7 +80,7 @@ final class Linker {
     // Link options. We can't link any options until we've linked all fields!
     for (ProtoFile protoFile : protoFiles) {
       Linker linker = withContext(protoFile);
-      protoFile.options().link(linker);
+      protoFile.linkOptions(linker);
       for (Type type : protoFile.types()) {
         type.linkOptions(linker);
       }

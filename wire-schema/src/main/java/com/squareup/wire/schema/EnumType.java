@@ -31,6 +31,7 @@ public final class EnumType extends Type {
   private final EnumElement element;
   private final ImmutableList<EnumConstant> constants;
   private final Options options;
+  private Object allowAlias;
 
   EnumType(ProtoType protoType, EnumElement element,
       ImmutableList<EnumConstant> constants, Options options) {
@@ -58,6 +59,10 @@ public final class EnumType extends Type {
 
   @Override public ImmutableList<Type> nestedTypes() {
     return ImmutableList.of(); // Enums do not allow nested type declarations.
+  }
+
+  public boolean allowAlias() {
+    return "true".equals(allowAlias);
   }
 
   /** Returns the constant named {@code name}, or null if this enum has no such constant. */
@@ -92,12 +97,13 @@ public final class EnumType extends Type {
     for (EnumConstant constant : constants) {
       constant.linkOptions(linker);
     }
+    allowAlias = options.get(ALLOW_ALIAS);
   }
 
   @Override void validate(Linker linker) {
     linker = linker.withContext(this);
 
-    if (!"true".equals(options.get(ALLOW_ALIAS))) {
+    if (!"true".equals(allowAlias)) {
       validateTagUniqueness(linker);
     }
   }
@@ -133,7 +139,9 @@ public final class EnumType extends Type {
       }
     }
 
-    return new EnumType(protoType, element, retainedConstants.build(),
+    EnumType result = new EnumType(protoType, element, retainedConstants.build(),
         options.retainAll(schema, markSet));
+    result.allowAlias = allowAlias;
+    return result;
   }
 }
