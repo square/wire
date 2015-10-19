@@ -21,20 +21,18 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * A heterogeneous set of type names and type members. If a member is included in the set, its type
- * is implicitly also included. A type that is included without a specific member implicitly
- * includes all of that type's members, but not its nested types.
+ * A heterogeneous set of rules to include and exclude types and members. If a member is included in
+ * the set, its type is implicitly also included. A type that is included without a specific member
+ * implicitly includes all of that type's members, but not its nested types.
  *
- * <p>Identifiers in this set may be in the following forms:
+ * <p>Rules in this set may be in the following forms:
  * <ul>
  *   <li>Package names, followed by {@code .*}, like {@code squareup.protos.person.*}. This matches
  *       types and services defined in the package and its descendant packages.
- *   <li>Fully qualified type names, like {@code squareup.protos.person.Person}.
- *   <li>Fully qualified service names, like {@code com.squareup.services.ExampleService}.
- *   <li>Fully qualified type names, followed by a '#', followed by a member name, like
- *       {@code squareup.protos.person.Person#address}.
- *   <li>Fully qualified service names, followed by a '#', followed by an RPC name, like
- *       {@code com.squareup.services.ExampleService#SendSomeData}.
+ *   <li>Fully qualified type and service names, like {@code squareup.protos.person.Person}.
+ *   <li>Fully qualified member names, which are type names followed by a '#', followed by a member
+ *       name, like {@code squareup.protos.person.Person#address}. Members may be fields, enum
+ *       constants or RPCs.
  * </ul>
  *
  * <p>An identifier set populated with {@code Movie} and {@code Actor#name} contains all members of
@@ -42,11 +40,9 @@ import java.util.Set;
  * {@code Actor} and one member {@code Actor#name}, but not {@code Actor#birth_date} or {@code
  * Actor#oscar_count}.
  *
- * <p>This set is initialized with <i>included identifiers</i> and <i>excluded identifiers</i>, with
- * excludes taking precedence over includes. That is, if a type {@code Movie} is in both the
- * includes and the excludes, it is not contained in the set. Any attempt to mark an excluded
- * identifier will return false, preventing the identifier's transitive dependencies from also being
- * marked.
+ * <p>This set has <i>included identifiers</i> and <i>excluded identifiers</i>, with excludes taking
+ * precedence over includes. That is, if a type {@code Movie} is in both the includes and the
+ * excludes, it is not contained in the set.
  *
  * <p>If the includes set is empty, that implies that all elements should be included. Use this to
  * exclude unwanted types and members without also including everything else.
@@ -87,14 +83,13 @@ public final class IdentifierSet {
 
     String includeMatch = null;
     String excludeMatch = null;
-    while (identifier != null) {
-      if (excludes.contains(identifier)) {
-        excludeMatch = identifier;
+    for (String rule = identifier; rule != null; rule = enclosing(rule)) {
+      if (excludes.contains(rule)) {
+        excludeMatch = rule;
       }
-      if (includes.contains(identifier)) {
-        includeMatch = identifier;
+      if (includes.contains(rule)) {
+        includeMatch = rule;
       }
-      identifier = enclosing(identifier);
     }
     if (excludeMatch != null) {
       usedExcludes.add(excludeMatch);
@@ -123,11 +118,10 @@ public final class IdentifierSet {
   /** Returns true if {@code identifier} or any of its enclosing identifiers is excluded. */
   private boolean exclude(String identifier) {
     String excludeMatch = null;
-    while (identifier != null) {
-      if (excludes.contains(identifier)) {
-        excludeMatch = identifier;
+    for (String rule = identifier; rule != null; rule = enclosing(rule)) {
+      if (excludes.contains(rule)) {
+        excludeMatch = rule;
       }
-      identifier = enclosing(identifier);
     }
     if (excludeMatch != null) {
       usedExcludes.add(excludeMatch);
