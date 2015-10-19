@@ -83,7 +83,7 @@ public final class Person extends Message<Person, Person.Builder> implements Par
     public Person createFromParcel(Parcel in) {
       try {
         return ADAPTER.decode(in.createByteArray());
-      } catch(IOException e) {
+      } catch (IOException e) {
         throw new RuntimeException(e);
       }
     }
@@ -337,7 +337,7 @@ public final class Person extends Message<Person, Person.Builder> implements Par
       public PhoneNumber createFromParcel(Parcel in) {
         try {
           return ADAPTER.decode(in.createByteArray());
-        } catch(IOException e) {
+        } catch (IOException e) {
           throw new RuntimeException(e);
         }
       }
