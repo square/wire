@@ -506,7 +506,7 @@ public final class JavaGenerator {
                       .addParameter(PARCEL, "in")
                       .beginControlFlow("try")
                       .addStatement("return $N.decode(in.createByteArray())", adapterName)
-                      .nextControlFlow("catch($T e)", IOException.class)
+                      .nextControlFlow("catch ($T e)", IOException.class)
                       .addStatement("throw new $T(e)", RuntimeException.class)
                       .endControlFlow()
                       .build())
