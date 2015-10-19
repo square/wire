@@ -16,6 +16,9 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * A heterogeneous set of type names and type members. If a member is included in the set, its type
@@ -47,10 +50,14 @@ import com.google.common.collect.ImmutableSet;
  *
  * <p>If the includes set is empty, that implies that all elements should be included. Use this to
  * exclude unwanted types and members without also including everything else.
+ *
+ * <p>Despite the builder, instances of this class are not safe for concurrent use.
  */
 public final class IdentifierSet {
   private final ImmutableSet<String> includes;
   private final ImmutableSet<String> excludes;
+  private final Set<String> usedIncludes = new LinkedHashSet<>();
+  private final Set<String> usedExcludes = new LinkedHashSet<>();
 
   private IdentifierSet(Builder builder) {
     this.includes = builder.includes.build();
@@ -78,13 +85,26 @@ public final class IdentifierSet {
   private boolean includes(String identifier) {
     if (includes.isEmpty()) return !exclude(identifier);
 
-    boolean included = false;
+    String includeMatch = null;
+    String excludeMatch = null;
     while (identifier != null) {
-      if (excludes.contains(identifier)) return false;
-      included = included || includes.contains(identifier);
+      if (excludes.contains(identifier)) {
+        excludeMatch = identifier;
+      }
+      if (includes.contains(identifier)) {
+        includeMatch = identifier;
+      }
       identifier = enclosing(identifier);
     }
-    return included;
+    if (excludeMatch != null) {
+      usedExcludes.add(excludeMatch);
+      return false;
+    }
+    if (includeMatch != null) {
+      usedIncludes.add(includeMatch);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -102,9 +122,16 @@ public final class IdentifierSet {
 
   /** Returns true if {@code identifier} or any of its enclosing identifiers is excluded. */
   private boolean exclude(String identifier) {
+    String excludeMatch = null;
     while (identifier != null) {
-      if (excludes.contains(identifier)) return true;
+      if (excludes.contains(identifier)) {
+        excludeMatch = identifier;
+      }
       identifier = enclosing(identifier);
+    }
+    if (excludeMatch != null) {
+      usedExcludes.add(excludeMatch);
+      return true;
     }
     return false;
   }
@@ -130,6 +157,14 @@ public final class IdentifierSet {
     if (dot != -1) return identifier.substring(0, dot) + ".*";
 
     return null;
+  }
+
+  public Set<String> unusedIncludes() {
+    return Sets.difference(includes, usedIncludes);
+  }
+
+  public Set<String> unusedExcludes() {
+    return Sets.difference(excludes, usedExcludes);
   }
 
   public static final class Builder {
