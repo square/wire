@@ -134,6 +134,13 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     Schema prunedSchema = schema.prune(identifierSet);
     int newSize = countTypes(prunedSchema);
 
+    for (String rule : identifierSet.unusedIncludes()) {
+      getLog().warn(String.format("Unused include: %s", rule));
+    }
+    for (String rule : identifierSet.unusedExcludes()) {
+      getLog().warn(String.format("Unused exclude: %s", rule));
+    }
+
     getLog().info(String.format("Pruned schema from %s types to %s types in %s",
         oldSize, newSize, stopwatch));
 

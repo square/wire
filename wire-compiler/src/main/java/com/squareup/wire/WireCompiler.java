@@ -224,6 +224,12 @@ public final class WireCompiler {
     if (!identifierSet.isEmpty()) {
       log.info("Analyzing dependencies of root types.");
       schema = schema.prune(identifierSet);
+      for (String rule : identifierSet.unusedIncludes()) {
+        log.info("Unused include: " + rule);
+      }
+      for (String rule : identifierSet.unusedExcludes()) {
+        log.info("Unused exclude: " + rule);
+      }
     }
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
