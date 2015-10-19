@@ -97,7 +97,7 @@ public final class ProtoType {
     ProtoType scalar = SCALAR_TYPES.get(name);
     if (scalar != null) return scalar;
 
-    if (name == null || name.isEmpty()) {
+    if (name == null || name.isEmpty() || name.contains("#")) {
       throw new IllegalArgumentException("unexpected name: " + name);
     }
     return new ProtoType(false, name);

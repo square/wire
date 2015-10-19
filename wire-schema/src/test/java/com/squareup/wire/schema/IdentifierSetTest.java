@@ -146,6 +146,76 @@ public final class IdentifierSetTest {
     assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED);
   }
 
+  @Test public void trackingUnusedIncludes() throws Exception {
+    IdentifierSet set = new IdentifierSet.Builder()
+        .include("a.*")
+        .include("b.IncludedType")
+        .include("c.IncludedMember#member")
+        .build();
+    assertThat(set.unusedIncludes()).containsExactly(
+        "a.*", "b.IncludedType", "c.IncludedMember#member");
+
+    set.includes(ProtoType.get("a.*"));
+    assertThat(set.unusedIncludes()).containsExactly(
+        "b.IncludedType", "c.IncludedMember#member");
+
+    set.includes(ProtoType.get("b.IncludedType"));
+    assertThat(set.unusedIncludes()).containsExactly(
+        "c.IncludedMember#member");
+
+    set.includes(ProtoMember.get("c.IncludedMember#member"));
+    assertThat(set.unusedIncludes()).isEmpty();
+  }
+
+  @Test public void trackingUnusedExcludes() throws Exception {
+    IdentifierSet set = new IdentifierSet.Builder()
+        .exclude("a.*")
+        .exclude("b.ExcludedType")
+        .exclude("c.ExcludedMember#member")
+        .build();
+    assertThat(set.unusedExcludes()).containsExactly(
+        "a.*", "b.ExcludedType", "c.ExcludedMember#member");
+
+    set.includes(ProtoType.get("a.*"));
+    assertThat(set.unusedExcludes()).containsExactly(
+        "b.ExcludedType", "c.ExcludedMember#member");
+
+    set.includes(ProtoType.get("b.ExcludedType"));
+    assertThat(set.unusedExcludes()).containsExactly(
+        "c.ExcludedMember#member");
+
+    set.includes(ProtoMember.get("c.ExcludedMember#member"));
+    assertThat(set.unusedExcludes()).isEmpty();
+  }
+
+  @Test public void trackingUnusedIncludesPrecedence() throws Exception {
+    IdentifierSet set = new IdentifierSet.Builder()
+        .include("a.*")
+        .include("a.IncludedType")
+        .build();
+    set.includes(ProtoMember.get("a.IncludedType#member"));
+    assertThat(set.unusedIncludes()).containsExactly("a.IncludedType");
+  }
+
+  @Test public void trackingUnusedExcludesPrecedence() throws Exception {
+    IdentifierSet set = new IdentifierSet.Builder()
+        .exclude("a.*")
+        .exclude("a.IncludedType")
+        .build();
+    set.includes(ProtoMember.get("a.IncludedType#member"));
+    assertThat(set.unusedExcludes()).containsExactly("a.IncludedType");
+  }
+
+  @Test public void trackingUnusedPrecedence() throws Exception {
+    IdentifierSet set = new IdentifierSet.Builder()
+        .include("a.*")
+        .exclude("a.*")
+        .build();
+    set.includes(ProtoType.get("a.Message"));
+    assertThat(set.unusedExcludes()).isEmpty();
+    assertThat(set.unusedIncludes()).containsExactly("a.*");
+  }
+
   private Policy policy(IdentifierSet set, String identifier) {
     if (identifier.contains("#")) {
       ProtoMember protoMember = ProtoMember.get(identifier);
