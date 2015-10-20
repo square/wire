@@ -273,7 +273,6 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [a = \"a\"];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message#f")
@@ -293,7 +292,6 @@ public final class PrunerTest {
             + "  optional string f = 1 [a = \"a\"];\n"
             + "  optional string g = 2;\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message#g")
@@ -316,7 +314,6 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [some_field_options.a = \"a\"];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message")
@@ -343,7 +340,6 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [some_field_options.a = \"a\"];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message")
@@ -480,7 +476,6 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [a = \"a\", b = \"b\"];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("google.protobuf.FieldOptions#b")
@@ -504,7 +499,6 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [some_field_options.a = \"a\", b = \"b\"];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("SomeFieldOptions")
@@ -530,7 +524,6 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [some_field_options = { a: \"a\", b: \"b\" }];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("SomeFieldOptions#b")
@@ -566,7 +559,6 @@ public final class PrunerTest {
             + "      b = \"b\"\n"
             + "  ];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("Dimensions")
@@ -589,7 +581,6 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [ a = \"a\", b = \"b\" ];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("google.protobuf.FieldOptions")
@@ -613,7 +604,6 @@ public final class PrunerTest {
             + "  option (b) = \"b2\";\n"
             + "  optional string f = 1;\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("google.protobuf.MessageOptions#a")

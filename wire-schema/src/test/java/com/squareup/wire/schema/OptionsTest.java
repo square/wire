@@ -42,7 +42,6 @@ public final class OptionsTest {
             + "  optional int32 a = 1 [(foo_options).opt1 = 123, (foo_options).opt2 = \"baz\"];\n"
             + "  optional int32 b = 2 [(foo_options) = { opt1: 456 opt2: \"quux\" }];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
 
     ProtoMember fooOptions = ProtoMember.get(Options.FIELD_OPTIONS, "foo_options");
@@ -74,7 +73,6 @@ public final class OptionsTest {
             + "message Message {\n"
             + "  optional int32 b = 2 [(foo) = { bar { baz: 123 } }];\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
 
     ProtoMember foo = ProtoMember.get(Options.FIELD_OPTIONS, "foo");
@@ -126,7 +124,6 @@ public final class OptionsTest {
             + "    [a.c.even_more_options]: {string_option: \"foo\"}\n"
             + "  };\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     ProtoType moreOptionsType = ProtoType.get("a.b.MoreOptions");
     ProtoType evenMoreOptionsType = ProtoType.get("a.c.EvenMoreOptions");
