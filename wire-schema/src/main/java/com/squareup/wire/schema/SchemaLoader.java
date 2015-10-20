@@ -124,6 +124,8 @@ public final class SchemaLoader {
     }
 
     Map<String, ProtoFile> loaded = new LinkedHashMap<>();
+    loaded.put(DESCRIPTOR_PROTO, loadDescriptorProto());
+
     while (!protos.isEmpty()) {
       String proto = protos.removeFirst();
       if (loaded.containsKey(proto)) {
@@ -160,11 +162,6 @@ public final class SchemaLoader {
       for (String importPath : element.imports()) {
         protos.addLast(importPath);
       }
-    }
-
-    ProtoFile descriptor = loaded.get(DESCRIPTOR_PROTO);
-    if (descriptor == null) {
-      loaded.put(DESCRIPTOR_PROTO, loadDescriptorProto());
     }
 
     return new Linker(loaded.values()).link();

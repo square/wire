@@ -256,7 +256,6 @@ public final class SchemaTest {
             + "extend google.protobuf.FieldOptions {\n"
             + "  optional string color = 60001;\n"
             + "}\n")
-        .add("google/protobuf/descriptor.proto")
         .build();
     MessageType message = (MessageType) schema.getType("Message");
 
@@ -282,7 +281,6 @@ public final class SchemaTest {
               + "extend google.protobuf.FieldOptions {\n"
               + "  optional string color = 60001;\n"
               + "}\n")
-          .add("google/protobuf/descriptor.proto")
           .build();
       fail();
     } catch (SchemaException expected) {
