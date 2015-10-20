@@ -58,11 +58,6 @@ final class Pruner {
     for (ProtoFile protoFile : schema.protoFiles()) {
       markRoots(protoFile);
     }
-
-    // File options are also marked, though not as roots.
-    for (ProtoFile protoFile : schema.protoFiles()) {
-      markOptions(protoFile.options());
-    }
   }
 
   private void markRoots(ProtoFile protoFile) {
