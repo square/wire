@@ -1,6 +1,81 @@
 Change Log
 ==========
 
+Version 2.0.0 *(2015-10-23)*
+----------------------------
+
+Wire 2 is a backwards-incompatible release. It makes breaking changes to the compiler, runtime,
+extensions, and generated code. These changes aren’t made lightly as we’ve endured the upgrade in
+our own projects! We believe the cost of migration is worth the benefits.
+
+**We’ve created the `wire-schema` library that models `.proto` schema definitions.** This is a
+capable library that packs several neat features. You can load a `Schema` from `.proto` files
+located on the local file system, a ZIP or JAR file, or any `java.nio.FileSystem` like
+[Jimfs][jimfs]. You can prune this schema with includes or excludes, allowing you to reuse `.proto`
+definitions with minimal code. And you can decode data directly from a schema: no code generation
+is necessary!
+
+**We’ve flattened extensions.** Wire 2.0 combines the fields defined directly on messages with
+fields defined far away in extensions. In the generated code, extension fields look just like every
+other field! One limitation of this approach is that it’s no longer possible to compile extensions
+separately from the messages they extend. For this reason we now recommend always generating all
+Wire code in a single step.
+
+**We’ve rearranged the runtime.** Types related to the protocol buffers format are now prefixed
+`Proto` and types related to our implementation are prefixed `Wire`. To encode and decode messages
+you must first get an adapter either from the `ADAPTER` constant or from `ProtoAdapter.get()`. You
+no longer need a `Wire` instance!
+
+#### Runtime Changes
+
+ * New `ADAPTER` constant on most messages gives access to encode & decode values. This replaces
+   the encoding and decoding methods on `Wire`.
+ * Guard against null lists. Code that passes `null` to builder methods expecting a `List` used to
+   accept that; now Wire throws a `NullPointerException`. Similarly list elements must also be
+   non-null.
+ * New `Message.newBuilder()` API. This replaces the previous copy constructor on `Builder`.
+ * Fix: Always throw `ProtocolException` when there are decoding problems.
+ * Fix: Stricter checking for oneof fields. Previously it was possible to create instances with
+   multiple values set!
+ * Fix: Improve redacting of repeated fields.
+ * Fix: `ProtoReader` now silently unpacks packed values.
+ * Fix: `ProtoReader` doesn’t return groups to callers.
+ * New: `Message.withoutUnknownFields()` strips unknown fields.
+
+
+#### Schema & Java Generator
+
+ * The Java generator is now standalone. Use these APIs programmatically to build plugins without
+   delegating to the command line interface.
+ * New: Prune schemas using includes and excludes. The `IdentifierSet` can be used to configure
+   which types and members are retained and which are pruned.
+ * New: Encode and decode values directly from the schema.
+ * New: Improved error messages for validation.
+ * Fix: Strict imports.
+ * Fix: Detect and forbid conflicts on extension tags.
+
+#### Compiler
+
+ * New: Always use Wire’s bundled `descriptor.proto`. Previously to define custom options you
+   needed to import a potentially-inconsistent descriptor.
+ * New: Emit all types when no `.proto` files are explicitly specified.
+ * New: Generate code for encoding and decoding messages. The previous, reflection-based
+   encoder and decoder are accessible with `--compact`.
+ * New: `ServiceFactory` has been removed. To generate code for your services, load a schema with
+   `wire-schema` and then use a library like [JavaPoet][javapoet] to generate your own code. The
+   `JavaGenerator` class can be used to look up Java names of message types.
+ * New: Compiler will load all `.proto` files if none are explicitly specified.
+ * New: Load `.proto` files from ZIP and JAR files.
+ * New: The `--android` flag causes Wire messages to implement `Parcelable`.
+ * New: Support multiple `--proto_path` arguments
+
+### Extensions
+
+ * Extensions have been flattened.
+ * Fix: Better field resolution for options.
+ * Fix: Extension fields may not be required.
+
+
 Version 1.8.0 *(2015-06-27)*
 ----------------------------
 
@@ -145,3 +220,7 @@ Version 1.0.0 *(2013-08-23)*
 ----------------------------
 
 Initial version.
+
+
+ [jimfs]: https://github.com/google/jimfs
+ [javapoet]: https://github.com/square/javapoet
