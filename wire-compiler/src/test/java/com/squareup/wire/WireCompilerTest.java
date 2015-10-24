@@ -166,7 +166,7 @@ public class WireCompilerTest {
     String[] sources = {
         "child_pkg.proto"
     };
-    invokeCompiler(sources);
+    invokeCompiler(sources, "--named_files_only");
 
     String[] outputs = {
         "com/squareup/wire/protos/ChildPackage.java",
@@ -218,11 +218,11 @@ public class WireCompilerTest {
     String[] sources = {
         "custom_options.proto"
     };
-    invokeCompiler(sources);
+    invokeCompiler(sources, "--named_files_only");
 
     String[] outputs = {
         "com/squareup/wire/protos/custom_options/FooBar.java",
-        "com/squareup/wire/protos/custom_options/MessageWithOptions.java"
+        "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
     };
     assertOutputs(outputs);
   }
@@ -231,7 +231,7 @@ public class WireCompilerTest {
     String[] sources = {
         "custom_options.proto"
     };
-    invokeCompiler(sources, "--excludes=google.protobuf.*");
+    invokeCompiler(sources, "--excludes=google.protobuf.*", "--named_files_only");
 
     String[] outputs = {
         "com/squareup/wire/protos/custom_options/FooBar.java",
