@@ -390,7 +390,7 @@ Wire does not support:
  * Groups - they are skipped when parsing binary input data
 
 Wire supports custom options on messages and fields. Other custom options are ignored. Pass
-`--exclude=google.protobuf.*` to the compiler to omit options from the generated code.
+`--excludes=google.protobuf.*` to the compiler to omit options from the generated code.
 
 
 Further Documentation

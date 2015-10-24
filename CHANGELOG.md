@@ -26,7 +26,7 @@ Wire code in a single step.
 you must first get an adapter either from the `ADAPTER` constant or from `ProtoAdapter.get()`. You
 no longer need a `Wire` instance!
 
-#### Runtime Changes
+#### Runtime
 
  * New `ADAPTER` constant on most messages gives access to encode & decode values. This replaces
    the encoding and decoding methods on `Wire`.
@@ -34,14 +34,13 @@ no longer need a `Wire` instance!
    accept that; now Wire throws a `NullPointerException`. Similarly list elements must also be
    non-null.
  * New `Message.newBuilder()` API. This replaces the previous copy constructor on `Builder`.
+ * New: `Message.withoutUnknownFields()` strips unknown fields.
  * Fix: Always throw `ProtocolException` when there are decoding problems.
  * Fix: Stricter checking for oneof fields. Previously it was possible to create instances with
    multiple values set!
  * Fix: Improve redacting of repeated fields.
  * Fix: `ProtoReader` now silently unpacks packed values.
  * Fix: `ProtoReader` doesn’t return groups to callers.
- * New: `Message.withoutUnknownFields()` strips unknown fields.
-
 
 #### Schema & Java Generator
 
@@ -68,12 +67,15 @@ no longer need a `Wire` instance!
  * New: Load `.proto` files from ZIP and JAR files.
  * New: The `--android` flag causes Wire messages to implement `Parcelable`.
  * New: Support multiple `--proto_path` arguments
+ * New: The `--named_files_only` flag limits which `.proto` files yield `.java` files. This was the
+   default in Wire 1.x.
+ * New: The `--no_options` flag has been deleted. Use `--excludes=google.protobuf.*` instead.
 
-### Extensions
+#### Extensions
 
  * Extensions have been flattened.
  * Fix: Better field resolution for options.
- * Fix: Extension fields may not be required.
+ * Fix: Extension fields must not be `required`.
 
 
 Version 1.8.0 *(2015-06-27)*
