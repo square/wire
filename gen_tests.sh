@@ -17,7 +17,7 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.noOptions \
-  --no_options \
+  --excludes=google.protobuf.* \
   ${PROTOS}
 
 cp src/test/proto-java.noOptions/com/squareup/wire/protos/custom_options/FooBar.java \

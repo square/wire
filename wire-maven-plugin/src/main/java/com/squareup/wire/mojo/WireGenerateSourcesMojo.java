@@ -44,9 +44,6 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.compact")
   private boolean emitCompact;
 
-  @Parameter(property = "wire.noOptions")
-  private boolean noOptions;
-
   @Parameter(property = "wire.includes")
   private String[] includes;
 
@@ -88,7 +85,6 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
       }
 
       JavaGenerator javaGenerator = JavaGenerator.get(schema)
-          .withOptions(!noOptions)
           .withAndroid(emitAndroid)
           .withCompact(emitCompact);
 

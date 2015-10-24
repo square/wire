@@ -17,7 +17,7 @@ package squareup.protos.roots;
 
 option java_package = "com.squareup.wire.protos.roots";
 
-// Used to test --roots flag of WireCompiler
+// Used to test --includes flag of WireCompiler
 //
 // A -> B -> C
 //  \

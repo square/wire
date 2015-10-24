@@ -157,29 +157,23 @@ public final class JavaGenerator {
 
   private final Schema schema;
   private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
-  private final boolean emitOptions;
   private final boolean emitAndroid;
   private final boolean emitCompact;
 
   private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToJavaName,
-      boolean emitOptions, boolean emitAndroid, boolean emitCompact) {
+      boolean emitAndroid, boolean emitCompact) {
     this.schema = schema;
     this.nameToJavaName = nameToJavaName;
-    this.emitOptions = emitOptions;
     this.emitAndroid = emitAndroid;
     this.emitCompact = emitCompact;
   }
 
-  public JavaGenerator withOptions(boolean emitOptions) {
-    return new JavaGenerator(schema, nameToJavaName, emitOptions, emitAndroid, emitCompact);
-  }
-
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToJavaName, emitOptions, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToJavaName, emitAndroid, emitCompact);
   }
 
   public JavaGenerator withCompact(boolean compactGeneration) {
-    return new JavaGenerator(schema, nameToJavaName, emitOptions, emitAndroid, compactGeneration);
+    return new JavaGenerator(schema, nameToJavaName, emitAndroid, compactGeneration);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -196,7 +190,7 @@ public final class JavaGenerator {
       }
     }
 
-    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToJavaName), false, false, false);
+    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToJavaName), false, false);
   }
 
   private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
@@ -322,22 +316,19 @@ public final class JavaGenerator {
     constructorBuilder.addParameter(TypeName.INT, "value");
 
     // Enum constant options, each of which requires a constructor parameter and a field.
-    ImmutableList<ProtoMember> allOptionMembers = ImmutableList.of();
-    if (emitOptions) {
-      Set<ProtoMember> allOptionFieldsBuilder = new LinkedHashSet<>();
-      for (EnumConstant constant : type.constants()) {
-        for (ProtoMember protoMember : constant.options().map().keySet()) {
-          Field optionField = schema.getField(protoMember);
-          if (allOptionFieldsBuilder.add(protoMember)) {
-            TypeName optionJavaType = typeName(optionField.type());
-            builder.addField(optionJavaType, optionField.name(), PUBLIC, FINAL);
-            constructorBuilder.addParameter(optionJavaType, optionField.name());
-            constructorBuilder.addStatement("this.$L = $L", optionField.name(), optionField.name());
-          }
+    Set<ProtoMember> allOptionFieldsBuilder = new LinkedHashSet<>();
+    for (EnumConstant constant : type.constants()) {
+      for (ProtoMember protoMember : constant.options().map().keySet()) {
+        Field optionField = schema.getField(protoMember);
+        if (allOptionFieldsBuilder.add(protoMember)) {
+          TypeName optionJavaType = typeName(optionField.type());
+          builder.addField(optionJavaType, optionField.name(), PUBLIC, FINAL);
+          constructorBuilder.addParameter(optionJavaType, optionField.name());
+          constructorBuilder.addStatement("this.$L = $L", optionField.name(), optionField.name());
         }
       }
-      allOptionMembers = ImmutableList.copyOf(allOptionFieldsBuilder);
     }
+    ImmutableList<ProtoMember> allOptionMembers = ImmutableList.copyOf(allOptionFieldsBuilder);
     String enumArgsFormat = "$L" + Strings.repeat(", $L", allOptionMembers.size());
     builder.addMethod(constructorBuilder.build());
 
@@ -380,11 +371,9 @@ public final class JavaGenerator {
         .build());
 
     // Enum type options.
-    if (emitOptions) {
-      FieldSpec options = optionsField(ENUM_OPTIONS, "ENUM_OPTIONS", type.options());
-      if (options != null) {
-        builder.addField(options);
-      }
+    FieldSpec options = optionsField(ENUM_OPTIONS, "ENUM_OPTIONS", type.options());
+    if (options != null) {
+      builder.addField(options);
     }
 
     // Public Getter
@@ -425,20 +414,18 @@ public final class JavaGenerator {
         .initializer("$LL", 0L)
         .build());
 
-    if (emitOptions) {
-      FieldSpec messageOptions = optionsField(
-          MESSAGE_OPTIONS, nameAllocator.get("MESSAGE_OPTIONS"), type.options());
-      if (messageOptions != null) {
-        builder.addField(messageOptions);
-      }
+    FieldSpec messageOptions = optionsField(
+        MESSAGE_OPTIONS, nameAllocator.get("MESSAGE_OPTIONS"), type.options());
+    if (messageOptions != null) {
+      builder.addField(messageOptions);
+    }
 
-      for (Field field : type.fieldsAndOneOfFields()) {
-        String fieldName = nameAllocator.get(field);
-        String optionsFieldName = "FIELD_OPTIONS_" + fieldName.toUpperCase(Locale.US);
-        FieldSpec fieldOptions = optionsField(FIELD_OPTIONS, optionsFieldName, field.options());
-        if (fieldOptions != null) {
-          builder.addField(fieldOptions);
-        }
+    for (Field field : type.fieldsAndOneOfFields()) {
+      String fieldName = nameAllocator.get(field);
+      String optionsFieldName = "FIELD_OPTIONS_" + fieldName.toUpperCase(Locale.US);
+      FieldSpec fieldOptions = optionsField(FIELD_OPTIONS, optionsFieldName, field.options());
+      if (fieldOptions != null) {
+        builder.addField(fieldOptions);
       }
     }
 
