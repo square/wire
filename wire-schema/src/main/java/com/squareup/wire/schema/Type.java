@@ -28,7 +28,7 @@ import java.util.List;
 
 public abstract class Type {
   public abstract Location location();
-  public abstract ProtoType name();
+  public abstract ProtoType type();
   public abstract String documentation();
   public abstract Options options();
   public abstract ImmutableList<Type> nestedTypes();

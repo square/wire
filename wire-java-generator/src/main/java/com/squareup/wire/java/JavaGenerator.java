@@ -203,9 +203,9 @@ public final class JavaGenerator {
       ClassName enclosingClassName, List<Type> types) {
     for (Type type : types) {
       ClassName className = enclosingClassName != null
-          ? enclosingClassName.nestedClass(type.name().simpleName())
-          : ClassName.get(javaPackage, type.name().simpleName());
-      wireToJava.put(type.name(), className);
+          ? enclosingClassName.nestedClass(type.type().simpleName())
+          : ClassName.get(javaPackage, type.type().simpleName());
+      wireToJava.put(type.type(), className);
       putAll(wireToJava, javaPackage, className, type.nestedTypes());
     }
   }
@@ -304,7 +304,7 @@ public final class JavaGenerator {
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateEnum(EnumType type) {
-    ClassName javaType = (ClassName) typeName(type.name());
+    ClassName javaType = (ClassName) typeName(type.type());
 
     TypeSpec.Builder builder = TypeSpec.enumBuilder(javaType.simpleName())
         .addModifiers(PUBLIC)
@@ -402,7 +402,7 @@ public final class JavaGenerator {
   public TypeSpec generateMessage(MessageType type) {
     NameAllocator nameAllocator = typeToNameAllocator.getUnchecked(type);
 
-    ClassName javaType = (ClassName) typeName(type.name());
+    ClassName javaType = (ClassName) typeName(type.type());
     ClassName builderJavaType = javaType.nestedClass("Builder");
 
     TypeSpec.Builder builder = TypeSpec.classBuilder(javaType.simpleName());
@@ -904,7 +904,7 @@ public final class JavaGenerator {
     String otherName = nameAllocator.get("other");
     String oName = nameAllocator.get("o");
 
-    TypeName javaType = typeName(type.name());
+    TypeName javaType = typeName(type.type());
     MethodSpec.Builder result = MethodSpec.methodBuilder("equals")
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
@@ -995,7 +995,7 @@ public final class JavaGenerator {
     }
 
     result.addStatement("return builder.replace(0, 2, \"$L{\").append('}').toString()",
-        type.name().simpleName());
+        type.type().simpleName());
 
     return result.build();
   }
@@ -1057,7 +1057,7 @@ public final class JavaGenerator {
   // }
   private MethodSpec newBuilder(NameAllocator nameAllocator, MessageType message) {
     String builderName = nameAllocator.get("builder");
-    ClassName javaType = (ClassName) typeName(message.name());
+    ClassName javaType = (ClassName) typeName(message.type());
     ClassName builderJavaType = javaType.nestedClass("Builder");
 
     MethodSpec.Builder result = MethodSpec.methodBuilder("newBuilder")

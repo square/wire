@@ -41,8 +41,8 @@ public final class SchemaTest {
 
     Service service = schema.getService("Service");
     Rpc call = service.rpc("Call");
-    assertThat(call.requestType()).isEqualTo(schema.getType("Request").name());
-    assertThat(call.responseType()).isEqualTo(schema.getType("Response").name());
+    assertThat(call.requestType()).isEqualTo(schema.getType("Request").type());
+    assertThat(call.responseType()).isEqualTo(schema.getType("Response").type());
   }
 
   @Test public void linkMessage() throws Exception {
@@ -60,7 +60,7 @@ public final class SchemaTest {
 
     MessageType message = (MessageType) schema.getType("Message");
     Field field = message.field("field");
-    assertThat(field.type()).isEqualTo(schema.getType("foo_package.Foo").name());
+    assertThat(field.type()).isEqualTo(schema.getType("foo_package.Foo").type());
   }
 
   @Test public void isValidTag() {
@@ -748,7 +748,7 @@ public final class SchemaTest {
         .build();
     MessageType a = (MessageType) schema.getType("pa.A");
     MessageType b = (MessageType) schema.getType("pb.B");
-    assertThat(a.field("b").type()).isEqualTo(b.name());
+    assertThat(a.field("b").type()).isEqualTo(b.type());
   }
 
   @Test public void fieldTypeNotImported() throws Exception {
@@ -787,8 +787,8 @@ public final class SchemaTest {
         .build();
     Service service = schema.getService("pa.Service");
     MessageType b = (MessageType) schema.getType("pb.B");
-    assertThat(service.rpcs().get(0).requestType()).isEqualTo(b.name());
-    assertThat(service.rpcs().get(0).responseType()).isEqualTo(b.name());
+    assertThat(service.rpcs().get(0).requestType()).isEqualTo(b.type());
+    assertThat(service.rpcs().get(0).responseType()).isEqualTo(b.type());
   }
 
   @Test public void rpcTypeNotImported() throws Exception {
@@ -832,7 +832,7 @@ public final class SchemaTest {
         .build();
     Extend extendB = schema.protoFiles().get(0).extendList().get(0);
     MessageType b = (MessageType) schema.getType("pb.B");
-    assertThat(extendB.type()).isEqualTo(b.name());
+    assertThat(extendB.type()).isEqualTo(b.type());
   }
 
   @Test public void extendTypeNotImported() throws Exception {
@@ -903,7 +903,7 @@ public final class SchemaTest {
         .build();
     MessageType a = (MessageType) schema.getType("pa.A");
     MessageType c = (MessageType) schema.getType("pc.C");
-    assertThat(a.field("c").type()).isEqualTo(c.name());
+    assertThat(a.field("c").type()).isEqualTo(c.type());
   }
 
   @Test public void importSamePackageDifferentFile() throws Exception {

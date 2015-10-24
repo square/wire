@@ -133,7 +133,7 @@ final class Linker {
   }
 
   private void register(Type type) {
-    protoTypeNames.put(type.name().toString(), type);
+    protoTypeNames.put(type.type().toString(), type);
     for (Type nestedType : type.nestedTypes()) {
       register(nestedType);
     }
@@ -169,7 +169,7 @@ final class Linker {
       return ProtoType.BYTES; // Just return any placeholder.
     }
 
-    return resolved.name();
+    return resolved.type();
   }
 
   <T> T resolve(String name, Map<String, T> map) {
@@ -199,7 +199,7 @@ final class Linker {
     for (int i = contextStack.size() - 1; i >= 0; i--) {
       Object context = contextStack.get(i);
       if (context instanceof Type) {
-        return ((Type) context).name().toString();
+        return ((Type) context).type().toString();
       } else if (context instanceof ProtoFile) {
         String packageName = ((ProtoFile) context).packageName();
         return packageName != null ? packageName : "";
@@ -305,7 +305,7 @@ final class Linker {
         error.append(String.format("multiple enums share constant %s:", constant));
         for (EnumType enumType : entry.getValue()) {
           error.append(String.format("\n  %s. %s.%s (%s)",
-              index++, enumType.name(), constant, enumType.constant(constant).location()));
+              index++, enumType.type(), constant, enumType.constant(constant).location()));
         }
         addError("%s", error);
       }
@@ -352,12 +352,12 @@ final class Linker {
       } else if (context instanceof MessageType) {
         MessageType message = (MessageType) context;
         error.append(String.format("%s message %s (%s)",
-            prefix, message.name(), message.location()));
+            prefix, message.type(), message.location()));
 
       } else if (context instanceof EnumType) {
         EnumType enumType = (EnumType) context;
         error.append(String.format("%s enum %s (%s)",
-            prefix, enumType.name(), enumType.location()));
+            prefix, enumType.type(), enumType.location()));
 
       } else if (context instanceof Service) {
         Service service = (Service) context;
