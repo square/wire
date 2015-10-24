@@ -31,4 +31,10 @@ public final class JavaGeneratorTest {
     String expected = "Google query.\n\n@see <a href=\"http://google.com\">http://google.com</a>";
     assertThat(JavaGenerator.sanitizeJavadoc(input)).isEqualTo(expected);
   }
+
+  @Test public void sanitizeJavadocStarSlash() {
+    String input = "/* comment inside comment. */";
+    String expected = "/* comment inside comment. &#42;/";
+    assertThat(JavaGenerator.sanitizeJavadoc(input)).isEqualTo(expected);
+  }
 }

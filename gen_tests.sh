@@ -10,6 +10,7 @@ PROTOS=`find src/test/proto -name '*.proto' | sed 's|^src/test/proto/||'`
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java \
+  google/protobuf/descriptor.proto \
   ${PROTOS}
 
 # NO OPTIONS
