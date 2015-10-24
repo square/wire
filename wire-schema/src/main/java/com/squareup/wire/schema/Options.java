@@ -131,7 +131,7 @@ public final class Options {
 
     Map<ProtoMember, Object> result = new LinkedHashMap<>();
     Map<ProtoMember, Object> last = result;
-    ProtoType lastProtoType = messageType.name();
+    ProtoType lastProtoType = messageType.type();
     for (int i = 1; i < path.length; i++) {
       Map<ProtoMember, Object> nested = new LinkedHashMap<>();
       last.put(ProtoMember.get(lastProtoType, field), nested);

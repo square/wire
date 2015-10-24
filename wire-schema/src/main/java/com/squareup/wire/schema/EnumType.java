@@ -45,7 +45,7 @@ public final class EnumType extends Type {
     return element.location();
   }
 
-  @Override public ProtoType name() {
+  @Override public ProtoType type() {
     return protoType;
   }
 

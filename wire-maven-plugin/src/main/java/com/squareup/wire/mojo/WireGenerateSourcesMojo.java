@@ -99,7 +99,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
 
         for (Type type : protoFile.types()) {
           Stopwatch stopwatch = Stopwatch.createStarted();
-          ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.name());
+          ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.type());
           TypeSpec typeSpec = type instanceof MessageType
               ? javaGenerator.generateMessage((MessageType) type)
               : javaGenerator.generateEnum((EnumType) type);

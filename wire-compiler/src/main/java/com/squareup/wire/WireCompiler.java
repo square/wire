@@ -243,7 +243,7 @@ public final class WireCompiler {
       }
 
       for (Type type : protoFile.types()) {
-        ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.name());
+        ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.type());
         TypeSpec typeSpec = type instanceof MessageType
             ? javaGenerator.generateMessage((MessageType) type)
             : javaGenerator.generateEnum((EnumType) type);

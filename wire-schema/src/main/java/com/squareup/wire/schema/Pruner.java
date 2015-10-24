@@ -70,7 +70,7 @@ final class Pruner {
   }
 
   private void markRoots(Type type) {
-    ProtoType protoType = type.name();
+    ProtoType protoType = type.type();
     if (identifierSet.includes(protoType)) {
       marks.root(protoType);
       queue.add(protoType);
@@ -189,13 +189,13 @@ final class Pruner {
   private void markType(Type type) {
     markOptions(type.options());
 
-    String enclosingTypeOrPackage = type.name().enclosingTypeOrPackage();
+    String enclosingTypeOrPackage = type.type().enclosingTypeOrPackage();
     Type enclosingType = schema.getType(enclosingTypeOrPackage);
     if (enclosingType != null) {
-      mark(enclosingType.name());
+      mark(enclosingType.type());
     }
 
-    if (marks.containsAllMembers(type.name())) {
+    if (marks.containsAllMembers(type.type())) {
       if (type instanceof MessageType) {
         markMessage((MessageType) type);
       } else if (type instanceof EnumType) {
@@ -213,7 +213,7 @@ final class Pruner {
 
   private void markEnum(EnumType wireEnum) {
     markOptions(wireEnum.options());
-    if (marks.containsAllMembers(wireEnum.name())) {
+    if (marks.containsAllMembers(wireEnum.type())) {
       for (EnumConstant constant : wireEnum.constants()) {
         markOptions(constant.options());
       }
