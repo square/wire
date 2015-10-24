@@ -15,7 +15,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 /**
- * Used to test --roots flag of WireCompiler
+ * Used to test --includes flag of WireCompiler
  *
  * A -> B -> C
  *  \

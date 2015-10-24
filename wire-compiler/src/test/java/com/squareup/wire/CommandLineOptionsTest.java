@@ -34,7 +34,7 @@ public class CommandLineOptionsTest {
     assertThat(compiler.protoPaths).containsExactly("foo/bar", "one/two", "three/four");
   }
 
-  @Test public void javaOut() throws Exception{
+  @Test public void javaOut() throws Exception {
     try {
       WireCompiler.forArgs();
       fail();
@@ -85,20 +85,12 @@ public class CommandLineOptionsTest {
     WireCompiler compiler = WireCompiler.forArgs("--java_out=.");
     assertThat(compiler.identifierSet.isEmpty()).isTrue();
 
-    compiler = WireCompiler.forArgs("--java_out=.", "--roots=com.example.Foo");
+    compiler = WireCompiler.forArgs("--java_out=.", "--includes=com.example.Foo");
     assertThat(compiler.identifierSet.includes(ProtoType.get("com.example.Foo"))).isTrue();
     assertThat(compiler.identifierSet.includes(ProtoType.get("com.example.Bar"))).isFalse();
 
-    compiler = WireCompiler.forArgs("--java_out=.", "--roots=com.example.Foo,com.example.Bar");
+    compiler = WireCompiler.forArgs("--java_out=.", "--includes=com.example.Foo,com.example.Bar");
     assertThat(compiler.identifierSet.includes(ProtoType.get("com.example.Foo"))).isTrue();
     assertThat(compiler.identifierSet.includes(ProtoType.get("com.example.Bar"))).isTrue();
-  }
-
-  @Test public void  emitOptions() throws Exception {
-    WireCompiler compiler = WireCompiler.forArgs("--java_out=.");
-    assertThat(compiler.emitOptions).isTrue();
-
-    compiler = WireCompiler.forArgs("--java_out=.", "--no_options");
-    assertThat(compiler.emitOptions).isFalse();
   }
 }

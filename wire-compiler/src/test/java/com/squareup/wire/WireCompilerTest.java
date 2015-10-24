@@ -231,7 +231,7 @@ public class WireCompilerTest {
     String[] sources = {
         "custom_options.proto"
     };
-    invokeCompiler(sources, "--no_options");
+    invokeCompiler(sources, "--excludes=google.protobuf.*");
 
     String[] outputs = {
         "com/squareup/wire/protos/custom_options/FooBar.java",
@@ -299,7 +299,7 @@ public class WireCompilerTest {
     String[] sources = {
         "roots.proto"
     };
-    invokeCompiler(sources, "--roots=squareup.protos.roots.A");
+    invokeCompiler(sources, "--includes=squareup.protos.roots.A");
 
     String[] outputs = {
         "com/squareup/wire/protos/roots/A.java",
@@ -314,7 +314,7 @@ public class WireCompilerTest {
     String[] sources = {
         "roots.proto"
     };
-    invokeCompiler(sources, "--roots=squareup.protos.roots.B");
+    invokeCompiler(sources, "--includes=squareup.protos.roots.B");
 
     String[] outputs = {
         "com/squareup/wire/protos/roots/B.java",
@@ -327,7 +327,7 @@ public class WireCompilerTest {
     String[] sources = {
         "roots.proto"
     };
-    invokeCompiler(sources, "--roots=squareup.protos.roots.E");
+    invokeCompiler(sources, "--includes=squareup.protos.roots.E");
 
     String[] outputs = {
         "com/squareup/wire/protos/roots/E.java",
@@ -340,7 +340,7 @@ public class WireCompilerTest {
     String[] sources = {
         "roots.proto"
     };
-    invokeCompiler(sources, "--roots=squareup.protos.roots.H");
+    invokeCompiler(sources, "--includes=squareup.protos.roots.H");
 
     String[] outputs = {
         "com/squareup/wire/protos/roots/E.java",
@@ -354,7 +354,7 @@ public class WireCompilerTest {
     String[] sources = {
         "roots.proto"
     };
-    invokeCompiler(sources, "--roots=squareup.protos.roots.I");
+    invokeCompiler(sources, "--includes=squareup.protos.roots.I");
 
     String[] outputs = {
         "com/squareup/wire/protos/roots/I.java",
@@ -368,7 +368,7 @@ public class WireCompilerTest {
     String[] sources = {
         "service_root.proto"
     };
-    invokeCompiler(sources, "--roots=squareup.wire.protos.roots.TheService", "--dry_run", "--quiet");
+    invokeCompiler(sources, "--includes=squareup.wire.protos.roots.TheService", "--dry_run", "--quiet");
 
     assertThat(logger.getLog()).isEqualTo(""
         + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"

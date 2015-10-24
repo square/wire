@@ -48,7 +48,6 @@ import java.util.Scanner;
  *     [--files=&lt;protos.include&gt;]
  *     [--includes=&lt;message_name&gt;[,&lt;message_name&gt;...]]
  *     [--excludes=&lt;message_name&gt;[,&lt;message_name&gt;...]]
- *     [--no_options]
  *     [--service_factory=&lt;class_name&gt;]
  *     [--service_factory_opt=&lt;value&gt;]
  *     [--service_factory_opt=&lt;value&gt;]...]
@@ -69,13 +68,6 @@ import java.util.Scanner;
  * classes generated during the compile. This list is suitable for passing to Wire's constructor
  * at runtime for constructing its internal extension registry.
  *
- * <p>Unless the {@code --no_options} flag is supplied, code will be emitted for options on messages
- * and fields.  The presence of options on a message will result in a static member named
- * "MESSAGE_OPTIONS", initialized with the options and their values.   The presence of options on
- * a field (other than the standard options "default", "deprecated", and "packed") will result in
- * a static member named "FIELD_OPTIONS_&lt;field name&gt;" in the generated code, initialized
- * with the field option values.
- *
  * <p>If {@code --quiet} is specified, diagnostic messages to stdout are suppressed.
  *
  * <p>The {@code --dry_run} flag causes the compile to just emit the names of the source files that
@@ -91,10 +83,8 @@ public final class WireCompiler {
   public static final String PROTO_PATH_FLAG = "--proto_path=";
   public static final String JAVA_OUT_FLAG = "--java_out=";
   public static final String FILES_FLAG = "--files=";
-  public static final String ROOTS_FLAG = "--roots="; // TODO(jwilson): drop before 2.0 final.
   public static final String INCLUDES_FLAG = "--includes=";
   public static final String EXCLUDES_FLAG = "--excludes=";
-  public static final String NO_OPTIONS_FLAG = "--no_options";
   public static final String QUIET_FLAG = "--quiet";
   public static final String DRY_RUN_FLAG = "--dry_run";
   public static final String ANDROID = "--android";
@@ -110,21 +100,19 @@ public final class WireCompiler {
   final String javaOut;
   final List<String> sourceFileNames;
   final IdentifierSet identifierSet;
-  final boolean emitOptions;
   final boolean dryRun;
   final boolean emitAndroid;
   final boolean emitCompact;
 
   WireCompiler(FileSystem fs, WireLogger log, List<String> protoPaths, String javaOut,
-      List<String> sourceFileNames, IdentifierSet identifierSet, boolean emitOptions,
-      boolean dryRun, boolean emitAndroid, boolean emitCompact) {
+      List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
+      boolean emitAndroid, boolean emitCompact) {
     this.fs = fs;
     this.log = log;
     this.protoPaths = protoPaths;
     this.javaOut = javaOut;
     this.sourceFileNames = sourceFileNames;
     this.identifierSet = identifierSet;
-    this.emitOptions = emitOptions;
     this.dryRun = dryRun;
     this.emitAndroid = emitAndroid;
     this.emitCompact = emitCompact;
@@ -149,7 +137,6 @@ public final class WireCompiler {
       FileSystem fileSystem, WireLogger logger, String... args) throws WireException {
     List<String> sourceFileNames = new ArrayList<>();
     IdentifierSet.Builder identifierSetBuilder = new IdentifierSet.Builder();
-    boolean emitOptions = true;
     List<String> protoPaths = new ArrayList<>();
     String javaOut = null;
     boolean quiet = false;
@@ -171,17 +158,14 @@ public final class WireCompiler {
           throw new WireException("Error processing argument " + arg, ex);
         }
         sourceFileNames.addAll(Arrays.asList(fileNames));
-      } else if (arg.startsWith(INCLUDES_FLAG) || arg.startsWith(ROOTS_FLAG)) {
-        String prefix = arg.startsWith(INCLUDES_FLAG) ? INCLUDES_FLAG : ROOTS_FLAG;
-        for (String identifier : splitArg(arg, prefix.length())) {
+      } else if (arg.startsWith(INCLUDES_FLAG)) {
+        for (String identifier : splitArg(arg, INCLUDES_FLAG.length())) {
           identifierSetBuilder.include(identifier);
         }
       } else if (arg.startsWith(EXCLUDES_FLAG)) {
         for (String identifier : splitArg(arg, EXCLUDES_FLAG.length())) {
           identifierSetBuilder.exclude(identifier);
         }
-      } else if (arg.equals(NO_OPTIONS_FLAG)) {
-        emitOptions = false;
       } else if (arg.equals(QUIET_FLAG)) {
         quiet = true;
       } else if (arg.equals(DRY_RUN_FLAG)) {
@@ -204,7 +188,7 @@ public final class WireCompiler {
     logger.setQuiet(quiet);
 
     return new WireCompiler(fileSystem, logger, protoPaths, javaOut, sourceFileNames,
-        identifierSetBuilder.build(), emitOptions, dryRun, emitAndroid, emitCompact);
+        identifierSetBuilder.build(), dryRun, emitAndroid, emitCompact);
   }
 
   private static List<String> splitArg(String arg, int flagLength) {
@@ -233,7 +217,6 @@ public final class WireCompiler {
     }
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
-        .withOptions(emitOptions)
         .withAndroid(emitAndroid)
         .withCompact(emitCompact);
 
