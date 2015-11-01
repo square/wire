@@ -2,6 +2,7 @@
 // Source file: simple_message.proto at 24:1
 package com.squareup.wire.protos.simple;
 
+import com.google.protobuf.EnumOptions;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -10,6 +11,7 @@ import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.io.IOException;
+import java.lang.Boolean;
 import java.lang.Deprecated;
 import java.lang.Double;
 import java.lang.Integer;
@@ -546,18 +548,27 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
   }
 
   public enum NestedEnum implements WireEnum {
-    FOO(1),
+    FOO(1, null),
 
-    BAR(2),
+    BAR(2, null),
 
-    BAZ(3);
+    BAZ(3, null),
+
+    BUZ(3, true);
 
     public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);
 
+    public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
+        .allow_alias(true)
+        .build();
+
     private final int value;
 
-    NestedEnum(int value) {
+    public final Boolean deprecated;
+
+    NestedEnum(int value, Boolean deprecated) {
       this.value = value;
+      this.deprecated = deprecated;
     }
 
     /**

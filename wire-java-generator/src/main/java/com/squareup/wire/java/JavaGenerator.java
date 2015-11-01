@@ -340,6 +340,7 @@ public final class JavaGenerator {
         .addParameter(int.class, "value")
         .beginControlFlow("switch (value)");
 
+    Set<Integer> seenTags = new LinkedHashSet<>();
     for (EnumConstant constant : type.constants()) {
       Object[] enumArgs = new Object[allOptionMembers.size() + 1];
       enumArgs[0] = constant.tag();
@@ -359,7 +360,10 @@ public final class JavaGenerator {
 
       builder.addEnumConstant(constant.name(), constantBuilder.build());
 
-      fromValueBuilder.addStatement("case $L: return $L", constant.tag(), constant.name());
+      // Ensure constant case tags are unique, which might not be the case if allow_alias is true.
+      if (seenTags.add(constant.tag())) {
+        fromValueBuilder.addStatement("case $L: return $L", constant.tag(), constant.name());
+      }
     }
 
     builder.addMethod(fromValueBuilder.addStatement("default: return null")

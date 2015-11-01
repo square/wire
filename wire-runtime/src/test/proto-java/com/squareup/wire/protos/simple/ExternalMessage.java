@@ -93,27 +93,27 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   public final Float f;
 
   /**
-   * Extension source: simple_message.proto at 69:3
+   * Extension source: simple_message.proto at 71:3
    */
   public final List<Integer> fooext;
 
   /**
-   * Extension source: simple_message.proto at 70:3
+   * Extension source: simple_message.proto at 72:3
    */
   public final Integer barext;
 
   /**
-   * Extension source: simple_message.proto at 71:3
+   * Extension source: simple_message.proto at 73:3
    */
   public final Integer bazext;
 
   /**
-   * Extension source: simple_message.proto at 72:3
+   * Extension source: simple_message.proto at 74:3
    */
   public final SimpleMessage.NestedMessage nested_message_ext;
 
   /**
-   * Extension source: simple_message.proto at 73:3
+   * Extension source: simple_message.proto at 75:3
    */
   public final SimpleMessage.NestedEnum nested_enum_ext;
 
