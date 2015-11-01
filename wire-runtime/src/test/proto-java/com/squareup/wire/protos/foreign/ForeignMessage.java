@@ -67,7 +67,7 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
   public final Integer i;
 
   /**
-   * Extension source: simple_message.proto at 77:3
+   * Extension source: simple_message.proto at 79:3
    */
   public final Integer j;
 
