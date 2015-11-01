@@ -554,6 +554,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     BAZ(3, null),
 
+    @Deprecated
     BUZ(3, true);
 
     public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);

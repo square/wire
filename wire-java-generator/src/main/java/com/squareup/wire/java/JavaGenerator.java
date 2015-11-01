@@ -68,6 +68,7 @@ import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.squareup.wire.schema.Options.ENUM_OPTIONS;
+import static com.squareup.wire.schema.Options.ENUM_VALUE_OPTIONS;
 import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
 import static com.squareup.wire.schema.Options.MESSAGE_OPTIONS;
 import static javax.lang.model.element.Modifier.FINAL;
@@ -83,7 +84,8 @@ import static javax.lang.model.element.Modifier.STATIC;
  * java.lang.String}, or {@code com.squareup.protos.person.Person}).
  */
 public final class JavaGenerator {
-  static final ProtoMember DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated");
+  static final ProtoMember FIELD_DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated");
+  static final ProtoMember ENUM_DEPRECATED = ProtoMember.get(ENUM_VALUE_OPTIONS, "deprecated");
   static final ProtoMember PACKED = ProtoMember.get(FIELD_OPTIONS, "packed");
 
   static final ClassName BYTE_STRING = ClassName.get(ByteString.class);
@@ -356,6 +358,10 @@ public final class JavaGenerator {
       TypeSpec.Builder constantBuilder = TypeSpec.anonymousClassBuilder(enumArgsFormat, enumArgs);
       if (!constant.documentation().isEmpty()) {
         constantBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.documentation()));
+      }
+
+      if ("true".equals(constant.options().get(ENUM_DEPRECATED))) {
+        constantBuilder.addAnnotation(Deprecated.class);
       }
 
       builder.addEnumConstant(constant.name(), constantBuilder.build());
@@ -736,7 +742,7 @@ public final class JavaGenerator {
 
     boolean empty = true;
     for (Map.Entry<ProtoMember, ?> entry : options.map().entrySet()) {
-      if (entry.getKey().equals(DEPRECATED) || entry.getKey().equals(PACKED)) {
+      if (entry.getKey().equals(FIELD_DEPRECATED) || entry.getKey().equals(PACKED)) {
         continue;
       }
 
