@@ -17,6 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Map;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
@@ -458,6 +459,29 @@ public final class PrunerTest {
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("ServiceA")
         .exclude("MessageC")
+        .build());
+    assertThat(pruned.getType("MessageB")).isNotNull();
+    assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull();
+    assertThat(pruned.getType("MessageC")).isNull();
+    assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull();
+  }
+
+  @Ignore("https://github.com/square/wire/issues/511")
+  @Test public void excludeRpcExcludesTypes() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("service.proto", ""
+            + "service ServiceA {\n"
+            + "  rpc CallB (MessageB) returns (MessageB);\n"
+            + "  rpc CallC (MessageC) returns (MessageC);\n"
+            + "}\n"
+            + "message MessageB {\n"
+            + "}\n"
+            + "message MessageC {\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("ServiceA")
+        .exclude("ServiceA#CallC")
         .build());
     assertThat(pruned.getType("MessageB")).isNotNull();
     assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull();
