@@ -17,7 +17,6 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Map;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
@@ -466,7 +465,6 @@ public final class PrunerTest {
     assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull();
   }
 
-  @Ignore("https://github.com/square/wire/issues/511")
   @Test public void excludeRpcExcludesTypes() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""
@@ -487,6 +485,52 @@ public final class PrunerTest {
     assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull();
     assertThat(pruned.getType("MessageC")).isNull();
     assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull();
+  }
+
+  @Test public void excludeFieldExcludesTypes() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message MessageA {\n"
+            + "  optional MessageB b = 1;\n"
+            + "  optional MessageC c = 2;\n"
+            + "}\n"
+            + "message MessageB {\n"
+            + "}\n"
+            + "message MessageC {\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA")
+        .exclude("MessageA#c")
+        .build());
+    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
+    assertThat(pruned.getType("MessageB")).isNotNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
+    assertThat(pruned.getType("MessageC")).isNull();
+  }
+
+  @Test public void excludeEnumExcludesOptions() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "enum Enum {\n"
+            + "  A = 0;\n"
+            + "  B = 1  [message.c = 1];\n"
+            + "}\n"
+            + "extend google.protobuf.EnumValueOptions {\n"
+            + "  optional Message message = 70000;\n"
+            + "};\n"
+            + "message Message {\n"
+            + "  optional int32 c = 1;\n"
+            + "}\n")
+        .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("Enum")
+        .exclude("Enum#B")
+        .build());
+    assertThat(((EnumType) pruned.getType("Enum")).constant("A")).isNotNull();
+    assertThat(((EnumType) pruned.getType("Enum")).constant("B")).isNull();
+    assertThat(pruned.getType("Message")).isNull();
   }
 
   @Test public void excludedFieldPrunesTopLevelOption() throws Exception {
