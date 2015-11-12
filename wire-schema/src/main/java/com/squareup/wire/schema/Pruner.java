@@ -126,7 +126,7 @@ final class Pruner {
             field = ((MessageType) type).extensionField(member);
           }
           if (field != null) {
-            markField(field);
+            markField(type.type(), field);
             continue;
           }
         } else if (type instanceof EnumType) {
@@ -141,7 +141,7 @@ final class Pruner {
         if (service != null) {
           Rpc rpc = service.rpc(member);
           if (rpc != null) {
-            markRpc(rpc);
+            markRpc(service.type(), rpc);
             continue;
           }
         }
@@ -205,9 +205,9 @@ final class Pruner {
   }
 
   private void markMessage(MessageType message) {
-    markFields(message.fields());
+    markFields(message.type(), message.fields());
     for (OneOf oneOf : message.oneOfs()) {
-      markFields(oneOf.fields());
+      markFields(message.type(), oneOf.fields());
     }
   }
 
@@ -215,20 +215,24 @@ final class Pruner {
     markOptions(wireEnum.options());
     if (marks.containsAllMembers(wireEnum.type())) {
       for (EnumConstant constant : wireEnum.constants()) {
-        markOptions(constant.options());
+        if (marks.contains(ProtoMember.get(wireEnum.type(), constant.name()))) {
+          markOptions(constant.options());
+        }
       }
     }
   }
 
-  private void markFields(ImmutableList<Field> fields) {
+  private void markFields(ProtoType declaringType, ImmutableList<Field> fields) {
     for (Field field : fields) {
-      markField(field);
+      markField(declaringType, field);
     }
   }
 
-  private void markField(Field field) {
-    markOptions(field.options());
-    mark(field.type());
+  private void markField(ProtoType declaringType, Field field) {
+    if (marks.contains(ProtoMember.get(declaringType, field.name()))) {
+      markOptions(field.options());
+      mark(field.type());
+    }
   }
 
   private void markOptions(Options options) {
@@ -241,14 +245,16 @@ final class Pruner {
     markOptions(service.options());
     if (marks.containsAllMembers(service.type())) {
       for (Rpc rpc : service.rpcs()) {
-        markRpc(rpc);
+        markRpc(service.type(), rpc);
       }
     }
   }
 
-  private void markRpc(Rpc rpc) {
-    markOptions(rpc.options());
-    mark(rpc.requestType());
-    mark(rpc.responseType());
+  private void markRpc(ProtoType declaringType, Rpc rpc) {
+    if (marks.contains(ProtoMember.get(declaringType, rpc.name()))) {
+      markOptions(rpc.options());
+      mark(rpc.requestType());
+      mark(rpc.responseType());
+    }
   }
 }
