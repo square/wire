@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 2.0.1 *(2015-11-12)*
+----------------------------
+
+ * Fix: Do not emit `case` statements for aliased enum constant values. The first constant for a
+   value will be returned when deserializing.
+ * Fix: Emit `@Deprecated` annotation on deprecated enum constants.
+ * Fix: Correctly prune dependencies of excluded message, enum, or service members. Previously
+   the dependencies of an excluded member were retained despite the member itself being omitted.
+
+
 Version 2.0.0 *(2015-10-23)*
 ----------------------------
 
