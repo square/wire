@@ -108,7 +108,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
     return builder.replace(0, 2, "RedactedRequired{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRequired, Builder> {
+  public static final class Builder extends Message.Builder<RedactedRequired, Builder> {
     public String a;
 
     public Builder() {

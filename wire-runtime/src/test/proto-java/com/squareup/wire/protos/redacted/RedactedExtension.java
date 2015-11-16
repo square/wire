@@ -122,7 +122,7 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
     return builder.replace(0, 2, "RedactedExtension{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedExtension, Builder> {
+  public static final class Builder extends Message.Builder<RedactedExtension, Builder> {
     public String d;
 
     public String e;

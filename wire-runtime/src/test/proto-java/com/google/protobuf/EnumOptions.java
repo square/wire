@@ -157,7 +157,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     return builder.replace(0, 2, "EnumOptions{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<EnumOptions, Builder> {
+  public static final class Builder extends Message.Builder<EnumOptions, Builder> {
     public Boolean allow_alias;
 
     public Boolean deprecated;

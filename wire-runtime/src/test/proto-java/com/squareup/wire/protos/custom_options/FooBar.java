@@ -270,7 +270,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     return builder.replace(0, 2, "FooBar{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<FooBar, Builder> {
+  public static final class Builder extends Message.Builder<FooBar, Builder> {
     public Integer foo;
 
     public String bar;
@@ -365,7 +365,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       @Override
       public Nested decode(ProtoReader reader) throws IOException {
-        Nested.Builder builder = new Nested.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -390,7 +390,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       @Override
       public Nested redact(Nested value) {
-        Nested.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -412,8 +412,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
 
     @Override
-    public Nested.Builder newBuilder() {
-      Nested.Builder builder = new Nested.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.value = value;
       builder.addUnknownFields(unknownFields());
       return builder;
@@ -446,7 +446,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       return builder.replace(0, 2, "Nested{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<Nested, Nested.Builder> {
+    public static final class Builder extends Message.Builder<Nested, Builder> {
       public FooBarBazEnum value;
 
       public Builder() {
@@ -480,7 +480,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       @Override
       public More decode(ProtoReader reader) throws IOException {
-        More.Builder builder = new More.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -498,7 +498,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       @Override
       public More redact(More value) {
-        More.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -518,8 +518,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
 
     @Override
-    public More.Builder newBuilder() {
-      More.Builder builder = new More.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.serial = copyOf("serial", serial);
       builder.addUnknownFields(unknownFields());
       return builder;
@@ -552,7 +552,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       return builder.replace(0, 2, "More{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<More, More.Builder> {
+    public static final class Builder extends Message.Builder<More, Builder> {
       public List<Integer> serial;
 
       public Builder() {

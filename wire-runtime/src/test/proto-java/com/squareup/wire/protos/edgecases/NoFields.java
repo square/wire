@@ -84,7 +84,7 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
     return builder.replace(0, 2, "NoFields{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<NoFields, Builder> {
+  public static final class Builder extends Message.Builder<NoFields, Builder> {
     public Builder() {
     }
 

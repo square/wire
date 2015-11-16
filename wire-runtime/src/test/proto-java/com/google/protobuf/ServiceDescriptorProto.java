@@ -130,7 +130,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     return builder.replace(0, 2, "ServiceDescriptorProto{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<ServiceDescriptorProto, Builder> {
+  public static final class Builder extends Message.Builder<ServiceDescriptorProto, Builder> {
     public String name;
 
     public List<MethodDescriptorProto> method;

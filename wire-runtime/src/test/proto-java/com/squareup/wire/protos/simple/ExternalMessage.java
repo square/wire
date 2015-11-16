@@ -186,7 +186,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
     return builder.replace(0, 2, "ExternalMessage{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<ExternalMessage, Builder> {
+  public static final class Builder extends Message.Builder<ExternalMessage, Builder> {
     public Float f;
 
     public List<Integer> fooext;

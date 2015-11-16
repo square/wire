@@ -104,7 +104,7 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
     return builder.replace(0, 2, "HeresAllTheDataRequest{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<HeresAllTheDataRequest, Builder> {
+  public static final class Builder extends Message.Builder<HeresAllTheDataRequest, Builder> {
     public ByteString data;
 
     public Builder() {

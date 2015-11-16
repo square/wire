@@ -124,7 +124,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     return builder.replace(0, 2, "RedactedRepeated{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedRepeated, Builder> {
+  public static final class Builder extends Message.Builder<RedactedRepeated, Builder> {
     public List<String> a;
 
     public List<Redacted> b;

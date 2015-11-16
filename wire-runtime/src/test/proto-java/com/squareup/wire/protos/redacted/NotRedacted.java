@@ -116,7 +116,7 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
     return builder.replace(0, 2, "NotRedacted{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<NotRedacted, Builder> {
+  public static final class Builder extends Message.Builder<NotRedacted, Builder> {
     public String a;
 
     public String b;

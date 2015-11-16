@@ -130,7 +130,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     return builder.replace(0, 2, "MethodOptions{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<MethodOptions, Builder> {
+  public static final class Builder extends Message.Builder<MethodOptions, Builder> {
     public Boolean deprecated;
 
     public List<UninterpretedOption> uninterpreted_option;

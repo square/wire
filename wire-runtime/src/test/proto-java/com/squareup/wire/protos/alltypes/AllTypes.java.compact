@@ -1697,7 +1697,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     return result;
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<AllTypes, Builder> {
+  public static final class Builder extends Message.Builder<AllTypes, Builder> {
     public Integer opt_int32;
 
     public Integer opt_uint32;
@@ -2819,8 +2819,8 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     @Override
-    public NestedMessage.Builder newBuilder() {
-      NestedMessage.Builder builder = new NestedMessage.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.a = a;
       builder.addUnknownFields(unknownFields());
       return builder;
@@ -2846,7 +2846,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return result;
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, NestedMessage.Builder> {
+    public static final class Builder extends Message.Builder<NestedMessage, Builder> {
       public Integer a;
 
       public Builder() {

@@ -84,7 +84,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     return builder.replace(0, 2, "Bar{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Bar, Builder> {
+  public static final class Builder extends Message.Builder<Bar, Builder> {
     public Builder() {
     }
 
@@ -108,7 +108,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
       @Override
       public Baz decode(ProtoReader reader) throws IOException {
-        Baz.Builder builder = new Baz.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -125,7 +125,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
       @Override
       public Baz redact(Baz value) {
-        Baz.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -142,8 +142,8 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     }
 
     @Override
-    public Baz.Builder newBuilder() {
-      Baz.Builder builder = new Baz.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.addUnknownFields(unknownFields());
       return builder;
     }
@@ -164,7 +164,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
       return builder.replace(0, 2, "Baz{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<Baz, Baz.Builder> {
+    public static final class Builder extends Message.Builder<Baz, Builder> {
       public Builder() {
       }
 
@@ -190,7 +190,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
         @Override
         public Moo decode(ProtoReader reader) throws IOException {
-          Moo.Builder builder = new Moo.Builder();
+          Builder builder = new Builder();
           long token = reader.beginMessage();
           for (int tag; (tag = reader.nextTag()) != -1;) {
             switch (tag) {
@@ -208,7 +208,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
         @Override
         public Moo redact(Moo value) {
-          Moo.Builder builder = value.newBuilder();
+          Builder builder = value.newBuilder();
           builder.clearUnknownFields();
           return builder.build();
         }
@@ -230,8 +230,8 @@ public final class Bar extends Message<Bar, Bar.Builder> {
       }
 
       @Override
-      public Moo.Builder newBuilder() {
-        Moo.Builder builder = new Moo.Builder();
+      public Builder newBuilder() {
+        Builder builder = new Builder();
         builder.boo = boo;
         builder.addUnknownFields(unknownFields());
         return builder;
@@ -264,7 +264,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
         return builder.replace(0, 2, "Moo{").append('}').toString();
       }
 
-      public static final class Builder extends com.squareup.wire.Message.Builder<Moo, Moo.Builder> {
+      public static final class Builder extends Message.Builder<Moo, Builder> {
         public String boo;
 
         public Builder() {

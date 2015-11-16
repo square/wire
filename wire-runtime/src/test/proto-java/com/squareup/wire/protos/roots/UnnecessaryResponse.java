@@ -84,7 +84,7 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
     return builder.replace(0, 2, "UnnecessaryResponse{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<UnnecessaryResponse, Builder> {
+  public static final class Builder extends Message.Builder<UnnecessaryResponse, Builder> {
     public Builder() {
     }
 

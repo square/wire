@@ -165,7 +165,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     return builder.replace(0, 2, "VersionTwo{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<VersionTwo, Builder> {
+  public static final class Builder extends Message.Builder<VersionTwo, Builder> {
     public Integer i;
 
     public Integer v2_i;

@@ -104,7 +104,7 @@ public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataRe
     return builder.replace(0, 2, "LetsDataResponse{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<LetsDataResponse, Builder> {
+  public static final class Builder extends Message.Builder<LetsDataResponse, Builder> {
     public ByteString data;
 
     public Builder() {

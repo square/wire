@@ -211,7 +211,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     return builder.replace(0, 2, "DescriptorProto{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<DescriptorProto, Builder> {
+  public static final class Builder extends Message.Builder<DescriptorProto, Builder> {
     public String name;
 
     public List<FieldDescriptorProto> field;
@@ -329,7 +329,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
       @Override
       public ExtensionRange decode(ProtoReader reader) throws IOException {
-        ExtensionRange.Builder builder = new ExtensionRange.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -348,7 +348,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
       @Override
       public ExtensionRange redact(ExtensionRange value) {
-        ExtensionRange.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -375,8 +375,8 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     }
 
     @Override
-    public ExtensionRange.Builder newBuilder() {
-      ExtensionRange.Builder builder = new ExtensionRange.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.start = start;
       builder.end = end;
       builder.addUnknownFields(unknownFields());
@@ -413,7 +413,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       return builder.replace(0, 2, "ExtensionRange{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<ExtensionRange, ExtensionRange.Builder> {
+    public static final class Builder extends Message.Builder<ExtensionRange, Builder> {
       public Integer start;
 
       public Integer end;
@@ -461,7 +461,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
       @Override
       public ReservedRange decode(ProtoReader reader) throws IOException {
-        ReservedRange.Builder builder = new ReservedRange.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -480,7 +480,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
       @Override
       public ReservedRange redact(ReservedRange value) {
-        ReservedRange.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -513,8 +513,8 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     }
 
     @Override
-    public ReservedRange.Builder newBuilder() {
-      ReservedRange.Builder builder = new ReservedRange.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.start = start;
       builder.end = end;
       builder.addUnknownFields(unknownFields());
@@ -551,7 +551,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       return builder.replace(0, 2, "ReservedRange{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<ReservedRange, ReservedRange.Builder> {
+    public static final class Builder extends Message.Builder<ReservedRange, Builder> {
       public Integer start;
 
       public Integer end;

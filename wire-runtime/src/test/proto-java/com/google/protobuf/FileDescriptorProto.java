@@ -258,7 +258,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     return builder.replace(0, 2, "FileDescriptorProto{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<FileDescriptorProto, Builder> {
+  public static final class Builder extends Message.Builder<FileDescriptorProto, Builder> {
     public String name;
 
     public String package_;

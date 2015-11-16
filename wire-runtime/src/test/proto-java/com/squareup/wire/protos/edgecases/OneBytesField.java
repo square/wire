@@ -104,7 +104,7 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
     return builder.replace(0, 2, "OneBytesField{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<OneBytesField, Builder> {
+  public static final class Builder extends Message.Builder<OneBytesField, Builder> {
     public ByteString opt_bytes;
 
     public Builder() {

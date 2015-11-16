@@ -116,7 +116,7 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
     return builder.replace(0, 2, "Recursive{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Recursive, Builder> {
+  public static final class Builder extends Message.Builder<Recursive, Builder> {
     public Integer value;
 
     public Recursive recursive;

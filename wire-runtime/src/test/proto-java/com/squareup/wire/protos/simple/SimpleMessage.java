@@ -299,7 +299,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     return builder.replace(0, 2, "SimpleMessage{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<SimpleMessage, Builder> {
+  public static final class Builder extends Message.Builder<SimpleMessage, Builder> {
     public Integer optional_int32;
 
     public NestedMessage optional_nested_msg;
@@ -449,7 +449,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
       @Override
       public NestedMessage decode(ProtoReader reader) throws IOException {
-        NestedMessage.Builder builder = new NestedMessage.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -467,7 +467,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
       @Override
       public NestedMessage redact(NestedMessage value) {
-        NestedMessage.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -492,8 +492,8 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     }
 
     @Override
-    public NestedMessage.Builder newBuilder() {
-      NestedMessage.Builder builder = new NestedMessage.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.bb = bb;
       builder.addUnknownFields(unknownFields());
       return builder;
@@ -526,7 +526,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       return builder.replace(0, 2, "NestedMessage{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, NestedMessage.Builder> {
+    public static final class Builder extends Message.Builder<NestedMessage, Builder> {
       public Integer bb;
 
       public Builder() {

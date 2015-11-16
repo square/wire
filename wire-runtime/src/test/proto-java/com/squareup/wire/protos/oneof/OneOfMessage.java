@@ -141,7 +141,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     return builder.replace(0, 2, "OneOfMessage{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<OneOfMessage, Builder> {
+  public static final class Builder extends Message.Builder<OneOfMessage, Builder> {
     public Integer foo;
 
     public String bar;

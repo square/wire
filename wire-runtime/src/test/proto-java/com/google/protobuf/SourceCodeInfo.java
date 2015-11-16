@@ -156,7 +156,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     return builder.replace(0, 2, "SourceCodeInfo{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<SourceCodeInfo, Builder> {
+  public static final class Builder extends Message.Builder<SourceCodeInfo, Builder> {
     public List<Location> location;
 
     public Builder() {
@@ -244,7 +244,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
       @Override
       public Location decode(ProtoReader reader) throws IOException {
-        Location.Builder builder = new Location.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -266,7 +266,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
       @Override
       public Location redact(Location value) {
-        Location.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -383,8 +383,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     }
 
     @Override
-    public Location.Builder newBuilder() {
-      Location.Builder builder = new Location.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.path = copyOf("path", path);
       builder.span = copyOf("span", span);
       builder.leading_comments = leading_comments;
@@ -433,7 +433,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       return builder.replace(0, 2, "Location{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<Location, Location.Builder> {
+    public static final class Builder extends Message.Builder<Location, Builder> {
       public List<Integer> path;
 
       public List<Integer> span;
