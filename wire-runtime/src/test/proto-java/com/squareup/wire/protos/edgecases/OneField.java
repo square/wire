@@ -105,7 +105,7 @@ public final class OneField extends Message<OneField, OneField.Builder> {
     return builder.replace(0, 2, "OneField{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<OneField, Builder> {
+  public static final class Builder extends Message.Builder<OneField, Builder> {
     public Integer opt_int32;
 
     public Builder() {

@@ -130,7 +130,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     return builder.replace(0, 2, "ServiceOptions{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<ServiceOptions, Builder> {
+  public static final class Builder extends Message.Builder<ServiceOptions, Builder> {
     public Boolean deprecated;
 
     public List<UninterpretedOption> uninterpreted_option;

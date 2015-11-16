@@ -1723,7 +1723,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     return builder.replace(0, 2, "AllTypes{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<AllTypes, Builder> {
+  public static final class Builder extends Message.Builder<AllTypes, Builder> {
     public Integer opt_int32;
 
     public Integer opt_uint32;
@@ -2838,7 +2838,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
       @Override
       public NestedMessage decode(ProtoReader reader) throws IOException {
-        NestedMessage.Builder builder = new NestedMessage.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -2856,7 +2856,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
       @Override
       public NestedMessage redact(NestedMessage value) {
-        NestedMessage.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -2878,8 +2878,8 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     @Override
-    public NestedMessage.Builder newBuilder() {
-      NestedMessage.Builder builder = new NestedMessage.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.a = a;
       builder.addUnknownFields(unknownFields());
       return builder;
@@ -2912,7 +2912,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return builder.replace(0, 2, "NestedMessage{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NestedMessage, NestedMessage.Builder> {
+    public static final class Builder extends Message.Builder<NestedMessage, Builder> {
       public Integer a;
 
       public Builder() {

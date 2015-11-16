@@ -130,7 +130,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     return builder.replace(0, 2, "EnumDescriptorProto{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<EnumDescriptorProto, Builder> {
+  public static final class Builder extends Message.Builder<EnumDescriptorProto, Builder> {
     public String name;
 
     public List<EnumValueDescriptorProto> value;

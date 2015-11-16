@@ -107,7 +107,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     return builder.replace(0, 2, "OneofDescriptorProto{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<OneofDescriptorProto, Builder> {
+  public static final class Builder extends Message.Builder<OneofDescriptorProto, Builder> {
     public String name;
 
     public Builder() {

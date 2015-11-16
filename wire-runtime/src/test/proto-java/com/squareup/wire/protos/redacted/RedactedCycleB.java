@@ -103,7 +103,7 @@ public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB
     return builder.replace(0, 2, "RedactedCycleB{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RedactedCycleB, Builder> {
+  public static final class Builder extends Message.Builder<RedactedCycleB, Builder> {
     public RedactedCycleA a;
 
     public Builder() {

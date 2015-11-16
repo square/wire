@@ -177,7 +177,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
     return builder.replace(0, 2, "MethodDescriptorProto{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<MethodDescriptorProto, Builder> {
+  public static final class Builder extends Message.Builder<MethodDescriptorProto, Builder> {
     public String name;
 
     public String input_type;

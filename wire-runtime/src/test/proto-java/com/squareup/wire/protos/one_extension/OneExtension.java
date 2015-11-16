@@ -118,7 +118,7 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
     return builder.replace(0, 2, "OneExtension{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<OneExtension, Builder> {
+  public static final class Builder extends Message.Builder<OneExtension, Builder> {
     public String id;
 
     public Foo foo;

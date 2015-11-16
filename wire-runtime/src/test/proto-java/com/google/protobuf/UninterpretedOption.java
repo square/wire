@@ -191,7 +191,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     return builder.replace(0, 2, "UninterpretedOption{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<UninterpretedOption, Builder> {
+  public static final class Builder extends Message.Builder<UninterpretedOption, Builder> {
     public List<NamePart> name;
 
     public String identifier_value;
@@ -281,7 +281,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
       @Override
       public NamePart decode(ProtoReader reader) throws IOException {
-        NamePart.Builder builder = new NamePart.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -300,7 +300,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
       @Override
       public NamePart redact(NamePart value) {
-        NamePart.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -327,8 +327,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     }
 
     @Override
-    public NamePart.Builder newBuilder() {
-      NamePart.Builder builder = new NamePart.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.name_part = name_part;
       builder.is_extension = is_extension;
       builder.addUnknownFields(unknownFields());
@@ -365,7 +365,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       return builder.replace(0, 2, "NamePart{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<NamePart, NamePart.Builder> {
+    public static final class Builder extends Message.Builder<NamePart, Builder> {
       public String name_part;
 
       public Boolean is_extension;

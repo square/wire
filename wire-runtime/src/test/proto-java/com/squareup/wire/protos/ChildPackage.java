@@ -112,7 +112,7 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
     return builder.replace(0, 2, "ChildPackage{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<ChildPackage, Builder> {
+  public static final class Builder extends Message.Builder<ChildPackage, Builder> {
     public ForeignEnum inner_foreign_enum;
 
     public Builder() {

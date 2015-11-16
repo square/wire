@@ -114,7 +114,7 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
     return builder.replace(0, 2, "RepeatedAndPacked{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<RepeatedAndPacked, Builder> {
+  public static final class Builder extends Message.Builder<RepeatedAndPacked, Builder> {
     public List<Integer> rep_int32;
 
     public List<Integer> pack_int32;

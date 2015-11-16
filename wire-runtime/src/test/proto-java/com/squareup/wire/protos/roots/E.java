@@ -123,7 +123,7 @@ public final class E extends Message<E, E.Builder> {
     return builder.replace(0, 2, "E{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<E, Builder> {
+  public static final class Builder extends Message.Builder<E, Builder> {
     public F f;
 
     public G g;
@@ -163,7 +163,7 @@ public final class E extends Message<E, E.Builder> {
 
       @Override
       public F decode(ProtoReader reader) throws IOException {
-        F.Builder builder = new F.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -181,7 +181,7 @@ public final class E extends Message<E, E.Builder> {
 
       @Override
       public F redact(F value) {
-        F.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -203,8 +203,8 @@ public final class E extends Message<E, E.Builder> {
     }
 
     @Override
-    public F.Builder newBuilder() {
-      F.Builder builder = new F.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.i = i;
       builder.addUnknownFields(unknownFields());
       return builder;
@@ -237,7 +237,7 @@ public final class E extends Message<E, E.Builder> {
       return builder.replace(0, 2, "F{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<F, F.Builder> {
+    public static final class Builder extends Message.Builder<F, Builder> {
       public Integer i;
 
       public Builder() {

@@ -104,7 +104,7 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
     return builder.replace(0, 2, "SendDataRequest{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<SendDataRequest, Builder> {
+  public static final class Builder extends Message.Builder<SendDataRequest, Builder> {
     public ByteString data;
 
     public Builder() {

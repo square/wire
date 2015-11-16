@@ -103,7 +103,7 @@ public final class H extends Message<H, H.Builder> {
     return builder.replace(0, 2, "H{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<H, Builder> {
+  public static final class Builder extends Message.Builder<H, Builder> {
     public E.F ef;
 
     public Builder() {

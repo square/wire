@@ -112,7 +112,7 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
     return builder.replace(0, 2, "CollisionSubject{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<CollisionSubject, Builder> {
+  public static final class Builder extends Message.Builder<CollisionSubject, Builder> {
     public String f;
 
     public Builder() {

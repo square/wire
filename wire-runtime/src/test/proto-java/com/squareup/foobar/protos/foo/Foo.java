@@ -104,7 +104,7 @@ public final class Foo extends Message<Foo, Foo.Builder> {
     return builder.replace(0, 2, "Foo{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Foo, Builder> {
+  public static final class Builder extends Message.Builder<Foo, Builder> {
     public Bar.Baz.Moo moo;
 
     public Builder() {

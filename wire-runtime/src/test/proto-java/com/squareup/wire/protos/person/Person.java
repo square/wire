@@ -154,7 +154,7 @@ public final class Person extends Message<Person, Person.Builder> {
     return builder.replace(0, 2, "Person{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Person, Builder> {
+  public static final class Builder extends Message.Builder<Person, Builder> {
     public String name;
 
     public Integer id;
@@ -265,7 +265,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
       @Override
       public PhoneNumber decode(ProtoReader reader) throws IOException {
-        PhoneNumber.Builder builder = new PhoneNumber.Builder();
+        Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
@@ -291,7 +291,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
       @Override
       public PhoneNumber redact(PhoneNumber value) {
-        PhoneNumber.Builder builder = value.newBuilder();
+        Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
@@ -324,8 +324,8 @@ public final class Person extends Message<Person, Person.Builder> {
     }
 
     @Override
-    public PhoneNumber.Builder newBuilder() {
-      PhoneNumber.Builder builder = new PhoneNumber.Builder();
+    public Builder newBuilder() {
+      Builder builder = new Builder();
       builder.number = number;
       builder.type = type;
       builder.addUnknownFields(unknownFields());
@@ -362,7 +362,7 @@ public final class Person extends Message<Person, Person.Builder> {
       return builder.replace(0, 2, "PhoneNumber{").append('}').toString();
     }
 
-    public static final class Builder extends com.squareup.wire.Message.Builder<PhoneNumber, PhoneNumber.Builder> {
+    public static final class Builder extends Message.Builder<PhoneNumber, Builder> {
       public String number;
 
       public PhoneType type;

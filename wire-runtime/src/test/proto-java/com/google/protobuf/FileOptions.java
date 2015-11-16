@@ -393,7 +393,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     return builder.replace(0, 2, "FileOptions{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<FileOptions, Builder> {
+  public static final class Builder extends Message.Builder<FileOptions, Builder> {
     public String java_package;
 
     public String java_outer_classname;

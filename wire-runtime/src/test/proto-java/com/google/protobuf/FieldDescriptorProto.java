@@ -244,7 +244,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     return builder.replace(0, 2, "FieldDescriptorProto{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<FieldDescriptorProto, Builder> {
+  public static final class Builder extends Message.Builder<FieldDescriptorProto, Builder> {
     public String name;
 
     public Integer number;

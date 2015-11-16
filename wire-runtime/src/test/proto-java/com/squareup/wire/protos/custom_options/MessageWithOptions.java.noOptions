@@ -84,7 +84,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
     return builder.replace(0, 2, "MessageWithOptions{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<MessageWithOptions, Builder> {
+  public static final class Builder extends Message.Builder<MessageWithOptions, Builder> {
     public Builder() {
     }
 

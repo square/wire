@@ -119,7 +119,7 @@ public final class I extends Message<I, I.Builder> {
     return builder.replace(0, 2, "I{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<I, Builder> {
+  public static final class Builder extends Message.Builder<I, Builder> {
     public Integer i;
 
     public J j;

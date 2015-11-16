@@ -172,7 +172,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     return builder.replace(0, 2, "EnumValueOptions{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<EnumValueOptions, Builder> {
+  public static final class Builder extends Message.Builder<EnumValueOptions, Builder> {
     public Boolean deprecated;
 
     public List<UninterpretedOption> uninterpreted_option;

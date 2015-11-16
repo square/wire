@@ -152,7 +152,7 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
     return builder.replace(0, 2, "Redacted{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<Redacted, Builder> {
+  public static final class Builder extends Message.Builder<Redacted, Builder> {
     public String a;
 
     public String b;

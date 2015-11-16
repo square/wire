@@ -84,7 +84,7 @@ public final class TheResponse extends Message<TheResponse, TheResponse.Builder>
     return builder.replace(0, 2, "TheResponse{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<TheResponse, Builder> {
+  public static final class Builder extends Message.Builder<TheResponse, Builder> {
     public Builder() {
     }
 

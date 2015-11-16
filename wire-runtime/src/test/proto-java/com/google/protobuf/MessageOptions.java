@@ -320,7 +320,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     return builder.replace(0, 2, "MessageOptions{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<MessageOptions, Builder> {
+  public static final class Builder extends Message.Builder<MessageOptions, Builder> {
     public Boolean message_set_wire_format;
 
     public Boolean no_standard_descriptor_accessor;

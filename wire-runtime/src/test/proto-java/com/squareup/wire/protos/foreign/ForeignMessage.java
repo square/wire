@@ -120,7 +120,7 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
     return builder.replace(0, 2, "ForeignMessage{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<ForeignMessage, Builder> {
+  public static final class Builder extends Message.Builder<ForeignMessage, Builder> {
     public Integer i;
 
     public Integer j;

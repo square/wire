@@ -403,7 +403,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     return builder.replace(0, 2, "FieldOptions{").append('}').toString();
   }
 
-  public static final class Builder extends com.squareup.wire.Message.Builder<FieldOptions, Builder> {
+  public static final class Builder extends Message.Builder<FieldOptions, Builder> {
     public CType ctype;
 
     public Boolean packed;
