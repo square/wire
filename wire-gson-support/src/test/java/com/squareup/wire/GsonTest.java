@@ -277,9 +277,10 @@ public class GsonTest {
     String json = gson.toJson(allTypes);
     assertThat(json).isEqualTo("{" + JSON_BASE + JSON_UNKNOWN_FIELDS + "}");
 
+    AllTypes allTypesWithKnownFields = allTypes.withoutUnknownFields();
     AllTypes parsed = gson.fromJson(json, AllTypes.class);
-    assertThat(parsed).isEqualTo(allTypes);
-    assertThat(parsed.toString()).isEqualTo(allTypes.toString());
-    assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
+    assertThat(parsed).isEqualTo(allTypesWithKnownFields);
+    assertThat(parsed.toString()).isEqualTo(allTypesWithKnownFields.toString());
+    assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypesWithKnownFields));
   }
 }
