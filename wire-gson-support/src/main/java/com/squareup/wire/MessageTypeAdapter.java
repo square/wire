@@ -29,16 +29,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import okio.Buffer;
-import okio.ByteString;
 
 import static com.squareup.wire.WireField.Label;
 import static java.util.Collections.unmodifiableMap;
 
 class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B>>
     extends TypeAdapter<M> {
-
-  private final Class<M> messageType;
 
   // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
   private static final BigInteger POWER_64 = new BigInteger("18446744073709551616");
@@ -50,8 +46,7 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
   @SuppressWarnings("unchecked")
   public MessageTypeAdapter(Gson gson, TypeToken<M> type) {
     this.gson = gson;
-    this.messageType = (Class<M>) type.getRawType();
-    this.messageAdapter = RuntimeMessageAdapter.create(messageType);
+    this.messageAdapter = RuntimeMessageAdapter.create((Class<M>) type.getRawType());
 
     Map<String, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<>();
     for (FieldBinding<M, B> binding : messageAdapter.fieldBindings().values()) {
@@ -76,35 +71,6 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
       out.name(tagBinding.name);
       emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label);
     }
-
-    if (message.unknownFields().size() > 0) {
-      ProtoReader reader = new ProtoReader(new Buffer().write(message.unknownFields()));
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-        Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-        out.name(Integer.toString(tag));
-        out.beginArray();
-        if (fieldEncoding == FieldEncoding.VARINT) {
-          out.value("varint");
-          out.value((Long) value);
-        } else if (fieldEncoding == FieldEncoding.FIXED32) {
-          out.value("fixed32");
-          out.value((Integer) value);
-        } else if (fieldEncoding == FieldEncoding.FIXED64) {
-          out.value("fixed64");
-          out.value((Long) value);
-        } else if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
-          out.value("length-delimited");
-          out.value(((ByteString) value).base64());
-        } else {
-          throw new AssertionError("Unknown field encoding " + fieldEncoding);
-        }
-        out.endArray();
-      }
-      reader.endMessage(token);
-    }
-
     out.endObject();
   }
 
