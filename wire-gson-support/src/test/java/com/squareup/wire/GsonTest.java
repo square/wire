@@ -26,7 +26,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
-  private static final String JSON_BASE = "\"opt_int32\":111,"
+  private static final String JSON = "{\"opt_int32\":111,"
       + "\"opt_uint32\":112,"
       + "\"opt_sint32\":113,"
       + "\"opt_fixed32\":114,"
@@ -130,15 +130,7 @@ public class GsonTest {
       + "\"ext_pack_bool\":[true,true],"
       + "\"ext_pack_float\":[1234500.0,1234500.0],"
       + "\"ext_pack_double\":[1.2345E67,1.2345E67],"
-      + "\"ext_pack_nested_enum\":[\"A\",\"A\"]";
-
-  // There doesn't appear to be a standard for representing unknown proto fields in JSON,
-  // so we use the format shown below.
-  private static final String JSON_UNKNOWN_FIELDS = ""
-      + ",\"9000\":[\"fixed32\",9000],"
-      + "\"9001\":[\"fixed64\",9001],"
-      + "\"9002\":[\"length-delimited\",\"OTAwMg==\"],"
-      + "\"9003\":[\"varint\",9003]";
+      + "\"ext_pack_nested_enum\":[\"A\",\"A\"]}";
 
   // Return a two-element list with a given repeated value
   @SuppressWarnings("unchecked")
@@ -255,7 +247,7 @@ public class GsonTest {
 
     AllTypes allTypes = createBuilder().build();
     String json = gson.toJson(allTypes);
-    assertThat(json).isEqualTo("{"+ JSON_BASE + "}");
+    assertThat(json).isEqualTo(JSON);
 
     AllTypes parsed = gson.fromJson(json, AllTypes.class);
     assertThat(parsed).isEqualTo(allTypes);
@@ -263,7 +255,7 @@ public class GsonTest {
     assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
   }
 
-  @Test public void testGsonWithUnknownFields() {
+  @Test public void testGsonOmitsUnknownFields() {
     Gson gson = createGson();
 
     AllTypes.Builder builder = createBuilder();
@@ -275,12 +267,6 @@ public class GsonTest {
 
     AllTypes allTypes = builder.build();
     String json = gson.toJson(allTypes);
-    assertThat(json).isEqualTo("{" + JSON_BASE + JSON_UNKNOWN_FIELDS + "}");
-
-    AllTypes allTypesWithKnownFields = allTypes.withoutUnknownFields();
-    AllTypes parsed = gson.fromJson(json, AllTypes.class);
-    assertThat(parsed).isEqualTo(allTypesWithKnownFields);
-    assertThat(parsed.toString()).isEqualTo(allTypesWithKnownFields.toString());
-    assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypesWithKnownFields));
+    assertThat(json).isEqualTo(JSON);
   }
 }
