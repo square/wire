@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +37,7 @@ public final class IdentifierSetTest {
   @Test public void empty() throws Exception {
     IdentifierSet set = new IdentifierSet.Builder()
         .build();
+    assertThat(set.isEmpty()).isTrue();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED);
   }
@@ -45,6 +47,7 @@ public final class IdentifierSetTest {
     IdentifierSet set = new IdentifierSet.Builder()
         .include("a.b.Message")
         .build();
+    assertThat(set.isEmpty()).isFalse();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED);
     assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.UNSPECIFIED);
@@ -52,10 +55,23 @@ public final class IdentifierSetTest {
     assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED);
   }
 
+  @Test (expected = NullPointerException.class) public void includeNull() throws Exception {
+    new IdentifierSet.Builder()
+      .include(null)
+      .build();
+  }
+
+  @Test (expected = NullPointerException.class) public void excludeNull() throws Exception {
+    new IdentifierSet.Builder()
+      .exclude(null)
+      .build();
+  }
+
   @Test public void includeMember() throws Exception {
     IdentifierSet set = new IdentifierSet.Builder()
         .include("a.b.Message#member")
         .build();
+    assertThat(set.isEmpty()).isFalse();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.UNSPECIFIED);
     assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.UNSPECIFIED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED);
@@ -68,6 +84,7 @@ public final class IdentifierSetTest {
     IdentifierSet set = new IdentifierSet.Builder()
         .include("a.b.*")
         .build();
+    assertThat(set.isEmpty()).isFalse();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED);
     assertThat(policy(set, "a.b.c.Message")).isEqualTo(Policy.INCLUDED);
@@ -80,6 +97,7 @@ public final class IdentifierSetTest {
     IdentifierSet set = new IdentifierSet.Builder()
         .exclude("a.b.Message")
         .build();
+    assertThat(set.isEmpty()).isFalse();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.INCLUDED);
@@ -90,6 +108,7 @@ public final class IdentifierSetTest {
     IdentifierSet set = new IdentifierSet.Builder()
         .exclude("a.b.Message#member")
         .build();
+    assertThat(set.isEmpty()).isFalse();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.INCLUDED);
@@ -101,6 +120,7 @@ public final class IdentifierSetTest {
     IdentifierSet set = new IdentifierSet.Builder()
         .exclude("a.b.*")
         .build();
+    assertThat(set.isEmpty()).isFalse();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.c.Message")).isEqualTo(Policy.EXCLUDED);
@@ -114,6 +134,7 @@ public final class IdentifierSetTest {
         .exclude("a.b.*")
         .include("a.b.Message")
         .build();
+    assertThat(set.isEmpty()).isFalse();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.Another")).isEqualTo(Policy.EXCLUDED);
@@ -127,6 +148,7 @@ public final class IdentifierSetTest {
         .exclude("a.b.Message")
         .include("a.b.Message#member")
         .build();
+    assertThat(set.isEmpty()).isFalse();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.EXCLUDED);
@@ -139,6 +161,7 @@ public final class IdentifierSetTest {
         .exclude("a.b.Message#member")
         .include("a.b.Message")
         .build();
+    assertThat(set.isEmpty()).isFalse();
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED);
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED);
     assertThat(policy(set, "a.b.Message#other")).isEqualTo(Policy.INCLUDED);

@@ -176,6 +176,7 @@ public final class PrunerTest {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""
             + "message Message {\n"
+            + "  // oneOf comment\n"
             + "  oneof selection {\n"
             + "    string a = 1;\n"
             + "    string b = 2;\n"
@@ -189,6 +190,7 @@ public final class PrunerTest {
     MessageType message = (MessageType) pruned.getType("Message");
     OneOf onlyOneOf = getOnlyElement(message.oneOfs());
     assertThat(onlyOneOf.name()).isEqualTo("selection");
+    assertThat(onlyOneOf.documentation()).isEqualTo("oneOf comment");
     assertThat(getOnlyElement(onlyOneOf.fields()).name()).isEqualTo("b");
     assertThat(message.field("a")).isNull();
     assertThat(message.field("c")).isNull();
