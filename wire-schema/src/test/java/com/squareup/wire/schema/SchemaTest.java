@@ -138,6 +138,23 @@ public final class SchemaTest {
     }
   }
 
+  @Test public void extensionsValidTag() throws Exception {
+      Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+          + "message Message {\n"
+          + "  extensions 500;\n"
+          + "  extensions 1000 to max;\n"
+          + "}\n")
+        .build();
+
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.extensions().size()).isEqualTo(2);
+    assertThat(message.extensions().get(0).start()).isEqualTo(500);
+    assertThat(message.extensions().get(0).end()).isEqualTo(500);
+    assertThat(message.extensions().get(1).start()).isEqualTo(1000);
+    assertThat(message.extensions().get(1).end()).isEqualTo(536870911);
+  }
+
   @Test public void extensionsInvalidTag() throws Exception {
     try {
       new SchemaBuilder()
@@ -611,6 +628,8 @@ public final class SchemaTest {
         .build();
     MessageType messageType = (MessageType) schema.getType("Message");
 
+    assertThat(messageType.fields().size()).isEqualTo(2);
+    assertThat(messageType.extensionFields().size()).isEqualTo(1);
     assertThat(messageType.field("a").tag()).isEqualTo(1);
     assertThat(messageType.field(1).name()).isEqualTo("a");
     assertThat(messageType.extensionField("p.a").tag()).isEqualTo(2);
