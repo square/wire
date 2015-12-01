@@ -21,6 +21,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -62,6 +63,7 @@ public final class ProtoMemberTest {
 
   @Test(expected = IllegalArgumentException.class) public void getIllegal() throws Exception {
     ProtoMember.get("testmember");
+    fail("Can't get ProtoMember without '#' in path");
   }
 
   @Test public void notEquals() throws Exception {

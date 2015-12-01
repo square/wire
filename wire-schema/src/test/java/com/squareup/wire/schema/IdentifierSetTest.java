@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public final class IdentifierSetTest {
   @Test public void enclosing() throws Exception {
@@ -59,12 +60,14 @@ public final class IdentifierSetTest {
     new IdentifierSet.Builder()
       .include(null)
       .build();
+    fail("IdentifierSet builder should throw NullPointerException when include null");
   }
 
   @Test (expected = NullPointerException.class) public void excludeNull() throws Exception {
     new IdentifierSet.Builder()
       .exclude(null)
       .build();
+    fail("IdentifierSet builder should throw NullPointerException when exclude null");
   }
 
   @Test public void includeMember() throws Exception {

@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public final class OptionElementTest {
   @Test public void simpleToSchema() {
@@ -91,6 +92,7 @@ public final class OptionElementTest {
   @Test(expected = NullPointerException.class) public void nullToSchema() {
     OptionElement option = OptionElement.create("foo", null, "null");
     option.toSchema();
+    fail("OptionElement should throw NullPointerException when tries to convert to schema with null kind");
   }
 
 }

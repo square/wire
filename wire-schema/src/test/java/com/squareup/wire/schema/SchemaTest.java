@@ -270,6 +270,7 @@ public final class SchemaTest {
         .build();
 
     MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.getRequiredFields()).isEmpty();
     assertThat(message.field("a").getDefault()).isNull();
     assertThat(message.field("b").getDefault()).isEqualTo("5");
     assertThat(message.field("c").getDefault()).isEqualTo("true");
@@ -295,6 +296,7 @@ public final class SchemaTest {
       .build();
 
     MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.getRequiredFields().size()).isEqualTo(1);
     assertThat(message.field("a").isOptional()).isTrue();
     assertThat(message.field("b").isOptional()).isFalse();
     assertThat(message.field("c").isOptional()).isTrue();
@@ -610,7 +612,10 @@ public final class SchemaTest {
     MessageType messageType = (MessageType) schema.getType("Message");
 
     assertThat(messageType.field("a").tag()).isEqualTo(1);
+    assertThat(messageType.field(1).name()).isEqualTo("a");
     assertThat(messageType.extensionField("p.a").tag()).isEqualTo(2);
+    assertThat(messageType.field(2).name()).isEqualTo("a");
+    assertThat(messageType.field(3)).isNull();
   }
 
   @Test public void extendNameCollisionInSamePackageDisallowed() throws Exception {

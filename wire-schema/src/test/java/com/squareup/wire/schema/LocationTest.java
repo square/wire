@@ -21,6 +21,7 @@ import org.junit.Test;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public final class LocationTest {
 
@@ -33,14 +34,17 @@ public final class LocationTest {
 
   @Test(expected = NullPointerException.class) public void getNullBase() throws Exception {
     Location.get(null, "path\\to\\location");
+    fail("Location should throw NullPointerException when tries to get location with null base");
   }
 
   @Test(expected = NullPointerException.class) public void getNullPath() throws Exception {
     Location.get(null);
+    fail("Location should throw NullPointerException when tries to get location with null base");
   }
 
   @Test(expected = NullPointerException.class) public void getNullPathWithBase() throws Exception {
     Location.get("main\\dir", null);
+    fail("Location should throw NullPointerException when tries to get location with null path");
   }
 
   @Test public void defaultLineAndColumn() throws Exception {
