@@ -23,6 +23,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
 public final class SchemaTest {
+  @Test public void serviceBuilder() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("service.proto", ""
+        + "import \"request.proto\";\n"
+        + "import \"response.proto\";\n"
+        + "// Service comment.\n"
+        + "service Service {\n"
+        + "  // rpc comment\n"
+        + "  rpc Call (Request) returns (Response);\n"
+        + "}\n")
+      .add("request.proto", ""
+        + "message Request {\n"
+        + "}\n")
+      .add("response.proto", ""
+        + "message Response {\n"
+        + "}\n")
+      .build();
+
+    Service service = schema.getService("Service");
+    assertThat(service).isNotNull();
+    assertThat(service.documentation()).isEqualTo("Service comment.");
+    assertThat(service.options().map()).isEmpty();
+    assertThat(service.rpcs().size()).isEqualTo(1);
+
+    Rpc rpc = service.rpcs().get(0);
+    assertThat(rpc.name()).isEqualTo("Call");
+    assertThat(rpc.documentation()).isEqualTo("rpc comment");
+    assertThat(rpc.requestType().simpleName()).isEqualTo("Request");
+    assertThat(rpc.responseType().simpleName()).isEqualTo("Response");
+  }
+
+
   @Test public void linkService() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""
@@ -243,6 +275,31 @@ public final class SchemaTest {
     assertThat(message.field("c").getDefault()).isEqualTo("true");
     assertThat(message.field("d").getDefault()).isEqualTo("foo");
     assertThat(message.field("e").getDefault()).isEqualTo("PAPER");
+  }
+
+  @Test public void fieldOptional() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("message.proto", ""
+        + "message Message {\n"
+        + "  optional int32 a = 1;\n"
+        + "  required int32 b = 2 [default = 5];\n"
+        + "  optional bool c = 3 [default = true];\n"
+        + "  optional string d = 4 [default = \"foo\"];\n"
+        + "  optional Roshambo e = 5 [default = PAPER];\n"
+        + "  enum Roshambo {\n"
+        + "    ROCK = 0;\n"
+        + "    SCISSORS = 1;\n"
+        + "    PAPER = 2;\n"
+        + "  }\n"
+        + "}\n")
+      .build();
+
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.field("a").isOptional()).isTrue();
+    assertThat(message.field("b").isOptional()).isFalse();
+    assertThat(message.field("c").isOptional()).isTrue();
+    assertThat(message.field("d").isOptional()).isTrue();
+    assertThat(message.field("e").isOptional()).isTrue();
   }
 
   @Test public void fieldOptions() throws Exception {
@@ -1055,14 +1112,33 @@ public final class SchemaTest {
           + "\n"
           + "  B = 1;\n"
           + "}\n")
-      .add("b.proto",
-        "message M {\n"
+      .add("b",
+        "package squareup.protos.files;\n"
+          + "\n"
+          + "message M {\n"
+          + "}\n")
+      .add("c/d.proto",
+        "option java_package = \"com.squareup.wire.protos.files\";\n"
+          + "message N {\n"
           + "}\n")
       .build();
 
     assertThat(schema.protoFile("a.proto")).isNotNull();
-    assertThat(schema.protoFile("b.proto")).isNotNull();
-    assertThat(schema.protoFile("c.proto")).isNull();
+    assertThat(schema.protoFile("a.proto").name()).isEqualTo("a");
+    assertThat(schema.protoFile("a.proto").javaPackage()).isNull();
+    assertThat(schema.protoFile("a.proto").toString()).isEqualTo("a.proto");
+
+    assertThat(schema.protoFile("b")).isNotNull();
+    assertThat(schema.protoFile("b").name()).isEqualTo("b");
+    assertThat(schema.protoFile("b").javaPackage()).isNull();
+    assertThat(schema.protoFile("b").toString()).isEqualTo("b");
+
+    assertThat(schema.protoFile("c")).isNull();
+
+    assertThat(schema.protoFile("c/d.proto")).isNotNull();
+    assertThat(schema.protoFile("c/d.proto").name()).isEqualTo("d");
+    assertThat(schema.protoFile("c/d.proto").javaPackage()).isEqualTo("com.squareup.wire.protos.files");
+    assertThat(schema.protoFile("c/d.proto").toString()).isEqualTo("c/d.proto");
   }
 
 
@@ -1162,6 +1238,7 @@ public final class SchemaTest {
     Field extendField = extend.fields().get(0);
     assertThat(extendField.documentation()).isEmpty();
     assertThat(extendField.name()).isEqualTo("my_file_option");
+    assertThat(extendField.toString()).isEqualTo("my_file_option");
     assertThat(extendField.tag()).isEqualTo(50000);
   }
 
