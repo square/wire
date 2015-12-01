@@ -16,9 +16,10 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Test;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.junit.Test;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -157,6 +158,43 @@ public final class OptionsTest {
 
   @Test public void resolveFieldPathDoesntMatch() throws Exception {
     assertThat(Options.resolveFieldPath("a.b", set("c", "d"))).isNull();
+  }
+
+  @Test public void optionMatches() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("foo.proto", ""
+        + "import \"google/protobuf/descriptor.proto\";\n"
+        + "message FooOptions {\n"
+        + "  optional string numberOption = 1 [testOption = 12];\n"
+        + "  optional int32 redactedOption = 2 [(option.redacted) = true];\n"
+        + "  optional int32 multiOption = 3 [(foo) = \"test\", fooName = \"part\"];\n"
+        + "}\n")
+      .build();
+
+    MessageType message = (MessageType) schema.getType("FooOptions");
+
+    assertThat(message.field(1).options().optionMatches("Option", "12")).isFalse();
+    assertThat(message.field(1).options().optionMatches(".*Option", "12")).isTrue();
+    assertThat(message.field(2).options().optionMatches("option\\.redacted", "true")).isTrue();
+    assertThat(message.field(2).options().optionMatches(".*\\.redacted", "true")).isTrue();
+    assertThat(message.field(2).options().optionMatches(".*\\.redacted", "false")).isFalse();
+    assertThat(message.field(3).options().optionMatches("foo.*", ".*")).isTrue();
+    assertThat(message.field(3).options().optionMatches("foo.*", ".*t")).isTrue();
+    assertThat(message.field(3).options().optionMatches("foo.*", "test")).isTrue();
+    assertThat(message.field(3).options().optionMatches("foo.*", "part")).isTrue();
+    assertThat(message.field(3).options().optionMatches("foo.+", "test")).isFalse();
+    assertThat(message.field(3).options().optionMatches("foo.+", "part")).isTrue();
+
+    assertThat(message.field(1).options().optionMatches("Option", "12")).isFalse();
+    assertThat(message.field(1).options().optionMatches(".*Option", "12")).isTrue();
+    assertThat(message.field(2).options().optionMatches("option\\.redacted", "true")).isTrue();
+    assertThat(message.field(2).options().optionMatches(".*\\.redacted", "true")).isTrue();
+    assertThat(message.field(2).options().optionMatches(".*\\.redacted", "false")).isFalse();
+    assertThat(message.field(3).options().optionMatches("foo.*", ".*")).isTrue();
+    assertThat(message.field(3).options().optionMatches("foo.*", "test")).isTrue();
+    assertThat(message.field(3).options().optionMatches("foo.*", "part")).isTrue();
+    assertThat(message.field(3).options().optionMatches("foo.+", "test")).isFalse();
+    assertThat(message.field(3).options().optionMatches("foo.+", "part")).isTrue();
   }
 
   private Set<String> set(String... elements) {
