@@ -138,6 +138,9 @@
           <outputDirectory>${project.build.directory}/site/cobertura</outputDirectory>
           <instrumentation>
             <ignoreTrivial>true</ignoreTrivial>
+            <excludes>
+              <exclude>**/*AutoValue_*.*</exclude>
+            </excludes>
           </instrumentation>
         </configuration>
         <executions>
