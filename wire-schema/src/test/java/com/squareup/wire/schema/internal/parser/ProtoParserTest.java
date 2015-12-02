@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.squareup.wire.schema.Field.Label.OPTIONAL;
@@ -1565,4 +1567,295 @@ public final class ProtoParserTest {
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
+
+  @Test public void validSyntaxDeclaration() {
+    String proto = "syntax = \"proto3\";";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+    assertThat(parsed.syntax().toString()).isEqualTo("proto3");
+  }
+
+  @Test(expected = IllegalStateException.class) public void incorrectSyntaxDeclaration() {
+    String proto = "syntax \"proto3\";";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when there is no equality character after 'syntax' key-word");
+  }
+
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterSyntax() {
+    String proto = "syntax \"proto3\"\n message A {}\n";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when there is no semicolon after syntax declaration");
+  }
+
+  @Test public void validPackageDeclaration() {
+    String proto = "package a.b;";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+    assertThat(parsed.packageName()).isEqualTo("a.b");
+  }
+
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterPackage() {
+    String proto = "package a.b message C {optional A.B ab = 1;}";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when there is no semicolon after package statement");
+  }
+
+  @Test(expected = IllegalStateException.class) public void tooManyPackages() {
+    String proto = "package a.b; package b.a; message C {optional A.B ab = 1;}";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when several package definitions are declared");
+  }
+
+  @Test(expected = IllegalStateException.class) public void packagePlacedInMessage() {
+    String proto = "message A { package a.b; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when package definition declared in message");
+  }
+
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterImport() {
+    String proto = "import a.b message C { optional A.B ab = 1;}";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when there is no semicolon after import statement");
+  }
+
+  @Test(expected = IllegalStateException.class) public void importPlacedInMessage() {
+    String proto = "message A { import a.b; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when import definition declared in message");
+  }
+
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterOption() {
+    String proto = "\toption java_package = \"com.google.protobuf\"\r\n message A { }\r\n";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when there is no semicolon after option declaration");
+  }
+
+  @Test(expected = IllegalStateException.class) public void oneOfPlacedInEnum() {
+    String proto = "enum A { oneof test { int32 a =  1; string b = 2; } }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when oneOf definition declared in enum");
+  }
+
+  @Test(expected = IllegalStateException.class) public void unexpectedType() {
+    String proto = "structure S { optional int32 id = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when unexpected type is declared");
+  }
+
+  @Test(expected = IllegalStateException.class) public void messageWithoutLeftBrace() {
+    String proto = "message A  optional int32 a = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when message definition declares message body without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void messageWithoutRightBrace() {
+    String proto = "message A { optional int32 a = 1; ";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when message definition declares message body without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void enumWithoutLeftBrace() {
+    String proto = "enum E   ONE = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when enum definition declares enum body without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void enumWithoutRightBrace() {
+    String proto = "enum E { ONE = 1; ";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when enum definition declares enum body without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void serviceWithoutLeftBrace() {
+    String proto = "service S rpc search (SearchRequest) returns (SearchResponse); }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when service definition declares service body without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void serviceWithoutRightBrace() {
+    String proto = "service S { rpc search (SearchRequest) returns (SearchResponse); ";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when service definition declares service body without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void extendWithoutLeftBrace() {
+    String proto = "extend A optional int32 id = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when extend definition declares extend body without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void extendWithoutRightBrace() {
+    String proto = "extend A { optional int32 id = 1; ";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when extend definition declares extend body without braces");
+  }
+
+  @Test public void messageWithoutDeclaredFields() {
+    String proto = "message A { ; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    assertThat(((MessageElement)parsed.types().get(0)).fields()).isEmpty();
+  }
+
+  @Test public void enumWithoutDeclaredConstants() {
+    String proto = "enum E { ; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    assertThat(((EnumElement)parsed.types().get(0)).constants()).isEmpty();
+  }
+
+  @Test public void serviceWithoutDeclaredRpcs() {
+    String proto = "service S { ; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    assertThat((parsed.services().get(0)).rpcs()).isEmpty();
+  }
+
+  @Test public void extendWithoutDeclaredFields() {
+    String proto = "extend A { ; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    assertThat(parsed.extendDeclarations().get(0).fields()).isEmpty();
+  }
+
+  @Test(expected = IllegalStateException.class) public void rpcPlacedInMessage() {
+    String proto = "message A { rpc Search (SearchRequest) returns (SearchResponse); }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when rpc definition declared in message");
+  }
+
+  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutLeftBrace() {
+    String proto = "service S { rpc Search SearchRequest) returns (SearchResponse); }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when rpc request type without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutRightBrace() {
+    String proto = "service S { rpc Search (SearchRequest returns (SearchResponse); }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when rpc request type without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutReturns() {
+    String proto = "service S { rpc Search (SearchRequest) (SearchResponse); }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when rpc request and response types are not separated by 'returns' key-word");
+  }
+
+  @Test(expected = IllegalStateException.class) public void rpcResponseTypeWithoutLeftBrace() {
+    String proto = "service S { rpc Search (SearchRequest) returns SearchResponse); }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when rpc response type without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void rpcResponseTypeWithoutRightBrace() {
+    String proto = "service S { rpc Search (SearchRequest) returns (SearchResponse; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when rpc response type without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void invalidMultiOptionDeclaration() {
+    String proto = "enum B { ONE = 1 [(test1) = 1;  (test2) = true]; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when field multi-options are not separated by coma");
+  }
+
+  @Test(expected = IllegalStateException.class) public void invalidEnumFieldDeclaration() {
+    String proto = "enum B { ONE; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when tag value is missed in enum field declaration");
+  }
+
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterFieldDeclaration() {
+    String proto = "enum B { ONE = 1 }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when enum field declaration is not finished with semicolon");
+  }
+  
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterFieldWithOptions() {
+    String proto = "message A { optional int32 a = 1 [deprecated = true, packed = true] }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when field with options declaration is not finished with semicolon");
+  }
+  
+  
+  // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
+  @Test(expected = IllegalStateException.class) public void mapFieldWithoutKeyValueTypes() {
+    String proto = "message A { optional map test = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when map field key and value types are not declared");
+  }
+
+  // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
+  @Test(expected = IllegalStateException.class) public void mapFieldWithoutValueType() {
+    String proto = "message A { optional map<int32> test = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when map field value type is not declared");
+  }
+
+  // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
+  @Test(expected = IllegalStateException.class) public void mapFieldIncompleteDeclaration() {
+    String proto = "message A { optional map<int32,string test = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when map field key and value types are not declared properly");
+  }
+
+  // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
+  // current parser don't follow the restriction 'Key type can be any integral or string type (so, any scalar type except for floating point types and bytes)'
+  @Ignore
+  @Test public void mapFieldInvalidKeyTypeDeclaration() {
+    String proto = "message A { optional map<bytes,string> test = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when map field key types is not string or integral");
+  }
+
+  // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
+  @Test(expected = IllegalStateException.class) public void fieldWithoutLabelInProto2() {
+    String proto = "syntax=\"proto2\";\n message A { int32 a = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when proto2 message field declared without label");
+  }
+
+  // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
+  @Test public void fieldWithoutLabelInProto3() {
+    String proto = "syntax=\"proto3\";\n message A { int32 b = 1; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    assertThat(((MessageElement)parsed.types().get(0)).fields().size()).isEqualTo(1);
+    assertThat(((MessageElement)parsed.types().get(0)).fields().get(0).name()).isEqualTo("b");
+    assertThat(((MessageElement)parsed.types().get(0)).fields().get(0).label()).isNull();
+  }
+
+  @Test(expected = IllegalStateException.class) public void optionListValueWithoutLeftBrace() {
+    String proto = "message M { required int32 id = 1 [ list = \"a\", \"b\", \"c\"]]; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when option list value declared without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void optionListValueWithoutRightBrace() {
+    String proto = "message M { required int32 id = 1 [ list = [\"a\", \"b\", \"c\"]; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when option list value declared without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void optionMapValueWithoutLeftBrace() {
+    String proto = "message M { required int32 id = 1 [ map = a:\"a\", b:\"b\", c:\"c\"}]; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when option map value declared without braces");
+  }
+
+  @Test(expected = IllegalStateException.class) public void optionMapValueWithoutRightBrace() {
+    String proto = "message M { required int32 id = 1 [map = {a:\"a\", b:\"b\", c:\"c\"]; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when option map value declared without braces");
+  }
+
+  @Test public void optionMapInListValue() {
+    String proto = "message M { required int32 id = 1 [list = [{a:\"a\", b:\"b\", c:\"c\"}]]; }";
+    ProtoParser.parse(location, proto);
+  }
+
+  @Test public void optionListInMapValue() {
+    String proto = "message M { required int32 id = 1 [map = {m : [\"a\", \"b\", \"c\"]}]; }";
+    ProtoParser.parse(location, proto);
+  }
+
 }
