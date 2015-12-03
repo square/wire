@@ -1013,6 +1013,28 @@ public final class SchemaTest {
     assertThat(messageC.field("c4").type()).isEqualTo(ProtoType.get("a.b.MessageC"));
   }
 
+  @Test public void duplicatedImport() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("a_b_1.proto", ""
+        + "package a.b;\n"
+        + "\n"
+        + "import \"a_b_2.proto\";\n"
+        + "import \"a_b_2.proto\";\n"
+        + "\n"
+        + "message MessageB {\n"
+        + "  optional a.b.c.MessageC c1 = 1;\n"
+        + "}\n")
+      .add("a_b_2.proto", ""
+        + "package a.b.c;\n"
+        + "\n"
+        + "message MessageC {\n"
+        + "}\n")
+      .build();
+
+    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
+    assertThat(messageC.field("c1").type()).isEqualTo(ProtoType.get("a.b.c.MessageC"));
+  }
+
   @Test public void importResolvesEnclosingPackageSuffix() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("a_b.proto", ""
