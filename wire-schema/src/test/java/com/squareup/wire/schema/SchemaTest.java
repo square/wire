@@ -1288,4 +1288,16 @@ public final class SchemaTest {
     assertThat(extendField.tag()).isEqualTo(50000);
   }
 
+  @Test(expected = IllegalArgumentException.class) public void protoAdapterWithUnknownProtoType() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("extend.proto",
+        "message A {\n"
+          + "}\n")
+      .build();
+
+    schema.protoAdapter("B", true);
+
+    fail("Schema should throw IllegalArgumentException when creating proto adapter for unknown type");
+  }
+
 }
