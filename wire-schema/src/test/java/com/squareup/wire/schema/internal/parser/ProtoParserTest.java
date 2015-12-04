@@ -21,24 +21,22 @@ import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.internal.Util;
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import static com.squareup.wire.schema.Field.Label.OPTIONAL;
-import static com.squareup.wire.schema.Field.Label.REPEATED;
-import static com.squareup.wire.schema.Field.Label.REQUIRED;
+import static com.squareup.wire.schema.Field.Label.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class ProtoParserTest {
   Location location = Location.get("file.proto");
 
-  @Test public void typeParsing() {
+  @Test public void typeParsing() throws Exception {
     String proto = ""
         + "message Types {\n"
         + "  required any f1 = 1;\n"
@@ -193,7 +191,7 @@ public final class ProtoParserTest {
   }
 
   /** It looks like an option, but 'default' is special. It's missing from descriptor.proto! */
-  @Test public void defaultFieldOptionIsSpecial() {
+  @Test public void defaultFieldOptionIsSpecial() throws Exception {
     String proto = ""
         + "message Message {\n"
         + "  required string a = 1 [default = \"b\", faulted = \"c\"];\n"
@@ -217,7 +215,63 @@ public final class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
-  @Test public void singleLineComment() {
+  // ProtoParser should parse this proto but fails with StringIndexOutOfBoundsException
+  @Ignore
+  @Test public void lastLineComment() throws Exception {
+    String proto = ""
+      + "message Test {}\n"
+      + "// ";
+
+    ProtoParser.parse(location, proto);
+  }
+
+  // ProtoParser should parse this proto but fails with StringIndexOutOfBoundsException
+  @Ignore
+  @Test public void lastLineEmptyComment() throws Exception {
+    String proto = ""
+      + "message Test {}\n"
+      + "//";
+
+    ProtoParser.parse(location, proto);
+  }
+
+  @Test(expected = IllegalStateException.class) public void lastLineIncompleteComment() throws Exception {
+    String proto = ""
+      + "message Test {}\n"
+      + "/";
+
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw IllegalStateException when last line comment has incomplete declaration");
+  }
+
+  @Test(expected = IllegalStateException.class) public void lastLineUnclosedComment1() throws Exception {
+    String proto = ""
+      + "message Test {}\n"
+      + "/*";
+
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
+  }
+
+  @Test(expected = IllegalStateException.class) public void lastLineUnclosedComment2() throws Exception {
+    String proto = ""
+      + "message Test {}\n"
+      + "/**";
+
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
+  }
+
+  @Test(expected = IllegalStateException.class) public void lastLineUnclosedComment3() throws Exception {
+    String proto = ""
+      + "message Test {}\n"
+      + "/* ";
+
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
+  }
+
+  @Test public void singleLineComment() throws Exception {
     String proto = ""
         + "// Test all the things!\n"
         + "message Test {}";
@@ -226,12 +280,14 @@ public final class ProtoParserTest {
     assertThat(type.documentation()).isEqualTo("Test all the things!");
   }
 
-  @Test public void multipleSingleLineComments() {
+  @Test public void multipleSingleLineComments() throws Exception {
     String proto = ""
+        + "//\n"
         + "// Test all\n"
         + "// the things!\n"
         + "message Test {}";
     String expected = ""
+        + "\n"
         + "Test all\n"
         + "the things!";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
@@ -239,7 +295,7 @@ public final class ProtoParserTest {
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
-  @Test public void singleLineJavadocComment() {
+  @Test public void singleLineJavadocComment() throws Exception {
     String proto = ""
         + "/** Test */\n"
         + "message Test {}";
@@ -248,7 +304,7 @@ public final class ProtoParserTest {
     assertThat(type.documentation()).isEqualTo("Test");
   }
 
-  @Test public void multilineJavadocComment() {
+  @Test public void multilineJavadocComment() throws Exception {
     String proto = ""
         + "/**\n"
         + " * Test\n"
@@ -265,7 +321,7 @@ public final class ProtoParserTest {
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
-  @Test public void multipleSingleLineCommentsWithLeadingWhitespace() {
+  @Test public void multipleSingleLineCommentsWithLeadingWhitespace() throws Exception {
     String proto = ""
         + "// Test\n"
         + "//   All\n"
@@ -282,7 +338,7 @@ public final class ProtoParserTest {
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
-  @Test public void multilineJavadocCommentWithLeadingWhitespace() {
+  @Test public void multilineJavadocCommentWithLeadingWhitespace() throws Exception {
     String proto = ""
         + "/**\n"
         + " * Test\n"
@@ -301,7 +357,7 @@ public final class ProtoParserTest {
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
-  @Test public void multilineJavadocCommentWithoutLeadingAsterisks() {
+  @Test public void multilineJavadocCommentWithoutLeadingAsterisks() throws Exception {
     // We do not honor leading whitespace when the comment lacks leading asterisks.
     String proto = ""
         + "/**\n"
@@ -321,11 +377,11 @@ public final class ProtoParserTest {
     assertThat(type.documentation()).isEqualTo(expected);
   }
 
-  @Test public void messageFieldTrailingComment() {
+  @Test public void messageFieldTrailingComment() throws Exception {
     // Trailing message field comment.
     String proto = ""
         + "message Test {\n"
-        + "  optional string name = 1; // Test all the things!\n"
+        + "  optional string name = 1; \t// Test all the things!\n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
     MessageElement message = (MessageElement) parsed.types().get(0);
@@ -333,7 +389,7 @@ public final class ProtoParserTest {
     assertThat(field.documentation()).isEqualTo("Test all the things!");
   }
 
-  @Test public void messageFieldLeadingAndTrailingCommentAreCombined() {
+  @Test public void messageFieldLeadingAndTrailingCommentAreCombined() throws Exception {
     String proto = ""
         + "message Test {\n"
         + "  // Test all...\n"
@@ -345,7 +401,7 @@ public final class ProtoParserTest {
     assertThat(field.documentation()).isEqualTo("Test all...\n...the things!");
   }
 
-  @Test public void trailingCommentNotAssignedToFollowingField() {
+  @Test public void trailingCommentNotAssignedToFollowingField() throws Exception {
     String proto = ""
         + "message Test {\n"
         + "  optional string first_name = 1; // Testing!\n"
@@ -359,10 +415,10 @@ public final class ProtoParserTest {
     assertThat(field2.documentation()).isEqualTo("");
   }
 
-  @Test public void enumValueTrailingComment() {
+  @Test public void enumValueTrailingComment() throws Exception {
     String proto = ""
         + "enum Test {\n"
-        + "  FOO = 1; // Test all the things!   \n"
+        + "  FOO = 1; // Test all the things! \t \t\t  \n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
     EnumElement enumElement = (EnumElement) parsed.types().get(0);
@@ -370,11 +426,12 @@ public final class ProtoParserTest {
     assertThat(value.documentation()).isEqualTo("Test all the things!");
   }
 
-  @Test public void trailingMultilineComment() {
+  @Test public void trailingMultilineComment() throws Exception {
     String proto = ""
         + "enum Test {\n"
         + "  FOO = 1; /* Test all the things!  */  \n"
         + "  BAR = 2;/*Test all the things!*/\n"
+        + "  BAZ = 3;/*Test all the things!**/\n"
         + "}";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
     EnumElement enumElement = (EnumElement) parsed.types().get(0);
@@ -382,9 +439,11 @@ public final class ProtoParserTest {
     assertThat(foo.documentation()).isEqualTo("Test all the things!");
     EnumConstantElement bar = enumElement.constants().get(1);
     assertThat(bar.documentation()).isEqualTo("Test all the things!");
+    EnumConstantElement baz = enumElement.constants().get(2);
+    assertThat(baz.documentation()).isEqualTo("Test all the things!*");
   }
 
-  @Test public void trailingUnclosedMultilineCommentThrows() {
+  @Test public void trailingUnclosedMultilineCommentThrows() throws Exception {
     String proto = ""
         + "enum Test {\n"
         + "  FOO = 1; /* Test all the things!   \n"
@@ -397,20 +456,20 @@ public final class ProtoParserTest {
     }
   }
 
-  @Test public void trailingMultilineCommentMustBeLastOnLineThrows() {
+  @Test public void trailingMultilineCommentMustBeLastOnLineThrows() throws Exception {
     String proto = ""
         + "enum Test {\n"
-        + "  FOO = 1; /* Test all the things! */ BAR = 2;\n"
+        + "  FOO = 1; /* Test all the things! */\t BAR = 2;\n"
         + "}";
     try {
       ProtoParser.parse(location, proto);
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage(
-          "Syntax error in file.proto at 2:40: no syntax may follow trailing comment");
+          "Syntax error in file.proto at 2:41: no syntax may follow trailing comment");
     }
   }
 
-  @Test public void invalidTrailingComment() {
+  @Test public void invalidTrailingComment() throws Exception {
     String proto = ""
         + "enum Test {\n"
         + "  FOO = 1; /\n"
@@ -423,7 +482,7 @@ public final class ProtoParserTest {
     }
   }
 
-  @Test public void enumValueLeadingAndTrailingCommentsAreCombined() {
+  @Test public void enumValueLeadingAndTrailingCommentsAreCombined() throws Exception {
     String proto = ""
         + "enum Test {\n"
         + "  // Test all...\n"
@@ -435,7 +494,7 @@ public final class ProtoParserTest {
     assertThat(value.documentation()).isEqualTo("Test all...\n...the things!");
   }
 
-  @Test public void trailingCommentNotCombinedWhenEmpty() {
+  @Test public void trailingCommentNotCombinedWhenEmpty() throws Exception {
     String proto = ""
         + "enum Test {\n"
         + "  // Test all...\n"
@@ -478,7 +537,7 @@ public final class ProtoParserTest {
     }
   }
 
-  @Test public void syntaxInWrongContextThrows() {
+  @Test public void syntaxInWrongContextThrows() throws Exception {
     String proto = ""
         + "message Foo {\n"
         + "  syntax = \"proto2\";\n"
@@ -488,6 +547,25 @@ public final class ProtoParserTest {
     } catch (IllegalStateException e) {
       assertThat(e).hasMessage("Syntax error in file.proto at 2:3: 'syntax' in MESSAGE");
     }
+  }
+
+  // should be IllegalStateException
+  @Test(expected = AssertionError.class) public void syntaxValueWithoutQuotes() throws Exception {
+    String proto = ""
+      + "syntax = proto2\n"
+      + "message Foo {}";
+
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw AssertionError when syntax value without quotes");
+  }
+
+  @Test(expected = IllegalStateException.class) public void syntaxWithoutSemicolon() throws Exception {
+    String proto = ""
+      + "syntax = \"proto2\"\n"
+      + "message Foo {}";
+
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw IllegalStateException when syntax is declared without semicolon at the end");
   }
 
   @Test public void syntaxNotFirstDeclarationThrows() throws Exception {
@@ -1275,7 +1353,7 @@ public final class ProtoParserTest {
         + "message ExoticOptions {\n"
         + "  option (squareup.one) = {name: \"Name\", class_name:\"ClassName\"};\n"
         + "  option (squareup.two.a) = {[squareup.options.type]: EXOTIC};\n"
-        + "  option (squareup.two.b) = {names: [\"Foo\", \"Bar\"]};\n"
+        + "  option (squareup.two.b) = {names: [\"Foo\", \"Bar\"], names: [\"Tic\", \"Tac\"]};\n"
         + "  option (squareup.three) = {x: {y: 1 y: 2}};\n" // NOTE: Omitted optional comma
         + "  option (squareup.four) = {x: {y: {z: 1}, y: {z: 2}}};\n"
         + "}";
@@ -1286,7 +1364,7 @@ public final class ProtoParserTest {
     Map<String, Object> option_two_a_map = new LinkedHashMap<>();
     option_two_a_map.put("[squareup.options.type]", "EXOTIC");
     Map<String, List<String>> option_two_b_map = new LinkedHashMap<>();
-    option_two_b_map.put("names", Arrays.asList("Foo", "Bar"));
+    option_two_b_map.put("names", Arrays.asList("Foo", "Bar", "Tic", "Tac"));
     Map<String, Map<String, ?>> option_three_map = new LinkedHashMap<>();
     Map<String, Object> option_three_nested_map = new LinkedHashMap<>();
     option_three_nested_map.put("y", Arrays.asList("1", "2"));
@@ -1313,6 +1391,7 @@ public final class ProtoParserTest {
                     OptionElement.create("squareup.four", Kind.MAP, option_four_map, true)))
                 .build()))
         .build();
+    ProtoParser.parse(location, proto);
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
@@ -1355,7 +1434,7 @@ public final class ProtoParserTest {
         .isEqualTo(protoFile);
   }
 
-  @Test public void optionNumericalBounds() {
+  @Test public void optionNumericalBounds() throws Exception {
     String proto = ""
         + "message Test {\n"
         + "  optional int32 default_int32 = 401 [x = 2147483647 ];\n"
@@ -1552,7 +1631,7 @@ public final class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(protoFile);
   }
 
-  @Test public void noWhitespace() {
+  @Test public void noWhitespace() throws Exception {
     String proto = "message C {optional A.B ab = 1;}";
     ProtoFileElement expected = ProtoFileElement.builder(location)
         .types(ImmutableList.<TypeElement>of(
@@ -1568,209 +1647,215 @@ public final class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
-  @Test public void validSyntaxDeclaration() {
+  @Test public void validSyntaxDeclaration() throws Exception {
     String proto = "syntax = \"proto3\";";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
     assertThat(parsed.syntax().toString()).isEqualTo("proto3");
   }
 
-  @Test(expected = IllegalStateException.class) public void incorrectSyntaxDeclaration() {
+  @Test(expected = IllegalStateException.class) public void incorrectSyntaxDeclaration() throws Exception {
     String proto = "syntax \"proto3\";";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when there is no equality character after 'syntax' key-word");
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterSyntax() {
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterSyntax() throws Exception {
     String proto = "syntax \"proto3\"\n message A {}\n";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when there is no semicolon after syntax declaration");
   }
 
-  @Test public void validPackageDeclaration() {
+  @Test public void validPackageDeclaration() throws Exception {
     String proto = "package a.b;";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
     assertThat(parsed.packageName()).isEqualTo("a.b");
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterPackage() {
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterPackage() throws Exception {
     String proto = "package a.b message C {optional A.B ab = 1;}";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when there is no semicolon after package statement");
   }
 
-  @Test(expected = IllegalStateException.class) public void tooManyPackages() {
+  @Test(expected = IllegalStateException.class) public void tooManyPackages() throws Exception {
     String proto = "package a.b; package b.a; message C {optional A.B ab = 1;}";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when several package definitions are declared");
   }
 
-  @Test(expected = IllegalStateException.class) public void packagePlacedInMessage() {
+  @Test(expected = IllegalStateException.class) public void packagePlacedInMessage() throws Exception {
     String proto = "message A { package a.b; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when package definition declared in message");
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterImport() {
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterImport() throws Exception {
     String proto = "import a.b message C { optional A.B ab = 1;}";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when there is no semicolon after import statement");
   }
 
-  @Test(expected = IllegalStateException.class) public void importPlacedInMessage() {
+  @Test(expected = IllegalStateException.class) public void importPlacedInMessage() throws Exception {
     String proto = "message A { import a.b; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when import definition declared in message");
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterOption() {
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterOption() throws Exception {
     String proto = "\toption java_package = \"com.google.protobuf\"\r\n message A { }\r\n";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when there is no semicolon after option declaration");
   }
 
-  @Test(expected = IllegalStateException.class) public void oneOfPlacedInEnum() {
+  @Test(expected = IllegalStateException.class) public void oneOfPlacedInEnum() throws Exception {
     String proto = "enum A { oneof test { int32 a =  1; string b = 2; } }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when oneOf definition declared in enum");
   }
 
-  @Test(expected = IllegalStateException.class) public void unexpectedType() {
+  @Test(expected = IllegalStateException.class) public void unexpectedType() throws Exception {
     String proto = "structure S { optional int32 id = 1; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when unexpected type is declared");
   }
 
-  @Test(expected = IllegalStateException.class) public void messageWithoutLeftBrace() {
+  @Test(expected = IllegalStateException.class) public void messageWithoutLeftBrace() throws Exception {
     String proto = "message A  optional int32 a = 1; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when message definition declares message body without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void messageWithoutRightBrace() {
+  @Test(expected = IllegalStateException.class) public void messageWithoutRightBrace() throws Exception {
     String proto = "message A { optional int32 a = 1; ";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when message definition declares message body without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void enumWithoutLeftBrace() {
+  @Test(expected = IllegalStateException.class) public void enumWithoutLeftBrace() throws Exception {
     String proto = "enum E   ONE = 1; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when enum definition declares enum body without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void enumWithoutRightBrace() {
+  @Test(expected = IllegalStateException.class) public void enumWithoutRightBrace() throws Exception {
     String proto = "enum E { ONE = 1; ";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when enum definition declares enum body without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void serviceWithoutLeftBrace() {
+  @Test(expected = IllegalStateException.class) public void serviceWithoutLeftBrace() throws Exception {
     String proto = "service S rpc search (SearchRequest) returns (SearchResponse); }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when service definition declares service body without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void serviceWithoutRightBrace() {
+  @Test(expected = IllegalStateException.class) public void serviceWithoutRightBrace() throws Exception {
     String proto = "service S { rpc search (SearchRequest) returns (SearchResponse); ";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when service definition declares service body without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void extendWithoutLeftBrace() {
+  @Test(expected = IllegalStateException.class) public void serviceWithoutSemiColon() throws Exception {
+    String proto = "service S { rpc search (SearchRequest) returns (SearchResponse) }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when service definition declares service without semicolon at the end");
+  }
+
+  @Test(expected = IllegalStateException.class) public void extendWithoutLeftBrace() throws Exception {
     String proto = "extend A optional int32 id = 1; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when extend definition declares extend body without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void extendWithoutRightBrace() {
+  @Test(expected = IllegalStateException.class) public void extendWithoutRightBrace() throws Exception {
     String proto = "extend A { optional int32 id = 1; ";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when extend definition declares extend body without braces");
   }
 
-  @Test public void messageWithoutDeclaredFields() {
+  @Test public void messageWithoutDeclaredFields() throws Exception {
     String proto = "message A { ; }";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
 
     assertThat(((MessageElement)parsed.types().get(0)).fields()).isEmpty();
   }
 
-  @Test public void enumWithoutDeclaredConstants() {
+  @Test public void enumWithoutDeclaredConstants() throws Exception {
     String proto = "enum E { ; }";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
 
     assertThat(((EnumElement)parsed.types().get(0)).constants()).isEmpty();
   }
 
-  @Test public void serviceWithoutDeclaredRpcs() {
+  @Test public void serviceWithoutDeclaredRpcs() throws Exception {
     String proto = "service S { ; }";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
 
     assertThat((parsed.services().get(0)).rpcs()).isEmpty();
   }
 
-  @Test public void extendWithoutDeclaredFields() {
+  @Test public void extendWithoutDeclaredFields() throws Exception {
     String proto = "extend A { ; }";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
 
     assertThat(parsed.extendDeclarations().get(0).fields()).isEmpty();
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcPlacedInMessage() {
+  @Test(expected = IllegalStateException.class) public void rpcPlacedInMessage() throws Exception {
     String proto = "message A { rpc Search (SearchRequest) returns (SearchResponse); }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when rpc definition declared in message");
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutLeftBrace() {
+  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutLeftBrace() throws Exception {
     String proto = "service S { rpc Search SearchRequest) returns (SearchResponse); }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when rpc request type without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutRightBrace() {
+  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutRightBrace() throws Exception {
     String proto = "service S { rpc Search (SearchRequest returns (SearchResponse); }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when rpc request type without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutReturns() {
-    String proto = "service S { rpc Search (SearchRequest) (SearchResponse); }";
+  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutReturns() throws Exception {
+    String proto = "service S { rpc Search (SearchRequest) to (SearchResponse); }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when rpc request and response types are not separated by 'returns' key-word");
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcResponseTypeWithoutLeftBrace() {
+  @Test(expected = IllegalStateException.class) public void rpcResponseTypeWithoutLeftBrace() throws Exception {
     String proto = "service S { rpc Search (SearchRequest) returns SearchResponse); }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when rpc response type without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcResponseTypeWithoutRightBrace() {
+  @Test(expected = IllegalStateException.class) public void rpcResponseTypeWithoutRightBrace() throws Exception {
     String proto = "service S { rpc Search (SearchRequest) returns (SearchResponse; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when rpc response type without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void invalidMultiOptionDeclaration() {
+  @Test(expected = IllegalStateException.class) public void invalidMultiOptionDeclaration() throws Exception {
     String proto = "enum B { ONE = 1 [(test1) = 1;  (test2) = true]; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when field multi-options are not separated by coma");
   }
 
-  @Test(expected = IllegalStateException.class) public void invalidEnumFieldDeclaration() {
+  @Test(expected = IllegalStateException.class) public void invalidEnumFieldDeclaration() throws Exception {
     String proto = "enum B { ONE; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when tag value is missed in enum field declaration");
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterFieldDeclaration() {
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterFieldDeclaration() throws Exception {
     String proto = "enum B { ONE = 1 }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when enum field declaration is not finished with semicolon");
   }
   
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterFieldWithOptions() {
+  @Test(expected = IllegalStateException.class) public void noSemicolonAfterFieldWithOptions() throws Exception {
     String proto = "message A { optional int32 a = 1 [deprecated = true, packed = true] }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when field with options declaration is not finished with semicolon");
@@ -1778,21 +1863,21 @@ public final class ProtoParserTest {
   
   
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
-  @Test(expected = IllegalStateException.class) public void mapFieldWithoutKeyValueTypes() {
+  @Test(expected = IllegalStateException.class) public void mapFieldWithoutKeyValueTypes() throws Exception {
     String proto = "message A { optional map test = 1; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when map field key and value types are not declared");
   }
 
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
-  @Test(expected = IllegalStateException.class) public void mapFieldWithoutValueType() {
+  @Test(expected = IllegalStateException.class) public void mapFieldWithoutValueType() throws Exception {
     String proto = "message A { optional map<int32> test = 1; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when map field value type is not declared");
   }
 
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
-  @Test(expected = IllegalStateException.class) public void mapFieldIncompleteDeclaration() {
+  @Test(expected = IllegalStateException.class) public void mapFieldIncompleteDeclaration() throws Exception {
     String proto = "message A { optional map<int32,string test = 1; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when map field key and value types are not declared properly");
@@ -1801,21 +1886,21 @@ public final class ProtoParserTest {
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
   // current parser don't follow the restriction 'Key type can be any integral or string type (so, any scalar type except for floating point types and bytes)'
   @Ignore
-  @Test public void mapFieldInvalidKeyTypeDeclaration() {
+  @Test public void mapFieldInvalidKeyTypeDeclaration() throws Exception {
     String proto = "message A { optional map<bytes,string> test = 1; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when map field key types is not string or integral");
   }
 
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
-  @Test(expected = IllegalStateException.class) public void fieldWithoutLabelInProto2() {
+  @Test(expected = IllegalStateException.class) public void fieldWithoutLabelInProto2() throws Exception {
     String proto = "syntax=\"proto2\";\n message A { int32 a = 1; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when proto2 message field declared without label");
   }
 
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
-  @Test public void fieldWithoutLabelInProto3() {
+  @Test public void fieldWithoutLabelInProto3() throws Exception {
     String proto = "syntax=\"proto3\";\n message A { int32 b = 1; }";
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
 
@@ -1824,38 +1909,194 @@ public final class ProtoParserTest {
     assertThat(((MessageElement)parsed.types().get(0)).fields().get(0).label()).isNull();
   }
 
-  @Test(expected = IllegalStateException.class) public void optionListValueWithoutLeftBrace() {
+  @Test(expected = IllegalStateException.class) public void optionListValueWithoutLeftBrace() throws Exception {
     String proto = "message M { required int32 id = 1 [ list = \"a\", \"b\", \"c\"]]; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when option list value declared without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void optionListValueWithoutRightBrace() {
+  @Test(expected = IllegalStateException.class) public void optionListValueWithoutRightBrace() throws Exception {
     String proto = "message M { required int32 id = 1 [ list = [\"a\", \"b\", \"c\"]; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when option list value declared without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void optionMapValueWithoutLeftBrace() {
+  @Test(expected = IllegalStateException.class) public void optionMapValueWithoutLeftBrace() throws Exception {
     String proto = "message M { required int32 id = 1 [ map = a:\"a\", b:\"b\", c:\"c\"}]; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when option map value declared without braces");
   }
 
-  @Test(expected = IllegalStateException.class) public void optionMapValueWithoutRightBrace() {
+  @Test(expected = IllegalStateException.class) public void optionMapValueWithoutRightBrace() throws Exception {
     String proto = "message M { required int32 id = 1 [map = {a:\"a\", b:\"b\", c:\"c\"]; }";
     ProtoParser.parse(location, proto);
     fail("Parser should throw IllegalStateException when option map value declared without braces");
   }
 
-  @Test public void optionMapInListValue() {
-    String proto = "message M { required int32 id = 1 [list = [{a:\"a\", b:\"b\", c:\"c\"}]]; }";
-    ProtoParser.parse(location, proto);
+  @Test public void optionMapInListValue() throws Exception {
+    String proto = "message M { required int32 id = 1 [list = [{a:1, b:true, c:\"c\"}]]; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    OptionElement element = ((MessageElement)parsed.types().get(0)).fields().get(0).options().get(0);
+    Map value = (Map)((List)element.value()).get(0);
+
+    assertThat(element.name()).isEqualTo("list");
+    assertThat(value.get("a")).isEqualTo("1");
+    assertThat(value.get("b")).isEqualTo("true");
+    assertThat(value.get("c")).isEqualTo("c");
   }
 
-  @Test public void optionListInMapValue() {
-    String proto = "message M { required int32 id = 1 [map = {m : [\"a\", \"b\", \"c\"]}]; }";
-    ProtoParser.parse(location, proto);
+  @Test public void optionListInMapValue() throws Exception {
+    String proto = "message M { required int32 id = 1 [map = {m : [\"a\", { r : \"r\" }, \"c\"]}]; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    OptionElement element = ((MessageElement)parsed.types().get(0)).fields().get(0).options().get(0);
+    List list = (List)((Map)element.value()).get("m");
+
+    assertThat(element.name()).isEqualTo("map");
+    assertThat(list.get(0)).isEqualTo("a");
+    assertThat(((Map)list.get(1)).get("r")).isEqualTo("r");
+    assertThat(list.get(2)).isEqualTo("c");
   }
+
+  @Test public void refMapValue() throws Exception {
+    String proto = "message M { required int32 id = 1 [map = { coord : { x : 10 }, polar : true, (coord).y : 15, (val).str : \"line\" }]; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    OptionElement element = ((MessageElement)parsed.types().get(0)).fields().get(0).options().get(0);
+    Map map = (Map)element.value();
+
+    assertThat(element.name()).isEqualTo("map");
+    assertThat(((Map)map.get("coord")).get("x")).isEqualTo("10");
+    assertThat(((Map)map.get("coord")).get("y")).isEqualTo("15");
+    assertThat((Map)map.get("(coord).y")).isNull();
+    assertThat(map.get("y")).isNull();
+    assertThat(map.get("polar")).isEqualTo("true");
+    assertThat(map.get("(val).str")).isNull();
+    assertThat(((Map)map.get("val")).get("str")).isEqualTo("line");
+  }
+
+  @Test public void optionWithEnumValue() throws Exception {
+    String proto = "enum E { option test_option = ONE; ONE = 1; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+    assertThat((parsed.types().get(0)).options().get(0).value()).isEqualTo("ONE");
+  }
+
+  @Test(expected = IllegalStateException.class) public void incorrectExtensionsValues() throws Exception {
+    String proto = "message M { extensions 500 downto 100; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when extensions range declared incorrectly");
+  }
+
+  @Test(expected = IllegalStateException.class) public void incompleteExtensionsDeclaration() throws Exception {
+    String proto = "message M { extensions 100 to 200 }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when extensions declared without semicolon at the end");
+  }
+
+  @Test(expected = IllegalStateException.class) public void extensionsPlacedOutsideOfMessage() throws Exception {
+    String proto = "extensions 100 to 200; message M { }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when extensions declared in wrong place");
+  }
+
+  @Test(expected = IllegalStateException.class) public void incorrectOptionSeparator() throws Exception {
+    String proto = "message M { option test_option : 50; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when option separator is differs from '='");
+  }
+
+  @Test(expected = IllegalStateException.class) public void incorrectOneOfFieldSeparator() throws Exception {
+    String proto = "message M { oneOf select { test_field : 50; } }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when field separator is differs from '='");
+  }
+
+  @Test(expected = IllegalStateException.class) public void unexpectedEndOfFileCase1() throws Exception {
+    String proto = "syntax = \"";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when statement declaration is incomplete");
+  }
+
+  @Test(expected = IllegalStateException.class) public void unexpectedEndOfFileCase2() throws Exception {
+    String proto = "message M { option test_option = \"value\\q\\";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when statement declaration is incomplete");
+  }
+
+  @Test(expected = IllegalStateException.class) public void unexpectedEndOfFieldName1() throws Exception {
+    String proto = "message M { optional int32 (a = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when braced field name declaration misses closing brace");
+  }
+
+  @Test(expected = IllegalStateException.class) public void unexpectedEndOfFieldName2() throws Exception {
+    String proto = "message M { optional int32 [a = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when braced field name declaration misses closing brace");
+  }
+
+  @Test(expected = IllegalStateException.class) public void invalidCommentDeclaration() throws Exception {
+    String proto = "/incorrect comment\nmessage M { optional a = 1; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when comment not declared properly");
+  }
+
+  @Test(expected = IllegalStateException.class) public void unclosedCommentDeclaration() throws Exception {
+    String proto = "message M { /* Test comment\nfor several\n lines";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when multiline comment not closed properly");
+  }
+
+  @Test(expected = IllegalStateException.class) public void invalidNumberDefinition() throws Exception {
+    String proto = "message M { optional int32 a = 1L; }";
+    ProtoParser.parse(location, proto);
+    fail("Parser should throw IllegalStateException when number is not defined properly");
+  }
+
+  @Test public void middleLineCommentDeclaration() throws Exception {
+    String proto = "message M { optional int32 a = //unexpected comment\n1; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    assertThat(((MessageElement)parsed.types().get(0)).fields().get(0).name()).isEqualTo("a");
+    assertThat(((MessageElement)parsed.types().get(0)).fields().get(0).tag()).isEqualTo(1);
+  }
+
+  @Test public void readHexCharsInStrings() throws Exception {
+    String proto = "message M { option test_option = \"compare \\x0F with \\Xag\"; }";
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    assertThat(parsed.types().get(0).options().get(0).name()).isEqualTo("test_option");
+    assertThat(parsed.types().get(0).options().get(0).value()).isEqualTo("compare "+ (char)0x0F + " with " + (char)0xa + "g");
+  }
+
+  @Test(expected = IllegalStateException.class) public void readInvalidHexCharsInStrings1() throws Exception {
+    String proto = "message M { option test_option = \"check \\x!F\"; }";
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw IllegalStateException when hex decimal is incorrect");
+  }
+
+  @Test(expected = IllegalStateException.class) public void readInvalidHexCharsInStrings2() throws Exception {
+    String proto = "message M { option test_option = \"check \\x=0\"; }";
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw IllegalStateException when hex decimal is incorrect");
+  }
+
+  @Test(expected = IllegalStateException.class) public void readInvalidHexCharsInStrings3() throws Exception {
+    String proto = "message M { option test_option = \"check \\xg5\"; }";
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw IllegalStateException when hex decimal is incorrect");
+  }
+
+  @Test(expected = IllegalStateException.class) public void listValueWithoutRightBrace() throws Exception {
+    String proto = "message M { option test_option = [1; }";
+    ProtoParser.parse(location, proto);
+    fail("ProtoParser should throw IllegalStateException when list value is not closed with brace");
+  }
+
+//  @Test public void trailingComment with () throws Exception {
+//    String proto = "enum E { /* first comment */\nONE = 1; /* second comment **/\n}";
+//    ProtoParser.parse(location, proto);
+//  }
 
 }
