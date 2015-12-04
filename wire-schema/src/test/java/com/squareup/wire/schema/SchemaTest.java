@@ -1290,14 +1290,25 @@ public final class SchemaTest {
 
   @Test(expected = IllegalArgumentException.class) public void protoAdapterWithUnknownProtoType() throws Exception {
     Schema schema = new SchemaBuilder()
-      .add("extend.proto",
-        "message A {\n"
+      .add("extend.proto", ""
+          + "message A {\n"
           + "}\n")
       .build();
 
     schema.protoAdapter("B", true);
 
     fail("Schema should throw IllegalArgumentException when creating proto adapter for unknown type");
+  }
+
+  @Test public void getEnumField() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("enum.proto", ""
+        + "enum E {\n"
+        + "FOO = 1;\n"
+        + "}\n")
+      .build();
+
+    assertThat(schema.getField(ProtoMember.get("E#FOO"))).isNull();
   }
 
 }
