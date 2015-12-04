@@ -170,34 +170,39 @@ public final class OptionsTest {
         + "message FooOptions {\n"
         + "  optional string numberOption = 1 [testOption = 12];\n"
         + "  optional int32 redactedOption = 2 [(option.redacted) = true];\n"
-        + "  optional int32 multiOption = 3 [(foo) = \"test\", fooName = \"part\"];\n"
+        + "}\n")
+      .add("plain.proto", ""
+        + "import \"google/protobuf/descriptor.proto\";\n"
+        + "message PlainOptions {\n"
+        + "  optional int32 multiOption = 1 [(foo) = \"test\", fooName = \"part\"];\n"
         + "}\n")
       .build();
 
-    MessageType message = (MessageType) schema.getType("test.FooOptions");
+    MessageType fooOptions = (MessageType) schema.getType("test.FooOptions");
+    MessageType plainOptions = (MessageType) schema.getType("PlainOptions");
 
-    assertThat(message.field(1).options().optionMatches("Option", "12")).isFalse();
-    assertThat(message.field(1).options().optionMatches(".*Option", "12")).isTrue();
-    assertThat(message.field(2).options().optionMatches("option\\.redacted", "true")).isTrue();
-    assertThat(message.field(2).options().optionMatches(".*\\.redacted", "true")).isTrue();
-    assertThat(message.field(2).options().optionMatches(".*\\.redacted", "false")).isFalse();
-    assertThat(message.field(3).options().optionMatches("foo.*", ".*")).isTrue();
-    assertThat(message.field(3).options().optionMatches("foo.*", ".*t")).isTrue();
-    assertThat(message.field(3).options().optionMatches("foo.*", "test")).isTrue();
-    assertThat(message.field(3).options().optionMatches("foo.*", "part")).isTrue();
-    assertThat(message.field(3).options().optionMatches("foo.+", "test")).isFalse();
-    assertThat(message.field(3).options().optionMatches("foo.+", "part")).isTrue();
+    assertThat(fooOptions.field(1).options().optionMatches("Option", "12")).isFalse();
+    assertThat(fooOptions.field(1).options().optionMatches(".*Option", "12")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches("option\\.redacted", "true")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches(".*\\.redacted", "true")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches(".*\\.redacted", "false")).isFalse();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", ".*")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", ".*t")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", "test")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", "part")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.+", "test")).isFalse();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.+", "part")).isTrue();
 
-    assertThat(message.field(1).options().optionMatches("Option", "12")).isFalse();
-    assertThat(message.field(1).options().optionMatches(".*Option", "12")).isTrue();
-    assertThat(message.field(2).options().optionMatches("option\\.redacted", "true")).isTrue();
-    assertThat(message.field(2).options().optionMatches(".*\\.redacted", "true")).isTrue();
-    assertThat(message.field(2).options().optionMatches(".*\\.redacted", "false")).isFalse();
-    assertThat(message.field(3).options().optionMatches("foo.*", ".*")).isTrue();
-    assertThat(message.field(3).options().optionMatches("foo.*", "test")).isTrue();
-    assertThat(message.field(3).options().optionMatches("foo.*", "part")).isTrue();
-    assertThat(message.field(3).options().optionMatches("foo.+", "test")).isFalse();
-    assertThat(message.field(3).options().optionMatches("foo.+", "part")).isTrue();
+    assertThat(fooOptions.field(1).options().optionMatches("Option", "12")).isFalse();
+    assertThat(fooOptions.field(1).options().optionMatches(".*Option", "12")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches("option\\.redacted", "true")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches(".*\\.redacted", "true")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches(".*\\.redacted", "false")).isFalse();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", ".*")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", "test")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", "part")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.+", "test")).isFalse();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.+", "part")).isTrue();
   }
 
   @Test public void refOptions() throws Exception {
