@@ -413,4 +413,14 @@ public class WireTest {
     assertThat(CollisionSubject.FIELD_OPTIONS_F.c)
         .isEqualTo("2c");
   }
+
+  @Test
+  public void staticGet() throws Exception {
+    assertThat(Wire.get("value", "test value")).isEqualTo("value");
+    assertThat(Wire.get("", "test value")).isEqualTo("");
+    assertThat(Wire.get(null, "test value")).isEqualTo("test value");
+    assertThat(Wire.get(null, "")).isEqualTo("");
+    assertThat(Wire.<String>get(null, null)).isEqualTo(null);
+  }
+
 }
