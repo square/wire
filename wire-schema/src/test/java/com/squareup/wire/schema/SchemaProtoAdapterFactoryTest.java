@@ -222,8 +222,8 @@ public class SchemaProtoAdapterFactoryTest {
     Mockito.verify(protoAdapter, Mockito.times(2)).encodeWithTag(Mockito.eq(protoWriter), Mockito.anyInt(), Mockito.eq(1));
     Mockito.verify(protoAdapter, Mockito.times(2)).encodeWithTag(Mockito.eq(protoWriter), Mockito.anyInt(), Mockito.eq(2));
     Mockito.verify(protoAdapter, Mockito.times(2)).encodeWithTag(Mockito.eq(protoWriter), Mockito.anyInt(), Mockito.eq(3));
-    Mockito.verify(protoAdapter, Mockito.times(1)).encodeWithTag(Mockito.eq(protoWriter), Mockito.anyInt(), Mockito.eq(true));
-    Mockito.verify(protoAdapter, Mockito.times(1)).encodeWithTag(Mockito.eq(protoWriter), Mockito.anyInt(), Mockito.eq(false));
+    Mockito.verify(protoAdapter).encodeWithTag(Mockito.eq(protoWriter), Mockito.anyInt(), Mockito.eq(true));
+    Mockito.verify(protoAdapter).encodeWithTag(Mockito.eq(protoWriter), Mockito.anyInt(), Mockito.eq(false));
   }
 
   @Test(expected = UnsupportedOperationException.class) public void messageAdapterToString() throws Exception {

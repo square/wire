@@ -76,7 +76,7 @@ public class LinkerTest {
     Linker enumLinker = new Linker(ImmutableList.of(schema.protoFile("enum.proto")));
     Linker messageLinker = new Linker(ImmutableList.of(schema.protoFile("enum.proto")));
 
-//    assertThat(enumLinker.dereference(schema.getField(ProtoMember.get("Message#N")), "[A]")).isNull();
+    assertThat(enumLinker.dereference(schema.getField(ProtoMember.get("Message#N")), "[A]")).isNull();
     assertThat(messageLinker.dereference(schema.getField(ProtoMember.get("Message#M")), "[S]")).isNull();
   }
 

@@ -19,7 +19,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.*;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.OPTION;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.NUMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 

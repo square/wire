@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema.internal.parser;
 
+import autovalue.shaded.org.apache.commons.lang.StringUtils;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.Util;
@@ -845,7 +846,7 @@ public final class ProtoParser {
           break;
         }
       }
-      return new String(data, start, pos - 1 - start);
+      return pos > start ? new String(data, start, pos - 1 - start) : StringUtils.EMPTY;
     } else {
       throw unexpected("unexpected '/'");
     }

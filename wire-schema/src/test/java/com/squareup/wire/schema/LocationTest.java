@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -26,10 +27,10 @@ import static org.assertj.core.api.Assertions.fail;
 public final class LocationTest {
 
   @Test public void get() throws Exception {
-    assertThat(compareLocations(Location.get("", ""), Location.get(""))).isTrue();
-    assertThat(compareLocations(Location.get("", "path\\to\\location"), Location.get("path\\to\\location"))).isTrue();
-    assertThat(compareLocations(Location.get("main", "path\\to\\location"), Location.get("main\\path\\to\\location"))).isTrue();
-    assertThat(compareLocations(Location.get("main\\dir", "path\\to\\location"), Location.get("main\\dir\\path\\to\\location"))).isTrue();
+    compareLocations(Location.get("", ""), Location.get(""));
+    compareLocations(Location.get("", "path\\to\\location"), Location.get("path\\to\\location"));
+    compareLocations(Location.get("main", "path\\to\\location"), Location.get("main\\path\\to\\location"));
+    compareLocations(Location.get("main\\dir", "path\\to\\location"), Location.get("main\\dir\\path\\to\\location"));
   }
 
   @Test(expected = NullPointerException.class) public void getNullBase() throws Exception {
@@ -61,34 +62,33 @@ public final class LocationTest {
     assertThat(location.column()).isEqualTo(21);
   }
 
-//  commented since this behavior is not supported yet
-//  @Test public void atNegativeLine() throws Exception {
-//    Location location = Location.get("path\\to\\location").at(-10, 21);
-//
-//    assertThat(location.line()).isEqualTo(-1);
-//    assertThat(location.column()).isEqualTo(-1);    // column value should be discarded in this case
-//  }
+  @Ignore("ignored since this behavior is not supported yet")
+  @Test public void atNegativeLine() throws Exception {
+    Location location = Location.get("path\\to\\location").at(-10, 21);
 
-//  commented since this behavior is not supported yet
-//  @Test public void atNegativeColumn() throws Exception {
-//    Location location = Location.get("path\\to\\location").at(11, -10);
-//
-//    assertThat(location.line()).isEqualTo(11);
-//    assertThat(location.column()).isEqualTo(-1);
-//  }
-//
+    assertThat(location.line()).isEqualTo(-1);
+    assertThat(location.column()).isEqualTo(-1);    // column value should be discarded in this case
+  }
 
-//  commented since this behavior is not supported yet
-//  @Test public void atNegativeLineAndNegativeColumn() throws Exception {
-//    Location location = Location.get("path\\to\\location").at(-100, -10);
-//
-//    assertThat(location.line()).isEqualTo(-1);
-//    assertThat(location.column()).isEqualTo(-1);
-//  }
+  @Ignore("ignored since this behavior is not supported yet")
+  @Test public void atNegativeColumn() throws Exception {
+    Location location = Location.get("path\\to\\location").at(11, -10);
+
+    assertThat(location.line()).isEqualTo(11);
+    assertThat(location.column()).isEqualTo(-1);
+  }
+
+  @Ignore("ignored since this behavior is not supported yet")
+  @Test public void atNegativeLineAndNegativeColumn() throws Exception {
+    Location location = Location.get("path\\to\\location").at(-100, -10);
+
+    assertThat(location.line()).isEqualTo(-1);
+    assertThat(location.column()).isEqualTo(-1);
+  }
 
   @Test public void withoutBase() throws Exception {
-    assertThat(compareLocations(Location.get("path\\to\\location").withoutBase(), Location.get("path\\to\\location"))).isTrue();
-    assertThat(compareLocations(Location.get("main\\dir", "path\\to\\location").withoutBase(), Location.get("path\\to\\location"))).isTrue();
+    compareLocations(Location.get("path\\to\\location").withoutBase(), Location.get("path\\to\\location"));
+    compareLocations(Location.get("main\\dir", "path\\to\\location").withoutBase(), Location.get("path\\to\\location"));
 
     Location location = Location.get("main\\dir", "path\\to\\location").at(11, 21);
     Location withoutBaseLocation = location.withoutBase();
@@ -110,15 +110,13 @@ public final class LocationTest {
     assertThat(Location.get("main\\dir", "path\\to\\location").at(-1, -1).toString()).isEqualTo(Location.get("main\\dir", "path\\to\\location").toString());
     assertThat(Location.get("main\\dir", "path\\to\\location").at(-1, 10).toString()).isEqualTo(Location.get("main\\dir", "path\\to\\location").at(-1,10).toString());
     assertThat(Location.get("main\\dir", "path\\to\\location").at(-1, 10).toString()).isEqualTo(Location.get("main\\dir", "path\\to\\location").toString());
-    // can't check since negative values in line and column not processed properly
-    // assertThat(Location.get("main\\dir", "path\\to\\location").at(-10, -10).toString()).isEqualTo(Location.get("main\\dir", "path\\to\\location").at(-1,-1).toString());
   }
 
-  private boolean compareLocations(Location location1, Location location2)
+  private void compareLocations(Location location1, Location location2)
   {
-    return (concat(location1.base(), location1.path())).equals(concat(location2.base(), location2.path()))
-      && (location1.line() == location2.line())
-      && (location1.column() == location2.column());
+    assertThat(concat(location1.base(), location1.path())).isEqualTo(concat(location2.base(), location2.path()));
+    assertThat(location1.line()).isEqualTo(location2.line());
+    assertThat(location1.column()).isEqualTo(location2.column());
   }
 
   private String concat(String path1, String path2)

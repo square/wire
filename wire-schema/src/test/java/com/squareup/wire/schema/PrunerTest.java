@@ -279,28 +279,6 @@ public final class PrunerTest {
     assertThat(pruned.getType("MessageD")).isNull();
   }
 
-//  @Test public void retainEnumType() throws Exception {
-//    Schema schema = new SchemaBuilder()
-//      .add("service.proto", ""
-//        + "message A {\n"
-//        + "  optional B cord = 0;\n"
-//        + "  enum B {\n"
-//        + "    X = 0;\n"
-//        + "    Y = 1;\n"
-//        + "    Z = 2;\n"
-//        + "  }\n"
-//        + "}\n")
-//      .build();
-//    Schema pruned = schema.prune(new IdentifierSet.Builder()
-//      .include("A#cord")
-//      .build());
-//    assertThat((pruned.getType("B") instanceof EnumType)).isTrue();
-//    assertThat(((EnumType) pruned.getType("B")).constants().size()).isEqualTo(3);
-//    assertThat(((EnumType) pruned.getType("B")).constant("X")).isNotNull();
-//    assertThat(((EnumType) pruned.getType("B")).constant("Y")).isNotNull();
-//    assertThat(((EnumType) pruned.getType("B")).constant("Z")).isNotNull();
-//  }
-
   @Test public void retainEnumConstant() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""

@@ -19,8 +19,13 @@ import com.squareup.wire.schema.internal.Util;
 import org.junit.Test;
 
 import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 
 public final class SchemaTest {
   @Test public void serviceBuilder() throws Exception {

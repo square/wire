@@ -29,7 +29,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.squareup.wire.schema.Field.Label.*;
+import static com.squareup.wire.schema.Field.Label.OPTIONAL;
+import static com.squareup.wire.schema.Field.Label.REPEATED;
+import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -215,8 +217,6 @@ public final class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
-  // ProtoParser should parse this proto but fails with StringIndexOutOfBoundsException
-  @Ignore
   @Test public void lastLineComment() throws Exception {
     String proto = ""
       + "message Test {}\n"
@@ -225,8 +225,6 @@ public final class ProtoParserTest {
     ProtoParser.parse(location, proto);
   }
 
-  // ProtoParser should parse this proto but fails with StringIndexOutOfBoundsException
-  @Ignore
   @Test public void lastLineEmptyComment() throws Exception {
     String proto = ""
       + "message Test {}\n"
@@ -2093,10 +2091,4 @@ public final class ProtoParserTest {
     ProtoParser.parse(location, proto);
     fail("ProtoParser should throw IllegalStateException when list value is not closed with brace");
   }
-
-//  @Test public void trailingComment with () throws Exception {
-//    String proto = "enum E { /* first comment */\nONE = 1; /* second comment **/\n}";
-//    ProtoParser.parse(location, proto);
-//  }
-
 }

@@ -16,23 +16,20 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.Message;
-import com.squareup.wire.schema.internal.parser.*;
+import com.squareup.wire.schema.internal.parser.EnumConstantElement;
+import com.squareup.wire.schema.internal.parser.EnumElement;
+import com.squareup.wire.schema.internal.parser.MessageElement;
+import com.squareup.wire.schema.internal.parser.OptionElement;
+import com.squareup.wire.schema.internal.parser.TypeElement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -44,7 +41,7 @@ public final class TypeTest {
   protected ImmutableList<OptionElement> enumOptions;
 
   protected void mockEnumConstants() {
-    enumConstants = ImmutableList.<EnumConstantElement>of(
+    enumConstants = ImmutableList.of(
       mockEnumConstant("FIRST"),
       mockEnumConstant("SECOND"),
       mockEnumConstant("THIRD")
@@ -93,6 +90,8 @@ public final class TypeTest {
     assertTrue(enumType.options().optionMatches("message", "test string"));
     assertTrue(enumType.options().optionMatches("processed", "true"));
   }
+
+
 
   @Test(expected = IllegalArgumentException.class) public void getIllegalType() throws Exception {
     TypeElement typeElement = mock(TypeElement.class);
