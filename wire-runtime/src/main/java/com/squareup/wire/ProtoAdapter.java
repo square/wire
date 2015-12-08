@@ -58,11 +58,13 @@ public abstract class ProtoAdapter<E> {
   /** Creates a new proto adapter for {@code type}. */
   public static <M extends Message<M, B>, B extends Builder<M, B>> ProtoAdapter<M>
       newMessageAdapter(Class<M> type) {
+    checkNotNull(type, "type == null");
     return RuntimeMessageAdapter.create(type);
   }
 
   /** Creates a new proto adapter for {@code type}. */
   public static <E extends WireEnum> RuntimeEnumAdapter<E> newEnumAdapter(Class<E> type) {
+    checkNotNull(type, "type == null");
     return new RuntimeEnumAdapter<>(type);
   }
 
@@ -78,8 +80,16 @@ public abstract class ProtoAdapter<E> {
 
   @SuppressWarnings("unchecked")
   static ProtoAdapter<?> get(String adapterString) {
+
+    checkNotNull(adapterString, "adapterString == null");
+
     try {
       int hash = adapterString.indexOf('#');
+
+      if (hash < 0) {
+        throw new IllegalArgumentException("adapterString must contain #");
+      }
+
       String className = adapterString.substring(0, hash);
       String fieldName = adapterString.substring(hash + 1);
       return (ProtoAdapter<Object>) Class.forName(className).getField(fieldName).get(null);
