@@ -62,30 +62,6 @@ public final class LocationTest {
     assertThat(location.column()).isEqualTo(21);
   }
 
-  @Ignore("ignored since this behavior is not supported yet")
-  @Test public void atNegativeLine() throws Exception {
-    Location location = Location.get("path\\to\\location").at(-10, 21);
-
-    assertThat(location.line()).isEqualTo(-1);
-    assertThat(location.column()).isEqualTo(-1);    // column value should be discarded in this case
-  }
-
-  @Ignore("ignored since this behavior is not supported yet")
-  @Test public void atNegativeColumn() throws Exception {
-    Location location = Location.get("path\\to\\location").at(11, -10);
-
-    assertThat(location.line()).isEqualTo(11);
-    assertThat(location.column()).isEqualTo(-1);
-  }
-
-  @Ignore("ignored since this behavior is not supported yet")
-  @Test public void atNegativeLineAndNegativeColumn() throws Exception {
-    Location location = Location.get("path\\to\\location").at(-100, -10);
-
-    assertThat(location.line()).isEqualTo(-1);
-    assertThat(location.column()).isEqualTo(-1);
-  }
-
   @Test public void withoutBase() throws Exception {
     compareLocations(Location.get("path\\to\\location").withoutBase(), Location.get("path\\to\\location"));
     compareLocations(Location.get("main\\dir", "path\\to\\location").withoutBase(), Location.get("path\\to\\location"));

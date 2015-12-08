@@ -1881,9 +1881,8 @@ public final class ProtoParserTest {
     fail("Parser should throw IllegalStateException when map field key and value types are not declared properly");
   }
 
-  // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
   // current parser don't follow the restriction 'Key type can be any integral or string type (so, any scalar type except for floating point types and bytes)'
-  @Ignore
+  @Ignore("Current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'")
   @Test public void mapFieldInvalidKeyTypeDeclaration() throws Exception {
     String proto = "message A { optional map<bytes,string> test = 1; }";
     ProtoParser.parse(location, proto);
