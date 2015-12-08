@@ -1,0 +1,21 @@
+syntax = "proto2";
+
+package javagenerator.test;
+
+option java_package = "com.javagenerator.test";
+
+// Enum example
+enum TestEnum {
+  // just an option
+  option allow_alias = true;
+
+  // 1
+  ONE = 1;
+
+  FIRST = 1;
+
+  TWO = 2;
+
+  // 3
+  THREE = 3 [deprecated=true];
+}

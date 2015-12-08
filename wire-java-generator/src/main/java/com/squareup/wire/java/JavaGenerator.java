@@ -115,9 +115,9 @@ public final class JavaGenerator {
           .put(ProtoType.STRING, ClassName.get(String.class))
           .put(ProtoType.UINT32, TypeName.INT.box())
           .put(ProtoType.UINT64, TypeName.LONG.box())
-          .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
-          .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
-          .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
+          .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
+          .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
+          .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
           .build();
 
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
