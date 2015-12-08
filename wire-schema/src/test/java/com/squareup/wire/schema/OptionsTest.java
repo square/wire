@@ -15,10 +15,13 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.junit.Test;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -157,6 +160,119 @@ public final class OptionsTest {
 
   @Test public void resolveFieldPathDoesntMatch() throws Exception {
     assertThat(Options.resolveFieldPath("a.b", set("c", "d"))).isNull();
+  }
+
+  @Test public void optionMatches() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("foo.proto", ""
+        + "package test;\n"
+        + "import \"google/protobuf/descriptor.proto\";\n"
+        + "message FooOptions {\n"
+        + "  optional string numberOption = 1 [testOption = 12];\n"
+        + "  optional int32 redactedOption = 2 [(option.redacted) = true];\n"
+        + "}\n")
+      .add("plain.proto", ""
+        + "import \"google/protobuf/descriptor.proto\";\n"
+        + "message PlainOptions {\n"
+        + "  optional int32 multiOption = 1 [(foo) = \"test\", fooName = \"part\"];\n"
+        + "}\n")
+      .build();
+
+    MessageType fooOptions = (MessageType) schema.getType("test.FooOptions");
+    MessageType plainOptions = (MessageType) schema.getType("PlainOptions");
+
+    assertThat(fooOptions.field(1).options().optionMatches("Option", "12")).isFalse();
+    assertThat(fooOptions.field(1).options().optionMatches(".*Option", "12")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches("option\\.redacted", "true")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches(".*\\.redacted", "true")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches(".*\\.redacted", "false")).isFalse();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", ".*")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", ".*t")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", "test")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", "part")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.+", "test")).isFalse();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.+", "part")).isTrue();
+
+    assertThat(fooOptions.field(1).options().optionMatches("Option", "12")).isFalse();
+    assertThat(fooOptions.field(1).options().optionMatches(".*Option", "12")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches("option\\.redacted", "true")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches(".*\\.redacted", "true")).isTrue();
+    assertThat(fooOptions.field(2).options().optionMatches(".*\\.redacted", "false")).isFalse();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", ".*")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", "test")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.*", "part")).isTrue();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.+", "test")).isFalse();
+    assertThat(plainOptions.field(1).options().optionMatches("foo.+", "part")).isTrue();
+  }
+
+  @Test public void refOptions() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("foo.proto", ""
+        + "import \"google/protobuf/descriptor.proto\";\n"
+        + "message Map {\n"
+        + "  optional int32 a = 1;\n"
+        + "  optional bool b = 2;\n"
+        + "  optional string c = 3;\n"
+        + "}\n"
+        + "extend google.protobuf.FieldOptions {\n"
+        + "  repeated int32 list_option = 1000;\n"
+        + "  optional Map map_option = 1001;\n"
+        + "  optional string string_option = 1002;\n"
+        + "  optional int32 int_option = 1003;\n"
+        + "  optional bool bool_option = 1004;\n"
+        + "}\n"
+        + "\n"
+        + "message Message {\n"
+        + "  optional int32 list = 1 [(list_option) = [1, 2, 3]];\n"
+        + "  optional int32 map = 2 [(map_option) = {a:1, b:true, c:\"test line\"}];\n"
+        + "  optional int32 plain = 3 [(string_option) = \"str\", (bool_option) = true, (int_option) = 32];\n"
+        + "}\n")
+      .build();
+
+    MessageType message = (MessageType) schema.getType("Message");
+
+    ProtoMember listOption = ProtoMember.get(Options.FIELD_OPTIONS, "list_option");
+
+    ProtoMember mapOption = ProtoMember.get(Options.FIELD_OPTIONS, "map_option");
+    ProtoMember mapA = ProtoMember.get(ProtoType.get("Map"), "a");
+    ProtoMember mapB = ProtoMember.get(ProtoType.get("Map"), "b");
+    ProtoMember mapC = ProtoMember.get(ProtoType.get("Map"), "c");
+
+    ProtoMember stringOption = ProtoMember.get(Options.FIELD_OPTIONS, "string_option");
+    ProtoMember boolOption = ProtoMember.get(Options.FIELD_OPTIONS, "bool_option");
+    ProtoMember intOption = ProtoMember.get(Options.FIELD_OPTIONS, "int_option");
+
+    assertThat(message.field("list").options().map()).isEqualTo(ImmutableMap.of(
+      listOption, ImmutableList.of("1", "2", "3")));
+    assertThat(message.field("map").options().map()).isEqualTo(ImmutableMap.of(
+      mapOption, ImmutableMap.of(mapA, "1", mapB, "true", mapC, "test line")));
+    assertThat(message.field("plain").options().map()).isEqualTo(ImmutableMap.of(
+      stringOption, "str", boolOption, "true", intOption, "32"));
+  }
+
+  // assertion fails due to incorrect message option processing during parsing
+  @Ignore
+  @Test public void structuredMessageOptions() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("foo.proto", ""
+        + "import \"google/protobuf/descriptor.proto\";\n"
+        + "message Message {\n"
+        + "  option list_option = [1, 2, 3];\n"
+        + "  option map_option = {"
+        + "     key1 : \"value1\""
+        + "     key2 : \"value2\""
+        + "  };\n"
+        + "}\n")
+      .build();
+
+    MessageType message = (MessageType) schema.getType("Message");
+    ProtoMember listOption = ProtoMember.get(Options.MESSAGE_OPTIONS, "list_option");
+    ProtoMember mapOption = ProtoMember.get(Options.MESSAGE_OPTIONS, "map_option");
+
+    assertThat(message.options().map()).isEqualTo(ImmutableMap.of(
+      listOption, ImmutableList.of("1", "2", "3")));
+    assertThat(message.options().map()).isEqualTo(ImmutableMap.of(
+      mapOption, ImmutableMap.of("key1", "value1", "key1", "value1")));
   }
 
   private Set<String> set(String... elements) {

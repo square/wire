@@ -25,6 +25,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 public final class EnumElementTest {
   Location location = Location.get("file.proto");
 
+  @Test public void builderTest() {
+    EnumConstantElement one = EnumConstantElement.builder(location).name("ONE").tag(1).build();
+    EnumConstantElement two = EnumConstantElement.builder(location).name("TWO").tag(2).build();
+    EnumConstantElement six = EnumConstantElement.builder(location).name("SIX").tag(6).build();
+
+    OptionElement booleanOption = OptionElement.create("my_boolean_option", OptionElement.Kind.BOOLEAN, true);
+    OptionElement textOption = OptionElement.create("my_text_option", OptionElement.Kind.STRING, "text");
+
+    EnumElement element = EnumElement.builder(location)
+      .name("Enum")
+      .documentation("Test documentation")
+      .constants(ImmutableList.of(one, two, six))
+      .options(ImmutableList.of(booleanOption, textOption))
+    .build();
+
+    assertThat(element).isNotNull();
+    assertThat(element.location()).isEqualTo(location);
+
+    assertThat(element.name()).isEqualTo("Enum");
+    assertThat(element.documentation()).isEqualTo("Test documentation");
+
+    assertThat(element.constants().contains(one)).isTrue();
+    assertThat(element.constants().contains(two)).isTrue();
+    assertThat(element.constants().contains(six)).isTrue();
+
+    assertThat(element.options().contains(booleanOption)).isTrue();
+    assertThat(element.options().contains(textOption)).isTrue();
+
+    assertThat(element.nestedTypes()).isEmpty();
+  }
+
   @Test public void emptyToSchema() {
     EnumElement element = EnumElement.builder(location).name("Enum").build();
     String expected = "enum Enum {}\n";

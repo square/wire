@@ -78,9 +78,10 @@ public final class Options {
   public boolean optionMatches(String namePattern, String valuePattern) {
     Matcher nameMatcher = Pattern.compile(namePattern).matcher("");
     Matcher valueMatcher = Pattern.compile(valuePattern).matcher("");
-    for (Map.Entry<ProtoMember, Object> entry : map.entrySet()) {
-      if (nameMatcher.reset(entry.getKey().member()).matches()
-          && valueMatcher.reset(String.valueOf(entry.getValue())).matches()) {
+
+    for (OptionElement entry : optionElements.asList()) {
+      if (nameMatcher.reset(entry.name()).matches()
+          && valueMatcher.reset(String.valueOf(entry.value())).matches()) {
         return true;
       }
     }

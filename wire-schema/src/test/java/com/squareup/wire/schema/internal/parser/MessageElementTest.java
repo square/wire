@@ -238,6 +238,22 @@ public final class MessageElementTest {
     assertThat(element.toSchema()).isEqualTo(expected);
   }
 
+  @Test public void emptyOneOfToSchema() {
+    TypeElement element = MessageElement.builder(location)
+      .name("Message")
+      .oneOfs(ImmutableList.of(
+        OneOfElement.builder()
+          .name("hi")
+          .fields(ImmutableList.<FieldElement>of())
+          .build()))
+      .build();
+    String expected = ""
+      + "message Message {\n"
+      + "  oneof hi {}\n"
+      + "}\n";
+    assertThat(element.toSchema()).isEqualTo(expected);
+  }
+
   @Test public void addMultipleOneOfs() {
     OneOfElement hi = OneOfElement.builder()
         .name("hi")

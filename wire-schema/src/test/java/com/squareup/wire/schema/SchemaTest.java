@@ -19,10 +19,47 @@ import com.squareup.wire.schema.internal.Util;
 import org.junit.Test;
 
 import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+
 public final class SchemaTest {
+  @Test public void serviceBuilder() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("service.proto", ""
+        + "import \"request.proto\";\n"
+        + "import \"response.proto\";\n"
+        + "// Service comment.\n"
+        + "service Service {\n"
+        + "  // rpc comment\n"
+        + "  rpc Call (Request) returns (Response);\n"
+        + "}\n")
+      .add("request.proto", ""
+        + "message Request {\n"
+        + "}\n")
+      .add("response.proto", ""
+        + "message Response {\n"
+        + "}\n")
+      .build();
+
+    Service service = schema.getService("Service");
+    assertThat(service).isNotNull();
+    assertThat(service.documentation()).isEqualTo("Service comment.");
+    assertThat(service.options().map()).isEmpty();
+    assertThat(service.rpcs().size()).isEqualTo(1);
+
+    Rpc rpc = service.rpcs().get(0);
+    assertThat(rpc.name()).isEqualTo("Call");
+    assertThat(rpc.documentation()).isEqualTo("rpc comment");
+    assertThat(rpc.requestType().simpleName()).isEqualTo("Request");
+    assertThat(rpc.responseType().simpleName()).isEqualTo("Response");
+  }
+
+
   @Test public void linkService() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""
@@ -104,6 +141,23 @@ public final class SchemaTest {
           + "  for field h (message.proto at 9:3)\n"
           + "  in message Message (message.proto at 1:1)");
     }
+  }
+
+  @Test public void extensionsValidTag() throws Exception {
+      Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+          + "message Message {\n"
+          + "  extensions 500;\n"
+          + "  extensions 1000 to max;\n"
+          + "}\n")
+        .build();
+
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.extensions().size()).isEqualTo(2);
+    assertThat(message.extensions().get(0).start()).isEqualTo(500);
+    assertThat(message.extensions().get(0).end()).isEqualTo(500);
+    assertThat(message.extensions().get(1).start()).isEqualTo(1000);
+    assertThat(message.extensions().get(1).end()).isEqualTo(536870911);
   }
 
   @Test public void extensionsInvalidTag() throws Exception {
@@ -238,11 +292,38 @@ public final class SchemaTest {
         .build();
 
     MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.getRequiredFields()).isEmpty();
     assertThat(message.field("a").getDefault()).isNull();
     assertThat(message.field("b").getDefault()).isEqualTo("5");
     assertThat(message.field("c").getDefault()).isEqualTo("true");
     assertThat(message.field("d").getDefault()).isEqualTo("foo");
     assertThat(message.field("e").getDefault()).isEqualTo("PAPER");
+  }
+
+  @Test public void fieldOptional() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("message.proto", ""
+        + "message Message {\n"
+        + "  optional int32 a = 1;\n"
+        + "  required int32 b = 2 [default = 5];\n"
+        + "  optional bool c = 3 [default = true];\n"
+        + "  optional string d = 4 [default = \"foo\"];\n"
+        + "  optional Roshambo e = 5 [default = PAPER];\n"
+        + "  enum Roshambo {\n"
+        + "    ROCK = 0;\n"
+        + "    SCISSORS = 1;\n"
+        + "    PAPER = 2;\n"
+        + "  }\n"
+        + "}\n")
+      .build();
+
+    MessageType message = (MessageType) schema.getType("Message");
+    assertThat(message.getRequiredFields().size()).isEqualTo(1);
+    assertThat(message.field("a").isOptional()).isTrue();
+    assertThat(message.field("b").isOptional()).isFalse();
+    assertThat(message.field("c").isOptional()).isTrue();
+    assertThat(message.field("d").isOptional()).isTrue();
+    assertThat(message.field("e").isOptional()).isTrue();
   }
 
   @Test public void fieldOptions() throws Exception {
@@ -552,8 +633,13 @@ public final class SchemaTest {
         .build();
     MessageType messageType = (MessageType) schema.getType("Message");
 
+    assertThat(messageType.fields().size()).isEqualTo(2);
+    assertThat(messageType.extensionFields().size()).isEqualTo(1);
     assertThat(messageType.field("a").tag()).isEqualTo(1);
+    assertThat(messageType.field(1).name()).isEqualTo("a");
     assertThat(messageType.extensionField("p.a").tag()).isEqualTo(2);
+    assertThat(messageType.field(2).name()).isEqualTo("a");
+    assertThat(messageType.field(3)).isNull();
   }
 
   @Test public void extendNameCollisionInSamePackageDisallowed() throws Exception {
@@ -932,6 +1018,28 @@ public final class SchemaTest {
     assertThat(messageC.field("c4").type()).isEqualTo(ProtoType.get("a.b.MessageC"));
   }
 
+  @Test public void duplicatedImport() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("a_b_1.proto", ""
+        + "package a.b;\n"
+        + "\n"
+        + "import \"a_b_2.proto\";\n"
+        + "import \"a_b_2.proto\";\n"
+        + "\n"
+        + "message MessageB {\n"
+        + "  optional a.b.c.MessageC c1 = 1;\n"
+        + "}\n")
+      .add("a_b_2.proto", ""
+        + "package a.b.c;\n"
+        + "\n"
+        + "message MessageC {\n"
+        + "}\n")
+      .build();
+
+    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
+    assertThat(messageC.field("c1").type()).isEqualTo(ProtoType.get("a.b.c.MessageC"));
+  }
+
   @Test public void importResolvesEnclosingPackageSuffix() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("a_b.proto", ""
@@ -1047,4 +1155,165 @@ public final class SchemaTest {
           + "  in message a.b.c.MessageC (a_b_c.proto at 5:1)");
     }
   }
+
+  @Test public void protoFiles() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("a.proto",
+        "enum A {\n"
+          + "\n"
+          + "  B = 1;\n"
+          + "}\n")
+      .add("b",
+        "package squareup.protos.files;\n"
+          + "\n"
+          + "message M {\n"
+          + "}\n")
+      .add("c/d.proto",
+        "option java_package = \"com.squareup.wire.protos.files\";\n"
+          + "message N {\n"
+          + "}\n")
+      .build();
+
+    assertThat(schema.protoFile("a.proto")).isNotNull();
+    assertThat(schema.protoFile("a.proto").name()).isEqualTo("a");
+    assertThat(schema.protoFile("a.proto").javaPackage()).isNull();
+    assertThat(schema.protoFile("a.proto").toString()).isEqualTo("a.proto");
+
+    assertThat(schema.protoFile("b")).isNotNull();
+    assertThat(schema.protoFile("b").name()).isEqualTo("b");
+    assertThat(schema.protoFile("b").javaPackage()).isNull();
+    assertThat(schema.protoFile("b").toString()).isEqualTo("b");
+
+    assertThat(schema.protoFile("c")).isNull();
+
+    assertThat(schema.protoFile("c/d.proto")).isNotNull();
+    assertThat(schema.protoFile("c/d.proto").name()).isEqualTo("d");
+    assertThat(schema.protoFile("c/d.proto").javaPackage()).isEqualTo("com.squareup.wire.protos.files");
+    assertThat(schema.protoFile("c/d.proto").toString()).isEqualTo("c/d.proto");
+  }
+
+
+  @Test public void plainEnumConstants() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("enum.proto",
+          "enum Enum {\n"
+        + "\n"
+        + "  A = 1;\n"
+        + "  B = 2;\n"
+        + "}\n")
+      .build();
+
+    EnumType enumType = (EnumType) schema.getType("Enum");
+    assertEquals(enumType.constant("A"), enumType.constant(1));
+    assertEquals(enumType.constant("B"), enumType.constant(2));
+    assertNull(enumType.constant("C"));
+    assertNull(enumType.constant(3));
+  }
+
+  @Test public void plainMessageFields() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("message.proto", ""
+        + "message Message {\n"
+        + "  optional string M = 1;\n"
+        + "  required int32 N = 2;\n"
+        + "}\n")
+      .build();
+
+    assertTrue(schema.getType("Message") instanceof MessageType);
+    MessageType messageType = (MessageType) schema.getType("Message");
+
+    assertEquals(messageType.field("M"), messageType.field(1));
+    assertEquals(messageType.field("N"), messageType.field(2));
+    assertNull(messageType.field("O"));
+    assertNull(messageType.field(3));
+  }
+
+  @Test public void documentedTypes() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("enum.proto",
+          "// Test enum type comment.\n"
+        + "enum Enum {\n"
+        + "\n"
+        + "  // constant A comment\n"
+        + "  A = 1;\n"
+        + "  B = 2;\n"
+        + "}\n")
+      .add("message.proto", ""
+        + "// Test message type comment.\n"
+        + "message Message {\n"
+        + "  optional string M = 1;\n"
+        + "\n"
+        + "  // field N comment\n"
+        + "  required int32 N = 2;\n"
+        + "}\n")
+      .build();
+
+    assertTrue(schema.getType("Enum") instanceof EnumType);
+
+    EnumType enumType = (EnumType) schema.getType("Enum");
+    assertThat(enumType.documentation()).isEqualTo("Test enum type comment.");
+    assertNotNull(enumType.constant("A"));
+    assertNotNull(enumType.constant("B"));
+    assertThat(enumType.constant("A").documentation()).isEqualTo("constant A comment");
+    assertThat(enumType.constant("B").documentation()).isNullOrEmpty();
+
+    MessageType messageType = (MessageType) schema.getType("Message");
+    assertThat(messageType.documentation()).isEqualTo("Test message type comment.");
+    assertNotNull(messageType.field("M"));
+    assertNotNull(messageType.field("N"));
+    assertThat(messageType.field("M").documentation()).isNullOrEmpty();
+    assertThat(messageType.field("N").documentation()).isEqualTo("field N comment");
+  }
+
+  @Test public void extendsType() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("extend.proto",
+          "import \"google/protobuf/descriptor.proto\";\n"
+            + "\n"
+            + "// Test extend type comment.\n"
+            + "extend google.protobuf.FileOptions {\n"
+            + "\n"
+            + " optional string my_file_option = 50000;"
+            + "}\n")
+      .build();
+
+    ProtoFile extendProtoFile = schema.protoFile("extend.proto");
+    assertNotNull(extendProtoFile);
+    assertNotNull(extendProtoFile.extendList());
+    assertThat(extendProtoFile.extendList().size()).isEqualTo(1);
+
+    Extend extend = extendProtoFile.extendList().get(0);
+    assertThat(extend.documentation()).isEqualTo("Test extend type comment.");
+    assertThat(extend.fields().size()).isEqualTo(1);
+
+    Field extendField = extend.fields().get(0);
+    assertThat(extendField.documentation()).isEmpty();
+    assertThat(extendField.name()).isEqualTo("my_file_option");
+    assertThat(extendField.toString()).isEqualTo("my_file_option");
+    assertThat(extendField.tag()).isEqualTo(50000);
+  }
+
+  @Test(expected = IllegalArgumentException.class) public void protoAdapterWithUnknownProtoType() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("extend.proto", ""
+          + "message A {\n"
+          + "}\n")
+      .build();
+
+    schema.protoAdapter("B", true);
+
+    fail("Schema should throw IllegalArgumentException when creating proto adapter for unknown type");
+  }
+
+  @Test public void getEnumField() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("enum.proto", ""
+        + "enum E {\n"
+        + "FOO = 1;\n"
+        + "}\n")
+      .build();
+
+    assertThat(schema.getField(ProtoMember.get("E#FOO"))).isNull();
+  }
+
 }
