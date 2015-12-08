@@ -79,33 +79,4 @@ public class LinkerTest {
     assertThat(enumLinker.dereference(schema.getField(ProtoMember.get("Message#N")), "[A]")).isNull();
     assertThat(messageLinker.dereference(schema.getField(ProtoMember.get("Message#M")), "[S]")).isNull();
   }
-
-  @Ignore    // this bug is not fixed
-  @Test (expected = IllegalArgumentException.class) public void dereferenceFieldWithoutOpenBrace() throws Exception {
-    // given
-    ProtoFile protoFile = ProtoFile.get(ProtoFileElement.builder(Location.get("empty.proto")).build());
-    Linker linker = new Linker(ImmutableList.of(protoFile));
-    Field field = new Field("", FieldElement.builder(Location.get("message.proto")).build(), null, false);
-
-    // when
-    linker.dereference(field, "withoutOpenBrace]");
-
-    // then
-    fail("Linker should throw IllegalArgumentException when try to dereference field with only one brace");
-  }
-
-  @Ignore    // this bug is not fixed
-  @Test (expected = IllegalArgumentException.class) public void dereferenceFieldWithoutClosingBrace() throws Exception {
-    // given
-    ProtoFile protoFile = ProtoFile.get(ProtoFileElement.builder(Location.get("empty.proto")).build());
-    Linker linker = new Linker(ImmutableList.of(protoFile));
-    Field field = new Field("", FieldElement.builder(Location.get("message.proto")).build(), null, false);
-
-    // when
-    linker.dereference(field, "[withoutClosingBrace");
-
-    // then
-    fail("Linker should throw IllegalArgumentException when try to dereference field with only one brace");
-  }
-
 }
