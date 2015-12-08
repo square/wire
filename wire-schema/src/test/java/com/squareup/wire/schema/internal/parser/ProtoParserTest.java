@@ -243,29 +243,29 @@ public final class ProtoParserTest {
   }
 
   @Test(expected = IllegalStateException.class) public void lastLineUnclosedComment1() throws Exception {
-    String proto = ""
+    String protoSlashAsterisk = ""
       + "message Test {}\n"
       + "/*";
 
-    ProtoParser.parse(location, proto);
+    ProtoParser.parse(location, protoSlashAsterisk);
     fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
   }
 
   @Test(expected = IllegalStateException.class) public void lastLineUnclosedComment2() throws Exception {
-    String proto = ""
+    String protoSlashAsteriskAsterisk = ""
       + "message Test {}\n"
       + "/**";
 
-    ProtoParser.parse(location, proto);
+    ProtoParser.parse(location, protoSlashAsteriskAsterisk);
     fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
   }
 
   @Test(expected = IllegalStateException.class) public void lastLineUnclosedComment3() throws Exception {
-    String proto = ""
+    String protoSlashAsteriskSpace = ""
       + "message Test {}\n"
       + "/* ";
 
-    ProtoParser.parse(location, proto);
+    ProtoParser.parse(location, protoSlashAsteriskSpace);
     fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
   }
 
