@@ -50,31 +50,31 @@ public class FieldBindingTest {
     fail("FieldBinding should throw AssertionError when tries to retrieve field that is not exist");
   }
 
-  @Test public void staticGetBuilderMethod() throws Exception {
-
-    // todo review
-
-    // when
-    Method method = Whitebox.invokeMethod(FieldBinding.class, "getBuilderMethod", C.Builder.class, "build");
-
-    // then
-    assertThat(method.getReturnType()).isEqualTo(C.class);
-    assertThat(method.getModifiers() | Modifier.PUBLIC).isEqualTo(1);
-  }
-
-  @Test(expected = AssertionError.class) public void staticGetBuilderMethodThrown() throws Exception {
-
-    // todo review
-
-    // when
-    Whitebox.invokeMethod(FieldBinding.class, "getBuilderMethod", C.Builder.class, "construct");
-
-    // then
-    fail("FieldBinding should throw AssertionError when tries to retrieve method that is not exist");
-  }
-
-
-  @Test public void constructor() throws Exception {
-
-  }
+//  @Test public void staticGetBuilderMethod() throws Exception {
+//
+//    // todo review
+//
+//    // when
+//    Method method = Whitebox.invokeMethod(FieldBinding.class, "getBuilderMethod", C.Builder.class, "build");
+//
+//    // then
+//    assertThat(method.getReturnType()).isEqualTo(C.class);
+//    assertThat(method.getModifiers() | Modifier.PUBLIC).isEqualTo(1);
+//  }
+//
+//  @Test(expected = AssertionError.class) public void staticGetBuilderMethodThrown() throws Exception {
+//
+//    // todo review
+//
+//    // when
+//    Whitebox.invokeMethod(FieldBinding.class, "getBuilderMethod", C.Builder.class, "construct");
+//
+//    // then
+//    fail("FieldBinding should throw AssertionError when tries to retrieve method that is not exist");
+//  }
+//
+//
+//  @Test public void constructor() throws Exception {
+//
+//  }
 }
