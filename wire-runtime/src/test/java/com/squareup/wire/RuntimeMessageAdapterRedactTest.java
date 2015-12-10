@@ -22,17 +22,16 @@ import com.squareup.wire.protos.redacted.RedactedCycleA;
 import com.squareup.wire.protos.redacted.RedactedExtension;
 import com.squareup.wire.protos.redacted.RedactedRepeated;
 import com.squareup.wire.protos.redacted.RedactedRequired;
+import com.squareup.wire.protos.roots.C;
+import com.squareup.wire.protos.roots.RedactFieldsMessage;
+import okio.ByteString;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.squareup.wire.protos.roots.C;
-import com.squareup.wire.protos.roots.RedactFieldsMessage;
-import com.squareup.wire.protos.roots.WiredFieldsMessage;
-import okio.ByteString;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
