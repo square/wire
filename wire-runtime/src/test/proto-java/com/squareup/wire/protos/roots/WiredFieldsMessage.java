@@ -75,5 +75,24 @@ public final class WiredFieldsMessage extends Message<WiredFieldsMessage, WiredF
     public WiredFieldsMessage build() {
       return new WiredFieldsMessage(val, list, c, buildUnknownFields());
     }
+
+    @Override public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      Builder builder = (Builder) o;
+
+      if (val != null ? !val.equals(builder.val) : builder.val != null) return false;
+      if (list != null ? !list.equals(builder.list) : builder.list != null) return false;
+      return !(c != null ? !c.equals(builder.c) : builder.c != null);
+
+    }
+
+    @Override public int hashCode() {
+      int result = val != null ? val.hashCode() : 0;
+      result = 31 * result + (list != null ? list.hashCode() : 0);
+      result = 31 * result + (c != null ? c.hashCode() : 0);
+      return result;
+    }
   }
 }
