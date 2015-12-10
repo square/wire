@@ -124,7 +124,7 @@ public class RuntimeMessageAdapterRedactTest {
     RuntimeMessageAdapter adapter = createAdapter("requiredRedacted");
 
     // when
-    adapter.redact(new RedactFieldsMessage(10, 20, 35, 45, new C(51), new C(61),
+    adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45, new C(51), new C(61),
       Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
@@ -136,12 +136,12 @@ public class RuntimeMessageAdapterRedactTest {
     RuntimeMessageAdapter adapter = createAdapter("requiredNotRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20, 35, 45,
+    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
     assertThat(message.requiredRedacted).isEqualTo(10);
-    assertThat(message.requiredNotRedacted).isEqualTo(20);
+    assertThat(message.requiredNotRedacted).isEqualTo(20L);
     assertThat(message.optionalRedacted).isEqualTo(35);
     assertThat(message.optionalNotRedacted).isEqualTo(45);
     assertThat(message.cRedacted.i).isEqualTo(51);
@@ -154,14 +154,14 @@ public class RuntimeMessageAdapterRedactTest {
     RuntimeMessageAdapter adapter = createAdapter("optionalRedacted");
 
     // when
-    RedactFieldsMessage nullValueMessage = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20, null, 45,
+    RedactFieldsMessage nullValueMessage = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, null, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20, 35, 45,
+    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
     assertThat(message.requiredRedacted).isEqualTo(10);
-    assertThat(message.requiredNotRedacted).isEqualTo(20);
+    assertThat(message.requiredNotRedacted).isEqualTo(20L);
     assertThat(message.optionalRedacted).isNull();
     assertThat(message.optionalNotRedacted).isEqualTo(45);
     assertThat(message.cRedacted.i).isEqualTo(51);
@@ -169,7 +169,7 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(message.unknownFields()).isEqualTo(ByteString.EMPTY);
 
     assertThat(nullValueMessage.requiredRedacted).isEqualTo(10);
-    assertThat(nullValueMessage.requiredNotRedacted).isEqualTo(20);
+    assertThat(nullValueMessage.requiredNotRedacted).isEqualTo(20L);
     assertThat(nullValueMessage.optionalRedacted).isNull();
     assertThat(nullValueMessage.optionalNotRedacted).isEqualTo(45);
     assertThat(nullValueMessage.cRedacted.i).isEqualTo(51);
@@ -182,12 +182,12 @@ public class RuntimeMessageAdapterRedactTest {
     RuntimeMessageAdapter adapter = createAdapter("optionalNotRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20, 35, 45,
+    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
     assertThat(message.requiredRedacted).isEqualTo(10);
-    assertThat(message.requiredNotRedacted).isEqualTo(20);
+    assertThat(message.requiredNotRedacted).isEqualTo(20L);
     assertThat(message.optionalRedacted).isEqualTo(35);
     assertThat(message.optionalNotRedacted).isEqualTo(45);
     assertThat(message.cRedacted.i).isEqualTo(51);
@@ -200,14 +200,14 @@ public class RuntimeMessageAdapterRedactTest {
     RuntimeMessageAdapter adapter = createAdapter("cRedacted");
 
     // when
-    RedactFieldsMessage nullValueMessage = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20, 35, 45,
+    RedactFieldsMessage nullValueMessage = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       null, new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20, 35, 45,
+    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
     assertThat(message.requiredRedacted).isEqualTo(10);
-    assertThat(message.requiredNotRedacted).isEqualTo(20);
+    assertThat(message.requiredNotRedacted).isEqualTo(20L);
     assertThat(message.optionalRedacted).isEqualTo(35);
     assertThat(message.optionalNotRedacted).isEqualTo(45);
     assertThat(message.cRedacted.i).isEqualTo(51);
@@ -215,7 +215,7 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(message.unknownFields()).isEqualTo(ByteString.EMPTY);
 
     assertThat(nullValueMessage.requiredRedacted).isEqualTo(10);
-    assertThat(nullValueMessage.requiredNotRedacted).isEqualTo(20);
+    assertThat(nullValueMessage.requiredNotRedacted).isEqualTo(20L);
     assertThat(nullValueMessage.optionalRedacted).isEqualTo(35);
     assertThat(nullValueMessage.optionalNotRedacted).isEqualTo(45);
     assertThat(nullValueMessage.cRedacted).isNull();
@@ -228,12 +228,12 @@ public class RuntimeMessageAdapterRedactTest {
     RuntimeMessageAdapter adapter = createAdapter("cNotRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20, 35, 45,
+    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
     assertThat(message.requiredRedacted).isEqualTo(10);
-    assertThat(message.requiredNotRedacted).isEqualTo(20);
+    assertThat(message.requiredNotRedacted).isEqualTo(20L);
     assertThat(message.optionalRedacted).isEqualTo(35);
     assertThat(message.optionalNotRedacted).isEqualTo(45);
     assertThat(message.cRedacted.i).isEqualTo(51);
@@ -246,12 +246,12 @@ public class RuntimeMessageAdapterRedactTest {
     RuntimeMessageAdapter adapter = createAdapter("cRepeatedRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20, 35, 45,
+    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
     assertThat(message.requiredRedacted).isEqualTo(10);
-    assertThat(message.requiredNotRedacted).isEqualTo(20);
+    assertThat(message.requiredNotRedacted).isEqualTo(20L);
     assertThat(message.optionalRedacted).isEqualTo(35);
     assertThat(message.optionalNotRedacted).isEqualTo(45);
     assertThat(message.cRedacted.i).isEqualTo(51);
@@ -264,12 +264,12 @@ public class RuntimeMessageAdapterRedactTest {
     RuntimeMessageAdapter adapter = createAdapter("cRepeatedNotRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20, 35, 45,
+    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
     assertThat(message.requiredRedacted).isEqualTo(10);
-    assertThat(message.requiredNotRedacted).isEqualTo(20);
+    assertThat(message.requiredNotRedacted).isEqualTo(20L);
     assertThat(message.optionalRedacted).isEqualTo(35);
     assertThat(message.optionalNotRedacted).isEqualTo(45);
     assertThat(message.cRedacted.i).isEqualTo(51);

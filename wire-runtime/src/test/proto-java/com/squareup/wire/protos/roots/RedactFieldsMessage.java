@@ -2,21 +2,90 @@
 // Source file: roots.proto at 43:1
 package com.squareup.wire.protos.roots;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
+import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
 import okio.ByteString;
 
+import java.io.IOException;
 import java.util.List;
 
 public class RedactFieldsMessage extends Message<RedactFieldsMessage, RedactFieldsMessage.Builder> {
+  public static final ProtoAdapter<RedactFieldsMessage> ADAPTER = new ProtoAdapter<RedactFieldsMessage>(FieldEncoding.LENGTH_DELIMITED, C.class) {
+    @Override
+    public int encodedSize(RedactFieldsMessage value) {
+      int result = 0;
+
+      result += value.requiredRedacted != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(1, value.requiredRedacted) : 0;
+      result += value.requiredNotRedacted != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(2, value.requiredNotRedacted) : 0;
+      result += value.optionalRedacted != null ? ProtoAdapter.INT32.encodedSizeWithTag(3, value.optionalRedacted) : 0;
+      result += value.optionalNotRedacted != null ? ProtoAdapter.INT32.encodedSizeWithTag(4, value.optionalNotRedacted) : 0;
+      result += value.cRedacted != null ? C.ADAPTER.encodedSizeWithTag(5, value.cRedacted) : 0;
+      result += value.cNotRedacted != null ? C.ADAPTER.encodedSizeWithTag(6, value.cNotRedacted) : 0;
+      result += value.cRepeatedRedacted != null ? C.ADAPTER.asRepeated().encodedSizeWithTag(7, value.cRepeatedRedacted) : 0;
+      result += value.cRepeatedNotRedacted != null ? C.ADAPTER.asRepeated().encodedSizeWithTag(8, value.cRepeatedNotRedacted) : 0;
+
+      result += value.unknownFields().size();
+
+      return result;
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, RedactFieldsMessage value) throws IOException {
+      if (value.requiredRedacted != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 1, value.requiredRedacted);
+      if (value.requiredNotRedacted != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 2, value.requiredNotRedacted);
+      if (value.optionalRedacted != null) ProtoAdapter.INT32.encodeWithTag(writer, 3, value.optionalRedacted);
+      if (value.optionalNotRedacted != null) ProtoAdapter.INT32.encodeWithTag(writer, 4, value.optionalNotRedacted);
+      if (value.cRedacted != null) C.ADAPTER.encodeWithTag(writer, 5, value.cRedacted);
+      if (value.cNotRedacted != null) C.ADAPTER.encodeWithTag(writer, 6, value.cNotRedacted);
+      if (value.cRepeatedRedacted != null) C.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.cRepeatedRedacted);
+      if (value.cRepeatedNotRedacted != null) C.ADAPTER.asRepeated().encodeWithTag(writer, 8, value.cRepeatedNotRedacted);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public RedactFieldsMessage decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.requiredRedacted(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 2: builder.requiredNotRedacted(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 3: builder.optionalRedacted(ProtoAdapter.INT32.decode(reader)); break;
+          case 4: builder.optionalNotRedacted(ProtoAdapter.INT32.decode(reader)); break;
+          case 5: builder.cRedacted(C.ADAPTER.decode(reader)); break;
+          case 6: builder.cNotRedacted(C.ADAPTER.decode(reader)); break;
+          case 7: builder.cRepeatedRedacted(C.ADAPTER.asRepeated().decode(reader)); break;
+          case 8: builder.cRepeatedNotRedacted(C.ADAPTER.asRepeated().decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public RedactFieldsMessage redact(RedactFieldsMessage value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
+    }
+  };
 
   private static final long serialVersionUID = 0L;
 
   @WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32", label = WireField.Label.REQUIRED, redacted = true)
   public final Integer requiredRedacted;
 
-  @WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32", label = WireField.Label.REQUIRED, redacted = false)
-  public final Integer requiredNotRedacted;
+  @WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT64", label = WireField.Label.REQUIRED, redacted = false)
+  public final Long requiredNotRedacted;
 
   @WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#INT32", label = WireField.Label.OPTIONAL, redacted = true)
   public final Integer optionalRedacted;
@@ -36,14 +105,14 @@ public class RedactFieldsMessage extends Message<RedactFieldsMessage, RedactFiel
   @WireField(tag = 8, adapter = "com.squareup.wire.protos.roots.C#ADAPTER", label = WireField.Label.REPEATED, redacted = false)
   public final List<C> cRepeatedNotRedacted;
 
-  public RedactFieldsMessage(Integer requiredRedacted, Integer requiredNotRedacted, Integer optionalRedacted,
+  public RedactFieldsMessage(Integer requiredRedacted, Long requiredNotRedacted, Integer optionalRedacted,
                              Integer optionalNotRedacted, C cRedacted, C cNotRedacted, List<C> cRepeatedRedacted,
                              List<C> cRepeatedNotRedacted) {
     this(requiredRedacted, requiredNotRedacted, optionalRedacted, optionalNotRedacted,
       cRedacted, cNotRedacted, cRepeatedRedacted, cRepeatedNotRedacted, ByteString.EMPTY);
   }
 
-  public RedactFieldsMessage(Integer requiredRedacted, Integer requiredNotRedacted, Integer optionalRedacted,
+  public RedactFieldsMessage(Integer requiredRedacted, Long requiredNotRedacted, Integer optionalRedacted,
                              Integer optionalNotRedacted, C cRedacted, C cNotRedacted, List<C> cRepeatedRedacted,
                              List<C> cRepeatedNotRedacted, ByteString unknownFields) {
     super(unknownFields);
@@ -75,7 +144,7 @@ public class RedactFieldsMessage extends Message<RedactFieldsMessage, RedactFiel
   public static final class Builder extends Message.Builder<RedactFieldsMessage, Builder> {
 
     public Integer requiredRedacted;
-    public Integer requiredNotRedacted;
+    public Long requiredNotRedacted;
     public Integer optionalRedacted;
     public Integer optionalNotRedacted;
     public C cRedacted;
@@ -91,7 +160,7 @@ public class RedactFieldsMessage extends Message<RedactFieldsMessage, RedactFiel
       return this;
     }
 
-    public Builder requiredNotRedacted(Integer requiredNotRedacted) {
+    public Builder requiredNotRedacted(Long requiredNotRedacted) {
       this.requiredNotRedacted = requiredNotRedacted;
       return this;
     }
