@@ -150,7 +150,7 @@ final class RuntimeMessageAdapter<M extends Message<M, B>, B extends Builder<M, 
         sb.append(", ")
             .append(fieldBinding.name)
             .append('=')
-            .append(fieldBinding.redacted ? REDACTED : value);
+            .append(fieldBinding.redacted ? REDACTED : String.valueOf(value));
       }
     }
 
