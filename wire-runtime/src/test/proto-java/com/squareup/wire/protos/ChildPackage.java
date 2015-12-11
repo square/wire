@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.io.IOException;
 import java.lang.Object;
@@ -66,6 +67,10 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
 
   public static final ForeignEnum DEFAULT_INNER_FOREIGN_ENUM = ForeignEnum.BAV;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.protos.foreign.ForeignEnum#ADAPTER"
+  )
   public final ForeignEnum inner_foreign_enum;
 
   public ChildPackage(ForeignEnum inner_foreign_enum) {

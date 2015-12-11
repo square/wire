@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -64,11 +65,19 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
 
   public static final Integer DEFAULT_J = 0;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer i;
 
   /**
    * Extension source: simple_message.proto at 79:3
    */
+  @WireField(
+      tag = 100,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer j;
 
   public ForeignMessage(Integer i, Integer j) {

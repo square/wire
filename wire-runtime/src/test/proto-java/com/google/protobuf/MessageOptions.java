@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import com.squareup.wire.protos.custom_options.FooBar;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.io.IOException;
@@ -139,6 +140,10 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
    * Because this is an option, the above two restrictions are not enforced by
    * the protocol compiler.
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean message_set_wire_format;
 
   /**
@@ -146,6 +151,10 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
    * conflict with a field of the same name.  This is meant to make migration
    * from proto1 easier; new code should avoid fields named "descriptor".
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean no_standard_descriptor_accessor;
 
   /**
@@ -154,6 +163,10 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
    * for the message, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating messages.
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean deprecated;
 
   /**
@@ -179,46 +192,83 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
    * instead. The option should only be implicitly set by the proto compiler
    * parser.
    */
+  @WireField(
+      tag = 7,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean map_entry;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
+  @WireField(
+      tag = 999,
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
    * Extension source: custom_options.proto at 55:3
    */
+  @WireField(
+      tag = 50001,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
   public final FooBar my_message_option_one;
 
   /**
    * Extension source: custom_options.proto at 56:3
    */
+  @WireField(
+      tag = 50002,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
   public final Float my_message_option_two;
 
   /**
    * Extension source: custom_options.proto at 57:3
    */
+  @WireField(
+      tag = 50003,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
   public final FooBar my_message_option_three;
 
   /**
    * Extension source: custom_options.proto at 58:3
    */
+  @WireField(
+      tag = 50004,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
+  )
   public final FooBar.FooBarBazEnum my_message_option_four;
 
   /**
    * Extension source: custom_options.proto at 59:3
    */
+  @WireField(
+      tag = 50005,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
   public final FooBar my_message_option_five;
 
   /**
    * Extension source: custom_options.proto at 60:3
    */
+  @WireField(
+      tag = 50006,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
   public final FooBar my_message_option_six;
 
   /**
    * Extension source: foreign.proto at 35:3
    */
+  @WireField(
+      tag = 50007,
+      adapter = "com.squareup.wire.protos.foreign.ForeignMessage#ADAPTER"
+  )
   public final ForeignMessage foreign_message_option;
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, Boolean deprecated, Boolean map_entry, List<UninterpretedOption> uninterpreted_option, FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three, FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five, FooBar my_message_option_six, ForeignMessage foreign_message_option) {

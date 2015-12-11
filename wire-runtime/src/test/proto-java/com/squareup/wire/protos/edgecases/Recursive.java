@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -63,8 +64,16 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
 
   public static final Integer DEFAULT_VALUE = 0;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer value;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.protos.edgecases.Recursive#ADAPTER"
+  )
   public final Recursive recursive;
 
   public Recursive(Integer value, Recursive recursive) {

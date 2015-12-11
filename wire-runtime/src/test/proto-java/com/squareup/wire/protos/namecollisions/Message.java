@@ -6,6 +6,7 @@ import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -102,24 +103,64 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
   public static final String DEFAULT_MESSAGE = "";
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String unknownFields;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String other;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String o;
 
+  @WireField(
+      tag = 4,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String result;
 
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String hashCode;
 
+  @WireField(
+      tag = 6,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String serialVersionUID_;
 
+  @WireField(
+      tag = 7,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String ADAPTER_;
 
+  @WireField(
+      tag = 8,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String MESSAGE_OPTIONS_;
 
+  @WireField(
+      tag = 9,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String this_;
 
+  @WireField(
+      tag = 10,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String message;
 
   public Message(String unknownFields, String other, String o, String result, String hashCode, String serialVersionUID_, String ADAPTER_, String MESSAGE_OPTIONS_, String this_, String message) {

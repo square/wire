@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -72,16 +73,28 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
   /**
    * What foo.
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer foo;
 
   /**
    * Such bar.
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String bar;
 
   /**
    * Nice baz.
    */
+  @WireField(
+      tag = 4,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String baz;
 
   public OneOfMessage(Integer foo, String bar, String baz) {

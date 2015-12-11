@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -78,6 +79,10 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
    * Set this option to true to allow mapping different tag names to the same
    * value.
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean allow_alias;
 
   /**
@@ -86,16 +91,29 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
    * for the enum, or it will be completely ignored; in the very least, this
    * is a formalization for deprecating enums.
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean deprecated;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
+  @WireField(
+      tag = 999,
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
    * Extension source: custom_options.proto at 76:3
    */
+  @WireField(
+      tag = 71000,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean enum_option;
 
   public EnumOptions(Boolean allow_alias, Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Boolean enum_option) {

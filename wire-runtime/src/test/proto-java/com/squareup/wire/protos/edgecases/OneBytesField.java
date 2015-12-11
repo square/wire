@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -58,6 +59,10 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
 
   public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
+  )
   public final ByteString opt_bytes;
 
   public OneBytesField(ByteString opt_bytes) {

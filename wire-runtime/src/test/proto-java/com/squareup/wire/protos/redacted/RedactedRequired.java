@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -62,6 +63,12 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
 
   public static final String DEFAULT_A = "";
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REQUIRED,
+      redacted = true
+  )
   public final String a;
 
   public RedactedRequired(String a) {

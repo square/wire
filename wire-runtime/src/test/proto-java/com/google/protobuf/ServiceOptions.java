@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -74,11 +75,20 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
    * for the service, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating services.
    */
+  @WireField(
+      tag = 33,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean deprecated;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
+  @WireField(
+      tag = 999,
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public ServiceOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option) {

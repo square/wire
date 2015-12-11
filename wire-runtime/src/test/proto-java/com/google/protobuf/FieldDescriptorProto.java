@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -116,16 +117,32 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
   public static final Integer DEFAULT_ONEOF_INDEX = 0;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String name;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer number;
 
+  @WireField(
+      tag = 4,
+      adapter = "com.google.protobuf.FieldDescriptorProto$Label#ADAPTER"
+  )
   public final Label label;
 
   /**
    * If type_name is set, this need not be set.  If both this and type_name
    * are set, this must be one of TYPE_ENUM, TYPE_MESSAGE or TYPE_GROUP.
    */
+  @WireField(
+      tag = 5,
+      adapter = "com.google.protobuf.FieldDescriptorProto$Type#ADAPTER"
+  )
   public final Type type;
 
   /**
@@ -135,12 +152,20 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
    * message are searched, then within the parent, on up to the root
    * namespace).
    */
+  @WireField(
+      tag = 6,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String type_name;
 
   /**
    * For extensions, this is the name of the type being extended.  It is
    * resolved in the same manner as type_name.
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String extendee;
 
   /**
@@ -150,14 +175,26 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
    * For bytes, contains the C escaped value.  All bytes >= 128 are escaped.
    * TODO(kenton):  Base-64 encode?
    */
+  @WireField(
+      tag = 7,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String default_value;
 
   /**
    * If set, gives the index of a oneof in the containing type's oneof_decl
    * list.  This field is a member of that oneof.
    */
+  @WireField(
+      tag = 9,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer oneof_index;
 
+  @WireField(
+      tag = 8,
+      adapter = "com.google.protobuf.FieldOptions#ADAPTER"
+  )
   public final FieldOptions options;
 
   public FieldDescriptorProto(String name, Integer number, Label label, Type type, String type_name, String extendee, String default_value, Integer oneof_index, FieldOptions options) {

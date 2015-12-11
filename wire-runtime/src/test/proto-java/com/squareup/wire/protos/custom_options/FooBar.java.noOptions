@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Double;
 import java.lang.Float;
@@ -112,28 +113,67 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   public static final FooBarBazEnum DEFAULT_EXT = FooBarBazEnum.FOO;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer foo;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String bar;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$Nested#ADAPTER"
+  )
   public final Nested baz;
 
+  @WireField(
+      tag = 4,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
+  )
   public final Long qux;
 
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+      label = WireField.Label.REPEATED
+  )
   public final List<Float> fred;
 
+  @WireField(
+      tag = 6,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+  )
   public final Double daisy;
 
+  @WireField(
+      tag = 7,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<FooBar> nested;
 
   /**
    * Extension source: custom_options.proto at 80:3
    */
+  @WireField(
+      tag = 101,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
+  )
   public final FooBarBazEnum ext;
 
   /**
    * Extension source: custom_options.proto at 81:3
    */
+  @WireField(
+      tag = 102,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<FooBarBazEnum> rep;
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep) {
@@ -350,6 +390,10 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     public static final FooBarBazEnum DEFAULT_VALUE = FooBarBazEnum.FOO;
 
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
+    )
     public final FooBarBazEnum value;
 
     public Nested(FooBarBazEnum value) {
@@ -456,6 +500,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     private static final long serialVersionUID = 0L;
 
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#INT32",
+        label = WireField.Label.REPEATED
+    )
     public final List<Integer> serial;
 
     public More(List<Integer> serial) {

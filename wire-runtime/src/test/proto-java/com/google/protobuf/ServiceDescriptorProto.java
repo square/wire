@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -70,10 +71,23 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   public static final String DEFAULT_NAME = "";
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String name;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.google.protobuf.MethodDescriptorProto#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<MethodDescriptorProto> method;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.google.protobuf.ServiceOptions#ADAPTER"
+  )
   public final ServiceOptions options;
 
   public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, ServiceOptions options) {

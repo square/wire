@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -70,8 +71,16 @@ public final class E extends Message<E, E.Builder> {
 
   public static final G DEFAULT_G = G.FOO;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.protos.roots.E$F#ADAPTER"
+  )
   public final F f;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.protos.roots.G#ADAPTER"
+  )
   public final G g;
 
   public E(F f, G g) {
@@ -191,6 +200,10 @@ public final class E extends Message<E, E.Builder> {
 
     public static final Integer DEFAULT_I = 0;
 
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    )
     public final Integer i;
 
     public F(Integer i) {

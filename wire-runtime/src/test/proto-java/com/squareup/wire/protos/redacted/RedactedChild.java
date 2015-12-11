@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -66,10 +67,22 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
 
   public static final String DEFAULT_A = "";
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String a;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.protos.redacted.Redacted#ADAPTER"
+  )
   public final Redacted b;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.protos.redacted.NotRedacted#ADAPTER"
+  )
   public final NotRedacted c;
 
   public RedactedChild(String a, Redacted b, NotRedacted c) {

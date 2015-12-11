@@ -451,9 +451,7 @@ public final class JavaGenerator {
 
       String fieldName = nameAllocator.get(field);
       FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldJavaType, fieldName, PUBLIC, FINAL);
-      if (emitCompact) {
-        fieldBuilder.addAnnotation(wireFieldAnnotation(field));
-      }
+      fieldBuilder.addAnnotation(wireFieldAnnotation(field));
       if (!field.documentation().isEmpty()) {
         fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(field.documentation()));
       }

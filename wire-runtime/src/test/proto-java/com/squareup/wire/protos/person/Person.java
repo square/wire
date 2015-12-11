@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -78,21 +79,40 @@ public final class Person extends Message<Person, Person.Builder> {
   /**
    * The customer's full name.
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REQUIRED
+  )
   public final String name;
 
   /**
    * The customer's ID number.
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REQUIRED
+  )
   public final Integer id;
 
   /**
    * Email address for the customer.
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String email;
 
   /**
    * A list of the customer's phone numbers.
    */
+  @WireField(
+      tag = 4,
+      adapter = "com.squareup.wire.protos.person.Person$PhoneNumber#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<PhoneNumber> phone;
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
@@ -306,11 +326,20 @@ public final class Person extends Message<Person, Person.Builder> {
     /**
      * The customer's phone number.
      */
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
+        label = WireField.Label.REQUIRED
+    )
     public final String number;
 
     /**
      * The type of phone stored here.
      */
+    @WireField(
+        tag = 2,
+        adapter = "com.squareup.wire.protos.person.Person$PhoneType#ADAPTER"
+    )
     public final PhoneType type;
 
     public PhoneNumber(String number, PhoneType type) {

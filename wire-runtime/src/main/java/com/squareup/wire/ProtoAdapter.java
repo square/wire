@@ -67,8 +67,7 @@ public abstract class ProtoAdapter<E> {
   }
 
   /** Returns the default adapter for {@code type}. */
-  public static <M extends Message<M, B>, B extends Builder<M, B>> ProtoAdapter<M> get(
-      Class<M> type) {
+  public static <M> ProtoAdapter<M> get(Class<M> type) {
     try {
       return (ProtoAdapter<M>) type.getField("ADAPTER").get(null);
     } catch (IllegalAccessException | NoSuchFieldException e) {

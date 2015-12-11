@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -175,6 +176,10 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * inappropriate because proto packages do not normally start with backwards
    * domain names.
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String java_package;
 
   /**
@@ -184,6 +189,10 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * a .proto always translates to a single class, but you may want to
    * explicitly choose the class name).
    */
+  @WireField(
+      tag = 8,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String java_outer_classname;
 
   /**
@@ -194,6 +203,10 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * generated to contain the file's getDescriptor() method as well as any
    * top-level extensions defined in the file.
    */
+  @WireField(
+      tag = 10,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean java_multiple_files;
 
   /**
@@ -208,6 +221,10 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * than object identity. (Implementations should not assume that hashcodes
    * will be consistent across runtimes or versions of the protocol compiler.)
    */
+  @WireField(
+      tag = 20,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean java_generate_equals_and_hash;
 
   /**
@@ -218,8 +235,16 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * However, an extension field still accepts non-UTF-8 byte sequences.
    * This option has no effect on when used with the lite runtime.
    */
+  @WireField(
+      tag = 27,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean java_string_check_utf8;
 
+  @WireField(
+      tag = 9,
+      adapter = "com.google.protobuf.FileOptions$OptimizeMode#ADAPTER"
+  )
   public final OptimizeMode optimize_for;
 
   /**
@@ -229,6 +254,10 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    *   - Otherwise, the package statement in the .proto file, if present.
    *   - Otherwise, the basename of the .proto file, without extension.
    */
+  @WireField(
+      tag = 11,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String go_package;
 
   /**
@@ -243,10 +272,22 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * these default to false.  Old code which depends on generic services should
    * explicitly set them to true.
    */
+  @WireField(
+      tag = 16,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean cc_generic_services;
 
+  @WireField(
+      tag = 17,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean java_generic_services;
 
+  @WireField(
+      tag = 18,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean py_generic_services;
 
   /**
@@ -255,28 +296,49 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
    * for everything in the file, or it will be completely ignored; in the very
    * least, this is a formalization for deprecating files.
    */
+  @WireField(
+      tag = 23,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean deprecated;
 
   /**
    * Enables the use of arenas for the proto messages in this file. This applies
    * only to generated classes for C++.
    */
+  @WireField(
+      tag = 31,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean cc_enable_arenas;
 
   /**
    * Sets the objective c class prefix which is prepended to all objective c
    * generated classes from this .proto. There is no default.
    */
+  @WireField(
+      tag = 36,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String objc_class_prefix;
 
   /**
    * Namespace for generated classes; defaults to the package.
    */
+  @WireField(
+      tag = 37,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String csharp_namespace;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
+  @WireField(
+      tag = 999,
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8, OptimizeMode optimize_for, String go_package, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, Boolean deprecated, Boolean cc_enable_arenas, String objc_class_prefix, String csharp_namespace, List<UninterpretedOption> uninterpreted_option) {
