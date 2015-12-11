@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -62,11 +63,19 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
 
   public static final String DEFAULT_ID = "";
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String id;
 
   /**
    * Extension source: one_extension.proto at 31:3
    */
+  @WireField(
+      tag = 1000,
+      adapter = "com.squareup.wire.protos.one_extension.Foo#ADAPTER"
+  )
   public final Foo foo;
 
   public OneExtension(String id, Foo foo) {

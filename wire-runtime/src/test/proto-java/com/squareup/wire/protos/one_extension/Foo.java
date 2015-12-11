@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -58,6 +59,10 @@ public final class Foo extends Message<Foo, Foo.Builder> {
 
   public static final String DEFAULT_BAR = "";
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String bar;
 
   public Foo(String bar) {

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -109,40 +110,87 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
   /**
    * file name, relative to root of source tree
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String name;
 
   /**
    * e.g. "foo", "foo.bar", etc.
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String package_;
 
   /**
    * Names of files imported by this file.
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REPEATED
+  )
   public final List<String> dependency;
 
   /**
    * Indexes of the public imported files in the dependency list above.
    */
+  @WireField(
+      tag = 10,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> public_dependency;
 
   /**
    * Indexes of the weak imported files in the dependency list.
    * For Google-internal migration only. Do not use.
    */
+  @WireField(
+      tag = 11,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> weak_dependency;
 
   /**
    * All top-level definitions in this file.
    */
+  @WireField(
+      tag = 4,
+      adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<DescriptorProto> message_type;
 
+  @WireField(
+      tag = 5,
+      adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<EnumDescriptorProto> enum_type;
 
+  @WireField(
+      tag = 6,
+      adapter = "com.google.protobuf.ServiceDescriptorProto#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<ServiceDescriptorProto> service;
 
+  @WireField(
+      tag = 7,
+      adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<FieldDescriptorProto> extension;
 
+  @WireField(
+      tag = 8,
+      adapter = "com.google.protobuf.FileOptions#ADAPTER"
+  )
   public final FileOptions options;
 
   /**
@@ -151,12 +199,20 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
    * functionality of the descriptors -- the information is needed only by
    * development tools.
    */
+  @WireField(
+      tag = 9,
+      adapter = "com.google.protobuf.SourceCodeInfo#ADAPTER"
+  )
   public final SourceCodeInfo source_code_info;
 
   /**
    * The syntax of the proto file.
    * The supported values are "proto2" and "proto3".
    */
+  @WireField(
+      tag = 12,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String syntax;
 
   public FileDescriptorProto(String name, String package_, List<String> dependency, List<Integer> public_dependency, List<Integer> weak_dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info, String syntax) {

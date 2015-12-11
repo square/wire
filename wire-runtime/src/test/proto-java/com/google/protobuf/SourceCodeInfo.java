@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -110,6 +111,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
    *   ignore those that it doesn't understand, as more types of locations could
    *   be recorded in the future.
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.google.protobuf.SourceCodeInfo$Location#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<Location> location;
 
   public SourceCodeInfo(List<Location> location) {
@@ -303,6 +309,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
      * this path refers to the whole field declaration (from the beginning
      * of the label to the terminating semicolon).
      */
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#INT32",
+        label = WireField.Label.PACKED
+    )
     public final List<Integer> path;
 
     /**
@@ -312,6 +323,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
      * and column numbers are zero-based -- typically you will want to add
      * 1 to each before displaying to a user.
      */
+    @WireField(
+        tag = 2,
+        adapter = "com.squareup.wire.ProtoAdapter#INT32",
+        label = WireField.Label.PACKED
+    )
     public final List<Integer> span;
 
     /**
@@ -363,10 +379,23 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
      *
      *   // ignored detached comments.
      */
+    @WireField(
+        tag = 3,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    )
     public final String leading_comments;
 
+    @WireField(
+        tag = 4,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    )
     public final String trailing_comments;
 
+    @WireField(
+        tag = 6,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
+        label = WireField.Label.REPEATED
+    )
     public final List<String> leading_detached_comments;
 
     public Location(List<Integer> path, List<Integer> span, String leading_comments, String trailing_comments, List<String> leading_detached_comments) {

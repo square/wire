@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import com.squareup.wire.protos.custom_options.FooBar;
 import java.io.IOException;
 import java.lang.Boolean;
@@ -164,6 +165,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    * options below.  This option is not yet implemented in the open source
    * release -- sorry, we'll try to include it in a future version!
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.google.protobuf.FieldOptions$CType#ADAPTER"
+  )
   public final CType ctype;
 
   /**
@@ -173,6 +178,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    * a single length-delimited blob. In proto3, only explicit setting it to
    * false will avoid using packed encoding.
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean packed;
 
   /**
@@ -186,6 +195,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    * This option is an enum to permit additional types to be added,
    * e.g. goog.math.Integer.
    */
+  @WireField(
+      tag = 6,
+      adapter = "com.google.protobuf.FieldOptions$JSType#ADAPTER"
+  )
   public final JSType jstype;
 
   /**
@@ -218,6 +231,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    * check its required fields, regardless of whether or not the message has
    * been parsed.
    */
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean lazy;
 
   /**
@@ -226,62 +243,111 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    * for accessors, or it will be completely ignored; in the very least, this
    * is a formalization for deprecating fields.
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean deprecated;
 
   /**
    * For Google-internal migration only. Do not use.
    */
+  @WireField(
+      tag = 10,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean weak;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
+  @WireField(
+      tag = 999,
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
    * Extension source: custom_options.proto at 64:3
    */
+  @WireField(
+      tag = 60001,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer my_field_option_one;
 
   /**
    * Extension source: custom_options.proto at 65:3
    */
+  @WireField(
+      tag = 60002,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
   public final Float my_field_option_two;
 
   /**
    * Extension source: custom_options.proto at 66:3
    */
+  @WireField(
+      tag = 60003,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
+  )
   public final FooBar.FooBarBazEnum my_field_option_three;
 
   /**
    * Extension source: custom_options.proto at 67:3
    */
+  @WireField(
+      tag = 60004,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
   public final FooBar my_field_option_four;
 
   /**
    * Extension source: extension_collision_1.proto at 6:3
    */
+  @WireField(
+      tag = 22101,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String squareup_protos_extension_collision_1_a;
 
   /**
    * Extension source: extension_collision_1.proto at 7:3
    */
+  @WireField(
+      tag = 22102,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String b;
 
   /**
    * Extension source: extension_collision_2.proto at 6:3
    */
+  @WireField(
+      tag = 22103,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String squareup_protos_extension_collision_2_a;
 
   /**
    * Extension source: extension_collision_2.proto at 7:3
    */
+  @WireField(
+      tag = 22104,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String c;
 
   /**
    * Fields marked with redacted are not to be logged, generally for PCI or PII.
    * Extension source: redacted_test.proto at 62:3
    */
+  @WireField(
+      tag = 22200,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean redacted;
 
   public FieldOptions(CType ctype, Boolean packed, JSType jstype, Boolean lazy, Boolean deprecated, Boolean weak, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, String squareup_protos_extension_collision_1_a, String b, String squareup_protos_extension_collision_2_a, String c, Boolean redacted) {

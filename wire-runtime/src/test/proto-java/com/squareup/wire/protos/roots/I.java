@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -63,11 +64,19 @@ public final class I extends Message<I, I.Builder> {
 
   public static final Integer DEFAULT_I = 0;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer i;
 
   /**
    * Extension source: roots.proto at 84:3
    */
+  @WireField(
+      tag = 1000,
+      adapter = "com.squareup.wire.protos.roots.J#ADAPTER"
+  )
   public final J j;
 
   public I(Integer i, J j) {

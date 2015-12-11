@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -57,6 +58,10 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
 
   private static final long serialVersionUID = 0L;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.protos.redacted.RedactedCycleB#ADAPTER"
+  )
   public final RedactedCycleB b;
 
   public RedactedCycleA(RedactedCycleB b) {

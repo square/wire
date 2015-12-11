@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -82,15 +83,32 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
 
   public static final String DEFAULT_C = "";
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      redacted = true
+  )
   public final String a;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String b;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String c;
 
   /**
    * Extension source: redacted_test.proto at 71:3
    */
+  @WireField(
+      tag = 10,
+      adapter = "com.squareup.wire.protos.redacted.RedactedExtension#ADAPTER"
+  )
   public final RedactedExtension extension;
 
   public Redacted(String a, String b, String c, RedactedExtension extension) {

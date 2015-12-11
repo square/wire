@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.io.IOException;
 import java.lang.Boolean;
@@ -144,60 +145,110 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
   /**
    * An optional int32
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer optional_int32;
 
   /**
    * An optional NestedMessage, deprecated
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedMessage#ADAPTER"
+  )
   @Deprecated
   public final NestedMessage optional_nested_msg;
 
   /**
    * An optional ExternalMessage
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.protos.simple.ExternalMessage#ADAPTER"
+  )
   public final ExternalMessage optional_external_msg;
 
+  @WireField(
+      tag = 4,
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedEnum#ADAPTER"
+  )
   public final NestedEnum default_nested_enum;
 
   /**
    * A required int32
    */
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REQUIRED
+  )
   public final Integer required_int32;
 
   /**
    * A repeated double, deprecated
    */
+  @WireField(
+      tag = 6,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+      label = WireField.Label.REPEATED
+  )
   @Deprecated
   public final List<Double> repeated_double;
 
   /**
    * enum from another package with an explicit default
    */
+  @WireField(
+      tag = 7,
+      adapter = "com.squareup.wire.protos.foreign.ForeignEnum#ADAPTER"
+  )
   public final ForeignEnum default_foreign_enum;
 
   /**
    * enum from another package without an explicit default
    */
+  @WireField(
+      tag = 8,
+      adapter = "com.squareup.wire.protos.foreign.ForeignEnum#ADAPTER"
+  )
   public final ForeignEnum no_default_foreign_enum;
 
   /**
    * field with the same name as a Java keyword
    */
+  @WireField(
+      tag = 9,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String package_;
 
   /**
    * field with the name "result"
    */
+  @WireField(
+      tag = 10,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String result;
 
   /**
    * field with the name "other"
    */
+  @WireField(
+      tag = 11,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String other;
 
   /**
    * field with the name "o"
    */
+  @WireField(
+      tag = 12,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String o;
 
   public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String package_, String result, String other, String o) {
@@ -480,6 +531,10 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     /**
      * An optional int32
      */
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    )
     public final Integer bb;
 
     public NestedMessage(Integer bb) {

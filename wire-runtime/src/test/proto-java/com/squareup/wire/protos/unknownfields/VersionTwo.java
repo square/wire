@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Long;
@@ -84,16 +85,41 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
 
   public static final Long DEFAULT_V2_F64 = 0L;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer i;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer v2_i;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String v2_s;
 
+  @WireField(
+      tag = 4,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+  )
   public final Integer v2_f32;
 
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+  )
   public final Long v2_f64;
 
+  @WireField(
+      tag = 6,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REPEATED
+  )
   public final List<String> v2_rs;
 
   public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs) {

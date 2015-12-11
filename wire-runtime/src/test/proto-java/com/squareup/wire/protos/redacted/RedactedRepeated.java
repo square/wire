@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -68,11 +69,22 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
       .redacted(true)
       .build();
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REPEATED,
+      redacted = true
+  )
   public final List<String> a;
 
   /**
    * Values in the repeated type need redacting.
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.protos.redacted.Redacted#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<Redacted> b;
 
   public RedactedRepeated(List<String> a, List<Redacted> b) {

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -86,26 +87,50 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
 
   public static final Boolean DEFAULT_SERVER_STREAMING = false;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String name;
 
   /**
    * Input and output type names.  These are resolved in the same way as
    * FieldDescriptorProto.type_name, but must refer to a message type.
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String input_type;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String output_type;
 
+  @WireField(
+      tag = 4,
+      adapter = "com.google.protobuf.MethodOptions#ADAPTER"
+  )
   public final MethodOptions options;
 
   /**
    * Identifies if client streams multiple client messages
    */
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean client_streaming;
 
   /**
    * Identifies if server streams multiple server messages
    */
+  @WireField(
+      tag = 6,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean server_streaming;
 
   public MethodDescriptorProto(String name, String input_type, String output_type, MethodOptions options, Boolean client_streaming, Boolean server_streaming) {

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -99,22 +100,51 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
   public static final String DEFAULT_AGGREGATE_VALUE = "";
 
+  @WireField(
+      tag = 2,
+      adapter = "com.google.protobuf.UninterpretedOption$NamePart#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<NamePart> name;
 
   /**
    * The value of the uninterpreted option, in whatever type the tokenizer
    * identified it as during parsing. Exactly one of these should be set.
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String identifier_value;
 
+  @WireField(
+      tag = 4,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
+  )
   public final Long positive_int_value;
 
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
+  )
   public final Long negative_int_value;
 
+  @WireField(
+      tag = 6,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+  )
   public final Double double_value;
 
+  @WireField(
+      tag = 7,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
+  )
   public final ByteString string_value;
 
+  @WireField(
+      tag = 8,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String aggregate_value;
 
   public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value) {
@@ -312,8 +342,18 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
     public static final Boolean DEFAULT_IS_EXTENSION = false;
 
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
+        label = WireField.Label.REQUIRED
+    )
     public final String name_part;
 
+    @WireField(
+        tag = 2,
+        adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+        label = WireField.Label.REQUIRED
+    )
     public final Boolean is_extension;
 
     public NamePart(String name_part, Boolean is_extension) {

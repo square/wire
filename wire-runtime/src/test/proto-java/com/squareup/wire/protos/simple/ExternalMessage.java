@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Float;
 import java.lang.Integer;
@@ -90,31 +91,56 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
 
   public static final SimpleMessage.NestedEnum DEFAULT_NESTED_ENUM_EXT = SimpleMessage.NestedEnum.FOO;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
   public final Float f;
 
   /**
    * Extension source: simple_message.proto at 71:3
    */
+  @WireField(
+      tag = 125,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> fooext;
 
   /**
    * Extension source: simple_message.proto at 72:3
    */
+  @WireField(
+      tag = 126,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer barext;
 
   /**
    * Extension source: simple_message.proto at 73:3
    */
+  @WireField(
+      tag = 127,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer bazext;
 
   /**
    * Extension source: simple_message.proto at 74:3
    */
+  @WireField(
+      tag = 128,
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedMessage#ADAPTER"
+  )
   public final SimpleMessage.NestedMessage nested_message_ext;
 
   /**
    * Extension source: simple_message.proto at 75:3
    */
+  @WireField(
+      tag = 129,
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedEnum#ADAPTER"
+  )
   public final SimpleMessage.NestedEnum nested_enum_ext;
 
   public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext) {

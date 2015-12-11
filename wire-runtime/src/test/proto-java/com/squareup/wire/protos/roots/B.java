@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -57,6 +58,11 @@ public final class B extends Message<B, B.Builder> {
 
   private static final long serialVersionUID = 0L;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.protos.roots.C#ADAPTER",
+      label = WireField.Label.REQUIRED
+  )
   public final C c;
 
   public B(C c) {

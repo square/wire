@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -63,8 +64,16 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
 
   public static final String DEFAULT_B = "";
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String a;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String b;
 
   public NotRedacted(String a, String b) {

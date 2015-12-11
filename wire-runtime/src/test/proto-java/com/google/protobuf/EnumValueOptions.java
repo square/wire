@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import com.squareup.wire.protos.custom_options.FooBar;
 import java.io.IOException;
 import java.lang.Boolean;
@@ -86,26 +87,47 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
    * for the enum value, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating enum values.
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean deprecated;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
+  @WireField(
+      tag = 999,
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
    * Extension source: custom_options.proto at 71:3
    */
+  @WireField(
+      tag = 70000,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer enum_value_option;
 
   /**
    * Extension source: custom_options.proto at 72:3
    */
+  @WireField(
+      tag = 70001,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$More#ADAPTER"
+  )
   public final FooBar.More complex_enum_value_option;
 
   /**
    * Extension source: foreign.proto at 39:3
    */
+  @WireField(
+      tag = 70002,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean foreign_enum_value_option;
 
   public EnumValueOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Integer enum_value_option, FooBar.More complex_enum_value_option, Boolean foreign_enum_value_option) {

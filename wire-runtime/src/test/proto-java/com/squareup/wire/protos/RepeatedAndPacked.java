@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -61,8 +62,18 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
 
   private static final long serialVersionUID = 0L;
 
+  @WireField(
+      tag = 201,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> rep_int32;
 
+  @WireField(
+      tag = 301,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> pack_int32;
 
   public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32) {
