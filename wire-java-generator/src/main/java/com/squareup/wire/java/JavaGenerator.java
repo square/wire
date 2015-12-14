@@ -174,10 +174,6 @@ public final class JavaGenerator {
     return new JavaGenerator(schema, nameToJavaName, emitAndroid, emitCompact);
   }
 
-  public JavaGenerator withCompact(boolean compactGeneration) {
-    return new JavaGenerator(schema, nameToJavaName, emitAndroid, compactGeneration);
-  }
-
   public static JavaGenerator get(Schema schema) {
     Map<ProtoType, TypeName> nameToJavaName = new LinkedHashMap<>();
     nameToJavaName.putAll(BUILT_IN_TYPES_MAP);
@@ -193,6 +189,10 @@ public final class JavaGenerator {
     }
 
     return new JavaGenerator(schema, ImmutableMap.copyOf(nameToJavaName), false, false);
+  }
+
+  public JavaGenerator withCompact(boolean compactGeneration) {
+    return new JavaGenerator(schema, nameToJavaName, emitAndroid, compactGeneration);
   }
 
   private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
@@ -418,7 +418,9 @@ public final class JavaGenerator {
 
     builder.superclass(messageOf(javaType, builderJavaType));
 
-    builder.addField(messageAdapter(nameAllocator, type, javaType, builderJavaType));
+    ClassName adapterJavaType = javaType.nestedClass(javaType.simpleName() + "Adapter");
+    builder.addType(messageAdapter(nameAllocator, type, javaType, adapterJavaType, builderJavaType));
+    builder.addField(messageAdapterField(nameAllocator, javaType, adapterJavaType));
 
     builder.addField(FieldSpec.builder(TypeName.LONG, nameAllocator.get("serialVersionUID"))
         .addModifiers(PRIVATE, STATIC, FINAL)
@@ -545,23 +547,27 @@ public final class JavaGenerator {
     return collidingNames;
   }
 
-  private FieldSpec messageAdapter(NameAllocator nameAllocator, MessageType type,
-      ClassName javaType, ClassName builderJavaType) {
+  private TypeSpec messageAdapter(NameAllocator nameAllocator, MessageType type, ClassName javaType,
+      ClassName adapterJavaType, ClassName builderJavaType) {
+    TypeSpec.Builder adapter = TypeSpec.classBuilder(adapterJavaType.simpleName())
+            .addModifiers(PRIVATE, STATIC, FINAL)
+            .superclass(adapterOf(javaType));
+
+    adapter.addMethod(messageAdapterEncodedSize(nameAllocator, type, javaType));
+    adapter.addMethod(messageAdapterEncode(nameAllocator, type, javaType));
+    adapter.addMethod(messageAdapterDecode(nameAllocator, type, javaType, builderJavaType));
+    adapter.addMethod(messageAdapterRedact(nameAllocator, type, javaType, builderJavaType));
+    return adapter.build();
+  }
+
+  private FieldSpec messageAdapterField(NameAllocator nameAllocator, ClassName javaType,
+      ClassName adapterJavaType) {
     FieldSpec.Builder result = FieldSpec.builder(adapterOf(javaType), nameAllocator.get("ADAPTER"))
         .addModifiers(PUBLIC, STATIC, FINAL);
     if (emitCompact) {
       result.initializer("$T.newMessageAdapter($T.class)", ProtoAdapter.class, javaType);
     } else {
-      TypeSpec.Builder adapter =
-          TypeSpec.anonymousClassBuilder("$T.LENGTH_DELIMITED, $T.class", FieldEncoding.class,
-              javaType).superclass(adapterOf(javaType));
-
-      adapter.addMethod(messageAdapterEncodedSize(nameAllocator, type, javaType));
-      adapter.addMethod(messageAdapterEncode(nameAllocator, type, javaType));
-      adapter.addMethod(messageAdapterDecode(nameAllocator, type, javaType, builderJavaType));
-      adapter.addMethod(messageAdapterRedact(nameAllocator, type, javaType, builderJavaType));
-
-      result.initializer("$L", adapter.build());
+      result.initializer("new $T()", adapterJavaType);
     }
     return result.build();
   }
