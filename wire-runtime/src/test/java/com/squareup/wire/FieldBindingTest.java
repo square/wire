@@ -217,7 +217,7 @@ public class FieldBindingTest {
     fieldBinding.set(builder, 33);
 
     // then
-    Mockito.verify(builder, Mockito.never()).val(33);
+    Mockito.verify(builder, Mockito.never()).val(33);   // since we need to check that OneOf and other labels are processed in different ways
     assertThat(builder.val).isEqualTo(33);
     assertThat(message.val).isEqualTo(12);
   }

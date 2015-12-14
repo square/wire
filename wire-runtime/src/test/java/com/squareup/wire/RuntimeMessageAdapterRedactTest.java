@@ -277,8 +277,6 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(message.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
-
-
   private RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> createAdapter(String... fieldNames) throws Exception {
 
     Map<Integer, FieldBinding<RedactFieldsMessage, RedactFieldsMessage.Builder>> fieldBindings = new HashMap<>();
@@ -293,5 +291,4 @@ public class RuntimeMessageAdapterRedactTest {
 
     return new RuntimeMessageAdapter<>(RedactFieldsMessage.class, RedactFieldsMessage.Builder.class, fieldBindings);
   }
-
 }

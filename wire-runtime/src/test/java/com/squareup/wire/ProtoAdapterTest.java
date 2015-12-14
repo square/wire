@@ -127,7 +127,6 @@ public final class ProtoAdapterTest {
     fail("ProtoAdapter should throw ClassCastException when path contains field with incorrect type");
   }
 
-
   @Test public void redacted() throws Exception {
     assertThat(ProtoAdapter.INT32.redact(null)).isNull();
     assertThat(ProtoAdapter.INT32.redact(20)).isNull();

@@ -16,7 +16,6 @@
 package com.squareup.wire;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -42,21 +41,9 @@ public class MutableOnWriteListTest {
     mutableOnWriteList = new MutableOnWriteList<>(initialList);
   }
 
-
   @Test public void constructor() throws Exception {
     assertThat(Whitebox.getInternalState(mutableOnWriteList, "immutableList")).isEqualTo(initialList);
     assertThat(Whitebox.getInternalState(mutableOnWriteList, "mutableList")).isEqualTo(initialList);
-  }
-
-
-  @Ignore("Constructor argument parameter should be wrapped to immutable list")
-  @Test public void immutabilityViolation() throws Exception {
-    // when
-    initialList.add("four");
-
-    // then
-    assertThat(Whitebox.getInternalState(mutableOnWriteList, "immutableList")).isNotEqualTo(initialList);
-    assertThat(Whitebox.getInternalState(mutableOnWriteList, "mutableList")).isNotEqualTo(initialList);
   }
 
   @Test public void get() throws Exception {
