@@ -17,44 +17,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class Bar extends Message<Bar, Bar.Builder> {
-  public static final ProtoAdapter<Bar> ADAPTER = new ProtoAdapter<Bar>(FieldEncoding.LENGTH_DELIMITED, Bar.class) {
-    @Override
-    public int encodedSize(Bar value) {
-      return (value.baz != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.baz) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, Bar value) throws IOException {
-      if (value.baz != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.baz);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public Bar decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.baz(ProtoAdapter.INT32.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public Bar redact(Bar value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<Bar> ADAPTER = new ProtoAdapter_Bar();
 
   private static final long serialVersionUID = 0L;
 
@@ -124,6 +87,49 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     @Override
     public Bar build() {
       return new Bar(baz, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_Bar extends ProtoAdapter<Bar> {
+    ProtoAdapter_Bar() {
+      super(FieldEncoding.LENGTH_DELIMITED, Bar.class);
+    }
+
+    @Override
+    public int encodedSize(Bar value) {
+      return (value.baz != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.baz) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Bar value) throws IOException {
+      if (value.baz != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.baz);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Bar decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.baz(ProtoAdapter.INT32.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Bar redact(Bar value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

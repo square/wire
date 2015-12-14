@@ -17,48 +17,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class Recursive extends Message<Recursive, Recursive.Builder> {
-  public static final ProtoAdapter<Recursive> ADAPTER = new ProtoAdapter<Recursive>(FieldEncoding.LENGTH_DELIMITED, Recursive.class) {
-    @Override
-    public int encodedSize(Recursive value) {
-      return (value.value != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.value) : 0)
-          + (value.recursive != null ? Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, Recursive value) throws IOException {
-      if (value.value != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value);
-      if (value.recursive != null) Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public Recursive decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.value(ProtoAdapter.INT32.decode(reader)); break;
-          case 2: builder.recursive(Recursive.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public Recursive redact(Recursive value) {
-      Builder builder = value.newBuilder();
-      if (builder.recursive != null) builder.recursive = Recursive.ADAPTER.redact(builder.recursive);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<Recursive> ADAPTER = new ProtoAdapter_Recursive();
 
   private static final long serialVersionUID = 0L;
 
@@ -146,6 +105,53 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
     @Override
     public Recursive build() {
       return new Recursive(value, recursive, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_Recursive extends ProtoAdapter<Recursive> {
+    ProtoAdapter_Recursive() {
+      super(FieldEncoding.LENGTH_DELIMITED, Recursive.class);
+    }
+
+    @Override
+    public int encodedSize(Recursive value) {
+      return (value.value != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.value) : 0)
+          + (value.recursive != null ? Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Recursive value) throws IOException {
+      if (value.value != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value);
+      if (value.recursive != null) Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Recursive decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.value(ProtoAdapter.INT32.decode(reader)); break;
+          case 2: builder.recursive(Recursive.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Recursive redact(Recursive value) {
+      Builder builder = value.newBuilder();
+      if (builder.recursive != null) builder.recursive = Recursive.ADAPTER.redact(builder.recursive);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

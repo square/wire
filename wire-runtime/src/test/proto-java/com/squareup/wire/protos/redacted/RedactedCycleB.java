@@ -16,45 +16,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB.Builder> {
-  public static final ProtoAdapter<RedactedCycleB> ADAPTER = new ProtoAdapter<RedactedCycleB>(FieldEncoding.LENGTH_DELIMITED, RedactedCycleB.class) {
-    @Override
-    public int encodedSize(RedactedCycleB value) {
-      return (value.a != null ? RedactedCycleA.ADAPTER.encodedSizeWithTag(1, value.a) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, RedactedCycleB value) throws IOException {
-      if (value.a != null) RedactedCycleA.ADAPTER.encodeWithTag(writer, 1, value.a);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public RedactedCycleB decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.a(RedactedCycleA.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public RedactedCycleB redact(RedactedCycleB value) {
-      Builder builder = value.newBuilder();
-      if (builder.a != null) builder.a = RedactedCycleA.ADAPTER.redact(builder.a);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<RedactedCycleB> ADAPTER = new ProtoAdapter_RedactedCycleB();
 
   private static final long serialVersionUID = 0L;
 
@@ -122,6 +84,50 @@ public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB
     @Override
     public RedactedCycleB build() {
       return new RedactedCycleB(a, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_RedactedCycleB extends ProtoAdapter<RedactedCycleB> {
+    ProtoAdapter_RedactedCycleB() {
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedCycleB.class);
+    }
+
+    @Override
+    public int encodedSize(RedactedCycleB value) {
+      return (value.a != null ? RedactedCycleA.ADAPTER.encodedSizeWithTag(1, value.a) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, RedactedCycleB value) throws IOException {
+      if (value.a != null) RedactedCycleA.ADAPTER.encodeWithTag(writer, 1, value.a);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public RedactedCycleB decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.a(RedactedCycleA.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public RedactedCycleB redact(RedactedCycleB value) {
+      Builder builder = value.newBuilder();
+      if (builder.a != null) builder.a = RedactedCycleA.ADAPTER.redact(builder.a);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

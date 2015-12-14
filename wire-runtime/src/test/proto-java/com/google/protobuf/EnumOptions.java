@@ -18,54 +18,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder> {
-  public static final ProtoAdapter<EnumOptions> ADAPTER = new ProtoAdapter<EnumOptions>(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class) {
-    @Override
-    public int encodedSize(EnumOptions value) {
-      return (value.allow_alias != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.allow_alias) : 0)
-          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + (value.enum_option != null ? ProtoAdapter.BOOL.encodedSizeWithTag(71000, value.enum_option) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, EnumOptions value) throws IOException {
-      if (value.allow_alias != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.allow_alias);
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
-      if (value.enum_option != null) ProtoAdapter.BOOL.encodeWithTag(writer, 71000, value.enum_option);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public EnumOptions decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 2: builder.allow_alias(ProtoAdapter.BOOL.decode(reader)); break;
-          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
-          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
-          case 71000: builder.enum_option(ProtoAdapter.BOOL.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public EnumOptions redact(EnumOptions value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<EnumOptions> ADAPTER = new ProtoAdapter_EnumOptions();
 
   private static final long serialVersionUID = 0L;
 
@@ -225,6 +178,59 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     @Override
     public EnumOptions build() {
       return new EnumOptions(allow_alias, deprecated, uninterpreted_option, enum_option, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_EnumOptions extends ProtoAdapter<EnumOptions> {
+    ProtoAdapter_EnumOptions() {
+      super(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class);
+    }
+
+    @Override
+    public int encodedSize(EnumOptions value) {
+      return (value.allow_alias != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.allow_alias) : 0)
+          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
+          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
+          + (value.enum_option != null ? ProtoAdapter.BOOL.encodedSizeWithTag(71000, value.enum_option) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, EnumOptions value) throws IOException {
+      if (value.allow_alias != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.allow_alias);
+      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      if (value.enum_option != null) ProtoAdapter.BOOL.encodeWithTag(writer, 71000, value.enum_option);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public EnumOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 2: builder.allow_alias(ProtoAdapter.BOOL.decode(reader)); break;
+          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
+          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 71000: builder.enum_option(ProtoAdapter.BOOL.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public EnumOptions redact(EnumOptions value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

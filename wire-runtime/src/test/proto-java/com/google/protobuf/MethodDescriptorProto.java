@@ -20,60 +20,7 @@ import okio.ByteString;
  * Describes a method of a service.
  */
 public final class MethodDescriptorProto extends Message<MethodDescriptorProto, MethodDescriptorProto.Builder> {
-  public static final ProtoAdapter<MethodDescriptorProto> ADAPTER = new ProtoAdapter<MethodDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, MethodDescriptorProto.class) {
-    @Override
-    public int encodedSize(MethodDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + (value.input_type != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.input_type) : 0)
-          + (value.output_type != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.output_type) : 0)
-          + (value.options != null ? MethodOptions.ADAPTER.encodedSizeWithTag(4, value.options) : 0)
-          + (value.client_streaming != null ? ProtoAdapter.BOOL.encodedSizeWithTag(5, value.client_streaming) : 0)
-          + (value.server_streaming != null ? ProtoAdapter.BOOL.encodedSizeWithTag(6, value.server_streaming) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, MethodDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.input_type != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.input_type);
-      if (value.output_type != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.output_type);
-      if (value.options != null) MethodOptions.ADAPTER.encodeWithTag(writer, 4, value.options);
-      if (value.client_streaming != null) ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.client_streaming);
-      if (value.server_streaming != null) ProtoAdapter.BOOL.encodeWithTag(writer, 6, value.server_streaming);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public MethodDescriptorProto decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.input_type(ProtoAdapter.STRING.decode(reader)); break;
-          case 3: builder.output_type(ProtoAdapter.STRING.decode(reader)); break;
-          case 4: builder.options(MethodOptions.ADAPTER.decode(reader)); break;
-          case 5: builder.client_streaming(ProtoAdapter.BOOL.decode(reader)); break;
-          case 6: builder.server_streaming(ProtoAdapter.BOOL.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public MethodDescriptorProto redact(MethodDescriptorProto value) {
-      Builder builder = value.newBuilder();
-      if (builder.options != null) builder.options = MethodOptions.ADAPTER.redact(builder.options);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<MethodDescriptorProto> ADAPTER = new ProtoAdapter_MethodDescriptorProto();
 
   private static final long serialVersionUID = 0L;
 
@@ -261,6 +208,65 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
     @Override
     public MethodDescriptorProto build() {
       return new MethodDescriptorProto(name, input_type, output_type, options, client_streaming, server_streaming, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_MethodDescriptorProto extends ProtoAdapter<MethodDescriptorProto> {
+    ProtoAdapter_MethodDescriptorProto() {
+      super(FieldEncoding.LENGTH_DELIMITED, MethodDescriptorProto.class);
+    }
+
+    @Override
+    public int encodedSize(MethodDescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + (value.input_type != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.input_type) : 0)
+          + (value.output_type != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.output_type) : 0)
+          + (value.options != null ? MethodOptions.ADAPTER.encodedSizeWithTag(4, value.options) : 0)
+          + (value.client_streaming != null ? ProtoAdapter.BOOL.encodedSizeWithTag(5, value.client_streaming) : 0)
+          + (value.server_streaming != null ? ProtoAdapter.BOOL.encodedSizeWithTag(6, value.server_streaming) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, MethodDescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.input_type != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.input_type);
+      if (value.output_type != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.output_type);
+      if (value.options != null) MethodOptions.ADAPTER.encodeWithTag(writer, 4, value.options);
+      if (value.client_streaming != null) ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.client_streaming);
+      if (value.server_streaming != null) ProtoAdapter.BOOL.encodeWithTag(writer, 6, value.server_streaming);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public MethodDescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.input_type(ProtoAdapter.STRING.decode(reader)); break;
+          case 3: builder.output_type(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.options(MethodOptions.ADAPTER.decode(reader)); break;
+          case 5: builder.client_streaming(ProtoAdapter.BOOL.decode(reader)); break;
+          case 6: builder.server_streaming(ProtoAdapter.BOOL.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public MethodDescriptorProto redact(MethodDescriptorProto value) {
+      Builder builder = value.newBuilder();
+      if (builder.options != null) builder.options = MethodOptions.ADAPTER.redact(builder.options);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

@@ -16,44 +16,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest, HeresAllTheDataRequest.Builder> {
-  public static final ProtoAdapter<HeresAllTheDataRequest> ADAPTER = new ProtoAdapter<HeresAllTheDataRequest>(FieldEncoding.LENGTH_DELIMITED, HeresAllTheDataRequest.class) {
-    @Override
-    public int encodedSize(HeresAllTheDataRequest value) {
-      return (value.data != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, HeresAllTheDataRequest value) throws IOException {
-      if (value.data != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public HeresAllTheDataRequest decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.data(ProtoAdapter.BYTES.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public HeresAllTheDataRequest redact(HeresAllTheDataRequest value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<HeresAllTheDataRequest> ADAPTER = new ProtoAdapter_HeresAllTheDataRequest();
 
   private static final long serialVersionUID = 0L;
 
@@ -123,6 +86,49 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
     @Override
     public HeresAllTheDataRequest build() {
       return new HeresAllTheDataRequest(data, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_HeresAllTheDataRequest extends ProtoAdapter<HeresAllTheDataRequest> {
+    ProtoAdapter_HeresAllTheDataRequest() {
+      super(FieldEncoding.LENGTH_DELIMITED, HeresAllTheDataRequest.class);
+    }
+
+    @Override
+    public int encodedSize(HeresAllTheDataRequest value) {
+      return (value.data != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, HeresAllTheDataRequest value) throws IOException {
+      if (value.data != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public HeresAllTheDataRequest decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.data(ProtoAdapter.BYTES.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public HeresAllTheDataRequest redact(HeresAllTheDataRequest value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

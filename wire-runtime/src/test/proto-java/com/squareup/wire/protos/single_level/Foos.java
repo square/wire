@@ -17,45 +17,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class Foos extends Message<Foos, Foos.Builder> {
-  public static final ProtoAdapter<Foos> ADAPTER = new ProtoAdapter<Foos>(FieldEncoding.LENGTH_DELIMITED, Foos.class) {
-    @Override
-    public int encodedSize(Foos value) {
-      return Foo.ADAPTER.asRepeated().encodedSizeWithTag(1, value.foos)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, Foos value) throws IOException {
-      if (value.foos != null) Foo.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.foos);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public Foos decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.foos.add(Foo.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public Foos redact(Foos value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.foos, Foo.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<Foos> ADAPTER = new ProtoAdapter_Foos();
 
   private static final long serialVersionUID = 0L;
 
@@ -126,6 +88,50 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     @Override
     public Foos build() {
       return new Foos(foos, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_Foos extends ProtoAdapter<Foos> {
+    ProtoAdapter_Foos() {
+      super(FieldEncoding.LENGTH_DELIMITED, Foos.class);
+    }
+
+    @Override
+    public int encodedSize(Foos value) {
+      return Foo.ADAPTER.asRepeated().encodedSizeWithTag(1, value.foos)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Foos value) throws IOException {
+      if (value.foos != null) Foo.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.foos);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Foos decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.foos.add(Foo.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Foos redact(Foos value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.foos, Foo.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

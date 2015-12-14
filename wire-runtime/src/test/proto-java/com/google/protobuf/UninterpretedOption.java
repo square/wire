@@ -28,63 +28,7 @@ import okio.ByteString;
  * in them.
  */
 public final class UninterpretedOption extends Message<UninterpretedOption, UninterpretedOption.Builder> {
-  public static final ProtoAdapter<UninterpretedOption> ADAPTER = new ProtoAdapter<UninterpretedOption>(FieldEncoding.LENGTH_DELIMITED, UninterpretedOption.class) {
-    @Override
-    public int encodedSize(UninterpretedOption value) {
-      return NamePart.ADAPTER.asRepeated().encodedSizeWithTag(2, value.name)
-          + (value.identifier_value != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.identifier_value) : 0)
-          + (value.positive_int_value != null ? ProtoAdapter.UINT64.encodedSizeWithTag(4, value.positive_int_value) : 0)
-          + (value.negative_int_value != null ? ProtoAdapter.INT64.encodedSizeWithTag(5, value.negative_int_value) : 0)
-          + (value.double_value != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.double_value) : 0)
-          + (value.string_value != null ? ProtoAdapter.BYTES.encodedSizeWithTag(7, value.string_value) : 0)
-          + (value.aggregate_value != null ? ProtoAdapter.STRING.encodedSizeWithTag(8, value.aggregate_value) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, UninterpretedOption value) throws IOException {
-      if (value.name != null) NamePart.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.name);
-      if (value.identifier_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.identifier_value);
-      if (value.positive_int_value != null) ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.positive_int_value);
-      if (value.negative_int_value != null) ProtoAdapter.INT64.encodeWithTag(writer, 5, value.negative_int_value);
-      if (value.double_value != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.double_value);
-      if (value.string_value != null) ProtoAdapter.BYTES.encodeWithTag(writer, 7, value.string_value);
-      if (value.aggregate_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 8, value.aggregate_value);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public UninterpretedOption decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 2: builder.name.add(NamePart.ADAPTER.decode(reader)); break;
-          case 3: builder.identifier_value(ProtoAdapter.STRING.decode(reader)); break;
-          case 4: builder.positive_int_value(ProtoAdapter.UINT64.decode(reader)); break;
-          case 5: builder.negative_int_value(ProtoAdapter.INT64.decode(reader)); break;
-          case 6: builder.double_value(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 7: builder.string_value(ProtoAdapter.BYTES.decode(reader)); break;
-          case 8: builder.aggregate_value(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public UninterpretedOption redact(UninterpretedOption value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.name, NamePart.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<UninterpretedOption> ADAPTER = new ProtoAdapter_UninterpretedOption();
 
   private static final long serialVersionUID = 0L;
 
@@ -294,47 +238,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
    * "foo.(bar.baz).qux".
    */
   public static final class NamePart extends Message<NamePart, NamePart.Builder> {
-    public static final ProtoAdapter<NamePart> ADAPTER = new ProtoAdapter<NamePart>(FieldEncoding.LENGTH_DELIMITED, NamePart.class) {
-      @Override
-      public int encodedSize(NamePart value) {
-        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name_part)
-            + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.is_extension)
-            + value.unknownFields().size();
-      }
-
-      @Override
-      public void encode(ProtoWriter writer, NamePart value) throws IOException {
-        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name_part);
-        ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.is_extension);
-        writer.writeBytes(value.unknownFields());
-      }
-
-      @Override
-      public NamePart decode(ProtoReader reader) throws IOException {
-        Builder builder = new Builder();
-        long token = reader.beginMessage();
-        for (int tag; (tag = reader.nextTag()) != -1;) {
-          switch (tag) {
-            case 1: builder.name_part(ProtoAdapter.STRING.decode(reader)); break;
-            case 2: builder.is_extension(ProtoAdapter.BOOL.decode(reader)); break;
-            default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
-            }
-          }
-        }
-        reader.endMessage(token);
-        return builder.build();
-      }
-
-      @Override
-      public NamePart redact(NamePart value) {
-        Builder builder = value.newBuilder();
-        builder.clearUnknownFields();
-        return builder.build();
-      }
-    };
+    public static final ProtoAdapter<NamePart> ADAPTER = new ProtoAdapter_NamePart();
 
     private static final long serialVersionUID = 0L;
 
@@ -432,6 +336,114 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
         }
         return new NamePart(name_part, is_extension, buildUnknownFields());
       }
+    }
+
+    private static final class ProtoAdapter_NamePart extends ProtoAdapter<NamePart> {
+      ProtoAdapter_NamePart() {
+        super(FieldEncoding.LENGTH_DELIMITED, NamePart.class);
+      }
+
+      @Override
+      public int encodedSize(NamePart value) {
+        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name_part)
+            + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.is_extension)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, NamePart value) throws IOException {
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name_part);
+        ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.is_extension);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public NamePart decode(ProtoReader reader) throws IOException {
+        Builder builder = new Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.name_part(ProtoAdapter.STRING.decode(reader)); break;
+            case 2: builder.is_extension(ProtoAdapter.BOOL.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public NamePart redact(NamePart value) {
+        Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    }
+  }
+
+  private static final class ProtoAdapter_UninterpretedOption extends ProtoAdapter<UninterpretedOption> {
+    ProtoAdapter_UninterpretedOption() {
+      super(FieldEncoding.LENGTH_DELIMITED, UninterpretedOption.class);
+    }
+
+    @Override
+    public int encodedSize(UninterpretedOption value) {
+      return NamePart.ADAPTER.asRepeated().encodedSizeWithTag(2, value.name)
+          + (value.identifier_value != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.identifier_value) : 0)
+          + (value.positive_int_value != null ? ProtoAdapter.UINT64.encodedSizeWithTag(4, value.positive_int_value) : 0)
+          + (value.negative_int_value != null ? ProtoAdapter.INT64.encodedSizeWithTag(5, value.negative_int_value) : 0)
+          + (value.double_value != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.double_value) : 0)
+          + (value.string_value != null ? ProtoAdapter.BYTES.encodedSizeWithTag(7, value.string_value) : 0)
+          + (value.aggregate_value != null ? ProtoAdapter.STRING.encodedSizeWithTag(8, value.aggregate_value) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, UninterpretedOption value) throws IOException {
+      if (value.name != null) NamePart.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.name);
+      if (value.identifier_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.identifier_value);
+      if (value.positive_int_value != null) ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.positive_int_value);
+      if (value.negative_int_value != null) ProtoAdapter.INT64.encodeWithTag(writer, 5, value.negative_int_value);
+      if (value.double_value != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.double_value);
+      if (value.string_value != null) ProtoAdapter.BYTES.encodeWithTag(writer, 7, value.string_value);
+      if (value.aggregate_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 8, value.aggregate_value);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public UninterpretedOption decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 2: builder.name.add(NamePart.ADAPTER.decode(reader)); break;
+          case 3: builder.identifier_value(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.positive_int_value(ProtoAdapter.UINT64.decode(reader)); break;
+          case 5: builder.negative_int_value(ProtoAdapter.INT64.decode(reader)); break;
+          case 6: builder.double_value(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 7: builder.string_value(ProtoAdapter.BYTES.decode(reader)); break;
+          case 8: builder.aggregate_value(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public UninterpretedOption redact(UninterpretedOption value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.name, NamePart.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

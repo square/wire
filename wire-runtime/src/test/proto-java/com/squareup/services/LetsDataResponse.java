@@ -16,44 +16,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataResponse.Builder> {
-  public static final ProtoAdapter<LetsDataResponse> ADAPTER = new ProtoAdapter<LetsDataResponse>(FieldEncoding.LENGTH_DELIMITED, LetsDataResponse.class) {
-    @Override
-    public int encodedSize(LetsDataResponse value) {
-      return (value.data != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, LetsDataResponse value) throws IOException {
-      if (value.data != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public LetsDataResponse decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.data(ProtoAdapter.BYTES.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public LetsDataResponse redact(LetsDataResponse value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<LetsDataResponse> ADAPTER = new ProtoAdapter_LetsDataResponse();
 
   private static final long serialVersionUID = 0L;
 
@@ -123,6 +86,49 @@ public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataRe
     @Override
     public LetsDataResponse build() {
       return new LetsDataResponse(data, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_LetsDataResponse extends ProtoAdapter<LetsDataResponse> {
+    ProtoAdapter_LetsDataResponse() {
+      super(FieldEncoding.LENGTH_DELIMITED, LetsDataResponse.class);
+    }
+
+    @Override
+    public int encodedSize(LetsDataResponse value) {
+      return (value.data != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, LetsDataResponse value) throws IOException {
+      if (value.data != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public LetsDataResponse decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.data(ProtoAdapter.BYTES.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public LetsDataResponse redact(LetsDataResponse value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

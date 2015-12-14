@@ -17,44 +17,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class CollisionSubject extends Message<CollisionSubject, CollisionSubject.Builder> {
-  public static final ProtoAdapter<CollisionSubject> ADAPTER = new ProtoAdapter<CollisionSubject>(FieldEncoding.LENGTH_DELIMITED, CollisionSubject.class) {
-    @Override
-    public int encodedSize(CollisionSubject value) {
-      return (value.f != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.f) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, CollisionSubject value) throws IOException {
-      if (value.f != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.f);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public CollisionSubject decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.f(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public CollisionSubject redact(CollisionSubject value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<CollisionSubject> ADAPTER = new ProtoAdapter_CollisionSubject();
 
   private static final long serialVersionUID = 0L;
 
@@ -131,6 +94,49 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
     @Override
     public CollisionSubject build() {
       return new CollisionSubject(f, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_CollisionSubject extends ProtoAdapter<CollisionSubject> {
+    ProtoAdapter_CollisionSubject() {
+      super(FieldEncoding.LENGTH_DELIMITED, CollisionSubject.class);
+    }
+
+    @Override
+    public int encodedSize(CollisionSubject value) {
+      return (value.f != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.f) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, CollisionSubject value) throws IOException {
+      if (value.f != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.f);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public CollisionSubject decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.f(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public CollisionSubject redact(CollisionSubject value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

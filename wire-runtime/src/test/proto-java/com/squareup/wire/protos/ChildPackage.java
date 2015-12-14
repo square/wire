@@ -17,51 +17,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class ChildPackage extends Message<ChildPackage, ChildPackage.Builder> {
-  public static final ProtoAdapter<ChildPackage> ADAPTER = new ProtoAdapter<ChildPackage>(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class) {
-    @Override
-    public int encodedSize(ChildPackage value) {
-      return (value.inner_foreign_enum != null ? ForeignEnum.ADAPTER.encodedSizeWithTag(1, value.inner_foreign_enum) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, ChildPackage value) throws IOException {
-      if (value.inner_foreign_enum != null) ForeignEnum.ADAPTER.encodeWithTag(writer, 1, value.inner_foreign_enum);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public ChildPackage decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: {
-            try {
-              builder.inner_foreign_enum(ForeignEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public ChildPackage redact(ChildPackage value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<ChildPackage> ADAPTER = new ProtoAdapter_ChildPackage();
 
   private static final long serialVersionUID = 0L;
 
@@ -131,6 +87,56 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
     @Override
     public ChildPackage build() {
       return new ChildPackage(inner_foreign_enum, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_ChildPackage extends ProtoAdapter<ChildPackage> {
+    ProtoAdapter_ChildPackage() {
+      super(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class);
+    }
+
+    @Override
+    public int encodedSize(ChildPackage value) {
+      return (value.inner_foreign_enum != null ? ForeignEnum.ADAPTER.encodedSizeWithTag(1, value.inner_foreign_enum) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, ChildPackage value) throws IOException {
+      if (value.inner_foreign_enum != null) ForeignEnum.ADAPTER.encodeWithTag(writer, 1, value.inner_foreign_enum);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public ChildPackage decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: {
+            try {
+              builder.inner_foreign_enum(ForeignEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public ChildPackage redact(ChildPackage value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

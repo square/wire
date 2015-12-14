@@ -17,44 +17,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
-  public static final ProtoAdapter<VersionOne> ADAPTER = new ProtoAdapter<VersionOne>(FieldEncoding.LENGTH_DELIMITED, VersionOne.class) {
-    @Override
-    public int encodedSize(VersionOne value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, VersionOne value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public VersionOne decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public VersionOne redact(VersionOne value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<VersionOne> ADAPTER = new ProtoAdapter_VersionOne();
 
   private static final long serialVersionUID = 0L;
 
@@ -124,6 +87,49 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     @Override
     public VersionOne build() {
       return new VersionOne(i, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_VersionOne extends ProtoAdapter<VersionOne> {
+    ProtoAdapter_VersionOne() {
+      super(FieldEncoding.LENGTH_DELIMITED, VersionOne.class);
+    }
+
+    @Override
+    public int encodedSize(VersionOne value) {
+      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, VersionOne value) throws IOException {
+      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public VersionOne decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public VersionOne redact(VersionOne value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

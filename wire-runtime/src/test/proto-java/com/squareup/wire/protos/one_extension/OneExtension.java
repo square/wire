@@ -16,48 +16,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class OneExtension extends Message<OneExtension, OneExtension.Builder> {
-  public static final ProtoAdapter<OneExtension> ADAPTER = new ProtoAdapter<OneExtension>(FieldEncoding.LENGTH_DELIMITED, OneExtension.class) {
-    @Override
-    public int encodedSize(OneExtension value) {
-      return (value.id != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.id) : 0)
-          + (value.foo != null ? Foo.ADAPTER.encodedSizeWithTag(1000, value.foo) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, OneExtension value) throws IOException {
-      if (value.id != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.id);
-      if (value.foo != null) Foo.ADAPTER.encodeWithTag(writer, 1000, value.foo);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public OneExtension decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.id(ProtoAdapter.STRING.decode(reader)); break;
-          case 1000: builder.foo(Foo.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public OneExtension redact(OneExtension value) {
-      Builder builder = value.newBuilder();
-      if (builder.foo != null) builder.foo = Foo.ADAPTER.redact(builder.foo);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<OneExtension> ADAPTER = new ProtoAdapter_OneExtension();
 
   private static final long serialVersionUID = 0L;
 
@@ -148,6 +107,53 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
     @Override
     public OneExtension build() {
       return new OneExtension(id, foo, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_OneExtension extends ProtoAdapter<OneExtension> {
+    ProtoAdapter_OneExtension() {
+      super(FieldEncoding.LENGTH_DELIMITED, OneExtension.class);
+    }
+
+    @Override
+    public int encodedSize(OneExtension value) {
+      return (value.id != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.id) : 0)
+          + (value.foo != null ? Foo.ADAPTER.encodedSizeWithTag(1000, value.foo) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, OneExtension value) throws IOException {
+      if (value.id != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.id);
+      if (value.foo != null) Foo.ADAPTER.encodeWithTag(writer, 1000, value.foo);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public OneExtension decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.id(ProtoAdapter.STRING.decode(reader)); break;
+          case 1000: builder.foo(Foo.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public OneExtension redact(OneExtension value) {
+      Builder builder = value.newBuilder();
+      if (builder.foo != null) builder.foo = Foo.ADAPTER.redact(builder.foo);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

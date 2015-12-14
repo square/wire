@@ -18,42 +18,7 @@ import java.lang.UnsupportedOperationException;
 import okio.ByteString;
 
 public final class RedactedRequired extends Message<RedactedRequired, RedactedRequired.Builder> {
-  public static final ProtoAdapter<RedactedRequired> ADAPTER = new ProtoAdapter<RedactedRequired>(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class) {
-    @Override
-    public int encodedSize(RedactedRequired value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, RedactedRequired value) throws IOException {
-      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public RedactedRequired decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.a(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public RedactedRequired redact(RedactedRequired value) {
-      throw new UnsupportedOperationException("Field 'a' is required and cannot be redacted.");
-    }
-  };
+  public static final ProtoAdapter<RedactedRequired> ADAPTER = new ProtoAdapter_RedactedRequired();
 
   private static final long serialVersionUID = 0L;
 
@@ -132,6 +97,47 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
         throw missingRequiredFields(a, "a");
       }
       return new RedactedRequired(a, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_RedactedRequired extends ProtoAdapter<RedactedRequired> {
+    ProtoAdapter_RedactedRequired() {
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class);
+    }
+
+    @Override
+    public int encodedSize(RedactedRequired value) {
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, RedactedRequired value) throws IOException {
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public RedactedRequired decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.a(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public RedactedRequired redact(RedactedRequired value) {
+      throw new UnsupportedOperationException("Field 'a' is required and cannot be redacted.");
     }
   }
 }

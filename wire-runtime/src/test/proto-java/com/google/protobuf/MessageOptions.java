@@ -21,90 +21,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class MessageOptions extends Message<MessageOptions, MessageOptions.Builder> {
-  public static final ProtoAdapter<MessageOptions> ADAPTER = new ProtoAdapter<MessageOptions>(FieldEncoding.LENGTH_DELIMITED, MessageOptions.class) {
-    @Override
-    public int encodedSize(MessageOptions value) {
-      return (value.message_set_wire_format != null ? ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format) : 0)
-          + (value.no_standard_descriptor_accessor != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor) : 0)
-          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
-          + (value.map_entry != null ? ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry) : 0)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + (value.my_message_option_one != null ? FooBar.ADAPTER.encodedSizeWithTag(50001, value.my_message_option_one) : 0)
-          + (value.my_message_option_two != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(50002, value.my_message_option_two) : 0)
-          + (value.my_message_option_three != null ? FooBar.ADAPTER.encodedSizeWithTag(50003, value.my_message_option_three) : 0)
-          + (value.my_message_option_four != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(50004, value.my_message_option_four) : 0)
-          + (value.my_message_option_five != null ? FooBar.ADAPTER.encodedSizeWithTag(50005, value.my_message_option_five) : 0)
-          + (value.my_message_option_six != null ? FooBar.ADAPTER.encodedSizeWithTag(50006, value.my_message_option_six) : 0)
-          + (value.foreign_message_option != null ? ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, MessageOptions value) throws IOException {
-      if (value.message_set_wire_format != null) ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.message_set_wire_format);
-      if (value.no_standard_descriptor_accessor != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.no_standard_descriptor_accessor);
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
-      if (value.map_entry != null) ProtoAdapter.BOOL.encodeWithTag(writer, 7, value.map_entry);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
-      if (value.my_message_option_one != null) FooBar.ADAPTER.encodeWithTag(writer, 50001, value.my_message_option_one);
-      if (value.my_message_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 50002, value.my_message_option_two);
-      if (value.my_message_option_three != null) FooBar.ADAPTER.encodeWithTag(writer, 50003, value.my_message_option_three);
-      if (value.my_message_option_four != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 50004, value.my_message_option_four);
-      if (value.my_message_option_five != null) FooBar.ADAPTER.encodeWithTag(writer, 50005, value.my_message_option_five);
-      if (value.my_message_option_six != null) FooBar.ADAPTER.encodeWithTag(writer, 50006, value.my_message_option_six);
-      if (value.foreign_message_option != null) ForeignMessage.ADAPTER.encodeWithTag(writer, 50007, value.foreign_message_option);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public MessageOptions decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.message_set_wire_format(ProtoAdapter.BOOL.decode(reader)); break;
-          case 2: builder.no_standard_descriptor_accessor(ProtoAdapter.BOOL.decode(reader)); break;
-          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
-          case 7: builder.map_entry(ProtoAdapter.BOOL.decode(reader)); break;
-          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
-          case 50001: builder.my_message_option_one(FooBar.ADAPTER.decode(reader)); break;
-          case 50002: builder.my_message_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 50003: builder.my_message_option_three(FooBar.ADAPTER.decode(reader)); break;
-          case 50004: {
-            try {
-              builder.my_message_option_four(FooBar.FooBarBazEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 50005: builder.my_message_option_five(FooBar.ADAPTER.decode(reader)); break;
-          case 50006: builder.my_message_option_six(FooBar.ADAPTER.decode(reader)); break;
-          case 50007: builder.foreign_message_option(ForeignMessage.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public MessageOptions redact(MessageOptions value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
-      if (builder.my_message_option_one != null) builder.my_message_option_one = FooBar.ADAPTER.redact(builder.my_message_option_one);
-      if (builder.my_message_option_three != null) builder.my_message_option_three = FooBar.ADAPTER.redact(builder.my_message_option_three);
-      if (builder.my_message_option_five != null) builder.my_message_option_five = FooBar.ADAPTER.redact(builder.my_message_option_five);
-      if (builder.my_message_option_six != null) builder.my_message_option_six = FooBar.ADAPTER.redact(builder.my_message_option_six);
-      if (builder.foreign_message_option != null) builder.foreign_message_option = ForeignMessage.ADAPTER.redact(builder.foreign_message_option);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<MessageOptions> ADAPTER = new ProtoAdapter_MessageOptions();
 
   private static final long serialVersionUID = 0L;
 
@@ -520,6 +437,95 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     @Override
     public MessageOptions build() {
       return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, deprecated, map_entry, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_MessageOptions extends ProtoAdapter<MessageOptions> {
+    ProtoAdapter_MessageOptions() {
+      super(FieldEncoding.LENGTH_DELIMITED, MessageOptions.class);
+    }
+
+    @Override
+    public int encodedSize(MessageOptions value) {
+      return (value.message_set_wire_format != null ? ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format) : 0)
+          + (value.no_standard_descriptor_accessor != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor) : 0)
+          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
+          + (value.map_entry != null ? ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry) : 0)
+          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
+          + (value.my_message_option_one != null ? FooBar.ADAPTER.encodedSizeWithTag(50001, value.my_message_option_one) : 0)
+          + (value.my_message_option_two != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(50002, value.my_message_option_two) : 0)
+          + (value.my_message_option_three != null ? FooBar.ADAPTER.encodedSizeWithTag(50003, value.my_message_option_three) : 0)
+          + (value.my_message_option_four != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(50004, value.my_message_option_four) : 0)
+          + (value.my_message_option_five != null ? FooBar.ADAPTER.encodedSizeWithTag(50005, value.my_message_option_five) : 0)
+          + (value.my_message_option_six != null ? FooBar.ADAPTER.encodedSizeWithTag(50006, value.my_message_option_six) : 0)
+          + (value.foreign_message_option != null ? ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, MessageOptions value) throws IOException {
+      if (value.message_set_wire_format != null) ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.message_set_wire_format);
+      if (value.no_standard_descriptor_accessor != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.no_standard_descriptor_accessor);
+      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
+      if (value.map_entry != null) ProtoAdapter.BOOL.encodeWithTag(writer, 7, value.map_entry);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      if (value.my_message_option_one != null) FooBar.ADAPTER.encodeWithTag(writer, 50001, value.my_message_option_one);
+      if (value.my_message_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 50002, value.my_message_option_two);
+      if (value.my_message_option_three != null) FooBar.ADAPTER.encodeWithTag(writer, 50003, value.my_message_option_three);
+      if (value.my_message_option_four != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 50004, value.my_message_option_four);
+      if (value.my_message_option_five != null) FooBar.ADAPTER.encodeWithTag(writer, 50005, value.my_message_option_five);
+      if (value.my_message_option_six != null) FooBar.ADAPTER.encodeWithTag(writer, 50006, value.my_message_option_six);
+      if (value.foreign_message_option != null) ForeignMessage.ADAPTER.encodeWithTag(writer, 50007, value.foreign_message_option);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public MessageOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.message_set_wire_format(ProtoAdapter.BOOL.decode(reader)); break;
+          case 2: builder.no_standard_descriptor_accessor(ProtoAdapter.BOOL.decode(reader)); break;
+          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
+          case 7: builder.map_entry(ProtoAdapter.BOOL.decode(reader)); break;
+          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 50001: builder.my_message_option_one(FooBar.ADAPTER.decode(reader)); break;
+          case 50002: builder.my_message_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 50003: builder.my_message_option_three(FooBar.ADAPTER.decode(reader)); break;
+          case 50004: {
+            try {
+              builder.my_message_option_four(FooBar.FooBarBazEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 50005: builder.my_message_option_five(FooBar.ADAPTER.decode(reader)); break;
+          case 50006: builder.my_message_option_six(FooBar.ADAPTER.decode(reader)); break;
+          case 50007: builder.foreign_message_option(ForeignMessage.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public MessageOptions redact(MessageOptions value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      if (builder.my_message_option_one != null) builder.my_message_option_one = FooBar.ADAPTER.redact(builder.my_message_option_one);
+      if (builder.my_message_option_three != null) builder.my_message_option_three = FooBar.ADAPTER.redact(builder.my_message_option_three);
+      if (builder.my_message_option_five != null) builder.my_message_option_five = FooBar.ADAPTER.redact(builder.my_message_option_five);
+      if (builder.my_message_option_six != null) builder.my_message_option_six = FooBar.ADAPTER.redact(builder.my_message_option_six);
+      if (builder.foreign_message_option != null) builder.foreign_message_option = ForeignMessage.ADAPTER.redact(builder.foreign_message_option);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

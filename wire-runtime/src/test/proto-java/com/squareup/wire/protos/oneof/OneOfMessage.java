@@ -17,50 +17,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Builder> {
-  public static final ProtoAdapter<OneOfMessage> ADAPTER = new ProtoAdapter<OneOfMessage>(FieldEncoding.LENGTH_DELIMITED, OneOfMessage.class) {
-    @Override
-    public int encodedSize(OneOfMessage value) {
-      return (value.foo != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) : 0)
-          + (value.bar != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) : 0)
-          + (value.baz != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, OneOfMessage value) throws IOException {
-      if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
-      if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar);
-      if (value.baz != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public OneOfMessage decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.foo(ProtoAdapter.INT32.decode(reader)); break;
-          case 3: builder.bar(ProtoAdapter.STRING.decode(reader)); break;
-          case 4: builder.baz(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public OneOfMessage redact(OneOfMessage value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<OneOfMessage> ADAPTER = new ProtoAdapter_OneOfMessage();
 
   private static final long serialVersionUID = 0L;
 
@@ -197,6 +154,55 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     @Override
     public OneOfMessage build() {
       return new OneOfMessage(foo, bar, baz, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_OneOfMessage extends ProtoAdapter<OneOfMessage> {
+    ProtoAdapter_OneOfMessage() {
+      super(FieldEncoding.LENGTH_DELIMITED, OneOfMessage.class);
+    }
+
+    @Override
+    public int encodedSize(OneOfMessage value) {
+      return (value.foo != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) : 0)
+          + (value.bar != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) : 0)
+          + (value.baz != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, OneOfMessage value) throws IOException {
+      if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
+      if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar);
+      if (value.baz != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public OneOfMessage decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.foo(ProtoAdapter.INT32.decode(reader)); break;
+          case 3: builder.bar(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.baz(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public OneOfMessage redact(OneOfMessage value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }
