@@ -17,47 +17,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage.Builder> {
-  public static final ProtoAdapter<ForeignMessage> ADAPTER = new ProtoAdapter<ForeignMessage>(FieldEncoding.LENGTH_DELIMITED, ForeignMessage.class) {
-    @Override
-    public int encodedSize(ForeignMessage value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
-          + (value.j != null ? ProtoAdapter.INT32.encodedSizeWithTag(100, value.j) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, ForeignMessage value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
-      if (value.j != null) ProtoAdapter.INT32.encodeWithTag(writer, 100, value.j);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public ForeignMessage decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
-          case 100: builder.j(ProtoAdapter.INT32.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public ForeignMessage redact(ForeignMessage value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<ForeignMessage> ADAPTER = new ProtoAdapter_ForeignMessage();
 
   private static final long serialVersionUID = 0L;
 
@@ -150,6 +110,52 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
     @Override
     public ForeignMessage build() {
       return new ForeignMessage(i, j, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_ForeignMessage extends ProtoAdapter<ForeignMessage> {
+    ProtoAdapter_ForeignMessage() {
+      super(FieldEncoding.LENGTH_DELIMITED, ForeignMessage.class);
+    }
+
+    @Override
+    public int encodedSize(ForeignMessage value) {
+      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
+          + (value.j != null ? ProtoAdapter.INT32.encodedSizeWithTag(100, value.j) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, ForeignMessage value) throws IOException {
+      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      if (value.j != null) ProtoAdapter.INT32.encodeWithTag(writer, 100, value.j);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public ForeignMessage decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
+          case 100: builder.j(ProtoAdapter.INT32.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public ForeignMessage redact(ForeignMessage value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

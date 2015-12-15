@@ -21,83 +21,7 @@ import okio.ByteString;
  * Describes a complete .proto file.
  */
 public final class FileDescriptorProto extends Message<FileDescriptorProto, FileDescriptorProto.Builder> {
-  public static final ProtoAdapter<FileDescriptorProto> ADAPTER = new ProtoAdapter<FileDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, FileDescriptorProto.class) {
-    @Override
-    public int encodedSize(FileDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + (value.package_ != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.package_) : 0)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(3, value.dependency)
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(10, value.public_dependency)
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(11, value.weak_dependency)
-          + DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.message_type)
-          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enum_type)
-          + ServiceDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.service)
-          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(7, value.extension)
-          + (value.options != null ? FileOptions.ADAPTER.encodedSizeWithTag(8, value.options) : 0)
-          + (value.source_code_info != null ? SourceCodeInfo.ADAPTER.encodedSizeWithTag(9, value.source_code_info) : 0)
-          + (value.syntax != null ? ProtoAdapter.STRING.encodedSizeWithTag(12, value.syntax) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, FileDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.package_ != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.package_);
-      if (value.dependency != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 3, value.dependency);
-      if (value.public_dependency != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 10, value.public_dependency);
-      if (value.weak_dependency != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 11, value.weak_dependency);
-      if (value.message_type != null) DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.message_type);
-      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enum_type);
-      if (value.service != null) ServiceDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.service);
-      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.extension);
-      if (value.options != null) FileOptions.ADAPTER.encodeWithTag(writer, 8, value.options);
-      if (value.source_code_info != null) SourceCodeInfo.ADAPTER.encodeWithTag(writer, 9, value.source_code_info);
-      if (value.syntax != null) ProtoAdapter.STRING.encodeWithTag(writer, 12, value.syntax);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public FileDescriptorProto decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.package_(ProtoAdapter.STRING.decode(reader)); break;
-          case 3: builder.dependency.add(ProtoAdapter.STRING.decode(reader)); break;
-          case 10: builder.public_dependency.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 11: builder.weak_dependency.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 4: builder.message_type.add(DescriptorProto.ADAPTER.decode(reader)); break;
-          case 5: builder.enum_type.add(EnumDescriptorProto.ADAPTER.decode(reader)); break;
-          case 6: builder.service.add(ServiceDescriptorProto.ADAPTER.decode(reader)); break;
-          case 7: builder.extension.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
-          case 8: builder.options(FileOptions.ADAPTER.decode(reader)); break;
-          case 9: builder.source_code_info(SourceCodeInfo.ADAPTER.decode(reader)); break;
-          case 12: builder.syntax(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public FileDescriptorProto redact(FileDescriptorProto value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.message_type, DescriptorProto.ADAPTER);
-      redactElements(builder.enum_type, EnumDescriptorProto.ADAPTER);
-      redactElements(builder.service, ServiceDescriptorProto.ADAPTER);
-      redactElements(builder.extension, FieldDescriptorProto.ADAPTER);
-      if (builder.options != null) builder.options = FileOptions.ADAPTER.redact(builder.options);
-      if (builder.source_code_info != null) builder.source_code_info = SourceCodeInfo.ADAPTER.redact(builder.source_code_info);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<FileDescriptorProto> ADAPTER = new ProtoAdapter_FileDescriptorProto();
 
   private static final long serialVersionUID = 0L;
 
@@ -448,6 +372,88 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     @Override
     public FileDescriptorProto build() {
       return new FileDescriptorProto(name, package_, dependency, public_dependency, weak_dependency, message_type, enum_type, service, extension, options, source_code_info, syntax, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_FileDescriptorProto extends ProtoAdapter<FileDescriptorProto> {
+    ProtoAdapter_FileDescriptorProto() {
+      super(FieldEncoding.LENGTH_DELIMITED, FileDescriptorProto.class);
+    }
+
+    @Override
+    public int encodedSize(FileDescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + (value.package_ != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.package_) : 0)
+          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(3, value.dependency)
+          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(10, value.public_dependency)
+          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(11, value.weak_dependency)
+          + DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.message_type)
+          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enum_type)
+          + ServiceDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.service)
+          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(7, value.extension)
+          + (value.options != null ? FileOptions.ADAPTER.encodedSizeWithTag(8, value.options) : 0)
+          + (value.source_code_info != null ? SourceCodeInfo.ADAPTER.encodedSizeWithTag(9, value.source_code_info) : 0)
+          + (value.syntax != null ? ProtoAdapter.STRING.encodedSizeWithTag(12, value.syntax) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, FileDescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.package_ != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.package_);
+      if (value.dependency != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 3, value.dependency);
+      if (value.public_dependency != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 10, value.public_dependency);
+      if (value.weak_dependency != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 11, value.weak_dependency);
+      if (value.message_type != null) DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.message_type);
+      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enum_type);
+      if (value.service != null) ServiceDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.service);
+      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.extension);
+      if (value.options != null) FileOptions.ADAPTER.encodeWithTag(writer, 8, value.options);
+      if (value.source_code_info != null) SourceCodeInfo.ADAPTER.encodeWithTag(writer, 9, value.source_code_info);
+      if (value.syntax != null) ProtoAdapter.STRING.encodeWithTag(writer, 12, value.syntax);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public FileDescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.package_(ProtoAdapter.STRING.decode(reader)); break;
+          case 3: builder.dependency.add(ProtoAdapter.STRING.decode(reader)); break;
+          case 10: builder.public_dependency.add(ProtoAdapter.INT32.decode(reader)); break;
+          case 11: builder.weak_dependency.add(ProtoAdapter.INT32.decode(reader)); break;
+          case 4: builder.message_type.add(DescriptorProto.ADAPTER.decode(reader)); break;
+          case 5: builder.enum_type.add(EnumDescriptorProto.ADAPTER.decode(reader)); break;
+          case 6: builder.service.add(ServiceDescriptorProto.ADAPTER.decode(reader)); break;
+          case 7: builder.extension.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
+          case 8: builder.options(FileOptions.ADAPTER.decode(reader)); break;
+          case 9: builder.source_code_info(SourceCodeInfo.ADAPTER.decode(reader)); break;
+          case 12: builder.syntax(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public FileDescriptorProto redact(FileDescriptorProto value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.message_type, DescriptorProto.ADAPTER);
+      redactElements(builder.enum_type, EnumDescriptorProto.ADAPTER);
+      redactElements(builder.service, ServiceDescriptorProto.ADAPTER);
+      redactElements(builder.extension, FieldDescriptorProto.ADAPTER);
+      if (builder.options != null) builder.options = FileOptions.ADAPTER.redact(builder.options);
+      if (builder.source_code_info != null) builder.source_code_info = SourceCodeInfo.ADAPTER.redact(builder.source_code_info);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

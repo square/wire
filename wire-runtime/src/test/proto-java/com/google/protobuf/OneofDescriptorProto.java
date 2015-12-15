@@ -19,44 +19,7 @@ import okio.ByteString;
  * Describes a oneof.
  */
 public final class OneofDescriptorProto extends Message<OneofDescriptorProto, OneofDescriptorProto.Builder> {
-  public static final ProtoAdapter<OneofDescriptorProto> ADAPTER = new ProtoAdapter<OneofDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, OneofDescriptorProto.class) {
-    @Override
-    public int encodedSize(OneofDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, OneofDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public OneofDescriptorProto decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public OneofDescriptorProto redact(OneofDescriptorProto value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<OneofDescriptorProto> ADAPTER = new ProtoAdapter_OneofDescriptorProto();
 
   private static final long serialVersionUID = 0L;
 
@@ -126,6 +89,49 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     @Override
     public OneofDescriptorProto build() {
       return new OneofDescriptorProto(name, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_OneofDescriptorProto extends ProtoAdapter<OneofDescriptorProto> {
+    ProtoAdapter_OneofDescriptorProto() {
+      super(FieldEncoding.LENGTH_DELIMITED, OneofDescriptorProto.class);
+    }
+
+    @Override
+    public int encodedSize(OneofDescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, OneofDescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public OneofDescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public OneofDescriptorProto redact(OneofDescriptorProto value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

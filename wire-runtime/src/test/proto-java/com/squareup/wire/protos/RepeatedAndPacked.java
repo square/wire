@@ -18,47 +18,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class RepeatedAndPacked extends Message<RepeatedAndPacked, RepeatedAndPacked.Builder> {
-  public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = new ProtoAdapter<RepeatedAndPacked>(FieldEncoding.LENGTH_DELIMITED, RepeatedAndPacked.class) {
-    @Override
-    public int encodedSize(RepeatedAndPacked value) {
-      return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
-          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, RepeatedAndPacked value) throws IOException {
-      if (value.rep_int32 != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
-      if (value.pack_int32 != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public RepeatedAndPacked decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 201: builder.rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 301: builder.pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public RepeatedAndPacked redact(RepeatedAndPacked value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = new ProtoAdapter_RepeatedAndPacked();
 
   private static final long serialVersionUID = 0L;
 
@@ -150,6 +110,52 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
     @Override
     public RepeatedAndPacked build() {
       return new RepeatedAndPacked(rep_int32, pack_int32, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_RepeatedAndPacked extends ProtoAdapter<RepeatedAndPacked> {
+    ProtoAdapter_RepeatedAndPacked() {
+      super(FieldEncoding.LENGTH_DELIMITED, RepeatedAndPacked.class);
+    }
+
+    @Override
+    public int encodedSize(RepeatedAndPacked value) {
+      return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
+          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, RepeatedAndPacked value) throws IOException {
+      if (value.rep_int32 != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
+      if (value.pack_int32 != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public RepeatedAndPacked decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 201: builder.rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
+          case 301: builder.pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public RepeatedAndPacked redact(RepeatedAndPacked value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

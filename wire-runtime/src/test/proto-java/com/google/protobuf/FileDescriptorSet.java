@@ -21,45 +21,7 @@ import okio.ByteString;
  * files it parses.
  */
 public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDescriptorSet.Builder> {
-  public static final ProtoAdapter<FileDescriptorSet> ADAPTER = new ProtoAdapter<FileDescriptorSet>(FieldEncoding.LENGTH_DELIMITED, FileDescriptorSet.class) {
-    @Override
-    public int encodedSize(FileDescriptorSet value) {
-      return FileDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(1, value.file)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, FileDescriptorSet value) throws IOException {
-      if (value.file != null) FileDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.file);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public FileDescriptorSet decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.file.add(FileDescriptorProto.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public FileDescriptorSet redact(FileDescriptorSet value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.file, FileDescriptorProto.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<FileDescriptorSet> ADAPTER = new ProtoAdapter_FileDescriptorSet();
 
   private static final long serialVersionUID = 0L;
 
@@ -130,6 +92,50 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
     @Override
     public FileDescriptorSet build() {
       return new FileDescriptorSet(file, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_FileDescriptorSet extends ProtoAdapter<FileDescriptorSet> {
+    ProtoAdapter_FileDescriptorSet() {
+      super(FieldEncoding.LENGTH_DELIMITED, FileDescriptorSet.class);
+    }
+
+    @Override
+    public int encodedSize(FileDescriptorSet value) {
+      return FileDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(1, value.file)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, FileDescriptorSet value) throws IOException {
+      if (value.file != null) FileDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.file);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public FileDescriptorSet decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.file.add(FileDescriptorProto.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public FileDescriptorSet redact(FileDescriptorSet value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.file, FileDescriptorProto.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

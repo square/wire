@@ -21,79 +21,7 @@ import okio.ByteString;
  * Describes a message type.
  */
 public final class DescriptorProto extends Message<DescriptorProto, DescriptorProto.Builder> {
-  public static final ProtoAdapter<DescriptorProto> ADAPTER = new ProtoAdapter<DescriptorProto>(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class) {
-    @Override
-    public int encodedSize(DescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.field)
-          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.extension)
-          + DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(3, value.nested_type)
-          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.enum_type)
-          + ExtensionRange.ADAPTER.asRepeated().encodedSizeWithTag(5, value.extension_range)
-          + OneofDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(8, value.oneof_decl)
-          + (value.options != null ? MessageOptions.ADAPTER.encodedSizeWithTag(7, value.options) : 0)
-          + ReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(9, value.reserved_range)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(10, value.reserved_name)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, DescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.field != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.field);
-      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension);
-      if (value.nested_type != null) DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.nested_type);
-      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.enum_type);
-      if (value.extension_range != null) ExtensionRange.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.extension_range);
-      if (value.oneof_decl != null) OneofDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 8, value.oneof_decl);
-      if (value.options != null) MessageOptions.ADAPTER.encodeWithTag(writer, 7, value.options);
-      if (value.reserved_range != null) ReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 9, value.reserved_range);
-      if (value.reserved_name != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 10, value.reserved_name);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public DescriptorProto decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.field.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
-          case 6: builder.extension.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
-          case 3: builder.nested_type.add(DescriptorProto.ADAPTER.decode(reader)); break;
-          case 4: builder.enum_type.add(EnumDescriptorProto.ADAPTER.decode(reader)); break;
-          case 5: builder.extension_range.add(ExtensionRange.ADAPTER.decode(reader)); break;
-          case 8: builder.oneof_decl.add(OneofDescriptorProto.ADAPTER.decode(reader)); break;
-          case 7: builder.options(MessageOptions.ADAPTER.decode(reader)); break;
-          case 9: builder.reserved_range.add(ReservedRange.ADAPTER.decode(reader)); break;
-          case 10: builder.reserved_name.add(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public DescriptorProto redact(DescriptorProto value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.field, FieldDescriptorProto.ADAPTER);
-      redactElements(builder.extension, FieldDescriptorProto.ADAPTER);
-      redactElements(builder.nested_type, DescriptorProto.ADAPTER);
-      redactElements(builder.enum_type, EnumDescriptorProto.ADAPTER);
-      redactElements(builder.extension_range, ExtensionRange.ADAPTER);
-      redactElements(builder.oneof_decl, OneofDescriptorProto.ADAPTER);
-      if (builder.options != null) builder.options = MessageOptions.ADAPTER.redact(builder.options);
-      redactElements(builder.reserved_range, ReservedRange.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<DescriptorProto> ADAPTER = new ProtoAdapter_DescriptorProto();
 
   private static final long serialVersionUID = 0L;
 
@@ -361,47 +289,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   }
 
   public static final class ExtensionRange extends Message<ExtensionRange, ExtensionRange.Builder> {
-    public static final ProtoAdapter<ExtensionRange> ADAPTER = new ProtoAdapter<ExtensionRange>(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class) {
-      @Override
-      public int encodedSize(ExtensionRange value) {
-        return (value.start != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) : 0)
-            + (value.end != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.end) : 0)
-            + value.unknownFields().size();
-      }
-
-      @Override
-      public void encode(ProtoWriter writer, ExtensionRange value) throws IOException {
-        if (value.start != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start);
-        if (value.end != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.end);
-        writer.writeBytes(value.unknownFields());
-      }
-
-      @Override
-      public ExtensionRange decode(ProtoReader reader) throws IOException {
-        Builder builder = new Builder();
-        long token = reader.beginMessage();
-        for (int tag; (tag = reader.nextTag()) != -1;) {
-          switch (tag) {
-            case 1: builder.start(ProtoAdapter.INT32.decode(reader)); break;
-            case 2: builder.end(ProtoAdapter.INT32.decode(reader)); break;
-            default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
-            }
-          }
-        }
-        reader.endMessage(token);
-        return builder.build();
-      }
-
-      @Override
-      public ExtensionRange redact(ExtensionRange value) {
-        Builder builder = value.newBuilder();
-        builder.clearUnknownFields();
-        return builder.build();
-      }
-    };
+    public static final ProtoAdapter<ExtensionRange> ADAPTER = new ProtoAdapter_ExtensionRange();
 
     private static final long serialVersionUID = 0L;
 
@@ -493,31 +381,28 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
         return new ExtensionRange(start, end, buildUnknownFields());
       }
     }
-  }
 
-  /**
-   * Range of reserved tag numbers. Reserved tag numbers may not be used by
-   * fields or extension ranges in the same message. Reserved ranges may
-   * not overlap.
-   */
-  public static final class ReservedRange extends Message<ReservedRange, ReservedRange.Builder> {
-    public static final ProtoAdapter<ReservedRange> ADAPTER = new ProtoAdapter<ReservedRange>(FieldEncoding.LENGTH_DELIMITED, ReservedRange.class) {
+    private static final class ProtoAdapter_ExtensionRange extends ProtoAdapter<ExtensionRange> {
+      ProtoAdapter_ExtensionRange() {
+        super(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class);
+      }
+
       @Override
-      public int encodedSize(ReservedRange value) {
+      public int encodedSize(ExtensionRange value) {
         return (value.start != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) : 0)
             + (value.end != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.end) : 0)
             + value.unknownFields().size();
       }
 
       @Override
-      public void encode(ProtoWriter writer, ReservedRange value) throws IOException {
+      public void encode(ProtoWriter writer, ExtensionRange value) throws IOException {
         if (value.start != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start);
         if (value.end != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.end);
         writer.writeBytes(value.unknownFields());
       }
 
       @Override
-      public ReservedRange decode(ProtoReader reader) throws IOException {
+      public ExtensionRange decode(ProtoReader reader) throws IOException {
         Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
@@ -536,12 +421,21 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       }
 
       @Override
-      public ReservedRange redact(ReservedRange value) {
+      public ExtensionRange redact(ExtensionRange value) {
         Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
-    };
+    }
+  }
+
+  /**
+   * Range of reserved tag numbers. Reserved tag numbers may not be used by
+   * fields or extension ranges in the same message. Reserved ranges may
+   * not overlap.
+   */
+  public static final class ReservedRange extends Message<ReservedRange, ReservedRange.Builder> {
+    public static final ProtoAdapter<ReservedRange> ADAPTER = new ProtoAdapter_ReservedRange();
 
     private static final long serialVersionUID = 0L;
 
@@ -644,6 +538,130 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       public ReservedRange build() {
         return new ReservedRange(start, end, buildUnknownFields());
       }
+    }
+
+    private static final class ProtoAdapter_ReservedRange extends ProtoAdapter<ReservedRange> {
+      ProtoAdapter_ReservedRange() {
+        super(FieldEncoding.LENGTH_DELIMITED, ReservedRange.class);
+      }
+
+      @Override
+      public int encodedSize(ReservedRange value) {
+        return (value.start != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) : 0)
+            + (value.end != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.end) : 0)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, ReservedRange value) throws IOException {
+        if (value.start != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start);
+        if (value.end != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.end);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public ReservedRange decode(ProtoReader reader) throws IOException {
+        Builder builder = new Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.start(ProtoAdapter.INT32.decode(reader)); break;
+            case 2: builder.end(ProtoAdapter.INT32.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public ReservedRange redact(ReservedRange value) {
+        Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    }
+  }
+
+  private static final class ProtoAdapter_DescriptorProto extends ProtoAdapter<DescriptorProto> {
+    ProtoAdapter_DescriptorProto() {
+      super(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class);
+    }
+
+    @Override
+    public int encodedSize(DescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.field)
+          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.extension)
+          + DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(3, value.nested_type)
+          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.enum_type)
+          + ExtensionRange.ADAPTER.asRepeated().encodedSizeWithTag(5, value.extension_range)
+          + OneofDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(8, value.oneof_decl)
+          + (value.options != null ? MessageOptions.ADAPTER.encodedSizeWithTag(7, value.options) : 0)
+          + ReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(9, value.reserved_range)
+          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(10, value.reserved_name)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, DescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.field != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.field);
+      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension);
+      if (value.nested_type != null) DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.nested_type);
+      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.enum_type);
+      if (value.extension_range != null) ExtensionRange.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.extension_range);
+      if (value.oneof_decl != null) OneofDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 8, value.oneof_decl);
+      if (value.options != null) MessageOptions.ADAPTER.encodeWithTag(writer, 7, value.options);
+      if (value.reserved_range != null) ReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 9, value.reserved_range);
+      if (value.reserved_name != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 10, value.reserved_name);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public DescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.field.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
+          case 6: builder.extension.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
+          case 3: builder.nested_type.add(DescriptorProto.ADAPTER.decode(reader)); break;
+          case 4: builder.enum_type.add(EnumDescriptorProto.ADAPTER.decode(reader)); break;
+          case 5: builder.extension_range.add(ExtensionRange.ADAPTER.decode(reader)); break;
+          case 8: builder.oneof_decl.add(OneofDescriptorProto.ADAPTER.decode(reader)); break;
+          case 7: builder.options(MessageOptions.ADAPTER.decode(reader)); break;
+          case 9: builder.reserved_range.add(ReservedRange.ADAPTER.decode(reader)); break;
+          case 10: builder.reserved_name.add(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public DescriptorProto redact(DescriptorProto value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.field, FieldDescriptorProto.ADAPTER);
+      redactElements(builder.extension, FieldDescriptorProto.ADAPTER);
+      redactElements(builder.nested_type, DescriptorProto.ADAPTER);
+      redactElements(builder.enum_type, EnumDescriptorProto.ADAPTER);
+      redactElements(builder.extension_range, ExtensionRange.ADAPTER);
+      redactElements(builder.oneof_decl, OneofDescriptorProto.ADAPTER);
+      if (builder.options != null) builder.options = MessageOptions.ADAPTER.redact(builder.options);
+      redactElements(builder.reserved_range, ReservedRange.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

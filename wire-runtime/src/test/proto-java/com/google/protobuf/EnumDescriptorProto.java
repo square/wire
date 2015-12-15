@@ -20,52 +20,7 @@ import okio.ByteString;
  * Describes an enum type.
  */
 public final class EnumDescriptorProto extends Message<EnumDescriptorProto, EnumDescriptorProto.Builder> {
-  public static final ProtoAdapter<EnumDescriptorProto> ADAPTER = new ProtoAdapter<EnumDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, EnumDescriptorProto.class) {
-    @Override
-    public int encodedSize(EnumDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + EnumValueDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.value)
-          + (value.options != null ? EnumOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, EnumDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.value != null) EnumValueDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.value);
-      if (value.options != null) EnumOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public EnumDescriptorProto decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.value.add(EnumValueDescriptorProto.ADAPTER.decode(reader)); break;
-          case 3: builder.options(EnumOptions.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public EnumDescriptorProto redact(EnumDescriptorProto value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.value, EnumValueDescriptorProto.ADAPTER);
-      if (builder.options != null) builder.options = EnumOptions.ADAPTER.redact(builder.options);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<EnumDescriptorProto> ADAPTER = new ProtoAdapter_EnumDescriptorProto();
 
   private static final long serialVersionUID = 0L;
 
@@ -174,6 +129,57 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     @Override
     public EnumDescriptorProto build() {
       return new EnumDescriptorProto(name, value, options, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_EnumDescriptorProto extends ProtoAdapter<EnumDescriptorProto> {
+    ProtoAdapter_EnumDescriptorProto() {
+      super(FieldEncoding.LENGTH_DELIMITED, EnumDescriptorProto.class);
+    }
+
+    @Override
+    public int encodedSize(EnumDescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + EnumValueDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.value)
+          + (value.options != null ? EnumOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, EnumDescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.value != null) EnumValueDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.value);
+      if (value.options != null) EnumOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public EnumDescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.value.add(EnumValueDescriptorProto.ADAPTER.decode(reader)); break;
+          case 3: builder.options(EnumOptions.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public EnumDescriptorProto redact(EnumDescriptorProto value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.value, EnumValueDescriptorProto.ADAPTER);
+      if (builder.options != null) builder.options = EnumOptions.ADAPTER.redact(builder.options);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

@@ -22,112 +22,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class FieldOptions extends Message<FieldOptions, FieldOptions.Builder> {
-  public static final ProtoAdapter<FieldOptions> ADAPTER = new ProtoAdapter<FieldOptions>(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class) {
-    @Override
-    public int encodedSize(FieldOptions value) {
-      return (value.ctype != null ? CType.ADAPTER.encodedSizeWithTag(1, value.ctype) : 0)
-          + (value.packed != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed) : 0)
-          + (value.jstype != null ? JSType.ADAPTER.encodedSizeWithTag(6, value.jstype) : 0)
-          + (value.lazy != null ? ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy) : 0)
-          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
-          + (value.weak != null ? ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak) : 0)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + (value.my_field_option_one != null ? ProtoAdapter.INT32.encodedSizeWithTag(60001, value.my_field_option_one) : 0)
-          + (value.my_field_option_two != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(60002, value.my_field_option_two) : 0)
-          + (value.my_field_option_three != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(60003, value.my_field_option_three) : 0)
-          + (value.my_field_option_four != null ? FooBar.ADAPTER.encodedSizeWithTag(60004, value.my_field_option_four) : 0)
-          + (value.squareup_protos_extension_collision_1_a != null ? ProtoAdapter.STRING.encodedSizeWithTag(22101, value.squareup_protos_extension_collision_1_a) : 0)
-          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(22102, value.b) : 0)
-          + (value.squareup_protos_extension_collision_2_a != null ? ProtoAdapter.STRING.encodedSizeWithTag(22103, value.squareup_protos_extension_collision_2_a) : 0)
-          + (value.c != null ? ProtoAdapter.STRING.encodedSizeWithTag(22104, value.c) : 0)
-          + (value.redacted != null ? ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, FieldOptions value) throws IOException {
-      if (value.ctype != null) CType.ADAPTER.encodeWithTag(writer, 1, value.ctype);
-      if (value.packed != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.packed);
-      if (value.jstype != null) JSType.ADAPTER.encodeWithTag(writer, 6, value.jstype);
-      if (value.lazy != null) ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.lazy);
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
-      if (value.weak != null) ProtoAdapter.BOOL.encodeWithTag(writer, 10, value.weak);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
-      if (value.my_field_option_one != null) ProtoAdapter.INT32.encodeWithTag(writer, 60001, value.my_field_option_one);
-      if (value.my_field_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 60002, value.my_field_option_two);
-      if (value.my_field_option_three != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 60003, value.my_field_option_three);
-      if (value.my_field_option_four != null) FooBar.ADAPTER.encodeWithTag(writer, 60004, value.my_field_option_four);
-      if (value.squareup_protos_extension_collision_1_a != null) ProtoAdapter.STRING.encodeWithTag(writer, 22101, value.squareup_protos_extension_collision_1_a);
-      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 22102, value.b);
-      if (value.squareup_protos_extension_collision_2_a != null) ProtoAdapter.STRING.encodeWithTag(writer, 22103, value.squareup_protos_extension_collision_2_a);
-      if (value.c != null) ProtoAdapter.STRING.encodeWithTag(writer, 22104, value.c);
-      if (value.redacted != null) ProtoAdapter.BOOL.encodeWithTag(writer, 22200, value.redacted);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public FieldOptions decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: {
-            try {
-              builder.ctype(CType.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 2: builder.packed(ProtoAdapter.BOOL.decode(reader)); break;
-          case 6: {
-            try {
-              builder.jstype(JSType.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 5: builder.lazy(ProtoAdapter.BOOL.decode(reader)); break;
-          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
-          case 10: builder.weak(ProtoAdapter.BOOL.decode(reader)); break;
-          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
-          case 60001: builder.my_field_option_one(ProtoAdapter.INT32.decode(reader)); break;
-          case 60002: builder.my_field_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 60003: {
-            try {
-              builder.my_field_option_three(FooBar.FooBarBazEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 60004: builder.my_field_option_four(FooBar.ADAPTER.decode(reader)); break;
-          case 22101: builder.squareup_protos_extension_collision_1_a(ProtoAdapter.STRING.decode(reader)); break;
-          case 22102: builder.b(ProtoAdapter.STRING.decode(reader)); break;
-          case 22103: builder.squareup_protos_extension_collision_2_a(ProtoAdapter.STRING.decode(reader)); break;
-          case 22104: builder.c(ProtoAdapter.STRING.decode(reader)); break;
-          case 22200: builder.redacted(ProtoAdapter.BOOL.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public FieldOptions redact(FieldOptions value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
-      if (builder.my_field_option_four != null) builder.my_field_option_four = FooBar.ADAPTER.redact(builder.my_field_option_four);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<FieldOptions> ADAPTER = new ProtoAdapter_FieldOptions();
 
   private static final long serialVersionUID = 0L;
 
@@ -737,6 +632,117 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     @Override
     public int getValue() {
       return value;
+    }
+  }
+
+  private static final class ProtoAdapter_FieldOptions extends ProtoAdapter<FieldOptions> {
+    ProtoAdapter_FieldOptions() {
+      super(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class);
+    }
+
+    @Override
+    public int encodedSize(FieldOptions value) {
+      return (value.ctype != null ? CType.ADAPTER.encodedSizeWithTag(1, value.ctype) : 0)
+          + (value.packed != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed) : 0)
+          + (value.jstype != null ? JSType.ADAPTER.encodedSizeWithTag(6, value.jstype) : 0)
+          + (value.lazy != null ? ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy) : 0)
+          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
+          + (value.weak != null ? ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak) : 0)
+          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
+          + (value.my_field_option_one != null ? ProtoAdapter.INT32.encodedSizeWithTag(60001, value.my_field_option_one) : 0)
+          + (value.my_field_option_two != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(60002, value.my_field_option_two) : 0)
+          + (value.my_field_option_three != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(60003, value.my_field_option_three) : 0)
+          + (value.my_field_option_four != null ? FooBar.ADAPTER.encodedSizeWithTag(60004, value.my_field_option_four) : 0)
+          + (value.squareup_protos_extension_collision_1_a != null ? ProtoAdapter.STRING.encodedSizeWithTag(22101, value.squareup_protos_extension_collision_1_a) : 0)
+          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(22102, value.b) : 0)
+          + (value.squareup_protos_extension_collision_2_a != null ? ProtoAdapter.STRING.encodedSizeWithTag(22103, value.squareup_protos_extension_collision_2_a) : 0)
+          + (value.c != null ? ProtoAdapter.STRING.encodedSizeWithTag(22104, value.c) : 0)
+          + (value.redacted != null ? ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, FieldOptions value) throws IOException {
+      if (value.ctype != null) CType.ADAPTER.encodeWithTag(writer, 1, value.ctype);
+      if (value.packed != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.packed);
+      if (value.jstype != null) JSType.ADAPTER.encodeWithTag(writer, 6, value.jstype);
+      if (value.lazy != null) ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.lazy);
+      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
+      if (value.weak != null) ProtoAdapter.BOOL.encodeWithTag(writer, 10, value.weak);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      if (value.my_field_option_one != null) ProtoAdapter.INT32.encodeWithTag(writer, 60001, value.my_field_option_one);
+      if (value.my_field_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 60002, value.my_field_option_two);
+      if (value.my_field_option_three != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 60003, value.my_field_option_three);
+      if (value.my_field_option_four != null) FooBar.ADAPTER.encodeWithTag(writer, 60004, value.my_field_option_four);
+      if (value.squareup_protos_extension_collision_1_a != null) ProtoAdapter.STRING.encodeWithTag(writer, 22101, value.squareup_protos_extension_collision_1_a);
+      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 22102, value.b);
+      if (value.squareup_protos_extension_collision_2_a != null) ProtoAdapter.STRING.encodeWithTag(writer, 22103, value.squareup_protos_extension_collision_2_a);
+      if (value.c != null) ProtoAdapter.STRING.encodeWithTag(writer, 22104, value.c);
+      if (value.redacted != null) ProtoAdapter.BOOL.encodeWithTag(writer, 22200, value.redacted);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public FieldOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: {
+            try {
+              builder.ctype(CType.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 2: builder.packed(ProtoAdapter.BOOL.decode(reader)); break;
+          case 6: {
+            try {
+              builder.jstype(JSType.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 5: builder.lazy(ProtoAdapter.BOOL.decode(reader)); break;
+          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
+          case 10: builder.weak(ProtoAdapter.BOOL.decode(reader)); break;
+          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 60001: builder.my_field_option_one(ProtoAdapter.INT32.decode(reader)); break;
+          case 60002: builder.my_field_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 60003: {
+            try {
+              builder.my_field_option_three(FooBar.FooBarBazEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 60004: builder.my_field_option_four(FooBar.ADAPTER.decode(reader)); break;
+          case 22101: builder.squareup_protos_extension_collision_1_a(ProtoAdapter.STRING.decode(reader)); break;
+          case 22102: builder.b(ProtoAdapter.STRING.decode(reader)); break;
+          case 22103: builder.squareup_protos_extension_collision_2_a(ProtoAdapter.STRING.decode(reader)); break;
+          case 22104: builder.c(ProtoAdapter.STRING.decode(reader)); break;
+          case 22200: builder.redacted(ProtoAdapter.BOOL.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public FieldOptions redact(FieldOptions value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      if (builder.my_field_option_four != null) builder.my_field_option_four = FooBar.ADAPTER.redact(builder.my_field_option_four);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

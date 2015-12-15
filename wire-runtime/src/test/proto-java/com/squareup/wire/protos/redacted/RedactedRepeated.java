@@ -19,49 +19,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRepeated.Builder> {
-  public static final ProtoAdapter<RedactedRepeated> ADAPTER = new ProtoAdapter<RedactedRepeated>(FieldEncoding.LENGTH_DELIMITED, RedactedRepeated.class) {
-    @Override
-    public int encodedSize(RedactedRepeated value) {
-      return ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
-          + Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, RedactedRepeated value) throws IOException {
-      if (value.a != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a);
-      if (value.b != null) Redacted.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public RedactedRepeated decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.a.add(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.b.add(Redacted.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public RedactedRepeated redact(RedactedRepeated value) {
-      Builder builder = value.newBuilder();
-      builder.a = Collections.emptyList();
-      redactElements(builder.b, Redacted.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<RedactedRepeated> ADAPTER = new ProtoAdapter_RedactedRepeated();
 
   private static final long serialVersionUID = 0L;
 
@@ -164,6 +122,54 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     @Override
     public RedactedRepeated build() {
       return new RedactedRepeated(a, b, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_RedactedRepeated extends ProtoAdapter<RedactedRepeated> {
+    ProtoAdapter_RedactedRepeated() {
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedRepeated.class);
+    }
+
+    @Override
+    public int encodedSize(RedactedRepeated value) {
+      return ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
+          + Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, RedactedRepeated value) throws IOException {
+      if (value.a != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a);
+      if (value.b != null) Redacted.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public RedactedRepeated decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.a.add(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.b.add(Redacted.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public RedactedRepeated redact(RedactedRepeated value) {
+      Builder builder = value.newBuilder();
+      builder.a = Collections.emptyList();
+      redactElements(builder.b, Redacted.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

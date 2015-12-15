@@ -17,55 +17,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class Redacted extends Message<Redacted, Redacted.Builder> {
-  public static final ProtoAdapter<Redacted> ADAPTER = new ProtoAdapter<Redacted>(FieldEncoding.LENGTH_DELIMITED, Redacted.class) {
-    @Override
-    public int encodedSize(Redacted value) {
-      return (value.a != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) : 0)
-          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) : 0)
-          + (value.c != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.c) : 0)
-          + (value.extension != null ? RedactedExtension.ADAPTER.encodedSizeWithTag(10, value.extension) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, Redacted value) throws IOException {
-      if (value.a != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
-      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b);
-      if (value.c != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.c);
-      if (value.extension != null) RedactedExtension.ADAPTER.encodeWithTag(writer, 10, value.extension);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public Redacted decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.a(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.b(ProtoAdapter.STRING.decode(reader)); break;
-          case 3: builder.c(ProtoAdapter.STRING.decode(reader)); break;
-          case 10: builder.extension(RedactedExtension.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public Redacted redact(Redacted value) {
-      Builder builder = value.newBuilder();
-      builder.a = null;
-      if (builder.extension != null) builder.extension = RedactedExtension.ADAPTER.redact(builder.extension);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<Redacted> ADAPTER = new ProtoAdapter_Redacted();
 
   private static final long serialVersionUID = 0L;
 
@@ -205,6 +157,60 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
     @Override
     public Redacted build() {
       return new Redacted(a, b, c, extension, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_Redacted extends ProtoAdapter<Redacted> {
+    ProtoAdapter_Redacted() {
+      super(FieldEncoding.LENGTH_DELIMITED, Redacted.class);
+    }
+
+    @Override
+    public int encodedSize(Redacted value) {
+      return (value.a != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) : 0)
+          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) : 0)
+          + (value.c != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.c) : 0)
+          + (value.extension != null ? RedactedExtension.ADAPTER.encodedSizeWithTag(10, value.extension) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Redacted value) throws IOException {
+      if (value.a != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
+      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b);
+      if (value.c != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.c);
+      if (value.extension != null) RedactedExtension.ADAPTER.encodeWithTag(writer, 10, value.extension);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Redacted decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.a(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.b(ProtoAdapter.STRING.decode(reader)); break;
+          case 3: builder.c(ProtoAdapter.STRING.decode(reader)); break;
+          case 10: builder.extension(RedactedExtension.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Redacted redact(Redacted value) {
+      Builder builder = value.newBuilder();
+      builder.a = null;
+      if (builder.extension != null) builder.extension = RedactedExtension.ADAPTER.redact(builder.extension);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

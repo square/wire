@@ -26,84 +26,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class FooBar extends Message<FooBar, FooBar.Builder> {
-  public static final ProtoAdapter<FooBar> ADAPTER = new ProtoAdapter<FooBar>(FieldEncoding.LENGTH_DELIMITED, FooBar.class) {
-    @Override
-    public int encodedSize(FooBar value) {
-      return (value.foo != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) : 0)
-          + (value.bar != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar) : 0)
-          + (value.baz != null ? Nested.ADAPTER.encodedSizeWithTag(3, value.baz) : 0)
-          + (value.qux != null ? ProtoAdapter.UINT64.encodedSizeWithTag(4, value.qux) : 0)
-          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(5, value.fred)
-          + (value.daisy != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy) : 0)
-          + FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested)
-          + (value.ext != null ? FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext) : 0)
-          + FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, FooBar value) throws IOException {
-      if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
-      if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar);
-      if (value.baz != null) Nested.ADAPTER.encodeWithTag(writer, 3, value.baz);
-      if (value.qux != null) ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.qux);
-      if (value.fred != null) ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 5, value.fred);
-      if (value.daisy != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.daisy);
-      if (value.nested != null) FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested);
-      if (value.ext != null) FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
-      if (value.rep != null) FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public FooBar decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.foo(ProtoAdapter.INT32.decode(reader)); break;
-          case 2: builder.bar(ProtoAdapter.STRING.decode(reader)); break;
-          case 3: builder.baz(Nested.ADAPTER.decode(reader)); break;
-          case 4: builder.qux(ProtoAdapter.UINT64.decode(reader)); break;
-          case 5: builder.fred.add(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 6: builder.daisy(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 7: builder.nested.add(FooBar.ADAPTER.decode(reader)); break;
-          case 101: {
-            try {
-              builder.ext(FooBarBazEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 102: {
-            try {
-              builder.rep.add(FooBarBazEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public FooBar redact(FooBar value) {
-      Builder builder = value.newBuilder();
-      if (builder.baz != null) builder.baz = Nested.ADAPTER.redact(builder.baz);
-      redactElements(builder.nested, FooBar.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<FooBar> ADAPTER = new ProtoAdapter_FooBar();
 
   private static final long serialVersionUID = 0L;
 
@@ -390,51 +313,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   }
 
   public static final class Nested extends Message<Nested, Nested.Builder> {
-    public static final ProtoAdapter<Nested> ADAPTER = new ProtoAdapter<Nested>(FieldEncoding.LENGTH_DELIMITED, Nested.class) {
-      @Override
-      public int encodedSize(Nested value) {
-        return (value.value != null ? FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value) : 0)
-            + value.unknownFields().size();
-      }
-
-      @Override
-      public void encode(ProtoWriter writer, Nested value) throws IOException {
-        if (value.value != null) FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value);
-        writer.writeBytes(value.unknownFields());
-      }
-
-      @Override
-      public Nested decode(ProtoReader reader) throws IOException {
-        Builder builder = new Builder();
-        long token = reader.beginMessage();
-        for (int tag; (tag = reader.nextTag()) != -1;) {
-          switch (tag) {
-            case 1: {
-              try {
-                builder.value(FooBarBazEnum.ADAPTER.decode(reader));
-              } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-                builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-              }
-              break;
-            }
-            default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
-            }
-          }
-        }
-        reader.endMessage(token);
-        return builder.build();
-      }
-
-      @Override
-      public Nested redact(Nested value) {
-        Builder builder = value.newBuilder();
-        builder.clearUnknownFields();
-        return builder.build();
-      }
-    };
+    public static final ProtoAdapter<Nested> ADAPTER = new ProtoAdapter_Nested();
 
     private static final long serialVersionUID = 0L;
 
@@ -506,29 +385,38 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
         return new Nested(value, buildUnknownFields());
       }
     }
-  }
 
-  public static final class More extends Message<More, More.Builder> {
-    public static final ProtoAdapter<More> ADAPTER = new ProtoAdapter<More>(FieldEncoding.LENGTH_DELIMITED, More.class) {
+    private static final class ProtoAdapter_Nested extends ProtoAdapter<Nested> {
+      ProtoAdapter_Nested() {
+        super(FieldEncoding.LENGTH_DELIMITED, Nested.class);
+      }
+
       @Override
-      public int encodedSize(More value) {
-        return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial)
+      public int encodedSize(Nested value) {
+        return (value.value != null ? FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value) : 0)
             + value.unknownFields().size();
       }
 
       @Override
-      public void encode(ProtoWriter writer, More value) throws IOException {
-        if (value.serial != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial);
+      public void encode(ProtoWriter writer, Nested value) throws IOException {
+        if (value.value != null) FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value);
         writer.writeBytes(value.unknownFields());
       }
 
       @Override
-      public More decode(ProtoReader reader) throws IOException {
+      public Nested decode(ProtoReader reader) throws IOException {
         Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
           switch (tag) {
-            case 1: builder.serial.add(ProtoAdapter.INT32.decode(reader)); break;
+            case 1: {
+              try {
+                builder.value(FooBarBazEnum.ADAPTER.decode(reader));
+              } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+                builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+              }
+              break;
+            }
             default: {
               FieldEncoding fieldEncoding = reader.peekFieldEncoding();
               Object value = fieldEncoding.rawProtoAdapter().decode(reader);
@@ -541,12 +429,16 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       }
 
       @Override
-      public More redact(More value) {
+      public Nested redact(Nested value) {
         Builder builder = value.newBuilder();
         builder.clearUnknownFields();
         return builder.build();
       }
-    };
+    }
+  }
+
+  public static final class More extends Message<More, More.Builder> {
+    public static final ProtoAdapter<More> ADAPTER = new ProtoAdapter_More();
 
     private static final long serialVersionUID = 0L;
 
@@ -619,6 +511,49 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
         return new More(serial, buildUnknownFields());
       }
     }
+
+    private static final class ProtoAdapter_More extends ProtoAdapter<More> {
+      ProtoAdapter_More() {
+        super(FieldEncoding.LENGTH_DELIMITED, More.class);
+      }
+
+      @Override
+      public int encodedSize(More value) {
+        return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, More value) throws IOException {
+        if (value.serial != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public More decode(ProtoReader reader) throws IOException {
+        Builder builder = new Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.serial.add(ProtoAdapter.INT32.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public More redact(More value) {
+        Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    }
   }
 
   public enum FooBarBazEnum implements WireEnum {
@@ -668,6 +603,89 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     @Override
     public int getValue() {
       return value;
+    }
+  }
+
+  private static final class ProtoAdapter_FooBar extends ProtoAdapter<FooBar> {
+    ProtoAdapter_FooBar() {
+      super(FieldEncoding.LENGTH_DELIMITED, FooBar.class);
+    }
+
+    @Override
+    public int encodedSize(FooBar value) {
+      return (value.foo != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) : 0)
+          + (value.bar != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar) : 0)
+          + (value.baz != null ? Nested.ADAPTER.encodedSizeWithTag(3, value.baz) : 0)
+          + (value.qux != null ? ProtoAdapter.UINT64.encodedSizeWithTag(4, value.qux) : 0)
+          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(5, value.fred)
+          + (value.daisy != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy) : 0)
+          + FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested)
+          + (value.ext != null ? FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext) : 0)
+          + FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, FooBar value) throws IOException {
+      if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
+      if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar);
+      if (value.baz != null) Nested.ADAPTER.encodeWithTag(writer, 3, value.baz);
+      if (value.qux != null) ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.qux);
+      if (value.fred != null) ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 5, value.fred);
+      if (value.daisy != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.daisy);
+      if (value.nested != null) FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested);
+      if (value.ext != null) FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
+      if (value.rep != null) FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public FooBar decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.foo(ProtoAdapter.INT32.decode(reader)); break;
+          case 2: builder.bar(ProtoAdapter.STRING.decode(reader)); break;
+          case 3: builder.baz(Nested.ADAPTER.decode(reader)); break;
+          case 4: builder.qux(ProtoAdapter.UINT64.decode(reader)); break;
+          case 5: builder.fred.add(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 6: builder.daisy(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 7: builder.nested.add(FooBar.ADAPTER.decode(reader)); break;
+          case 101: {
+            try {
+              builder.ext(FooBarBazEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 102: {
+            try {
+              builder.rep.add(FooBarBazEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public FooBar redact(FooBar value) {
+      Builder builder = value.newBuilder();
+      if (builder.baz != null) builder.baz = Nested.ADAPTER.redact(builder.baz);
+      redactElements(builder.nested, FooBar.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

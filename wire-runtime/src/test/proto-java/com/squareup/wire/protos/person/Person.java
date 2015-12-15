@@ -19,54 +19,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class Person extends Message<Person, Person.Builder> {
-  public static final ProtoAdapter<Person> ADAPTER = new ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person.class) {
-    @Override
-    public int encodedSize(Person value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
-          + (value.email != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) : 0)
-          + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, Person value) throws IOException {
-      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
-      if (value.email != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
-      if (value.phone != null) PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public Person decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.id(ProtoAdapter.INT32.decode(reader)); break;
-          case 3: builder.email(ProtoAdapter.STRING.decode(reader)); break;
-          case 4: builder.phone.add(PhoneNumber.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public Person redact(Person value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.phone, PhoneNumber.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<Person> ADAPTER = new ProtoAdapter_Person();
 
   private static final long serialVersionUID = 0L;
 
@@ -268,54 +221,7 @@ public final class Person extends Message<Person, Person.Builder> {
   }
 
   public static final class PhoneNumber extends Message<PhoneNumber, PhoneNumber.Builder> {
-    public static final ProtoAdapter<PhoneNumber> ADAPTER = new ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class) {
-      @Override
-      public int encodedSize(PhoneNumber value) {
-        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
-            + (value.type != null ? PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) : 0)
-            + value.unknownFields().size();
-      }
-
-      @Override
-      public void encode(ProtoWriter writer, PhoneNumber value) throws IOException {
-        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
-        if (value.type != null) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
-        writer.writeBytes(value.unknownFields());
-      }
-
-      @Override
-      public PhoneNumber decode(ProtoReader reader) throws IOException {
-        Builder builder = new Builder();
-        long token = reader.beginMessage();
-        for (int tag; (tag = reader.nextTag()) != -1;) {
-          switch (tag) {
-            case 1: builder.number(ProtoAdapter.STRING.decode(reader)); break;
-            case 2: {
-              try {
-                builder.type(PhoneType.ADAPTER.decode(reader));
-              } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-                builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-              }
-              break;
-            }
-            default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
-            }
-          }
-        }
-        reader.endMessage(token);
-        return builder.build();
-      }
-
-      @Override
-      public PhoneNumber redact(PhoneNumber value) {
-        Builder builder = value.newBuilder();
-        builder.clearUnknownFields();
-        return builder.build();
-      }
-    };
+    public static final ProtoAdapter<PhoneNumber> ADAPTER = new ProtoAdapter_PhoneNumber();
 
     private static final long serialVersionUID = 0L;
 
@@ -422,6 +328,112 @@ public final class Person extends Message<Person, Person.Builder> {
         }
         return new PhoneNumber(number, type, buildUnknownFields());
       }
+    }
+
+    private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
+      ProtoAdapter_PhoneNumber() {
+        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class);
+      }
+
+      @Override
+      public int encodedSize(PhoneNumber value) {
+        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
+            + (value.type != null ? PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) : 0)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, PhoneNumber value) throws IOException {
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
+        if (value.type != null) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public PhoneNumber decode(ProtoReader reader) throws IOException {
+        Builder builder = new Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.number(ProtoAdapter.STRING.decode(reader)); break;
+            case 2: {
+              try {
+                builder.type(PhoneType.ADAPTER.decode(reader));
+              } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+                builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+              }
+              break;
+            }
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public PhoneNumber redact(PhoneNumber value) {
+        Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    }
+  }
+
+  private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
+    ProtoAdapter_Person() {
+      super(FieldEncoding.LENGTH_DELIMITED, Person.class);
+    }
+
+    @Override
+    public int encodedSize(Person value) {
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
+          + (value.email != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) : 0)
+          + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Person value) throws IOException {
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
+      if (value.email != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
+      if (value.phone != null) PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Person decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.id(ProtoAdapter.INT32.decode(reader)); break;
+          case 3: builder.email(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.phone.add(PhoneNumber.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Person redact(Person value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.phone, PhoneNumber.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

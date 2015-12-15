@@ -19,59 +19,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
-  public static final ProtoAdapter<VersionTwo> ADAPTER = new ProtoAdapter<VersionTwo>(FieldEncoding.LENGTH_DELIMITED, VersionTwo.class) {
-    @Override
-    public int encodedSize(VersionTwo value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
-          + (value.v2_i != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i) : 0)
-          + (value.v2_s != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.v2_s) : 0)
-          + (value.v2_f32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.v2_f32) : 0)
-          + (value.v2_f64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(5, value.v2_f64) : 0)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.v2_rs)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, VersionTwo value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
-      if (value.v2_i != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i);
-      if (value.v2_s != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s);
-      if (value.v2_f32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.v2_f32);
-      if (value.v2_f64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64);
-      if (value.v2_rs != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public VersionTwo decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
-          case 2: builder.v2_i(ProtoAdapter.INT32.decode(reader)); break;
-          case 3: builder.v2_s(ProtoAdapter.STRING.decode(reader)); break;
-          case 4: builder.v2_f32(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 5: builder.v2_f64(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 6: builder.v2_rs.add(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public VersionTwo redact(VersionTwo value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<VersionTwo> ADAPTER = new ProtoAdapter_VersionTwo();
 
   private static final long serialVersionUID = 0L;
 
@@ -242,6 +190,64 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     @Override
     public VersionTwo build() {
       return new VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_VersionTwo extends ProtoAdapter<VersionTwo> {
+    ProtoAdapter_VersionTwo() {
+      super(FieldEncoding.LENGTH_DELIMITED, VersionTwo.class);
+    }
+
+    @Override
+    public int encodedSize(VersionTwo value) {
+      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
+          + (value.v2_i != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i) : 0)
+          + (value.v2_s != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.v2_s) : 0)
+          + (value.v2_f32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.v2_f32) : 0)
+          + (value.v2_f64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(5, value.v2_f64) : 0)
+          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.v2_rs)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, VersionTwo value) throws IOException {
+      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      if (value.v2_i != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i);
+      if (value.v2_s != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s);
+      if (value.v2_f32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.v2_f32);
+      if (value.v2_f64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64);
+      if (value.v2_rs != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public VersionTwo decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
+          case 2: builder.v2_i(ProtoAdapter.INT32.decode(reader)); break;
+          case 3: builder.v2_s(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.v2_f32(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 5: builder.v2_f64(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 6: builder.v2_rs.add(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public VersionTwo redact(VersionTwo value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

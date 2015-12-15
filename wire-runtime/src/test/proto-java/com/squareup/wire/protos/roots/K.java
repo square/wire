@@ -17,44 +17,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class K extends Message<K, K.Builder> {
-  public static final ProtoAdapter<K> ADAPTER = new ProtoAdapter<K>(FieldEncoding.LENGTH_DELIMITED, K.class) {
-    @Override
-    public int encodedSize(K value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, K value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public K decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public K redact(K value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<K> ADAPTER = new ProtoAdapter_K();
 
   private static final long serialVersionUID = 0L;
 
@@ -124,6 +87,49 @@ public final class K extends Message<K, K.Builder> {
     @Override
     public K build() {
       return new K(i, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_K extends ProtoAdapter<K> {
+    ProtoAdapter_K() {
+      super(FieldEncoding.LENGTH_DELIMITED, K.class);
+    }
+
+    @Override
+    public int encodedSize(K value) {
+      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, K value) throws IOException {
+      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public K decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public K redact(K value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

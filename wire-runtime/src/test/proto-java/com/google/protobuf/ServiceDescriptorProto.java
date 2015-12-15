@@ -20,52 +20,7 @@ import okio.ByteString;
  * Describes a service.
  */
 public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto, ServiceDescriptorProto.Builder> {
-  public static final ProtoAdapter<ServiceDescriptorProto> ADAPTER = new ProtoAdapter<ServiceDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, ServiceDescriptorProto.class) {
-    @Override
-    public int encodedSize(ServiceDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + MethodDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.method)
-          + (value.options != null ? ServiceOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, ServiceDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.method != null) MethodDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.method);
-      if (value.options != null) ServiceOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public ServiceDescriptorProto decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.method.add(MethodDescriptorProto.ADAPTER.decode(reader)); break;
-          case 3: builder.options(ServiceOptions.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public ServiceDescriptorProto redact(ServiceDescriptorProto value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.method, MethodDescriptorProto.ADAPTER);
-      if (builder.options != null) builder.options = ServiceOptions.ADAPTER.redact(builder.options);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<ServiceDescriptorProto> ADAPTER = new ProtoAdapter_ServiceDescriptorProto();
 
   private static final long serialVersionUID = 0L;
 
@@ -174,6 +129,57 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     @Override
     public ServiceDescriptorProto build() {
       return new ServiceDescriptorProto(name, method, options, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_ServiceDescriptorProto extends ProtoAdapter<ServiceDescriptorProto> {
+    ProtoAdapter_ServiceDescriptorProto() {
+      super(FieldEncoding.LENGTH_DELIMITED, ServiceDescriptorProto.class);
+    }
+
+    @Override
+    public int encodedSize(ServiceDescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + MethodDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.method)
+          + (value.options != null ? ServiceOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, ServiceDescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.method != null) MethodDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.method);
+      if (value.options != null) ServiceOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public ServiceDescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.method.add(MethodDescriptorProto.ADAPTER.decode(reader)); break;
+          case 3: builder.options(ServiceOptions.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public ServiceDescriptorProto redact(ServiceDescriptorProto value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.method, MethodDescriptorProto.ADAPTER);
+      if (builder.options != null) builder.options = ServiceOptions.ADAPTER.redact(builder.options);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

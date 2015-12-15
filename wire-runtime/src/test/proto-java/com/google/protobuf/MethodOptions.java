@@ -18,48 +18,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class MethodOptions extends Message<MethodOptions, MethodOptions.Builder> {
-  public static final ProtoAdapter<MethodOptions> ADAPTER = new ProtoAdapter<MethodOptions>(FieldEncoding.LENGTH_DELIMITED, MethodOptions.class) {
-    @Override
-    public int encodedSize(MethodOptions value) {
-      return (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated) : 0)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, MethodOptions value) throws IOException {
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public MethodOptions decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 33: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
-          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public MethodOptions redact(MethodOptions value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<MethodOptions> ADAPTER = new ProtoAdapter_MethodOptions();
 
   private static final long serialVersionUID = 0L;
 
@@ -176,6 +135,53 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     @Override
     public MethodOptions build() {
       return new MethodOptions(deprecated, uninterpreted_option, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_MethodOptions extends ProtoAdapter<MethodOptions> {
+    ProtoAdapter_MethodOptions() {
+      super(FieldEncoding.LENGTH_DELIMITED, MethodOptions.class);
+    }
+
+    @Override
+    public int encodedSize(MethodOptions value) {
+      return (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated) : 0)
+          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, MethodOptions value) throws IOException {
+      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public MethodOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 33: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
+          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public MethodOptions redact(MethodOptions value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

@@ -16,44 +16,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class OneBytesField extends Message<OneBytesField, OneBytesField.Builder> {
-  public static final ProtoAdapter<OneBytesField> ADAPTER = new ProtoAdapter<OneBytesField>(FieldEncoding.LENGTH_DELIMITED, OneBytesField.class) {
-    @Override
-    public int encodedSize(OneBytesField value) {
-      return (value.opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, OneBytesField value) throws IOException {
-      if (value.opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public OneBytesField decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.opt_bytes(ProtoAdapter.BYTES.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public OneBytesField redact(OneBytesField value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<OneBytesField> ADAPTER = new ProtoAdapter_OneBytesField();
 
   private static final long serialVersionUID = 0L;
 
@@ -123,6 +86,49 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
     @Override
     public OneBytesField build() {
       return new OneBytesField(opt_bytes, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_OneBytesField extends ProtoAdapter<OneBytesField> {
+    ProtoAdapter_OneBytesField() {
+      super(FieldEncoding.LENGTH_DELIMITED, OneBytesField.class);
+    }
+
+    @Override
+    public int encodedSize(OneBytesField value) {
+      return (value.opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, OneBytesField value) throws IOException {
+      if (value.opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public OneBytesField decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.opt_bytes(ProtoAdapter.BYTES.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public OneBytesField redact(OneBytesField value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

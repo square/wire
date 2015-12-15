@@ -24,45 +24,7 @@ import okio.ByteString;
  * FileDescriptorProto was generated.
  */
 public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo.Builder> {
-  public static final ProtoAdapter<SourceCodeInfo> ADAPTER = new ProtoAdapter<SourceCodeInfo>(FieldEncoding.LENGTH_DELIMITED, SourceCodeInfo.class) {
-    @Override
-    public int encodedSize(SourceCodeInfo value) {
-      return Location.ADAPTER.asRepeated().encodedSizeWithTag(1, value.location)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, SourceCodeInfo value) throws IOException {
-      if (value.location != null) Location.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.location);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public SourceCodeInfo decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.location.add(Location.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public SourceCodeInfo redact(SourceCodeInfo value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.location, Location.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<SourceCodeInfo> ADAPTER = new ProtoAdapter_SourceCodeInfo();
 
   private static final long serialVersionUID = 0L;
 
@@ -227,56 +189,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
   }
 
   public static final class Location extends Message<Location, Location.Builder> {
-    public static final ProtoAdapter<Location> ADAPTER = new ProtoAdapter<Location>(FieldEncoding.LENGTH_DELIMITED, Location.class) {
-      @Override
-      public int encodedSize(Location value) {
-        return ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path)
-            + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(2, value.span)
-            + (value.leading_comments != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.leading_comments) : 0)
-            + (value.trailing_comments != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.trailing_comments) : 0)
-            + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.leading_detached_comments)
-            + value.unknownFields().size();
-      }
-
-      @Override
-      public void encode(ProtoWriter writer, Location value) throws IOException {
-        if (value.path != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.path);
-        if (value.span != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value.span);
-        if (value.leading_comments != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.leading_comments);
-        if (value.trailing_comments != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.trailing_comments);
-        if (value.leading_detached_comments != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.leading_detached_comments);
-        writer.writeBytes(value.unknownFields());
-      }
-
-      @Override
-      public Location decode(ProtoReader reader) throws IOException {
-        Builder builder = new Builder();
-        long token = reader.beginMessage();
-        for (int tag; (tag = reader.nextTag()) != -1;) {
-          switch (tag) {
-            case 1: builder.path.add(ProtoAdapter.INT32.decode(reader)); break;
-            case 2: builder.span.add(ProtoAdapter.INT32.decode(reader)); break;
-            case 3: builder.leading_comments(ProtoAdapter.STRING.decode(reader)); break;
-            case 4: builder.trailing_comments(ProtoAdapter.STRING.decode(reader)); break;
-            case 6: builder.leading_detached_comments.add(ProtoAdapter.STRING.decode(reader)); break;
-            default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
-            }
-          }
-        }
-        reader.endMessage(token);
-        return builder.build();
-      }
-
-      @Override
-      public Location redact(Location value) {
-        Builder builder = value.newBuilder();
-        builder.clearUnknownFields();
-        return builder.build();
-      }
-    };
+    public static final ProtoAdapter<Location> ADAPTER = new ProtoAdapter_Location();
 
     private static final long serialVersionUID = 0L;
 
@@ -592,6 +505,105 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       public Location build() {
         return new Location(path, span, leading_comments, trailing_comments, leading_detached_comments, buildUnknownFields());
       }
+    }
+
+    private static final class ProtoAdapter_Location extends ProtoAdapter<Location> {
+      ProtoAdapter_Location() {
+        super(FieldEncoding.LENGTH_DELIMITED, Location.class);
+      }
+
+      @Override
+      public int encodedSize(Location value) {
+        return ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path)
+            + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(2, value.span)
+            + (value.leading_comments != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.leading_comments) : 0)
+            + (value.trailing_comments != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.trailing_comments) : 0)
+            + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.leading_detached_comments)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, Location value) throws IOException {
+        if (value.path != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.path);
+        if (value.span != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value.span);
+        if (value.leading_comments != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.leading_comments);
+        if (value.trailing_comments != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.trailing_comments);
+        if (value.leading_detached_comments != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.leading_detached_comments);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public Location decode(ProtoReader reader) throws IOException {
+        Builder builder = new Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.path.add(ProtoAdapter.INT32.decode(reader)); break;
+            case 2: builder.span.add(ProtoAdapter.INT32.decode(reader)); break;
+            case 3: builder.leading_comments(ProtoAdapter.STRING.decode(reader)); break;
+            case 4: builder.trailing_comments(ProtoAdapter.STRING.decode(reader)); break;
+            case 6: builder.leading_detached_comments.add(ProtoAdapter.STRING.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public Location redact(Location value) {
+        Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    }
+  }
+
+  private static final class ProtoAdapter_SourceCodeInfo extends ProtoAdapter<SourceCodeInfo> {
+    ProtoAdapter_SourceCodeInfo() {
+      super(FieldEncoding.LENGTH_DELIMITED, SourceCodeInfo.class);
+    }
+
+    @Override
+    public int encodedSize(SourceCodeInfo value) {
+      return Location.ADAPTER.asRepeated().encodedSizeWithTag(1, value.location)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, SourceCodeInfo value) throws IOException {
+      if (value.location != null) Location.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.location);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public SourceCodeInfo decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.location.add(Location.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public SourceCodeInfo redact(SourceCodeInfo value) {
+      Builder builder = value.newBuilder();
+      redactElements(builder.location, Location.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

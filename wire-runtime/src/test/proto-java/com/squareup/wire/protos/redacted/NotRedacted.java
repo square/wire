@@ -16,47 +16,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder> {
-  public static final ProtoAdapter<NotRedacted> ADAPTER = new ProtoAdapter<NotRedacted>(FieldEncoding.LENGTH_DELIMITED, NotRedacted.class) {
-    @Override
-    public int encodedSize(NotRedacted value) {
-      return (value.a != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) : 0)
-          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, NotRedacted value) throws IOException {
-      if (value.a != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
-      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public NotRedacted decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.a(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.b(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public NotRedacted redact(NotRedacted value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<NotRedacted> ADAPTER = new ProtoAdapter_NotRedacted();
 
   private static final long serialVersionUID = 0L;
 
@@ -146,6 +106,52 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
     @Override
     public NotRedacted build() {
       return new NotRedacted(a, b, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_NotRedacted extends ProtoAdapter<NotRedacted> {
+    ProtoAdapter_NotRedacted() {
+      super(FieldEncoding.LENGTH_DELIMITED, NotRedacted.class);
+    }
+
+    @Override
+    public int encodedSize(NotRedacted value) {
+      return (value.a != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) : 0)
+          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, NotRedacted value) throws IOException {
+      if (value.a != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
+      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public NotRedacted decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.a(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.b(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public NotRedacted redact(NotRedacted value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }
