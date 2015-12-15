@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.squareup.wire</groupId>
     <artifactId>wire</artifactId>
-    <version>2.0.2-SNAPSHOT</version>
+    <version>2.0.2</version>
   </parent>
 
   <artifactId>wire-gson-support</artifactId>
