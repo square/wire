@@ -1,0 +1,58 @@
+syntax = "proto2";
+package javagenerator.test;
+
+option java_package = "com.javagenerator.test";
+
+message TestMessage {
+
+  option (message_option) = "test message option";
+  option (list_option)= [1,2,3];
+  option (map_option) = {a:"a", b:"b", c:"c"};
+
+  // Just a test comment.
+  message InnerMessage {   // Level 2
+    optional int32 intValue = 1 [default = 1];
+    optional int64 longValue = 2 [default = 1];
+    optional float floatValue = 3 [default = 1];
+    optional double doubleValue = 4 [default = 1];
+    optional string stringValue = 5 [default = "empty"];
+    optional bytes bytesValue = 6 [default = "empty"];
+    optional bool boolValue = 7 [default = true];
+  }
+
+  enum InnerEnum {
+    INNER_OPTION = 1;
+  }
+
+  optional string name = 1;
+  optional string oldName = 2 [deprecated=true];
+  optional bytes hashedName = 3;
+
+  oneof oneof_value {
+    int32 intValue = 4;
+    int64 longValue = 5;
+    float floatValue = 6;
+    double doubleValue = 7;
+    InnerEnum innerEnum = 14;
+  }
+
+  // optional map<int32, string> attrs = 8; decomment with fix
+
+  required InnerEnum options = 9;
+
+  // Another test comment.
+  repeated string tags = 10;
+  repeated int32 voteResults = 11 [deprecated=true,packed=true];
+  required int32 testPacked = 12 [packed=true];
+
+  oneof single_oneof_test {
+   sint32 nooption = 13;
+  }
+
+  repeated InnerEnum repeatedEnum = 15 [(squareup.redacted)=true];
+  required InnerMessage innerMessage = 16 [(squareup.redacted)=true];
+}
+
+service TestService {
+    rpc Test (TestMessage) returns (TestMessage);
+}

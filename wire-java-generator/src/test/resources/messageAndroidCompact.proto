@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package javagenerator.test;
+
+// Short message
+message ShortMessage {
+  enum InnerEnum {
+    FIRST = 1;
+    SECOND = 2;
+  }
+  required string uid = 1;
+  required string label = 2 [label = "label"];
+
+  required int32 hash = 3 [packed=true];
+
+  // name
+  required string firstName = 4 [(squareup.redacted) = true];
+  optional string secondName = 5 [(squareup.redacted) = true];
+
+  // tags
+  repeated string tags = 6;
+
+  required InnerEnum innerEnum = 7;
+}
