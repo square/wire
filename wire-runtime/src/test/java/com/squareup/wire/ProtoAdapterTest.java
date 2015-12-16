@@ -35,6 +35,18 @@ public final class ProtoAdapterTest {
     assertThat(personAdapter.decode(encoded.toByteArray())).isEqualTo(person);
   }
 
+  @Test public void getFromInstanceSameAsFromClass() throws Exception {
+    Person person = new Person.Builder()
+        .id(99)
+        .name("Omar Little")
+        .build();
+
+    ProtoAdapter<Person> instanceAdapter = ProtoAdapter.get(person);
+    ProtoAdapter<Person> classAdapter = ProtoAdapter.get(Person.class);
+
+    assertThat(instanceAdapter).isSameAs(classAdapter);
+  }
+
   @Test public void getFromClassWrongType() throws Exception {
     Message nonGeneratedMessage = new Message(ByteString.EMPTY) {
       @Override public Builder newBuilder() {
