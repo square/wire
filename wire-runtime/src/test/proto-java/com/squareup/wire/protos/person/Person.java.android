@@ -223,7 +223,7 @@ public final class Person extends Message<Person, Person.Builder> implements Par
      */
     WORK(2);
 
-    public static final ProtoAdapter<PhoneType> ADAPTER = ProtoAdapter.newEnumAdapter(PhoneType.class);
+    public static final ProtoAdapter<PhoneType> ADAPTER = new ProtoAdapter_PhoneType();
 
     private final int value;
 
@@ -246,6 +246,30 @@ public final class Person extends Message<Person, Person.Builder> implements Par
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_PhoneType extends ProtoAdapter<PhoneType> {
+      ProtoAdapter_PhoneType() {
+        super(FieldEncoding.VARINT, PhoneType.class);
+      }
+
+      @Override
+      public int encodedSize(PhoneType value) {
+        return ProtoAdapter.varint32Size(value.getValue());
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, PhoneType value) {
+        writer.writeVarint32(value.getValue());
+      }
+
+      @Override
+      public PhoneType decode(ProtoReader reader) {
+        int value = reader.readVarint32();
+        PhoneType constant = PhoneType.fromValue(value);
+        if (constant != null) return constant;
+        throw new ProtoAdapter.EnumConstantNotFoundException(value, PhoneType.class);
+      }
     }
   }
 

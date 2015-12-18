@@ -567,7 +567,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     STRING_PIECE(2);
 
-    public static final ProtoAdapter<CType> ADAPTER = ProtoAdapter.newEnumAdapter(CType.class);
+    public static final ProtoAdapter<CType> ADAPTER = new ProtoAdapter_CType();
 
     private final int value;
 
@@ -591,6 +591,30 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     public int getValue() {
       return value;
     }
+
+    private static final class ProtoAdapter_CType extends ProtoAdapter<CType> {
+      ProtoAdapter_CType() {
+        super(FieldEncoding.VARINT, CType.class);
+      }
+
+      @Override
+      public int encodedSize(CType value) {
+        return ProtoAdapter.varint32Size(value.getValue());
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, CType value) {
+        writer.writeVarint32(value.getValue());
+      }
+
+      @Override
+      public CType decode(ProtoReader reader) {
+        int value = reader.readVarint32();
+        CType constant = CType.fromValue(value);
+        if (constant != null) return constant;
+        throw new ProtoAdapter.EnumConstantNotFoundException(value, CType.class);
+      }
+    }
   }
 
   public enum JSType implements WireEnum {
@@ -609,7 +633,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
      */
     JS_NUMBER(2);
 
-    public static final ProtoAdapter<JSType> ADAPTER = ProtoAdapter.newEnumAdapter(JSType.class);
+    public static final ProtoAdapter<JSType> ADAPTER = new ProtoAdapter_JSType();
 
     private final int value;
 
@@ -632,6 +656,30 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_JSType extends ProtoAdapter<JSType> {
+      ProtoAdapter_JSType() {
+        super(FieldEncoding.VARINT, JSType.class);
+      }
+
+      @Override
+      public int encodedSize(JSType value) {
+        return ProtoAdapter.varint32Size(value.getValue());
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, JSType value) {
+        writer.writeVarint32(value.getValue());
+      }
+
+      @Override
+      public JSType decode(ProtoReader reader) {
+        int value = reader.readVarint32();
+        JSType constant = JSType.fromValue(value);
+        if (constant != null) return constant;
+        throw new ProtoAdapter.EnumConstantNotFoundException(value, JSType.class);
+      }
     }
   }
 

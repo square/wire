@@ -525,7 +525,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     @Deprecated
     BUZ(3, true);
 
-    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);
+    public static final ProtoAdapter<NestedEnum> ADAPTER = new ProtoAdapter_NestedEnum();
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .allow_alias(true)
@@ -555,6 +555,30 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_NestedEnum extends ProtoAdapter<NestedEnum> {
+      ProtoAdapter_NestedEnum() {
+        super(FieldEncoding.VARINT, NestedEnum.class);
+      }
+
+      @Override
+      public int encodedSize(NestedEnum value) {
+        return ProtoAdapter.varint32Size(value.getValue());
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, NestedEnum value) {
+        writer.writeVarint32(value.getValue());
+      }
+
+      @Override
+      public NestedEnum decode(ProtoReader reader) {
+        int value = reader.readVarint32();
+        NestedEnum constant = NestedEnum.fromValue(value);
+        if (constant != null) return constant;
+        throw new ProtoAdapter.EnumConstantNotFoundException(value, NestedEnum.class);
+      }
     }
   }
 

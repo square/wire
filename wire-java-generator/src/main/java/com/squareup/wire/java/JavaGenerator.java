@@ -123,39 +123,60 @@ public final class JavaGenerator {
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
 
   /**
-   * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
+   * Preallocate all of the names we'll need for a message type. Names are allocated in precedence
    * order, so names we're stuck with (serialVersionUID etc.) occur before proto field names are
    * assigned. Names we aren't stuck with (typically for locals) yield to message fields.
    *
    * <p>Name allocations are computed once and reused because some types may be needed when
    * generating other types.
    */
-  private final LoadingCache<MessageType, NameAllocator> typeToNameAllocator
-      = CacheBuilder.newBuilder().build(new CacheLoader<MessageType, NameAllocator>() {
-    @Override public NameAllocator load(MessageType type) throws Exception {
-      NameAllocator nameAllocator = new NameAllocator();
-      nameAllocator.newName("serialVersionUID", "serialVersionUID");
-      nameAllocator.newName("ADAPTER", "ADAPTER");
-      nameAllocator.newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS");
-      if (emitAndroid) {
-        nameAllocator.newName("CREATOR", "CREATOR");
-      }
-      Set<String> collidingNames = collidingFieldNames(type.fieldsAndOneOfFields());
-      for (Field field : type.fieldsAndOneOfFields()) {
-        String suggestion = collidingNames.contains(field.name())
-            ? field.qualifiedName()
-            : field.name();
-        nameAllocator.newName(suggestion, field);
-      }
-      nameAllocator.newName("unknownFields", "unknownFields");
-      nameAllocator.newName("result", "result");
-      nameAllocator.newName("message", "message");
-      nameAllocator.newName("other", "other");
-      nameAllocator.newName("o", "o");
-      nameAllocator.newName("builder", "builder");
-      return nameAllocator;
-    }
-  });
+  private final LoadingCache<MessageType, NameAllocator> messageToNameAllocator =
+      CacheBuilder.newBuilder().build(new CacheLoader<MessageType, NameAllocator>() {
+        @Override public NameAllocator load(MessageType type) throws Exception {
+          NameAllocator nameAllocator = new NameAllocator();
+          nameAllocator.newName("serialVersionUID", "serialVersionUID");
+          nameAllocator.newName("ADAPTER", "ADAPTER");
+          nameAllocator.newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS");
+          if (emitAndroid) {
+            nameAllocator.newName("CREATOR", "CREATOR");
+          }
+          Set<String> collidingNames = collidingFieldNames(type.fieldsAndOneOfFields());
+          for (Field field : type.fieldsAndOneOfFields()) {
+            String suggestion =
+                collidingNames.contains(field.name()) ? field.qualifiedName() : field.name();
+            nameAllocator.newName(suggestion, field);
+          }
+          nameAllocator.newName("unknownFields", "unknownFields");
+          nameAllocator.newName("result", "result");
+          nameAllocator.newName("message", "message");
+          nameAllocator.newName("other", "other");
+          nameAllocator.newName("o", "o");
+          nameAllocator.newName("builder", "builder");
+          return nameAllocator;
+        }
+      });
+
+  /**
+   * Preallocate all of the names we'll need for an enum type. Names are allocated in precedence
+   * order, so names we're stuck with (ADAPTER etc.) occur before constant names are
+   * assigned. Names we aren't stuck with (typically for locals) yield to message fields.
+   *
+   * <p>Name allocations are computed once and reused because some types may be needed when
+   * generating other types.
+   */
+  private final LoadingCache<EnumType, NameAllocator> enumToNameAllocator =
+      CacheBuilder.newBuilder().build(new CacheLoader<EnumType, NameAllocator>() {
+        @Override public NameAllocator load(EnumType type) throws Exception {
+          NameAllocator nameAllocator = new NameAllocator();
+          nameAllocator.newName("ADAPTER", "ADAPTER");
+          nameAllocator.newName("ENUM_OPTIONS", "ENUM_OPTIONS");
+          for (EnumConstant constant : type.constants()) {
+            nameAllocator.newName(constant.name(), constant.name());
+          }
+          nameAllocator.newName("value", "value");
+          return nameAllocator;
+        }
+      });
 
   private final Schema schema;
   private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
@@ -301,6 +322,7 @@ public final class JavaGenerator {
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateEnum(EnumType type) {
+    NameAllocator nameAllocator = enumToNameAllocator.getUnchecked(type);
     ClassName javaType = (ClassName) typeName(type.type());
 
     TypeSpec.Builder builder = TypeSpec.enumBuilder(javaType.simpleName())
@@ -312,11 +334,12 @@ public final class JavaGenerator {
     }
 
     // Output Private tag field
-    builder.addField(TypeName.INT, "value", PRIVATE, FINAL);
+    String valueFieldName = nameAllocator.get("value");
+    builder.addField(TypeName.INT, valueFieldName, PRIVATE, FINAL);
 
     MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
-    constructorBuilder.addStatement("this.value = value");
-    constructorBuilder.addParameter(TypeName.INT, "value");
+    constructorBuilder.addStatement("this.$1N = $1N", valueFieldName);
+    constructorBuilder.addParameter(TypeName.INT, valueFieldName);
 
     // Enum constant options, each of which requires a constructor parameter and a field.
     Set<ProtoMember> allOptionFieldsBuilder = new LinkedHashSet<>();
@@ -336,11 +359,11 @@ public final class JavaGenerator {
     builder.addMethod(constructorBuilder.build());
 
     MethodSpec.Builder fromValueBuilder = MethodSpec.methodBuilder("fromValue")
-        .addJavadoc("Return the constant for {@code value} or null.\n")
+        .addJavadoc("Return the constant for {@code $N} or null.\n", valueFieldName)
         .addModifiers(PUBLIC, STATIC)
         .returns(javaType)
-        .addParameter(int.class, "value")
-        .beginControlFlow("switch (value)");
+        .addParameter(int.class, valueFieldName)
+        .beginControlFlow("switch ($N)", valueFieldName);
 
     Set<Integer> seenTags = new LinkedHashSet<>();
     for (EnumConstant constant : type.constants()) {
@@ -376,13 +399,16 @@ public final class JavaGenerator {
         .endControlFlow()
         .build());
 
-    builder.addField(FieldSpec.builder(adapterOf(javaType), "ADAPTER")
-        .addModifiers(PUBLIC, STATIC, FINAL)
-        .initializer("$T.newEnumAdapter($T.class)", ProtoAdapter.class, javaType)
-        .build());
+    String protoAdapterName = "ProtoAdapter_" + javaType.simpleName();
+    // TODO(jw): Update this to use the single-argument newName when JavaPoet is updated.
+    String protoAdapterClassName = nameAllocator.newName(protoAdapterName, protoAdapterName);
+    ClassName adapterJavaType = javaType.nestedClass(protoAdapterClassName);
+    builder.addField(enumAdapterField(nameAllocator, javaType, adapterJavaType));
+    // Note: The non-compact implementation is added at the very bottom of the surrounding type.
 
     // Enum type options.
-    FieldSpec options = optionsField(ENUM_OPTIONS, "ENUM_OPTIONS", type.options());
+    String enumOptionsName = nameAllocator.get("ENUM_OPTIONS");
+    FieldSpec options = optionsField(ENUM_OPTIONS, enumOptionsName, type.options());
     if (options != null) {
       builder.addField(options);
     }
@@ -395,12 +421,67 @@ public final class JavaGenerator {
         .addStatement("return value")
         .build());
 
+    if (!emitCompact) {
+      // Add the ProtoAdapter implementation at the very bottom since it's ugly serialization code.
+      builder.addType(enumAdapterType(javaType, adapterJavaType));
+    }
+
     return builder.build();
+  }
+
+  private FieldSpec enumAdapterField(NameAllocator nameAllocator, ClassName javaType,
+      ClassName adapterJavaType) {
+    FieldSpec.Builder result = FieldSpec.builder(adapterOf(javaType), nameAllocator.get("ADAPTER"))
+        .addModifiers(PUBLIC, STATIC, FINAL);
+    if (emitCompact) {
+      result.initializer("$T.newEnumAdapter($T.class)", ProtoAdapter.class, javaType);
+    } else {
+      result.initializer("new $T()", adapterJavaType);
+    }
+    return result.build();
+  }
+
+  private TypeSpec enumAdapterType(ClassName javaType, ClassName adapterJavaType) {
+    TypeSpec.Builder adapter = TypeSpec.classBuilder(adapterJavaType.simpleName())
+        .addModifiers(PRIVATE, STATIC, FINAL)
+        .superclass(adapterOf(javaType));
+
+    adapter.addMethod(MethodSpec.constructorBuilder()
+        .addStatement("super($T.VARINT, $T.class)", FieldEncoding.class, javaType)
+        .build());
+
+    adapter.addMethod(MethodSpec.methodBuilder("encodedSize")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(TypeName.INT)
+        .addParameter(javaType, "value")
+        .addStatement("return $T.varint32Size(value.getValue())", ProtoAdapter.class)
+        .build());
+    adapter.addMethod(MethodSpec.methodBuilder("encode")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .addParameter(ProtoWriter.class, "writer")
+        .addParameter(javaType, "value")
+        .addStatement("writer.writeVarint32(value.getValue())")
+        .build());
+    adapter.addMethod(MethodSpec.methodBuilder("decode")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(javaType)
+        .addParameter(ProtoReader.class, "reader")
+        .addStatement("int value = reader.readVarint32()")
+        .addStatement("$1T constant = $1T.fromValue(value)", javaType)
+        .addStatement("if (constant != null) return constant")
+        .addStatement("throw new $T(value, $T.class)", EnumConstantNotFoundException.class,
+            javaType)
+        .build());
+
+    return adapter.build();
   }
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateMessage(MessageType type) {
-    NameAllocator nameAllocator = typeToNameAllocator.getUnchecked(type);
+    NameAllocator nameAllocator = messageToNameAllocator.getUnchecked(type);
 
     ClassName javaType = (ClassName) typeName(type.type());
     ClassName builderJavaType = javaType.nestedClass("Builder");
@@ -538,7 +619,7 @@ public final class JavaGenerator {
     if (!emitCompact) {
       // Add the ProtoAdapter implementation at the very bottom since it's ugly serialization code.
       builder.addType(
-           messageAdapter(nameAllocator, type, javaType, adapterJavaType, builderJavaType));
+           messageAdapterType(nameAllocator, type, javaType, adapterJavaType, builderJavaType));
     }
 
     return builder.build();
@@ -568,8 +649,8 @@ public final class JavaGenerator {
     return result.build();
   }
 
-  private TypeSpec messageAdapter(NameAllocator nameAllocator, MessageType type, ClassName javaType,
-      ClassName adapterJavaType, ClassName builderJavaType) {
+  private TypeSpec messageAdapterType(NameAllocator nameAllocator, MessageType type,
+      ClassName javaType, ClassName adapterJavaType, ClassName builderJavaType) {
     TypeSpec.Builder adapter = TypeSpec.classBuilder(adapterJavaType.simpleName())
             .addModifiers(PRIVATE, STATIC, FINAL)
             .superclass(adapterOf(javaType));
@@ -779,7 +860,7 @@ public final class JavaGenerator {
 
   private String fieldName(ProtoType type, Field field) {
     MessageType messageType = (MessageType) schema.getType(type);
-    NameAllocator names = typeToNameAllocator.getUnchecked(messageType);
+    NameAllocator names = messageToNameAllocator.getUnchecked(messageType);
     return names.get(field);
   }
 

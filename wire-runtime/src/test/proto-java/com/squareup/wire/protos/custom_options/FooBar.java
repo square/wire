@@ -567,7 +567,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     BAZ(3, 18, null, false);
 
-    public static final ProtoAdapter<FooBarBazEnum> ADAPTER = ProtoAdapter.newEnumAdapter(FooBarBazEnum.class);
+    public static final ProtoAdapter<FooBarBazEnum> ADAPTER = new ProtoAdapter_FooBarBazEnum();
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .enum_option(true)
@@ -603,6 +603,30 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_FooBarBazEnum extends ProtoAdapter<FooBarBazEnum> {
+      ProtoAdapter_FooBarBazEnum() {
+        super(FieldEncoding.VARINT, FooBarBazEnum.class);
+      }
+
+      @Override
+      public int encodedSize(FooBarBazEnum value) {
+        return ProtoAdapter.varint32Size(value.getValue());
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, FooBarBazEnum value) {
+        writer.writeVarint32(value.getValue());
+      }
+
+      @Override
+      public FooBarBazEnum decode(ProtoReader reader) {
+        int value = reader.readVarint32();
+        FooBarBazEnum constant = FooBarBazEnum.fromValue(value);
+        if (constant != null) return constant;
+        throw new ProtoAdapter.EnumConstantNotFoundException(value, FooBarBazEnum.class);
+      }
     }
   }
 

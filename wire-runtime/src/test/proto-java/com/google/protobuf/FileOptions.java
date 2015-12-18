@@ -585,7 +585,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
      */
     LITE_RUNTIME(3);
 
-    public static final ProtoAdapter<OptimizeMode> ADAPTER = ProtoAdapter.newEnumAdapter(OptimizeMode.class);
+    public static final ProtoAdapter<OptimizeMode> ADAPTER = new ProtoAdapter_OptimizeMode();
 
     private final int value;
 
@@ -608,6 +608,30 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_OptimizeMode extends ProtoAdapter<OptimizeMode> {
+      ProtoAdapter_OptimizeMode() {
+        super(FieldEncoding.VARINT, OptimizeMode.class);
+      }
+
+      @Override
+      public int encodedSize(OptimizeMode value) {
+        return ProtoAdapter.varint32Size(value.getValue());
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, OptimizeMode value) {
+        writer.writeVarint32(value.getValue());
+      }
+
+      @Override
+      public OptimizeMode decode(ProtoReader reader) {
+        int value = reader.readVarint32();
+        OptimizeMode constant = OptimizeMode.fromValue(value);
+        if (constant != null) return constant;
+        throw new ProtoAdapter.EnumConstantNotFoundException(value, OptimizeMode.class);
+      }
     }
   }
 

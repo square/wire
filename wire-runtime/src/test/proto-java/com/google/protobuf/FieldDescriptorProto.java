@@ -368,7 +368,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
      */
     TYPE_SINT64(18);
 
-    public static final ProtoAdapter<Type> ADAPTER = ProtoAdapter.newEnumAdapter(Type.class);
+    public static final ProtoAdapter<Type> ADAPTER = new ProtoAdapter_Type();
 
     private final int value;
 
@@ -407,6 +407,30 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     public int getValue() {
       return value;
     }
+
+    private static final class ProtoAdapter_Type extends ProtoAdapter<Type> {
+      ProtoAdapter_Type() {
+        super(FieldEncoding.VARINT, Type.class);
+      }
+
+      @Override
+      public int encodedSize(Type value) {
+        return ProtoAdapter.varint32Size(value.getValue());
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, Type value) {
+        writer.writeVarint32(value.getValue());
+      }
+
+      @Override
+      public Type decode(ProtoReader reader) {
+        int value = reader.readVarint32();
+        Type constant = Type.fromValue(value);
+        if (constant != null) return constant;
+        throw new ProtoAdapter.EnumConstantNotFoundException(value, Type.class);
+      }
+    }
   }
 
   public enum Label implements WireEnum {
@@ -419,7 +443,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     LABEL_REPEATED(3);
 
-    public static final ProtoAdapter<Label> ADAPTER = ProtoAdapter.newEnumAdapter(Label.class);
+    public static final ProtoAdapter<Label> ADAPTER = new ProtoAdapter_Label();
 
     private final int value;
 
@@ -442,6 +466,30 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_Label extends ProtoAdapter<Label> {
+      ProtoAdapter_Label() {
+        super(FieldEncoding.VARINT, Label.class);
+      }
+
+      @Override
+      public int encodedSize(Label value) {
+        return ProtoAdapter.varint32Size(value.getValue());
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, Label value) {
+        writer.writeVarint32(value.getValue());
+      }
+
+      @Override
+      public Label decode(ProtoReader reader) {
+        int value = reader.readVarint32();
+        Label constant = Label.fromValue(value);
+        if (constant != null) return constant;
+        throw new ProtoAdapter.EnumConstantNotFoundException(value, Label.class);
+      }
     }
   }
 

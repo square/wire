@@ -2,7 +2,10 @@
 // Source file: foreign.proto at 23:1
 package com.squareup.wire.protos.foreign;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
@@ -11,7 +14,7 @@ public enum ForeignEnum implements WireEnum {
 
   BAX(1);
 
-  public static final ProtoAdapter<ForeignEnum> ADAPTER = ProtoAdapter.newEnumAdapter(ForeignEnum.class);
+  public static final ProtoAdapter<ForeignEnum> ADAPTER = new ProtoAdapter_ForeignEnum();
 
   private final int value;
 
@@ -33,5 +36,29 @@ public enum ForeignEnum implements WireEnum {
   @Override
   public int getValue() {
     return value;
+  }
+
+  private static final class ProtoAdapter_ForeignEnum extends ProtoAdapter<ForeignEnum> {
+    ProtoAdapter_ForeignEnum() {
+      super(FieldEncoding.VARINT, ForeignEnum.class);
+    }
+
+    @Override
+    public int encodedSize(ForeignEnum value) {
+      return ProtoAdapter.varint32Size(value.getValue());
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, ForeignEnum value) {
+      writer.writeVarint32(value.getValue());
+    }
+
+    @Override
+    public ForeignEnum decode(ProtoReader reader) {
+      int value = reader.readVarint32();
+      ForeignEnum constant = ForeignEnum.fromValue(value);
+      if (constant != null) return constant;
+      throw new ProtoAdapter.EnumConstantNotFoundException(value, ForeignEnum.class);
+    }
   }
 }

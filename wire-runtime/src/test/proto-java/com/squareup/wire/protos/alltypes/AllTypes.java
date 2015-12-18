@@ -2912,7 +2912,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public enum NestedEnum implements WireEnum {
     A(1);
 
-    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);
+    public static final ProtoAdapter<NestedEnum> ADAPTER = new ProtoAdapter_NestedEnum();
 
     private final int value;
 
@@ -2933,6 +2933,30 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_NestedEnum extends ProtoAdapter<NestedEnum> {
+      ProtoAdapter_NestedEnum() {
+        super(FieldEncoding.VARINT, NestedEnum.class);
+      }
+
+      @Override
+      public int encodedSize(NestedEnum value) {
+        return ProtoAdapter.varint32Size(value.getValue());
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, NestedEnum value) {
+        writer.writeVarint32(value.getValue());
+      }
+
+      @Override
+      public NestedEnum decode(ProtoReader reader) {
+        int value = reader.readVarint32();
+        NestedEnum constant = NestedEnum.fromValue(value);
+        if (constant != null) return constant;
+        throw new ProtoAdapter.EnumConstantNotFoundException(value, NestedEnum.class);
+      }
     }
   }
 

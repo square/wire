@@ -2,7 +2,10 @@
 // Source file: roots.proto at 60:1
 package com.squareup.wire.protos.roots;
 
+import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
@@ -11,7 +14,7 @@ public enum G implements WireEnum {
 
   BAR(2);
 
-  public static final ProtoAdapter<G> ADAPTER = ProtoAdapter.newEnumAdapter(G.class);
+  public static final ProtoAdapter<G> ADAPTER = new ProtoAdapter_G();
 
   private final int value;
 
@@ -33,5 +36,29 @@ public enum G implements WireEnum {
   @Override
   public int getValue() {
     return value;
+  }
+
+  private static final class ProtoAdapter_G extends ProtoAdapter<G> {
+    ProtoAdapter_G() {
+      super(FieldEncoding.VARINT, G.class);
+    }
+
+    @Override
+    public int encodedSize(G value) {
+      return ProtoAdapter.varint32Size(value.getValue());
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, G value) {
+      writer.writeVarint32(value.getValue());
+    }
+
+    @Override
+    public G decode(ProtoReader reader) {
+      int value = reader.readVarint32();
+      G constant = G.fromValue(value);
+      if (constant != null) return constant;
+      throw new ProtoAdapter.EnumConstantNotFoundException(value, G.class);
+    }
   }
 }
