@@ -80,6 +80,11 @@ public abstract class ProtoAdapter<E> {
   static ProtoAdapter<?> get(String adapterString) {
     try {
       int hash = adapterString.indexOf('#');
+
+      if (hash < 0) {
+        throw new IllegalArgumentException("adapterString must contain #");
+      }
+
       String className = adapterString.substring(0, hash);
       String fieldName = adapterString.substring(hash + 1);
       return (ProtoAdapter<Object>) Class.forName(className).getField(fieldName).get(null);
