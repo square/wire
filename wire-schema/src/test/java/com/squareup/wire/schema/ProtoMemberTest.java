@@ -23,16 +23,21 @@ import static org.assertj.core.api.Assertions.fail;
 public final class ProtoMemberTest {
 
   @Test(expected = IllegalArgumentException.class) public void getIllegal() throws Exception {
+    // when
     ProtoMember.get("testmember");
+
+    // then
     fail("Can't get ProtoMember without '#' in path");
   }
 
   @Test public void notEquals() throws Exception {
+    // when
     ProtoMember protoMember1 = ProtoMember.get("a.b#member");
     ProtoMember protoMember2 = ProtoMember.get("a.b#member2");
     ProtoMember protoMember3 = ProtoMember.get("a.b.c#member");
     ProtoMember protoMember4 = ProtoMember.get("a.b.c#");
 
+    // then
     assertThat(protoMember1).isNotEqualTo(protoMember2);
     assertThat(protoMember1).isNotEqualTo(protoMember3);
     assertThat(protoMember2).isNotEqualTo(protoMember3);

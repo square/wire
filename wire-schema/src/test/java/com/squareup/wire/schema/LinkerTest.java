@@ -27,29 +27,45 @@ import static org.junit.Assert.fail;
 
 public class LinkerTest {
   @Test(expected = IllegalStateException.class) public void resolveEmptyContext() throws Exception {
+    // given
     ProtoFile protoFile = ProtoFile.get(ProtoFileElement.builder(Location.get("empty.proto")).build());
     Linker linker = new Linker(ImmutableList.of(protoFile));
 
+    // when
     linker.resolve("A", ImmutableMap.of("A", protoFile));
 
+    // then
     fail("Linker should throw IllegalStateException when resolving empty context");
   }
 
   @Test public void packageName() throws Exception {
+    // given
     ProtoFile emptyProtoFile = ProtoFile.get(ProtoFileElement.builder(Location.get("empty.proto")).build());
     ProtoFile protoFile = ProtoFile.get(ProtoFileElement.builder(Location.get("packaged.proto")).packageName("a.b.c").build());
-    Linker nullLinker = new Linker(ImmutableList.of(emptyProtoFile));
-    Linker emptyPackageNameLinker = new Linker(ImmutableList.of(emptyProtoFile)).withContext(emptyProtoFile);
-    Linker notProtoFileLinker = new Linker(ImmutableList.of(emptyProtoFile)).withContext(Field.PACKED);
-    Linker linker = new Linker(ImmutableList.of(protoFile)).withContext(protoFile);
 
+    // when
+    Linker nullLinker = new Linker(ImmutableList.of(emptyProtoFile));
+    // then
     assertThat(nullLinker.packageName()).isNull();
+
+    // when
+    Linker emptyPackageNameLinker = new Linker(ImmutableList.of(emptyProtoFile)).withContext(emptyProtoFile);
+    // then
     assertThat(emptyPackageNameLinker.packageName()).isNull();
+
+    // when
+    Linker notProtoFileLinker = new Linker(ImmutableList.of(emptyProtoFile)).withContext(Field.PACKED);
+    // then
     assertThat(notProtoFileLinker.packageName()).isNull();
+
+    // when
+    Linker linker = new Linker(ImmutableList.of(protoFile)).withContext(protoFile);
+    // then
     assertThat(linker.packageName()).isEqualTo("a.b.c");
   }
 
-  @Test public void dereference() throws Exception {
+  @Test public void dereference() {
+    // given
     Schema schema = new SchemaBuilder()
       .add("enum.proto", ""
           + "enum Enum {\n"
@@ -73,9 +89,11 @@ public class LinkerTest {
         + "}\n")
       .build();
 
+    // when
     Linker enumLinker = new Linker(ImmutableList.of(schema.protoFile("enum.proto")));
     Linker messageLinker = new Linker(ImmutableList.of(schema.protoFile("enum.proto")));
 
+    // then
     assertThat(enumLinker.dereference(schema.getField(ProtoMember.get("Message#N")), "[A]")).isNull();
     assertThat(messageLinker.dereference(schema.getField(ProtoMember.get("Message#M")), "[S]")).isNull();
   }
