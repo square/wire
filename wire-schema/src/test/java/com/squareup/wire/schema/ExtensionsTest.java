@@ -16,23 +16,11 @@
 package com.squareup.wire.schema;
 
 
-import com.squareup.wire.schema.internal.Util;
 import com.squareup.wire.schema.internal.parser.ExtensionsElement;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Linker.class, Util.class })
 public final class ExtensionsTest {
   Location location = Location.get("file.proto");
 
@@ -45,71 +33,5 @@ public final class ExtensionsTest {
     assertThat(item.start()).isEqualTo(element.start());
     assertThat(item.end()).isEqualTo(element.end());
     assertThat(item.location()).isEqualTo(element.location());
-  }
-
-  @Test public void validate() throws Exception {
-    Extensions extensions = new Extensions(ExtensionsElement.create(location, 1, 2, ""));
-    Linker linker = spy(new Linker(Collections.EMPTY_LIST));
-    spy(Util.class);
-
-    extensions.validate(linker);
-
-    PowerMockito.verifyStatic();
-    Util.isValidTag(1);
-    PowerMockito.verifyStatic();
-    Util.isValidTag(2);
-    Mockito.verify(linker, Mockito.never()).withContext(extensions);
-    Mockito.verify(linker, Mockito.never()).addError(Mockito.anyString(), Mockito.anyList());
-  }
-
-  @Test public void validateIllegalStart() throws Exception {
-    Extensions extensions = new Extensions(ExtensionsElement.create(location, 0, 1, ""));
-    Linker linker = spy(new Linker(Collections.EMPTY_LIST));
-    when(linker.withContext(extensions)).thenReturn(linker);
-    spy(Util.class);
-
-    extensions.validate(linker);
-
-    PowerMockito.verifyStatic();
-    Util.isValidTag(0);
-    PowerMockito.verifyStatic(Mockito.never());
-    Util.isValidTag(1);
-    Mockito.verify(linker).withContext(extensions);
-    Mockito.verify(linker).addError(Mockito.anyString(),
-      Mockito.eq(extensions.start()), Mockito.eq(extensions.end()));
-  }
-
-  @Test public void validateIllegalEnd() throws Exception {
-    Extensions extensions = new Extensions(ExtensionsElement.create(location, 100, 19500, ""));
-    Linker linker = spy(new Linker(Collections.EMPTY_LIST));
-    when(linker.withContext(extensions)).thenReturn(linker);
-    spy(Util.class);
-
-    extensions.validate(linker);
-
-    PowerMockito.verifyStatic();
-    Util.isValidTag(100);
-    PowerMockito.verifyStatic();
-    Util.isValidTag(19500);
-    Mockito.verify(linker).withContext(extensions);
-    Mockito.verify(linker).addError(Mockito.anyString(),
-      Mockito.eq(extensions.start()), Mockito.eq(extensions.end()));
-  }
-
-  @Test public void validateIllegalStartAndEnd() throws Exception {
-    Extensions extensions = new Extensions(ExtensionsElement.create(location, 19999, 19000, ""));
-    Linker linker = spy(new Linker(Collections.EMPTY_LIST));
-    when(linker.withContext(extensions)).thenReturn(linker);
-    spy(Util.class);
-
-    extensions.validate(linker);
-
-    PowerMockito.verifyStatic();
-    Util.isValidTag(19999);
-    PowerMockito.verifyStatic(Mockito.never());
-    Util.isValidTag(19000);
-    Mockito.verify(linker).withContext(extensions);
-    Mockito.verify(linker).addError(Mockito.anyString(),
-      Mockito.eq(extensions.start()), Mockito.eq(extensions.end()));
   }
 }
