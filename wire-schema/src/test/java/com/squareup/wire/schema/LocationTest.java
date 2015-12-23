@@ -16,7 +16,6 @@
 package com.squareup.wire.schema;
 
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -33,44 +32,73 @@ public final class LocationTest {
     compareLocations(Location.get("main\\dir", "path\\to\\location"), Location.get("main\\dir\\path\\to\\location"));
   }
 
-  @Test(expected = NullPointerException.class) public void getNullBase() throws Exception {
-    Location.get(null, "path\\to\\location");
-    fail("Location should throw NullPointerException when tries to get location with null base");
+  @Test public void getNullBase() throws Exception {
+    try {
+      // when
+      Location.get(null, "path\\to\\location");
+
+      // then
+      fail("Location should throw NullPointerException when tries to get location with null base");
+    }
+    catch (NullPointerException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void getNullPath() throws Exception {
-    Location.get(null);
-    fail("Location should throw NullPointerException when tries to get location with null base");
+  @Test public void getNullPath() throws Exception {
+    try {
+      // when
+      Location.get(null);
+
+      // then
+      fail("Location should throw NullPointerException when tries to get location with null base");
+    }
+    catch (NullPointerException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void getNullPathWithBase() throws Exception {
-    Location.get("main\\dir", null);
-    fail("Location should throw NullPointerException when tries to get location with null path");
+  @Test public void getNullPathWithBase() throws Exception {
+    try {
+      // when
+      Location.get("main\\dir", null);
+
+      // then
+      fail("Location should throw NullPointerException when tries to get location with null path");
+    }
+    catch (NullPointerException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
   @Test public void defaultLineAndColumn() throws Exception {
+    // when
     Location location = Location.get("path\\to\\location");
 
+    // then
     assertThat(location.line()).isEqualTo(-1);
     assertThat(location.column()).isEqualTo(-1);
   }
 
   @Test public void at() throws Exception {
+    // when
     Location location = Location.get("path\\to\\location").at(11, 21);
 
+    // then
     assertThat(location.line()).isEqualTo(11);
     assertThat(location.column()).isEqualTo(21);
   }
 
   @Test public void withoutBase() throws Exception {
-    compareLocations(Location.get("path\\to\\location").withoutBase(), Location.get("path\\to\\location"));
-    compareLocations(Location.get("main\\dir", "path\\to\\location").withoutBase(), Location.get("path\\to\\location"));
-
+    // when
     Location location = Location.get("main\\dir", "path\\to\\location").at(11, 21);
     Location withoutBaseLocation = location.withoutBase();
 
+    // then
     assertThat(location.line()).isEqualTo(withoutBaseLocation.line());
     assertThat(location.column()).isEqualTo(withoutBaseLocation.column());
+    compareLocations(Location.get("path\\to\\location").withoutBase(), Location.get("path\\to\\location"));
+    compareLocations(Location.get("main\\dir", "path\\to\\location").withoutBase(), Location.get("path\\to\\location"));
   }
 
   @Test public void testToString() throws Exception {

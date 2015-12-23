@@ -22,12 +22,17 @@ import static org.assertj.core.api.Assertions.fail;
 
 public final class ProtoMemberTest {
 
-  @Test(expected = IllegalArgumentException.class) public void getIllegal() throws Exception {
-    // when
-    ProtoMember.get("testmember");
+  @Test public void getIllegal() throws Exception {
+    try {
+      // when
+      ProtoMember.get("testmember");
 
-    // then
-    fail("Can't get ProtoMember without '#' in path");
+      // then
+      fail("Can't get ProtoMember without '#' in path");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("expected a '#' in testmember");
+    }
   }
 
   @Test public void notEquals() throws Exception {

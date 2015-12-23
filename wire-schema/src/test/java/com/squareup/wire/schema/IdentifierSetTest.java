@@ -55,18 +55,34 @@ public final class IdentifierSetTest {
     assertThat(policy(set, "a.b.Another#member")).isEqualTo(Policy.UNSPECIFIED);
   }
 
-  @Test (expected = NullPointerException.class) public void includeNull() throws Exception {
-    new IdentifierSet.Builder()
-      .include(null)
-      .build();
-    fail("IdentifierSet builder should throw NullPointerException when include null");
+  @Test public void includeNull() throws Exception {
+    try {
+      // when
+      new IdentifierSet.Builder()
+        .include(null)
+        .build();
+
+      // then
+      fail("IdentifierSet builder should throw NullPointerException when include null");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("identifier == null");
+    }
   }
 
-  @Test (expected = NullPointerException.class) public void excludeNull() throws Exception {
-    new IdentifierSet.Builder()
-      .exclude(null)
-      .build();
-    fail("IdentifierSet builder should throw NullPointerException when exclude null");
+  @Test public void excludeNull() throws Exception {
+    try {
+      // when
+      new IdentifierSet.Builder()
+        .exclude(null)
+        .build();
+
+      // then
+      fail("IdentifierSet builder should throw NullPointerException when exclude null");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("identifier == null");
+    }
   }
 
   @Test public void includeMember() throws Exception {

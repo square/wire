@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -48,15 +49,21 @@ public class SchemaProtoAdapterFactoryTest {
     assertEquals(new SchemaProtoAdapterFactory.MessageAdapter(false).includeUnknown, false);
   }
 
-  @Test(expected = UnsupportedOperationException.class) public void messageAdapterRedact() throws Exception {
+  @Test public void messageAdapterRedact() throws Exception {
     // given
     SchemaProtoAdapterFactory.MessageAdapter adapter = new SchemaProtoAdapterFactory.MessageAdapter(false);
 
-    // when
-    adapter.redact(ImmutableMap.<String, Object>of());
+    try
+    {
+      // when
+      adapter.redact(ImmutableMap.<String, Object>of());
 
-    // then
-    fail("SchemaProtoAdapterFactory.MessageAdapter should throw UnsupportedOperationException on redact method call");
+      // then
+      fail("SchemaProtoAdapterFactory.MessageAdapter should throw UnsupportedOperationException on redact method call");
+    }
+    catch (UnsupportedOperationException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
   @Test public void messageEncodeSize() throws Exception {
@@ -73,15 +80,20 @@ public class SchemaProtoAdapterFactoryTest {
     assertEquals(adapter.encodedSize(ImmutableMap.<String, Object>of("UnknownField", "unknown value", "OptionalField", false)), 2);
   }
 
-  @Test(expected = UnsupportedOperationException.class) public void messageAdapterToString() throws Exception {
+  @Test public void messageAdapterToString() throws Exception {
     // given
     SchemaProtoAdapterFactory.MessageAdapter adapter = new SchemaProtoAdapterFactory.MessageAdapter(false);
 
-    // when
-    adapter.toString(ImmutableMap.<String, Object>of());
+    try {
+      // when
+      adapter.toString(ImmutableMap.<String, Object>of());
 
-    // then
-    fail("SchemaProtoAdapterFactory.MessageAdapter should throw UnsupportedOperationException on toString method call");
+      // then
+      fail("SchemaProtoAdapterFactory.MessageAdapter should throw UnsupportedOperationException on toString method call");
+    }
+    catch (UnsupportedOperationException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
 }

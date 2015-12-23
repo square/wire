@@ -15,6 +15,10 @@
  */
 package com.squareup.wire.schema;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,9 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -152,9 +153,17 @@ public final class SchemaLoaderTest {
     assertThat(schemaLoader.protos().get(0)).isEqualTo(message1.getName());
   }
 
-  @Test(expected = IllegalStateException.class) public void loadWithoutSources() throws IOException {
-    new SchemaLoader().load();
-    fail("SchemaLoader should throw IllegalStateException when no source is attached");
+  @Test public void loadWithoutSources() throws IOException {
+    try {
+      // when
+      new SchemaLoader().load();
+
+      // then
+      fail("SchemaLoader should throw IllegalStateException when no source is attached");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("No sources added.");
+    }
   }
 
   private void writeFile(File file, String content) throws IOException {

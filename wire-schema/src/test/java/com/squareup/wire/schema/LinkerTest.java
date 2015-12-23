@@ -26,16 +26,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class LinkerTest {
-  @Test(expected = IllegalStateException.class) public void resolveEmptyContext() throws Exception {
+  @Test public void resolveEmptyContext() throws Exception {
     // given
     ProtoFile protoFile = ProtoFile.get(ProtoFileElement.builder(Location.get("empty.proto")).build());
     Linker linker = new Linker(ImmutableList.of(protoFile));
 
-    // when
-    linker.resolve("A", ImmutableMap.of("A", protoFile));
+    try {
+      // when
+      linker.resolve("A", ImmutableMap.of("A", protoFile));
 
-    // then
-    fail("Linker should throw IllegalStateException when resolving empty context");
+      // then
+      fail("Linker should throw IllegalStateException when resolving empty context");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
   @Test public void packageName() throws Exception {

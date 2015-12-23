@@ -94,10 +94,16 @@ public final class OptionElementTest {
     assertThat(option.toSchema()).isEqualTo(expected);
   }
 
-  @Test(expected = NullPointerException.class) public void nullToSchema() {
-    OptionElement option = OptionElement.create("foo", null, "null");
-    option.toSchema();
-    fail("OptionElement should throw NullPointerException when tries to convert to schema with null kind");
-  }
+  @Test public void createNullKindOptionElement() {
+    try {
+      // when
+      OptionElement.create("foo", null, "null");
 
+      // then
+      fail("OptionElement should throw NullPointerException when tries to convert to schema with null kind");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("Null kind");
+    }
+  }
 }
