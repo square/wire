@@ -250,12 +250,18 @@ public final class OptionsTest {
       stringOption, "str", boolOption, "true", intOption, "32"));
   }
 
-  // assertion fails due to incorrect message option processing during parsing
-  @Ignore
   @Test public void structuredMessageOptions() throws Exception {
     Schema schema = new SchemaBuilder()
       .add("foo.proto", ""
         + "import \"google/protobuf/descriptor.proto\";\n"
+        + "extend google.protobuf.MessageOptions {\n"
+        + "  repeated int32 list_option = 5000;\n"
+        + "  optional Foo map_option = 6000;\n"
+        + "}\n"
+        + "message Foo {\n"
+        + "  optional string key1 = 1;\n"
+        + "  optional string key2 = 2;\n"
+        + "}\n"
         + "message Message {\n"
         + "  option list_option = [1, 2, 3];\n"
         + "  option map_option = {"
@@ -265,14 +271,16 @@ public final class OptionsTest {
         + "}\n")
       .build();
 
-    MessageType message = (MessageType) schema.getType("Message");
     ProtoMember listOption = ProtoMember.get(Options.MESSAGE_OPTIONS, "list_option");
     ProtoMember mapOption = ProtoMember.get(Options.MESSAGE_OPTIONS, "map_option");
+    MessageType message = (MessageType) schema.getType("Message");
+    MessageType foo = (MessageType) schema.getType("Foo");
+    ProtoMember key1 = ProtoMember.get(foo.type(), "key1");
+    ProtoMember key2 = ProtoMember.get(foo.type(), "key2");
 
     assertThat(message.options().map()).isEqualTo(ImmutableMap.of(
-      listOption, ImmutableList.of("1", "2", "3")));
-    assertThat(message.options().map()).isEqualTo(ImmutableMap.of(
-      mapOption, ImmutableMap.of("key1", "value1", "key1", "value1")));
+      listOption, ImmutableList.of("1", "2", "3"),
+      mapOption, ImmutableMap.of(key1, "value1", key2, "value2")));
   }
 
   private Set<String> set(String... elements) {

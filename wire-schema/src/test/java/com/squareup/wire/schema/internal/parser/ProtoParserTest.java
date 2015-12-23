@@ -233,40 +233,76 @@ public final class ProtoParserTest {
     ProtoParser.parse(location, proto);
   }
 
-  @Test(expected = IllegalStateException.class) public void lastLineIncompleteComment() throws Exception {
+  @Test public void lastLineIncompleteComment() throws Exception {
+    // given
     String proto = ""
       + "message Test {}\n"
       + "/";
 
-    ProtoParser.parse(location, proto);
-    fail("ProtoParser should throw IllegalStateException when last line comment has incomplete declaration");
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("ProtoParser should throw IllegalStateException when last line comment has incomplete declaration");
+    }
+    catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in file.proto at 2:2: unexpected '/'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void lastLineUnclosedComment1() throws Exception {
+  @Test public void lastLineUnclosedComment1() throws Exception {
+    // given
     String protoSlashAsterisk = ""
       + "message Test {}\n"
       + "/*";
 
-    ProtoParser.parse(location, protoSlashAsterisk);
-    fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
+    try {
+      // when
+      ProtoParser.parse(location, protoSlashAsterisk);
+
+      // then
+      fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
+    }
+    catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in file.proto at 2:3: unterminated comment");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void lastLineUnclosedComment2() throws Exception {
+  @Test public void lastLineUnclosedComment2() throws Exception {
+    // given
     String protoSlashAsteriskAsterisk = ""
       + "message Test {}\n"
       + "/**";
 
-    ProtoParser.parse(location, protoSlashAsteriskAsterisk);
-    fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
+    try {
+      // when
+      ProtoParser.parse(location, protoSlashAsteriskAsterisk);
+
+      // then
+      fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
+    }
+    catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in file.proto at 2:3: unterminated comment");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void lastLineUnclosedComment3() throws Exception {
+  @Test public void lastLineUnclosedComment3() throws Exception {
+    // given
     String protoSlashAsteriskSpace = ""
       + "message Test {}\n"
       + "/* ";
 
-    ProtoParser.parse(location, protoSlashAsteriskSpace);
-    fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
+    try {
+      // when
+      ProtoParser.parse(location, protoSlashAsteriskSpace);
+
+      // then
+      fail("ProtoParser should throw IllegalStateException when last line comment declaration is not closed properly");
+    }
+    catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Syntax error in file.proto at 2:3: unterminated comment");
+    }
   }
 
   @Test public void singleLineComment() throws Exception {
@@ -548,22 +584,40 @@ public final class ProtoParserTest {
   }
 
   // should be IllegalStateException
-  @Test(expected = AssertionError.class) public void syntaxValueWithoutQuotes() throws Exception {
+  @Test public void syntaxValueWithoutQuotes() throws Exception {
+    // given
     String proto = ""
       + "syntax = proto2\n"
       + "message Foo {}";
 
-    ProtoParser.parse(location, proto);
-    fail("ProtoParser should throw AssertionError when syntax value without quotes");
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("ProtoParser should throw AssertionError when syntax value without quotes");
+    }
+    catch (AssertionError e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void syntaxWithoutSemicolon() throws Exception {
+  @Test public void syntaxWithoutSemicolon() throws Exception {
+    // given
     String proto = ""
       + "syntax = \"proto2\"\n"
       + "message Foo {}";
 
-    ProtoParser.parse(location, proto);
-    fail("ProtoParser should throw IllegalStateException when syntax is declared without semicolon at the end");
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("ProtoParser should throw IllegalStateException when syntax is declared without semicolon at the end");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 2:2: expected ';'");
+    }
   }
 
   @Test public void syntaxNotFirstDeclarationThrows() throws Exception {
@@ -1646,129 +1700,329 @@ public final class ProtoParserTest {
   }
 
   @Test public void validSyntaxDeclaration() throws Exception {
+    // given
     String proto = "syntax = \"proto3\";";
+
+    // when
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    // then
     assertThat(parsed.syntax().toString()).isEqualTo("proto3");
   }
 
-  @Test(expected = IllegalStateException.class) public void incorrectSyntaxDeclaration() throws Exception {
+  @Test public void incorrectSyntaxDeclaration() throws Exception {
+    // given
     String proto = "syntax \"proto3\";";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when there is no equality character after 'syntax' key-word");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when there is no equality character after 'syntax' key-word");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:9: expected '='");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterSyntax() throws Exception {
+  @Test public void noSemicolonAfterSyntax() throws Exception {
+    // given
     String proto = "syntax \"proto3\"\n message A {}\n";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when there is no semicolon after syntax declaration");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when there is no semicolon after syntax declaration");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:9: expected '='");
+    }
   }
 
   @Test public void validPackageDeclaration() throws Exception {
+    // given
     String proto = "package a.b;";
+
+    // when
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    // then
     assertThat(parsed.packageName()).isEqualTo("a.b");
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterPackage() throws Exception {
+  @Test public void noSemicolonAfterPackage() throws Exception {
+    // given
     String proto = "package a.b message C {optional A.B ab = 1;}";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when there is no semicolon after package statement");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when there is no semicolon after package statement");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:14: expected ';'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void tooManyPackages() throws Exception {
+  @Test public void tooManyPackages() throws Exception {
+    // given
     String proto = "package a.b; package b.a; message C {optional A.B ab = 1;}";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when several package definitions are declared");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when several package definitions are declared");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:14: too many package names");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void packagePlacedInMessage() throws Exception {
+  @Test public void packagePlacedInMessage() throws Exception {
+    // given
     String proto = "message A { package a.b; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when package definition declared in message");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when package definition declared in message");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:13: 'package' in MESSAGE");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterImport() throws Exception {
+  @Test public void noSemicolonAfterImport() throws Exception {
+    // given
     String proto = "import a.b message C { optional A.B ab = 1;}";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when there is no semicolon after import statement");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when there is no semicolon after import statement");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:13: expected ';'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void importPlacedInMessage() throws Exception {
+  @Test public void importPlacedInMessage() throws Exception {
+    // given
     String proto = "message A { import a.b; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when import definition declared in message");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when import definition declared in message");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:13: 'import' in MESSAGE");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterOption() throws Exception {
+  @Test public void noSemicolonAfterOption() throws Exception {
+    // given
     String proto = "\toption java_package = \"com.google.protobuf\"\r\n message A { }\r\n";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when there is no semicolon after option declaration");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when there is no semicolon after option declaration");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 2:3: expected ';'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void oneOfPlacedInEnum() throws Exception {
+  @Test public void oneOfPlacedInEnum() throws Exception {
+    // given
     String proto = "enum A { oneof test { int32 a =  1; string b = 2; } }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when oneOf definition declared in enum");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when oneOf definition declared in enum");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:10: 'oneof' must be nested in message");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void unexpectedType() throws Exception {
+  @Test public void unexpectedType() throws Exception {
+    // given
     String proto = "structure S { optional int32 id = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when unexpected type is declared");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when unexpected type is declared");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:1: unexpected label: structure");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void messageWithoutLeftBrace() throws Exception {
+  @Test public void messageWithoutLeftBrace() throws Exception {
+    // given
     String proto = "message A  optional int32 a = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when message definition declares message body without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when message definition declares message body without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:13: expected '{'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void messageWithoutRightBrace() throws Exception {
+  @Test public void messageWithoutRightBrace() throws Exception {
+    // given
     String proto = "message A { optional int32 a = 1; ";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when message definition declares message body without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when message definition declares message body without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:34: expected '//' or '/*'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void enumWithoutLeftBrace() throws Exception {
+  @Test public void enumWithoutLeftBrace() throws Exception {
+    // given
     String proto = "enum E   ONE = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when enum definition declares enum body without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when enum definition declares enum body without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:11: expected '{'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void enumWithoutRightBrace() throws Exception {
+  @Test public void enumWithoutRightBrace() throws Exception {
+    // given
     String proto = "enum E { ONE = 1; ";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when enum definition declares enum body without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when enum definition declares enum body without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:18: expected '//' or '/*'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void serviceWithoutLeftBrace() throws Exception {
+  @Test public void serviceWithoutLeftBrace() throws Exception {
+    // given
     String proto = "service S rpc search (SearchRequest) returns (SearchResponse); }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when service definition declares service body without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when service definition declares service body without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:12: expected '{'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void serviceWithoutRightBrace() throws Exception {
+  @Test public void serviceWithoutRightBrace() throws Exception {
+    // given
     String proto = "service S { rpc search (SearchRequest) returns (SearchResponse); ";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when service definition declares service body without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when service definition declares service body without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:66: unexpected end of file");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void serviceWithoutSemiColon() throws Exception {
+  @Test public void serviceWithoutSemiColon() throws Exception {
+    // given
     String proto = "service S { rpc search (SearchRequest) returns (SearchResponse) }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when service definition declares service without semicolon at the end");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when service definition declares service without semicolon at the end");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:66: expected ';'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void extendWithoutLeftBrace() throws Exception {
+  @Test public void extendWithoutLeftBrace() throws Exception {
+    // given
     String proto = "extend A optional int32 id = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when extend definition declares extend body without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when extend definition declares extend body without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:11: expected '{'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void extendWithoutRightBrace() throws Exception {
+  @Test public void extendWithoutRightBrace() throws Exception {
+    // given
     String proto = "extend A { optional int32 id = 1; ";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when extend definition declares extend body without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when extend definition declares extend body without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:34: expected '//' or '/*'");
+    }
   }
 
   @Test public void messageWithoutDeclaredFields() throws Exception {
@@ -1799,101 +2053,250 @@ public final class ProtoParserTest {
     assertThat(parsed.extendDeclarations().get(0).fields()).isEmpty();
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcPlacedInMessage() throws Exception {
+  @Test public void rpcPlacedInMessage() throws Exception {
+    // given
     String proto = "message A { rpc Search (SearchRequest) returns (SearchResponse); }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when rpc definition declared in message");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when rpc definition declared in message");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:13: 'rpc' in MESSAGE");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutLeftBrace() throws Exception {
+  @Test public void rpcRequestTypeWithoutLeftBrace() throws Exception {
+    // given
     String proto = "service S { rpc Search SearchRequest) returns (SearchResponse); }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when rpc request type without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when rpc request type without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:25: expected '('");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutRightBrace() throws Exception {
+  @Test public void rpcRequestTypeWithoutRightBrace() throws Exception {
+    // given
     String proto = "service S { rpc Search (SearchRequest returns (SearchResponse); }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when rpc request type without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when rpc request type without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:40: expected ')'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcRequestTypeWithoutReturns() throws Exception {
+  @Test public void rpcRequestTypeWithoutReturns() throws Exception {
+    // given
     String proto = "service S { rpc Search (SearchRequest) to (SearchResponse); }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when rpc request and response types are not separated by 'returns' key-word");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when rpc request and response types are not separated by 'returns' key-word");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:42: expected 'returns'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcResponseTypeWithoutLeftBrace() throws Exception {
+  @Test public void rpcResponseTypeWithoutLeftBrace() throws Exception {
+    // given
     String proto = "service S { rpc Search (SearchRequest) returns SearchResponse); }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when rpc response type without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when rpc response type without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:49: expected '('");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void rpcResponseTypeWithoutRightBrace() throws Exception {
+  @Test public void rpcResponseTypeWithoutRightBrace() throws Exception {
+    // given
     String proto = "service S { rpc Search (SearchRequest) returns (SearchResponse; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when rpc response type without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when rpc response type without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:64: expected ')'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void invalidMultiOptionDeclaration() throws Exception {
+  @Test public void invalidMultiOptionDeclaration() throws Exception {
+    // given
     String proto = "enum B { ONE = 1 [(test1) = 1;  (test2) = true]; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when field multi-options are not separated by coma");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when field multi-options are not separated by coma");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:31: Expected ',' or ']");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void invalidEnumFieldDeclaration() throws Exception {
+  @Test public void invalidEnumFieldDeclaration() throws Exception {
+    // given
     String proto = "enum B { ONE; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when tag value is missed in enum field declaration");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when tag value is missed in enum field declaration");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:14: expected '='");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterFieldDeclaration() throws Exception {
+  @Test public void noSemicolonAfterFieldDeclaration() throws Exception {
+    // given
     String proto = "enum B { ONE = 1 }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when enum field declaration is not finished with semicolon");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when enum field declaration is not finished with semicolon");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:19: expected ';'");
+    }
   }
   
-  @Test(expected = IllegalStateException.class) public void noSemicolonAfterFieldWithOptions() throws Exception {
+  @Test public void noSemicolonAfterFieldWithOptions() throws Exception {
+    // given
     String proto = "message A { optional int32 a = 1 [deprecated = true, packed = true] }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when field with options declaration is not finished with semicolon");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when field with options declaration is not finished with semicolon");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:70: expected ';'");
+    }
   }
-  
-  
+
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
-  @Test(expected = IllegalStateException.class) public void mapFieldWithoutKeyValueTypes() throws Exception {
+  @Test public void mapFieldWithoutKeyValueTypes() throws Exception {
+    // given
     String proto = "message A { optional map test = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when map field key and value types are not declared");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when map field key and value types are not declared");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:27: expected '<'");
+    }
   }
 
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
-  @Test(expected = IllegalStateException.class) public void mapFieldWithoutValueType() throws Exception {
+  @Test public void mapFieldWithoutValueType() throws Exception {
+    // given
     String proto = "message A { optional map<int32> test = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when map field value type is not declared");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when map field value type is not declared");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:32: expected ','");
+    }
   }
 
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
-  @Test(expected = IllegalStateException.class) public void mapFieldIncompleteDeclaration() throws Exception {
+  @Test public void mapFieldIncompleteDeclaration() throws Exception {
+    // given
     String proto = "message A { optional map<int32,string test = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when map field key and value types are not declared properly");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when map field key and value types are not declared properly");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:40: expected '>'");
+    }
   }
 
   // current parser don't follow the restriction 'Key type can be any integral or string type (so, any scalar type except for floating point types and bytes)'
   @Ignore("Current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'")
   @Test public void mapFieldInvalidKeyTypeDeclaration() throws Exception {
+    // given
     String proto = "message A { optional map<bytes,string> test = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when map field key types is not string or integral");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when map field key types is not string or integral");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("expected error message");
+    }
   }
 
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
-  @Test(expected = IllegalStateException.class) public void fieldWithoutLabelInProto2() throws Exception {
+  @Test public void fieldWithoutLabelInProto2() throws Exception {
+    // given
     String proto = "syntax=\"proto2\";\n message A { int32 a = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when proto2 message field declared without label");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when proto2 message field declared without label");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 2:14: unexpected label: int32");
+    }
   }
 
   // current parser don't follow the restriction 'Maps cannot be repeated, optional, or required'
@@ -1906,28 +2309,68 @@ public final class ProtoParserTest {
     assertThat(((MessageElement)parsed.types().get(0)).fields().get(0).label()).isNull();
   }
 
-  @Test(expected = IllegalStateException.class) public void optionListValueWithoutLeftBrace() throws Exception {
+  @Test public void optionListValueWithoutLeftBrace() throws Exception {
+    // given
     String proto = "message M { required int32 id = 1 [ list = \"a\", \"b\", \"c\"]]; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when option list value declared without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when option list value declared without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:49: expected a word");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void optionListValueWithoutRightBrace() throws Exception {
+  @Test public void optionListValueWithoutRightBrace() throws Exception {
+    // given
     String proto = "message M { required int32 id = 1 [ list = [\"a\", \"b\", \"c\"]; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when option list value declared without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when option list value declared without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:59: expected a word");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void optionMapValueWithoutLeftBrace() throws Exception {
+  @Test public void optionMapValueWithoutLeftBrace() throws Exception {
+    // given
     String proto = "message M { required int32 id = 1 [ map = a:\"a\", b:\"b\", c:\"c\"}]; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when option map value declared without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when option map value declared without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:44: expected a word");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void optionMapValueWithoutRightBrace() throws Exception {
+  @Test public void optionMapValueWithoutRightBrace() throws Exception {
+    // given
     String proto = "message M { required int32 id = 1 [map = {a:\"a\", b:\"b\", c:\"c\"]; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when option map value declared without braces");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when option map value declared without braces");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:62: expected a word");
+    }
   }
 
   @Test public void optionMapInListValue() throws Exception {
@@ -1974,81 +2417,206 @@ public final class ProtoParserTest {
   }
 
   @Test public void optionWithEnumValue() throws Exception {
+    // given
     String proto = "enum E { option test_option = ONE; ONE = 1; }";
+
+    // when
     ProtoFileElement parsed = ProtoParser.parse(location, proto);
+
+    // then
     assertThat((parsed.types().get(0)).options().get(0).value()).isEqualTo("ONE");
   }
 
-  @Test(expected = IllegalStateException.class) public void incorrectExtensionsValues() throws Exception {
+  @Test public void incorrectExtensionsValues() throws Exception {
+    // given
     String proto = "message M { extensions 500 downto 100; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when extensions range declared incorrectly");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when extensions range declared incorrectly");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:34: expected ';' or 'to'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void incompleteExtensionsDeclaration() throws Exception {
+  @Test public void incompleteExtensionsDeclaration() throws Exception {
+    // given
     String proto = "message M { extensions 100 to 200 }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when extensions declared without semicolon at the end");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when extensions declared without semicolon at the end");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:36: expected ';'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void extensionsPlacedOutsideOfMessage() throws Exception {
+  @Test public void extensionsPlacedOutsideOfMessage() throws Exception {
+    // given
     String proto = "extensions 100 to 200; message M { }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when extensions declared in wrong place");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when extensions declared in wrong place");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:1: 'extensions' must be nested");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void incorrectOptionSeparator() throws Exception {
+  @Test public void incorrectOptionSeparator() throws Exception {
+    // given
     String proto = "message M { option test_option : 50; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when option separator is differs from '='");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when option separator is differs from '='");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:33: expected '=' in option");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void incorrectOneOfFieldSeparator() throws Exception {
+  @Test public void incorrectOneOfFieldSeparator() throws Exception {
+    // given
     String proto = "message M { oneOf select { test_field : 50; } }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when field separator is differs from '='");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when field separator is differs from '='");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:27: expected '='");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void unexpectedEndOfFileCase1() throws Exception {
+  @Test public void unexpectedEndOfFileCase1() throws Exception {
+    // given
     String proto = "syntax = \"";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when statement declaration is incomplete");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when statement declaration is incomplete");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:11: unterminated string");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void unexpectedEndOfFileCase2() throws Exception {
+  @Test public void unexpectedEndOfFileCase2() throws Exception {
+    // given
     String proto = "message M { option test_option = \"value\\q\\";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when statement declaration is incomplete");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when statement declaration is incomplete");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:43: unexpected end of file");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void unexpectedEndOfFieldName1() throws Exception {
+  @Test public void unexpectedEndOfFieldName1() throws Exception {
+    // given
     String proto = "message M { optional int32 (a = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when braced field name declaration misses closing brace");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when braced field name declaration misses closing brace");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:32: expected ')'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void unexpectedEndOfFieldName2() throws Exception {
+  @Test public void unexpectedEndOfFieldName2() throws Exception {
+    // given
     String proto = "message M { optional int32 [a = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when braced field name declaration misses closing brace");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when braced field name declaration misses closing brace");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:32: expected ']'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void invalidCommentDeclaration() throws Exception {
+  @Test public void invalidCommentDeclaration() throws Exception {
+    // given
     String proto = "/incorrect comment\nmessage M { optional a = 1; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when comment not declared properly");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when comment not declared properly");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:3: unexpected '/'");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void unclosedCommentDeclaration() throws Exception {
+  @Test public void unclosedCommentDeclaration() throws Exception {
+    // given
     String proto = "message M { /* Test comment\nfor several\n lines";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when multiline comment not closed properly");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when multiline comment not closed properly");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 3:7: unterminated comment");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void invalidNumberDefinition() throws Exception {
+  @Test public void invalidNumberDefinition() throws Exception {
+    // given
     String proto = "message M { optional int32 a = 1L; }";
-    ProtoParser.parse(location, proto);
-    fail("Parser should throw IllegalStateException when number is not defined properly");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("Parser should throw IllegalStateException when number is not defined properly");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:34: expected an integer but was 1L");
+    }
   }
 
   @Test public void middleLineCommentDeclaration() throws Exception {
@@ -2067,27 +2635,67 @@ public final class ProtoParserTest {
     assertThat(parsed.types().get(0).options().get(0).value()).isEqualTo("compare "+ (char)0x0F + " with " + (char)0xa + "g");
   }
 
-  @Test(expected = IllegalStateException.class) public void readInvalidHexCharsInStrings1() throws Exception {
+  @Test public void readInvalidHexCharsInStrings1() throws Exception {
+    // given
     String proto = "message M { option test_option = \"check \\x!F\"; }";
-    ProtoParser.parse(location, proto);
-    fail("ProtoParser should throw IllegalStateException when hex decimal is incorrect");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("ProtoParser should throw IllegalStateException when hex decimal is incorrect");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:43: expected a digit after \\x or \\X");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void readInvalidHexCharsInStrings2() throws Exception {
+  @Test public void readInvalidHexCharsInStrings2() throws Exception {
+    // given
     String proto = "message M { option test_option = \"check \\x=0\"; }";
-    ProtoParser.parse(location, proto);
-    fail("ProtoParser should throw IllegalStateException when hex decimal is incorrect");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("ProtoParser should throw IllegalStateException when hex decimal is incorrect");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:43: expected a digit after \\x or \\X");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void readInvalidHexCharsInStrings3() throws Exception {
+  @Test public void readInvalidHexCharsInStrings3() throws Exception {
+    // given
     String proto = "message M { option test_option = \"check \\xg5\"; }";
-    ProtoParser.parse(location, proto);
-    fail("ProtoParser should throw IllegalStateException when hex decimal is incorrect");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("ProtoParser should throw IllegalStateException when hex decimal is incorrect");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:43: expected a digit after \\x or \\X");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void listValueWithoutRightBrace() throws Exception {
+  @Test public void listValueWithoutRightBrace() throws Exception {
+    // given
     String proto = "message M { option test_option = [1; }";
-    ProtoParser.parse(location, proto);
-    fail("ProtoParser should throw IllegalStateException when list value is not closed with brace");
+
+    try {
+      // when
+      ProtoParser.parse(location, proto);
+
+      // then
+      fail("ProtoParser should throw IllegalStateException when list value is not closed with brace");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 1:36: expected ',' or ']'");
+    }
   }
 }

@@ -127,7 +127,7 @@ public final class SchemaTest {
           .build();
       fail();
     } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo(""
+      assertThat(expected).hasMessage(""
           + "tag is out of range: 0\n"
           + "  for field a (message.proto at 2:3)\n"
           + "  in message Message (message.proto at 1:1)\n"
@@ -852,7 +852,7 @@ public final class SchemaTest {
           .build();
       fail();
     } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import b.proto\n"
+      assertThat(expected).hasMessage("a.proto needs to import b.proto\n"
           + "  for field b (a.proto at 3:3)\n"
           + "  in message pa.A (a.proto at 2:1)");
     }
@@ -892,7 +892,7 @@ public final class SchemaTest {
           .build();
       fail();
     } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo(""
+      assertThat(expected).hasMessage(""
           + "a.proto needs to import b.proto\n"
           + "  for rpc Call (a.proto at 3:3)\n"
           + "  in service pa.Service (a.proto at 2:1)\n"
@@ -937,7 +937,7 @@ public final class SchemaTest {
           .build();
       fail();
     } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import b.proto\n"
+      assertThat(expected).hasMessage("a.proto needs to import b.proto\n"
           + "  for extend pb.B (a.proto at 2:1)");
     }
   }
@@ -963,7 +963,7 @@ public final class SchemaTest {
           .build();
       fail();
     } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import c.proto\n"
+      assertThat(expected).hasMessage("a.proto needs to import c.proto\n"
           + "  for field c (a.proto at 4:3)\n"
           + "  in message pa.A (a.proto at 3:1)");
     }
@@ -1293,19 +1293,28 @@ public final class SchemaTest {
     assertThat(extendField.tag()).isEqualTo(50000);
   }
 
-  @Test(expected = IllegalArgumentException.class) public void protoAdapterWithUnknownProtoType() throws Exception {
+  @Test public void protoAdapterWithUnknownProtoType() throws Exception {
+    // given
     Schema schema = new SchemaBuilder()
       .add("extend.proto", ""
           + "message A {\n"
           + "}\n")
       .build();
 
-    schema.protoAdapter("B", true);
+    try {
+      // when
+      schema.protoAdapter("B", true);
 
-    fail("Schema should throw IllegalArgumentException when creating proto adapter for unknown type");
+      // then
+      fail("Schema should throw IllegalArgumentException when creating proto adapter for unknown type");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("unexpected type B");
+    }
   }
 
   @Test public void getEnumField() throws Exception {
+    // when
     Schema schema = new SchemaBuilder()
       .add("enum.proto", ""
         + "enum E {\n"
@@ -1313,6 +1322,7 @@ public final class SchemaTest {
         + "}\n")
       .build();
 
+    // then
     assertThat(schema.getField(ProtoMember.get("E#FOO"))).isNull();
   }
 

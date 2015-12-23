@@ -31,79 +31,168 @@ public class MarkSetTest {
   }
 
   @Test public void containsAllMembers() throws Exception {
+    // when
     defaultMarkSet.root(ProtoType.get("A"));
     defaultMarkSet.mark(ProtoMember.get("A#a"));
     defaultMarkSet.mark(ProtoMember.get("A#b"));
     defaultMarkSet.mark(ProtoMember.get("C#c"));
     defaultMarkSet.mark(ProtoType.get("B"));
 
+    // then
     assertThat(defaultMarkSet.containsAllMembers(ProtoType.get("A"))).isTrue();
     assertThat(defaultMarkSet.containsAllMembers(ProtoType.get("B"))).isTrue();
     assertThat(defaultMarkSet.containsAllMembers(ProtoType.get("C"))).isTrue();
     assertThat(defaultMarkSet.containsAllMembers(ProtoType.get("D"))).isFalse();
   }
 
-  @Test(expected = NullPointerException.class) public void nullContainsAllMembers() throws Exception {
-    defaultMarkSet.containsAllMembers(null);
-    fail("MarkSet should throw NullPointerException when null is passed to be verified as members container");
+  @Test public void nullContainsAllMembers() throws Exception {
+    try {
+      // when
+      defaultMarkSet.containsAllMembers(null);
+
+      // then
+      fail("MarkSet should throw NullPointerException when null is passed to be verified as members container");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("type == null");
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void nullProtoTypeRoot() throws Exception {
-    defaultMarkSet.root((ProtoType) null);
-    fail("MarkSet should throw NullPointerException when null is passed as root");
+  @Test public void nullProtoTypeRoot() throws Exception {
+    try {
+      // when
+      defaultMarkSet.root((ProtoType) null);
+
+      // then
+      fail("MarkSet should throw NullPointerException when null is passed as root");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("type == null");
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void nullProtoMemberRoot() throws Exception {
-    defaultMarkSet.root((ProtoMember) null);
-    fail("MarkSet should throw NullPointerException when null is passed as root");
+  @Test public void nullProtoMemberRoot() throws Exception {
+    try {
+      // when
+      defaultMarkSet.root((ProtoMember) null);
+
+      // then
+      fail("MarkSet should throw NullPointerException when null is passed as root");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("protoMember == null");
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void nullProtoTypeMark() throws Exception {
-    defaultMarkSet.mark((ProtoType) null);
-    fail("MarkSet should throw NullPointerException when null is passed to mark");
+  @Test public void nullProtoTypeMark() throws Exception {
+    try {
+      // when
+      defaultMarkSet.mark((ProtoType) null);
+
+      // then
+      fail("MarkSet should throw NullPointerException when null is passed to mark");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("type == null");
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void nullProtoMemberMark() throws Exception {
-    defaultMarkSet.mark((ProtoMember) null);
-    fail("MarkSet should throw NullPointerException when null is passed to mark");
+  @Test public void nullProtoMemberMark() throws Exception {
+    try {
+      // when
+      defaultMarkSet.mark((ProtoMember) null);
+
+      // then
+      fail("MarkSet should throw NullPointerException when null is passed to mark");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("type == null");
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void nullProtoTypeContains() throws Exception {
-    defaultMarkSet.contains((ProtoType) null);
-    fail("MarkSet should throw NullPointerException when null is checked to be contained");
+  @Test public void nullProtoTypeContains() throws Exception {
+    try {
+      // when
+      defaultMarkSet.contains((ProtoType) null);
+
+      // then
+      fail("MarkSet should throw NullPointerException when null is checked to be contained");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("type == null");
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void nullProtoMemberContains() throws Exception {
-    defaultMarkSet.contains((ProtoMember) null);
-    fail("MarkSet should throw NullPointerException when null is checked to be contained");
+  @Test public void nullProtoMemberContains() throws Exception {
+    try {
+      // when
+      defaultMarkSet.contains((ProtoMember) null);
+
+      // then
+      fail("MarkSet should throw NullPointerException when null is checked to be contained");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("protoMember == null");
+    }
   }
 
-  @Test(expected = IllegalArgumentException.class) public void excludedProtoTypeRoot() throws Exception {
-    new MarkSet(new IdentifierSet.Builder().exclude("A").build()).root(ProtoType.get("A"));
-    fail("MarkSet should throw IllegalArgumentException when excluded value is passed as root");
+  @Test public void excludedProtoTypeRoot() throws Exception {
+    try {
+      // when
+      new MarkSet(new IdentifierSet.Builder().exclude("A").build()).root(ProtoType.get("A"));
+
+      // then
+      fail("MarkSet should throw IllegalArgumentException when excluded value is passed as root");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
-  @Test(expected = IllegalArgumentException.class) public void excludedProtoMemberRoot() throws Exception {
-    new MarkSet(new IdentifierSet.Builder().exclude("A").build()).root(ProtoMember.get("A#a"));
-    fail("MarkSet should throw IllegalArgumentException when excluded value is passed as root");
+  @Test public void excludedProtoMemberRoot() throws Exception {
+    try {
+      // when
+      new MarkSet(new IdentifierSet.Builder().exclude("A").build()).root(ProtoMember.get("A#a"));
+
+      // then
+      fail("MarkSet should throw IllegalArgumentException when excluded value is passed as root");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
-  @Test(expected = IllegalArgumentException.class) public void duplicatedProtoTypeRoot() throws Exception {
+  @Test public void duplicatedProtoTypeRoot() throws Exception {
+    // given
     ProtoMember member = ProtoMember.get("A#a");
 
-    defaultMarkSet.root(member);
-    defaultMarkSet.root(member.type());
+    try {
+      // when
+      defaultMarkSet.root(member);
+      defaultMarkSet.root(member.type());
 
-    fail("MarkSet should throw IllegalArgumentException when registered value is passed as root");
+      // then
+      fail("MarkSet should throw IllegalArgumentException when registered value is passed as root");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
-  @Test(expected = IllegalArgumentException.class) public void duplicatedProtoMemberRoot() throws Exception {
+  @Test public void duplicatedProtoMemberRoot() throws Exception {
+    // given
     ProtoMember member = ProtoMember.get("A#a");
 
-    defaultMarkSet.root(member.type());
-    defaultMarkSet.root(member);
+    try {
+      // when
+      defaultMarkSet.root(member.type());
+      defaultMarkSet.root(member);
 
-    fail("MarkSet should throw IllegalArgumentException when registered value is passed as root");
+      // then
+      fail("MarkSet should throw IllegalArgumentException when registered value is passed as root");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
-
 }
