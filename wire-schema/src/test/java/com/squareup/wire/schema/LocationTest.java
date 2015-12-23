@@ -25,95 +25,83 @@ import static org.assertj.core.api.Assertions.fail;
 
 public final class LocationTest {
 
+  private static final String S = File.separator;
+
   @Test public void get() throws Exception {
     compareLocations(Location.get("", ""), Location.get(""));
-    compareLocations(Location.get("", "path\\to\\location"), Location.get("path\\to\\location"));
-    compareLocations(Location.get("main", "path\\to\\location"), Location.get("main\\path\\to\\location"));
-    compareLocations(Location.get("main\\dir", "path\\to\\location"), Location.get("main\\dir\\path\\to\\location"));
+    compareLocations(Location.get("", "path" + S + "to" + S + "location"),
+      Location.get("path" + S + "to" + S + "location"));
+    compareLocations(Location.get("main", "path" + S + "to" + S + "location"),
+      Location.get("main" + S + "path" + S + "to" + S + "location"));
+    compareLocations(Location.get("main" + S + "dir", "path" + S + "to" + S + "location"),
+      Location.get("main" + S + "dir" + S + "path" + S + "to" + S + "location"));
   }
 
-  @Test public void getNullBase() throws Exception {
-    try {
-      // when
-      Location.get(null, "path\\to\\location");
-
-      // then
-      fail("Location should throw NullPointerException when tries to get location with null base");
-    }
-    catch (NullPointerException e) {
-      assertThat(e.getMessage()).isNull();
-    }
+  @Test(expected = NullPointerException.class) public void getNullBase() throws Exception {
+    Location.get(null, "path" + S + "to" + S + "location");
+    fail("Location should throw NullPointerException when tries to get location with null base");
   }
 
-  @Test public void getNullPath() throws Exception {
-    try {
-      // when
-      Location.get(null);
-
-      // then
-      fail("Location should throw NullPointerException when tries to get location with null base");
-    }
-    catch (NullPointerException e) {
-      assertThat(e.getMessage()).isNull();
-    }
+  @Test(expected = NullPointerException.class) public void getNullPath() throws Exception {
+    Location.get(null);
+    fail("Location should throw NullPointerException when tries to get location with null base");
   }
 
-  @Test public void getNullPathWithBase() throws Exception {
-    try {
-      // when
-      Location.get("main\\dir", null);
-
-      // then
-      fail("Location should throw NullPointerException when tries to get location with null path");
-    }
-    catch (NullPointerException e) {
-      assertThat(e.getMessage()).isNull();
-    }
+  @Test(expected = NullPointerException.class) public void getNullPathWithBase() throws Exception {
+    Location.get("main" + S + "dir", null);
+    fail("Location should throw NullPointerException when tries to get location with null path");
   }
 
   @Test public void defaultLineAndColumn() throws Exception {
-    // when
-    Location location = Location.get("path\\to\\location");
+    Location location = Location.get("path" + S + "to" + S + "location");
 
-    // then
     assertThat(location.line()).isEqualTo(-1);
     assertThat(location.column()).isEqualTo(-1);
   }
 
   @Test public void at() throws Exception {
-    // when
-    Location location = Location.get("path\\to\\location").at(11, 21);
+    Location location = Location.get("path" + S + "to" + S + "location").at(11, 21);
 
-    // then
     assertThat(location.line()).isEqualTo(11);
     assertThat(location.column()).isEqualTo(21);
   }
 
   @Test public void withoutBase() throws Exception {
-    // when
-    Location location = Location.get("main\\dir", "path\\to\\location").at(11, 21);
+    compareLocations(Location.get("path" + S + "to" + S + "location").withoutBase(),
+      Location.get("path" + S + "to" + S + "location"));
+    compareLocations(Location.get("main" + S + "dir", "path" + S + "to" + S + "location").withoutBase(),
+      Location.get("path" + S + "to" + S + "location"));
+
+    Location location = Location.get("main" + S + "dir", "path" + S + "to" + S + "location").at(11, 21);
     Location withoutBaseLocation = location.withoutBase();
 
-    // then
     assertThat(location.line()).isEqualTo(withoutBaseLocation.line());
     assertThat(location.column()).isEqualTo(withoutBaseLocation.column());
-    compareLocations(Location.get("path\\to\\location").withoutBase(), Location.get("path\\to\\location"));
-    compareLocations(Location.get("main\\dir", "path\\to\\location").withoutBase(), Location.get("path\\to\\location"));
   }
 
   @Test public void testToString() throws Exception {
     assertThat(Location.get("", "").toString()).isEqualTo(Location.get("").toString());
-    assertThat(Location.get("", "path\\to\\location").toString()).isEqualTo(Location.get("path\\to\\location").toString());
-    assertThat(Location.get("main", "path\\to\\location").toString()).isEqualTo(Location.get("main\\path\\to\\location").toString());
-    assertThat(Location.get("main\\dir", "path\\to\\location").toString()).isEqualTo(Location.get("main\\dir\\path\\to\\location").toString());
+    assertThat(Location.get("", "path" + S + "to" + S + "location").toString()).isEqualTo(
+      Location.get("path" + S + "to" + S + "location").toString());
+    assertThat(Location.get("main", "path" + S + "to" + S + "location").toString()).isEqualTo(
+      Location.get("main" + S + "path" + S + "to" + S + "location").toString());
+    assertThat(Location.get("main" + S + "dir", "path" + S + "to" + S + "location").toString()).isEqualTo(
+      Location.get("main" + S + "dir" + S + "path" + S + "to" + S + "location").toString());
 
-    assertThat(Location.get("main\\dir", "path\\to\\location").toString()).isNotEqualTo(Location.get("main\\dir\\path\\to\\location").at(11, 12).toString());
-    assertThat(Location.get("main\\dir", "path\\to\\location").at(5, 6).toString()).isNotEqualTo(Location.get("main\\dir\\path\\to\\location").at(11, 12).toString());
-    assertThat(Location.get("main\\dir", "path\\to\\location").at(11, 12).toString()).isEqualTo(Location.get("main\\dir\\path\\to\\location").at(11, 12).toString());
-    assertThat(Location.get("main\\dir", "path\\to\\location").at(10, -1).toString()).isEqualTo(Location.get("main\\dir", "path\\to\\location").at(10,-1).toString());
-    assertThat(Location.get("main\\dir", "path\\to\\location").at(-1, -1).toString()).isEqualTo(Location.get("main\\dir", "path\\to\\location").toString());
-    assertThat(Location.get("main\\dir", "path\\to\\location").at(-1, 10).toString()).isEqualTo(Location.get("main\\dir", "path\\to\\location").at(-1,10).toString());
-    assertThat(Location.get("main\\dir", "path\\to\\location").at(-1, 10).toString()).isEqualTo(Location.get("main\\dir", "path\\to\\location").toString());
+    assertThat(Location.get("main" + S + "dir", "path" + S + "to" + S + "location").toString()).isNotEqualTo(
+      Location.get("main" + S + "dir" + S + "path" + S + "to" + S + "location").at(11, 12).toString());
+    assertThat(Location.get("main" + S + "dir", "path" + S + "to" + S + "location").at(5, 6).toString()).isNotEqualTo
+      (Location.get("main" + S + "dir" + S + "path" + S + "to" + S + "location").at(11, 12).toString());
+    assertThat(Location.get("main" + S + "dir", "path" + S + "to" + S + "location").at(11, 12).toString()).isEqualTo(
+      Location.get("main" + S + "dir" + S + "path" + S + "to" + S + "location").at(11, 12).toString());
+    assertThat(Location.get("main" + S + "dir", "path" + S + "to" + S + "location").at(10, -1).toString()).isEqualTo(
+      Location.get("main" + S + "dir", "path" + S + "to" + S + "location").at(10,-1).toString());
+    assertThat(Location.get("main" + S + "dir", "path" + S + "to" + S + "location").at(-1, -1).toString()).isEqualTo(
+      Location.get("main" + S + "dir", "path" + S + "to" + S + "location").toString());
+    assertThat(Location.get("main" + S + "dir", "path" + S + "to" + S + "location").at(-1, 10).toString()).isEqualTo(
+      Location.get("main" + S + "dir", "path" + S + "to" + S + "location").at(-1,10).toString());
+    assertThat(Location.get("main" + S + "dir", "path" + S + "to" + S + "location").at(-1, 10).toString()).isEqualTo(
+      Location.get("main" + S + "dir", "path" + S + "to" + S + "location").toString());
   }
 
   private void compareLocations(Location location1, Location location2)
