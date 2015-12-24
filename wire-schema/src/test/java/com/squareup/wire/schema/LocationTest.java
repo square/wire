@@ -37,19 +37,44 @@ public final class LocationTest {
       Location.get("main" + S + "dir" + S + "path" + S + "to" + S + "location"));
   }
 
-  @Test(expected = NullPointerException.class) public void getNullBase() throws Exception {
-    Location.get(null, "path" + S + "to" + S + "location");
-    fail("Location should throw NullPointerException when tries to get location with null base");
+  @Test public void getNullBase() throws Exception {
+    try {
+      // when
+      Location.get(null, "path" + S + "to" + S + "location");
+
+      // then
+      fail("Location should throw NullPointerException when tries to get location with null base");
+    }
+    catch (NullPointerException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void getNullPath() throws Exception {
-    Location.get(null);
-    fail("Location should throw NullPointerException when tries to get location with null base");
+  @Test public void getNullPath() throws Exception {
+    try {
+      // when
+      Location.get(null);
+
+      // then
+      fail("Location should throw NullPointerException when tries to get location with null base");
+    }
+    catch (NullPointerException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
-  @Test(expected = NullPointerException.class) public void getNullPathWithBase() throws Exception {
-    Location.get("main" + S + "dir", null);
-    fail("Location should throw NullPointerException when tries to get location with null path");
+  @Test public void getNullPathWithBase() throws Exception {
+    try {
+      // when
+      Location.get("main" + S + "dir", null);
+
+      // then
+      fail("Location should throw NullPointerException when tries to get location with null path");
+    }
+    catch (NullPointerException e) {
+      assertThat(e.getMessage()).isNull();
+    }
+
   }
 
   @Test public void defaultLineAndColumn() throws Exception {
