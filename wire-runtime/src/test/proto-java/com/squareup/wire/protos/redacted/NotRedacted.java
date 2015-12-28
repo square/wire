@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -60,9 +61,9 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
     if (other == this) return true;
     if (!(other instanceof NotRedacted)) return false;
     NotRedacted o = (NotRedacted) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(a, o.a)
-        && equals(b, o.b);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(a, o.a)
+        && WireInternal.equals(b, o.b);
   }
 
   @Override

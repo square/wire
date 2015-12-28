@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -66,10 +67,10 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
     if (other == this) return true;
     if (!(other instanceof RedactedChild)) return false;
     RedactedChild o = (RedactedChild) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(a, o.a)
-        && equals(b, o.b)
-        && equals(c, o.c);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(a, o.a)
+        && WireInternal.equals(b, o.b)
+        && WireInternal.equals(c, o.c);
   }
 
   @Override

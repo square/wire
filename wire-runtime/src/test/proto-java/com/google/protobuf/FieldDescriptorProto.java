@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -159,16 +160,16 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     if (other == this) return true;
     if (!(other instanceof FieldDescriptorProto)) return false;
     FieldDescriptorProto o = (FieldDescriptorProto) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(name, o.name)
-        && equals(number, o.number)
-        && equals(label, o.label)
-        && equals(type, o.type)
-        && equals(type_name, o.type_name)
-        && equals(extendee, o.extendee)
-        && equals(default_value, o.default_value)
-        && equals(oneof_index, o.oneof_index)
-        && equals(options, o.options);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(name, o.name)
+        && WireInternal.equals(number, o.number)
+        && WireInternal.equals(label, o.label)
+        && WireInternal.equals(type, o.type)
+        && WireInternal.equals(type_name, o.type_name)
+        && WireInternal.equals(extendee, o.extendee)
+        && WireInternal.equals(default_value, o.default_value)
+        && WireInternal.equals(oneof_index, o.oneof_index)
+        && WireInternal.equals(options, o.options);
   }
 
   @Override

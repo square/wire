@@ -7,6 +7,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -139,17 +140,17 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
     if (other_ == this) return true;
     if (!(other_ instanceof Message)) return false;
     Message o_ = (Message) other_;
-    return equals(unknownFields(), o_.unknownFields())
-        && equals(unknownFields, o_.unknownFields)
-        && equals(other, o_.other)
-        && equals(o, o_.o)
-        && equals(result, o_.result)
-        && equals(hashCode, o_.hashCode)
-        && equals(serialVersionUID_, o_.serialVersionUID_)
-        && equals(ADAPTER_, o_.ADAPTER_)
-        && equals(MESSAGE_OPTIONS_, o_.MESSAGE_OPTIONS_)
-        && equals(this_, o_.this_)
-        && equals(message, o_.message);
+    return WireInternal.equals(unknownFields(), o_.unknownFields())
+        && WireInternal.equals(unknownFields, o_.unknownFields)
+        && WireInternal.equals(other, o_.other)
+        && WireInternal.equals(o, o_.o)
+        && WireInternal.equals(result, o_.result)
+        && WireInternal.equals(hashCode, o_.hashCode)
+        && WireInternal.equals(serialVersionUID_, o_.serialVersionUID_)
+        && WireInternal.equals(ADAPTER_, o_.ADAPTER_)
+        && WireInternal.equals(MESSAGE_OPTIONS_, o_.MESSAGE_OPTIONS_)
+        && WireInternal.equals(this_, o_.this_)
+        && WireInternal.equals(message, o_.message);
   }
 
   @Override

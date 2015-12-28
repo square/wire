@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -53,8 +54,8 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     if (other == this) return true;
     if (!(other instanceof OneofDescriptorProto)) return false;
     OneofDescriptorProto o = (OneofDescriptorProto) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(name, o.name);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(name, o.name);
   }
 
   @Override

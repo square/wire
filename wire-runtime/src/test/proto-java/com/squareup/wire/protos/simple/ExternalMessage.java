@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Float;
 import java.lang.Integer;
@@ -90,7 +91,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext, ByteString unknownFields) {
     super(unknownFields);
     this.f = f;
-    this.fooext = immutableCopyOf("fooext", fooext);
+    this.fooext = WireInternal.immutableCopyOf("fooext", fooext);
     this.barext = barext;
     this.bazext = bazext;
     this.nested_message_ext = nested_message_ext;
@@ -101,7 +102,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.f = f;
-    builder.fooext = copyOf("fooext", fooext);
+    builder.fooext = WireInternal.copyOf("fooext", fooext);
     builder.barext = barext;
     builder.bazext = bazext;
     builder.nested_message_ext = nested_message_ext;
@@ -115,13 +116,13 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
     if (other == this) return true;
     if (!(other instanceof ExternalMessage)) return false;
     ExternalMessage o = (ExternalMessage) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(f, o.f)
-        && equals(fooext, o.fooext)
-        && equals(barext, o.barext)
-        && equals(bazext, o.bazext)
-        && equals(nested_message_ext, o.nested_message_ext)
-        && equals(nested_enum_ext, o.nested_enum_ext);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(f, o.f)
+        && WireInternal.equals(fooext, o.fooext)
+        && WireInternal.equals(barext, o.barext)
+        && WireInternal.equals(bazext, o.bazext)
+        && WireInternal.equals(nested_message_ext, o.nested_message_ext)
+        && WireInternal.equals(nested_enum_ext, o.nested_enum_ext);
   }
 
   @Override
@@ -166,7 +167,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
     public SimpleMessage.NestedEnum nested_enum_ext;
 
     public Builder() {
-      fooext = newMutableList();
+      fooext = WireInternal.newMutableList();
     }
 
     public Builder f(Float f) {
@@ -175,7 +176,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
     }
 
     public Builder fooext(List<Integer> fooext) {
-      checkElementsNotNull(fooext);
+      WireInternal.checkElementsNotNull(fooext);
       this.fooext = fooext;
       return this;
     }

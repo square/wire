@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -58,8 +59,8 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
     if (other == this) return true;
     if (!(other instanceof RedactedRequired)) return false;
     RedactedRequired o = (RedactedRequired) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(a, o.a);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(a, o.a);
   }
 
   @Override
@@ -94,7 +95,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
     @Override
     public RedactedRequired build() {
       if (a == null) {
-        throw missingRequiredFields(a, "a");
+        throw WireInternal.missingRequiredFields(a, "a");
       }
       return new RedactedRequired(a, buildUnknownFields());
     }

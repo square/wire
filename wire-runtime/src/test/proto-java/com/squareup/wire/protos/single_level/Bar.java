@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -51,8 +52,8 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     if (other == this) return true;
     if (!(other instanceof Bar)) return false;
     Bar o = (Bar) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(baz, o.baz);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(baz, o.baz);
   }
 
   @Override

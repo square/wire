@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -147,13 +148,13 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     super(unknownFields);
     this.name = name;
     this.package_ = package_;
-    this.dependency = immutableCopyOf("dependency", dependency);
-    this.public_dependency = immutableCopyOf("public_dependency", public_dependency);
-    this.weak_dependency = immutableCopyOf("weak_dependency", weak_dependency);
-    this.message_type = immutableCopyOf("message_type", message_type);
-    this.enum_type = immutableCopyOf("enum_type", enum_type);
-    this.service = immutableCopyOf("service", service);
-    this.extension = immutableCopyOf("extension", extension);
+    this.dependency = WireInternal.immutableCopyOf("dependency", dependency);
+    this.public_dependency = WireInternal.immutableCopyOf("public_dependency", public_dependency);
+    this.weak_dependency = WireInternal.immutableCopyOf("weak_dependency", weak_dependency);
+    this.message_type = WireInternal.immutableCopyOf("message_type", message_type);
+    this.enum_type = WireInternal.immutableCopyOf("enum_type", enum_type);
+    this.service = WireInternal.immutableCopyOf("service", service);
+    this.extension = WireInternal.immutableCopyOf("extension", extension);
     this.options = options;
     this.source_code_info = source_code_info;
     this.syntax = syntax;
@@ -164,13 +165,13 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     Builder builder = new Builder();
     builder.name = name;
     builder.package_ = package_;
-    builder.dependency = copyOf("dependency", dependency);
-    builder.public_dependency = copyOf("public_dependency", public_dependency);
-    builder.weak_dependency = copyOf("weak_dependency", weak_dependency);
-    builder.message_type = copyOf("message_type", message_type);
-    builder.enum_type = copyOf("enum_type", enum_type);
-    builder.service = copyOf("service", service);
-    builder.extension = copyOf("extension", extension);
+    builder.dependency = WireInternal.copyOf("dependency", dependency);
+    builder.public_dependency = WireInternal.copyOf("public_dependency", public_dependency);
+    builder.weak_dependency = WireInternal.copyOf("weak_dependency", weak_dependency);
+    builder.message_type = WireInternal.copyOf("message_type", message_type);
+    builder.enum_type = WireInternal.copyOf("enum_type", enum_type);
+    builder.service = WireInternal.copyOf("service", service);
+    builder.extension = WireInternal.copyOf("extension", extension);
     builder.options = options;
     builder.source_code_info = source_code_info;
     builder.syntax = syntax;
@@ -183,19 +184,19 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     if (other == this) return true;
     if (!(other instanceof FileDescriptorProto)) return false;
     FileDescriptorProto o = (FileDescriptorProto) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(name, o.name)
-        && equals(package_, o.package_)
-        && equals(dependency, o.dependency)
-        && equals(public_dependency, o.public_dependency)
-        && equals(weak_dependency, o.weak_dependency)
-        && equals(message_type, o.message_type)
-        && equals(enum_type, o.enum_type)
-        && equals(service, o.service)
-        && equals(extension, o.extension)
-        && equals(options, o.options)
-        && equals(source_code_info, o.source_code_info)
-        && equals(syntax, o.syntax);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(name, o.name)
+        && WireInternal.equals(package_, o.package_)
+        && WireInternal.equals(dependency, o.dependency)
+        && WireInternal.equals(public_dependency, o.public_dependency)
+        && WireInternal.equals(weak_dependency, o.weak_dependency)
+        && WireInternal.equals(message_type, o.message_type)
+        && WireInternal.equals(enum_type, o.enum_type)
+        && WireInternal.equals(service, o.service)
+        && WireInternal.equals(extension, o.extension)
+        && WireInternal.equals(options, o.options)
+        && WireInternal.equals(source_code_info, o.source_code_info)
+        && WireInternal.equals(syntax, o.syntax);
   }
 
   @Override
@@ -264,13 +265,13 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     public String syntax;
 
     public Builder() {
-      dependency = newMutableList();
-      public_dependency = newMutableList();
-      weak_dependency = newMutableList();
-      message_type = newMutableList();
-      enum_type = newMutableList();
-      service = newMutableList();
-      extension = newMutableList();
+      dependency = WireInternal.newMutableList();
+      public_dependency = WireInternal.newMutableList();
+      weak_dependency = WireInternal.newMutableList();
+      message_type = WireInternal.newMutableList();
+      enum_type = WireInternal.newMutableList();
+      service = WireInternal.newMutableList();
+      extension = WireInternal.newMutableList();
     }
 
     /**
@@ -293,7 +294,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
      * Names of files imported by this file.
      */
     public Builder dependency(List<String> dependency) {
-      checkElementsNotNull(dependency);
+      WireInternal.checkElementsNotNull(dependency);
       this.dependency = dependency;
       return this;
     }
@@ -302,7 +303,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
      * Indexes of the public imported files in the dependency list above.
      */
     public Builder public_dependency(List<Integer> public_dependency) {
-      checkElementsNotNull(public_dependency);
+      WireInternal.checkElementsNotNull(public_dependency);
       this.public_dependency = public_dependency;
       return this;
     }
@@ -312,7 +313,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
      * For Google-internal migration only. Do not use.
      */
     public Builder weak_dependency(List<Integer> weak_dependency) {
-      checkElementsNotNull(weak_dependency);
+      WireInternal.checkElementsNotNull(weak_dependency);
       this.weak_dependency = weak_dependency;
       return this;
     }
@@ -321,25 +322,25 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
      * All top-level definitions in this file.
      */
     public Builder message_type(List<DescriptorProto> message_type) {
-      checkElementsNotNull(message_type);
+      WireInternal.checkElementsNotNull(message_type);
       this.message_type = message_type;
       return this;
     }
 
     public Builder enum_type(List<EnumDescriptorProto> enum_type) {
-      checkElementsNotNull(enum_type);
+      WireInternal.checkElementsNotNull(enum_type);
       this.enum_type = enum_type;
       return this;
     }
 
     public Builder service(List<ServiceDescriptorProto> service) {
-      checkElementsNotNull(service);
+      WireInternal.checkElementsNotNull(service);
       this.service = service;
       return this;
     }
 
     public Builder extension(List<FieldDescriptorProto> extension) {
-      checkElementsNotNull(extension);
+      WireInternal.checkElementsNotNull(extension);
       this.extension = extension;
       return this;
     }
@@ -446,10 +447,10 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     @Override
     public FileDescriptorProto redact(FileDescriptorProto value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.message_type, DescriptorProto.ADAPTER);
-      redactElements(builder.enum_type, EnumDescriptorProto.ADAPTER);
-      redactElements(builder.service, ServiceDescriptorProto.ADAPTER);
-      redactElements(builder.extension, FieldDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.message_type, DescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.enum_type, EnumDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.service, ServiceDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.extension, FieldDescriptorProto.ADAPTER);
       if (builder.options != null) builder.options = FileOptions.ADAPTER.redact(builder.options);
       if (builder.source_code_info != null) builder.source_code_info = SourceCodeInfo.ADAPTER.redact(builder.source_code_info);
       builder.clearUnknownFields();

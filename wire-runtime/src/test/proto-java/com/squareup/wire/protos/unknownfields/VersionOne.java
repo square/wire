@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -51,8 +52,8 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     if (other == this) return true;
     if (!(other instanceof VersionOne)) return false;
     VersionOne o = (VersionOne) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(i, o.i);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(i, o.i);
   }
 
   @Override

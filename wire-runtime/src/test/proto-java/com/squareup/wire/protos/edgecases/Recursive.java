@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -59,9 +60,9 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
     if (other == this) return true;
     if (!(other instanceof Recursive)) return false;
     Recursive o = (Recursive) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(value, o.value)
-        && equals(recursive, o.recursive);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(value, o.value)
+        && WireInternal.equals(recursive, o.recursive);
   }
 
   @Override

@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -38,13 +39,13 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
 
   public FileDescriptorSet(List<FileDescriptorProto> file, ByteString unknownFields) {
     super(unknownFields);
-    this.file = immutableCopyOf("file", file);
+    this.file = WireInternal.immutableCopyOf("file", file);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.file = copyOf("file", file);
+    builder.file = WireInternal.copyOf("file", file);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -54,8 +55,8 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
     if (other == this) return true;
     if (!(other instanceof FileDescriptorSet)) return false;
     FileDescriptorSet o = (FileDescriptorSet) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(file, o.file);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(file, o.file);
   }
 
   @Override
@@ -80,11 +81,11 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
     public List<FileDescriptorProto> file;
 
     public Builder() {
-      file = newMutableList();
+      file = WireInternal.newMutableList();
     }
 
     public Builder file(List<FileDescriptorProto> file) {
-      checkElementsNotNull(file);
+      WireInternal.checkElementsNotNull(file);
       this.file = file;
       return this;
     }
@@ -133,7 +134,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
     @Override
     public FileDescriptorSet redact(FileDescriptorSet value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.file, FileDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.file, FileDescriptorProto.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

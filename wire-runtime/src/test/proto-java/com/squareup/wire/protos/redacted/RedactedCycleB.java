@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -48,8 +49,8 @@ public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB
     if (other == this) return true;
     if (!(other instanceof RedactedCycleB)) return false;
     RedactedCycleB o = (RedactedCycleB) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(a, o.a);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(a, o.a);
   }
 
   @Override

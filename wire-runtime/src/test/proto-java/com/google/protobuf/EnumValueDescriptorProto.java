@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -72,10 +73,10 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
     if (other == this) return true;
     if (!(other instanceof EnumValueDescriptorProto)) return false;
     EnumValueDescriptorProto o = (EnumValueDescriptorProto) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(name, o.name)
-        && equals(number, o.number)
-        && equals(options, o.options);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(name, o.name)
+        && WireInternal.equals(number, o.number)
+        && WireInternal.equals(options, o.options);
   }
 
   @Override

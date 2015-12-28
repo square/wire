@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -77,7 +78,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     super(unknownFields);
     this.allow_alias = allow_alias;
     this.deprecated = deprecated;
-    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.uninterpreted_option = WireInternal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.enum_option = enum_option;
   }
 
@@ -86,7 +87,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     Builder builder = new Builder();
     builder.allow_alias = allow_alias;
     builder.deprecated = deprecated;
-    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = WireInternal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.enum_option = enum_option;
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -97,11 +98,11 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     if (other == this) return true;
     if (!(other instanceof EnumOptions)) return false;
     EnumOptions o = (EnumOptions) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(allow_alias, o.allow_alias)
-        && equals(deprecated, o.deprecated)
-        && equals(uninterpreted_option, o.uninterpreted_option)
-        && equals(enum_option, o.enum_option);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(allow_alias, o.allow_alias)
+        && WireInternal.equals(deprecated, o.deprecated)
+        && WireInternal.equals(uninterpreted_option, o.uninterpreted_option)
+        && WireInternal.equals(enum_option, o.enum_option);
   }
 
   @Override
@@ -138,7 +139,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     public Boolean enum_option;
 
     public Builder() {
-      uninterpreted_option = newMutableList();
+      uninterpreted_option = WireInternal.newMutableList();
     }
 
     /**
@@ -165,7 +166,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      checkElementsNotNull(uninterpreted_option);
+      WireInternal.checkElementsNotNull(uninterpreted_option);
       this.uninterpreted_option = uninterpreted_option;
       return this;
     }
@@ -228,7 +229,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     @Override
     public EnumOptions redact(EnumOptions value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      WireInternal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

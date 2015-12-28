@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -34,13 +35,13 @@ public final class Foos extends Message<Foos, Foos.Builder> {
 
   public Foos(List<Foo> foos, ByteString unknownFields) {
     super(unknownFields);
-    this.foos = immutableCopyOf("foos", foos);
+    this.foos = WireInternal.immutableCopyOf("foos", foos);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.foos = copyOf("foos", foos);
+    builder.foos = WireInternal.copyOf("foos", foos);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -50,8 +51,8 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     if (other == this) return true;
     if (!(other instanceof Foos)) return false;
     Foos o = (Foos) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(foos, o.foos);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(foos, o.foos);
   }
 
   @Override
@@ -76,11 +77,11 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     public List<Foo> foos;
 
     public Builder() {
-      foos = newMutableList();
+      foos = WireInternal.newMutableList();
     }
 
     public Builder foos(List<Foo> foos) {
-      checkElementsNotNull(foos);
+      WireInternal.checkElementsNotNull(foos);
       this.foos = foos;
       return this;
     }
@@ -129,7 +130,7 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     @Override
     public Foos redact(Foos value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.foos, Foo.ADAPTER);
+      WireInternal.redactElements(builder.foos, Foo.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -52,7 +53,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, ServiceOptions options, ByteString unknownFields) {
     super(unknownFields);
     this.name = name;
-    this.method = immutableCopyOf("method", method);
+    this.method = WireInternal.immutableCopyOf("method", method);
     this.options = options;
   }
 
@@ -60,7 +61,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.name = name;
-    builder.method = copyOf("method", method);
+    builder.method = WireInternal.copyOf("method", method);
     builder.options = options;
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -71,10 +72,10 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     if (other == this) return true;
     if (!(other instanceof ServiceDescriptorProto)) return false;
     ServiceDescriptorProto o = (ServiceDescriptorProto) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(name, o.name)
-        && equals(method, o.method)
-        && equals(options, o.options);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(name, o.name)
+        && WireInternal.equals(method, o.method)
+        && WireInternal.equals(options, o.options);
   }
 
   @Override
@@ -107,7 +108,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     public ServiceOptions options;
 
     public Builder() {
-      method = newMutableList();
+      method = WireInternal.newMutableList();
     }
 
     public Builder name(String name) {
@@ -116,7 +117,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     }
 
     public Builder method(List<MethodDescriptorProto> method) {
-      checkElementsNotNull(method);
+      WireInternal.checkElementsNotNull(method);
       this.method = method;
       return this;
     }
@@ -176,7 +177,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     @Override
     public ServiceDescriptorProto redact(ServiceDescriptorProto value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.method, MethodDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.method, MethodDescriptorProto.ADAPTER);
       if (builder.options != null) builder.options = ServiceOptions.ADAPTER.redact(builder.options);
       builder.clearUnknownFields();
       return builder.build();

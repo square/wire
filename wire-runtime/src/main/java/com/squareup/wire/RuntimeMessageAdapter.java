@@ -126,7 +126,7 @@ final class RuntimeMessageAdapter<M extends Message<M, B>, B extends Builder<M, 
         List<Object> values = (List<Object>) fieldBinding.getFromBuilder(builder);
         //noinspection unchecked
         ProtoAdapter<Object> adapter = (ProtoAdapter<Object>) fieldBinding.singleAdapter();
-        Message.redactElements(values, adapter);
+        WireInternal.redactElements(values, adapter);
       }
     }
     builder.clearUnknownFields();

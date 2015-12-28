@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import com.squareup.wire.protos.custom_options.FooBar;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.io.IOException;
@@ -198,7 +199,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     this.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
     this.deprecated = deprecated;
     this.map_entry = map_entry;
-    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.uninterpreted_option = WireInternal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.my_message_option_one = my_message_option_one;
     this.my_message_option_two = my_message_option_two;
     this.my_message_option_three = my_message_option_three;
@@ -215,7 +216,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     builder.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
     builder.deprecated = deprecated;
     builder.map_entry = map_entry;
-    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = WireInternal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.my_message_option_one = my_message_option_one;
     builder.my_message_option_two = my_message_option_two;
     builder.my_message_option_three = my_message_option_three;
@@ -232,19 +233,19 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     if (other == this) return true;
     if (!(other instanceof MessageOptions)) return false;
     MessageOptions o = (MessageOptions) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(message_set_wire_format, o.message_set_wire_format)
-        && equals(no_standard_descriptor_accessor, o.no_standard_descriptor_accessor)
-        && equals(deprecated, o.deprecated)
-        && equals(map_entry, o.map_entry)
-        && equals(uninterpreted_option, o.uninterpreted_option)
-        && equals(my_message_option_one, o.my_message_option_one)
-        && equals(my_message_option_two, o.my_message_option_two)
-        && equals(my_message_option_three, o.my_message_option_three)
-        && equals(my_message_option_four, o.my_message_option_four)
-        && equals(my_message_option_five, o.my_message_option_five)
-        && equals(my_message_option_six, o.my_message_option_six)
-        && equals(foreign_message_option, o.foreign_message_option);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(message_set_wire_format, o.message_set_wire_format)
+        && WireInternal.equals(no_standard_descriptor_accessor, o.no_standard_descriptor_accessor)
+        && WireInternal.equals(deprecated, o.deprecated)
+        && WireInternal.equals(map_entry, o.map_entry)
+        && WireInternal.equals(uninterpreted_option, o.uninterpreted_option)
+        && WireInternal.equals(my_message_option_one, o.my_message_option_one)
+        && WireInternal.equals(my_message_option_two, o.my_message_option_two)
+        && WireInternal.equals(my_message_option_three, o.my_message_option_three)
+        && WireInternal.equals(my_message_option_four, o.my_message_option_four)
+        && WireInternal.equals(my_message_option_five, o.my_message_option_five)
+        && WireInternal.equals(my_message_option_six, o.my_message_option_six)
+        && WireInternal.equals(foreign_message_option, o.foreign_message_option);
   }
 
   @Override
@@ -313,7 +314,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     public ForeignMessage foreign_message_option;
 
     public Builder() {
-      uninterpreted_option = newMutableList();
+      uninterpreted_option = WireInternal.newMutableList();
     }
 
     /**
@@ -394,7 +395,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      checkElementsNotNull(uninterpreted_option);
+      WireInternal.checkElementsNotNull(uninterpreted_option);
       this.uninterpreted_option = uninterpreted_option;
       return this;
     }
@@ -518,7 +519,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     @Override
     public MessageOptions redact(MessageOptions value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      WireInternal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
       if (builder.my_message_option_one != null) builder.my_message_option_one = FooBar.ADAPTER.redact(builder.my_message_option_one);
       if (builder.my_message_option_three != null) builder.my_message_option_three = FooBar.ADAPTER.redact(builder.my_message_option_three);
       if (builder.my_message_option_five != null) builder.my_message_option_five = FooBar.ADAPTER.redact(builder.my_message_option_five);

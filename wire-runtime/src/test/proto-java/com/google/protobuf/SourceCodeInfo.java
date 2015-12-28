@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -86,13 +87,13 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
   public SourceCodeInfo(List<Location> location, ByteString unknownFields) {
     super(unknownFields);
-    this.location = immutableCopyOf("location", location);
+    this.location = WireInternal.immutableCopyOf("location", location);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.location = copyOf("location", location);
+    builder.location = WireInternal.copyOf("location", location);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -102,8 +103,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     if (other == this) return true;
     if (!(other instanceof SourceCodeInfo)) return false;
     SourceCodeInfo o = (SourceCodeInfo) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(location, o.location);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(location, o.location);
   }
 
   @Override
@@ -128,7 +129,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     public List<Location> location;
 
     public Builder() {
-      location = newMutableList();
+      location = WireInternal.newMutableList();
     }
 
     /**
@@ -177,7 +178,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
      *   be recorded in the future.
      */
     public Builder location(List<Location> location) {
-      checkElementsNotNull(location);
+      WireInternal.checkElementsNotNull(location);
       this.location = location;
       return this;
     }
@@ -317,21 +318,21 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
     public Location(List<Integer> path, List<Integer> span, String leading_comments, String trailing_comments, List<String> leading_detached_comments, ByteString unknownFields) {
       super(unknownFields);
-      this.path = immutableCopyOf("path", path);
-      this.span = immutableCopyOf("span", span);
+      this.path = WireInternal.immutableCopyOf("path", path);
+      this.span = WireInternal.immutableCopyOf("span", span);
       this.leading_comments = leading_comments;
       this.trailing_comments = trailing_comments;
-      this.leading_detached_comments = immutableCopyOf("leading_detached_comments", leading_detached_comments);
+      this.leading_detached_comments = WireInternal.immutableCopyOf("leading_detached_comments", leading_detached_comments);
     }
 
     @Override
     public Builder newBuilder() {
       Builder builder = new Builder();
-      builder.path = copyOf("path", path);
-      builder.span = copyOf("span", span);
+      builder.path = WireInternal.copyOf("path", path);
+      builder.span = WireInternal.copyOf("span", span);
       builder.leading_comments = leading_comments;
       builder.trailing_comments = trailing_comments;
-      builder.leading_detached_comments = copyOf("leading_detached_comments", leading_detached_comments);
+      builder.leading_detached_comments = WireInternal.copyOf("leading_detached_comments", leading_detached_comments);
       builder.addUnknownFields(unknownFields());
       return builder;
     }
@@ -341,12 +342,12 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       if (other == this) return true;
       if (!(other instanceof Location)) return false;
       Location o = (Location) other;
-      return equals(unknownFields(), o.unknownFields())
-          && equals(path, o.path)
-          && equals(span, o.span)
-          && equals(leading_comments, o.leading_comments)
-          && equals(trailing_comments, o.trailing_comments)
-          && equals(leading_detached_comments, o.leading_detached_comments);
+      return WireInternal.equals(unknownFields(), o.unknownFields())
+          && WireInternal.equals(path, o.path)
+          && WireInternal.equals(span, o.span)
+          && WireInternal.equals(leading_comments, o.leading_comments)
+          && WireInternal.equals(trailing_comments, o.trailing_comments)
+          && WireInternal.equals(leading_detached_comments, o.leading_detached_comments);
     }
 
     @Override
@@ -387,9 +388,9 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       public List<String> leading_detached_comments;
 
       public Builder() {
-        path = newMutableList();
-        span = newMutableList();
-        leading_detached_comments = newMutableList();
+        path = WireInternal.newMutableList();
+        span = WireInternal.newMutableList();
+        leading_detached_comments = WireInternal.newMutableList();
       }
 
       /**
@@ -418,7 +419,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
        * of the label to the terminating semicolon).
        */
       public Builder path(List<Integer> path) {
-        checkElementsNotNull(path);
+        WireInternal.checkElementsNotNull(path);
         this.path = path;
         return this;
       }
@@ -431,7 +432,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
        * 1 to each before displaying to a user.
        */
       public Builder span(List<Integer> span) {
-        checkElementsNotNull(span);
+        WireInternal.checkElementsNotNull(span);
         this.span = span;
         return this;
       }
@@ -496,7 +497,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       }
 
       public Builder leading_detached_comments(List<String> leading_detached_comments) {
-        checkElementsNotNull(leading_detached_comments);
+        WireInternal.checkElementsNotNull(leading_detached_comments);
         this.leading_detached_comments = leading_detached_comments;
         return this;
       }
@@ -601,7 +602,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     @Override
     public SourceCodeInfo redact(SourceCodeInfo value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.location, Location.ADAPTER);
+      WireInternal.redactElements(builder.location, Location.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Long;
@@ -81,7 +82,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     this.v2_s = v2_s;
     this.v2_f32 = v2_f32;
     this.v2_f64 = v2_f64;
-    this.v2_rs = immutableCopyOf("v2_rs", v2_rs);
+    this.v2_rs = WireInternal.immutableCopyOf("v2_rs", v2_rs);
   }
 
   @Override
@@ -92,7 +93,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     builder.v2_s = v2_s;
     builder.v2_f32 = v2_f32;
     builder.v2_f64 = v2_f64;
-    builder.v2_rs = copyOf("v2_rs", v2_rs);
+    builder.v2_rs = WireInternal.copyOf("v2_rs", v2_rs);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -102,13 +103,13 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     if (other == this) return true;
     if (!(other instanceof VersionTwo)) return false;
     VersionTwo o = (VersionTwo) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(i, o.i)
-        && equals(v2_i, o.v2_i)
-        && equals(v2_s, o.v2_s)
-        && equals(v2_f32, o.v2_f32)
-        && equals(v2_f64, o.v2_f64)
-        && equals(v2_rs, o.v2_rs);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(i, o.i)
+        && WireInternal.equals(v2_i, o.v2_i)
+        && WireInternal.equals(v2_s, o.v2_s)
+        && WireInternal.equals(v2_f32, o.v2_f32)
+        && WireInternal.equals(v2_f64, o.v2_f64)
+        && WireInternal.equals(v2_rs, o.v2_rs);
   }
 
   @Override
@@ -153,7 +154,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     public List<String> v2_rs;
 
     public Builder() {
-      v2_rs = newMutableList();
+      v2_rs = WireInternal.newMutableList();
     }
 
     public Builder i(Integer i) {
@@ -182,7 +183,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     }
 
     public Builder v2_rs(List<String> v2_rs) {
-      checkElementsNotNull(v2_rs);
+      WireInternal.checkElementsNotNull(v2_rs);
       this.v2_rs = v2_rs;
       return this;
     }
