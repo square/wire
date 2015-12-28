@@ -4,6 +4,7 @@ package com.squareup.wire.protos.person;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -75,6 +76,7 @@ public final class Person extends Message<Person, Person.Builder> implements Par
       tag = 3,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
+  @Nullable
   public final String email;
 
   /**
@@ -87,11 +89,11 @@ public final class Person extends Message<Person, Person.Builder> implements Par
   )
   public final List<PhoneNumber> phone;
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
+  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone) {
     this(name, id, email, phone, ByteString.EMPTY);
   }
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phone, ByteString unknownFields) {
+  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone, ByteString unknownFields) {
     super(unknownFields);
     this.name = name;
     this.id = id;
@@ -291,13 +293,14 @@ public final class Person extends Message<Person, Person.Builder> implements Par
         tag = 2,
         adapter = "com.squareup.wire.protos.person.Person$PhoneType#ADAPTER"
     )
+    @Nullable
     public final PhoneType type;
 
-    public PhoneNumber(String number, PhoneType type) {
+    public PhoneNumber(String number, @Nullable PhoneType type) {
       this(number, type, ByteString.EMPTY);
     }
 
-    public PhoneNumber(String number, PhoneType type, ByteString unknownFields) {
+    public PhoneNumber(String number, @Nullable PhoneType type, ByteString unknownFields) {
       super(unknownFields);
       this.number = number;
       this.type = type;
