@@ -30,6 +30,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.NameAllocator;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -96,6 +97,7 @@ public final class JavaGenerator {
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
   static final ClassName PARCEL = ClassName.get("android.os", "Parcel");
   static final ClassName PARCELABLE = ClassName.get("android.os", "Parcelable");
+  static final ClassName NULLABLE = ClassName.get("android.support.annotation", "Nullable");
   static final ClassName CREATOR = PARCELABLE.nestedClass("Creator");
 
   private static final Map<ProtoType, TypeName> BUILT_IN_TYPES_MAP =
@@ -465,6 +467,9 @@ public final class JavaGenerator {
       }
       if (field.isDeprecated()) {
         fieldBuilder.addAnnotation(Deprecated.class);
+      }
+      if (emitAndroid && field.isOptional()) {
+        fieldBuilder.addAnnotation(NULLABLE);
       }
       builder.addField(fieldBuilder.build());
     }
@@ -852,7 +857,11 @@ public final class JavaGenerator {
     for (Field field : type.fieldsAndOneOfFields()) {
       TypeName javaType = fieldType(field);
       String fieldName = nameAllocator.get(field);
-      result.addParameter(javaType, fieldName);
+      ParameterSpec.Builder param = ParameterSpec.builder(javaType, fieldName);
+      if (emitAndroid && field.isOptional()) {
+        param.addAnnotation(NULLABLE);
+      }
+      result.addParameter(param.build());
       result.addCode("$L, ", fieldName);
     }
     result.addCode("$T.EMPTY);\n", BYTE_STRING);
@@ -892,7 +901,11 @@ public final class JavaGenerator {
     for (Field field : type.fieldsAndOneOfFields()) {
       TypeName javaType = fieldType(field);
       String fieldName = nameAllocator.get(field);
-      result.addParameter(javaType, fieldName);
+      ParameterSpec.Builder param = ParameterSpec.builder(javaType, fieldName);
+      if (emitAndroid && field.isOptional()) {
+        param.addAnnotation(NULLABLE);
+      }
+      result.addParameter(param.build());
       if (field.isRepeated()) {
         result.addStatement("this.$1L = immutableCopyOf($1S, $1L)", fieldName);
       } else {
