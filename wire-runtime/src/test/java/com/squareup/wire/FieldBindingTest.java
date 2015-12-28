@@ -20,23 +20,13 @@ import com.squareup.wire.protos.roots.C;
 import com.squareup.wire.protos.roots.WiredFieldsMessage;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.powermock.api.mockito.PowerMockito.spy;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({FieldBinding.class, WiredFieldsMessage.Builder.class})
 public class FieldBindingTest {
 
   private WiredFieldsMessage message;
@@ -50,43 +40,6 @@ public class FieldBindingTest {
     valField = message.getClass().getField("val");
     listField = message.getClass().getField("list");
     cField = message.getClass().getField("c");
-  }
-
-  @Test public void staticGetBuilderField() throws Exception {
-    // when
-    Field field = Whitebox.invokeMethod(FieldBinding.class, "getBuilderField", C.Builder.class, "i");
-
-    // then
-    assertThat(field.getType()).isEqualTo(Integer.class);
-  }
-
-  @Test(expected = AssertionError.class) public void staticGetBuilderFieldThrown() throws Exception {
-    // when
-    Whitebox.invokeMethod(FieldBinding.class, "getBuilderField", C.Builder.class, "j");
-
-    // then
-    fail("FieldBinding should throw AssertionError when tries to retrieve field that is not exist");
-  }
-
-  @Test public void staticGetBuilderMethod() throws Exception {
-    // when
-    Method method = Whitebox.invokeMethod(FieldBinding.class, "getBuilderMethod", C.Builder.class, "i", Integer.class);
-
-    // then
-    assertThat(method).isEqualTo(C.Builder.class.getMethod("i", Integer.class));
-  }
-
-  @Test public void staticGetBuilderMethodThrown() throws Exception {
-    // when
-    try {
-      Whitebox.invokeMethod(FieldBinding.class, "getBuilderMethod", C.Builder.class, "j", Integer.class);
-    }
-    catch (AssertionError e) {
-      return;
-    }
-
-    // then
-    fail("FieldBinding should throw AssertionError when tries to retrieve method that is not exist");
   }
 
 
@@ -104,9 +57,6 @@ public class FieldBindingTest {
     assertThat(fieldBinding.tag).isEqualTo(wireField.tag());
     assertThat(fieldBinding.adapterString).isEqualTo(wireField.adapter());
     assertThat(fieldBinding.redacted).isEqualTo(wireField.redacted());
-    assertThat(Whitebox.getInternalState(fieldBinding, "messageField")).isEqualTo(valField);
-    assertThat(Whitebox.getInternalState(fieldBinding, "builderField")).isEqualTo(WiredFieldsMessage.Builder.class.getField("val"));
-    assertThat(Whitebox.getInternalState(fieldBinding, "builderMethod")).isEqualTo(WiredFieldsMessage.Builder.class.getMethod("val", Integer.class));
   }
 
   @Test public void valueList() throws Exception {
@@ -170,7 +120,6 @@ public class FieldBindingTest {
 
     // then
     assertThat(adapter1.javaType).isEqualTo(List.class);
-    assertThat(Whitebox.getInternalState(adapter1, "fieldEncoding")).isEqualTo(FieldEncoding.VARINT);
     assertThat(adapter1).isEqualTo(adapter2);
   }
 
@@ -194,14 +143,13 @@ public class FieldBindingTest {
     WireField wireField = cField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
       new FieldBinding<>(wireField, cField, WiredFieldsMessage.Builder.class);
-    WiredFieldsMessage.Builder builder = spy(new WiredFieldsMessage.Builder().c(new C(55)));
+    WiredFieldsMessage.Builder builder = new WiredFieldsMessage.Builder().c(new C(55));
     C newC = new C(15);
 
     // when
     fieldBinding.set(builder, newC);
 
     // then
-    Mockito.verify(builder).c(newC);
     assertThat(builder.c.i).isEqualTo(15);
     assertThat(message.c.i).isEqualTo(10);
   }
@@ -211,13 +159,12 @@ public class FieldBindingTest {
     WireField wireField = valField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
       new FieldBinding<>(wireField, valField, WiredFieldsMessage.Builder.class);
-    WiredFieldsMessage.Builder builder = spy(new WiredFieldsMessage.Builder().val(88));
+    WiredFieldsMessage.Builder builder = new WiredFieldsMessage.Builder().val(88);
 
     // when
     fieldBinding.set(builder, 33);
 
     // then
-    Mockito.verify(builder, Mockito.never()).val(33);   // since we need to check that OneOf and other labels are processed in different ways
     assertThat(builder.val).isEqualTo(33);
     assertThat(message.val).isEqualTo(12);
   }

@@ -15,24 +15,15 @@
  */
 package com.squareup.wire;
 
-import java.io.IOException;
-
 import okio.Buffer;
-import okio.BufferedSink;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ProtoWriter.class, Buffer.class})
 public final class ProtoWriterTest {
   @Test public void utf8() throws IOException {
     // 0 byte strings.
@@ -135,77 +126,6 @@ public final class ProtoWriterTest {
   @Test(expected = IllegalArgumentException.class) public void staticVarInt64SizeMinValue() throws Exception {
     ProtoWriter.varint64Size(Long.MIN_VALUE);
     fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
-  }
-
-  @Test public void constructor() throws Exception {
-    // given
-    BufferedSink sink = new Buffer();
-
-    // when
-    ProtoWriter protoWriter = new ProtoWriter(sink);
-
-    // then
-    assertThat(Whitebox.getInternalState(protoWriter, "sink")).isEqualTo(sink);
-  }
-
-  @Test public void writeSignedVarint32Case1() throws Exception {
-    // given
-    BufferedSink sink = mock(Buffer.class);
-    ProtoWriter protoWriter = new ProtoWriter(sink);
-
-    // when
-    protoWriter.writeSignedVarint32(1);
-
-    // then
-    Mockito.verify(sink, Mockito.never()).writeByte(0);
-    Mockito.verify(sink, Mockito.times(1)).writeByte(1);
-    Mockito.verify(sink, Mockito.never()).writeByte(7);
-    Mockito.verify(sink, Mockito.never()).writeByte(255);
-  }
-
-  @Test public void writeSignedVarint32Case2() throws Exception {
-    // given
-    BufferedSink sink = mock(Buffer.class);
-    ProtoWriter protoWriter = new ProtoWriter(sink);
-
-    // when
-    protoWriter.writeSignedVarint32(0);
-
-    // then
-    Mockito.verify(sink, Mockito.times(1)).writeByte(0);
-    Mockito.verify(sink, Mockito.never()).writeByte(1);
-    Mockito.verify(sink, Mockito.never()).writeByte(7);
-    Mockito.verify(sink, Mockito.never()).writeByte(255);
-  }
-
-  @Test public void writeSignedVarint32Case3() throws Exception {
-    // given
-    BufferedSink sink = mock(Buffer.class);
-    ProtoWriter protoWriter = new ProtoWriter(sink);
-
-    // when
-    protoWriter.writeSignedVarint32(Integer.MAX_VALUE);
-
-    // then
-    Mockito.verify(sink, Mockito.never()).writeByte(0);
-    Mockito.verify(sink, Mockito.never()).writeByte(1);
-    Mockito.verify(sink, Mockito.times(1)).writeByte(7);
-    Mockito.verify(sink, Mockito.times(4)).writeByte(255);
-  }
-
-  @Test public void writeSignedVarint32Case4() throws Exception {
-    // given
-    BufferedSink sink = mock(Buffer.class);
-    ProtoWriter protoWriter = new ProtoWriter(sink);
-
-    // when
-    protoWriter.writeSignedVarint32(-1);
-
-    // then
-    Mockito.verify(sink, Mockito.never()).writeByte(0);
-    Mockito.verify(sink, Mockito.times(1)).writeByte(1);
-    Mockito.verify(sink, Mockito.never()).writeByte(7);
-    Mockito.verify(sink, Mockito.times(9)).writeByte(255);
   }
 
   private void assertUtf8(String string, String expectedHex) throws IOException {

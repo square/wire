@@ -17,7 +17,6 @@ package com.squareup.wire;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.reflect.Whitebox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,20 +36,6 @@ public class ImmutableListTest {
   }
 
 
-  @Test public void constructor() throws Exception {
-    assertThat(Whitebox.getInternalState(immutableList, "list")).isEqualTo(initialList);
-  }
-
-  @Test public void immutabilityViolation() throws Exception {
-    // when
-    initialList.add("four");
-
-    // then
-    List<String> internalList = Whitebox.getInternalState(immutableList, "list");
-    assertThat(internalList.size()).isEqualTo(3);
-    assertThat(internalList.contains("four")).isFalse();
-  }
-
   @Test public void get() throws Exception {
     assertThat(immutableList.get(0)).isEqualTo(initialList.get(0));
     assertThat(immutableList.get(1)).isEqualTo(initialList.get(1));
@@ -60,13 +45,4 @@ public class ImmutableListTest {
   @Test public void size() throws Exception {
     assertThat(immutableList.size()).isEqualTo(initialList.size());
   }
-
-  @Test public void writeReplace() throws Exception {
-    // when
-    List<String> newList = Whitebox.invokeMethod(immutableList, "writeReplace");
-
-    // then
-    assertThat(newList).isEqualTo(immutableList);
-  }
-
 }

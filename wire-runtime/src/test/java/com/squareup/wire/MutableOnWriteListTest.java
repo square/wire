@@ -17,10 +17,6 @@ package com.squareup.wire;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +24,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(MutableOnWriteList.class)
 public class MutableOnWriteListTest {
 
   private List<String> initialList;
@@ -39,11 +33,6 @@ public class MutableOnWriteListTest {
   public void init() {
     initialList = new ArrayList<>(Arrays.asList("one", "two", "three"));
     mutableOnWriteList = new MutableOnWriteList<>(initialList);
-  }
-
-  @Test public void constructor() throws Exception {
-    assertThat(Whitebox.getInternalState(mutableOnWriteList, "immutableList")).isEqualTo(initialList);
-    assertThat(Whitebox.getInternalState(mutableOnWriteList, "mutableList")).isEqualTo(initialList);
   }
 
   @Test public void get() throws Exception {
@@ -99,19 +88,5 @@ public class MutableOnWriteListTest {
     assertThat(mutableOnWriteList.get(0)).isEqualTo("three");
     assertThat(initialList.size()).isEqualTo(3);
     assertThat(mutableOnWriteList.size()).isEqualTo(1);
-  }
-
-  @Test public void writeReplace() throws Exception {
-    // when
-    List<String> newList = Whitebox.invokeMethod(mutableOnWriteList, "writeReplace");
-    newList.remove(0);
-
-    // then
-    assertThat(initialList.get(0)).isEqualTo("one");
-    assertThat(mutableOnWriteList.get(0)).isEqualTo("one");
-    assertThat(newList.get(0)).isEqualTo("two");
-    assertThat(initialList.size()).isEqualTo(3);
-    assertThat(mutableOnWriteList.size()).isEqualTo(3);
-    assertThat(newList.size()).isEqualTo(2);
   }
 }

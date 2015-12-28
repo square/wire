@@ -18,32 +18,13 @@ package com.squareup.wire;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import com.squareup.wire.protos.roots.C;
 import com.squareup.wire.protos.roots.G;
-import com.squareup.wire.protos.roots.PrivateFromValue;
-import com.squareup.wire.protos.roots.UnsupportedFromValue;
 import com.squareup.wire.protos.roots.WithoutFromValue;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.powermock.api.mockito.PowerMockito.mock;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ProtoReader.class)
 public class RuntimeEnumAdapterTest {
-
-  @Test public void constructor() throws Exception {
-    // when
-    RuntimeEnumAdapter runtimeEnumAdapter = new RuntimeEnumAdapter<>(G.class);
-
-    // then
-    assertThat(Whitebox.getInternalState(runtimeEnumAdapter, "type")).isEqualTo(G.class);
-    assertThat(Whitebox.getInternalState(runtimeEnumAdapter, "fromValueMethod")).isEqualTo(G.class.getMethod("fromValue", int.class));
-  }
 
   // better solution is to declare fromValue method in WireEnum
   @Test public void constructorIllegalArgument() throws Exception {
@@ -58,46 +39,6 @@ public class RuntimeEnumAdapterTest {
     // then
     fail("RuntimeEnumAdapter should throw AssertionError when type without fromValue(int) method is passed as constructor argument");
   }
-
-  // better solution is to declare fromValue method in WireEnum
-  @Test public void decodePrivateFromValueMethod() throws Exception {
-    // given
-    ProtoReader protoReader = mock(ProtoReader.class);
-    RuntimeEnumAdapter runtimeEnumAdapter = new RuntimeEnumAdapter<>(PrivateFromValue.class);
-
-    PowerMockito.when(protoReader.readVarint32()).thenReturn(1);
-
-    // when
-    try {
-      runtimeEnumAdapter.decode(protoReader);
-    }
-    catch (AssertionError e) {
-      return;
-    }
-
-    // then
-    fail("RuntimeEnumAdapter should throw AssertionError when type with private fromValue(int) method is used");
-  }
-
-  @Test public void decodeFromValueMethodWithException() throws Exception {
-    // given
-    ProtoReader protoReader = mock(ProtoReader.class);
-    RuntimeEnumAdapter runtimeEnumAdapter = new RuntimeEnumAdapter<>(UnsupportedFromValue.class);
-
-    PowerMockito.when(protoReader.readVarint32()).thenReturn(1);
-
-    // when
-    try {
-      runtimeEnumAdapter.decode(protoReader);
-    }
-    catch (AssertionError e) {
-      return;
-    }
-
-    // then
-    fail("RuntimeEnumAdapter should throw AssertionError when type with fromValue(int) throws exception while execution");
-  }
-
 
   @Test public void equalsMethod() throws Exception {
     assertThat(new RuntimeEnumAdapter<>(G.class).equals(G.ADAPTER)).isTrue();

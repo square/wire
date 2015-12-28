@@ -19,26 +19,13 @@ import com.squareup.wire.protos.person.Person;
 import com.squareup.wire.protos.roots.C;
 import com.squareup.wire.protos.simple.SimpleMessage;
 import okio.ByteString;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ ProtoReader.class, ProtoWriter.class, WireField.Label.class})
 public final class ProtoAdapterTest {
 
   @Test public void getFromClass() throws Exception {
@@ -157,146 +144,6 @@ public final class ProtoAdapterTest {
 
     // then
     fail("ProtoAdapter should throw AssertionError when IO error occur during encoding");
-  }
-
-  @Test public void boolEncode() throws Exception {
-    // given
-    ProtoWriter protoWriterTrue = mock(ProtoWriter.class);
-    ProtoWriter protoWriterFalse = mock(ProtoWriter.class);
-
-    // when
-    ProtoAdapter.BOOL.encode(protoWriterTrue, true);
-    ProtoAdapter.BOOL.encode(protoWriterFalse, false);
-
-    // then
-    Mockito.verify(protoWriterTrue).writeVarint32(1);
-    Mockito.verify(protoWriterFalse).writeVarint32(0);
-  }
-
-  @Test public void boolDecode() throws Exception {
-    // given
-    ProtoReader protoReader0 = mock(ProtoReader.class);
-    ProtoReader protoReader1 = mock(ProtoReader.class);
-
-    // when
-    when(protoReader0.readVarint32()).thenReturn(0);
-    when(protoReader1.readVarint32()).thenReturn(1);
-
-    // then
-    assertThat(ProtoAdapter.BOOL.decode(protoReader0)).isEqualTo(Boolean.FALSE);
-    assertThat(ProtoAdapter.BOOL.decode(protoReader1)).isEqualTo(Boolean.TRUE);
-  }
-
-  @Test(expected = IOException.class) public void boolDecodeUnknown() throws Exception {
-    // given
-    ProtoReader protoReader = mock(ProtoReader.class);
-
-    // when
-    when(protoReader.readVarint32()).thenReturn(-1);
-    ProtoAdapter.BOOL.decode(protoReader);
-
-    // then
-    fail("ProtoAdapter should throw IOException when non bit value is returned by reader");
-  }
-
-
-  @Test public void withLabel() throws Exception {
-    // given
-    WireField.Label repeatedPackedLabel = mock(WireField.Label.class);
-    WireField.Label repeatedNotPackedLabel = mock(WireField.Label.class);
-    WireField.Label notRepeatedPackedLabel = mock(WireField.Label.class);
-    WireField.Label notRepeatedNotPackedLabel = mock(WireField.Label.class);
-
-    // when
-    when(repeatedPackedLabel.isRepeated()).thenReturn(true);
-    when(repeatedPackedLabel.isPacked()).thenReturn(true);
-
-    when(repeatedNotPackedLabel.isRepeated()).thenReturn(true);
-    when(repeatedNotPackedLabel.isPacked()).thenReturn(false);
-
-    when(notRepeatedPackedLabel.isRepeated()).thenReturn(false);
-    when(notRepeatedPackedLabel.isPacked()).thenReturn(true);
-
-    when(notRepeatedNotPackedLabel.isRepeated()).thenReturn(false);
-    when(notRepeatedNotPackedLabel.isPacked()).thenReturn(false);
-
-    // then
-    assertThat(ProtoAdapter.BOOL.withLabel(repeatedPackedLabel)).isEqualTo(ProtoAdapter.BOOL.asPacked());
-    assertThat(ProtoAdapter.BOOL.withLabel(repeatedNotPackedLabel)).isEqualTo(ProtoAdapter.BOOL.asRepeated());
-    assertThat(ProtoAdapter.BOOL.withLabel(notRepeatedPackedLabel)).isEqualTo(ProtoAdapter.BOOL);
-    assertThat(ProtoAdapter.BOOL.withLabel(notRepeatedNotPackedLabel)).isEqualTo(ProtoAdapter.BOOL);
-  }
-
-  @Test(expected = IllegalArgumentException.class) public void createPackedForNonPackableFieldAdapter() throws Exception {
-    // when
-    Whitebox.invokeMethod(ProtoAdapter.STRING, "createPacked");
-
-    // then
-    fail("ProtoAdapter should throw IllegalArgumentException when non packable field adapter tries to create packed adapter");
-  }
-
-  @Test public void createPackedAdapterDecode() throws Exception {
-    // given
-    ProtoAdapter<List> packedAdapter = Whitebox.invokeMethod(ProtoAdapter.BOOL, "createPacked");
-    ProtoReader protoReader = mock(ProtoReader.class);
-
-    // when
-    when(protoReader.readVarint32()).thenReturn(1);
-
-    // then
-    assertThat(packedAdapter.decode(protoReader)).isEqualTo(Collections.singletonList(Boolean.TRUE));
-  }
-
-  @Test public void createPackedAdapterRedacted() throws Exception {
-    // when
-    ProtoAdapter<List> packedAdapter = Whitebox.invokeMethod(ProtoAdapter.BOOL, "createPacked");
-
-    // then
-    assertThat(packedAdapter.redact(Arrays.asList(true, false))).isEqualTo(Collections.emptyList());
-  }
-
-  @Test(expected = UnsupportedOperationException.class) public void createRepeatedAdapterEncodedSize() throws Exception {
-    // given
-    ProtoAdapter<List<Boolean>> repeatedAdapter = Whitebox.invokeMethod(ProtoAdapter.BOOL, "createRepeated");
-
-    // when
-    repeatedAdapter.encodedSize(Arrays.asList(true, false));
-
-    // then
-    fail("Repeated ProtoAdapter should throw UnsupportedOperationException on encodedSize call");
-  }
-
-  @Test(expected = UnsupportedOperationException.class) public void createRepeatedAdapterEncode() throws Exception {
-    // given
-    ProtoAdapter<List<Boolean>> repeatedAdapter = Whitebox.invokeMethod(ProtoAdapter.BOOL, "createRepeated");
-    ProtoWriter protoWriter = mock(ProtoWriter.class);
-
-    // when
-    repeatedAdapter.encode(protoWriter, Arrays.asList(true, false));
-
-    // then
-    fail("Repeated ProtoAdapter should throw UnsupportedOperationException on encode call");
-  }
-
-
-  @Test public void createRepeatedAdapterDecode() throws Exception {
-    // given
-    ProtoAdapter<List> repeatedAdapter = Whitebox.invokeMethod(ProtoAdapter.BOOL, "createRepeated");
-    ProtoReader protoReader = mock(ProtoReader.class);
-
-    // when
-    when(protoReader.readVarint32()).thenReturn(1);
-
-    // then
-    assertThat(repeatedAdapter.decode(protoReader)).isEqualTo(Collections.singletonList(Boolean.TRUE));
-  }
-
-  @Test public void createRepeatedAdapterRedacted() throws Exception {
-    // when
-    ProtoAdapter<List> repeatedAdapter = Whitebox.invokeMethod(ProtoAdapter.BOOL, "createRepeated");
-
-    // then
-    assertThat(repeatedAdapter.redact(Arrays.asList(true, false))).isEqualTo(Collections.emptyList());
   }
 
   private ProtoAdapter<C> createErrorProtoAdapter() {

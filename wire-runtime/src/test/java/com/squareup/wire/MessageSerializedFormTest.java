@@ -17,32 +17,10 @@ package com.squareup.wire;
 
 import com.squareup.wire.protos.roots.C;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.Whitebox;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.io.IOException;
-import java.io.StreamCorruptedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-import static org.powermock.api.mockito.PowerMockito.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MessageSerializedForm.class, ProtoAdapter.class})
 public class MessageSerializedFormTest {
-
-  @Test public void constructor() throws Exception {
-    // when
-    MessageSerializedForm messageSerializedForm = new MessageSerializedForm(new C(5), C.class);
-
-    // then
-    assertThat(((byte[])Whitebox.getInternalState(messageSerializedForm, "bytes"))[1]).isEqualTo((byte) 5);
-    assertThat(Whitebox.getInternalState(messageSerializedForm, "messageClass")).isEqualTo(C.class);
-
-  }
 
   @Test public void readResolve() throws Exception {
     // when
@@ -51,23 +29,5 @@ public class MessageSerializedFormTest {
 
     // then
     assertThat(messageSerializedForm.readResolve()).isEqualTo(message);
-  }
-
-  @Test(expected = StreamCorruptedException.class) public void readResolveThrown() throws Exception {
-    // given
-    ProtoAdapter protoAdapterMock = mock(ProtoAdapter.class);
-    when(protoAdapterMock.decode(Mockito.any(byte[].class))).thenThrow(new IOException());
-
-    mockStatic(ProtoAdapter.class);
-    when(ProtoAdapter.get(Mockito.any(Class.class))).thenReturn(protoAdapterMock);
-
-    C message = new C(5);
-    MessageSerializedForm messageSerializedForm = new MessageSerializedForm(message, message.getClass());
-
-    // when
-    messageSerializedForm.readResolve();
-
-    // then
-    fail("MessageSerializedForm should throw StreamCorruptedException when decoding caused IO error");
   }
 }
