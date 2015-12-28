@@ -23,6 +23,7 @@ import okio.ByteString;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,12 +38,12 @@ public class RuntimeMessageAdapterTest {
   private Map<Integer, FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder>> fieldBindings;
 
   @Before
-  public void init() throws Exception {
+  public void init() throws NoSuchFieldException {
     fieldBindings = createFieldBindings("val");
     adapter = new RuntimeMessageAdapter<>(WiredFieldsMessage.class, WiredFieldsMessage.Builder.class, fieldBindings);
   }
 
-  @Test(expected = IllegalArgumentException.class) public void staticCreateWrongBuilder() throws Exception {
+  @Test(expected = IllegalArgumentException.class) public void staticCreateWrongBuilder() {
     // when
     RuntimeMessageAdapter.create(CustomBuilderNameMessage.class);
 
@@ -50,11 +51,11 @@ public class RuntimeMessageAdapterTest {
     fail("RuntimeMessageAdapter should throw IllegalArgumentException when message type don't have nested Builder class");
   }
 
-  @Test public void constructor() throws Exception {
+  @Test public void constructor() {
     assertThat(adapter.fieldBindings()).isEqualTo(fieldBindings);
   }
 
-  @Test public void newBuilder() throws Exception {
+  @Test public void newBuilder() {
     // when
     WiredFieldsMessage.Builder builder = adapter.newBuilder();
 
@@ -62,7 +63,7 @@ public class RuntimeMessageAdapterTest {
     assertThat(builder).isEqualTo(new WiredFieldsMessage.Builder());
   }
 
-  @Test public void newBuilderInaccessibleConstructor() throws Exception {
+  @Test public void newBuilderInaccessibleConstructor() {
     // given
     RuntimeMessageAdapter<CustomBuilderNameMessage, CustomBuilderNameMessage.CustomBuilder> adapter =
       new RuntimeMessageAdapter<>(
@@ -83,7 +84,7 @@ public class RuntimeMessageAdapterTest {
     fail("RuntimeMessageAdapter should throw AssertionError when builder constructor is inaccessible");
   }
 
-  @Test public void newBuilderErrorThrowingConstructor() throws Exception {
+  @Test public void newBuilderErrorThrowingConstructor() {
     // given
     RuntimeMessageAdapter adapter =
       new RuntimeMessageAdapter(
@@ -104,7 +105,7 @@ public class RuntimeMessageAdapterTest {
     fail("RuntimeMessageAdapter should throw AssertionError when builder constructor is inaccessible");
   }
 
-  @Test public void encodeSize() throws Exception {
+  @Test public void encodeSize() {
     // when
     WiredFieldsMessage message = new WiredFieldsMessage(1, Arrays.asList(3, 7, 5), new C(51));
     WiredFieldsMessage nullMessage = new WiredFieldsMessage(null, Arrays.asList(3, 7, 5), new C(51));
@@ -114,7 +115,7 @@ public class RuntimeMessageAdapterTest {
     assertThat(adapter.encodedSize(nullMessage)).isEqualTo(0);
   }
 
-  @Test public void toStringRedacted() throws Exception {
+  @Test public void toStringRedacted() {
     // when
     WiredFieldsMessage message = new WiredFieldsMessage(15, Arrays.asList(3, 7, 5), new C(51));
 
@@ -123,7 +124,7 @@ public class RuntimeMessageAdapterTest {
   }
 
 
-  @Test public void toStringNotRedacted() throws Exception {
+  @Test public void toStringNotRedacted() throws NoSuchFieldException {
     // given
     fieldBindings = createFieldBindings("c");
     adapter = new RuntimeMessageAdapter<>(WiredFieldsMessage.class, WiredFieldsMessage.Builder.class, fieldBindings);
@@ -135,7 +136,7 @@ public class RuntimeMessageAdapterTest {
     assertThat(adapter.toString(message)).isEqualTo("WiredFieldsMessage{c=C{i=51}}");
   }
 
-  @Test public void toStringNull() throws Exception {
+  @Test public void toStringNull() throws NoSuchFieldException {
     // given
     fieldBindings = createFieldBindings("c");
     adapter = new RuntimeMessageAdapter<>(WiredFieldsMessage.class, WiredFieldsMessage.Builder.class, fieldBindings);
@@ -147,17 +148,17 @@ public class RuntimeMessageAdapterTest {
     assertThat(adapter.toString(message)).isEqualTo("WiredFieldsMessage{}");
   }
 
-  @Test public void equalsMethod() throws Exception {
+  @Test public void equalsMethod() {
     assertThat(adapter.equals(RuntimeMessageAdapter.create(WiredFieldsMessage.class))).isTrue();
     assertThat(adapter.equals(RuntimeMessageAdapter.create(C.class))).isFalse();
     assertThat(adapter.equals(fieldBindings)).isFalse();
   }
 
-  @Test public void hashCodeMethod() throws Exception {
+  @Test public void hashCodeMethod() {
     assertThat(adapter.hashCode()).isEqualTo(WiredFieldsMessage.class.hashCode());
   }
 
-  @Test public void decodeWithWiredFields() throws Exception {
+  @Test public void decodeWithWiredFields() throws IOException, NoSuchFieldException {
     // given
     fieldBindings = createFieldBindings("val", "list", "c");
     adapter = new RuntimeMessageAdapter<>(WiredFieldsMessage.class, WiredFieldsMessage.Builder.class, fieldBindings);
@@ -174,7 +175,7 @@ public class RuntimeMessageAdapterTest {
     assertThat(decoded.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
-  @Test public void decodeWithoutWiredFields() throws Exception {
+  @Test public void decodeWithoutWiredFields() throws IOException {
     // given
     RuntimeMessageAdapter<C, C.Builder> messageAdapter = RuntimeMessageAdapter.create(C.class);
     ByteString encoded = ByteString.decodeHex("082c");
@@ -187,7 +188,8 @@ public class RuntimeMessageAdapterTest {
     assertThat(C.ADAPTER.decode(decoded.unknownFields().toByteArray())).isEqualTo(new C(44));
   }
 
-  private Map<Integer, FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder>> createFieldBindings(String... fieldNames) throws Exception {
+  private Map<Integer, FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder>>
+  createFieldBindings(String... fieldNames) throws NoSuchFieldException {
 
     Map<Integer, FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder>> map = new HashMap<>();
 
@@ -201,5 +203,4 @@ public class RuntimeMessageAdapterTest {
 
     return map;
   }
-
 }

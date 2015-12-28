@@ -42,7 +42,7 @@ import static org.junit.Assert.fail;
 public class WireTest {
 
   @Test
-  public void testSimpleMessage() throws Exception {
+  public void testSimpleMessage() throws IOException {
     SimpleMessage msg = new SimpleMessage.Builder().required_int32(456).build();
     assertThat(msg.optional_int32).isNull();
     assertThat(msg.optional_nested_msg).isNull();
@@ -116,7 +116,7 @@ public class WireTest {
     assertThat(msg.repeated_double).isEqualTo(doubles);
   }
 
-  @Test public void mutateBuilder() throws Exception {
+  @Test public void mutateBuilder() {
     SimpleMessage message = new SimpleMessage.Builder()
         .required_int32(10)
         .build();
@@ -152,7 +152,7 @@ public class WireTest {
   }
 
   @Test
-  public void testExtensions() throws Exception {
+  public void testExtensions() throws IOException {
     ExternalMessage optional_external_msg = new ExternalMessage.Builder()
         .fooext(Arrays.asList(444, 555))
         .barext(333)
@@ -185,7 +185,7 @@ public class WireTest {
   }
 
   @Test
-  public void testExtensionEnum() throws Exception {
+  public void testExtensionEnum() throws IOException {
     ExternalMessage optional_external_msg = new ExternalMessage.Builder()
         .nested_enum_ext(SimpleMessage.NestedEnum.BAZ)
         .build();
@@ -220,7 +220,7 @@ public class WireTest {
   }
 
   @Test
-  public void testExtensionsNoRegistry() throws Exception {
+  public void testExtensionsNoRegistry() throws IOException {
     ExternalMessage optional_external_msg =
         new ExternalMessage.Builder()
             .fooext(Arrays.asList(444, 555))
@@ -403,7 +403,7 @@ public class WireTest {
   }
 
   @Test
-  public void extensionNameCollisions() throws Exception {
+  public void extensionNameCollisions() {
     assertThat(CollisionSubject.FIELD_OPTIONS_F.squareup_protos_extension_collision_1_a)
         .isEqualTo("1a");
     assertThat(CollisionSubject.FIELD_OPTIONS_F.b)
@@ -415,7 +415,7 @@ public class WireTest {
   }
 
   @Test
-  public void staticGet() throws Exception {
+  public void staticGet() {
     assertThat(Wire.get("value", "test value")).isEqualTo("value");
     assertThat(Wire.get("", "test value")).isEqualTo("");
     assertThat(Wire.get(null, "test value")).isEqualTo("test value");

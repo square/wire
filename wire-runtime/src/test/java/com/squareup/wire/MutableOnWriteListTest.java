@@ -35,17 +35,17 @@ public class MutableOnWriteListTest {
     mutableOnWriteList = new MutableOnWriteList<>(initialList);
   }
 
-  @Test public void get() throws Exception {
+  @Test public void get() {
     assertThat(mutableOnWriteList.get(0)).isEqualTo(initialList.get(0));
     assertThat(mutableOnWriteList.get(1)).isEqualTo(initialList.get(1));
     assertThat(mutableOnWriteList.get(2)).isEqualTo(initialList.get(2));
   }
 
-  @Test public void size() throws Exception {
+  @Test public void size() {
     assertThat(mutableOnWriteList.size()).isEqualTo(initialList.size());
   }
 
-  @Test public void add() throws Exception {
+  @Test public void add() {
     // when
     mutableOnWriteList.add(0, "zero");
 
@@ -56,7 +56,7 @@ public class MutableOnWriteListTest {
     assertThat(mutableOnWriteList.size()).isEqualTo(4);
   }
 
-  @Test public void set() throws Exception {
+  @Test public void set() {
     // when
     mutableOnWriteList.set(0, "zero");
 
@@ -67,7 +67,7 @@ public class MutableOnWriteListTest {
     assertThat(mutableOnWriteList.size()).isEqualTo(3);
   }
 
-  @Test public void remove() throws Exception {
+  @Test public void remove() {
     // when
     mutableOnWriteList.remove(1);
 
@@ -78,7 +78,7 @@ public class MutableOnWriteListTest {
     assertThat(mutableOnWriteList.size()).isEqualTo(2);
   }
 
-  @Test public void repeatableRemove() throws Exception {
+  @Test public void repeatableRemove() {
     // when
     mutableOnWriteList.remove(0);
     mutableOnWriteList.remove(0);

@@ -32,7 +32,7 @@ public class MessageTest {
     defaultUnknownFields = ByteString.of("test".getBytes());
   }
 
-  @Test(expected = NullPointerException.class) public void constructorThrown() throws Exception {
+  @Test(expected = NullPointerException.class) public void constructorThrown() {
     // when
     new C(5, null);
 
@@ -40,7 +40,7 @@ public class MessageTest {
     fail("Message should throw NullPointerException when try to create new instance with null as unknown fields");
   }
 
-  @Test public void unknownFields() throws Exception {
+  @Test public void unknownFields() {
     // when
     Message message = new C(5, defaultUnknownFields);
 

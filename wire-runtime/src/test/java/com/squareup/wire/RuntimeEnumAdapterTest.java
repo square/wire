@@ -27,7 +27,7 @@ import static org.junit.Assert.fail;
 public class RuntimeEnumAdapterTest {
 
   // better solution is to declare fromValue method in WireEnum
-  @Test public void constructorIllegalArgument() throws Exception {
+  @Test public void constructorIllegalArgument() {
     // when
     try {
       new RuntimeEnumAdapter<>(WithoutFromValue.class);
@@ -40,13 +40,13 @@ public class RuntimeEnumAdapterTest {
     fail("RuntimeEnumAdapter should throw AssertionError when type without fromValue(int) method is passed as constructor argument");
   }
 
-  @Test public void equalsMethod() throws Exception {
+  @Test public void equalsMethod() {
     assertThat(new RuntimeEnumAdapter<>(G.class).equals(G.ADAPTER)).isTrue();
     assertThat(new RuntimeEnumAdapter<>(G.class).equals(new RuntimeEnumAdapter(ForeignEnum.class))).isFalse();
     assertThat(new RuntimeEnumAdapter<>(G.class).equals(C.ADAPTER)).isFalse();
   }
 
-  @Test public void hashCodeMethod() throws Exception {
+  @Test public void hashCodeMethod() {
     assertThat(new RuntimeEnumAdapter<>(G.class).hashCode()).isEqualTo(G.class.hashCode());
     assertThat(new RuntimeEnumAdapter<>(ForeignEnum.class).hashCode()).isEqualTo(ForeignEnum.class.hashCode());
   }

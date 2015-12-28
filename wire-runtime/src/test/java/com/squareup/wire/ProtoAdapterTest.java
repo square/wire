@@ -65,12 +65,12 @@ public final class ProtoAdapterTest {
       RuntimeMessageAdapter.create(SimpleMessage.NestedMessage.class));
   }
 
-  @Test(expected = NullPointerException.class) public void staticNewMessageAdapterThrown() throws Exception {
+  @Test(expected = NullPointerException.class) public void staticNewMessageAdapterThrown() {
     ProtoAdapter.newMessageAdapter(null);
     fail("ProtoAdapter should throw NullPointerException when null is passed as parameter");
   }
 
-  @Test public void staticGet() throws Exception {
+  @Test public void staticGet() {
     // when
     ProtoAdapter protoAdapter = ProtoAdapter.get("com.squareup.wire.protos.roots.C#ADAPTER");
 
@@ -79,47 +79,47 @@ public final class ProtoAdapterTest {
     assertThat(protoAdapter.getClass()).isEqualTo(C.ADAPTER.getClass());
   }
 
-  @Test(expected = NullPointerException.class) public void staticGetNull() throws Exception {
+  @Test(expected = NullPointerException.class) public void staticGetNull() {
     ProtoAdapter.get((String) null);
     fail("ProtoAdapter should throw NullPointerException when null is passed as parameter");
   }
 
-  @Test(expected = IllegalArgumentException.class) public void staticGetEmpty() throws Exception {
+  @Test(expected = IllegalArgumentException.class) public void staticGetEmpty() {
     ProtoAdapter.get("");
     fail("ProtoAdapter should throw IllegalArgumentException when empty string is passed as parameter");
   }
 
-  @Test(expected = IllegalArgumentException.class) public void staticGetIncorrectPath() throws Exception {
+  @Test(expected = IllegalArgumentException.class) public void staticGetIncorrectPath() {
     ProtoAdapter.get("IncorrectPath");
     fail("ProtoAdapter should throw IllegalArgumentException when string without # is passed as parameter");
   }
 
-  @Test(expected = IllegalArgumentException.class) public void staticGetIncorrectClass() throws Exception {
+  @Test(expected = IllegalArgumentException.class) public void staticGetIncorrectClass() {
     ProtoAdapter.get("C#ADAPTER");
     fail("ProtoAdapter should throw IllegalArgumentException when path contains wrong class");
   }
 
-  @Test(expected = IllegalArgumentException.class) public void staticGetIncorrectField() throws Exception {
+  @Test(expected = IllegalArgumentException.class) public void staticGetIncorrectField() {
     ProtoAdapter.get("com.squareup.wire.protos.roots.C#protoAdapter");
     fail("ProtoAdapter should throw IllegalArgumentException when path contains wrong field");
   }
 
-  @Test(expected = IllegalArgumentException.class) public void staticGetIncorrectFieldAccess() throws Exception {
+  @Test(expected = IllegalArgumentException.class) public void staticGetIncorrectFieldAccess() {
     ProtoAdapter.get("com.squareup.wire.protos.roots.C#serialVersionUID");
     fail("ProtoAdapter should throw IllegalArgumentException when path contains inaccessible field");
   }
 
-  @Test(expected = ClassCastException.class) public void staticGetIncorrectFieldType() throws Exception {
+  @Test(expected = ClassCastException.class) public void staticGetIncorrectFieldType() {
     ProtoAdapter.get("com.squareup.wire.protos.roots.C#DEFAULT_I");
     fail("ProtoAdapter should throw ClassCastException when path contains field with incorrect type");
   }
 
-  @Test public void redacted() throws Exception {
+  @Test public void redacted() {
     assertThat(ProtoAdapter.INT32.redact(null)).isNull();
     assertThat(ProtoAdapter.INT32.redact(20)).isNull();
   }
 
-  @Test(expected = NullPointerException.class) public void encodeNull() throws Exception {
+  @Test(expected = NullPointerException.class) public void encodeNull() {
     // given
     ProtoAdapter<C> protoAdapter = createErrorProtoAdapter();
 
@@ -130,7 +130,7 @@ public final class ProtoAdapterTest {
     fail("ProtoAdapter should throw NullPointerException when null value is passed to encode");
   }
 
-  @Test public void encodeIOError() throws Exception {
+  @Test public void encodeIOError() {
     // given
     ProtoAdapter<C> protoAdapter = createErrorProtoAdapter();
 

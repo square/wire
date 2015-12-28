@@ -119,7 +119,7 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(adapter.toString(new RedactedRequired("a"))).isEqualTo("RedactedRequired{a=██}");
   }
 
-  @Test(expected = UnsupportedOperationException.class) public void redactRequiredField() throws Exception {
+  @Test(expected = UnsupportedOperationException.class) public void redactRequiredField() throws NoSuchFieldException {
     // given
     RuntimeMessageAdapter adapter = createAdapter("requiredRedacted");
 
@@ -131,7 +131,7 @@ public class RuntimeMessageAdapterRedactTest {
     fail("RuntimeMessageAdapter should throw UnsupportedOperationException when tries to redact required field");
   }
 
-  @Test public void notRedactRequiredField() throws Exception {
+  @Test public void notRedactRequiredField() throws NoSuchFieldException {
     // given
     RuntimeMessageAdapter adapter = createAdapter("requiredNotRedacted");
 
@@ -149,7 +149,7 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(message.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
-  @Test public void redactOptionalField() throws Exception {
+  @Test public void redactOptionalField() throws NoSuchFieldException {
     // given
     RuntimeMessageAdapter adapter = createAdapter("optionalRedacted");
 
@@ -177,7 +177,7 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(nullValueMessage.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
-  @Test public void notRedactOptionalField() throws Exception {
+  @Test public void notRedactOptionalField() throws NoSuchFieldException {
     // given
     RuntimeMessageAdapter adapter = createAdapter("optionalNotRedacted");
 
@@ -195,7 +195,7 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(message.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
-  @Test public void redactMessageField() throws Exception {
+  @Test public void redactMessageField() throws NoSuchFieldException {
     // given
     RuntimeMessageAdapter adapter = createAdapter("cRedacted");
 
@@ -223,7 +223,7 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(nullValueMessage.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
-  @Test public void notRedactMessageField() throws Exception {
+  @Test public void notRedactMessageField() throws NoSuchFieldException {
     // given
     RuntimeMessageAdapter adapter = createAdapter("cNotRedacted");
 
@@ -241,7 +241,7 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(message.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
-  @Test public void redactRepeatedMessageField() throws Exception {
+  @Test public void redactRepeatedMessageField() throws NoSuchFieldException {
     // given
     RuntimeMessageAdapter adapter = createAdapter("cRepeatedRedacted");
 
@@ -259,7 +259,7 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(message.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
-  @Test public void notRedactRepeatedMessageField() throws Exception {
+  @Test public void notRedactRepeatedMessageField() throws NoSuchFieldException {
     // given
     RuntimeMessageAdapter adapter = createAdapter("cRepeatedNotRedacted");
 
@@ -277,7 +277,8 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(message.unknownFields()).isEqualTo(ByteString.EMPTY);
   }
 
-  private RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> createAdapter(String... fieldNames) throws Exception {
+  private RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder>
+  createAdapter(String... fieldNames) throws NoSuchFieldException {
 
     Map<Integer, FieldBinding<RedactFieldsMessage, RedactFieldsMessage.Builder>> fieldBindings = new HashMap<>();
 

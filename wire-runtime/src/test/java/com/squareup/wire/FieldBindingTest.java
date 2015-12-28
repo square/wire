@@ -35,7 +35,7 @@ public class FieldBindingTest {
   private Field cField;
 
   @Before
-  public void init() throws Exception {
+  public void init() throws NoSuchFieldException {
     message = new WiredFieldsMessage(12, new ArrayList<Integer>(), new C(10));
     valField = message.getClass().getField("val");
     listField = message.getClass().getField("list");
@@ -43,7 +43,7 @@ public class FieldBindingTest {
   }
 
 
-  @Test public void constructor() throws Exception {
+  @Test public void constructor() {
     // given
     WireField wireField = valField.getAnnotation(WireField.class);
 
@@ -59,7 +59,7 @@ public class FieldBindingTest {
     assertThat(fieldBinding.redacted).isEqualTo(wireField.redacted());
   }
 
-  @Test public void valueList() throws Exception {
+  @Test public void valueList() {
     // given
     WireField wireField = listField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
@@ -76,7 +76,7 @@ public class FieldBindingTest {
     assertThat(message.list).isEmpty();
   }
 
-  @Test public void valueVal() throws Exception {
+  @Test public void valueVal() {
     // given
     WireField wireField = valField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
@@ -93,7 +93,7 @@ public class FieldBindingTest {
     assertThat(message.list).isEmpty();
   }
 
-  @Test public void singleAdapter() throws Exception {
+  @Test public void singleAdapter() {
     // given
     WireField wireField = valField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
@@ -108,7 +108,7 @@ public class FieldBindingTest {
     assertThat(adapter1).isEqualTo(adapter2);
   }
 
-  @Test public void adapter() throws Exception {
+  @Test public void adapter() {
     // given
     WireField wireField = listField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
@@ -123,7 +123,7 @@ public class FieldBindingTest {
     assertThat(adapter1).isEqualTo(adapter2);
   }
 
-  @Test public void get() throws Exception {
+  @Test public void get() {
     // given
     WireField wireField = valField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
@@ -138,7 +138,7 @@ public class FieldBindingTest {
     assertThat(message.val).isEqualTo(12);
   }
 
-  @Test public void setOneOf() throws Exception {
+  @Test public void setOneOf() {
     // given
     WireField wireField = cField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
@@ -154,7 +154,7 @@ public class FieldBindingTest {
     assertThat(message.c.i).isEqualTo(10);
   }
 
-  @Test public void setVal() throws Exception {
+  @Test public void setVal() {
     // given
     WireField wireField = valField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
@@ -169,7 +169,7 @@ public class FieldBindingTest {
     assertThat(message.val).isEqualTo(12);
   }
 
-  @Test public void getFromBuilder() throws Exception {
+  @Test public void getFromBuilder() {
     // given
     WireField wireField = valField.getAnnotation(WireField.class);
     FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder> fieldBinding =
@@ -183,5 +183,4 @@ public class FieldBindingTest {
     assertThat(result).isEqualTo(41);
     assertThat(message.val).isEqualTo(12);
   }
-
 }

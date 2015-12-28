@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class WireFieldTest {
 
-  @Test public void isOneOf() throws Exception {
+  @Test public void isOneOf() {
     assertThat(WireField.Label.ONE_OF.isOneOf()).isTrue();
     assertThat(WireField.Label.OPTIONAL.isOneOf()).isFalse();
     assertThat(WireField.Label.PACKED.isOneOf()).isFalse();
@@ -29,7 +29,7 @@ public class WireFieldTest {
     assertThat(WireField.Label.REQUIRED.isOneOf()).isFalse();
   }
 
-  @Test public void isPacked() throws Exception {
+  @Test public void isPacked() {
     assertThat(WireField.Label.ONE_OF.isPacked()).isFalse();
     assertThat(WireField.Label.OPTIONAL.isPacked()).isFalse();
     assertThat(WireField.Label.PACKED.isPacked()).isTrue();
@@ -37,7 +37,7 @@ public class WireFieldTest {
     assertThat(WireField.Label.REQUIRED.isPacked()).isFalse();
   }
 
-  @Test public void isRepeated() throws Exception {
+  @Test public void isRepeated() {
     assertThat(WireField.Label.ONE_OF.isRepeated()).isFalse();
     assertThat(WireField.Label.OPTIONAL.isRepeated()).isFalse();
     assertThat(WireField.Label.PACKED.isRepeated()).isTrue();

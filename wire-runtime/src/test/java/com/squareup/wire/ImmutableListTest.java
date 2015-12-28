@@ -36,13 +36,13 @@ public class ImmutableListTest {
   }
 
 
-  @Test public void get() throws Exception {
+  @Test public void get() {
     assertThat(immutableList.get(0)).isEqualTo(initialList.get(0));
     assertThat(immutableList.get(1)).isEqualTo(initialList.get(1));
     assertThat(immutableList.get(2)).isEqualTo(initialList.get(2));
   }
 
-  @Test public void size() throws Exception {
+  @Test public void size() {
     assertThat(immutableList.size()).isEqualTo(initialList.size());
   }
 }

@@ -50,7 +50,7 @@ public final class ProtoReaderTest {
     reader.endMessage(token);
   }
 
-  @Test(expected = IllegalStateException.class) public void endMessageIllegalState() throws Exception {
+  @Test(expected = IllegalStateException.class) public void endMessageIllegalState() throws IOException {
     // when
     defaultProtoReader.endMessage(1);
 
@@ -59,7 +59,7 @@ public final class ProtoReaderTest {
       + " reader is not in STATE_TAG state");
   }
 
-  @Test(expected = IllegalStateException.class) public void nextTagIllegalState() throws Exception {
+  @Test(expected = IllegalStateException.class) public void nextTagIllegalState() throws IOException {
     // when
     defaultProtoReader.nextTag();
 
@@ -68,7 +68,7 @@ public final class ProtoReaderTest {
       + " reader is not in STATE_LENGTH_DELIMITED state");
   }
 
-  @Test(expected = ProtocolException.class) public void unexpectedEndOfGroup() throws Exception {
+  @Test(expected = ProtocolException.class) public void unexpectedEndOfGroup() throws IOException {
     // given
     ByteString encoded = ByteString.decodeHex("130a01611c");
     ProtoReader reader = new ProtoReader(new Buffer().write(encoded));
@@ -81,7 +81,7 @@ public final class ProtoReaderTest {
     fail("ProtoReader should throw ProtocolException when read group is not closed properly");
   }
 
-  @Test public void readVarint32Negative() throws Exception {
+  @Test public void readVarint32Negative() throws IOException {
     // given
     RedactFieldsMessage message = new RedactFieldsMessage(0, 0L, Integer.MIN_VALUE, 0, null, null, null, null);
 
@@ -100,7 +100,7 @@ public final class ProtoReaderTest {
     assertThat(reader.readVarint32()).isEqualTo(Integer.MIN_VALUE);
   }
 
-  @Test public void readVarint32Big1() throws Exception {
+  @Test public void readVarint32Big1() throws IOException {
     // given
     RedactFieldsMessage message = new RedactFieldsMessage(0, 0L, 1024, 0, null, null, null, null);
 
@@ -119,7 +119,7 @@ public final class ProtoReaderTest {
     assertThat(reader.readVarint32()).isEqualTo(1024);
   }
 
-  @Test public void readVarint32Big2() throws Exception {
+  @Test public void readVarint32Big2() throws IOException {
     // given
     RedactFieldsMessage message = new RedactFieldsMessage(0, 0L, 1048575, 0, null, null, null, null);
 
@@ -138,7 +138,7 @@ public final class ProtoReaderTest {
     assertThat(reader.readVarint32()).isEqualTo(1048575);
   }
 
-  @Test public void readVarint32Big3() throws Exception {
+  @Test public void readVarint32Big3() throws IOException {
     // given
     RedactFieldsMessage message = new RedactFieldsMessage(0, 0L, 16777216, 0, null, null, null, null);
 
@@ -157,7 +157,7 @@ public final class ProtoReaderTest {
     assertThat(reader.readVarint32()).isEqualTo(16777216);
   }
 
-  @Test public void readVarint32Big4() throws Exception {
+  @Test public void readVarint32Big4() throws IOException {
     // given
     RedactFieldsMessage message = new RedactFieldsMessage(0, 0L, 1073741824, 0, null, null, null, null);
 
@@ -176,7 +176,7 @@ public final class ProtoReaderTest {
     assertThat(reader.readVarint32()).isEqualTo(1073741824);
   }
 
-  @Test(expected = IllegalStateException.class) public void unexpectedSkip() throws Exception {
+  @Test(expected = IllegalStateException.class) public void unexpectedSkip() throws IOException {
     // given
     ByteString encoded = ByteString.of(C.ADAPTER.encode(new C(15)));
     ProtoReader reader = new ProtoReader(new Buffer().write(encoded));
@@ -190,7 +190,7 @@ public final class ProtoReaderTest {
   }
 
 
-  @Test(expected = IllegalStateException.class) public void unexpectedSkipGroup() throws Exception {
+  @Test(expected = IllegalStateException.class) public void unexpectedSkipGroup() throws IOException {
     // given
     ByteString encoded = ByteString.of(C.ADAPTER.encode(new C(0)));
     ProtoReader reader = new ProtoReader(new Buffer().write(encoded));

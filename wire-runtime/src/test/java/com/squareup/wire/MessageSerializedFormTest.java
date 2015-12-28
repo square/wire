@@ -18,13 +18,17 @@ package com.squareup.wire;
 import com.squareup.wire.protos.roots.C;
 import org.junit.Test;
 
+import java.io.ObjectStreamException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MessageSerializedFormTest {
 
-  @Test public void readResolve() throws Exception {
-    // when
+  @Test public void readResolve() throws ObjectStreamException {
+    // given
     C message = new C(5);
+
+    // when
     MessageSerializedForm messageSerializedForm = new MessageSerializedForm(message, message.getClass());
 
     // then
