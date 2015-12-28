@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -48,8 +49,8 @@ public final class H extends Message<H, H.Builder> {
     if (other == this) return true;
     if (!(other instanceof H)) return false;
     H o = (H) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(ef, o.ef);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(ef, o.ef);
   }
 
   @Override

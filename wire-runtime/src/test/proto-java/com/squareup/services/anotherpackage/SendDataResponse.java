@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -50,8 +51,8 @@ public final class SendDataResponse extends Message<SendDataResponse, SendDataRe
     if (other == this) return true;
     if (!(other instanceof SendDataResponse)) return false;
     SendDataResponse o = (SendDataResponse) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(data, o.data);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(data, o.data);
   }
 
   @Override

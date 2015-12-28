@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -42,15 +43,15 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
 
   public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32, ByteString unknownFields) {
     super(unknownFields);
-    this.rep_int32 = immutableCopyOf("rep_int32", rep_int32);
-    this.pack_int32 = immutableCopyOf("pack_int32", pack_int32);
+    this.rep_int32 = WireInternal.immutableCopyOf("rep_int32", rep_int32);
+    this.pack_int32 = WireInternal.immutableCopyOf("pack_int32", pack_int32);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.rep_int32 = copyOf("rep_int32", rep_int32);
-    builder.pack_int32 = copyOf("pack_int32", pack_int32);
+    builder.rep_int32 = WireInternal.copyOf("rep_int32", rep_int32);
+    builder.pack_int32 = WireInternal.copyOf("pack_int32", pack_int32);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -60,9 +61,9 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
     if (other == this) return true;
     if (!(other instanceof RepeatedAndPacked)) return false;
     RepeatedAndPacked o = (RepeatedAndPacked) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(rep_int32, o.rep_int32)
-        && equals(pack_int32, o.pack_int32);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(rep_int32, o.rep_int32)
+        && WireInternal.equals(pack_int32, o.pack_int32);
   }
 
   @Override
@@ -91,18 +92,18 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
     public List<Integer> pack_int32;
 
     public Builder() {
-      rep_int32 = newMutableList();
-      pack_int32 = newMutableList();
+      rep_int32 = WireInternal.newMutableList();
+      pack_int32 = WireInternal.newMutableList();
     }
 
     public Builder rep_int32(List<Integer> rep_int32) {
-      checkElementsNotNull(rep_int32);
+      WireInternal.checkElementsNotNull(rep_int32);
       this.rep_int32 = rep_int32;
       return this;
     }
 
     public Builder pack_int32(List<Integer> pack_int32) {
-      checkElementsNotNull(pack_int32);
+      WireInternal.checkElementsNotNull(pack_int32);
       this.pack_int32 = pack_int32;
       return this;
     }

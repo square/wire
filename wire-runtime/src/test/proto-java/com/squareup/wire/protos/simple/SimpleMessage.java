@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.io.IOException;
 import java.lang.Boolean;
@@ -169,7 +170,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     this.optional_external_msg = optional_external_msg;
     this.default_nested_enum = default_nested_enum;
     this.required_int32 = required_int32;
-    this.repeated_double = immutableCopyOf("repeated_double", repeated_double);
+    this.repeated_double = WireInternal.immutableCopyOf("repeated_double", repeated_double);
     this.default_foreign_enum = default_foreign_enum;
     this.no_default_foreign_enum = no_default_foreign_enum;
     this.package_ = package_;
@@ -186,7 +187,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     builder.optional_external_msg = optional_external_msg;
     builder.default_nested_enum = default_nested_enum;
     builder.required_int32 = required_int32;
-    builder.repeated_double = copyOf("repeated_double", repeated_double);
+    builder.repeated_double = WireInternal.copyOf("repeated_double", repeated_double);
     builder.default_foreign_enum = default_foreign_enum;
     builder.no_default_foreign_enum = no_default_foreign_enum;
     builder.package_ = package_;
@@ -202,19 +203,19 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     if (other_ == this) return true;
     if (!(other_ instanceof SimpleMessage)) return false;
     SimpleMessage o_ = (SimpleMessage) other_;
-    return equals(unknownFields(), o_.unknownFields())
-        && equals(optional_int32, o_.optional_int32)
-        && equals(optional_nested_msg, o_.optional_nested_msg)
-        && equals(optional_external_msg, o_.optional_external_msg)
-        && equals(default_nested_enum, o_.default_nested_enum)
-        && equals(required_int32, o_.required_int32)
-        && equals(repeated_double, o_.repeated_double)
-        && equals(default_foreign_enum, o_.default_foreign_enum)
-        && equals(no_default_foreign_enum, o_.no_default_foreign_enum)
-        && equals(package_, o_.package_)
-        && equals(result, o_.result)
-        && equals(other, o_.other)
-        && equals(o, o_.o);
+    return WireInternal.equals(unknownFields(), o_.unknownFields())
+        && WireInternal.equals(optional_int32, o_.optional_int32)
+        && WireInternal.equals(optional_nested_msg, o_.optional_nested_msg)
+        && WireInternal.equals(optional_external_msg, o_.optional_external_msg)
+        && WireInternal.equals(default_nested_enum, o_.default_nested_enum)
+        && WireInternal.equals(required_int32, o_.required_int32)
+        && WireInternal.equals(repeated_double, o_.repeated_double)
+        && WireInternal.equals(default_foreign_enum, o_.default_foreign_enum)
+        && WireInternal.equals(no_default_foreign_enum, o_.no_default_foreign_enum)
+        && WireInternal.equals(package_, o_.package_)
+        && WireInternal.equals(result, o_.result)
+        && WireInternal.equals(other, o_.other)
+        && WireInternal.equals(o, o_.o);
   }
 
   @Override
@@ -283,7 +284,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     public String o;
 
     public Builder() {
-      repeated_double = newMutableList();
+      repeated_double = WireInternal.newMutableList();
     }
 
     /**
@@ -329,7 +330,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
      */
     @Deprecated
     public Builder repeated_double(List<Double> repeated_double) {
-      checkElementsNotNull(repeated_double);
+      WireInternal.checkElementsNotNull(repeated_double);
       this.repeated_double = repeated_double;
       return this;
     }
@@ -385,7 +386,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     @Override
     public SimpleMessage build() {
       if (required_int32 == null) {
-        throw missingRequiredFields(required_int32, "required_int32");
+        throw WireInternal.missingRequiredFields(required_int32, "required_int32");
       }
       return new SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, package_, result, other, o, buildUnknownFields());
     }
@@ -429,8 +430,8 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
       NestedMessage o = (NestedMessage) other;
-      return equals(unknownFields(), o.unknownFields())
-          && equals(bb, o.bb);
+      return WireInternal.equals(unknownFields(), o.unknownFields())
+          && WireInternal.equals(bb, o.bb);
     }
 
     @Override

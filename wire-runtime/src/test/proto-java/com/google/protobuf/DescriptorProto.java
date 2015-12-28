@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -106,30 +107,30 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   public DescriptorProto(String name, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, List<OneofDescriptorProto> oneof_decl, MessageOptions options, List<ReservedRange> reserved_range, List<String> reserved_name, ByteString unknownFields) {
     super(unknownFields);
     this.name = name;
-    this.field = immutableCopyOf("field", field);
-    this.extension = immutableCopyOf("extension", extension);
-    this.nested_type = immutableCopyOf("nested_type", nested_type);
-    this.enum_type = immutableCopyOf("enum_type", enum_type);
-    this.extension_range = immutableCopyOf("extension_range", extension_range);
-    this.oneof_decl = immutableCopyOf("oneof_decl", oneof_decl);
+    this.field = WireInternal.immutableCopyOf("field", field);
+    this.extension = WireInternal.immutableCopyOf("extension", extension);
+    this.nested_type = WireInternal.immutableCopyOf("nested_type", nested_type);
+    this.enum_type = WireInternal.immutableCopyOf("enum_type", enum_type);
+    this.extension_range = WireInternal.immutableCopyOf("extension_range", extension_range);
+    this.oneof_decl = WireInternal.immutableCopyOf("oneof_decl", oneof_decl);
     this.options = options;
-    this.reserved_range = immutableCopyOf("reserved_range", reserved_range);
-    this.reserved_name = immutableCopyOf("reserved_name", reserved_name);
+    this.reserved_range = WireInternal.immutableCopyOf("reserved_range", reserved_range);
+    this.reserved_name = WireInternal.immutableCopyOf("reserved_name", reserved_name);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.name = name;
-    builder.field = copyOf("field", field);
-    builder.extension = copyOf("extension", extension);
-    builder.nested_type = copyOf("nested_type", nested_type);
-    builder.enum_type = copyOf("enum_type", enum_type);
-    builder.extension_range = copyOf("extension_range", extension_range);
-    builder.oneof_decl = copyOf("oneof_decl", oneof_decl);
+    builder.field = WireInternal.copyOf("field", field);
+    builder.extension = WireInternal.copyOf("extension", extension);
+    builder.nested_type = WireInternal.copyOf("nested_type", nested_type);
+    builder.enum_type = WireInternal.copyOf("enum_type", enum_type);
+    builder.extension_range = WireInternal.copyOf("extension_range", extension_range);
+    builder.oneof_decl = WireInternal.copyOf("oneof_decl", oneof_decl);
     builder.options = options;
-    builder.reserved_range = copyOf("reserved_range", reserved_range);
-    builder.reserved_name = copyOf("reserved_name", reserved_name);
+    builder.reserved_range = WireInternal.copyOf("reserved_range", reserved_range);
+    builder.reserved_name = WireInternal.copyOf("reserved_name", reserved_name);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -139,17 +140,17 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     if (other == this) return true;
     if (!(other instanceof DescriptorProto)) return false;
     DescriptorProto o = (DescriptorProto) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(name, o.name)
-        && equals(field, o.field)
-        && equals(extension, o.extension)
-        && equals(nested_type, o.nested_type)
-        && equals(enum_type, o.enum_type)
-        && equals(extension_range, o.extension_range)
-        && equals(oneof_decl, o.oneof_decl)
-        && equals(options, o.options)
-        && equals(reserved_range, o.reserved_range)
-        && equals(reserved_name, o.reserved_name);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(name, o.name)
+        && WireInternal.equals(field, o.field)
+        && WireInternal.equals(extension, o.extension)
+        && WireInternal.equals(nested_type, o.nested_type)
+        && WireInternal.equals(enum_type, o.enum_type)
+        && WireInternal.equals(extension_range, o.extension_range)
+        && WireInternal.equals(oneof_decl, o.oneof_decl)
+        && WireInternal.equals(options, o.options)
+        && WireInternal.equals(reserved_range, o.reserved_range)
+        && WireInternal.equals(reserved_name, o.reserved_name);
   }
 
   @Override
@@ -210,14 +211,14 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     public List<String> reserved_name;
 
     public Builder() {
-      field = newMutableList();
-      extension = newMutableList();
-      nested_type = newMutableList();
-      enum_type = newMutableList();
-      extension_range = newMutableList();
-      oneof_decl = newMutableList();
-      reserved_range = newMutableList();
-      reserved_name = newMutableList();
+      field = WireInternal.newMutableList();
+      extension = WireInternal.newMutableList();
+      nested_type = WireInternal.newMutableList();
+      enum_type = WireInternal.newMutableList();
+      extension_range = WireInternal.newMutableList();
+      oneof_decl = WireInternal.newMutableList();
+      reserved_range = WireInternal.newMutableList();
+      reserved_name = WireInternal.newMutableList();
     }
 
     public Builder name(String name) {
@@ -226,37 +227,37 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     }
 
     public Builder field(List<FieldDescriptorProto> field) {
-      checkElementsNotNull(field);
+      WireInternal.checkElementsNotNull(field);
       this.field = field;
       return this;
     }
 
     public Builder extension(List<FieldDescriptorProto> extension) {
-      checkElementsNotNull(extension);
+      WireInternal.checkElementsNotNull(extension);
       this.extension = extension;
       return this;
     }
 
     public Builder nested_type(List<DescriptorProto> nested_type) {
-      checkElementsNotNull(nested_type);
+      WireInternal.checkElementsNotNull(nested_type);
       this.nested_type = nested_type;
       return this;
     }
 
     public Builder enum_type(List<EnumDescriptorProto> enum_type) {
-      checkElementsNotNull(enum_type);
+      WireInternal.checkElementsNotNull(enum_type);
       this.enum_type = enum_type;
       return this;
     }
 
     public Builder extension_range(List<ExtensionRange> extension_range) {
-      checkElementsNotNull(extension_range);
+      WireInternal.checkElementsNotNull(extension_range);
       this.extension_range = extension_range;
       return this;
     }
 
     public Builder oneof_decl(List<OneofDescriptorProto> oneof_decl) {
-      checkElementsNotNull(oneof_decl);
+      WireInternal.checkElementsNotNull(oneof_decl);
       this.oneof_decl = oneof_decl;
       return this;
     }
@@ -267,7 +268,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     }
 
     public Builder reserved_range(List<ReservedRange> reserved_range) {
-      checkElementsNotNull(reserved_range);
+      WireInternal.checkElementsNotNull(reserved_range);
       this.reserved_range = reserved_range;
       return this;
     }
@@ -277,7 +278,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
      * A given name may only be reserved once.
      */
     public Builder reserved_name(List<String> reserved_name) {
-      checkElementsNotNull(reserved_name);
+      WireInternal.checkElementsNotNull(reserved_name);
       this.reserved_name = reserved_name;
       return this;
     }
@@ -333,9 +334,9 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       if (other == this) return true;
       if (!(other instanceof ExtensionRange)) return false;
       ExtensionRange o = (ExtensionRange) other;
-      return equals(unknownFields(), o.unknownFields())
-          && equals(start, o.start)
-          && equals(end, o.end);
+      return WireInternal.equals(unknownFields(), o.unknownFields())
+          && WireInternal.equals(start, o.start)
+          && WireInternal.equals(end, o.end);
     }
 
     @Override
@@ -485,9 +486,9 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       if (other == this) return true;
       if (!(other instanceof ReservedRange)) return false;
       ReservedRange o = (ReservedRange) other;
-      return equals(unknownFields(), o.unknownFields())
-          && equals(start, o.start)
-          && equals(end, o.end);
+      return WireInternal.equals(unknownFields(), o.unknownFields())
+          && WireInternal.equals(start, o.start)
+          && WireInternal.equals(end, o.end);
     }
 
     @Override
@@ -652,14 +653,14 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     @Override
     public DescriptorProto redact(DescriptorProto value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.field, FieldDescriptorProto.ADAPTER);
-      redactElements(builder.extension, FieldDescriptorProto.ADAPTER);
-      redactElements(builder.nested_type, DescriptorProto.ADAPTER);
-      redactElements(builder.enum_type, EnumDescriptorProto.ADAPTER);
-      redactElements(builder.extension_range, ExtensionRange.ADAPTER);
-      redactElements(builder.oneof_decl, OneofDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.field, FieldDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.extension, FieldDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.nested_type, DescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.enum_type, EnumDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.extension_range, ExtensionRange.ADAPTER);
+      WireInternal.redactElements(builder.oneof_decl, OneofDescriptorProto.ADAPTER);
       if (builder.options != null) builder.options = MessageOptions.ADAPTER.redact(builder.options);
-      redactElements(builder.reserved_range, ReservedRange.ADAPTER);
+      WireInternal.redactElements(builder.reserved_range, ReservedRange.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

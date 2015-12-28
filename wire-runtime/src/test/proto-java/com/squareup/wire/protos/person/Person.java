@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -77,7 +78,7 @@ public final class Person extends Message<Person, Person.Builder> {
     this.name = name;
     this.id = id;
     this.email = email;
-    this.phone = immutableCopyOf("phone", phone);
+    this.phone = WireInternal.immutableCopyOf("phone", phone);
   }
 
   @Override
@@ -86,7 +87,7 @@ public final class Person extends Message<Person, Person.Builder> {
     builder.name = name;
     builder.id = id;
     builder.email = email;
-    builder.phone = copyOf("phone", phone);
+    builder.phone = WireInternal.copyOf("phone", phone);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -96,11 +97,11 @@ public final class Person extends Message<Person, Person.Builder> {
     if (other == this) return true;
     if (!(other instanceof Person)) return false;
     Person o = (Person) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(name, o.name)
-        && equals(id, o.id)
-        && equals(email, o.email)
-        && equals(phone, o.phone);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(name, o.name)
+        && WireInternal.equals(id, o.id)
+        && WireInternal.equals(email, o.email)
+        && WireInternal.equals(phone, o.phone);
   }
 
   @Override
@@ -137,7 +138,7 @@ public final class Person extends Message<Person, Person.Builder> {
     public List<PhoneNumber> phone;
 
     public Builder() {
-      phone = newMutableList();
+      phone = WireInternal.newMutableList();
     }
 
     /**
@@ -168,7 +169,7 @@ public final class Person extends Message<Person, Person.Builder> {
      * A list of the customer's phone numbers.
      */
     public Builder phone(List<PhoneNumber> phone) {
-      checkElementsNotNull(phone);
+      WireInternal.checkElementsNotNull(phone);
       this.phone = phone;
       return this;
     }
@@ -177,7 +178,7 @@ public final class Person extends Message<Person, Person.Builder> {
     public Person build() {
       if (name == null
           || id == null) {
-        throw missingRequiredFields(name, "name",
+        throw WireInternal.missingRequiredFields(name, "name",
             id, "id");
       }
       return new Person(name, id, email, phone, buildUnknownFields());
@@ -272,9 +273,9 @@ public final class Person extends Message<Person, Person.Builder> {
       if (other == this) return true;
       if (!(other instanceof PhoneNumber)) return false;
       PhoneNumber o = (PhoneNumber) other;
-      return equals(unknownFields(), o.unknownFields())
-          && equals(number, o.number)
-          && equals(type, o.type);
+      return WireInternal.equals(unknownFields(), o.unknownFields())
+          && WireInternal.equals(number, o.number)
+          && WireInternal.equals(type, o.type);
     }
 
     @Override
@@ -324,7 +325,7 @@ public final class Person extends Message<Person, Person.Builder> {
       @Override
       public PhoneNumber build() {
         if (number == null) {
-          throw missingRequiredFields(number, "number");
+          throw WireInternal.missingRequiredFields(number, "number");
         }
         return new PhoneNumber(number, type, buildUnknownFields());
       }
@@ -431,7 +432,7 @@ public final class Person extends Message<Person, Person.Builder> {
     @Override
     public Person redact(Person value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.phone, PhoneNumber.ADAPTER);
+      WireInternal.redactElements(builder.phone, PhoneNumber.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

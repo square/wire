@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -57,14 +58,14 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   public MethodOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
     super(unknownFields);
     this.deprecated = deprecated;
-    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.uninterpreted_option = WireInternal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.deprecated = deprecated;
-    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = WireInternal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -74,9 +75,9 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     if (other == this) return true;
     if (!(other instanceof MethodOptions)) return false;
     MethodOptions o = (MethodOptions) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(deprecated, o.deprecated)
-        && equals(uninterpreted_option, o.uninterpreted_option);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(deprecated, o.deprecated)
+        && WireInternal.equals(uninterpreted_option, o.uninterpreted_option);
   }
 
   @Override
@@ -105,7 +106,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
-      uninterpreted_option = newMutableList();
+      uninterpreted_option = WireInternal.newMutableList();
     }
 
     /**
@@ -127,7 +128,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      checkElementsNotNull(uninterpreted_option);
+      WireInternal.checkElementsNotNull(uninterpreted_option);
       this.uninterpreted_option = uninterpreted_option;
       return this;
     }
@@ -179,7 +180,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     @Override
     public MethodOptions redact(MethodOptions value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      WireInternal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

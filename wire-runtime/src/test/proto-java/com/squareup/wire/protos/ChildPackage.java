@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.io.IOException;
 import java.lang.Object;
@@ -51,8 +52,8 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
     if (other == this) return true;
     if (!(other instanceof ChildPackage)) return false;
     ChildPackage o = (ChildPackage) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(inner_foreign_enum, o.inner_foreign_enum);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(inner_foreign_enum, o.inner_foreign_enum);
   }
 
   @Override

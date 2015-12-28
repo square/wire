@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import com.squareup.wire.protos.custom_options.FooBar;
 import java.io.IOException;
 import java.lang.Boolean;
@@ -86,7 +87,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   public EnumValueOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Integer enum_value_option, FooBar.More complex_enum_value_option, Boolean foreign_enum_value_option, ByteString unknownFields) {
     super(unknownFields);
     this.deprecated = deprecated;
-    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.uninterpreted_option = WireInternal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.enum_value_option = enum_value_option;
     this.complex_enum_value_option = complex_enum_value_option;
     this.foreign_enum_value_option = foreign_enum_value_option;
@@ -96,7 +97,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.deprecated = deprecated;
-    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = WireInternal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.enum_value_option = enum_value_option;
     builder.complex_enum_value_option = complex_enum_value_option;
     builder.foreign_enum_value_option = foreign_enum_value_option;
@@ -109,12 +110,12 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     if (other == this) return true;
     if (!(other instanceof EnumValueOptions)) return false;
     EnumValueOptions o = (EnumValueOptions) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(deprecated, o.deprecated)
-        && equals(uninterpreted_option, o.uninterpreted_option)
-        && equals(enum_value_option, o.enum_value_option)
-        && equals(complex_enum_value_option, o.complex_enum_value_option)
-        && equals(foreign_enum_value_option, o.foreign_enum_value_option);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(deprecated, o.deprecated)
+        && WireInternal.equals(uninterpreted_option, o.uninterpreted_option)
+        && WireInternal.equals(enum_value_option, o.enum_value_option)
+        && WireInternal.equals(complex_enum_value_option, o.complex_enum_value_option)
+        && WireInternal.equals(foreign_enum_value_option, o.foreign_enum_value_option);
   }
 
   @Override
@@ -155,7 +156,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     public Boolean foreign_enum_value_option;
 
     public Builder() {
-      uninterpreted_option = newMutableList();
+      uninterpreted_option = WireInternal.newMutableList();
     }
 
     /**
@@ -173,7 +174,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      checkElementsNotNull(uninterpreted_option);
+      WireInternal.checkElementsNotNull(uninterpreted_option);
       this.uninterpreted_option = uninterpreted_option;
       return this;
     }
@@ -249,7 +250,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     @Override
     public EnumValueOptions redact(EnumValueOptions value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      WireInternal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
       if (builder.complex_enum_value_option != null) builder.complex_enum_value_option = FooBar.More.ADAPTER.redact(builder.complex_enum_value_option);
       builder.clearUnknownFields();
       return builder.build();

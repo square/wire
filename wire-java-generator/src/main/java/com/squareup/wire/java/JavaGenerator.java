@@ -42,6 +42,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Field;
@@ -735,7 +736,8 @@ public final class JavaGenerator {
       } else if (!field.type().isScalar() && !isEnum(field.type())) {
         if (field.isRepeated()) {
           CodeBlock adapter = singleAdapterFor(field);
-          result.addStatement("redactElements(builder.$N, $L)", fieldName, adapter);
+          result.addStatement("$T.redactElements(builder.$N, $L)", WireInternal.class, fieldName,
+              adapter);
         } else {
           CodeBlock adapter = adapterFor(field);
           result.addStatement("if (builder.$1N != null) builder.$1N = $2L.redact(builder.$1N)",
@@ -893,7 +895,7 @@ public final class JavaGenerator {
         first = false;
       }
       CodeBlock fieldNames = fieldNamesBuilder.build();
-      result.beginControlFlow("if (countNonNull($L) > 1)", fieldNames);
+      result.beginControlFlow("if ($T.countNonNull($L) > 1)", WireInternal.class, fieldNames);
       result.addStatement("throw new IllegalArgumentException($S)",
           "at most one of " + fieldNames + " may be non-null");
       result.endControlFlow();
@@ -907,7 +909,8 @@ public final class JavaGenerator {
       }
       result.addParameter(param.build());
       if (field.isRepeated()) {
-        result.addStatement("this.$1L = immutableCopyOf($1S, $1L)", fieldName);
+        result.addStatement("this.$1L = $2T.immutableCopyOf($1S, $1L)", fieldName,
+            WireInternal.class);
       } else {
         result.addStatement("this.$1L = $1L", fieldName);
       }
@@ -949,10 +952,11 @@ public final class JavaGenerator {
     result.addStatement("if (!($N instanceof $T)) return false", otherName, javaType);
 
     result.addStatement("$T $N = ($T) $N", javaType, oName, javaType, otherName);
-    result.addCode("$[return equals(unknownFields(), $N.unknownFields())", oName);
+    result.addCode("$[return $T.equals(unknownFields(), $N.unknownFields())", WireInternal.class,
+        oName);
     for (Field field : fields) {
       String fieldName = nameAllocator.get(field);
-      result.addCode("\n&& equals($L, $N.$L)", fieldName, oName, fieldName);
+      result.addCode("\n&& $T.equals($L, $N.$L)", WireInternal.class, fieldName, oName, fieldName);
     }
     result.addCode(";\n$]");
 
@@ -1067,7 +1071,7 @@ public final class JavaGenerator {
     for (Field field : type.fieldsAndOneOfFields()) {
       if (field.isPacked() || field.isRepeated()) {
         String fieldName = nameAllocator.get(field);
-        result.addStatement("$L = newMutableList()", fieldName);
+        result.addStatement("$L = $T.newMutableList()", fieldName, WireInternal.class);
       }
     }
     return result.build();
@@ -1098,7 +1102,8 @@ public final class JavaGenerator {
     for (Field field : fields) {
       String fieldName = nameAllocator.get(field);
       if (field.isRepeated()) {
-        result.addStatement("$1L.$2L = copyOf($2S, $2L)", builderName, fieldName);
+        result.addStatement("$1L.$2L = $3T.copyOf($2S, $2L)", builderName, fieldName,
+            WireInternal.class);
       } else {
         result.addStatement("$1L.$2L = $2L", builderName, fieldName);
       }
@@ -1128,7 +1133,7 @@ public final class JavaGenerator {
     }
 
     if (field.isRepeated()) {
-      result.addStatement("checkElementsNotNull($L)", fieldName);
+      result.addStatement("$T.checkElementsNotNull($L)", WireInternal.class, fieldName);
     }
     result.addStatement("this.$L = $L", fieldName, fieldName);
 
@@ -1177,7 +1182,8 @@ public final class JavaGenerator {
       }
 
       result.beginControlFlow("if ($L)", conditionals.add("$]").build())
-          .addStatement("throw missingRequiredFields($L)", missingArgs.build())
+          .addStatement("throw $T.missingRequiredFields($L)", WireInternal.class,
+              missingArgs.build())
           .endControlFlow();
     }
 
