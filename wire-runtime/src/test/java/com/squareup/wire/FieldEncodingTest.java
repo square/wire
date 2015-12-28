@@ -32,12 +32,17 @@ public class FieldEncodingTest {
     assertThat(FieldEncoding.get(2)).isEqualTo(FieldEncoding.LENGTH_DELIMITED);
   }
 
-  @Test(expected = ProtocolException.class) public void getThrows() throws IOException {
-    // when
-    FieldEncoding.get(3);
+  @Test public void getThrows() throws IOException {
+    try {
+      // when
+      FieldEncoding.get(3);
 
-    // then
-    fail("FieldEncoding should throw ProtocolException when unknown encoding type is requested");
+      // then
+      fail("FieldEncoding should throw ProtocolException when unknown encoding type is requested");
+    }
+    catch (ProtocolException e) {
+      assertThat(e).hasMessage("Unexpected FieldEncoding: 3");
+    }
   }
 
   @Test public void rawProtoAdapter() {

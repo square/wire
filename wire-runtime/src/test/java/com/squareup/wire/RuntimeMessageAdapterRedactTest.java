@@ -119,16 +119,22 @@ public class RuntimeMessageAdapterRedactTest {
     assertThat(adapter.toString(new RedactedRequired("a"))).isEqualTo("RedactedRequired{a=██}");
   }
 
-  @Test(expected = UnsupportedOperationException.class) public void redactRequiredField() throws NoSuchFieldException {
+  @Test public void redactRequiredField() throws NoSuchFieldException {
     // given
     RuntimeMessageAdapter adapter = createAdapter("requiredRedacted");
 
     // when
-    adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45, new C(51), new C(61),
-      Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
+    try {
+      adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45, new C(51), new C(61),
+        Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
-    // then
-    fail("RuntimeMessageAdapter should throw UnsupportedOperationException when tries to redact required field");
+      // then
+      fail("RuntimeMessageAdapter should throw UnsupportedOperationException when tries to redact required field");
+    }
+    catch (UnsupportedOperationException e) {
+      assertThat(e).hasMessage("Field 'requiredRedacted' in com.squareup.wire.protos.roots.RedactFieldsMessage is " +
+        "required and cannot be redacted.");
+    }
   }
 
   @Test public void notRedactRequiredField() throws NoSuchFieldException {

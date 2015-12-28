@@ -83,15 +83,31 @@ public final class ProtoWriterTest {
   }
 
   @Ignore("Negative numbers processing must be supported in varint32Size")
-  @Test(expected = IllegalArgumentException.class) public void staticVarint32SizeNegative() {
-    ProtoWriter.varint32Size(-1);
-    fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
+  @Test public void staticVarint32SizeNegative() {
+    try {
+      // when
+      ProtoWriter.varint32Size(-1);
+
+      // then
+      fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
   @Ignore("Negative numbers processing must be supported in varint32Size")
-  @Test(expected = IllegalArgumentException.class) public void staticVarint32SizeMinValue() {
-    ProtoWriter.varint32Size(Integer.MIN_VALUE);
-    fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
+  @Test public void staticVarint32SizeMinValue() {
+    try {
+      // when
+      ProtoWriter.varint32Size(Integer.MIN_VALUE);
+
+      // then
+      fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
   @Test public void staticVarInt64Size() {
@@ -117,15 +133,31 @@ public final class ProtoWriterTest {
   }
 
   @Ignore("Negative numbers processing must be supported in staticVarInt64Size")
-  @Test(expected = IllegalArgumentException.class) public void staticVarInt64SizeNegative() {
-    ProtoWriter.varint64Size(-1L);
-    fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
+  @Test public void staticVarInt64SizeNegative() {
+    try {
+      // when
+      ProtoWriter.varint64Size(-1L);
+
+      // then
+      fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
   @Ignore("Negative numbers processing must be supported in staticVarInt64Size")
-  @Test(expected = IllegalArgumentException.class) public void staticVarInt64SizeMinValue() {
-    ProtoWriter.varint64Size(Long.MIN_VALUE);
-    fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
+  @Test public void staticVarInt64SizeMinValue() {
+    try {
+      // when
+      ProtoWriter.varint64Size(Long.MIN_VALUE);
+
+      // then
+      fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e.getMessage()).isNull();
+    }
   }
 
   private void assertUtf8(String string, String expectedHex) throws IOException {

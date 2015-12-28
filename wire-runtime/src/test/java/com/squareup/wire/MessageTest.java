@@ -20,6 +20,8 @@ import okio.ByteString;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.ProtocolException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -32,12 +34,17 @@ public class MessageTest {
     defaultUnknownFields = ByteString.of("test".getBytes());
   }
 
-  @Test(expected = NullPointerException.class) public void constructorThrown() {
-    // when
-    new C(5, null);
+  @Test public void constructorThrown() {
+    try {
+      // when
+      new C(5, null);
 
-    // then
-    fail("Message should throw NullPointerException when try to create new instance with null as unknown fields");
+      // then
+      fail("Message should throw NullPointerException when try to create new instance with null as unknown fields");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("unknownFields == null");
+    }
   }
 
   @Test public void unknownFields() {

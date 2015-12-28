@@ -50,35 +50,51 @@ public final class ProtoReaderTest {
     reader.endMessage(token);
   }
 
-  @Test(expected = IllegalStateException.class) public void endMessageIllegalState() throws IOException {
-    // when
-    defaultProtoReader.endMessage(1);
+  @Test public void endMessageIllegalState() throws IOException {
+    try {
+      // when
+      defaultProtoReader.endMessage(1);
 
-    // then
-    fail("ProtoReader should throw IllegalStateException when endMessage call is performed while"
-      + " reader is not in STATE_TAG state");
+      // then
+      fail("ProtoReader should throw IllegalStateException when endMessage call is performed while"
+        + " reader is not in STATE_TAG state");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Unexpected call to endMessage()");
+    }
   }
 
-  @Test(expected = IllegalStateException.class) public void nextTagIllegalState() throws IOException {
-    // when
-    defaultProtoReader.nextTag();
+  @Test public void nextTagIllegalState() throws IOException {
+    try {
+      // when
+      defaultProtoReader.nextTag();
 
-    // then
-    fail("ProtoReader should throw IllegalStateException when beginMessage call is performed while"
-      + " reader is not in STATE_LENGTH_DELIMITED state");
+      // then
+      fail("ProtoReader should throw IllegalStateException when beginMessage call is performed while"
+        + " reader is not in STATE_LENGTH_DELIMITED state");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Unexpected call to nextTag()");
+    }
   }
 
-  @Test(expected = ProtocolException.class) public void unexpectedEndOfGroup() throws IOException {
+  @Test public void unexpectedEndOfGroup() throws IOException {
     // given
     ByteString encoded = ByteString.decodeHex("130a01611c");
     ProtoReader reader = new ProtoReader(new Buffer().write(encoded));
 
     // when
     reader.beginMessage();
-    reader.nextTag();
 
-    // then
-    fail("ProtoReader should throw ProtocolException when read group is not closed properly");
+    try {
+      reader.nextTag();
+
+      // then
+      fail("ProtoReader should throw ProtocolException when read group is not closed properly");
+    }
+    catch (ProtocolException e) {
+      assertThat(e).hasMessage("Unexpected end group");
+    }
   }
 
   @Test public void readVarint32Negative() throws IOException {
@@ -176,30 +192,42 @@ public final class ProtoReaderTest {
     assertThat(reader.readVarint32()).isEqualTo(1073741824);
   }
 
-  @Test(expected = IllegalStateException.class) public void unexpectedSkip() throws IOException {
+  @Test public void unexpectedSkip() throws IOException {
     // given
     ByteString encoded = ByteString.of(C.ADAPTER.encode(new C(15)));
     ProtoReader reader = new ProtoReader(new Buffer().write(encoded));
 
     // when
     reader.beginMessage();
-    reader.skip();
 
-    // then
-    fail("ProtoReader should throw IllegalStateException when skip is called in illegal state");
+    try {
+      reader.skip();
+
+      // then
+      fail("ProtoReader should throw IllegalStateException when skip is called in illegal state");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Unexpected call to skip()");
+    }
   }
 
 
-  @Test(expected = IllegalStateException.class) public void unexpectedSkipGroup() throws IOException {
+  @Test public void unexpectedSkipGroup() throws IOException {
     // given
     ByteString encoded = ByteString.of(C.ADAPTER.encode(new C(0)));
     ProtoReader reader = new ProtoReader(new Buffer().write(encoded));
 
     // when
     reader.beginMessage();
-    reader.skip();
 
-    // then
-    fail("ProtoReader should throw IllegalStateException when skip is called in illegal state");
+    try {
+      reader.skip();
+
+      // then
+      fail("ProtoReader should throw IllegalStateException when skip is called in illegal state");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Unexpected call to skip()");
+    }
   }
 }

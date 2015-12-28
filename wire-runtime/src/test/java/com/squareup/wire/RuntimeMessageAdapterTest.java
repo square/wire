@@ -43,12 +43,19 @@ public class RuntimeMessageAdapterTest {
     adapter = new RuntimeMessageAdapter<>(WiredFieldsMessage.class, WiredFieldsMessage.Builder.class, fieldBindings);
   }
 
-  @Test(expected = IllegalArgumentException.class) public void staticCreateWrongBuilder() {
-    // when
-    RuntimeMessageAdapter.create(CustomBuilderNameMessage.class);
+  @Test public void staticCreateWrongBuilder() {
+    try {
+      // when
+      RuntimeMessageAdapter.create(CustomBuilderNameMessage.class);
 
-    // then
-    fail("RuntimeMessageAdapter should throw IllegalArgumentException when message type don't have nested Builder class");
+      // then
+      fail("RuntimeMessageAdapter should throw IllegalArgumentException when message type don't have nested " +
+        "Builder class");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage(
+        "No builder class found for message type com.squareup.wire.protos.roots.CustomBuilderNameMessage");
+    }
   }
 
   @Test public void constructor() {

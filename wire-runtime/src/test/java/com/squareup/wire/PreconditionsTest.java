@@ -17,6 +17,7 @@ package com.squareup.wire;
 
 import org.junit.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class PreconditionsTest {
@@ -25,8 +26,16 @@ public class PreconditionsTest {
     Preconditions.checkNotNull(new Object(), "Object must be not null");
   }
 
-  @Test(expected = NullPointerException.class) public void checkNotNullThrown() {
-    Preconditions.checkNotNull(null, "Object must be not null");
-    fail("Preconditions must throw NullPointerException when null passed as object to check");
+  @Test public void checkNotNullThrown() {
+    try {
+      // when
+      Preconditions.checkNotNull(null, "Object must be not null");
+
+      // then
+      fail("Preconditions must throw NullPointerException when null passed as object to check");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("Object must be not null");
+    }
   }
 }
