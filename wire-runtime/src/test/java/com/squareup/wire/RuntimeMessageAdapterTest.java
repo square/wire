@@ -100,16 +100,18 @@ public class RuntimeMessageAdapterTest {
         Collections.EMPTY_MAP
       );
 
-    // when
+
     try {
+      // when
       adapter.newBuilder();
+
+      // then
+      fail("RuntimeMessageAdapter should throw AssertionError when builder constructor is inaccessible");
     }
     catch (AssertionError e) {
-      return;
+      assertThat(e).hasMessage("java.lang.InstantiationException: com.squareup.wire.protos.roots" +
+        ".CustomBuilderNameMessage$ExtendedCustomBuilder");
     }
-
-    // then
-    fail("RuntimeMessageAdapter should throw AssertionError when builder constructor is inaccessible");
   }
 
   @Test public void encodeSize() {
