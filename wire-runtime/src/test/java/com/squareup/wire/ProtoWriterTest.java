@@ -82,34 +82,6 @@ public final class ProtoWriterTest {
     assertThat(ProtoWriter.varint32Size(268435456)).isEqualTo(5);
   }
 
-  @Ignore("Negative numbers processing must be supported in varint32Size")
-  @Test public void staticVarint32SizeNegative() {
-    try {
-      // when
-      ProtoWriter.varint32Size(-1);
-
-      // then
-      fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
-    }
-    catch (IllegalArgumentException e) {
-      assertThat(e.getMessage()).isNull();
-    }
-  }
-
-  @Ignore("Negative numbers processing must be supported in varint32Size")
-  @Test public void staticVarint32SizeMinValue() {
-    try {
-      // when
-      ProtoWriter.varint32Size(Integer.MIN_VALUE);
-
-      // then
-      fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
-    }
-    catch (IllegalArgumentException e) {
-      assertThat(e.getMessage()).isNull();
-    }
-  }
-
   @Test public void staticVarInt64Size() {
     assertThat(ProtoWriter.varint64Size(0L)).isEqualTo(1);
     assertThat(ProtoWriter.varint64Size(127L)).isEqualTo(1);
@@ -130,34 +102,6 @@ public final class ProtoWriterTest {
     assertThat(ProtoWriter.varint64Size(72057594037927936L)).isEqualTo(9);
     assertThat(ProtoWriter.varint64Size(9223372036854775807L)).isEqualTo(9);
     assertThat(ProtoWriter.varint64Size(Long.MAX_VALUE)).isEqualTo(9);
-  }
-
-  @Ignore("Negative numbers processing must be supported in staticVarInt64Size")
-  @Test public void staticVarInt64SizeNegative() {
-    try {
-      // when
-      ProtoWriter.varint64Size(-1L);
-
-      // then
-      fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
-    }
-    catch (IllegalArgumentException e) {
-      assertThat(e.getMessage()).isNull();
-    }
-  }
-
-  @Ignore("Negative numbers processing must be supported in staticVarInt64Size")
-  @Test public void staticVarInt64SizeMinValue() {
-    try {
-      // when
-      ProtoWriter.varint64Size(Long.MIN_VALUE);
-
-      // then
-      fail("ProtoWriter should throw IllegalArgumentException when argument is negative");
-    }
-    catch (IllegalArgumentException e) {
-      assertThat(e.getMessage()).isNull();
-    }
   }
 
   private void assertUtf8(String string, String expectedHex) throws IOException {
