@@ -29,8 +29,7 @@ public class MutableOnWriteListTest {
   private List<String> initialList;
   private MutableOnWriteList mutableOnWriteList;
 
-  @Before
-  public void init() {
+  @Before public void init() {
     initialList = new ArrayList<>(Arrays.asList("one", "two", "three"));
     mutableOnWriteList = new MutableOnWriteList<>(initialList);
   }

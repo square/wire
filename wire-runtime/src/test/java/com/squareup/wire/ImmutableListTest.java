@@ -29,8 +29,7 @@ public class ImmutableListTest {
   private List<String> initialList;
   private ImmutableList immutableList;
 
-  @Before
-  public void init() {
+  @Before public void init() {
     initialList = new ArrayList<>(Arrays.asList("one", "two", "three"));
     immutableList = new ImmutableList<>(initialList);
   }

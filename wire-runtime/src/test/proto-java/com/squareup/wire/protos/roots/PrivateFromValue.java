@@ -14,7 +14,7 @@ public enum PrivateFromValue implements WireEnum {
 
     private final int value;
 
-  PrivateFromValue(int value) {
+    PrivateFromValue(int value) {
       this.value = value;
     }
 

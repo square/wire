@@ -34,8 +34,7 @@ public class FieldBindingTest {
   private Field listField;
   private Field cField;
 
-  @Before
-  public void init() throws NoSuchFieldException {
+  @Before public void init() throws NoSuchFieldException {
     message = new WiredFieldsMessage(12, new ArrayList<Integer>(), new C(10));
     valField = message.getClass().getField("val");
     listField = message.getClass().getField("list");

@@ -29,8 +29,7 @@ public class MessageTest {
 
   private ByteString defaultUnknownFields;
 
-  @Before
-  public void init() {
+  @Before public void init() {
     defaultUnknownFields = ByteString.of("test".getBytes());
   }
 

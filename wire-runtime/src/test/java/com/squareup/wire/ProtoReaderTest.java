@@ -32,8 +32,7 @@ public final class ProtoReaderTest {
 
   private ProtoReader defaultProtoReader;
 
-  @Before
-  public void init() {
+  @Before public void init() {
     Buffer defaultContent = new Buffer().write("some text".getBytes());
     defaultProtoReader = new ProtoReader(defaultContent);
   }
