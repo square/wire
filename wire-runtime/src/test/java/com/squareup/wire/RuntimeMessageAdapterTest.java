@@ -37,8 +37,7 @@ public class RuntimeMessageAdapterTest {
   private RuntimeMessageAdapter<WiredFieldsMessage, WiredFieldsMessage.Builder> adapter;
   private Map<Integer, FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder>> fieldBindings;
 
-  @Before
-  public void init() throws NoSuchFieldException {
+  @Before public void init() throws NoSuchFieldException {
     fieldBindings = createFieldBindings("val");
     adapter = new RuntimeMessageAdapter<>(WiredFieldsMessage.class, WiredFieldsMessage.Builder.class, fieldBindings);
   }
