@@ -2,7 +2,6 @@
 // Source file: roots.proto at 60:1
 package com.squareup.wire.protos.roots;
 
-import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 
 public enum WithoutFromValue implements WireEnum {
@@ -13,7 +12,7 @@ public enum WithoutFromValue implements WireEnum {
 
   WithoutFromValue(int value) {
       this.value = value;
-    }
+  }
 
   @Override
   public int getValue() {
