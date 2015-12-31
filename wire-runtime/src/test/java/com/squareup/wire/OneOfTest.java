@@ -76,18 +76,6 @@ public class OneOfTest {
     }
   }
 
-  @Test public void countNonNull() throws Exception {
-    assertThat(Message.countNonNull(null, null)).isEqualTo(0);
-    assertThat(Message.countNonNull("xx", null)).isEqualTo(1);
-    assertThat(Message.countNonNull("xx", "xx")).isEqualTo(2);
-    assertThat(Message.countNonNull("xx", "xx", null)).isEqualTo(2);
-    assertThat(Message.countNonNull("xx", "xx", "xx")).isEqualTo(3);
-    assertThat(Message.countNonNull("xx", "xx", "xx", null)).isEqualTo(3);
-    assertThat(Message.countNonNull("xx", "xx", "xx", "xx")).isEqualTo(4);
-    assertThat(Message.countNonNull("xx", "xx", "xx", "xx", (Object) null)).isEqualTo(4);
-    assertThat(Message.countNonNull("xx", "xx", "xx", "xx", "xx")).isEqualTo(5);
-  }
-
   private void validate(OneOfMessage.Builder builder, Integer expectedFoo, String expectedBar,
       byte[] expectedBytes) throws IOException {
     // Check builder fields

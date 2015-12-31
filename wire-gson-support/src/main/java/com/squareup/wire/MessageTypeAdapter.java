@@ -29,32 +29,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import okio.Buffer;
-import okio.ByteString;
 
-import static com.squareup.wire.FieldEncoding.FIXED32;
-import static com.squareup.wire.FieldEncoding.FIXED64;
-import static com.squareup.wire.FieldEncoding.LENGTH_DELIMITED;
-import static com.squareup.wire.FieldEncoding.VARINT;
 import static com.squareup.wire.WireField.Label;
 import static java.util.Collections.unmodifiableMap;
 
 class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B>>
     extends TypeAdapter<M> {
-
-  private final Class<M> messageType;
-
-  enum UnknownFieldType {
-    VARINT, FIXED32, FIXED64, LENGTH_DELIMITED;
-
-    public static UnknownFieldType of(String name) {
-      if ("varint".equals(name)) return VARINT;
-      if ("fixed32".equals(name)) return FIXED32;
-      if ("fixed64".equals(name)) return FIXED64;
-      if ("length-delimited".equals(name)) return LENGTH_DELIMITED;
-      throw new IllegalArgumentException("Unknown type " + name);
-    }
-  }
 
   // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
   private static final BigInteger POWER_64 = new BigInteger("18446744073709551616");
@@ -66,8 +46,7 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
   @SuppressWarnings("unchecked")
   public MessageTypeAdapter(Gson gson, TypeToken<M> type) {
     this.gson = gson;
-    this.messageType = (Class<M>) type.getRawType();
-    this.messageAdapter = RuntimeMessageAdapter.create(messageType);
+    this.messageAdapter = RuntimeMessageAdapter.create((Class<M>) type.getRawType());
 
     Map<String, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<>();
     for (FieldBinding<M, B> binding : messageAdapter.fieldBindings().values()) {
@@ -92,35 +71,6 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
       out.name(tagBinding.name);
       emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label);
     }
-
-    if (message.unknownFields().size() > 0) {
-      ProtoReader reader = new ProtoReader(new Buffer().write(message.unknownFields()));
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-        Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-        out.name(Integer.toString(tag));
-        out.beginArray();
-        if (fieldEncoding == FieldEncoding.VARINT) {
-          out.value("varint");
-          out.value((Long) value);
-        } else if (fieldEncoding == FieldEncoding.FIXED32) {
-          out.value("fixed32");
-          out.value((Integer) value);
-        } else if (fieldEncoding == FieldEncoding.FIXED64) {
-          out.value("fixed64");
-          out.value((Long) value);
-        } else if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
-          out.value("length-delimited");
-          out.value(((ByteString) value).base64());
-        } else {
-          throw new AssertionError("Unknown field encoding " + fieldEncoding);
-        }
-        out.endArray();
-      }
-      reader.endMessage(token);
-    }
-
     out.endObject();
   }
 
@@ -172,7 +122,7 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
         continue;
       }
 
-      parseUnknownField(in, builder, Integer.parseInt(name));
+      in.skipValue();
     }
 
     in.endObject();
@@ -193,34 +143,6 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
     } else {
       return readJson(valueType, valueElement);
     }
-  }
-
-  private void parseUnknownField(JsonReader in, B builder, int tag) throws IOException {
-    in.beginArray();
-    UnknownFieldType type = UnknownFieldType.of(in.nextString());
-    while (in.peek() != JsonToken.END_ARRAY) {
-      switch (type) {
-        case VARINT:
-          long varint = in.nextLong();
-          builder.addUnknownField(tag, VARINT, varint);
-          break;
-        case FIXED32:
-          int fixed32 = in.nextInt();
-          builder.addUnknownField(tag, FIXED32, fixed32);
-          break;
-        case FIXED64:
-          long fixed64 = in.nextLong();
-          builder.addUnknownField(tag, FIXED64, fixed64);
-          break;
-        case LENGTH_DELIMITED:
-          ByteString byteString = ByteString.decodeBase64(in.nextString());
-          builder.addUnknownField(tag, LENGTH_DELIMITED, byteString);
-          break;
-        default:
-          throw new AssertionError("Unknown field type " + type);
-      }
-    }
-    in.endArray();
   }
 
   private Object readJson(Type valueType, JsonElement element) {

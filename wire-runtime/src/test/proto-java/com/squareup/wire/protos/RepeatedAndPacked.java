@@ -7,6 +7,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -17,7 +19,106 @@ import java.util.List;
 import okio.ByteString;
 
 public final class RepeatedAndPacked extends Message<RepeatedAndPacked, RepeatedAndPacked.Builder> {
-  public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = new ProtoAdapter<RepeatedAndPacked>(FieldEncoding.LENGTH_DELIMITED, RepeatedAndPacked.class) {
+  public static final ProtoAdapter<RepeatedAndPacked> ADAPTER = new ProtoAdapter_RepeatedAndPacked();
+
+  private static final long serialVersionUID = 0L;
+
+  @WireField(
+      tag = 201,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Integer> rep_int32;
+
+  @WireField(
+      tag = 301,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.PACKED
+  )
+  public final List<Integer> pack_int32;
+
+  public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32) {
+    this(rep_int32, pack_int32, ByteString.EMPTY);
+  }
+
+  public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32, ByteString unknownFields) {
+    super(unknownFields);
+    this.rep_int32 = WireInternal.immutableCopyOf("rep_int32", rep_int32);
+    this.pack_int32 = WireInternal.immutableCopyOf("pack_int32", pack_int32);
+  }
+
+  @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.rep_int32 = WireInternal.copyOf("rep_int32", rep_int32);
+    builder.pack_int32 = WireInternal.copyOf("pack_int32", pack_int32);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) return true;
+    if (!(other instanceof RepeatedAndPacked)) return false;
+    RepeatedAndPacked o = (RepeatedAndPacked) other;
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(rep_int32, o.rep_int32)
+        && WireInternal.equals(pack_int32, o.pack_int32);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode;
+    if (result == 0) {
+      result = unknownFields().hashCode();
+      result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 1);
+      result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
+      super.hashCode = result;
+    }
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (rep_int32 != null) builder.append(", rep_int32=").append(rep_int32);
+    if (pack_int32 != null) builder.append(", pack_int32=").append(pack_int32);
+    return builder.replace(0, 2, "RepeatedAndPacked{").append('}').toString();
+  }
+
+  public static final class Builder extends Message.Builder<RepeatedAndPacked, Builder> {
+    public List<Integer> rep_int32;
+
+    public List<Integer> pack_int32;
+
+    public Builder() {
+      rep_int32 = WireInternal.newMutableList();
+      pack_int32 = WireInternal.newMutableList();
+    }
+
+    public Builder rep_int32(List<Integer> rep_int32) {
+      WireInternal.checkElementsNotNull(rep_int32);
+      this.rep_int32 = rep_int32;
+      return this;
+    }
+
+    public Builder pack_int32(List<Integer> pack_int32) {
+      WireInternal.checkElementsNotNull(pack_int32);
+      this.pack_int32 = pack_int32;
+      return this;
+    }
+
+    @Override
+    public RepeatedAndPacked build() {
+      return new RepeatedAndPacked(rep_int32, pack_int32, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_RepeatedAndPacked extends ProtoAdapter<RepeatedAndPacked> {
+    ProtoAdapter_RepeatedAndPacked() {
+      super(FieldEncoding.LENGTH_DELIMITED, RepeatedAndPacked.class);
+    }
+
     @Override
     public int encodedSize(RepeatedAndPacked value) {
       return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
@@ -56,89 +157,6 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
       Builder builder = value.newBuilder();
       builder.clearUnknownFields();
       return builder.build();
-    }
-  };
-
-  private static final long serialVersionUID = 0L;
-
-  public final List<Integer> rep_int32;
-
-  public final List<Integer> pack_int32;
-
-  public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32) {
-    this(rep_int32, pack_int32, ByteString.EMPTY);
-  }
-
-  public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32, ByteString unknownFields) {
-    super(unknownFields);
-    this.rep_int32 = immutableCopyOf("rep_int32", rep_int32);
-    this.pack_int32 = immutableCopyOf("pack_int32", pack_int32);
-  }
-
-  @Override
-  public Builder newBuilder() {
-    Builder builder = new Builder();
-    builder.rep_int32 = copyOf("rep_int32", rep_int32);
-    builder.pack_int32 = copyOf("pack_int32", pack_int32);
-    builder.addUnknownFields(unknownFields());
-    return builder;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof RepeatedAndPacked)) return false;
-    RepeatedAndPacked o = (RepeatedAndPacked) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(rep_int32, o.rep_int32)
-        && equals(pack_int32, o.pack_int32);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode;
-    if (result == 0) {
-      result = unknownFields().hashCode();
-      result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 1);
-      result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
-      super.hashCode = result;
-    }
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    if (rep_int32 != null) builder.append(", rep_int32=").append(rep_int32);
-    if (pack_int32 != null) builder.append(", pack_int32=").append(pack_int32);
-    return builder.replace(0, 2, "RepeatedAndPacked{").append('}').toString();
-  }
-
-  public static final class Builder extends Message.Builder<RepeatedAndPacked, Builder> {
-    public List<Integer> rep_int32;
-
-    public List<Integer> pack_int32;
-
-    public Builder() {
-      rep_int32 = newMutableList();
-      pack_int32 = newMutableList();
-    }
-
-    public Builder rep_int32(List<Integer> rep_int32) {
-      checkElementsNotNull(rep_int32);
-      this.rep_int32 = rep_int32;
-      return this;
-    }
-
-    public Builder pack_int32(List<Integer> pack_int32) {
-      checkElementsNotNull(pack_int32);
-      this.pack_int32 = pack_int32;
-      return this;
-    }
-
-    @Override
-    public RepeatedAndPacked build() {
-      return new RepeatedAndPacked(rep_int32, pack_int32, buildUnknownFields());
     }
   }
 }

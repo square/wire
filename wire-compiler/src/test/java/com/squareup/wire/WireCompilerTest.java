@@ -15,6 +15,7 @@
  */
 package com.squareup.wire;
 
+import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;

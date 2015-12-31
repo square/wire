@@ -7,6 +7,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -16,58 +18,25 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class I extends Message<I, I.Builder> {
-  public static final ProtoAdapter<I> ADAPTER = new ProtoAdapter<I>(FieldEncoding.LENGTH_DELIMITED, I.class) {
-    @Override
-    public int encodedSize(I value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
-          + (value.j != null ? J.ADAPTER.encodedSizeWithTag(1000, value.j) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, I value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
-      if (value.j != null) J.ADAPTER.encodeWithTag(writer, 1000, value.j);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public I decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
-          case 1000: builder.j(J.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public I redact(I value) {
-      Builder builder = value.newBuilder();
-      if (builder.j != null) builder.j = J.ADAPTER.redact(builder.j);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<I> ADAPTER = new ProtoAdapter_I();
 
   private static final long serialVersionUID = 0L;
 
   public static final Integer DEFAULT_I = 0;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer i;
 
   /**
    * Extension source: roots.proto at 84:3
    */
+  @WireField(
+      tag = 1000,
+      adapter = "com.squareup.wire.protos.roots.J#ADAPTER"
+  )
   public final J j;
 
   public I(Integer i, J j) {
@@ -94,9 +63,9 @@ public final class I extends Message<I, I.Builder> {
     if (other == this) return true;
     if (!(other instanceof I)) return false;
     I o = (I) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(i, o.i)
-        && equals(j, o.j);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(i, o.i)
+        && WireInternal.equals(j, o.j);
   }
 
   @Override
@@ -140,6 +109,53 @@ public final class I extends Message<I, I.Builder> {
     @Override
     public I build() {
       return new I(i, j, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_I extends ProtoAdapter<I> {
+    ProtoAdapter_I() {
+      super(FieldEncoding.LENGTH_DELIMITED, I.class);
+    }
+
+    @Override
+    public int encodedSize(I value) {
+      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
+          + (value.j != null ? J.ADAPTER.encodedSizeWithTag(1000, value.j) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, I value) throws IOException {
+      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      if (value.j != null) J.ADAPTER.encodeWithTag(writer, 1000, value.j);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public I decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
+          case 1000: builder.j(J.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public I redact(I value) {
+      Builder builder = value.newBuilder();
+      if (builder.j != null) builder.j = J.ADAPTER.redact(builder.j);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

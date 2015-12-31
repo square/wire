@@ -15,41 +15,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class NoFields extends Message<NoFields, NoFields.Builder> {
-  public static final ProtoAdapter<NoFields> ADAPTER = new ProtoAdapter<NoFields>(FieldEncoding.LENGTH_DELIMITED, NoFields.class) {
-    @Override
-    public int encodedSize(NoFields value) {
-      return value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, NoFields value) throws IOException {
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public NoFields decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public NoFields redact(NoFields value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<NoFields> ADAPTER = new ProtoAdapter_NoFields();
 
   private static final long serialVersionUID = 0L;
 
@@ -91,6 +57,46 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
     @Override
     public NoFields build() {
       return new NoFields(buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_NoFields extends ProtoAdapter<NoFields> {
+    ProtoAdapter_NoFields() {
+      super(FieldEncoding.LENGTH_DELIMITED, NoFields.class);
+    }
+
+    @Override
+    public int encodedSize(NoFields value) {
+      return value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, NoFields value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public NoFields decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public NoFields redact(NoFields value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

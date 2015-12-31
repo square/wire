@@ -8,6 +8,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -16,7 +18,82 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class Foo extends Message<Foo, Foo.Builder> {
-  public static final ProtoAdapter<Foo> ADAPTER = new ProtoAdapter<Foo>(FieldEncoding.LENGTH_DELIMITED, Foo.class) {
+  public static final ProtoAdapter<Foo> ADAPTER = new ProtoAdapter_Foo();
+
+  private static final long serialVersionUID = 0L;
+
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.differentpackage.protos.bar.Bar$Baz$Moo#ADAPTER"
+  )
+  public final Bar.Baz.Moo moo;
+
+  public Foo(Bar.Baz.Moo moo) {
+    this(moo, ByteString.EMPTY);
+  }
+
+  public Foo(Bar.Baz.Moo moo, ByteString unknownFields) {
+    super(unknownFields);
+    this.moo = moo;
+  }
+
+  @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.moo = moo;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) return true;
+    if (!(other instanceof Foo)) return false;
+    Foo o = (Foo) other;
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(moo, o.moo);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode;
+    if (result == 0) {
+      result = unknownFields().hashCode();
+      result = result * 37 + (moo != null ? moo.hashCode() : 0);
+      super.hashCode = result;
+    }
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (moo != null) builder.append(", moo=").append(moo);
+    return builder.replace(0, 2, "Foo{").append('}').toString();
+  }
+
+  public static final class Builder extends Message.Builder<Foo, Builder> {
+    public Bar.Baz.Moo moo;
+
+    public Builder() {
+    }
+
+    public Builder moo(Bar.Baz.Moo moo) {
+      this.moo = moo;
+      return this;
+    }
+
+    @Override
+    public Foo build() {
+      return new Foo(moo, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_Foo extends ProtoAdapter<Foo> {
+    ProtoAdapter_Foo() {
+      super(FieldEncoding.LENGTH_DELIMITED, Foo.class);
+    }
+
     @Override
     public int encodedSize(Foo value) {
       return (value.moo != null ? Bar.Baz.Moo.ADAPTER.encodedSizeWithTag(1, value.moo) : 0)
@@ -53,71 +130,6 @@ public final class Foo extends Message<Foo, Foo.Builder> {
       if (builder.moo != null) builder.moo = Bar.Baz.Moo.ADAPTER.redact(builder.moo);
       builder.clearUnknownFields();
       return builder.build();
-    }
-  };
-
-  private static final long serialVersionUID = 0L;
-
-  public final Bar.Baz.Moo moo;
-
-  public Foo(Bar.Baz.Moo moo) {
-    this(moo, ByteString.EMPTY);
-  }
-
-  public Foo(Bar.Baz.Moo moo, ByteString unknownFields) {
-    super(unknownFields);
-    this.moo = moo;
-  }
-
-  @Override
-  public Builder newBuilder() {
-    Builder builder = new Builder();
-    builder.moo = moo;
-    builder.addUnknownFields(unknownFields());
-    return builder;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof Foo)) return false;
-    Foo o = (Foo) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(moo, o.moo);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode;
-    if (result == 0) {
-      result = unknownFields().hashCode();
-      result = result * 37 + (moo != null ? moo.hashCode() : 0);
-      super.hashCode = result;
-    }
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    if (moo != null) builder.append(", moo=").append(moo);
-    return builder.replace(0, 2, "Foo{").append('}').toString();
-  }
-
-  public static final class Builder extends Message.Builder<Foo, Builder> {
-    public Bar.Baz.Moo moo;
-
-    public Builder() {
-    }
-
-    public Builder moo(Bar.Baz.Moo moo) {
-      this.moo = moo;
-      return this;
-    }
-
-    @Override
-    public Foo build() {
-      return new Foo(moo, buildUnknownFields());
     }
   }
 }
