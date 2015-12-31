@@ -121,7 +121,8 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void redactRequiredField() throws NoSuchFieldException {
     // given
-    RuntimeMessageAdapter adapter = createAdapter("requiredRedacted");
+    RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> adapter =
+      createAdapter("requiredRedacted");
 
     // when
     try {
@@ -139,10 +140,11 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void notRedactRequiredField() throws NoSuchFieldException {
     // given
-    RuntimeMessageAdapter adapter = createAdapter("requiredNotRedacted");
+    RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> adapter =
+      createAdapter("requiredNotRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
+    RedactFieldsMessage message = adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
@@ -157,12 +159,13 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void redactOptionalField() throws NoSuchFieldException {
     // given
-    RuntimeMessageAdapter adapter = createAdapter("optionalRedacted");
+    RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> adapter =
+      createAdapter("optionalRedacted");
 
     // when
-    RedactFieldsMessage nullValueMessage = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, null, 45,
+    RedactFieldsMessage nullValueMessage = adapter.redact(new RedactFieldsMessage(10, 20L, null, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
+    RedactFieldsMessage message = adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
@@ -185,10 +188,11 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void notRedactOptionalField() throws NoSuchFieldException {
     // given
-    RuntimeMessageAdapter adapter = createAdapter("optionalNotRedacted");
+    RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> adapter =
+      createAdapter("optionalNotRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
+    RedactFieldsMessage message = adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
@@ -203,12 +207,13 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void redactMessageField() throws NoSuchFieldException {
     // given
-    RuntimeMessageAdapter adapter = createAdapter("cRedacted");
+    RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> adapter =
+      createAdapter("cRedacted");
 
     // when
-    RedactFieldsMessage nullValueMessage = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
+    RedactFieldsMessage nullValueMessage = adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       null, new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
+    RedactFieldsMessage message = adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
@@ -231,10 +236,11 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void notRedactMessageField() throws NoSuchFieldException {
     // given
-    RuntimeMessageAdapter adapter = createAdapter("cNotRedacted");
+    RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> adapter =
+      createAdapter("cNotRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
+    RedactFieldsMessage message = adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
@@ -249,10 +255,11 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void redactRepeatedMessageField() throws NoSuchFieldException {
     // given
-    RuntimeMessageAdapter adapter = createAdapter("cRepeatedRedacted");
+    RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> adapter =
+      createAdapter("cRepeatedRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
+    RedactFieldsMessage message = adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
@@ -267,10 +274,11 @@ public class RuntimeMessageAdapterRedactTest {
 
   @Test public void notRedactRepeatedMessageField() throws NoSuchFieldException {
     // given
-    RuntimeMessageAdapter adapter = createAdapter("cRepeatedNotRedacted");
+    RuntimeMessageAdapter<RedactFieldsMessage, RedactFieldsMessage.Builder> adapter =
+      createAdapter("cRepeatedNotRedacted");
 
     // when
-    RedactFieldsMessage message = (RedactFieldsMessage)adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
+    RedactFieldsMessage message = adapter.redact(new RedactFieldsMessage(10, 20L, 35, 45,
       new C(51), new C(61), Arrays.asList(new C(3), new C(7), new C(5)), Arrays.asList(new C(2), new C(4))));
 
     // then
