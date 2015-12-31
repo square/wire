@@ -15,41 +15,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class UnnecessaryResponse extends Message<UnnecessaryResponse, UnnecessaryResponse.Builder> {
-  public static final ProtoAdapter<UnnecessaryResponse> ADAPTER = new ProtoAdapter<UnnecessaryResponse>(FieldEncoding.LENGTH_DELIMITED, UnnecessaryResponse.class) {
-    @Override
-    public int encodedSize(UnnecessaryResponse value) {
-      return value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, UnnecessaryResponse value) throws IOException {
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public UnnecessaryResponse decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public UnnecessaryResponse redact(UnnecessaryResponse value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<UnnecessaryResponse> ADAPTER = new ProtoAdapter_UnnecessaryResponse();
 
   private static final long serialVersionUID = 0L;
 
@@ -91,6 +57,46 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
     @Override
     public UnnecessaryResponse build() {
       return new UnnecessaryResponse(buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_UnnecessaryResponse extends ProtoAdapter<UnnecessaryResponse> {
+    ProtoAdapter_UnnecessaryResponse() {
+      super(FieldEncoding.LENGTH_DELIMITED, UnnecessaryResponse.class);
+    }
+
+    @Override
+    public int encodedSize(UnnecessaryResponse value) {
+      return value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, UnnecessaryResponse value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public UnnecessaryResponse decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public UnnecessaryResponse redact(UnnecessaryResponse value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

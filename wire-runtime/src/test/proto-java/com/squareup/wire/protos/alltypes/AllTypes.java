@@ -8,6 +8,8 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -22,489 +24,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
-  public static final ProtoAdapter<AllTypes> ADAPTER = new ProtoAdapter<AllTypes>(FieldEncoding.LENGTH_DELIMITED, AllTypes.class) {
-    @Override
-    public int encodedSize(AllTypes value) {
-      return (value.opt_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32) : 0)
-          + (value.opt_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32) : 0)
-          + (value.opt_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(3, value.opt_sint32) : 0)
-          + (value.opt_fixed32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.opt_fixed32) : 0)
-          + (value.opt_sfixed32 != null ? ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.opt_sfixed32) : 0)
-          + (value.opt_int64 != null ? ProtoAdapter.INT64.encodedSizeWithTag(6, value.opt_int64) : 0)
-          + (value.opt_uint64 != null ? ProtoAdapter.UINT64.encodedSizeWithTag(7, value.opt_uint64) : 0)
-          + (value.opt_sint64 != null ? ProtoAdapter.SINT64.encodedSizeWithTag(8, value.opt_sint64) : 0)
-          + (value.opt_fixed64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.opt_fixed64) : 0)
-          + (value.opt_sfixed64 != null ? ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.opt_sfixed64) : 0)
-          + (value.opt_bool != null ? ProtoAdapter.BOOL.encodedSizeWithTag(11, value.opt_bool) : 0)
-          + (value.opt_float != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.opt_float) : 0)
-          + (value.opt_double != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.opt_double) : 0)
-          + (value.opt_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(14, value.opt_string) : 0)
-          + (value.opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(15, value.opt_bytes) : 0)
-          + (value.opt_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(16, value.opt_nested_enum) : 0)
-          + (value.opt_nested_message != null ? NestedMessage.ADAPTER.encodedSizeWithTag(17, value.opt_nested_message) : 0)
-          + ProtoAdapter.INT32.encodedSizeWithTag(101, value.req_int32)
-          + ProtoAdapter.UINT32.encodedSizeWithTag(102, value.req_uint32)
-          + ProtoAdapter.SINT32.encodedSizeWithTag(103, value.req_sint32)
-          + ProtoAdapter.FIXED32.encodedSizeWithTag(104, value.req_fixed32)
-          + ProtoAdapter.SFIXED32.encodedSizeWithTag(105, value.req_sfixed32)
-          + ProtoAdapter.INT64.encodedSizeWithTag(106, value.req_int64)
-          + ProtoAdapter.UINT64.encodedSizeWithTag(107, value.req_uint64)
-          + ProtoAdapter.SINT64.encodedSizeWithTag(108, value.req_sint64)
-          + ProtoAdapter.FIXED64.encodedSizeWithTag(109, value.req_fixed64)
-          + ProtoAdapter.SFIXED64.encodedSizeWithTag(110, value.req_sfixed64)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(111, value.req_bool)
-          + ProtoAdapter.FLOAT.encodedSizeWithTag(112, value.req_float)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(113, value.req_double)
-          + ProtoAdapter.STRING.encodedSizeWithTag(114, value.req_string)
-          + ProtoAdapter.BYTES.encodedSizeWithTag(115, value.req_bytes)
-          + NestedEnum.ADAPTER.encodedSizeWithTag(116, value.req_nested_enum)
-          + NestedMessage.ADAPTER.encodedSizeWithTag(117, value.req_nested_message)
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
-          + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
-          + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
-          + ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(204, value.rep_fixed32)
-          + ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(205, value.rep_sfixed32)
-          + ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(206, value.rep_int64)
-          + ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(207, value.rep_uint64)
-          + ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(208, value.rep_sint64)
-          + ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(209, value.rep_fixed64)
-          + ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(210, value.rep_sfixed64)
-          + ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(211, value.rep_bool)
-          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(212, value.rep_float)
-          + ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(213, value.rep_double)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(214, value.rep_string)
-          + ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(215, value.rep_bytes)
-          + NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(216, value.rep_nested_enum)
-          + NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(217, value.rep_nested_message)
-          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
-          + ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32)
-          + ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32)
-          + ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(304, value.pack_fixed32)
-          + ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(305, value.pack_sfixed32)
-          + ProtoAdapter.INT64.asPacked().encodedSizeWithTag(306, value.pack_int64)
-          + ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(307, value.pack_uint64)
-          + ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(308, value.pack_sint64)
-          + ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(309, value.pack_fixed64)
-          + ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(310, value.pack_sfixed64)
-          + ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(311, value.pack_bool)
-          + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float)
-          + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double)
-          + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum)
-          + (value.default_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(401, value.default_int32) : 0)
-          + (value.default_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(402, value.default_uint32) : 0)
-          + (value.default_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(403, value.default_sint32) : 0)
-          + (value.default_fixed32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(404, value.default_fixed32) : 0)
-          + (value.default_sfixed32 != null ? ProtoAdapter.SFIXED32.encodedSizeWithTag(405, value.default_sfixed32) : 0)
-          + (value.default_int64 != null ? ProtoAdapter.INT64.encodedSizeWithTag(406, value.default_int64) : 0)
-          + (value.default_uint64 != null ? ProtoAdapter.UINT64.encodedSizeWithTag(407, value.default_uint64) : 0)
-          + (value.default_sint64 != null ? ProtoAdapter.SINT64.encodedSizeWithTag(408, value.default_sint64) : 0)
-          + (value.default_fixed64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(409, value.default_fixed64) : 0)
-          + (value.default_sfixed64 != null ? ProtoAdapter.SFIXED64.encodedSizeWithTag(410, value.default_sfixed64) : 0)
-          + (value.default_bool != null ? ProtoAdapter.BOOL.encodedSizeWithTag(411, value.default_bool) : 0)
-          + (value.default_float != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(412, value.default_float) : 0)
-          + (value.default_double != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(413, value.default_double) : 0)
-          + (value.default_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string) : 0)
-          + (value.default_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes) : 0)
-          + (value.default_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum) : 0)
-          + (value.ext_opt_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32) : 0)
-          + (value.ext_opt_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32) : 0)
-          + (value.ext_opt_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32) : 0)
-          + (value.ext_opt_fixed32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(1004, value.ext_opt_fixed32) : 0)
-          + (value.ext_opt_sfixed32 != null ? ProtoAdapter.SFIXED32.encodedSizeWithTag(1005, value.ext_opt_sfixed32) : 0)
-          + (value.ext_opt_int64 != null ? ProtoAdapter.INT64.encodedSizeWithTag(1006, value.ext_opt_int64) : 0)
-          + (value.ext_opt_uint64 != null ? ProtoAdapter.UINT64.encodedSizeWithTag(1007, value.ext_opt_uint64) : 0)
-          + (value.ext_opt_sint64 != null ? ProtoAdapter.SINT64.encodedSizeWithTag(1008, value.ext_opt_sint64) : 0)
-          + (value.ext_opt_fixed64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(1009, value.ext_opt_fixed64) : 0)
-          + (value.ext_opt_sfixed64 != null ? ProtoAdapter.SFIXED64.encodedSizeWithTag(1010, value.ext_opt_sfixed64) : 0)
-          + (value.ext_opt_bool != null ? ProtoAdapter.BOOL.encodedSizeWithTag(1011, value.ext_opt_bool) : 0)
-          + (value.ext_opt_float != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(1012, value.ext_opt_float) : 0)
-          + (value.ext_opt_double != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(1013, value.ext_opt_double) : 0)
-          + (value.ext_opt_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(1014, value.ext_opt_string) : 0)
-          + (value.ext_opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1015, value.ext_opt_bytes) : 0)
-          + (value.ext_opt_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(1016, value.ext_opt_nested_enum) : 0)
-          + (value.ext_opt_nested_message != null ? NestedMessage.ADAPTER.encodedSizeWithTag(1017, value.ext_opt_nested_message) : 0)
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1101, value.ext_rep_int32)
-          + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(1102, value.ext_rep_uint32)
-          + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(1103, value.ext_rep_sint32)
-          + ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(1104, value.ext_rep_fixed32)
-          + ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(1105, value.ext_rep_sfixed32)
-          + ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(1106, value.ext_rep_int64)
-          + ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(1107, value.ext_rep_uint64)
-          + ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(1108, value.ext_rep_sint64)
-          + ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(1109, value.ext_rep_fixed64)
-          + ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(1110, value.ext_rep_sfixed64)
-          + ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(1111, value.ext_rep_bool)
-          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(1112, value.ext_rep_float)
-          + ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(1113, value.ext_rep_double)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1114, value.ext_rep_string)
-          + ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1115, value.ext_rep_bytes)
-          + NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1116, value.ext_rep_nested_enum)
-          + NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1117, value.ext_rep_nested_message)
-          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1201, value.ext_pack_int32)
-          + ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1202, value.ext_pack_uint32)
-          + ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1203, value.ext_pack_sint32)
-          + ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(1204, value.ext_pack_fixed32)
-          + ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(1205, value.ext_pack_sfixed32)
-          + ProtoAdapter.INT64.asPacked().encodedSizeWithTag(1206, value.ext_pack_int64)
-          + ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(1207, value.ext_pack_uint64)
-          + ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(1208, value.ext_pack_sint64)
-          + ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(1209, value.ext_pack_fixed64)
-          + ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(1210, value.ext_pack_sfixed64)
-          + ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(1211, value.ext_pack_bool)
-          + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float)
-          + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double)
-          + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, AllTypes value) throws IOException {
-      if (value.opt_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32);
-      if (value.opt_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.opt_uint32);
-      if (value.opt_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.opt_sint32);
-      if (value.opt_fixed32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.opt_fixed32);
-      if (value.opt_sfixed32 != null) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.opt_sfixed32);
-      if (value.opt_int64 != null) ProtoAdapter.INT64.encodeWithTag(writer, 6, value.opt_int64);
-      if (value.opt_uint64 != null) ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.opt_uint64);
-      if (value.opt_sint64 != null) ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.opt_sint64);
-      if (value.opt_fixed64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.opt_fixed64);
-      if (value.opt_sfixed64 != null) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10, value.opt_sfixed64);
-      if (value.opt_bool != null) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.opt_bool);
-      if (value.opt_float != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.opt_float);
-      if (value.opt_double != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.opt_double);
-      if (value.opt_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 14, value.opt_string);
-      if (value.opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.opt_bytes);
-      if (value.opt_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.opt_nested_enum);
-      if (value.opt_nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.opt_nested_message);
-      ProtoAdapter.INT32.encodeWithTag(writer, 101, value.req_int32);
-      ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.req_uint32);
-      ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.req_sint32);
-      ProtoAdapter.FIXED32.encodeWithTag(writer, 104, value.req_fixed32);
-      ProtoAdapter.SFIXED32.encodeWithTag(writer, 105, value.req_sfixed32);
-      ProtoAdapter.INT64.encodeWithTag(writer, 106, value.req_int64);
-      ProtoAdapter.UINT64.encodeWithTag(writer, 107, value.req_uint64);
-      ProtoAdapter.SINT64.encodeWithTag(writer, 108, value.req_sint64);
-      ProtoAdapter.FIXED64.encodeWithTag(writer, 109, value.req_fixed64);
-      ProtoAdapter.SFIXED64.encodeWithTag(writer, 110, value.req_sfixed64);
-      ProtoAdapter.BOOL.encodeWithTag(writer, 111, value.req_bool);
-      ProtoAdapter.FLOAT.encodeWithTag(writer, 112, value.req_float);
-      ProtoAdapter.DOUBLE.encodeWithTag(writer, 113, value.req_double);
-      ProtoAdapter.STRING.encodeWithTag(writer, 114, value.req_string);
-      ProtoAdapter.BYTES.encodeWithTag(writer, 115, value.req_bytes);
-      NestedEnum.ADAPTER.encodeWithTag(writer, 116, value.req_nested_enum);
-      NestedMessage.ADAPTER.encodeWithTag(writer, 117, value.req_nested_message);
-      if (value.rep_int32 != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
-      if (value.rep_uint32 != null) ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32);
-      if (value.rep_sint32 != null) ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32);
-      if (value.rep_fixed32 != null) ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 204, value.rep_fixed32);
-      if (value.rep_sfixed32 != null) ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 205, value.rep_sfixed32);
-      if (value.rep_int64 != null) ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 206, value.rep_int64);
-      if (value.rep_uint64 != null) ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 207, value.rep_uint64);
-      if (value.rep_sint64 != null) ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 208, value.rep_sint64);
-      if (value.rep_fixed64 != null) ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 209, value.rep_fixed64);
-      if (value.rep_sfixed64 != null) ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 210, value.rep_sfixed64);
-      if (value.rep_bool != null) ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 211, value.rep_bool);
-      if (value.rep_float != null) ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 212, value.rep_float);
-      if (value.rep_double != null) ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 213, value.rep_double);
-      if (value.rep_string != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 214, value.rep_string);
-      if (value.rep_bytes != null) ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 215, value.rep_bytes);
-      if (value.rep_nested_enum != null) NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 216, value.rep_nested_enum);
-      if (value.rep_nested_message != null) NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 217, value.rep_nested_message);
-      if (value.pack_int32 != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
-      if (value.pack_uint32 != null) ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 302, value.pack_uint32);
-      if (value.pack_sint32 != null) ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32);
-      if (value.pack_fixed32 != null) ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 304, value.pack_fixed32);
-      if (value.pack_sfixed32 != null) ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 305, value.pack_sfixed32);
-      if (value.pack_int64 != null) ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 306, value.pack_int64);
-      if (value.pack_uint64 != null) ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 307, value.pack_uint64);
-      if (value.pack_sint64 != null) ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 308, value.pack_sint64);
-      if (value.pack_fixed64 != null) ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 309, value.pack_fixed64);
-      if (value.pack_sfixed64 != null) ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 310, value.pack_sfixed64);
-      if (value.pack_bool != null) ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 311, value.pack_bool);
-      if (value.pack_float != null) ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 312, value.pack_float);
-      if (value.pack_double != null) ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 313, value.pack_double);
-      if (value.pack_nested_enum != null) NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 316, value.pack_nested_enum);
-      if (value.default_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 401, value.default_int32);
-      if (value.default_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 402, value.default_uint32);
-      if (value.default_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 403, value.default_sint32);
-      if (value.default_fixed32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 404, value.default_fixed32);
-      if (value.default_sfixed32 != null) ProtoAdapter.SFIXED32.encodeWithTag(writer, 405, value.default_sfixed32);
-      if (value.default_int64 != null) ProtoAdapter.INT64.encodeWithTag(writer, 406, value.default_int64);
-      if (value.default_uint64 != null) ProtoAdapter.UINT64.encodeWithTag(writer, 407, value.default_uint64);
-      if (value.default_sint64 != null) ProtoAdapter.SINT64.encodeWithTag(writer, 408, value.default_sint64);
-      if (value.default_fixed64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 409, value.default_fixed64);
-      if (value.default_sfixed64 != null) ProtoAdapter.SFIXED64.encodeWithTag(writer, 410, value.default_sfixed64);
-      if (value.default_bool != null) ProtoAdapter.BOOL.encodeWithTag(writer, 411, value.default_bool);
-      if (value.default_float != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 412, value.default_float);
-      if (value.default_double != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 413, value.default_double);
-      if (value.default_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 414, value.default_string);
-      if (value.default_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 415, value.default_bytes);
-      if (value.default_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 416, value.default_nested_enum);
-      if (value.ext_opt_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32);
-      if (value.ext_opt_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32);
-      if (value.ext_opt_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32);
-      if (value.ext_opt_fixed32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 1004, value.ext_opt_fixed32);
-      if (value.ext_opt_sfixed32 != null) ProtoAdapter.SFIXED32.encodeWithTag(writer, 1005, value.ext_opt_sfixed32);
-      if (value.ext_opt_int64 != null) ProtoAdapter.INT64.encodeWithTag(writer, 1006, value.ext_opt_int64);
-      if (value.ext_opt_uint64 != null) ProtoAdapter.UINT64.encodeWithTag(writer, 1007, value.ext_opt_uint64);
-      if (value.ext_opt_sint64 != null) ProtoAdapter.SINT64.encodeWithTag(writer, 1008, value.ext_opt_sint64);
-      if (value.ext_opt_fixed64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 1009, value.ext_opt_fixed64);
-      if (value.ext_opt_sfixed64 != null) ProtoAdapter.SFIXED64.encodeWithTag(writer, 1010, value.ext_opt_sfixed64);
-      if (value.ext_opt_bool != null) ProtoAdapter.BOOL.encodeWithTag(writer, 1011, value.ext_opt_bool);
-      if (value.ext_opt_float != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 1012, value.ext_opt_float);
-      if (value.ext_opt_double != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 1013, value.ext_opt_double);
-      if (value.ext_opt_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 1014, value.ext_opt_string);
-      if (value.ext_opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1015, value.ext_opt_bytes);
-      if (value.ext_opt_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 1016, value.ext_opt_nested_enum);
-      if (value.ext_opt_nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 1017, value.ext_opt_nested_message);
-      if (value.ext_rep_int32 != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1101, value.ext_rep_int32);
-      if (value.ext_rep_uint32 != null) ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 1102, value.ext_rep_uint32);
-      if (value.ext_rep_sint32 != null) ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 1103, value.ext_rep_sint32);
-      if (value.ext_rep_fixed32 != null) ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 1104, value.ext_rep_fixed32);
-      if (value.ext_rep_sfixed32 != null) ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 1105, value.ext_rep_sfixed32);
-      if (value.ext_rep_int64 != null) ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 1106, value.ext_rep_int64);
-      if (value.ext_rep_uint64 != null) ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 1107, value.ext_rep_uint64);
-      if (value.ext_rep_sint64 != null) ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 1108, value.ext_rep_sint64);
-      if (value.ext_rep_fixed64 != null) ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 1109, value.ext_rep_fixed64);
-      if (value.ext_rep_sfixed64 != null) ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 1110, value.ext_rep_sfixed64);
-      if (value.ext_rep_bool != null) ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 1111, value.ext_rep_bool);
-      if (value.ext_rep_float != null) ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 1112, value.ext_rep_float);
-      if (value.ext_rep_double != null) ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 1113, value.ext_rep_double);
-      if (value.ext_rep_string != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1114, value.ext_rep_string);
-      if (value.ext_rep_bytes != null) ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1115, value.ext_rep_bytes);
-      if (value.ext_rep_nested_enum != null) NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1116, value.ext_rep_nested_enum);
-      if (value.ext_rep_nested_message != null) NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1117, value.ext_rep_nested_message);
-      if (value.ext_pack_int32 != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1201, value.ext_pack_int32);
-      if (value.ext_pack_uint32 != null) ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1202, value.ext_pack_uint32);
-      if (value.ext_pack_sint32 != null) ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1203, value.ext_pack_sint32);
-      if (value.ext_pack_fixed32 != null) ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 1204, value.ext_pack_fixed32);
-      if (value.ext_pack_sfixed32 != null) ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 1205, value.ext_pack_sfixed32);
-      if (value.ext_pack_int64 != null) ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 1206, value.ext_pack_int64);
-      if (value.ext_pack_uint64 != null) ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 1207, value.ext_pack_uint64);
-      if (value.ext_pack_sint64 != null) ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 1208, value.ext_pack_sint64);
-      if (value.ext_pack_fixed64 != null) ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 1209, value.ext_pack_fixed64);
-      if (value.ext_pack_sfixed64 != null) ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 1210, value.ext_pack_sfixed64);
-      if (value.ext_pack_bool != null) ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 1211, value.ext_pack_bool);
-      if (value.ext_pack_float != null) ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1212, value.ext_pack_float);
-      if (value.ext_pack_double != null) ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1213, value.ext_pack_double);
-      if (value.ext_pack_nested_enum != null) NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1216, value.ext_pack_nested_enum);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public AllTypes decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.opt_int32(ProtoAdapter.INT32.decode(reader)); break;
-          case 2: builder.opt_uint32(ProtoAdapter.UINT32.decode(reader)); break;
-          case 3: builder.opt_sint32(ProtoAdapter.SINT32.decode(reader)); break;
-          case 4: builder.opt_fixed32(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 5: builder.opt_sfixed32(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 6: builder.opt_int64(ProtoAdapter.INT64.decode(reader)); break;
-          case 7: builder.opt_uint64(ProtoAdapter.UINT64.decode(reader)); break;
-          case 8: builder.opt_sint64(ProtoAdapter.SINT64.decode(reader)); break;
-          case 9: builder.opt_fixed64(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 10: builder.opt_sfixed64(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 11: builder.opt_bool(ProtoAdapter.BOOL.decode(reader)); break;
-          case 12: builder.opt_float(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 13: builder.opt_double(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 14: builder.opt_string(ProtoAdapter.STRING.decode(reader)); break;
-          case 15: builder.opt_bytes(ProtoAdapter.BYTES.decode(reader)); break;
-          case 16: {
-            try {
-              builder.opt_nested_enum(NestedEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 17: builder.opt_nested_message(NestedMessage.ADAPTER.decode(reader)); break;
-          case 101: builder.req_int32(ProtoAdapter.INT32.decode(reader)); break;
-          case 102: builder.req_uint32(ProtoAdapter.UINT32.decode(reader)); break;
-          case 103: builder.req_sint32(ProtoAdapter.SINT32.decode(reader)); break;
-          case 104: builder.req_fixed32(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 105: builder.req_sfixed32(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 106: builder.req_int64(ProtoAdapter.INT64.decode(reader)); break;
-          case 107: builder.req_uint64(ProtoAdapter.UINT64.decode(reader)); break;
-          case 108: builder.req_sint64(ProtoAdapter.SINT64.decode(reader)); break;
-          case 109: builder.req_fixed64(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 110: builder.req_sfixed64(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 111: builder.req_bool(ProtoAdapter.BOOL.decode(reader)); break;
-          case 112: builder.req_float(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 113: builder.req_double(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 114: builder.req_string(ProtoAdapter.STRING.decode(reader)); break;
-          case 115: builder.req_bytes(ProtoAdapter.BYTES.decode(reader)); break;
-          case 116: {
-            try {
-              builder.req_nested_enum(NestedEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 117: builder.req_nested_message(NestedMessage.ADAPTER.decode(reader)); break;
-          case 201: builder.rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 202: builder.rep_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
-          case 203: builder.rep_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
-          case 204: builder.rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 205: builder.rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 206: builder.rep_int64.add(ProtoAdapter.INT64.decode(reader)); break;
-          case 207: builder.rep_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
-          case 208: builder.rep_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
-          case 209: builder.rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 210: builder.rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 211: builder.rep_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
-          case 212: builder.rep_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 213: builder.rep_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 214: builder.rep_string.add(ProtoAdapter.STRING.decode(reader)); break;
-          case 215: builder.rep_bytes.add(ProtoAdapter.BYTES.decode(reader)); break;
-          case 216: {
-            try {
-              builder.rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 217: builder.rep_nested_message.add(NestedMessage.ADAPTER.decode(reader)); break;
-          case 301: builder.pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 302: builder.pack_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
-          case 303: builder.pack_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
-          case 304: builder.pack_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 305: builder.pack_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 306: builder.pack_int64.add(ProtoAdapter.INT64.decode(reader)); break;
-          case 307: builder.pack_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
-          case 308: builder.pack_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
-          case 309: builder.pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 310: builder.pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 311: builder.pack_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
-          case 312: builder.pack_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 313: builder.pack_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 316: {
-            try {
-              builder.pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 401: builder.default_int32(ProtoAdapter.INT32.decode(reader)); break;
-          case 402: builder.default_uint32(ProtoAdapter.UINT32.decode(reader)); break;
-          case 403: builder.default_sint32(ProtoAdapter.SINT32.decode(reader)); break;
-          case 404: builder.default_fixed32(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 405: builder.default_sfixed32(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 406: builder.default_int64(ProtoAdapter.INT64.decode(reader)); break;
-          case 407: builder.default_uint64(ProtoAdapter.UINT64.decode(reader)); break;
-          case 408: builder.default_sint64(ProtoAdapter.SINT64.decode(reader)); break;
-          case 409: builder.default_fixed64(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 410: builder.default_sfixed64(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 411: builder.default_bool(ProtoAdapter.BOOL.decode(reader)); break;
-          case 412: builder.default_float(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 413: builder.default_double(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 414: builder.default_string(ProtoAdapter.STRING.decode(reader)); break;
-          case 415: builder.default_bytes(ProtoAdapter.BYTES.decode(reader)); break;
-          case 416: {
-            try {
-              builder.default_nested_enum(NestedEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 1001: builder.ext_opt_int32(ProtoAdapter.INT32.decode(reader)); break;
-          case 1002: builder.ext_opt_uint32(ProtoAdapter.UINT32.decode(reader)); break;
-          case 1003: builder.ext_opt_sint32(ProtoAdapter.SINT32.decode(reader)); break;
-          case 1004: builder.ext_opt_fixed32(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 1005: builder.ext_opt_sfixed32(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 1006: builder.ext_opt_int64(ProtoAdapter.INT64.decode(reader)); break;
-          case 1007: builder.ext_opt_uint64(ProtoAdapter.UINT64.decode(reader)); break;
-          case 1008: builder.ext_opt_sint64(ProtoAdapter.SINT64.decode(reader)); break;
-          case 1009: builder.ext_opt_fixed64(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 1010: builder.ext_opt_sfixed64(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 1011: builder.ext_opt_bool(ProtoAdapter.BOOL.decode(reader)); break;
-          case 1012: builder.ext_opt_float(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 1013: builder.ext_opt_double(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 1014: builder.ext_opt_string(ProtoAdapter.STRING.decode(reader)); break;
-          case 1015: builder.ext_opt_bytes(ProtoAdapter.BYTES.decode(reader)); break;
-          case 1016: {
-            try {
-              builder.ext_opt_nested_enum(NestedEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 1017: builder.ext_opt_nested_message(NestedMessage.ADAPTER.decode(reader)); break;
-          case 1101: builder.ext_rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 1102: builder.ext_rep_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
-          case 1103: builder.ext_rep_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
-          case 1104: builder.ext_rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 1105: builder.ext_rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 1106: builder.ext_rep_int64.add(ProtoAdapter.INT64.decode(reader)); break;
-          case 1107: builder.ext_rep_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
-          case 1108: builder.ext_rep_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
-          case 1109: builder.ext_rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 1110: builder.ext_rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 1111: builder.ext_rep_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
-          case 1112: builder.ext_rep_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 1113: builder.ext_rep_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 1114: builder.ext_rep_string.add(ProtoAdapter.STRING.decode(reader)); break;
-          case 1115: builder.ext_rep_bytes.add(ProtoAdapter.BYTES.decode(reader)); break;
-          case 1116: {
-            try {
-              builder.ext_rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 1117: builder.ext_rep_nested_message.add(NestedMessage.ADAPTER.decode(reader)); break;
-          case 1201: builder.ext_pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 1202: builder.ext_pack_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
-          case 1203: builder.ext_pack_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
-          case 1204: builder.ext_pack_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 1205: builder.ext_pack_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 1206: builder.ext_pack_int64.add(ProtoAdapter.INT64.decode(reader)); break;
-          case 1207: builder.ext_pack_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
-          case 1208: builder.ext_pack_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
-          case 1209: builder.ext_pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 1210: builder.ext_pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 1211: builder.ext_pack_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
-          case 1212: builder.ext_pack_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 1213: builder.ext_pack_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 1216: {
-            try {
-              builder.ext_pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public AllTypes redact(AllTypes value) {
-      Builder builder = value.newBuilder();
-      if (builder.opt_nested_message != null) builder.opt_nested_message = NestedMessage.ADAPTER.redact(builder.opt_nested_message);
-      if (builder.req_nested_message != null) builder.req_nested_message = NestedMessage.ADAPTER.redact(builder.req_nested_message);
-      redactElements(builder.rep_nested_message, NestedMessage.ADAPTER);
-      if (builder.ext_opt_nested_message != null) builder.ext_opt_nested_message = NestedMessage.ADAPTER.redact(builder.ext_opt_nested_message);
-      redactElements(builder.ext_rep_nested_message, NestedMessage.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<AllTypes> ADAPTER = new ProtoAdapter_AllTypes();
 
   private static final long serialVersionUID = 0L;
 
@@ -637,406 +157,1001 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   public static final NestedEnum DEFAULT_EXT_OPT_NESTED_ENUM = NestedEnum.A;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer opt_int32;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
+  )
   public final Integer opt_uint32;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
+  )
   public final Integer opt_sint32;
 
+  @WireField(
+      tag = 4,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+  )
   public final Integer opt_fixed32;
 
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
+  )
   public final Integer opt_sfixed32;
 
+  @WireField(
+      tag = 6,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
+  )
   public final Long opt_int64;
 
+  @WireField(
+      tag = 7,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
+  )
   public final Long opt_uint64;
 
+  @WireField(
+      tag = 8,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
+  )
   public final Long opt_sint64;
 
+  @WireField(
+      tag = 9,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+  )
   public final Long opt_fixed64;
 
+  @WireField(
+      tag = 10,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
+  )
   public final Long opt_sfixed64;
 
+  @WireField(
+      tag = 11,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean opt_bool;
 
+  @WireField(
+      tag = 12,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
   public final Float opt_float;
 
+  @WireField(
+      tag = 13,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+  )
   public final Double opt_double;
 
+  @WireField(
+      tag = 14,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String opt_string;
 
+  @WireField(
+      tag = 15,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
+  )
   public final ByteString opt_bytes;
 
+  @WireField(
+      tag = 16,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER"
+  )
   public final NestedEnum opt_nested_enum;
 
+  @WireField(
+      tag = 17,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER"
+  )
   public final NestedMessage opt_nested_message;
 
+  @WireField(
+      tag = 101,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REQUIRED
+  )
   public final Integer req_int32;
 
+  @WireField(
+      tag = 102,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+      label = WireField.Label.REQUIRED
+  )
   public final Integer req_uint32;
 
+  @WireField(
+      tag = 103,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      label = WireField.Label.REQUIRED
+  )
   public final Integer req_sint32;
 
+  @WireField(
+      tag = 104,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+      label = WireField.Label.REQUIRED
+  )
   public final Integer req_fixed32;
 
+  @WireField(
+      tag = 105,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+      label = WireField.Label.REQUIRED
+  )
   public final Integer req_sfixed32;
 
+  @WireField(
+      tag = 106,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
+      label = WireField.Label.REQUIRED
+  )
   public final Long req_int64;
 
+  @WireField(
+      tag = 107,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+      label = WireField.Label.REQUIRED
+  )
   public final Long req_uint64;
 
+  @WireField(
+      tag = 108,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+      label = WireField.Label.REQUIRED
+  )
   public final Long req_sint64;
 
+  @WireField(
+      tag = 109,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+      label = WireField.Label.REQUIRED
+  )
   public final Long req_fixed64;
 
+  @WireField(
+      tag = 110,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      label = WireField.Label.REQUIRED
+  )
   public final Long req_sfixed64;
 
+  @WireField(
+      tag = 111,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+      label = WireField.Label.REQUIRED
+  )
   public final Boolean req_bool;
 
+  @WireField(
+      tag = 112,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+      label = WireField.Label.REQUIRED
+  )
   public final Float req_float;
 
+  @WireField(
+      tag = 113,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+      label = WireField.Label.REQUIRED
+  )
   public final Double req_double;
 
+  @WireField(
+      tag = 114,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REQUIRED
+  )
   public final String req_string;
 
+  @WireField(
+      tag = 115,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+      label = WireField.Label.REQUIRED
+  )
   public final ByteString req_bytes;
 
+  @WireField(
+      tag = 116,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
+      label = WireField.Label.REQUIRED
+  )
   public final NestedEnum req_nested_enum;
 
+  @WireField(
+      tag = 117,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER",
+      label = WireField.Label.REQUIRED
+  )
   public final NestedMessage req_nested_message;
 
+  @WireField(
+      tag = 201,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> rep_int32;
 
+  @WireField(
+      tag = 202,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> rep_uint32;
 
+  @WireField(
+      tag = 203,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> rep_sint32;
 
+  @WireField(
+      tag = 204,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> rep_fixed32;
 
+  @WireField(
+      tag = 205,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> rep_sfixed32;
 
+  @WireField(
+      tag = 206,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> rep_int64;
 
+  @WireField(
+      tag = 207,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> rep_uint64;
 
+  @WireField(
+      tag = 208,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> rep_sint64;
 
+  @WireField(
+      tag = 209,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> rep_fixed64;
 
+  @WireField(
+      tag = 210,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> rep_sfixed64;
 
+  @WireField(
+      tag = 211,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+      label = WireField.Label.REPEATED
+  )
   public final List<Boolean> rep_bool;
 
+  @WireField(
+      tag = 212,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+      label = WireField.Label.REPEATED
+  )
   public final List<Float> rep_float;
 
+  @WireField(
+      tag = 213,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+      label = WireField.Label.REPEATED
+  )
   public final List<Double> rep_double;
 
+  @WireField(
+      tag = 214,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REPEATED
+  )
   public final List<String> rep_string;
 
+  @WireField(
+      tag = 215,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+      label = WireField.Label.REPEATED
+  )
   public final List<ByteString> rep_bytes;
 
+  @WireField(
+      tag = 216,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<NestedEnum> rep_nested_enum;
 
+  @WireField(
+      tag = 217,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<NestedMessage> rep_nested_message;
 
+  @WireField(
+      tag = 301,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> pack_int32;
 
+  @WireField(
+      tag = 302,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> pack_uint32;
 
+  @WireField(
+      tag = 303,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> pack_sint32;
 
+  @WireField(
+      tag = 304,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> pack_fixed32;
 
+  @WireField(
+      tag = 305,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> pack_sfixed32;
 
+  @WireField(
+      tag = 306,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> pack_int64;
 
+  @WireField(
+      tag = 307,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> pack_uint64;
 
+  @WireField(
+      tag = 308,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> pack_sint64;
 
+  @WireField(
+      tag = 309,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> pack_fixed64;
 
+  @WireField(
+      tag = 310,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> pack_sfixed64;
 
+  @WireField(
+      tag = 311,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+      label = WireField.Label.PACKED
+  )
   public final List<Boolean> pack_bool;
 
+  @WireField(
+      tag = 312,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+      label = WireField.Label.PACKED
+  )
   public final List<Float> pack_float;
 
+  @WireField(
+      tag = 313,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+      label = WireField.Label.PACKED
+  )
   public final List<Double> pack_double;
 
+  @WireField(
+      tag = 316,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
+      label = WireField.Label.PACKED
+  )
   public final List<NestedEnum> pack_nested_enum;
 
+  @WireField(
+      tag = 401,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer default_int32;
 
+  @WireField(
+      tag = 402,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
+  )
   public final Integer default_uint32;
 
+  @WireField(
+      tag = 403,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
+  )
   public final Integer default_sint32;
 
+  @WireField(
+      tag = 404,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+  )
   public final Integer default_fixed32;
 
+  @WireField(
+      tag = 405,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
+  )
   public final Integer default_sfixed32;
 
+  @WireField(
+      tag = 406,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
+  )
   public final Long default_int64;
 
+  @WireField(
+      tag = 407,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
+  )
   public final Long default_uint64;
 
+  @WireField(
+      tag = 408,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
+  )
   public final Long default_sint64;
 
+  @WireField(
+      tag = 409,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+  )
   public final Long default_fixed64;
 
+  @WireField(
+      tag = 410,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
+  )
   public final Long default_sfixed64;
 
+  @WireField(
+      tag = 411,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean default_bool;
 
+  @WireField(
+      tag = 412,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
   public final Float default_float;
 
+  @WireField(
+      tag = 413,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+  )
   public final Double default_double;
 
+  @WireField(
+      tag = 414,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String default_string;
 
+  @WireField(
+      tag = 415,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
+  )
   public final ByteString default_bytes;
 
+  @WireField(
+      tag = 416,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER"
+  )
   public final NestedEnum default_nested_enum;
 
   /**
    * Extension source: all_types.proto at 123:3
    */
+  @WireField(
+      tag = 1001,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer ext_opt_int32;
 
   /**
    * Extension source: all_types.proto at 124:3
    */
+  @WireField(
+      tag = 1002,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
+  )
   public final Integer ext_opt_uint32;
 
   /**
    * Extension source: all_types.proto at 125:3
    */
+  @WireField(
+      tag = 1003,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
+  )
   public final Integer ext_opt_sint32;
 
   /**
    * Extension source: all_types.proto at 126:3
    */
+  @WireField(
+      tag = 1004,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+  )
   public final Integer ext_opt_fixed32;
 
   /**
    * Extension source: all_types.proto at 127:3
    */
+  @WireField(
+      tag = 1005,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
+  )
   public final Integer ext_opt_sfixed32;
 
   /**
    * Extension source: all_types.proto at 128:3
    */
+  @WireField(
+      tag = 1006,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64"
+  )
   public final Long ext_opt_int64;
 
   /**
    * Extension source: all_types.proto at 129:3
    */
+  @WireField(
+      tag = 1007,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
+  )
   public final Long ext_opt_uint64;
 
   /**
    * Extension source: all_types.proto at 130:3
    */
+  @WireField(
+      tag = 1008,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
+  )
   public final Long ext_opt_sint64;
 
   /**
    * Extension source: all_types.proto at 131:3
    */
+  @WireField(
+      tag = 1009,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+  )
   public final Long ext_opt_fixed64;
 
   /**
    * Extension source: all_types.proto at 132:3
    */
+  @WireField(
+      tag = 1010,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
+  )
   public final Long ext_opt_sfixed64;
 
   /**
    * Extension source: all_types.proto at 133:3
    */
+  @WireField(
+      tag = 1011,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean ext_opt_bool;
 
   /**
    * Extension source: all_types.proto at 134:3
    */
+  @WireField(
+      tag = 1012,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
   public final Float ext_opt_float;
 
   /**
    * Extension source: all_types.proto at 135:3
    */
+  @WireField(
+      tag = 1013,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
+  )
   public final Double ext_opt_double;
 
   /**
    * Extension source: all_types.proto at 136:3
    */
+  @WireField(
+      tag = 1014,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String ext_opt_string;
 
   /**
    * Extension source: all_types.proto at 137:3
    */
+  @WireField(
+      tag = 1015,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES"
+  )
   public final ByteString ext_opt_bytes;
 
   /**
    * Extension source: all_types.proto at 138:3
    */
+  @WireField(
+      tag = 1016,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER"
+  )
   public final NestedEnum ext_opt_nested_enum;
 
   /**
    * Extension source: all_types.proto at 139:3
    */
+  @WireField(
+      tag = 1017,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER"
+  )
   public final NestedMessage ext_opt_nested_message;
 
   /**
    * Extension source: all_types.proto at 141:3
    */
+  @WireField(
+      tag = 1101,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> ext_rep_int32;
 
   /**
    * Extension source: all_types.proto at 142:3
    */
+  @WireField(
+      tag = 1102,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> ext_rep_uint32;
 
   /**
    * Extension source: all_types.proto at 143:3
    */
+  @WireField(
+      tag = 1103,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> ext_rep_sint32;
 
   /**
    * Extension source: all_types.proto at 144:3
    */
+  @WireField(
+      tag = 1104,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> ext_rep_fixed32;
 
   /**
    * Extension source: all_types.proto at 145:3
    */
+  @WireField(
+      tag = 1105,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+      label = WireField.Label.REPEATED
+  )
   public final List<Integer> ext_rep_sfixed32;
 
   /**
    * Extension source: all_types.proto at 146:3
    */
+  @WireField(
+      tag = 1106,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> ext_rep_int64;
 
   /**
    * Extension source: all_types.proto at 147:3
    */
+  @WireField(
+      tag = 1107,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> ext_rep_uint64;
 
   /**
    * Extension source: all_types.proto at 148:3
    */
+  @WireField(
+      tag = 1108,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> ext_rep_sint64;
 
   /**
    * Extension source: all_types.proto at 149:3
    */
+  @WireField(
+      tag = 1109,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> ext_rep_fixed64;
 
   /**
    * Extension source: all_types.proto at 150:3
    */
+  @WireField(
+      tag = 1110,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      label = WireField.Label.REPEATED
+  )
   public final List<Long> ext_rep_sfixed64;
 
   /**
    * Extension source: all_types.proto at 151:3
    */
+  @WireField(
+      tag = 1111,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+      label = WireField.Label.REPEATED
+  )
   public final List<Boolean> ext_rep_bool;
 
   /**
    * Extension source: all_types.proto at 152:3
    */
+  @WireField(
+      tag = 1112,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+      label = WireField.Label.REPEATED
+  )
   public final List<Float> ext_rep_float;
 
   /**
    * Extension source: all_types.proto at 153:3
    */
+  @WireField(
+      tag = 1113,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+      label = WireField.Label.REPEATED
+  )
   public final List<Double> ext_rep_double;
 
   /**
    * Extension source: all_types.proto at 154:3
    */
+  @WireField(
+      tag = 1114,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REPEATED
+  )
   public final List<String> ext_rep_string;
 
   /**
    * Extension source: all_types.proto at 155:3
    */
+  @WireField(
+      tag = 1115,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+      label = WireField.Label.REPEATED
+  )
   public final List<ByteString> ext_rep_bytes;
 
   /**
    * Extension source: all_types.proto at 156:3
    */
+  @WireField(
+      tag = 1116,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<NestedEnum> ext_rep_nested_enum;
 
   /**
    * Extension source: all_types.proto at 157:3
    */
+  @WireField(
+      tag = 1117,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<NestedMessage> ext_rep_nested_message;
 
   /**
    * Extension source: all_types.proto at 159:3
    */
+  @WireField(
+      tag = 1201,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> ext_pack_int32;
 
   /**
    * Extension source: all_types.proto at 160:3
    */
+  @WireField(
+      tag = 1202,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> ext_pack_uint32;
 
   /**
    * Extension source: all_types.proto at 161:3
    */
+  @WireField(
+      tag = 1203,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> ext_pack_sint32;
 
   /**
    * Extension source: all_types.proto at 162:3
    */
+  @WireField(
+      tag = 1204,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> ext_pack_fixed32;
 
   /**
    * Extension source: all_types.proto at 163:3
    */
+  @WireField(
+      tag = 1205,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+      label = WireField.Label.PACKED
+  )
   public final List<Integer> ext_pack_sfixed32;
 
   /**
    * Extension source: all_types.proto at 164:3
    */
+  @WireField(
+      tag = 1206,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> ext_pack_int64;
 
   /**
    * Extension source: all_types.proto at 165:3
    */
+  @WireField(
+      tag = 1207,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> ext_pack_uint64;
 
   /**
    * Extension source: all_types.proto at 166:3
    */
+  @WireField(
+      tag = 1208,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> ext_pack_sint64;
 
   /**
    * Extension source: all_types.proto at 167:3
    */
+  @WireField(
+      tag = 1209,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> ext_pack_fixed64;
 
   /**
    * Extension source: all_types.proto at 168:3
    */
+  @WireField(
+      tag = 1210,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      label = WireField.Label.PACKED
+  )
   public final List<Long> ext_pack_sfixed64;
 
   /**
    * Extension source: all_types.proto at 169:3
    */
+  @WireField(
+      tag = 1211,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+      label = WireField.Label.PACKED
+  )
   public final List<Boolean> ext_pack_bool;
 
   /**
    * Extension source: all_types.proto at 170:3
    */
+  @WireField(
+      tag = 1212,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+      label = WireField.Label.PACKED
+  )
   public final List<Float> ext_pack_float;
 
   /**
    * Extension source: all_types.proto at 171:3
    */
+  @WireField(
+      tag = 1213,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+      label = WireField.Label.PACKED
+  )
   public final List<Double> ext_pack_double;
 
   /**
    * Extension source: all_types.proto at 172:3
    */
+  @WireField(
+      tag = 1216,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER",
+      label = WireField.Label.PACKED
+  )
   public final List<NestedEnum> ext_pack_nested_enum;
 
   public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum, Integer ext_opt_int32, Integer ext_opt_uint32, Integer ext_opt_sint32, Integer ext_opt_fixed32, Integer ext_opt_sfixed32, Long ext_opt_int64, Long ext_opt_uint64, Long ext_opt_sint64, Long ext_opt_fixed64, Long ext_opt_sfixed64, Boolean ext_opt_bool, Float ext_opt_float, Double ext_opt_double, String ext_opt_string, ByteString ext_opt_bytes, NestedEnum ext_opt_nested_enum, NestedMessage ext_opt_nested_message, List<Integer> ext_rep_int32, List<Integer> ext_rep_uint32, List<Integer> ext_rep_sint32, List<Integer> ext_rep_fixed32, List<Integer> ext_rep_sfixed32, List<Long> ext_rep_int64, List<Long> ext_rep_uint64, List<Long> ext_rep_sint64, List<Long> ext_rep_fixed64, List<Long> ext_rep_sfixed64, List<Boolean> ext_rep_bool, List<Float> ext_rep_float, List<Double> ext_rep_double, List<String> ext_rep_string, List<ByteString> ext_rep_bytes, List<NestedEnum> ext_rep_nested_enum, List<NestedMessage> ext_rep_nested_message, List<Integer> ext_pack_int32, List<Integer> ext_pack_uint32, List<Integer> ext_pack_sint32, List<Integer> ext_pack_fixed32, List<Integer> ext_pack_sfixed32, List<Long> ext_pack_int64, List<Long> ext_pack_uint64, List<Long> ext_pack_sint64, List<Long> ext_pack_fixed64, List<Long> ext_pack_sfixed64, List<Boolean> ext_pack_bool, List<Float> ext_pack_float, List<Double> ext_pack_double, List<NestedEnum> ext_pack_nested_enum) {
@@ -1079,37 +1194,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.req_bytes = req_bytes;
     this.req_nested_enum = req_nested_enum;
     this.req_nested_message = req_nested_message;
-    this.rep_int32 = immutableCopyOf("rep_int32", rep_int32);
-    this.rep_uint32 = immutableCopyOf("rep_uint32", rep_uint32);
-    this.rep_sint32 = immutableCopyOf("rep_sint32", rep_sint32);
-    this.rep_fixed32 = immutableCopyOf("rep_fixed32", rep_fixed32);
-    this.rep_sfixed32 = immutableCopyOf("rep_sfixed32", rep_sfixed32);
-    this.rep_int64 = immutableCopyOf("rep_int64", rep_int64);
-    this.rep_uint64 = immutableCopyOf("rep_uint64", rep_uint64);
-    this.rep_sint64 = immutableCopyOf("rep_sint64", rep_sint64);
-    this.rep_fixed64 = immutableCopyOf("rep_fixed64", rep_fixed64);
-    this.rep_sfixed64 = immutableCopyOf("rep_sfixed64", rep_sfixed64);
-    this.rep_bool = immutableCopyOf("rep_bool", rep_bool);
-    this.rep_float = immutableCopyOf("rep_float", rep_float);
-    this.rep_double = immutableCopyOf("rep_double", rep_double);
-    this.rep_string = immutableCopyOf("rep_string", rep_string);
-    this.rep_bytes = immutableCopyOf("rep_bytes", rep_bytes);
-    this.rep_nested_enum = immutableCopyOf("rep_nested_enum", rep_nested_enum);
-    this.rep_nested_message = immutableCopyOf("rep_nested_message", rep_nested_message);
-    this.pack_int32 = immutableCopyOf("pack_int32", pack_int32);
-    this.pack_uint32 = immutableCopyOf("pack_uint32", pack_uint32);
-    this.pack_sint32 = immutableCopyOf("pack_sint32", pack_sint32);
-    this.pack_fixed32 = immutableCopyOf("pack_fixed32", pack_fixed32);
-    this.pack_sfixed32 = immutableCopyOf("pack_sfixed32", pack_sfixed32);
-    this.pack_int64 = immutableCopyOf("pack_int64", pack_int64);
-    this.pack_uint64 = immutableCopyOf("pack_uint64", pack_uint64);
-    this.pack_sint64 = immutableCopyOf("pack_sint64", pack_sint64);
-    this.pack_fixed64 = immutableCopyOf("pack_fixed64", pack_fixed64);
-    this.pack_sfixed64 = immutableCopyOf("pack_sfixed64", pack_sfixed64);
-    this.pack_bool = immutableCopyOf("pack_bool", pack_bool);
-    this.pack_float = immutableCopyOf("pack_float", pack_float);
-    this.pack_double = immutableCopyOf("pack_double", pack_double);
-    this.pack_nested_enum = immutableCopyOf("pack_nested_enum", pack_nested_enum);
+    this.rep_int32 = WireInternal.immutableCopyOf("rep_int32", rep_int32);
+    this.rep_uint32 = WireInternal.immutableCopyOf("rep_uint32", rep_uint32);
+    this.rep_sint32 = WireInternal.immutableCopyOf("rep_sint32", rep_sint32);
+    this.rep_fixed32 = WireInternal.immutableCopyOf("rep_fixed32", rep_fixed32);
+    this.rep_sfixed32 = WireInternal.immutableCopyOf("rep_sfixed32", rep_sfixed32);
+    this.rep_int64 = WireInternal.immutableCopyOf("rep_int64", rep_int64);
+    this.rep_uint64 = WireInternal.immutableCopyOf("rep_uint64", rep_uint64);
+    this.rep_sint64 = WireInternal.immutableCopyOf("rep_sint64", rep_sint64);
+    this.rep_fixed64 = WireInternal.immutableCopyOf("rep_fixed64", rep_fixed64);
+    this.rep_sfixed64 = WireInternal.immutableCopyOf("rep_sfixed64", rep_sfixed64);
+    this.rep_bool = WireInternal.immutableCopyOf("rep_bool", rep_bool);
+    this.rep_float = WireInternal.immutableCopyOf("rep_float", rep_float);
+    this.rep_double = WireInternal.immutableCopyOf("rep_double", rep_double);
+    this.rep_string = WireInternal.immutableCopyOf("rep_string", rep_string);
+    this.rep_bytes = WireInternal.immutableCopyOf("rep_bytes", rep_bytes);
+    this.rep_nested_enum = WireInternal.immutableCopyOf("rep_nested_enum", rep_nested_enum);
+    this.rep_nested_message = WireInternal.immutableCopyOf("rep_nested_message", rep_nested_message);
+    this.pack_int32 = WireInternal.immutableCopyOf("pack_int32", pack_int32);
+    this.pack_uint32 = WireInternal.immutableCopyOf("pack_uint32", pack_uint32);
+    this.pack_sint32 = WireInternal.immutableCopyOf("pack_sint32", pack_sint32);
+    this.pack_fixed32 = WireInternal.immutableCopyOf("pack_fixed32", pack_fixed32);
+    this.pack_sfixed32 = WireInternal.immutableCopyOf("pack_sfixed32", pack_sfixed32);
+    this.pack_int64 = WireInternal.immutableCopyOf("pack_int64", pack_int64);
+    this.pack_uint64 = WireInternal.immutableCopyOf("pack_uint64", pack_uint64);
+    this.pack_sint64 = WireInternal.immutableCopyOf("pack_sint64", pack_sint64);
+    this.pack_fixed64 = WireInternal.immutableCopyOf("pack_fixed64", pack_fixed64);
+    this.pack_sfixed64 = WireInternal.immutableCopyOf("pack_sfixed64", pack_sfixed64);
+    this.pack_bool = WireInternal.immutableCopyOf("pack_bool", pack_bool);
+    this.pack_float = WireInternal.immutableCopyOf("pack_float", pack_float);
+    this.pack_double = WireInternal.immutableCopyOf("pack_double", pack_double);
+    this.pack_nested_enum = WireInternal.immutableCopyOf("pack_nested_enum", pack_nested_enum);
     this.default_int32 = default_int32;
     this.default_uint32 = default_uint32;
     this.default_sint32 = default_sint32;
@@ -1143,37 +1258,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.ext_opt_bytes = ext_opt_bytes;
     this.ext_opt_nested_enum = ext_opt_nested_enum;
     this.ext_opt_nested_message = ext_opt_nested_message;
-    this.ext_rep_int32 = immutableCopyOf("ext_rep_int32", ext_rep_int32);
-    this.ext_rep_uint32 = immutableCopyOf("ext_rep_uint32", ext_rep_uint32);
-    this.ext_rep_sint32 = immutableCopyOf("ext_rep_sint32", ext_rep_sint32);
-    this.ext_rep_fixed32 = immutableCopyOf("ext_rep_fixed32", ext_rep_fixed32);
-    this.ext_rep_sfixed32 = immutableCopyOf("ext_rep_sfixed32", ext_rep_sfixed32);
-    this.ext_rep_int64 = immutableCopyOf("ext_rep_int64", ext_rep_int64);
-    this.ext_rep_uint64 = immutableCopyOf("ext_rep_uint64", ext_rep_uint64);
-    this.ext_rep_sint64 = immutableCopyOf("ext_rep_sint64", ext_rep_sint64);
-    this.ext_rep_fixed64 = immutableCopyOf("ext_rep_fixed64", ext_rep_fixed64);
-    this.ext_rep_sfixed64 = immutableCopyOf("ext_rep_sfixed64", ext_rep_sfixed64);
-    this.ext_rep_bool = immutableCopyOf("ext_rep_bool", ext_rep_bool);
-    this.ext_rep_float = immutableCopyOf("ext_rep_float", ext_rep_float);
-    this.ext_rep_double = immutableCopyOf("ext_rep_double", ext_rep_double);
-    this.ext_rep_string = immutableCopyOf("ext_rep_string", ext_rep_string);
-    this.ext_rep_bytes = immutableCopyOf("ext_rep_bytes", ext_rep_bytes);
-    this.ext_rep_nested_enum = immutableCopyOf("ext_rep_nested_enum", ext_rep_nested_enum);
-    this.ext_rep_nested_message = immutableCopyOf("ext_rep_nested_message", ext_rep_nested_message);
-    this.ext_pack_int32 = immutableCopyOf("ext_pack_int32", ext_pack_int32);
-    this.ext_pack_uint32 = immutableCopyOf("ext_pack_uint32", ext_pack_uint32);
-    this.ext_pack_sint32 = immutableCopyOf("ext_pack_sint32", ext_pack_sint32);
-    this.ext_pack_fixed32 = immutableCopyOf("ext_pack_fixed32", ext_pack_fixed32);
-    this.ext_pack_sfixed32 = immutableCopyOf("ext_pack_sfixed32", ext_pack_sfixed32);
-    this.ext_pack_int64 = immutableCopyOf("ext_pack_int64", ext_pack_int64);
-    this.ext_pack_uint64 = immutableCopyOf("ext_pack_uint64", ext_pack_uint64);
-    this.ext_pack_sint64 = immutableCopyOf("ext_pack_sint64", ext_pack_sint64);
-    this.ext_pack_fixed64 = immutableCopyOf("ext_pack_fixed64", ext_pack_fixed64);
-    this.ext_pack_sfixed64 = immutableCopyOf("ext_pack_sfixed64", ext_pack_sfixed64);
-    this.ext_pack_bool = immutableCopyOf("ext_pack_bool", ext_pack_bool);
-    this.ext_pack_float = immutableCopyOf("ext_pack_float", ext_pack_float);
-    this.ext_pack_double = immutableCopyOf("ext_pack_double", ext_pack_double);
-    this.ext_pack_nested_enum = immutableCopyOf("ext_pack_nested_enum", ext_pack_nested_enum);
+    this.ext_rep_int32 = WireInternal.immutableCopyOf("ext_rep_int32", ext_rep_int32);
+    this.ext_rep_uint32 = WireInternal.immutableCopyOf("ext_rep_uint32", ext_rep_uint32);
+    this.ext_rep_sint32 = WireInternal.immutableCopyOf("ext_rep_sint32", ext_rep_sint32);
+    this.ext_rep_fixed32 = WireInternal.immutableCopyOf("ext_rep_fixed32", ext_rep_fixed32);
+    this.ext_rep_sfixed32 = WireInternal.immutableCopyOf("ext_rep_sfixed32", ext_rep_sfixed32);
+    this.ext_rep_int64 = WireInternal.immutableCopyOf("ext_rep_int64", ext_rep_int64);
+    this.ext_rep_uint64 = WireInternal.immutableCopyOf("ext_rep_uint64", ext_rep_uint64);
+    this.ext_rep_sint64 = WireInternal.immutableCopyOf("ext_rep_sint64", ext_rep_sint64);
+    this.ext_rep_fixed64 = WireInternal.immutableCopyOf("ext_rep_fixed64", ext_rep_fixed64);
+    this.ext_rep_sfixed64 = WireInternal.immutableCopyOf("ext_rep_sfixed64", ext_rep_sfixed64);
+    this.ext_rep_bool = WireInternal.immutableCopyOf("ext_rep_bool", ext_rep_bool);
+    this.ext_rep_float = WireInternal.immutableCopyOf("ext_rep_float", ext_rep_float);
+    this.ext_rep_double = WireInternal.immutableCopyOf("ext_rep_double", ext_rep_double);
+    this.ext_rep_string = WireInternal.immutableCopyOf("ext_rep_string", ext_rep_string);
+    this.ext_rep_bytes = WireInternal.immutableCopyOf("ext_rep_bytes", ext_rep_bytes);
+    this.ext_rep_nested_enum = WireInternal.immutableCopyOf("ext_rep_nested_enum", ext_rep_nested_enum);
+    this.ext_rep_nested_message = WireInternal.immutableCopyOf("ext_rep_nested_message", ext_rep_nested_message);
+    this.ext_pack_int32 = WireInternal.immutableCopyOf("ext_pack_int32", ext_pack_int32);
+    this.ext_pack_uint32 = WireInternal.immutableCopyOf("ext_pack_uint32", ext_pack_uint32);
+    this.ext_pack_sint32 = WireInternal.immutableCopyOf("ext_pack_sint32", ext_pack_sint32);
+    this.ext_pack_fixed32 = WireInternal.immutableCopyOf("ext_pack_fixed32", ext_pack_fixed32);
+    this.ext_pack_sfixed32 = WireInternal.immutableCopyOf("ext_pack_sfixed32", ext_pack_sfixed32);
+    this.ext_pack_int64 = WireInternal.immutableCopyOf("ext_pack_int64", ext_pack_int64);
+    this.ext_pack_uint64 = WireInternal.immutableCopyOf("ext_pack_uint64", ext_pack_uint64);
+    this.ext_pack_sint64 = WireInternal.immutableCopyOf("ext_pack_sint64", ext_pack_sint64);
+    this.ext_pack_fixed64 = WireInternal.immutableCopyOf("ext_pack_fixed64", ext_pack_fixed64);
+    this.ext_pack_sfixed64 = WireInternal.immutableCopyOf("ext_pack_sfixed64", ext_pack_sfixed64);
+    this.ext_pack_bool = WireInternal.immutableCopyOf("ext_pack_bool", ext_pack_bool);
+    this.ext_pack_float = WireInternal.immutableCopyOf("ext_pack_float", ext_pack_float);
+    this.ext_pack_double = WireInternal.immutableCopyOf("ext_pack_double", ext_pack_double);
+    this.ext_pack_nested_enum = WireInternal.immutableCopyOf("ext_pack_nested_enum", ext_pack_nested_enum);
   }
 
   @Override
@@ -1213,37 +1328,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.req_bytes = req_bytes;
     builder.req_nested_enum = req_nested_enum;
     builder.req_nested_message = req_nested_message;
-    builder.rep_int32 = copyOf("rep_int32", rep_int32);
-    builder.rep_uint32 = copyOf("rep_uint32", rep_uint32);
-    builder.rep_sint32 = copyOf("rep_sint32", rep_sint32);
-    builder.rep_fixed32 = copyOf("rep_fixed32", rep_fixed32);
-    builder.rep_sfixed32 = copyOf("rep_sfixed32", rep_sfixed32);
-    builder.rep_int64 = copyOf("rep_int64", rep_int64);
-    builder.rep_uint64 = copyOf("rep_uint64", rep_uint64);
-    builder.rep_sint64 = copyOf("rep_sint64", rep_sint64);
-    builder.rep_fixed64 = copyOf("rep_fixed64", rep_fixed64);
-    builder.rep_sfixed64 = copyOf("rep_sfixed64", rep_sfixed64);
-    builder.rep_bool = copyOf("rep_bool", rep_bool);
-    builder.rep_float = copyOf("rep_float", rep_float);
-    builder.rep_double = copyOf("rep_double", rep_double);
-    builder.rep_string = copyOf("rep_string", rep_string);
-    builder.rep_bytes = copyOf("rep_bytes", rep_bytes);
-    builder.rep_nested_enum = copyOf("rep_nested_enum", rep_nested_enum);
-    builder.rep_nested_message = copyOf("rep_nested_message", rep_nested_message);
-    builder.pack_int32 = copyOf("pack_int32", pack_int32);
-    builder.pack_uint32 = copyOf("pack_uint32", pack_uint32);
-    builder.pack_sint32 = copyOf("pack_sint32", pack_sint32);
-    builder.pack_fixed32 = copyOf("pack_fixed32", pack_fixed32);
-    builder.pack_sfixed32 = copyOf("pack_sfixed32", pack_sfixed32);
-    builder.pack_int64 = copyOf("pack_int64", pack_int64);
-    builder.pack_uint64 = copyOf("pack_uint64", pack_uint64);
-    builder.pack_sint64 = copyOf("pack_sint64", pack_sint64);
-    builder.pack_fixed64 = copyOf("pack_fixed64", pack_fixed64);
-    builder.pack_sfixed64 = copyOf("pack_sfixed64", pack_sfixed64);
-    builder.pack_bool = copyOf("pack_bool", pack_bool);
-    builder.pack_float = copyOf("pack_float", pack_float);
-    builder.pack_double = copyOf("pack_double", pack_double);
-    builder.pack_nested_enum = copyOf("pack_nested_enum", pack_nested_enum);
+    builder.rep_int32 = WireInternal.copyOf("rep_int32", rep_int32);
+    builder.rep_uint32 = WireInternal.copyOf("rep_uint32", rep_uint32);
+    builder.rep_sint32 = WireInternal.copyOf("rep_sint32", rep_sint32);
+    builder.rep_fixed32 = WireInternal.copyOf("rep_fixed32", rep_fixed32);
+    builder.rep_sfixed32 = WireInternal.copyOf("rep_sfixed32", rep_sfixed32);
+    builder.rep_int64 = WireInternal.copyOf("rep_int64", rep_int64);
+    builder.rep_uint64 = WireInternal.copyOf("rep_uint64", rep_uint64);
+    builder.rep_sint64 = WireInternal.copyOf("rep_sint64", rep_sint64);
+    builder.rep_fixed64 = WireInternal.copyOf("rep_fixed64", rep_fixed64);
+    builder.rep_sfixed64 = WireInternal.copyOf("rep_sfixed64", rep_sfixed64);
+    builder.rep_bool = WireInternal.copyOf("rep_bool", rep_bool);
+    builder.rep_float = WireInternal.copyOf("rep_float", rep_float);
+    builder.rep_double = WireInternal.copyOf("rep_double", rep_double);
+    builder.rep_string = WireInternal.copyOf("rep_string", rep_string);
+    builder.rep_bytes = WireInternal.copyOf("rep_bytes", rep_bytes);
+    builder.rep_nested_enum = WireInternal.copyOf("rep_nested_enum", rep_nested_enum);
+    builder.rep_nested_message = WireInternal.copyOf("rep_nested_message", rep_nested_message);
+    builder.pack_int32 = WireInternal.copyOf("pack_int32", pack_int32);
+    builder.pack_uint32 = WireInternal.copyOf("pack_uint32", pack_uint32);
+    builder.pack_sint32 = WireInternal.copyOf("pack_sint32", pack_sint32);
+    builder.pack_fixed32 = WireInternal.copyOf("pack_fixed32", pack_fixed32);
+    builder.pack_sfixed32 = WireInternal.copyOf("pack_sfixed32", pack_sfixed32);
+    builder.pack_int64 = WireInternal.copyOf("pack_int64", pack_int64);
+    builder.pack_uint64 = WireInternal.copyOf("pack_uint64", pack_uint64);
+    builder.pack_sint64 = WireInternal.copyOf("pack_sint64", pack_sint64);
+    builder.pack_fixed64 = WireInternal.copyOf("pack_fixed64", pack_fixed64);
+    builder.pack_sfixed64 = WireInternal.copyOf("pack_sfixed64", pack_sfixed64);
+    builder.pack_bool = WireInternal.copyOf("pack_bool", pack_bool);
+    builder.pack_float = WireInternal.copyOf("pack_float", pack_float);
+    builder.pack_double = WireInternal.copyOf("pack_double", pack_double);
+    builder.pack_nested_enum = WireInternal.copyOf("pack_nested_enum", pack_nested_enum);
     builder.default_int32 = default_int32;
     builder.default_uint32 = default_uint32;
     builder.default_sint32 = default_sint32;
@@ -1277,37 +1392,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.ext_opt_bytes = ext_opt_bytes;
     builder.ext_opt_nested_enum = ext_opt_nested_enum;
     builder.ext_opt_nested_message = ext_opt_nested_message;
-    builder.ext_rep_int32 = copyOf("ext_rep_int32", ext_rep_int32);
-    builder.ext_rep_uint32 = copyOf("ext_rep_uint32", ext_rep_uint32);
-    builder.ext_rep_sint32 = copyOf("ext_rep_sint32", ext_rep_sint32);
-    builder.ext_rep_fixed32 = copyOf("ext_rep_fixed32", ext_rep_fixed32);
-    builder.ext_rep_sfixed32 = copyOf("ext_rep_sfixed32", ext_rep_sfixed32);
-    builder.ext_rep_int64 = copyOf("ext_rep_int64", ext_rep_int64);
-    builder.ext_rep_uint64 = copyOf("ext_rep_uint64", ext_rep_uint64);
-    builder.ext_rep_sint64 = copyOf("ext_rep_sint64", ext_rep_sint64);
-    builder.ext_rep_fixed64 = copyOf("ext_rep_fixed64", ext_rep_fixed64);
-    builder.ext_rep_sfixed64 = copyOf("ext_rep_sfixed64", ext_rep_sfixed64);
-    builder.ext_rep_bool = copyOf("ext_rep_bool", ext_rep_bool);
-    builder.ext_rep_float = copyOf("ext_rep_float", ext_rep_float);
-    builder.ext_rep_double = copyOf("ext_rep_double", ext_rep_double);
-    builder.ext_rep_string = copyOf("ext_rep_string", ext_rep_string);
-    builder.ext_rep_bytes = copyOf("ext_rep_bytes", ext_rep_bytes);
-    builder.ext_rep_nested_enum = copyOf("ext_rep_nested_enum", ext_rep_nested_enum);
-    builder.ext_rep_nested_message = copyOf("ext_rep_nested_message", ext_rep_nested_message);
-    builder.ext_pack_int32 = copyOf("ext_pack_int32", ext_pack_int32);
-    builder.ext_pack_uint32 = copyOf("ext_pack_uint32", ext_pack_uint32);
-    builder.ext_pack_sint32 = copyOf("ext_pack_sint32", ext_pack_sint32);
-    builder.ext_pack_fixed32 = copyOf("ext_pack_fixed32", ext_pack_fixed32);
-    builder.ext_pack_sfixed32 = copyOf("ext_pack_sfixed32", ext_pack_sfixed32);
-    builder.ext_pack_int64 = copyOf("ext_pack_int64", ext_pack_int64);
-    builder.ext_pack_uint64 = copyOf("ext_pack_uint64", ext_pack_uint64);
-    builder.ext_pack_sint64 = copyOf("ext_pack_sint64", ext_pack_sint64);
-    builder.ext_pack_fixed64 = copyOf("ext_pack_fixed64", ext_pack_fixed64);
-    builder.ext_pack_sfixed64 = copyOf("ext_pack_sfixed64", ext_pack_sfixed64);
-    builder.ext_pack_bool = copyOf("ext_pack_bool", ext_pack_bool);
-    builder.ext_pack_float = copyOf("ext_pack_float", ext_pack_float);
-    builder.ext_pack_double = copyOf("ext_pack_double", ext_pack_double);
-    builder.ext_pack_nested_enum = copyOf("ext_pack_nested_enum", ext_pack_nested_enum);
+    builder.ext_rep_int32 = WireInternal.copyOf("ext_rep_int32", ext_rep_int32);
+    builder.ext_rep_uint32 = WireInternal.copyOf("ext_rep_uint32", ext_rep_uint32);
+    builder.ext_rep_sint32 = WireInternal.copyOf("ext_rep_sint32", ext_rep_sint32);
+    builder.ext_rep_fixed32 = WireInternal.copyOf("ext_rep_fixed32", ext_rep_fixed32);
+    builder.ext_rep_sfixed32 = WireInternal.copyOf("ext_rep_sfixed32", ext_rep_sfixed32);
+    builder.ext_rep_int64 = WireInternal.copyOf("ext_rep_int64", ext_rep_int64);
+    builder.ext_rep_uint64 = WireInternal.copyOf("ext_rep_uint64", ext_rep_uint64);
+    builder.ext_rep_sint64 = WireInternal.copyOf("ext_rep_sint64", ext_rep_sint64);
+    builder.ext_rep_fixed64 = WireInternal.copyOf("ext_rep_fixed64", ext_rep_fixed64);
+    builder.ext_rep_sfixed64 = WireInternal.copyOf("ext_rep_sfixed64", ext_rep_sfixed64);
+    builder.ext_rep_bool = WireInternal.copyOf("ext_rep_bool", ext_rep_bool);
+    builder.ext_rep_float = WireInternal.copyOf("ext_rep_float", ext_rep_float);
+    builder.ext_rep_double = WireInternal.copyOf("ext_rep_double", ext_rep_double);
+    builder.ext_rep_string = WireInternal.copyOf("ext_rep_string", ext_rep_string);
+    builder.ext_rep_bytes = WireInternal.copyOf("ext_rep_bytes", ext_rep_bytes);
+    builder.ext_rep_nested_enum = WireInternal.copyOf("ext_rep_nested_enum", ext_rep_nested_enum);
+    builder.ext_rep_nested_message = WireInternal.copyOf("ext_rep_nested_message", ext_rep_nested_message);
+    builder.ext_pack_int32 = WireInternal.copyOf("ext_pack_int32", ext_pack_int32);
+    builder.ext_pack_uint32 = WireInternal.copyOf("ext_pack_uint32", ext_pack_uint32);
+    builder.ext_pack_sint32 = WireInternal.copyOf("ext_pack_sint32", ext_pack_sint32);
+    builder.ext_pack_fixed32 = WireInternal.copyOf("ext_pack_fixed32", ext_pack_fixed32);
+    builder.ext_pack_sfixed32 = WireInternal.copyOf("ext_pack_sfixed32", ext_pack_sfixed32);
+    builder.ext_pack_int64 = WireInternal.copyOf("ext_pack_int64", ext_pack_int64);
+    builder.ext_pack_uint64 = WireInternal.copyOf("ext_pack_uint64", ext_pack_uint64);
+    builder.ext_pack_sint64 = WireInternal.copyOf("ext_pack_sint64", ext_pack_sint64);
+    builder.ext_pack_fixed64 = WireInternal.copyOf("ext_pack_fixed64", ext_pack_fixed64);
+    builder.ext_pack_sfixed64 = WireInternal.copyOf("ext_pack_sfixed64", ext_pack_sfixed64);
+    builder.ext_pack_bool = WireInternal.copyOf("ext_pack_bool", ext_pack_bool);
+    builder.ext_pack_float = WireInternal.copyOf("ext_pack_float", ext_pack_float);
+    builder.ext_pack_double = WireInternal.copyOf("ext_pack_double", ext_pack_double);
+    builder.ext_pack_nested_enum = WireInternal.copyOf("ext_pack_nested_enum", ext_pack_nested_enum);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -1317,136 +1432,136 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (other == this) return true;
     if (!(other instanceof AllTypes)) return false;
     AllTypes o = (AllTypes) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(opt_int32, o.opt_int32)
-        && equals(opt_uint32, o.opt_uint32)
-        && equals(opt_sint32, o.opt_sint32)
-        && equals(opt_fixed32, o.opt_fixed32)
-        && equals(opt_sfixed32, o.opt_sfixed32)
-        && equals(opt_int64, o.opt_int64)
-        && equals(opt_uint64, o.opt_uint64)
-        && equals(opt_sint64, o.opt_sint64)
-        && equals(opt_fixed64, o.opt_fixed64)
-        && equals(opt_sfixed64, o.opt_sfixed64)
-        && equals(opt_bool, o.opt_bool)
-        && equals(opt_float, o.opt_float)
-        && equals(opt_double, o.opt_double)
-        && equals(opt_string, o.opt_string)
-        && equals(opt_bytes, o.opt_bytes)
-        && equals(opt_nested_enum, o.opt_nested_enum)
-        && equals(opt_nested_message, o.opt_nested_message)
-        && equals(req_int32, o.req_int32)
-        && equals(req_uint32, o.req_uint32)
-        && equals(req_sint32, o.req_sint32)
-        && equals(req_fixed32, o.req_fixed32)
-        && equals(req_sfixed32, o.req_sfixed32)
-        && equals(req_int64, o.req_int64)
-        && equals(req_uint64, o.req_uint64)
-        && equals(req_sint64, o.req_sint64)
-        && equals(req_fixed64, o.req_fixed64)
-        && equals(req_sfixed64, o.req_sfixed64)
-        && equals(req_bool, o.req_bool)
-        && equals(req_float, o.req_float)
-        && equals(req_double, o.req_double)
-        && equals(req_string, o.req_string)
-        && equals(req_bytes, o.req_bytes)
-        && equals(req_nested_enum, o.req_nested_enum)
-        && equals(req_nested_message, o.req_nested_message)
-        && equals(rep_int32, o.rep_int32)
-        && equals(rep_uint32, o.rep_uint32)
-        && equals(rep_sint32, o.rep_sint32)
-        && equals(rep_fixed32, o.rep_fixed32)
-        && equals(rep_sfixed32, o.rep_sfixed32)
-        && equals(rep_int64, o.rep_int64)
-        && equals(rep_uint64, o.rep_uint64)
-        && equals(rep_sint64, o.rep_sint64)
-        && equals(rep_fixed64, o.rep_fixed64)
-        && equals(rep_sfixed64, o.rep_sfixed64)
-        && equals(rep_bool, o.rep_bool)
-        && equals(rep_float, o.rep_float)
-        && equals(rep_double, o.rep_double)
-        && equals(rep_string, o.rep_string)
-        && equals(rep_bytes, o.rep_bytes)
-        && equals(rep_nested_enum, o.rep_nested_enum)
-        && equals(rep_nested_message, o.rep_nested_message)
-        && equals(pack_int32, o.pack_int32)
-        && equals(pack_uint32, o.pack_uint32)
-        && equals(pack_sint32, o.pack_sint32)
-        && equals(pack_fixed32, o.pack_fixed32)
-        && equals(pack_sfixed32, o.pack_sfixed32)
-        && equals(pack_int64, o.pack_int64)
-        && equals(pack_uint64, o.pack_uint64)
-        && equals(pack_sint64, o.pack_sint64)
-        && equals(pack_fixed64, o.pack_fixed64)
-        && equals(pack_sfixed64, o.pack_sfixed64)
-        && equals(pack_bool, o.pack_bool)
-        && equals(pack_float, o.pack_float)
-        && equals(pack_double, o.pack_double)
-        && equals(pack_nested_enum, o.pack_nested_enum)
-        && equals(default_int32, o.default_int32)
-        && equals(default_uint32, o.default_uint32)
-        && equals(default_sint32, o.default_sint32)
-        && equals(default_fixed32, o.default_fixed32)
-        && equals(default_sfixed32, o.default_sfixed32)
-        && equals(default_int64, o.default_int64)
-        && equals(default_uint64, o.default_uint64)
-        && equals(default_sint64, o.default_sint64)
-        && equals(default_fixed64, o.default_fixed64)
-        && equals(default_sfixed64, o.default_sfixed64)
-        && equals(default_bool, o.default_bool)
-        && equals(default_float, o.default_float)
-        && equals(default_double, o.default_double)
-        && equals(default_string, o.default_string)
-        && equals(default_bytes, o.default_bytes)
-        && equals(default_nested_enum, o.default_nested_enum)
-        && equals(ext_opt_int32, o.ext_opt_int32)
-        && equals(ext_opt_uint32, o.ext_opt_uint32)
-        && equals(ext_opt_sint32, o.ext_opt_sint32)
-        && equals(ext_opt_fixed32, o.ext_opt_fixed32)
-        && equals(ext_opt_sfixed32, o.ext_opt_sfixed32)
-        && equals(ext_opt_int64, o.ext_opt_int64)
-        && equals(ext_opt_uint64, o.ext_opt_uint64)
-        && equals(ext_opt_sint64, o.ext_opt_sint64)
-        && equals(ext_opt_fixed64, o.ext_opt_fixed64)
-        && equals(ext_opt_sfixed64, o.ext_opt_sfixed64)
-        && equals(ext_opt_bool, o.ext_opt_bool)
-        && equals(ext_opt_float, o.ext_opt_float)
-        && equals(ext_opt_double, o.ext_opt_double)
-        && equals(ext_opt_string, o.ext_opt_string)
-        && equals(ext_opt_bytes, o.ext_opt_bytes)
-        && equals(ext_opt_nested_enum, o.ext_opt_nested_enum)
-        && equals(ext_opt_nested_message, o.ext_opt_nested_message)
-        && equals(ext_rep_int32, o.ext_rep_int32)
-        && equals(ext_rep_uint32, o.ext_rep_uint32)
-        && equals(ext_rep_sint32, o.ext_rep_sint32)
-        && equals(ext_rep_fixed32, o.ext_rep_fixed32)
-        && equals(ext_rep_sfixed32, o.ext_rep_sfixed32)
-        && equals(ext_rep_int64, o.ext_rep_int64)
-        && equals(ext_rep_uint64, o.ext_rep_uint64)
-        && equals(ext_rep_sint64, o.ext_rep_sint64)
-        && equals(ext_rep_fixed64, o.ext_rep_fixed64)
-        && equals(ext_rep_sfixed64, o.ext_rep_sfixed64)
-        && equals(ext_rep_bool, o.ext_rep_bool)
-        && equals(ext_rep_float, o.ext_rep_float)
-        && equals(ext_rep_double, o.ext_rep_double)
-        && equals(ext_rep_string, o.ext_rep_string)
-        && equals(ext_rep_bytes, o.ext_rep_bytes)
-        && equals(ext_rep_nested_enum, o.ext_rep_nested_enum)
-        && equals(ext_rep_nested_message, o.ext_rep_nested_message)
-        && equals(ext_pack_int32, o.ext_pack_int32)
-        && equals(ext_pack_uint32, o.ext_pack_uint32)
-        && equals(ext_pack_sint32, o.ext_pack_sint32)
-        && equals(ext_pack_fixed32, o.ext_pack_fixed32)
-        && equals(ext_pack_sfixed32, o.ext_pack_sfixed32)
-        && equals(ext_pack_int64, o.ext_pack_int64)
-        && equals(ext_pack_uint64, o.ext_pack_uint64)
-        && equals(ext_pack_sint64, o.ext_pack_sint64)
-        && equals(ext_pack_fixed64, o.ext_pack_fixed64)
-        && equals(ext_pack_sfixed64, o.ext_pack_sfixed64)
-        && equals(ext_pack_bool, o.ext_pack_bool)
-        && equals(ext_pack_float, o.ext_pack_float)
-        && equals(ext_pack_double, o.ext_pack_double)
-        && equals(ext_pack_nested_enum, o.ext_pack_nested_enum);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(opt_int32, o.opt_int32)
+        && WireInternal.equals(opt_uint32, o.opt_uint32)
+        && WireInternal.equals(opt_sint32, o.opt_sint32)
+        && WireInternal.equals(opt_fixed32, o.opt_fixed32)
+        && WireInternal.equals(opt_sfixed32, o.opt_sfixed32)
+        && WireInternal.equals(opt_int64, o.opt_int64)
+        && WireInternal.equals(opt_uint64, o.opt_uint64)
+        && WireInternal.equals(opt_sint64, o.opt_sint64)
+        && WireInternal.equals(opt_fixed64, o.opt_fixed64)
+        && WireInternal.equals(opt_sfixed64, o.opt_sfixed64)
+        && WireInternal.equals(opt_bool, o.opt_bool)
+        && WireInternal.equals(opt_float, o.opt_float)
+        && WireInternal.equals(opt_double, o.opt_double)
+        && WireInternal.equals(opt_string, o.opt_string)
+        && WireInternal.equals(opt_bytes, o.opt_bytes)
+        && WireInternal.equals(opt_nested_enum, o.opt_nested_enum)
+        && WireInternal.equals(opt_nested_message, o.opt_nested_message)
+        && WireInternal.equals(req_int32, o.req_int32)
+        && WireInternal.equals(req_uint32, o.req_uint32)
+        && WireInternal.equals(req_sint32, o.req_sint32)
+        && WireInternal.equals(req_fixed32, o.req_fixed32)
+        && WireInternal.equals(req_sfixed32, o.req_sfixed32)
+        && WireInternal.equals(req_int64, o.req_int64)
+        && WireInternal.equals(req_uint64, o.req_uint64)
+        && WireInternal.equals(req_sint64, o.req_sint64)
+        && WireInternal.equals(req_fixed64, o.req_fixed64)
+        && WireInternal.equals(req_sfixed64, o.req_sfixed64)
+        && WireInternal.equals(req_bool, o.req_bool)
+        && WireInternal.equals(req_float, o.req_float)
+        && WireInternal.equals(req_double, o.req_double)
+        && WireInternal.equals(req_string, o.req_string)
+        && WireInternal.equals(req_bytes, o.req_bytes)
+        && WireInternal.equals(req_nested_enum, o.req_nested_enum)
+        && WireInternal.equals(req_nested_message, o.req_nested_message)
+        && WireInternal.equals(rep_int32, o.rep_int32)
+        && WireInternal.equals(rep_uint32, o.rep_uint32)
+        && WireInternal.equals(rep_sint32, o.rep_sint32)
+        && WireInternal.equals(rep_fixed32, o.rep_fixed32)
+        && WireInternal.equals(rep_sfixed32, o.rep_sfixed32)
+        && WireInternal.equals(rep_int64, o.rep_int64)
+        && WireInternal.equals(rep_uint64, o.rep_uint64)
+        && WireInternal.equals(rep_sint64, o.rep_sint64)
+        && WireInternal.equals(rep_fixed64, o.rep_fixed64)
+        && WireInternal.equals(rep_sfixed64, o.rep_sfixed64)
+        && WireInternal.equals(rep_bool, o.rep_bool)
+        && WireInternal.equals(rep_float, o.rep_float)
+        && WireInternal.equals(rep_double, o.rep_double)
+        && WireInternal.equals(rep_string, o.rep_string)
+        && WireInternal.equals(rep_bytes, o.rep_bytes)
+        && WireInternal.equals(rep_nested_enum, o.rep_nested_enum)
+        && WireInternal.equals(rep_nested_message, o.rep_nested_message)
+        && WireInternal.equals(pack_int32, o.pack_int32)
+        && WireInternal.equals(pack_uint32, o.pack_uint32)
+        && WireInternal.equals(pack_sint32, o.pack_sint32)
+        && WireInternal.equals(pack_fixed32, o.pack_fixed32)
+        && WireInternal.equals(pack_sfixed32, o.pack_sfixed32)
+        && WireInternal.equals(pack_int64, o.pack_int64)
+        && WireInternal.equals(pack_uint64, o.pack_uint64)
+        && WireInternal.equals(pack_sint64, o.pack_sint64)
+        && WireInternal.equals(pack_fixed64, o.pack_fixed64)
+        && WireInternal.equals(pack_sfixed64, o.pack_sfixed64)
+        && WireInternal.equals(pack_bool, o.pack_bool)
+        && WireInternal.equals(pack_float, o.pack_float)
+        && WireInternal.equals(pack_double, o.pack_double)
+        && WireInternal.equals(pack_nested_enum, o.pack_nested_enum)
+        && WireInternal.equals(default_int32, o.default_int32)
+        && WireInternal.equals(default_uint32, o.default_uint32)
+        && WireInternal.equals(default_sint32, o.default_sint32)
+        && WireInternal.equals(default_fixed32, o.default_fixed32)
+        && WireInternal.equals(default_sfixed32, o.default_sfixed32)
+        && WireInternal.equals(default_int64, o.default_int64)
+        && WireInternal.equals(default_uint64, o.default_uint64)
+        && WireInternal.equals(default_sint64, o.default_sint64)
+        && WireInternal.equals(default_fixed64, o.default_fixed64)
+        && WireInternal.equals(default_sfixed64, o.default_sfixed64)
+        && WireInternal.equals(default_bool, o.default_bool)
+        && WireInternal.equals(default_float, o.default_float)
+        && WireInternal.equals(default_double, o.default_double)
+        && WireInternal.equals(default_string, o.default_string)
+        && WireInternal.equals(default_bytes, o.default_bytes)
+        && WireInternal.equals(default_nested_enum, o.default_nested_enum)
+        && WireInternal.equals(ext_opt_int32, o.ext_opt_int32)
+        && WireInternal.equals(ext_opt_uint32, o.ext_opt_uint32)
+        && WireInternal.equals(ext_opt_sint32, o.ext_opt_sint32)
+        && WireInternal.equals(ext_opt_fixed32, o.ext_opt_fixed32)
+        && WireInternal.equals(ext_opt_sfixed32, o.ext_opt_sfixed32)
+        && WireInternal.equals(ext_opt_int64, o.ext_opt_int64)
+        && WireInternal.equals(ext_opt_uint64, o.ext_opt_uint64)
+        && WireInternal.equals(ext_opt_sint64, o.ext_opt_sint64)
+        && WireInternal.equals(ext_opt_fixed64, o.ext_opt_fixed64)
+        && WireInternal.equals(ext_opt_sfixed64, o.ext_opt_sfixed64)
+        && WireInternal.equals(ext_opt_bool, o.ext_opt_bool)
+        && WireInternal.equals(ext_opt_float, o.ext_opt_float)
+        && WireInternal.equals(ext_opt_double, o.ext_opt_double)
+        && WireInternal.equals(ext_opt_string, o.ext_opt_string)
+        && WireInternal.equals(ext_opt_bytes, o.ext_opt_bytes)
+        && WireInternal.equals(ext_opt_nested_enum, o.ext_opt_nested_enum)
+        && WireInternal.equals(ext_opt_nested_message, o.ext_opt_nested_message)
+        && WireInternal.equals(ext_rep_int32, o.ext_rep_int32)
+        && WireInternal.equals(ext_rep_uint32, o.ext_rep_uint32)
+        && WireInternal.equals(ext_rep_sint32, o.ext_rep_sint32)
+        && WireInternal.equals(ext_rep_fixed32, o.ext_rep_fixed32)
+        && WireInternal.equals(ext_rep_sfixed32, o.ext_rep_sfixed32)
+        && WireInternal.equals(ext_rep_int64, o.ext_rep_int64)
+        && WireInternal.equals(ext_rep_uint64, o.ext_rep_uint64)
+        && WireInternal.equals(ext_rep_sint64, o.ext_rep_sint64)
+        && WireInternal.equals(ext_rep_fixed64, o.ext_rep_fixed64)
+        && WireInternal.equals(ext_rep_sfixed64, o.ext_rep_sfixed64)
+        && WireInternal.equals(ext_rep_bool, o.ext_rep_bool)
+        && WireInternal.equals(ext_rep_float, o.ext_rep_float)
+        && WireInternal.equals(ext_rep_double, o.ext_rep_double)
+        && WireInternal.equals(ext_rep_string, o.ext_rep_string)
+        && WireInternal.equals(ext_rep_bytes, o.ext_rep_bytes)
+        && WireInternal.equals(ext_rep_nested_enum, o.ext_rep_nested_enum)
+        && WireInternal.equals(ext_rep_nested_message, o.ext_rep_nested_message)
+        && WireInternal.equals(ext_pack_int32, o.ext_pack_int32)
+        && WireInternal.equals(ext_pack_uint32, o.ext_pack_uint32)
+        && WireInternal.equals(ext_pack_sint32, o.ext_pack_sint32)
+        && WireInternal.equals(ext_pack_fixed32, o.ext_pack_fixed32)
+        && WireInternal.equals(ext_pack_sfixed32, o.ext_pack_sfixed32)
+        && WireInternal.equals(ext_pack_int64, o.ext_pack_int64)
+        && WireInternal.equals(ext_pack_uint64, o.ext_pack_uint64)
+        && WireInternal.equals(ext_pack_sint64, o.ext_pack_sint64)
+        && WireInternal.equals(ext_pack_fixed64, o.ext_pack_fixed64)
+        && WireInternal.equals(ext_pack_sfixed64, o.ext_pack_sfixed64)
+        && WireInternal.equals(ext_pack_bool, o.ext_pack_bool)
+        && WireInternal.equals(ext_pack_float, o.ext_pack_float)
+        && WireInternal.equals(ext_pack_double, o.ext_pack_double)
+        && WireInternal.equals(ext_pack_nested_enum, o.ext_pack_nested_enum);
   }
 
   @Override
@@ -1983,68 +2098,68 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     public List<NestedEnum> ext_pack_nested_enum;
 
     public Builder() {
-      rep_int32 = newMutableList();
-      rep_uint32 = newMutableList();
-      rep_sint32 = newMutableList();
-      rep_fixed32 = newMutableList();
-      rep_sfixed32 = newMutableList();
-      rep_int64 = newMutableList();
-      rep_uint64 = newMutableList();
-      rep_sint64 = newMutableList();
-      rep_fixed64 = newMutableList();
-      rep_sfixed64 = newMutableList();
-      rep_bool = newMutableList();
-      rep_float = newMutableList();
-      rep_double = newMutableList();
-      rep_string = newMutableList();
-      rep_bytes = newMutableList();
-      rep_nested_enum = newMutableList();
-      rep_nested_message = newMutableList();
-      pack_int32 = newMutableList();
-      pack_uint32 = newMutableList();
-      pack_sint32 = newMutableList();
-      pack_fixed32 = newMutableList();
-      pack_sfixed32 = newMutableList();
-      pack_int64 = newMutableList();
-      pack_uint64 = newMutableList();
-      pack_sint64 = newMutableList();
-      pack_fixed64 = newMutableList();
-      pack_sfixed64 = newMutableList();
-      pack_bool = newMutableList();
-      pack_float = newMutableList();
-      pack_double = newMutableList();
-      pack_nested_enum = newMutableList();
-      ext_rep_int32 = newMutableList();
-      ext_rep_uint32 = newMutableList();
-      ext_rep_sint32 = newMutableList();
-      ext_rep_fixed32 = newMutableList();
-      ext_rep_sfixed32 = newMutableList();
-      ext_rep_int64 = newMutableList();
-      ext_rep_uint64 = newMutableList();
-      ext_rep_sint64 = newMutableList();
-      ext_rep_fixed64 = newMutableList();
-      ext_rep_sfixed64 = newMutableList();
-      ext_rep_bool = newMutableList();
-      ext_rep_float = newMutableList();
-      ext_rep_double = newMutableList();
-      ext_rep_string = newMutableList();
-      ext_rep_bytes = newMutableList();
-      ext_rep_nested_enum = newMutableList();
-      ext_rep_nested_message = newMutableList();
-      ext_pack_int32 = newMutableList();
-      ext_pack_uint32 = newMutableList();
-      ext_pack_sint32 = newMutableList();
-      ext_pack_fixed32 = newMutableList();
-      ext_pack_sfixed32 = newMutableList();
-      ext_pack_int64 = newMutableList();
-      ext_pack_uint64 = newMutableList();
-      ext_pack_sint64 = newMutableList();
-      ext_pack_fixed64 = newMutableList();
-      ext_pack_sfixed64 = newMutableList();
-      ext_pack_bool = newMutableList();
-      ext_pack_float = newMutableList();
-      ext_pack_double = newMutableList();
-      ext_pack_nested_enum = newMutableList();
+      rep_int32 = WireInternal.newMutableList();
+      rep_uint32 = WireInternal.newMutableList();
+      rep_sint32 = WireInternal.newMutableList();
+      rep_fixed32 = WireInternal.newMutableList();
+      rep_sfixed32 = WireInternal.newMutableList();
+      rep_int64 = WireInternal.newMutableList();
+      rep_uint64 = WireInternal.newMutableList();
+      rep_sint64 = WireInternal.newMutableList();
+      rep_fixed64 = WireInternal.newMutableList();
+      rep_sfixed64 = WireInternal.newMutableList();
+      rep_bool = WireInternal.newMutableList();
+      rep_float = WireInternal.newMutableList();
+      rep_double = WireInternal.newMutableList();
+      rep_string = WireInternal.newMutableList();
+      rep_bytes = WireInternal.newMutableList();
+      rep_nested_enum = WireInternal.newMutableList();
+      rep_nested_message = WireInternal.newMutableList();
+      pack_int32 = WireInternal.newMutableList();
+      pack_uint32 = WireInternal.newMutableList();
+      pack_sint32 = WireInternal.newMutableList();
+      pack_fixed32 = WireInternal.newMutableList();
+      pack_sfixed32 = WireInternal.newMutableList();
+      pack_int64 = WireInternal.newMutableList();
+      pack_uint64 = WireInternal.newMutableList();
+      pack_sint64 = WireInternal.newMutableList();
+      pack_fixed64 = WireInternal.newMutableList();
+      pack_sfixed64 = WireInternal.newMutableList();
+      pack_bool = WireInternal.newMutableList();
+      pack_float = WireInternal.newMutableList();
+      pack_double = WireInternal.newMutableList();
+      pack_nested_enum = WireInternal.newMutableList();
+      ext_rep_int32 = WireInternal.newMutableList();
+      ext_rep_uint32 = WireInternal.newMutableList();
+      ext_rep_sint32 = WireInternal.newMutableList();
+      ext_rep_fixed32 = WireInternal.newMutableList();
+      ext_rep_sfixed32 = WireInternal.newMutableList();
+      ext_rep_int64 = WireInternal.newMutableList();
+      ext_rep_uint64 = WireInternal.newMutableList();
+      ext_rep_sint64 = WireInternal.newMutableList();
+      ext_rep_fixed64 = WireInternal.newMutableList();
+      ext_rep_sfixed64 = WireInternal.newMutableList();
+      ext_rep_bool = WireInternal.newMutableList();
+      ext_rep_float = WireInternal.newMutableList();
+      ext_rep_double = WireInternal.newMutableList();
+      ext_rep_string = WireInternal.newMutableList();
+      ext_rep_bytes = WireInternal.newMutableList();
+      ext_rep_nested_enum = WireInternal.newMutableList();
+      ext_rep_nested_message = WireInternal.newMutableList();
+      ext_pack_int32 = WireInternal.newMutableList();
+      ext_pack_uint32 = WireInternal.newMutableList();
+      ext_pack_sint32 = WireInternal.newMutableList();
+      ext_pack_fixed32 = WireInternal.newMutableList();
+      ext_pack_sfixed32 = WireInternal.newMutableList();
+      ext_pack_int64 = WireInternal.newMutableList();
+      ext_pack_uint64 = WireInternal.newMutableList();
+      ext_pack_sint64 = WireInternal.newMutableList();
+      ext_pack_fixed64 = WireInternal.newMutableList();
+      ext_pack_sfixed64 = WireInternal.newMutableList();
+      ext_pack_bool = WireInternal.newMutableList();
+      ext_pack_float = WireInternal.newMutableList();
+      ext_pack_double = WireInternal.newMutableList();
+      ext_pack_nested_enum = WireInternal.newMutableList();
     }
 
     public Builder opt_int32(Integer opt_int32) {
@@ -2218,187 +2333,187 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     public Builder rep_int32(List<Integer> rep_int32) {
-      checkElementsNotNull(rep_int32);
+      WireInternal.checkElementsNotNull(rep_int32);
       this.rep_int32 = rep_int32;
       return this;
     }
 
     public Builder rep_uint32(List<Integer> rep_uint32) {
-      checkElementsNotNull(rep_uint32);
+      WireInternal.checkElementsNotNull(rep_uint32);
       this.rep_uint32 = rep_uint32;
       return this;
     }
 
     public Builder rep_sint32(List<Integer> rep_sint32) {
-      checkElementsNotNull(rep_sint32);
+      WireInternal.checkElementsNotNull(rep_sint32);
       this.rep_sint32 = rep_sint32;
       return this;
     }
 
     public Builder rep_fixed32(List<Integer> rep_fixed32) {
-      checkElementsNotNull(rep_fixed32);
+      WireInternal.checkElementsNotNull(rep_fixed32);
       this.rep_fixed32 = rep_fixed32;
       return this;
     }
 
     public Builder rep_sfixed32(List<Integer> rep_sfixed32) {
-      checkElementsNotNull(rep_sfixed32);
+      WireInternal.checkElementsNotNull(rep_sfixed32);
       this.rep_sfixed32 = rep_sfixed32;
       return this;
     }
 
     public Builder rep_int64(List<Long> rep_int64) {
-      checkElementsNotNull(rep_int64);
+      WireInternal.checkElementsNotNull(rep_int64);
       this.rep_int64 = rep_int64;
       return this;
     }
 
     public Builder rep_uint64(List<Long> rep_uint64) {
-      checkElementsNotNull(rep_uint64);
+      WireInternal.checkElementsNotNull(rep_uint64);
       this.rep_uint64 = rep_uint64;
       return this;
     }
 
     public Builder rep_sint64(List<Long> rep_sint64) {
-      checkElementsNotNull(rep_sint64);
+      WireInternal.checkElementsNotNull(rep_sint64);
       this.rep_sint64 = rep_sint64;
       return this;
     }
 
     public Builder rep_fixed64(List<Long> rep_fixed64) {
-      checkElementsNotNull(rep_fixed64);
+      WireInternal.checkElementsNotNull(rep_fixed64);
       this.rep_fixed64 = rep_fixed64;
       return this;
     }
 
     public Builder rep_sfixed64(List<Long> rep_sfixed64) {
-      checkElementsNotNull(rep_sfixed64);
+      WireInternal.checkElementsNotNull(rep_sfixed64);
       this.rep_sfixed64 = rep_sfixed64;
       return this;
     }
 
     public Builder rep_bool(List<Boolean> rep_bool) {
-      checkElementsNotNull(rep_bool);
+      WireInternal.checkElementsNotNull(rep_bool);
       this.rep_bool = rep_bool;
       return this;
     }
 
     public Builder rep_float(List<Float> rep_float) {
-      checkElementsNotNull(rep_float);
+      WireInternal.checkElementsNotNull(rep_float);
       this.rep_float = rep_float;
       return this;
     }
 
     public Builder rep_double(List<Double> rep_double) {
-      checkElementsNotNull(rep_double);
+      WireInternal.checkElementsNotNull(rep_double);
       this.rep_double = rep_double;
       return this;
     }
 
     public Builder rep_string(List<String> rep_string) {
-      checkElementsNotNull(rep_string);
+      WireInternal.checkElementsNotNull(rep_string);
       this.rep_string = rep_string;
       return this;
     }
 
     public Builder rep_bytes(List<ByteString> rep_bytes) {
-      checkElementsNotNull(rep_bytes);
+      WireInternal.checkElementsNotNull(rep_bytes);
       this.rep_bytes = rep_bytes;
       return this;
     }
 
     public Builder rep_nested_enum(List<NestedEnum> rep_nested_enum) {
-      checkElementsNotNull(rep_nested_enum);
+      WireInternal.checkElementsNotNull(rep_nested_enum);
       this.rep_nested_enum = rep_nested_enum;
       return this;
     }
 
     public Builder rep_nested_message(List<NestedMessage> rep_nested_message) {
-      checkElementsNotNull(rep_nested_message);
+      WireInternal.checkElementsNotNull(rep_nested_message);
       this.rep_nested_message = rep_nested_message;
       return this;
     }
 
     public Builder pack_int32(List<Integer> pack_int32) {
-      checkElementsNotNull(pack_int32);
+      WireInternal.checkElementsNotNull(pack_int32);
       this.pack_int32 = pack_int32;
       return this;
     }
 
     public Builder pack_uint32(List<Integer> pack_uint32) {
-      checkElementsNotNull(pack_uint32);
+      WireInternal.checkElementsNotNull(pack_uint32);
       this.pack_uint32 = pack_uint32;
       return this;
     }
 
     public Builder pack_sint32(List<Integer> pack_sint32) {
-      checkElementsNotNull(pack_sint32);
+      WireInternal.checkElementsNotNull(pack_sint32);
       this.pack_sint32 = pack_sint32;
       return this;
     }
 
     public Builder pack_fixed32(List<Integer> pack_fixed32) {
-      checkElementsNotNull(pack_fixed32);
+      WireInternal.checkElementsNotNull(pack_fixed32);
       this.pack_fixed32 = pack_fixed32;
       return this;
     }
 
     public Builder pack_sfixed32(List<Integer> pack_sfixed32) {
-      checkElementsNotNull(pack_sfixed32);
+      WireInternal.checkElementsNotNull(pack_sfixed32);
       this.pack_sfixed32 = pack_sfixed32;
       return this;
     }
 
     public Builder pack_int64(List<Long> pack_int64) {
-      checkElementsNotNull(pack_int64);
+      WireInternal.checkElementsNotNull(pack_int64);
       this.pack_int64 = pack_int64;
       return this;
     }
 
     public Builder pack_uint64(List<Long> pack_uint64) {
-      checkElementsNotNull(pack_uint64);
+      WireInternal.checkElementsNotNull(pack_uint64);
       this.pack_uint64 = pack_uint64;
       return this;
     }
 
     public Builder pack_sint64(List<Long> pack_sint64) {
-      checkElementsNotNull(pack_sint64);
+      WireInternal.checkElementsNotNull(pack_sint64);
       this.pack_sint64 = pack_sint64;
       return this;
     }
 
     public Builder pack_fixed64(List<Long> pack_fixed64) {
-      checkElementsNotNull(pack_fixed64);
+      WireInternal.checkElementsNotNull(pack_fixed64);
       this.pack_fixed64 = pack_fixed64;
       return this;
     }
 
     public Builder pack_sfixed64(List<Long> pack_sfixed64) {
-      checkElementsNotNull(pack_sfixed64);
+      WireInternal.checkElementsNotNull(pack_sfixed64);
       this.pack_sfixed64 = pack_sfixed64;
       return this;
     }
 
     public Builder pack_bool(List<Boolean> pack_bool) {
-      checkElementsNotNull(pack_bool);
+      WireInternal.checkElementsNotNull(pack_bool);
       this.pack_bool = pack_bool;
       return this;
     }
 
     public Builder pack_float(List<Float> pack_float) {
-      checkElementsNotNull(pack_float);
+      WireInternal.checkElementsNotNull(pack_float);
       this.pack_float = pack_float;
       return this;
     }
 
     public Builder pack_double(List<Double> pack_double) {
-      checkElementsNotNull(pack_double);
+      WireInternal.checkElementsNotNull(pack_double);
       this.pack_double = pack_double;
       return this;
     }
 
     public Builder pack_nested_enum(List<NestedEnum> pack_nested_enum) {
-      checkElementsNotNull(pack_nested_enum);
+      WireInternal.checkElementsNotNull(pack_nested_enum);
       this.pack_nested_enum = pack_nested_enum;
       return this;
     }
@@ -2569,187 +2684,187 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     public Builder ext_rep_int32(List<Integer> ext_rep_int32) {
-      checkElementsNotNull(ext_rep_int32);
+      WireInternal.checkElementsNotNull(ext_rep_int32);
       this.ext_rep_int32 = ext_rep_int32;
       return this;
     }
 
     public Builder ext_rep_uint32(List<Integer> ext_rep_uint32) {
-      checkElementsNotNull(ext_rep_uint32);
+      WireInternal.checkElementsNotNull(ext_rep_uint32);
       this.ext_rep_uint32 = ext_rep_uint32;
       return this;
     }
 
     public Builder ext_rep_sint32(List<Integer> ext_rep_sint32) {
-      checkElementsNotNull(ext_rep_sint32);
+      WireInternal.checkElementsNotNull(ext_rep_sint32);
       this.ext_rep_sint32 = ext_rep_sint32;
       return this;
     }
 
     public Builder ext_rep_fixed32(List<Integer> ext_rep_fixed32) {
-      checkElementsNotNull(ext_rep_fixed32);
+      WireInternal.checkElementsNotNull(ext_rep_fixed32);
       this.ext_rep_fixed32 = ext_rep_fixed32;
       return this;
     }
 
     public Builder ext_rep_sfixed32(List<Integer> ext_rep_sfixed32) {
-      checkElementsNotNull(ext_rep_sfixed32);
+      WireInternal.checkElementsNotNull(ext_rep_sfixed32);
       this.ext_rep_sfixed32 = ext_rep_sfixed32;
       return this;
     }
 
     public Builder ext_rep_int64(List<Long> ext_rep_int64) {
-      checkElementsNotNull(ext_rep_int64);
+      WireInternal.checkElementsNotNull(ext_rep_int64);
       this.ext_rep_int64 = ext_rep_int64;
       return this;
     }
 
     public Builder ext_rep_uint64(List<Long> ext_rep_uint64) {
-      checkElementsNotNull(ext_rep_uint64);
+      WireInternal.checkElementsNotNull(ext_rep_uint64);
       this.ext_rep_uint64 = ext_rep_uint64;
       return this;
     }
 
     public Builder ext_rep_sint64(List<Long> ext_rep_sint64) {
-      checkElementsNotNull(ext_rep_sint64);
+      WireInternal.checkElementsNotNull(ext_rep_sint64);
       this.ext_rep_sint64 = ext_rep_sint64;
       return this;
     }
 
     public Builder ext_rep_fixed64(List<Long> ext_rep_fixed64) {
-      checkElementsNotNull(ext_rep_fixed64);
+      WireInternal.checkElementsNotNull(ext_rep_fixed64);
       this.ext_rep_fixed64 = ext_rep_fixed64;
       return this;
     }
 
     public Builder ext_rep_sfixed64(List<Long> ext_rep_sfixed64) {
-      checkElementsNotNull(ext_rep_sfixed64);
+      WireInternal.checkElementsNotNull(ext_rep_sfixed64);
       this.ext_rep_sfixed64 = ext_rep_sfixed64;
       return this;
     }
 
     public Builder ext_rep_bool(List<Boolean> ext_rep_bool) {
-      checkElementsNotNull(ext_rep_bool);
+      WireInternal.checkElementsNotNull(ext_rep_bool);
       this.ext_rep_bool = ext_rep_bool;
       return this;
     }
 
     public Builder ext_rep_float(List<Float> ext_rep_float) {
-      checkElementsNotNull(ext_rep_float);
+      WireInternal.checkElementsNotNull(ext_rep_float);
       this.ext_rep_float = ext_rep_float;
       return this;
     }
 
     public Builder ext_rep_double(List<Double> ext_rep_double) {
-      checkElementsNotNull(ext_rep_double);
+      WireInternal.checkElementsNotNull(ext_rep_double);
       this.ext_rep_double = ext_rep_double;
       return this;
     }
 
     public Builder ext_rep_string(List<String> ext_rep_string) {
-      checkElementsNotNull(ext_rep_string);
+      WireInternal.checkElementsNotNull(ext_rep_string);
       this.ext_rep_string = ext_rep_string;
       return this;
     }
 
     public Builder ext_rep_bytes(List<ByteString> ext_rep_bytes) {
-      checkElementsNotNull(ext_rep_bytes);
+      WireInternal.checkElementsNotNull(ext_rep_bytes);
       this.ext_rep_bytes = ext_rep_bytes;
       return this;
     }
 
     public Builder ext_rep_nested_enum(List<NestedEnum> ext_rep_nested_enum) {
-      checkElementsNotNull(ext_rep_nested_enum);
+      WireInternal.checkElementsNotNull(ext_rep_nested_enum);
       this.ext_rep_nested_enum = ext_rep_nested_enum;
       return this;
     }
 
     public Builder ext_rep_nested_message(List<NestedMessage> ext_rep_nested_message) {
-      checkElementsNotNull(ext_rep_nested_message);
+      WireInternal.checkElementsNotNull(ext_rep_nested_message);
       this.ext_rep_nested_message = ext_rep_nested_message;
       return this;
     }
 
     public Builder ext_pack_int32(List<Integer> ext_pack_int32) {
-      checkElementsNotNull(ext_pack_int32);
+      WireInternal.checkElementsNotNull(ext_pack_int32);
       this.ext_pack_int32 = ext_pack_int32;
       return this;
     }
 
     public Builder ext_pack_uint32(List<Integer> ext_pack_uint32) {
-      checkElementsNotNull(ext_pack_uint32);
+      WireInternal.checkElementsNotNull(ext_pack_uint32);
       this.ext_pack_uint32 = ext_pack_uint32;
       return this;
     }
 
     public Builder ext_pack_sint32(List<Integer> ext_pack_sint32) {
-      checkElementsNotNull(ext_pack_sint32);
+      WireInternal.checkElementsNotNull(ext_pack_sint32);
       this.ext_pack_sint32 = ext_pack_sint32;
       return this;
     }
 
     public Builder ext_pack_fixed32(List<Integer> ext_pack_fixed32) {
-      checkElementsNotNull(ext_pack_fixed32);
+      WireInternal.checkElementsNotNull(ext_pack_fixed32);
       this.ext_pack_fixed32 = ext_pack_fixed32;
       return this;
     }
 
     public Builder ext_pack_sfixed32(List<Integer> ext_pack_sfixed32) {
-      checkElementsNotNull(ext_pack_sfixed32);
+      WireInternal.checkElementsNotNull(ext_pack_sfixed32);
       this.ext_pack_sfixed32 = ext_pack_sfixed32;
       return this;
     }
 
     public Builder ext_pack_int64(List<Long> ext_pack_int64) {
-      checkElementsNotNull(ext_pack_int64);
+      WireInternal.checkElementsNotNull(ext_pack_int64);
       this.ext_pack_int64 = ext_pack_int64;
       return this;
     }
 
     public Builder ext_pack_uint64(List<Long> ext_pack_uint64) {
-      checkElementsNotNull(ext_pack_uint64);
+      WireInternal.checkElementsNotNull(ext_pack_uint64);
       this.ext_pack_uint64 = ext_pack_uint64;
       return this;
     }
 
     public Builder ext_pack_sint64(List<Long> ext_pack_sint64) {
-      checkElementsNotNull(ext_pack_sint64);
+      WireInternal.checkElementsNotNull(ext_pack_sint64);
       this.ext_pack_sint64 = ext_pack_sint64;
       return this;
     }
 
     public Builder ext_pack_fixed64(List<Long> ext_pack_fixed64) {
-      checkElementsNotNull(ext_pack_fixed64);
+      WireInternal.checkElementsNotNull(ext_pack_fixed64);
       this.ext_pack_fixed64 = ext_pack_fixed64;
       return this;
     }
 
     public Builder ext_pack_sfixed64(List<Long> ext_pack_sfixed64) {
-      checkElementsNotNull(ext_pack_sfixed64);
+      WireInternal.checkElementsNotNull(ext_pack_sfixed64);
       this.ext_pack_sfixed64 = ext_pack_sfixed64;
       return this;
     }
 
     public Builder ext_pack_bool(List<Boolean> ext_pack_bool) {
-      checkElementsNotNull(ext_pack_bool);
+      WireInternal.checkElementsNotNull(ext_pack_bool);
       this.ext_pack_bool = ext_pack_bool;
       return this;
     }
 
     public Builder ext_pack_float(List<Float> ext_pack_float) {
-      checkElementsNotNull(ext_pack_float);
+      WireInternal.checkElementsNotNull(ext_pack_float);
       this.ext_pack_float = ext_pack_float;
       return this;
     }
 
     public Builder ext_pack_double(List<Double> ext_pack_double) {
-      checkElementsNotNull(ext_pack_double);
+      WireInternal.checkElementsNotNull(ext_pack_double);
       this.ext_pack_double = ext_pack_double;
       return this;
     }
 
     public Builder ext_pack_nested_enum(List<NestedEnum> ext_pack_nested_enum) {
-      checkElementsNotNull(ext_pack_nested_enum);
+      WireInternal.checkElementsNotNull(ext_pack_nested_enum);
       this.ext_pack_nested_enum = ext_pack_nested_enum;
       return this;
     }
@@ -2773,7 +2888,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           || req_bytes == null
           || req_nested_enum == null
           || req_nested_message == null) {
-        throw missingRequiredFields(req_int32, "req_int32",
+        throw WireInternal.missingRequiredFields(req_int32, "req_int32",
             req_uint32, "req_uint32",
             req_sint32, "req_sint32",
             req_fixed32, "req_fixed32",
@@ -2823,7 +2938,84 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   public static final class NestedMessage extends Message<NestedMessage, NestedMessage.Builder> {
-    public static final ProtoAdapter<NestedMessage> ADAPTER = new ProtoAdapter<NestedMessage>(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class) {
+    public static final ProtoAdapter<NestedMessage> ADAPTER = new ProtoAdapter_NestedMessage();
+
+    private static final long serialVersionUID = 0L;
+
+    public static final Integer DEFAULT_A = 0;
+
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    )
+    public final Integer a;
+
+    public NestedMessage(Integer a) {
+      this(a, ByteString.EMPTY);
+    }
+
+    public NestedMessage(Integer a, ByteString unknownFields) {
+      super(unknownFields);
+      this.a = a;
+    }
+
+    @Override
+    public Builder newBuilder() {
+      Builder builder = new Builder();
+      builder.a = a;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (other == this) return true;
+      if (!(other instanceof NestedMessage)) return false;
+      NestedMessage o = (NestedMessage) other;
+      return WireInternal.equals(unknownFields(), o.unknownFields())
+          && WireInternal.equals(a, o.a);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = super.hashCode;
+      if (result == 0) {
+        result = unknownFields().hashCode();
+        result = result * 37 + (a != null ? a.hashCode() : 0);
+        super.hashCode = result;
+      }
+      return result;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      if (a != null) builder.append(", a=").append(a);
+      return builder.replace(0, 2, "NestedMessage{").append('}').toString();
+    }
+
+    public static final class Builder extends Message.Builder<NestedMessage, Builder> {
+      public Integer a;
+
+      public Builder() {
+      }
+
+      public Builder a(Integer a) {
+        this.a = a;
+        return this;
+      }
+
+      @Override
+      public NestedMessage build() {
+        return new NestedMessage(a, buildUnknownFields());
+      }
+    }
+
+    private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
+      ProtoAdapter_NestedMessage() {
+        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class);
+      }
+
       @Override
       public int encodedSize(NestedMessage value) {
         return (value.a != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.a) : 0)
@@ -2860,73 +3052,494 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         builder.clearUnknownFields();
         return builder.build();
       }
-    };
-
-    private static final long serialVersionUID = 0L;
-
-    public static final Integer DEFAULT_A = 0;
-
-    public final Integer a;
-
-    public NestedMessage(Integer a) {
-      this(a, ByteString.EMPTY);
     }
+  }
 
-    public NestedMessage(Integer a, ByteString unknownFields) {
-      super(unknownFields);
-      this.a = a;
+  private static final class ProtoAdapter_AllTypes extends ProtoAdapter<AllTypes> {
+    ProtoAdapter_AllTypes() {
+      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class);
     }
 
     @Override
-    public Builder newBuilder() {
+    public int encodedSize(AllTypes value) {
+      return (value.opt_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32) : 0)
+          + (value.opt_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32) : 0)
+          + (value.opt_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(3, value.opt_sint32) : 0)
+          + (value.opt_fixed32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.opt_fixed32) : 0)
+          + (value.opt_sfixed32 != null ? ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.opt_sfixed32) : 0)
+          + (value.opt_int64 != null ? ProtoAdapter.INT64.encodedSizeWithTag(6, value.opt_int64) : 0)
+          + (value.opt_uint64 != null ? ProtoAdapter.UINT64.encodedSizeWithTag(7, value.opt_uint64) : 0)
+          + (value.opt_sint64 != null ? ProtoAdapter.SINT64.encodedSizeWithTag(8, value.opt_sint64) : 0)
+          + (value.opt_fixed64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.opt_fixed64) : 0)
+          + (value.opt_sfixed64 != null ? ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.opt_sfixed64) : 0)
+          + (value.opt_bool != null ? ProtoAdapter.BOOL.encodedSizeWithTag(11, value.opt_bool) : 0)
+          + (value.opt_float != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.opt_float) : 0)
+          + (value.opt_double != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.opt_double) : 0)
+          + (value.opt_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(14, value.opt_string) : 0)
+          + (value.opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(15, value.opt_bytes) : 0)
+          + (value.opt_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(16, value.opt_nested_enum) : 0)
+          + (value.opt_nested_message != null ? NestedMessage.ADAPTER.encodedSizeWithTag(17, value.opt_nested_message) : 0)
+          + ProtoAdapter.INT32.encodedSizeWithTag(101, value.req_int32)
+          + ProtoAdapter.UINT32.encodedSizeWithTag(102, value.req_uint32)
+          + ProtoAdapter.SINT32.encodedSizeWithTag(103, value.req_sint32)
+          + ProtoAdapter.FIXED32.encodedSizeWithTag(104, value.req_fixed32)
+          + ProtoAdapter.SFIXED32.encodedSizeWithTag(105, value.req_sfixed32)
+          + ProtoAdapter.INT64.encodedSizeWithTag(106, value.req_int64)
+          + ProtoAdapter.UINT64.encodedSizeWithTag(107, value.req_uint64)
+          + ProtoAdapter.SINT64.encodedSizeWithTag(108, value.req_sint64)
+          + ProtoAdapter.FIXED64.encodedSizeWithTag(109, value.req_fixed64)
+          + ProtoAdapter.SFIXED64.encodedSizeWithTag(110, value.req_sfixed64)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(111, value.req_bool)
+          + ProtoAdapter.FLOAT.encodedSizeWithTag(112, value.req_float)
+          + ProtoAdapter.DOUBLE.encodedSizeWithTag(113, value.req_double)
+          + ProtoAdapter.STRING.encodedSizeWithTag(114, value.req_string)
+          + ProtoAdapter.BYTES.encodedSizeWithTag(115, value.req_bytes)
+          + NestedEnum.ADAPTER.encodedSizeWithTag(116, value.req_nested_enum)
+          + NestedMessage.ADAPTER.encodedSizeWithTag(117, value.req_nested_message)
+          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
+          + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
+          + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
+          + ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(204, value.rep_fixed32)
+          + ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(205, value.rep_sfixed32)
+          + ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(206, value.rep_int64)
+          + ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(207, value.rep_uint64)
+          + ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(208, value.rep_sint64)
+          + ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(209, value.rep_fixed64)
+          + ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(210, value.rep_sfixed64)
+          + ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(211, value.rep_bool)
+          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(212, value.rep_float)
+          + ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(213, value.rep_double)
+          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(214, value.rep_string)
+          + ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(215, value.rep_bytes)
+          + NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(216, value.rep_nested_enum)
+          + NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(217, value.rep_nested_message)
+          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
+          + ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32)
+          + ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32)
+          + ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(304, value.pack_fixed32)
+          + ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(305, value.pack_sfixed32)
+          + ProtoAdapter.INT64.asPacked().encodedSizeWithTag(306, value.pack_int64)
+          + ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(307, value.pack_uint64)
+          + ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(308, value.pack_sint64)
+          + ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(309, value.pack_fixed64)
+          + ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(310, value.pack_sfixed64)
+          + ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(311, value.pack_bool)
+          + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float)
+          + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double)
+          + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum)
+          + (value.default_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(401, value.default_int32) : 0)
+          + (value.default_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(402, value.default_uint32) : 0)
+          + (value.default_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(403, value.default_sint32) : 0)
+          + (value.default_fixed32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(404, value.default_fixed32) : 0)
+          + (value.default_sfixed32 != null ? ProtoAdapter.SFIXED32.encodedSizeWithTag(405, value.default_sfixed32) : 0)
+          + (value.default_int64 != null ? ProtoAdapter.INT64.encodedSizeWithTag(406, value.default_int64) : 0)
+          + (value.default_uint64 != null ? ProtoAdapter.UINT64.encodedSizeWithTag(407, value.default_uint64) : 0)
+          + (value.default_sint64 != null ? ProtoAdapter.SINT64.encodedSizeWithTag(408, value.default_sint64) : 0)
+          + (value.default_fixed64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(409, value.default_fixed64) : 0)
+          + (value.default_sfixed64 != null ? ProtoAdapter.SFIXED64.encodedSizeWithTag(410, value.default_sfixed64) : 0)
+          + (value.default_bool != null ? ProtoAdapter.BOOL.encodedSizeWithTag(411, value.default_bool) : 0)
+          + (value.default_float != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(412, value.default_float) : 0)
+          + (value.default_double != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(413, value.default_double) : 0)
+          + (value.default_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string) : 0)
+          + (value.default_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes) : 0)
+          + (value.default_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum) : 0)
+          + (value.ext_opt_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32) : 0)
+          + (value.ext_opt_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32) : 0)
+          + (value.ext_opt_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32) : 0)
+          + (value.ext_opt_fixed32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(1004, value.ext_opt_fixed32) : 0)
+          + (value.ext_opt_sfixed32 != null ? ProtoAdapter.SFIXED32.encodedSizeWithTag(1005, value.ext_opt_sfixed32) : 0)
+          + (value.ext_opt_int64 != null ? ProtoAdapter.INT64.encodedSizeWithTag(1006, value.ext_opt_int64) : 0)
+          + (value.ext_opt_uint64 != null ? ProtoAdapter.UINT64.encodedSizeWithTag(1007, value.ext_opt_uint64) : 0)
+          + (value.ext_opt_sint64 != null ? ProtoAdapter.SINT64.encodedSizeWithTag(1008, value.ext_opt_sint64) : 0)
+          + (value.ext_opt_fixed64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(1009, value.ext_opt_fixed64) : 0)
+          + (value.ext_opt_sfixed64 != null ? ProtoAdapter.SFIXED64.encodedSizeWithTag(1010, value.ext_opt_sfixed64) : 0)
+          + (value.ext_opt_bool != null ? ProtoAdapter.BOOL.encodedSizeWithTag(1011, value.ext_opt_bool) : 0)
+          + (value.ext_opt_float != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(1012, value.ext_opt_float) : 0)
+          + (value.ext_opt_double != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(1013, value.ext_opt_double) : 0)
+          + (value.ext_opt_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(1014, value.ext_opt_string) : 0)
+          + (value.ext_opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1015, value.ext_opt_bytes) : 0)
+          + (value.ext_opt_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(1016, value.ext_opt_nested_enum) : 0)
+          + (value.ext_opt_nested_message != null ? NestedMessage.ADAPTER.encodedSizeWithTag(1017, value.ext_opt_nested_message) : 0)
+          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1101, value.ext_rep_int32)
+          + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(1102, value.ext_rep_uint32)
+          + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(1103, value.ext_rep_sint32)
+          + ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(1104, value.ext_rep_fixed32)
+          + ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(1105, value.ext_rep_sfixed32)
+          + ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(1106, value.ext_rep_int64)
+          + ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(1107, value.ext_rep_uint64)
+          + ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(1108, value.ext_rep_sint64)
+          + ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(1109, value.ext_rep_fixed64)
+          + ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(1110, value.ext_rep_sfixed64)
+          + ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(1111, value.ext_rep_bool)
+          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(1112, value.ext_rep_float)
+          + ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(1113, value.ext_rep_double)
+          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1114, value.ext_rep_string)
+          + ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1115, value.ext_rep_bytes)
+          + NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1116, value.ext_rep_nested_enum)
+          + NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1117, value.ext_rep_nested_message)
+          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1201, value.ext_pack_int32)
+          + ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1202, value.ext_pack_uint32)
+          + ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1203, value.ext_pack_sint32)
+          + ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(1204, value.ext_pack_fixed32)
+          + ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(1205, value.ext_pack_sfixed32)
+          + ProtoAdapter.INT64.asPacked().encodedSizeWithTag(1206, value.ext_pack_int64)
+          + ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(1207, value.ext_pack_uint64)
+          + ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(1208, value.ext_pack_sint64)
+          + ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(1209, value.ext_pack_fixed64)
+          + ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(1210, value.ext_pack_sfixed64)
+          + ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(1211, value.ext_pack_bool)
+          + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float)
+          + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double)
+          + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, AllTypes value) throws IOException {
+      if (value.opt_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32);
+      if (value.opt_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.opt_uint32);
+      if (value.opt_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.opt_sint32);
+      if (value.opt_fixed32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.opt_fixed32);
+      if (value.opt_sfixed32 != null) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.opt_sfixed32);
+      if (value.opt_int64 != null) ProtoAdapter.INT64.encodeWithTag(writer, 6, value.opt_int64);
+      if (value.opt_uint64 != null) ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.opt_uint64);
+      if (value.opt_sint64 != null) ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.opt_sint64);
+      if (value.opt_fixed64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.opt_fixed64);
+      if (value.opt_sfixed64 != null) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10, value.opt_sfixed64);
+      if (value.opt_bool != null) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.opt_bool);
+      if (value.opt_float != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.opt_float);
+      if (value.opt_double != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.opt_double);
+      if (value.opt_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 14, value.opt_string);
+      if (value.opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.opt_bytes);
+      if (value.opt_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.opt_nested_enum);
+      if (value.opt_nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.opt_nested_message);
+      ProtoAdapter.INT32.encodeWithTag(writer, 101, value.req_int32);
+      ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.req_uint32);
+      ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.req_sint32);
+      ProtoAdapter.FIXED32.encodeWithTag(writer, 104, value.req_fixed32);
+      ProtoAdapter.SFIXED32.encodeWithTag(writer, 105, value.req_sfixed32);
+      ProtoAdapter.INT64.encodeWithTag(writer, 106, value.req_int64);
+      ProtoAdapter.UINT64.encodeWithTag(writer, 107, value.req_uint64);
+      ProtoAdapter.SINT64.encodeWithTag(writer, 108, value.req_sint64);
+      ProtoAdapter.FIXED64.encodeWithTag(writer, 109, value.req_fixed64);
+      ProtoAdapter.SFIXED64.encodeWithTag(writer, 110, value.req_sfixed64);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 111, value.req_bool);
+      ProtoAdapter.FLOAT.encodeWithTag(writer, 112, value.req_float);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 113, value.req_double);
+      ProtoAdapter.STRING.encodeWithTag(writer, 114, value.req_string);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 115, value.req_bytes);
+      NestedEnum.ADAPTER.encodeWithTag(writer, 116, value.req_nested_enum);
+      NestedMessage.ADAPTER.encodeWithTag(writer, 117, value.req_nested_message);
+      if (value.rep_int32 != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
+      if (value.rep_uint32 != null) ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32);
+      if (value.rep_sint32 != null) ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32);
+      if (value.rep_fixed32 != null) ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 204, value.rep_fixed32);
+      if (value.rep_sfixed32 != null) ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 205, value.rep_sfixed32);
+      if (value.rep_int64 != null) ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 206, value.rep_int64);
+      if (value.rep_uint64 != null) ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 207, value.rep_uint64);
+      if (value.rep_sint64 != null) ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 208, value.rep_sint64);
+      if (value.rep_fixed64 != null) ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 209, value.rep_fixed64);
+      if (value.rep_sfixed64 != null) ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 210, value.rep_sfixed64);
+      if (value.rep_bool != null) ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 211, value.rep_bool);
+      if (value.rep_float != null) ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 212, value.rep_float);
+      if (value.rep_double != null) ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 213, value.rep_double);
+      if (value.rep_string != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 214, value.rep_string);
+      if (value.rep_bytes != null) ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 215, value.rep_bytes);
+      if (value.rep_nested_enum != null) NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 216, value.rep_nested_enum);
+      if (value.rep_nested_message != null) NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 217, value.rep_nested_message);
+      if (value.pack_int32 != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
+      if (value.pack_uint32 != null) ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 302, value.pack_uint32);
+      if (value.pack_sint32 != null) ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32);
+      if (value.pack_fixed32 != null) ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 304, value.pack_fixed32);
+      if (value.pack_sfixed32 != null) ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 305, value.pack_sfixed32);
+      if (value.pack_int64 != null) ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 306, value.pack_int64);
+      if (value.pack_uint64 != null) ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 307, value.pack_uint64);
+      if (value.pack_sint64 != null) ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 308, value.pack_sint64);
+      if (value.pack_fixed64 != null) ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 309, value.pack_fixed64);
+      if (value.pack_sfixed64 != null) ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 310, value.pack_sfixed64);
+      if (value.pack_bool != null) ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 311, value.pack_bool);
+      if (value.pack_float != null) ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 312, value.pack_float);
+      if (value.pack_double != null) ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 313, value.pack_double);
+      if (value.pack_nested_enum != null) NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 316, value.pack_nested_enum);
+      if (value.default_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 401, value.default_int32);
+      if (value.default_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 402, value.default_uint32);
+      if (value.default_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 403, value.default_sint32);
+      if (value.default_fixed32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 404, value.default_fixed32);
+      if (value.default_sfixed32 != null) ProtoAdapter.SFIXED32.encodeWithTag(writer, 405, value.default_sfixed32);
+      if (value.default_int64 != null) ProtoAdapter.INT64.encodeWithTag(writer, 406, value.default_int64);
+      if (value.default_uint64 != null) ProtoAdapter.UINT64.encodeWithTag(writer, 407, value.default_uint64);
+      if (value.default_sint64 != null) ProtoAdapter.SINT64.encodeWithTag(writer, 408, value.default_sint64);
+      if (value.default_fixed64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 409, value.default_fixed64);
+      if (value.default_sfixed64 != null) ProtoAdapter.SFIXED64.encodeWithTag(writer, 410, value.default_sfixed64);
+      if (value.default_bool != null) ProtoAdapter.BOOL.encodeWithTag(writer, 411, value.default_bool);
+      if (value.default_float != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 412, value.default_float);
+      if (value.default_double != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 413, value.default_double);
+      if (value.default_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 414, value.default_string);
+      if (value.default_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 415, value.default_bytes);
+      if (value.default_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 416, value.default_nested_enum);
+      if (value.ext_opt_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32);
+      if (value.ext_opt_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32);
+      if (value.ext_opt_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32);
+      if (value.ext_opt_fixed32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 1004, value.ext_opt_fixed32);
+      if (value.ext_opt_sfixed32 != null) ProtoAdapter.SFIXED32.encodeWithTag(writer, 1005, value.ext_opt_sfixed32);
+      if (value.ext_opt_int64 != null) ProtoAdapter.INT64.encodeWithTag(writer, 1006, value.ext_opt_int64);
+      if (value.ext_opt_uint64 != null) ProtoAdapter.UINT64.encodeWithTag(writer, 1007, value.ext_opt_uint64);
+      if (value.ext_opt_sint64 != null) ProtoAdapter.SINT64.encodeWithTag(writer, 1008, value.ext_opt_sint64);
+      if (value.ext_opt_fixed64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 1009, value.ext_opt_fixed64);
+      if (value.ext_opt_sfixed64 != null) ProtoAdapter.SFIXED64.encodeWithTag(writer, 1010, value.ext_opt_sfixed64);
+      if (value.ext_opt_bool != null) ProtoAdapter.BOOL.encodeWithTag(writer, 1011, value.ext_opt_bool);
+      if (value.ext_opt_float != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 1012, value.ext_opt_float);
+      if (value.ext_opt_double != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 1013, value.ext_opt_double);
+      if (value.ext_opt_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 1014, value.ext_opt_string);
+      if (value.ext_opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1015, value.ext_opt_bytes);
+      if (value.ext_opt_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 1016, value.ext_opt_nested_enum);
+      if (value.ext_opt_nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 1017, value.ext_opt_nested_message);
+      if (value.ext_rep_int32 != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1101, value.ext_rep_int32);
+      if (value.ext_rep_uint32 != null) ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 1102, value.ext_rep_uint32);
+      if (value.ext_rep_sint32 != null) ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 1103, value.ext_rep_sint32);
+      if (value.ext_rep_fixed32 != null) ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 1104, value.ext_rep_fixed32);
+      if (value.ext_rep_sfixed32 != null) ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 1105, value.ext_rep_sfixed32);
+      if (value.ext_rep_int64 != null) ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 1106, value.ext_rep_int64);
+      if (value.ext_rep_uint64 != null) ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 1107, value.ext_rep_uint64);
+      if (value.ext_rep_sint64 != null) ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 1108, value.ext_rep_sint64);
+      if (value.ext_rep_fixed64 != null) ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 1109, value.ext_rep_fixed64);
+      if (value.ext_rep_sfixed64 != null) ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 1110, value.ext_rep_sfixed64);
+      if (value.ext_rep_bool != null) ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 1111, value.ext_rep_bool);
+      if (value.ext_rep_float != null) ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 1112, value.ext_rep_float);
+      if (value.ext_rep_double != null) ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 1113, value.ext_rep_double);
+      if (value.ext_rep_string != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1114, value.ext_rep_string);
+      if (value.ext_rep_bytes != null) ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 1115, value.ext_rep_bytes);
+      if (value.ext_rep_nested_enum != null) NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 1116, value.ext_rep_nested_enum);
+      if (value.ext_rep_nested_message != null) NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 1117, value.ext_rep_nested_message);
+      if (value.ext_pack_int32 != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1201, value.ext_pack_int32);
+      if (value.ext_pack_uint32 != null) ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 1202, value.ext_pack_uint32);
+      if (value.ext_pack_sint32 != null) ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 1203, value.ext_pack_sint32);
+      if (value.ext_pack_fixed32 != null) ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 1204, value.ext_pack_fixed32);
+      if (value.ext_pack_sfixed32 != null) ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 1205, value.ext_pack_sfixed32);
+      if (value.ext_pack_int64 != null) ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 1206, value.ext_pack_int64);
+      if (value.ext_pack_uint64 != null) ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 1207, value.ext_pack_uint64);
+      if (value.ext_pack_sint64 != null) ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 1208, value.ext_pack_sint64);
+      if (value.ext_pack_fixed64 != null) ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 1209, value.ext_pack_fixed64);
+      if (value.ext_pack_sfixed64 != null) ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 1210, value.ext_pack_sfixed64);
+      if (value.ext_pack_bool != null) ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 1211, value.ext_pack_bool);
+      if (value.ext_pack_float != null) ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1212, value.ext_pack_float);
+      if (value.ext_pack_double != null) ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1213, value.ext_pack_double);
+      if (value.ext_pack_nested_enum != null) NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1216, value.ext_pack_nested_enum);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public AllTypes decode(ProtoReader reader) throws IOException {
       Builder builder = new Builder();
-      builder.a = a;
-      builder.addUnknownFields(unknownFields());
-      return builder;
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.opt_int32(ProtoAdapter.INT32.decode(reader)); break;
+          case 2: builder.opt_uint32(ProtoAdapter.UINT32.decode(reader)); break;
+          case 3: builder.opt_sint32(ProtoAdapter.SINT32.decode(reader)); break;
+          case 4: builder.opt_fixed32(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 5: builder.opt_sfixed32(ProtoAdapter.SFIXED32.decode(reader)); break;
+          case 6: builder.opt_int64(ProtoAdapter.INT64.decode(reader)); break;
+          case 7: builder.opt_uint64(ProtoAdapter.UINT64.decode(reader)); break;
+          case 8: builder.opt_sint64(ProtoAdapter.SINT64.decode(reader)); break;
+          case 9: builder.opt_fixed64(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 10: builder.opt_sfixed64(ProtoAdapter.SFIXED64.decode(reader)); break;
+          case 11: builder.opt_bool(ProtoAdapter.BOOL.decode(reader)); break;
+          case 12: builder.opt_float(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 13: builder.opt_double(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 14: builder.opt_string(ProtoAdapter.STRING.decode(reader)); break;
+          case 15: builder.opt_bytes(ProtoAdapter.BYTES.decode(reader)); break;
+          case 16: {
+            try {
+              builder.opt_nested_enum(NestedEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 17: builder.opt_nested_message(NestedMessage.ADAPTER.decode(reader)); break;
+          case 101: builder.req_int32(ProtoAdapter.INT32.decode(reader)); break;
+          case 102: builder.req_uint32(ProtoAdapter.UINT32.decode(reader)); break;
+          case 103: builder.req_sint32(ProtoAdapter.SINT32.decode(reader)); break;
+          case 104: builder.req_fixed32(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 105: builder.req_sfixed32(ProtoAdapter.SFIXED32.decode(reader)); break;
+          case 106: builder.req_int64(ProtoAdapter.INT64.decode(reader)); break;
+          case 107: builder.req_uint64(ProtoAdapter.UINT64.decode(reader)); break;
+          case 108: builder.req_sint64(ProtoAdapter.SINT64.decode(reader)); break;
+          case 109: builder.req_fixed64(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 110: builder.req_sfixed64(ProtoAdapter.SFIXED64.decode(reader)); break;
+          case 111: builder.req_bool(ProtoAdapter.BOOL.decode(reader)); break;
+          case 112: builder.req_float(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 113: builder.req_double(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 114: builder.req_string(ProtoAdapter.STRING.decode(reader)); break;
+          case 115: builder.req_bytes(ProtoAdapter.BYTES.decode(reader)); break;
+          case 116: {
+            try {
+              builder.req_nested_enum(NestedEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 117: builder.req_nested_message(NestedMessage.ADAPTER.decode(reader)); break;
+          case 201: builder.rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
+          case 202: builder.rep_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
+          case 203: builder.rep_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
+          case 204: builder.rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 205: builder.rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
+          case 206: builder.rep_int64.add(ProtoAdapter.INT64.decode(reader)); break;
+          case 207: builder.rep_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
+          case 208: builder.rep_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
+          case 209: builder.rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 210: builder.rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
+          case 211: builder.rep_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
+          case 212: builder.rep_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 213: builder.rep_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 214: builder.rep_string.add(ProtoAdapter.STRING.decode(reader)); break;
+          case 215: builder.rep_bytes.add(ProtoAdapter.BYTES.decode(reader)); break;
+          case 216: {
+            try {
+              builder.rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 217: builder.rep_nested_message.add(NestedMessage.ADAPTER.decode(reader)); break;
+          case 301: builder.pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
+          case 302: builder.pack_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
+          case 303: builder.pack_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
+          case 304: builder.pack_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 305: builder.pack_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
+          case 306: builder.pack_int64.add(ProtoAdapter.INT64.decode(reader)); break;
+          case 307: builder.pack_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
+          case 308: builder.pack_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
+          case 309: builder.pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 310: builder.pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
+          case 311: builder.pack_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
+          case 312: builder.pack_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 313: builder.pack_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 316: {
+            try {
+              builder.pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 401: builder.default_int32(ProtoAdapter.INT32.decode(reader)); break;
+          case 402: builder.default_uint32(ProtoAdapter.UINT32.decode(reader)); break;
+          case 403: builder.default_sint32(ProtoAdapter.SINT32.decode(reader)); break;
+          case 404: builder.default_fixed32(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 405: builder.default_sfixed32(ProtoAdapter.SFIXED32.decode(reader)); break;
+          case 406: builder.default_int64(ProtoAdapter.INT64.decode(reader)); break;
+          case 407: builder.default_uint64(ProtoAdapter.UINT64.decode(reader)); break;
+          case 408: builder.default_sint64(ProtoAdapter.SINT64.decode(reader)); break;
+          case 409: builder.default_fixed64(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 410: builder.default_sfixed64(ProtoAdapter.SFIXED64.decode(reader)); break;
+          case 411: builder.default_bool(ProtoAdapter.BOOL.decode(reader)); break;
+          case 412: builder.default_float(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 413: builder.default_double(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 414: builder.default_string(ProtoAdapter.STRING.decode(reader)); break;
+          case 415: builder.default_bytes(ProtoAdapter.BYTES.decode(reader)); break;
+          case 416: {
+            try {
+              builder.default_nested_enum(NestedEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 1001: builder.ext_opt_int32(ProtoAdapter.INT32.decode(reader)); break;
+          case 1002: builder.ext_opt_uint32(ProtoAdapter.UINT32.decode(reader)); break;
+          case 1003: builder.ext_opt_sint32(ProtoAdapter.SINT32.decode(reader)); break;
+          case 1004: builder.ext_opt_fixed32(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 1005: builder.ext_opt_sfixed32(ProtoAdapter.SFIXED32.decode(reader)); break;
+          case 1006: builder.ext_opt_int64(ProtoAdapter.INT64.decode(reader)); break;
+          case 1007: builder.ext_opt_uint64(ProtoAdapter.UINT64.decode(reader)); break;
+          case 1008: builder.ext_opt_sint64(ProtoAdapter.SINT64.decode(reader)); break;
+          case 1009: builder.ext_opt_fixed64(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 1010: builder.ext_opt_sfixed64(ProtoAdapter.SFIXED64.decode(reader)); break;
+          case 1011: builder.ext_opt_bool(ProtoAdapter.BOOL.decode(reader)); break;
+          case 1012: builder.ext_opt_float(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 1013: builder.ext_opt_double(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 1014: builder.ext_opt_string(ProtoAdapter.STRING.decode(reader)); break;
+          case 1015: builder.ext_opt_bytes(ProtoAdapter.BYTES.decode(reader)); break;
+          case 1016: {
+            try {
+              builder.ext_opt_nested_enum(NestedEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 1017: builder.ext_opt_nested_message(NestedMessage.ADAPTER.decode(reader)); break;
+          case 1101: builder.ext_rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
+          case 1102: builder.ext_rep_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
+          case 1103: builder.ext_rep_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
+          case 1104: builder.ext_rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 1105: builder.ext_rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
+          case 1106: builder.ext_rep_int64.add(ProtoAdapter.INT64.decode(reader)); break;
+          case 1107: builder.ext_rep_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
+          case 1108: builder.ext_rep_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
+          case 1109: builder.ext_rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 1110: builder.ext_rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
+          case 1111: builder.ext_rep_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
+          case 1112: builder.ext_rep_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 1113: builder.ext_rep_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 1114: builder.ext_rep_string.add(ProtoAdapter.STRING.decode(reader)); break;
+          case 1115: builder.ext_rep_bytes.add(ProtoAdapter.BYTES.decode(reader)); break;
+          case 1116: {
+            try {
+              builder.ext_rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 1117: builder.ext_rep_nested_message.add(NestedMessage.ADAPTER.decode(reader)); break;
+          case 1201: builder.ext_pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
+          case 1202: builder.ext_pack_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
+          case 1203: builder.ext_pack_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
+          case 1204: builder.ext_pack_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 1205: builder.ext_pack_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
+          case 1206: builder.ext_pack_int64.add(ProtoAdapter.INT64.decode(reader)); break;
+          case 1207: builder.ext_pack_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
+          case 1208: builder.ext_pack_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
+          case 1209: builder.ext_pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 1210: builder.ext_pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
+          case 1211: builder.ext_pack_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
+          case 1212: builder.ext_pack_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 1213: builder.ext_pack_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 1216: {
+            try {
+              builder.ext_pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
     }
 
     @Override
-    public boolean equals(Object other) {
-      if (other == this) return true;
-      if (!(other instanceof NestedMessage)) return false;
-      NestedMessage o = (NestedMessage) other;
-      return equals(unknownFields(), o.unknownFields())
-          && equals(a, o.a);
-    }
-
-    @Override
-    public int hashCode() {
-      int result = super.hashCode;
-      if (result == 0) {
-        result = unknownFields().hashCode();
-        result = result * 37 + (a != null ? a.hashCode() : 0);
-        super.hashCode = result;
-      }
-      return result;
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder builder = new StringBuilder();
-      if (a != null) builder.append(", a=").append(a);
-      return builder.replace(0, 2, "NestedMessage{").append('}').toString();
-    }
-
-    public static final class Builder extends Message.Builder<NestedMessage, Builder> {
-      public Integer a;
-
-      public Builder() {
-      }
-
-      public Builder a(Integer a) {
-        this.a = a;
-        return this;
-      }
-
-      @Override
-      public NestedMessage build() {
-        return new NestedMessage(a, buildUnknownFields());
-      }
+    public AllTypes redact(AllTypes value) {
+      Builder builder = value.newBuilder();
+      if (builder.opt_nested_message != null) builder.opt_nested_message = NestedMessage.ADAPTER.redact(builder.opt_nested_message);
+      if (builder.req_nested_message != null) builder.req_nested_message = NestedMessage.ADAPTER.redact(builder.req_nested_message);
+      WireInternal.redactElements(builder.rep_nested_message, NestedMessage.ADAPTER);
+      if (builder.ext_opt_nested_message != null) builder.ext_opt_nested_message = NestedMessage.ADAPTER.redact(builder.ext_opt_nested_message);
+      WireInternal.redactElements(builder.ext_rep_nested_message, NestedMessage.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

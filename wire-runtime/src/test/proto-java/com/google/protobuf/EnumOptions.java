@@ -7,6 +7,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -17,7 +19,174 @@ import java.util.List;
 import okio.ByteString;
 
 public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder> {
-  public static final ProtoAdapter<EnumOptions> ADAPTER = new ProtoAdapter<EnumOptions>(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class) {
+  public static final ProtoAdapter<EnumOptions> ADAPTER = new ProtoAdapter_EnumOptions();
+
+  private static final long serialVersionUID = 0L;
+
+  public static final Boolean DEFAULT_ALLOW_ALIAS = false;
+
+  public static final Boolean DEFAULT_DEPRECATED = false;
+
+  public static final Boolean DEFAULT_ENUM_OPTION = false;
+
+  /**
+   * Set this option to true to allow mapping different tag names to the same
+   * value.
+   */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean allow_alias;
+
+  /**
+   * Is this enum deprecated?
+   * Depending on the target platform, this can emit Deprecated annotations
+   * for the enum, or it will be completely ignored; in the very least, this
+   * is a formalization for deprecating enums.
+   */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean deprecated;
+
+  /**
+   * The parser stores options it doesn't recognize here. See above.
+   */
+  @WireField(
+      tag = 999,
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
+  public final List<UninterpretedOption> uninterpreted_option;
+
+  /**
+   * Extension source: custom_options.proto at 76:3
+   */
+  @WireField(
+      tag = 71000,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean enum_option;
+
+  public EnumOptions(Boolean allow_alias, Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Boolean enum_option) {
+    this(allow_alias, deprecated, uninterpreted_option, enum_option, ByteString.EMPTY);
+  }
+
+  public EnumOptions(Boolean allow_alias, Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Boolean enum_option, ByteString unknownFields) {
+    super(unknownFields);
+    this.allow_alias = allow_alias;
+    this.deprecated = deprecated;
+    this.uninterpreted_option = WireInternal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.enum_option = enum_option;
+  }
+
+  @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.allow_alias = allow_alias;
+    builder.deprecated = deprecated;
+    builder.uninterpreted_option = WireInternal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.enum_option = enum_option;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) return true;
+    if (!(other instanceof EnumOptions)) return false;
+    EnumOptions o = (EnumOptions) other;
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(allow_alias, o.allow_alias)
+        && WireInternal.equals(deprecated, o.deprecated)
+        && WireInternal.equals(uninterpreted_option, o.uninterpreted_option)
+        && WireInternal.equals(enum_option, o.enum_option);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode;
+    if (result == 0) {
+      result = unknownFields().hashCode();
+      result = result * 37 + (allow_alias != null ? allow_alias.hashCode() : 0);
+      result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
+      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + (enum_option != null ? enum_option.hashCode() : 0);
+      super.hashCode = result;
+    }
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (allow_alias != null) builder.append(", allow_alias=").append(allow_alias);
+    if (deprecated != null) builder.append(", deprecated=").append(deprecated);
+    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (enum_option != null) builder.append(", enum_option=").append(enum_option);
+    return builder.replace(0, 2, "EnumOptions{").append('}').toString();
+  }
+
+  public static final class Builder extends Message.Builder<EnumOptions, Builder> {
+    public Boolean allow_alias;
+
+    public Boolean deprecated;
+
+    public List<UninterpretedOption> uninterpreted_option;
+
+    public Boolean enum_option;
+
+    public Builder() {
+      uninterpreted_option = WireInternal.newMutableList();
+    }
+
+    /**
+     * Set this option to true to allow mapping different tag names to the same
+     * value.
+     */
+    public Builder allow_alias(Boolean allow_alias) {
+      this.allow_alias = allow_alias;
+      return this;
+    }
+
+    /**
+     * Is this enum deprecated?
+     * Depending on the target platform, this can emit Deprecated annotations
+     * for the enum, or it will be completely ignored; in the very least, this
+     * is a formalization for deprecating enums.
+     */
+    public Builder deprecated(Boolean deprecated) {
+      this.deprecated = deprecated;
+      return this;
+    }
+
+    /**
+     * The parser stores options it doesn't recognize here. See above.
+     */
+    public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
+      WireInternal.checkElementsNotNull(uninterpreted_option);
+      this.uninterpreted_option = uninterpreted_option;
+      return this;
+    }
+
+    public Builder enum_option(Boolean enum_option) {
+      this.enum_option = enum_option;
+      return this;
+    }
+
+    @Override
+    public EnumOptions build() {
+      return new EnumOptions(allow_alias, deprecated, uninterpreted_option, enum_option, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_EnumOptions extends ProtoAdapter<EnumOptions> {
+    ProtoAdapter_EnumOptions() {
+      super(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class);
+    }
+
     @Override
     public int encodedSize(EnumOptions value) {
       return (value.allow_alias != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.allow_alias) : 0)
@@ -60,153 +229,9 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     @Override
     public EnumOptions redact(EnumOptions value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      WireInternal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
-    }
-  };
-
-  private static final long serialVersionUID = 0L;
-
-  public static final Boolean DEFAULT_ALLOW_ALIAS = false;
-
-  public static final Boolean DEFAULT_DEPRECATED = false;
-
-  public static final Boolean DEFAULT_ENUM_OPTION = false;
-
-  /**
-   * Set this option to true to allow mapping different tag names to the same
-   * value.
-   */
-  public final Boolean allow_alias;
-
-  /**
-   * Is this enum deprecated?
-   * Depending on the target platform, this can emit Deprecated annotations
-   * for the enum, or it will be completely ignored; in the very least, this
-   * is a formalization for deprecating enums.
-   */
-  public final Boolean deprecated;
-
-  /**
-   * The parser stores options it doesn't recognize here. See above.
-   */
-  public final List<UninterpretedOption> uninterpreted_option;
-
-  /**
-   * Extension source: custom_options.proto at 76:3
-   */
-  public final Boolean enum_option;
-
-  public EnumOptions(Boolean allow_alias, Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Boolean enum_option) {
-    this(allow_alias, deprecated, uninterpreted_option, enum_option, ByteString.EMPTY);
-  }
-
-  public EnumOptions(Boolean allow_alias, Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Boolean enum_option, ByteString unknownFields) {
-    super(unknownFields);
-    this.allow_alias = allow_alias;
-    this.deprecated = deprecated;
-    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
-    this.enum_option = enum_option;
-  }
-
-  @Override
-  public Builder newBuilder() {
-    Builder builder = new Builder();
-    builder.allow_alias = allow_alias;
-    builder.deprecated = deprecated;
-    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
-    builder.enum_option = enum_option;
-    builder.addUnknownFields(unknownFields());
-    return builder;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof EnumOptions)) return false;
-    EnumOptions o = (EnumOptions) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(allow_alias, o.allow_alias)
-        && equals(deprecated, o.deprecated)
-        && equals(uninterpreted_option, o.uninterpreted_option)
-        && equals(enum_option, o.enum_option);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode;
-    if (result == 0) {
-      result = unknownFields().hashCode();
-      result = result * 37 + (allow_alias != null ? allow_alias.hashCode() : 0);
-      result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
-      result = result * 37 + (enum_option != null ? enum_option.hashCode() : 0);
-      super.hashCode = result;
-    }
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    if (allow_alias != null) builder.append(", allow_alias=").append(allow_alias);
-    if (deprecated != null) builder.append(", deprecated=").append(deprecated);
-    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
-    if (enum_option != null) builder.append(", enum_option=").append(enum_option);
-    return builder.replace(0, 2, "EnumOptions{").append('}').toString();
-  }
-
-  public static final class Builder extends Message.Builder<EnumOptions, Builder> {
-    public Boolean allow_alias;
-
-    public Boolean deprecated;
-
-    public List<UninterpretedOption> uninterpreted_option;
-
-    public Boolean enum_option;
-
-    public Builder() {
-      uninterpreted_option = newMutableList();
-    }
-
-    /**
-     * Set this option to true to allow mapping different tag names to the same
-     * value.
-     */
-    public Builder allow_alias(Boolean allow_alias) {
-      this.allow_alias = allow_alias;
-      return this;
-    }
-
-    /**
-     * Is this enum deprecated?
-     * Depending on the target platform, this can emit Deprecated annotations
-     * for the enum, or it will be completely ignored; in the very least, this
-     * is a formalization for deprecating enums.
-     */
-    public Builder deprecated(Boolean deprecated) {
-      this.deprecated = deprecated;
-      return this;
-    }
-
-    /**
-     * The parser stores options it doesn't recognize here. See above.
-     */
-    public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      checkElementsNotNull(uninterpreted_option);
-      this.uninterpreted_option = uninterpreted_option;
-      return this;
-    }
-
-    public Builder enum_option(Boolean enum_option) {
-      this.enum_option = enum_option;
-      return this;
-    }
-
-    @Override
-    public EnumOptions build() {
-      return new EnumOptions(allow_alias, deprecated, uninterpreted_option, enum_option, buildUnknownFields());
     }
   }
 }

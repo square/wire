@@ -66,9 +66,13 @@ public abstract class ProtoAdapter<E> {
     return new RuntimeEnumAdapter<>(type);
   }
 
-  /** Returns the default adapter for {@code type}. */
-  public static <M extends Message<M, B>, B extends Builder<M, B>> ProtoAdapter<M> get(
-      Class<M> type) {
+  /** Returns the adapter for the type of {@code Message}. */
+  public static <M extends Message> ProtoAdapter<M> get(M message) {
+    return (ProtoAdapter<M>) get(message.getClass());
+  }
+
+  /** Returns the adapter for {@code type}. */
+  public static <M> ProtoAdapter<M> get(Class<M> type) {
     try {
       return (ProtoAdapter<M>) type.getField("ADAPTER").get(null);
     } catch (IllegalAccessException | NoSuchFieldException e) {

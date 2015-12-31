@@ -7,6 +7,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Float;
 import java.lang.Integer;
@@ -18,7 +20,198 @@ import java.util.List;
 import okio.ByteString;
 
 public final class ExternalMessage extends Message<ExternalMessage, ExternalMessage.Builder> {
-  public static final ProtoAdapter<ExternalMessage> ADAPTER = new ProtoAdapter<ExternalMessage>(FieldEncoding.LENGTH_DELIMITED, ExternalMessage.class) {
+  public static final ProtoAdapter<ExternalMessage> ADAPTER = new ProtoAdapter_ExternalMessage();
+
+  private static final long serialVersionUID = 0L;
+
+  public static final Float DEFAULT_F = 20f;
+
+  public static final Integer DEFAULT_BAREXT = 0;
+
+  public static final Integer DEFAULT_BAZEXT = 0;
+
+  public static final SimpleMessage.NestedEnum DEFAULT_NESTED_ENUM_EXT = SimpleMessage.NestedEnum.FOO;
+
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
+  public final Float f;
+
+  /**
+   * Extension source: simple_message.proto at 71:3
+   */
+  @WireField(
+      tag = 125,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Integer> fooext;
+
+  /**
+   * Extension source: simple_message.proto at 72:3
+   */
+  @WireField(
+      tag = 126,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer barext;
+
+  /**
+   * Extension source: simple_message.proto at 73:3
+   */
+  @WireField(
+      tag = 127,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer bazext;
+
+  /**
+   * Extension source: simple_message.proto at 74:3
+   */
+  @WireField(
+      tag = 128,
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedMessage#ADAPTER"
+  )
+  public final SimpleMessage.NestedMessage nested_message_ext;
+
+  /**
+   * Extension source: simple_message.proto at 75:3
+   */
+  @WireField(
+      tag = 129,
+      adapter = "com.squareup.wire.protos.simple.SimpleMessage$NestedEnum#ADAPTER"
+  )
+  public final SimpleMessage.NestedEnum nested_enum_ext;
+
+  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext) {
+    this(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, ByteString.EMPTY);
+  }
+
+  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext, ByteString unknownFields) {
+    super(unknownFields);
+    this.f = f;
+    this.fooext = WireInternal.immutableCopyOf("fooext", fooext);
+    this.barext = barext;
+    this.bazext = bazext;
+    this.nested_message_ext = nested_message_ext;
+    this.nested_enum_ext = nested_enum_ext;
+  }
+
+  @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.f = f;
+    builder.fooext = WireInternal.copyOf("fooext", fooext);
+    builder.barext = barext;
+    builder.bazext = bazext;
+    builder.nested_message_ext = nested_message_ext;
+    builder.nested_enum_ext = nested_enum_ext;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) return true;
+    if (!(other instanceof ExternalMessage)) return false;
+    ExternalMessage o = (ExternalMessage) other;
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(f, o.f)
+        && WireInternal.equals(fooext, o.fooext)
+        && WireInternal.equals(barext, o.barext)
+        && WireInternal.equals(bazext, o.bazext)
+        && WireInternal.equals(nested_message_ext, o.nested_message_ext)
+        && WireInternal.equals(nested_enum_ext, o.nested_enum_ext);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode;
+    if (result == 0) {
+      result = unknownFields().hashCode();
+      result = result * 37 + (f != null ? f.hashCode() : 0);
+      result = result * 37 + (fooext != null ? fooext.hashCode() : 1);
+      result = result * 37 + (barext != null ? barext.hashCode() : 0);
+      result = result * 37 + (bazext != null ? bazext.hashCode() : 0);
+      result = result * 37 + (nested_message_ext != null ? nested_message_ext.hashCode() : 0);
+      result = result * 37 + (nested_enum_ext != null ? nested_enum_ext.hashCode() : 0);
+      super.hashCode = result;
+    }
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (f != null) builder.append(", f=").append(f);
+    if (fooext != null) builder.append(", fooext=").append(fooext);
+    if (barext != null) builder.append(", barext=").append(barext);
+    if (bazext != null) builder.append(", bazext=").append(bazext);
+    if (nested_message_ext != null) builder.append(", nested_message_ext=").append(nested_message_ext);
+    if (nested_enum_ext != null) builder.append(", nested_enum_ext=").append(nested_enum_ext);
+    return builder.replace(0, 2, "ExternalMessage{").append('}').toString();
+  }
+
+  public static final class Builder extends Message.Builder<ExternalMessage, Builder> {
+    public Float f;
+
+    public List<Integer> fooext;
+
+    public Integer barext;
+
+    public Integer bazext;
+
+    public SimpleMessage.NestedMessage nested_message_ext;
+
+    public SimpleMessage.NestedEnum nested_enum_ext;
+
+    public Builder() {
+      fooext = WireInternal.newMutableList();
+    }
+
+    public Builder f(Float f) {
+      this.f = f;
+      return this;
+    }
+
+    public Builder fooext(List<Integer> fooext) {
+      WireInternal.checkElementsNotNull(fooext);
+      this.fooext = fooext;
+      return this;
+    }
+
+    public Builder barext(Integer barext) {
+      this.barext = barext;
+      return this;
+    }
+
+    public Builder bazext(Integer bazext) {
+      this.bazext = bazext;
+      return this;
+    }
+
+    public Builder nested_message_ext(SimpleMessage.NestedMessage nested_message_ext) {
+      this.nested_message_ext = nested_message_ext;
+      return this;
+    }
+
+    public Builder nested_enum_ext(SimpleMessage.NestedEnum nested_enum_ext) {
+      this.nested_enum_ext = nested_enum_ext;
+      return this;
+    }
+
+    @Override
+    public ExternalMessage build() {
+      return new ExternalMessage(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_ExternalMessage extends ProtoAdapter<ExternalMessage> {
+    ProtoAdapter_ExternalMessage() {
+      super(FieldEncoding.LENGTH_DELIMITED, ExternalMessage.class);
+    }
+
     @Override
     public int encodedSize(ExternalMessage value) {
       return (value.f != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f) : 0)
@@ -77,166 +270,6 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
       if (builder.nested_message_ext != null) builder.nested_message_ext = SimpleMessage.NestedMessage.ADAPTER.redact(builder.nested_message_ext);
       builder.clearUnknownFields();
       return builder.build();
-    }
-  };
-
-  private static final long serialVersionUID = 0L;
-
-  public static final Float DEFAULT_F = 20f;
-
-  public static final Integer DEFAULT_BAREXT = 0;
-
-  public static final Integer DEFAULT_BAZEXT = 0;
-
-  public static final SimpleMessage.NestedEnum DEFAULT_NESTED_ENUM_EXT = SimpleMessage.NestedEnum.FOO;
-
-  public final Float f;
-
-  /**
-   * Extension source: simple_message.proto at 71:3
-   */
-  public final List<Integer> fooext;
-
-  /**
-   * Extension source: simple_message.proto at 72:3
-   */
-  public final Integer barext;
-
-  /**
-   * Extension source: simple_message.proto at 73:3
-   */
-  public final Integer bazext;
-
-  /**
-   * Extension source: simple_message.proto at 74:3
-   */
-  public final SimpleMessage.NestedMessage nested_message_ext;
-
-  /**
-   * Extension source: simple_message.proto at 75:3
-   */
-  public final SimpleMessage.NestedEnum nested_enum_ext;
-
-  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext) {
-    this(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, ByteString.EMPTY);
-  }
-
-  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext, ByteString unknownFields) {
-    super(unknownFields);
-    this.f = f;
-    this.fooext = immutableCopyOf("fooext", fooext);
-    this.barext = barext;
-    this.bazext = bazext;
-    this.nested_message_ext = nested_message_ext;
-    this.nested_enum_ext = nested_enum_ext;
-  }
-
-  @Override
-  public Builder newBuilder() {
-    Builder builder = new Builder();
-    builder.f = f;
-    builder.fooext = copyOf("fooext", fooext);
-    builder.barext = barext;
-    builder.bazext = bazext;
-    builder.nested_message_ext = nested_message_ext;
-    builder.nested_enum_ext = nested_enum_ext;
-    builder.addUnknownFields(unknownFields());
-    return builder;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof ExternalMessage)) return false;
-    ExternalMessage o = (ExternalMessage) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(f, o.f)
-        && equals(fooext, o.fooext)
-        && equals(barext, o.barext)
-        && equals(bazext, o.bazext)
-        && equals(nested_message_ext, o.nested_message_ext)
-        && equals(nested_enum_ext, o.nested_enum_ext);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode;
-    if (result == 0) {
-      result = unknownFields().hashCode();
-      result = result * 37 + (f != null ? f.hashCode() : 0);
-      result = result * 37 + (fooext != null ? fooext.hashCode() : 1);
-      result = result * 37 + (barext != null ? barext.hashCode() : 0);
-      result = result * 37 + (bazext != null ? bazext.hashCode() : 0);
-      result = result * 37 + (nested_message_ext != null ? nested_message_ext.hashCode() : 0);
-      result = result * 37 + (nested_enum_ext != null ? nested_enum_ext.hashCode() : 0);
-      super.hashCode = result;
-    }
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    if (f != null) builder.append(", f=").append(f);
-    if (fooext != null) builder.append(", fooext=").append(fooext);
-    if (barext != null) builder.append(", barext=").append(barext);
-    if (bazext != null) builder.append(", bazext=").append(bazext);
-    if (nested_message_ext != null) builder.append(", nested_message_ext=").append(nested_message_ext);
-    if (nested_enum_ext != null) builder.append(", nested_enum_ext=").append(nested_enum_ext);
-    return builder.replace(0, 2, "ExternalMessage{").append('}').toString();
-  }
-
-  public static final class Builder extends Message.Builder<ExternalMessage, Builder> {
-    public Float f;
-
-    public List<Integer> fooext;
-
-    public Integer barext;
-
-    public Integer bazext;
-
-    public SimpleMessage.NestedMessage nested_message_ext;
-
-    public SimpleMessage.NestedEnum nested_enum_ext;
-
-    public Builder() {
-      fooext = newMutableList();
-    }
-
-    public Builder f(Float f) {
-      this.f = f;
-      return this;
-    }
-
-    public Builder fooext(List<Integer> fooext) {
-      checkElementsNotNull(fooext);
-      this.fooext = fooext;
-      return this;
-    }
-
-    public Builder barext(Integer barext) {
-      this.barext = barext;
-      return this;
-    }
-
-    public Builder bazext(Integer bazext) {
-      this.bazext = bazext;
-      return this;
-    }
-
-    public Builder nested_message_ext(SimpleMessage.NestedMessage nested_message_ext) {
-      this.nested_message_ext = nested_message_ext;
-      return this;
-    }
-
-    public Builder nested_enum_ext(SimpleMessage.NestedEnum nested_enum_ext) {
-      this.nested_enum_ext = nested_enum_ext;
-      return this;
-    }
-
-    @Override
-    public ExternalMessage build() {
-      return new ExternalMessage(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, buildUnknownFields());
     }
   }
 }

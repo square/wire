@@ -7,6 +7,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -15,7 +17,86 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class B extends Message<B, B.Builder> {
-  public static final ProtoAdapter<B> ADAPTER = new ProtoAdapter<B>(FieldEncoding.LENGTH_DELIMITED, B.class) {
+  public static final ProtoAdapter<B> ADAPTER = new ProtoAdapter_B();
+
+  private static final long serialVersionUID = 0L;
+
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.protos.roots.C#ADAPTER",
+      label = WireField.Label.REQUIRED
+  )
+  public final C c;
+
+  public B(C c) {
+    this(c, ByteString.EMPTY);
+  }
+
+  public B(C c, ByteString unknownFields) {
+    super(unknownFields);
+    this.c = c;
+  }
+
+  @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.c = c;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) return true;
+    if (!(other instanceof B)) return false;
+    B o = (B) other;
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(c, o.c);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode;
+    if (result == 0) {
+      result = unknownFields().hashCode();
+      result = result * 37 + (c != null ? c.hashCode() : 0);
+      super.hashCode = result;
+    }
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (c != null) builder.append(", c=").append(c);
+    return builder.replace(0, 2, "B{").append('}').toString();
+  }
+
+  public static final class Builder extends Message.Builder<B, Builder> {
+    public C c;
+
+    public Builder() {
+    }
+
+    public Builder c(C c) {
+      this.c = c;
+      return this;
+    }
+
+    @Override
+    public B build() {
+      if (c == null) {
+        throw WireInternal.missingRequiredFields(c, "c");
+      }
+      return new B(c, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_B extends ProtoAdapter<B> {
+    ProtoAdapter_B() {
+      super(FieldEncoding.LENGTH_DELIMITED, B.class);
+    }
+
     @Override
     public int encodedSize(B value) {
       return C.ADAPTER.encodedSizeWithTag(1, value.c)
@@ -52,74 +133,6 @@ public final class B extends Message<B, B.Builder> {
       if (builder.c != null) builder.c = C.ADAPTER.redact(builder.c);
       builder.clearUnknownFields();
       return builder.build();
-    }
-  };
-
-  private static final long serialVersionUID = 0L;
-
-  public final C c;
-
-  public B(C c) {
-    this(c, ByteString.EMPTY);
-  }
-
-  public B(C c, ByteString unknownFields) {
-    super(unknownFields);
-    this.c = c;
-  }
-
-  @Override
-  public Builder newBuilder() {
-    Builder builder = new Builder();
-    builder.c = c;
-    builder.addUnknownFields(unknownFields());
-    return builder;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof B)) return false;
-    B o = (B) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(c, o.c);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode;
-    if (result == 0) {
-      result = unknownFields().hashCode();
-      result = result * 37 + (c != null ? c.hashCode() : 0);
-      super.hashCode = result;
-    }
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    if (c != null) builder.append(", c=").append(c);
-    return builder.replace(0, 2, "B{").append('}').toString();
-  }
-
-  public static final class Builder extends Message.Builder<B, Builder> {
-    public C c;
-
-    public Builder() {
-    }
-
-    public Builder c(C c) {
-      this.c = c;
-      return this;
-    }
-
-    @Override
-    public B build() {
-      if (c == null) {
-        throw missingRequiredFields(c, "c");
-      }
-      return new B(c, buildUnknownFields());
     }
   }
 }

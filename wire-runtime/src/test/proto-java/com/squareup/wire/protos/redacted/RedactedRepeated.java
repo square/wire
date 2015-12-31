@@ -8,6 +8,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -18,7 +20,117 @@ import java.util.List;
 import okio.ByteString;
 
 public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRepeated.Builder> {
-  public static final ProtoAdapter<RedactedRepeated> ADAPTER = new ProtoAdapter<RedactedRepeated>(FieldEncoding.LENGTH_DELIMITED, RedactedRepeated.class) {
+  public static final ProtoAdapter<RedactedRepeated> ADAPTER = new ProtoAdapter_RedactedRepeated();
+
+  private static final long serialVersionUID = 0L;
+
+  public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
+      .redacted(true)
+      .build();
+
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REPEATED,
+      redacted = true
+  )
+  public final List<String> a;
+
+  /**
+   * Values in the repeated type need redacting.
+   */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.protos.redacted.Redacted#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
+  public final List<Redacted> b;
+
+  public RedactedRepeated(List<String> a, List<Redacted> b) {
+    this(a, b, ByteString.EMPTY);
+  }
+
+  public RedactedRepeated(List<String> a, List<Redacted> b, ByteString unknownFields) {
+    super(unknownFields);
+    this.a = WireInternal.immutableCopyOf("a", a);
+    this.b = WireInternal.immutableCopyOf("b", b);
+  }
+
+  @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.a = WireInternal.copyOf("a", a);
+    builder.b = WireInternal.copyOf("b", b);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) return true;
+    if (!(other instanceof RedactedRepeated)) return false;
+    RedactedRepeated o = (RedactedRepeated) other;
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(a, o.a)
+        && WireInternal.equals(b, o.b);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode;
+    if (result == 0) {
+      result = unknownFields().hashCode();
+      result = result * 37 + (a != null ? a.hashCode() : 1);
+      result = result * 37 + (b != null ? b.hashCode() : 1);
+      super.hashCode = result;
+    }
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (a != null) builder.append(", a=██");
+    if (b != null) builder.append(", b=").append(b);
+    return builder.replace(0, 2, "RedactedRepeated{").append('}').toString();
+  }
+
+  public static final class Builder extends Message.Builder<RedactedRepeated, Builder> {
+    public List<String> a;
+
+    public List<Redacted> b;
+
+    public Builder() {
+      a = WireInternal.newMutableList();
+      b = WireInternal.newMutableList();
+    }
+
+    public Builder a(List<String> a) {
+      WireInternal.checkElementsNotNull(a);
+      this.a = a;
+      return this;
+    }
+
+    /**
+     * Values in the repeated type need redacting.
+     */
+    public Builder b(List<Redacted> b) {
+      WireInternal.checkElementsNotNull(b);
+      this.b = b;
+      return this;
+    }
+
+    @Override
+    public RedactedRepeated build() {
+      return new RedactedRepeated(a, b, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_RedactedRepeated extends ProtoAdapter<RedactedRepeated> {
+    ProtoAdapter_RedactedRepeated() {
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedRepeated.class);
+    }
+
     @Override
     public int encodedSize(RedactedRepeated value) {
       return ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
@@ -56,102 +168,9 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     public RedactedRepeated redact(RedactedRepeated value) {
       Builder builder = value.newBuilder();
       builder.a = Collections.emptyList();
-      redactElements(builder.b, Redacted.ADAPTER);
+      WireInternal.redactElements(builder.b, Redacted.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
-    }
-  };
-
-  private static final long serialVersionUID = 0L;
-
-  public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
-      .redacted(true)
-      .build();
-
-  public final List<String> a;
-
-  /**
-   * Values in the repeated type need redacting.
-   */
-  public final List<Redacted> b;
-
-  public RedactedRepeated(List<String> a, List<Redacted> b) {
-    this(a, b, ByteString.EMPTY);
-  }
-
-  public RedactedRepeated(List<String> a, List<Redacted> b, ByteString unknownFields) {
-    super(unknownFields);
-    this.a = immutableCopyOf("a", a);
-    this.b = immutableCopyOf("b", b);
-  }
-
-  @Override
-  public Builder newBuilder() {
-    Builder builder = new Builder();
-    builder.a = copyOf("a", a);
-    builder.b = copyOf("b", b);
-    builder.addUnknownFields(unknownFields());
-    return builder;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof RedactedRepeated)) return false;
-    RedactedRepeated o = (RedactedRepeated) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(a, o.a)
-        && equals(b, o.b);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode;
-    if (result == 0) {
-      result = unknownFields().hashCode();
-      result = result * 37 + (a != null ? a.hashCode() : 1);
-      result = result * 37 + (b != null ? b.hashCode() : 1);
-      super.hashCode = result;
-    }
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    if (a != null) builder.append(", a=██");
-    if (b != null) builder.append(", b=").append(b);
-    return builder.replace(0, 2, "RedactedRepeated{").append('}').toString();
-  }
-
-  public static final class Builder extends Message.Builder<RedactedRepeated, Builder> {
-    public List<String> a;
-
-    public List<Redacted> b;
-
-    public Builder() {
-      a = newMutableList();
-      b = newMutableList();
-    }
-
-    public Builder a(List<String> a) {
-      checkElementsNotNull(a);
-      this.a = a;
-      return this;
-    }
-
-    /**
-     * Values in the repeated type need redacting.
-     */
-    public Builder b(List<Redacted> b) {
-      checkElementsNotNull(b);
-      this.b = b;
-      return this;
-    }
-
-    @Override
-    public RedactedRepeated build() {
-      return new RedactedRepeated(a, b, buildUnknownFields());
     }
   }
 }

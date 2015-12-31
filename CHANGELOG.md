@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 2.0.2 *(2015-12-14)*
+----------------------------
+
+ * Fix: Exclude unknown fields when encoding JSON and drop unknown fields when parsing JSON.
+ * Fix: Ensure JSON encoding and decoding works in the default generation mode (not just
+   `--compact`) by always adding `@WireField` metadata to message fields.
+ * Fix: Update to JavaPoet 1.4 for more accurate generation of valid Java code.
+
+
 Version 2.0.1 *(2015-11-12)*
 ----------------------------
 

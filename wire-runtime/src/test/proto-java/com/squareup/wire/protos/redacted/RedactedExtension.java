@@ -8,6 +8,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -16,48 +18,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class RedactedExtension extends Message<RedactedExtension, RedactedExtension.Builder> {
-  public static final ProtoAdapter<RedactedExtension> ADAPTER = new ProtoAdapter<RedactedExtension>(FieldEncoding.LENGTH_DELIMITED, RedactedExtension.class) {
-    @Override
-    public int encodedSize(RedactedExtension value) {
-      return (value.d != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.d) : 0)
-          + (value.e != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.e) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, RedactedExtension value) throws IOException {
-      if (value.d != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d);
-      if (value.e != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public RedactedExtension decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.d(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.e(ProtoAdapter.STRING.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public RedactedExtension redact(RedactedExtension value) {
-      Builder builder = value.newBuilder();
-      builder.d = null;
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<RedactedExtension> ADAPTER = new ProtoAdapter_RedactedExtension();
 
   private static final long serialVersionUID = 0L;
 
@@ -69,8 +30,17 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
 
   public static final String DEFAULT_E = "";
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      redacted = true
+  )
   public final String d;
 
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String e;
 
   public RedactedExtension(String d, String e) {
@@ -97,9 +67,9 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
     if (other == this) return true;
     if (!(other instanceof RedactedExtension)) return false;
     RedactedExtension o = (RedactedExtension) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(d, o.d)
-        && equals(e, o.e);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(d, o.d)
+        && WireInternal.equals(e, o.e);
   }
 
   @Override
@@ -143,6 +113,53 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
     @Override
     public RedactedExtension build() {
       return new RedactedExtension(d, e, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_RedactedExtension extends ProtoAdapter<RedactedExtension> {
+    ProtoAdapter_RedactedExtension() {
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedExtension.class);
+    }
+
+    @Override
+    public int encodedSize(RedactedExtension value) {
+      return (value.d != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.d) : 0)
+          + (value.e != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.e) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, RedactedExtension value) throws IOException {
+      if (value.d != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d);
+      if (value.e != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public RedactedExtension decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.d(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.e(ProtoAdapter.STRING.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public RedactedExtension redact(RedactedExtension value) {
+      Builder builder = value.newBuilder();
+      builder.d = null;
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }
