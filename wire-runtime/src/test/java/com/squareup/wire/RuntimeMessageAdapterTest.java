@@ -17,6 +17,7 @@ package com.squareup.wire;
 
 import com.squareup.wire.protos.roots.C;
 import com.squareup.wire.protos.roots.CustomBuilderNameMessage;
+import com.squareup.wire.protos.roots.NotWiredMessage;
 import com.squareup.wire.protos.roots.WiredFieldsMessage;
 import okio.Buffer;
 import okio.ByteString;
@@ -185,15 +186,17 @@ public class RuntimeMessageAdapterTest {
 
   @Test public void decodeWithoutWiredFields() throws IOException {
     // given
-    RuntimeMessageAdapter<C, C.Builder> messageAdapter = RuntimeMessageAdapter.create(C.class);
+    RuntimeMessageAdapter<NotWiredMessage, NotWiredMessage.Builder> messageAdapter =
+      RuntimeMessageAdapter.create(NotWiredMessage.class);
     ByteString encoded = ByteString.decodeHex("082c");
 
     // when
-    C decoded = messageAdapter.decode(new ProtoReader(new Buffer().write(encoded.toByteArray())));
+    NotWiredMessage decoded = messageAdapter.decode(new ProtoReader(new Buffer().write(encoded.toByteArray())));
 
     // then
     assertThat(decoded.i).isNull();
-    assertThat(C.ADAPTER.decode(decoded.unknownFields().toByteArray())).isEqualTo(new C(44));
+    assertThat(NotWiredMessage.ADAPTER.decode(decoded.unknownFields().toByteArray()))
+      .isEqualTo(new NotWiredMessage(44));
   }
 
   private Map<Integer, FieldBinding<WiredFieldsMessage, WiredFieldsMessage.Builder>>
