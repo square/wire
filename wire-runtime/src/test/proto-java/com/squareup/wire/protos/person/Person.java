@@ -8,6 +8,8 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -18,54 +20,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class Person extends Message<Person, Person.Builder> {
-  public static final ProtoAdapter<Person> ADAPTER = new ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person.class) {
-    @Override
-    public int encodedSize(Person value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
-          + (value.email != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) : 0)
-          + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, Person value) throws IOException {
-      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
-      if (value.email != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
-      if (value.phone != null) PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public Person decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.id(ProtoAdapter.INT32.decode(reader)); break;
-          case 3: builder.email(ProtoAdapter.STRING.decode(reader)); break;
-          case 4: builder.phone.add(PhoneNumber.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public Person redact(Person value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.phone, PhoneNumber.ADAPTER);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<Person> ADAPTER = new ProtoAdapter_Person();
 
   private static final long serialVersionUID = 0L;
 
@@ -78,21 +33,40 @@ public final class Person extends Message<Person, Person.Builder> {
   /**
    * The customer's full name.
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REQUIRED
+  )
   public final String name;
 
   /**
    * The customer's ID number.
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.REQUIRED
+  )
   public final Integer id;
 
   /**
    * Email address for the customer.
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String email;
 
   /**
    * A list of the customer's phone numbers.
    */
+  @WireField(
+      tag = 4,
+      adapter = "com.squareup.wire.protos.person.Person$PhoneNumber#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<PhoneNumber> phone;
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
@@ -104,7 +78,7 @@ public final class Person extends Message<Person, Person.Builder> {
     this.name = name;
     this.id = id;
     this.email = email;
-    this.phone = immutableCopyOf("phone", phone);
+    this.phone = WireInternal.immutableCopyOf("phone", phone);
   }
 
   @Override
@@ -113,7 +87,7 @@ public final class Person extends Message<Person, Person.Builder> {
     builder.name = name;
     builder.id = id;
     builder.email = email;
-    builder.phone = copyOf("phone", phone);
+    builder.phone = WireInternal.copyOf("phone", phone);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -123,11 +97,11 @@ public final class Person extends Message<Person, Person.Builder> {
     if (other == this) return true;
     if (!(other instanceof Person)) return false;
     Person o = (Person) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(name, o.name)
-        && equals(id, o.id)
-        && equals(email, o.email)
-        && equals(phone, o.phone);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(name, o.name)
+        && WireInternal.equals(id, o.id)
+        && WireInternal.equals(email, o.email)
+        && WireInternal.equals(phone, o.phone);
   }
 
   @Override
@@ -164,7 +138,7 @@ public final class Person extends Message<Person, Person.Builder> {
     public List<PhoneNumber> phone;
 
     public Builder() {
-      phone = newMutableList();
+      phone = WireInternal.newMutableList();
     }
 
     /**
@@ -195,7 +169,7 @@ public final class Person extends Message<Person, Person.Builder> {
      * A list of the customer's phone numbers.
      */
     public Builder phone(List<PhoneNumber> phone) {
-      checkElementsNotNull(phone);
+      WireInternal.checkElementsNotNull(phone);
       this.phone = phone;
       return this;
     }
@@ -204,7 +178,7 @@ public final class Person extends Message<Person, Person.Builder> {
     public Person build() {
       if (name == null
           || id == null) {
-        throw missingRequiredFields(name, "name",
+        throw WireInternal.missingRequiredFields(name, "name",
             id, "id");
       }
       return new Person(name, id, email, phone, buildUnknownFields());
@@ -248,54 +222,7 @@ public final class Person extends Message<Person, Person.Builder> {
   }
 
   public static final class PhoneNumber extends Message<PhoneNumber, PhoneNumber.Builder> {
-    public static final ProtoAdapter<PhoneNumber> ADAPTER = new ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class) {
-      @Override
-      public int encodedSize(PhoneNumber value) {
-        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
-            + (value.type != null ? PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) : 0)
-            + value.unknownFields().size();
-      }
-
-      @Override
-      public void encode(ProtoWriter writer, PhoneNumber value) throws IOException {
-        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
-        if (value.type != null) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
-        writer.writeBytes(value.unknownFields());
-      }
-
-      @Override
-      public PhoneNumber decode(ProtoReader reader) throws IOException {
-        Builder builder = new Builder();
-        long token = reader.beginMessage();
-        for (int tag; (tag = reader.nextTag()) != -1;) {
-          switch (tag) {
-            case 1: builder.number(ProtoAdapter.STRING.decode(reader)); break;
-            case 2: {
-              try {
-                builder.type(PhoneType.ADAPTER.decode(reader));
-              } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-                builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-              }
-              break;
-            }
-            default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
-            }
-          }
-        }
-        reader.endMessage(token);
-        return builder.build();
-      }
-
-      @Override
-      public PhoneNumber redact(PhoneNumber value) {
-        Builder builder = value.newBuilder();
-        builder.clearUnknownFields();
-        return builder.build();
-      }
-    };
+    public static final ProtoAdapter<PhoneNumber> ADAPTER = new ProtoAdapter_PhoneNumber();
 
     private static final long serialVersionUID = 0L;
 
@@ -306,11 +233,20 @@ public final class Person extends Message<Person, Person.Builder> {
     /**
      * The customer's phone number.
      */
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
+        label = WireField.Label.REQUIRED
+    )
     public final String number;
 
     /**
      * The type of phone stored here.
      */
+    @WireField(
+        tag = 2,
+        adapter = "com.squareup.wire.protos.person.Person$PhoneType#ADAPTER"
+    )
     public final PhoneType type;
 
     public PhoneNumber(String number, PhoneType type) {
@@ -337,9 +273,9 @@ public final class Person extends Message<Person, Person.Builder> {
       if (other == this) return true;
       if (!(other instanceof PhoneNumber)) return false;
       PhoneNumber o = (PhoneNumber) other;
-      return equals(unknownFields(), o.unknownFields())
-          && equals(number, o.number)
-          && equals(type, o.type);
+      return WireInternal.equals(unknownFields(), o.unknownFields())
+          && WireInternal.equals(number, o.number)
+          && WireInternal.equals(type, o.type);
     }
 
     @Override
@@ -389,10 +325,116 @@ public final class Person extends Message<Person, Person.Builder> {
       @Override
       public PhoneNumber build() {
         if (number == null) {
-          throw missingRequiredFields(number, "number");
+          throw WireInternal.missingRequiredFields(number, "number");
         }
         return new PhoneNumber(number, type, buildUnknownFields());
       }
+    }
+
+    private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
+      ProtoAdapter_PhoneNumber() {
+        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class);
+      }
+
+      @Override
+      public int encodedSize(PhoneNumber value) {
+        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
+            + (value.type != null ? PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) : 0)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, PhoneNumber value) throws IOException {
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
+        if (value.type != null) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public PhoneNumber decode(ProtoReader reader) throws IOException {
+        Builder builder = new Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.number(ProtoAdapter.STRING.decode(reader)); break;
+            case 2: {
+              try {
+                builder.type(PhoneType.ADAPTER.decode(reader));
+              } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+                builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+              }
+              break;
+            }
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public PhoneNumber redact(PhoneNumber value) {
+        Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    }
+  }
+
+  private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
+    ProtoAdapter_Person() {
+      super(FieldEncoding.LENGTH_DELIMITED, Person.class);
+    }
+
+    @Override
+    public int encodedSize(Person value) {
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
+          + (value.email != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) : 0)
+          + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, Person value) throws IOException {
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
+      if (value.email != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
+      if (value.phone != null) PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public Person decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.id(ProtoAdapter.INT32.decode(reader)); break;
+          case 3: builder.email(ProtoAdapter.STRING.decode(reader)); break;
+          case 4: builder.phone.add(PhoneNumber.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public Person redact(Person value) {
+      Builder builder = value.newBuilder();
+      WireInternal.redactElements(builder.phone, PhoneNumber.ADAPTER);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

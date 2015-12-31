@@ -15,41 +15,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class MessageWithOptions extends Message<MessageWithOptions, MessageWithOptions.Builder> {
-  public static final ProtoAdapter<MessageWithOptions> ADAPTER = new ProtoAdapter<MessageWithOptions>(FieldEncoding.LENGTH_DELIMITED, MessageWithOptions.class) {
-    @Override
-    public int encodedSize(MessageWithOptions value) {
-      return value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, MessageWithOptions value) throws IOException {
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public MessageWithOptions decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public MessageWithOptions redact(MessageWithOptions value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<MessageWithOptions> ADAPTER = new ProtoAdapter_MessageWithOptions();
 
   private static final long serialVersionUID = 0L;
 
@@ -91,6 +57,46 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
     @Override
     public MessageWithOptions build() {
       return new MessageWithOptions(buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_MessageWithOptions extends ProtoAdapter<MessageWithOptions> {
+    ProtoAdapter_MessageWithOptions() {
+      super(FieldEncoding.LENGTH_DELIMITED, MessageWithOptions.class);
+    }
+
+    @Override
+    public int encodedSize(MessageWithOptions value) {
+      return value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, MessageWithOptions value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public MessageWithOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public MessageWithOptions redact(MessageWithOptions value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

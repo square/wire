@@ -7,6 +7,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -15,7 +17,82 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA.Builder> {
-  public static final ProtoAdapter<RedactedCycleA> ADAPTER = new ProtoAdapter<RedactedCycleA>(FieldEncoding.LENGTH_DELIMITED, RedactedCycleA.class) {
+  public static final ProtoAdapter<RedactedCycleA> ADAPTER = new ProtoAdapter_RedactedCycleA();
+
+  private static final long serialVersionUID = 0L;
+
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.protos.redacted.RedactedCycleB#ADAPTER"
+  )
+  public final RedactedCycleB b;
+
+  public RedactedCycleA(RedactedCycleB b) {
+    this(b, ByteString.EMPTY);
+  }
+
+  public RedactedCycleA(RedactedCycleB b, ByteString unknownFields) {
+    super(unknownFields);
+    this.b = b;
+  }
+
+  @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.b = b;
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) return true;
+    if (!(other instanceof RedactedCycleA)) return false;
+    RedactedCycleA o = (RedactedCycleA) other;
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(b, o.b);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode;
+    if (result == 0) {
+      result = unknownFields().hashCode();
+      result = result * 37 + (b != null ? b.hashCode() : 0);
+      super.hashCode = result;
+    }
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (b != null) builder.append(", b=").append(b);
+    return builder.replace(0, 2, "RedactedCycleA{").append('}').toString();
+  }
+
+  public static final class Builder extends Message.Builder<RedactedCycleA, Builder> {
+    public RedactedCycleB b;
+
+    public Builder() {
+    }
+
+    public Builder b(RedactedCycleB b) {
+      this.b = b;
+      return this;
+    }
+
+    @Override
+    public RedactedCycleA build() {
+      return new RedactedCycleA(b, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_RedactedCycleA extends ProtoAdapter<RedactedCycleA> {
+    ProtoAdapter_RedactedCycleA() {
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedCycleA.class);
+    }
+
     @Override
     public int encodedSize(RedactedCycleA value) {
       return (value.b != null ? RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b) : 0)
@@ -52,71 +129,6 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
       if (builder.b != null) builder.b = RedactedCycleB.ADAPTER.redact(builder.b);
       builder.clearUnknownFields();
       return builder.build();
-    }
-  };
-
-  private static final long serialVersionUID = 0L;
-
-  public final RedactedCycleB b;
-
-  public RedactedCycleA(RedactedCycleB b) {
-    this(b, ByteString.EMPTY);
-  }
-
-  public RedactedCycleA(RedactedCycleB b, ByteString unknownFields) {
-    super(unknownFields);
-    this.b = b;
-  }
-
-  @Override
-  public Builder newBuilder() {
-    Builder builder = new Builder();
-    builder.b = b;
-    builder.addUnknownFields(unknownFields());
-    return builder;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof RedactedCycleA)) return false;
-    RedactedCycleA o = (RedactedCycleA) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(b, o.b);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode;
-    if (result == 0) {
-      result = unknownFields().hashCode();
-      result = result * 37 + (b != null ? b.hashCode() : 0);
-      super.hashCode = result;
-    }
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    if (b != null) builder.append(", b=").append(b);
-    return builder.replace(0, 2, "RedactedCycleA{").append('}').toString();
-  }
-
-  public static final class Builder extends Message.Builder<RedactedCycleA, Builder> {
-    public RedactedCycleB b;
-
-    public Builder() {
-    }
-
-    public Builder b(RedactedCycleB b) {
-      this.b = b;
-      return this;
-    }
-
-    @Override
-    public RedactedCycleA build() {
-      return new RedactedCycleA(b, buildUnknownFields());
     }
   }
 }

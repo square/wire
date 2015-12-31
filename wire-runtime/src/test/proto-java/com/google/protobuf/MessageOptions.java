@@ -7,6 +7,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import com.squareup.wire.protos.custom_options.FooBar;
 import com.squareup.wire.protos.foreign.ForeignMessage;
 import java.io.IOException;
@@ -20,90 +22,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class MessageOptions extends Message<MessageOptions, MessageOptions.Builder> {
-  public static final ProtoAdapter<MessageOptions> ADAPTER = new ProtoAdapter<MessageOptions>(FieldEncoding.LENGTH_DELIMITED, MessageOptions.class) {
-    @Override
-    public int encodedSize(MessageOptions value) {
-      return (value.message_set_wire_format != null ? ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format) : 0)
-          + (value.no_standard_descriptor_accessor != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor) : 0)
-          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
-          + (value.map_entry != null ? ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry) : 0)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + (value.my_message_option_one != null ? FooBar.ADAPTER.encodedSizeWithTag(50001, value.my_message_option_one) : 0)
-          + (value.my_message_option_two != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(50002, value.my_message_option_two) : 0)
-          + (value.my_message_option_three != null ? FooBar.ADAPTER.encodedSizeWithTag(50003, value.my_message_option_three) : 0)
-          + (value.my_message_option_four != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(50004, value.my_message_option_four) : 0)
-          + (value.my_message_option_five != null ? FooBar.ADAPTER.encodedSizeWithTag(50005, value.my_message_option_five) : 0)
-          + (value.my_message_option_six != null ? FooBar.ADAPTER.encodedSizeWithTag(50006, value.my_message_option_six) : 0)
-          + (value.foreign_message_option != null ? ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, MessageOptions value) throws IOException {
-      if (value.message_set_wire_format != null) ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.message_set_wire_format);
-      if (value.no_standard_descriptor_accessor != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.no_standard_descriptor_accessor);
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
-      if (value.map_entry != null) ProtoAdapter.BOOL.encodeWithTag(writer, 7, value.map_entry);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
-      if (value.my_message_option_one != null) FooBar.ADAPTER.encodeWithTag(writer, 50001, value.my_message_option_one);
-      if (value.my_message_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 50002, value.my_message_option_two);
-      if (value.my_message_option_three != null) FooBar.ADAPTER.encodeWithTag(writer, 50003, value.my_message_option_three);
-      if (value.my_message_option_four != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 50004, value.my_message_option_four);
-      if (value.my_message_option_five != null) FooBar.ADAPTER.encodeWithTag(writer, 50005, value.my_message_option_five);
-      if (value.my_message_option_six != null) FooBar.ADAPTER.encodeWithTag(writer, 50006, value.my_message_option_six);
-      if (value.foreign_message_option != null) ForeignMessage.ADAPTER.encodeWithTag(writer, 50007, value.foreign_message_option);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public MessageOptions decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.message_set_wire_format(ProtoAdapter.BOOL.decode(reader)); break;
-          case 2: builder.no_standard_descriptor_accessor(ProtoAdapter.BOOL.decode(reader)); break;
-          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
-          case 7: builder.map_entry(ProtoAdapter.BOOL.decode(reader)); break;
-          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
-          case 50001: builder.my_message_option_one(FooBar.ADAPTER.decode(reader)); break;
-          case 50002: builder.my_message_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 50003: builder.my_message_option_three(FooBar.ADAPTER.decode(reader)); break;
-          case 50004: {
-            try {
-              builder.my_message_option_four(FooBar.FooBarBazEnum.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 50005: builder.my_message_option_five(FooBar.ADAPTER.decode(reader)); break;
-          case 50006: builder.my_message_option_six(FooBar.ADAPTER.decode(reader)); break;
-          case 50007: builder.foreign_message_option(ForeignMessage.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public MessageOptions redact(MessageOptions value) {
-      Builder builder = value.newBuilder();
-      redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
-      if (builder.my_message_option_one != null) builder.my_message_option_one = FooBar.ADAPTER.redact(builder.my_message_option_one);
-      if (builder.my_message_option_three != null) builder.my_message_option_three = FooBar.ADAPTER.redact(builder.my_message_option_three);
-      if (builder.my_message_option_five != null) builder.my_message_option_five = FooBar.ADAPTER.redact(builder.my_message_option_five);
-      if (builder.my_message_option_six != null) builder.my_message_option_six = FooBar.ADAPTER.redact(builder.my_message_option_six);
-      if (builder.foreign_message_option != null) builder.foreign_message_option = ForeignMessage.ADAPTER.redact(builder.foreign_message_option);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<MessageOptions> ADAPTER = new ProtoAdapter_MessageOptions();
 
   private static final long serialVersionUID = 0L;
 
@@ -139,6 +58,10 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
    * Because this is an option, the above two restrictions are not enforced by
    * the protocol compiler.
    */
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean message_set_wire_format;
 
   /**
@@ -146,6 +69,10 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
    * conflict with a field of the same name.  This is meant to make migration
    * from proto1 easier; new code should avoid fields named "descriptor".
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean no_standard_descriptor_accessor;
 
   /**
@@ -154,6 +81,10 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
    * for the message, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating messages.
    */
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean deprecated;
 
   /**
@@ -179,46 +110,83 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
    * instead. The option should only be implicitly set by the proto compiler
    * parser.
    */
+  @WireField(
+      tag = 7,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
   public final Boolean map_entry;
 
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
+  @WireField(
+      tag = 999,
+      adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
    * Extension source: custom_options.proto at 55:3
    */
+  @WireField(
+      tag = 50001,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
   public final FooBar my_message_option_one;
 
   /**
    * Extension source: custom_options.proto at 56:3
    */
+  @WireField(
+      tag = 50002,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
+  )
   public final Float my_message_option_two;
 
   /**
    * Extension source: custom_options.proto at 57:3
    */
+  @WireField(
+      tag = 50003,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
   public final FooBar my_message_option_three;
 
   /**
    * Extension source: custom_options.proto at 58:3
    */
+  @WireField(
+      tag = 50004,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER"
+  )
   public final FooBar.FooBarBazEnum my_message_option_four;
 
   /**
    * Extension source: custom_options.proto at 59:3
    */
+  @WireField(
+      tag = 50005,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
   public final FooBar my_message_option_five;
 
   /**
    * Extension source: custom_options.proto at 60:3
    */
+  @WireField(
+      tag = 50006,
+      adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
+  )
   public final FooBar my_message_option_six;
 
   /**
    * Extension source: foreign.proto at 35:3
    */
+  @WireField(
+      tag = 50007,
+      adapter = "com.squareup.wire.protos.foreign.ForeignMessage#ADAPTER"
+  )
   public final ForeignMessage foreign_message_option;
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, Boolean deprecated, Boolean map_entry, List<UninterpretedOption> uninterpreted_option, FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three, FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five, FooBar my_message_option_six, ForeignMessage foreign_message_option) {
@@ -231,7 +199,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     this.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
     this.deprecated = deprecated;
     this.map_entry = map_entry;
-    this.uninterpreted_option = immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.uninterpreted_option = WireInternal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.my_message_option_one = my_message_option_one;
     this.my_message_option_two = my_message_option_two;
     this.my_message_option_three = my_message_option_three;
@@ -248,7 +216,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     builder.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
     builder.deprecated = deprecated;
     builder.map_entry = map_entry;
-    builder.uninterpreted_option = copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = WireInternal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.my_message_option_one = my_message_option_one;
     builder.my_message_option_two = my_message_option_two;
     builder.my_message_option_three = my_message_option_three;
@@ -265,19 +233,19 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     if (other == this) return true;
     if (!(other instanceof MessageOptions)) return false;
     MessageOptions o = (MessageOptions) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(message_set_wire_format, o.message_set_wire_format)
-        && equals(no_standard_descriptor_accessor, o.no_standard_descriptor_accessor)
-        && equals(deprecated, o.deprecated)
-        && equals(map_entry, o.map_entry)
-        && equals(uninterpreted_option, o.uninterpreted_option)
-        && equals(my_message_option_one, o.my_message_option_one)
-        && equals(my_message_option_two, o.my_message_option_two)
-        && equals(my_message_option_three, o.my_message_option_three)
-        && equals(my_message_option_four, o.my_message_option_four)
-        && equals(my_message_option_five, o.my_message_option_five)
-        && equals(my_message_option_six, o.my_message_option_six)
-        && equals(foreign_message_option, o.foreign_message_option);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(message_set_wire_format, o.message_set_wire_format)
+        && WireInternal.equals(no_standard_descriptor_accessor, o.no_standard_descriptor_accessor)
+        && WireInternal.equals(deprecated, o.deprecated)
+        && WireInternal.equals(map_entry, o.map_entry)
+        && WireInternal.equals(uninterpreted_option, o.uninterpreted_option)
+        && WireInternal.equals(my_message_option_one, o.my_message_option_one)
+        && WireInternal.equals(my_message_option_two, o.my_message_option_two)
+        && WireInternal.equals(my_message_option_three, o.my_message_option_three)
+        && WireInternal.equals(my_message_option_four, o.my_message_option_four)
+        && WireInternal.equals(my_message_option_five, o.my_message_option_five)
+        && WireInternal.equals(my_message_option_six, o.my_message_option_six)
+        && WireInternal.equals(foreign_message_option, o.foreign_message_option);
   }
 
   @Override
@@ -346,7 +314,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     public ForeignMessage foreign_message_option;
 
     public Builder() {
-      uninterpreted_option = newMutableList();
+      uninterpreted_option = WireInternal.newMutableList();
     }
 
     /**
@@ -427,7 +395,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      checkElementsNotNull(uninterpreted_option);
+      WireInternal.checkElementsNotNull(uninterpreted_option);
       this.uninterpreted_option = uninterpreted_option;
       return this;
     }
@@ -470,6 +438,95 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     @Override
     public MessageOptions build() {
       return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, deprecated, map_entry, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_MessageOptions extends ProtoAdapter<MessageOptions> {
+    ProtoAdapter_MessageOptions() {
+      super(FieldEncoding.LENGTH_DELIMITED, MessageOptions.class);
+    }
+
+    @Override
+    public int encodedSize(MessageOptions value) {
+      return (value.message_set_wire_format != null ? ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format) : 0)
+          + (value.no_standard_descriptor_accessor != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor) : 0)
+          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
+          + (value.map_entry != null ? ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry) : 0)
+          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
+          + (value.my_message_option_one != null ? FooBar.ADAPTER.encodedSizeWithTag(50001, value.my_message_option_one) : 0)
+          + (value.my_message_option_two != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(50002, value.my_message_option_two) : 0)
+          + (value.my_message_option_three != null ? FooBar.ADAPTER.encodedSizeWithTag(50003, value.my_message_option_three) : 0)
+          + (value.my_message_option_four != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(50004, value.my_message_option_four) : 0)
+          + (value.my_message_option_five != null ? FooBar.ADAPTER.encodedSizeWithTag(50005, value.my_message_option_five) : 0)
+          + (value.my_message_option_six != null ? FooBar.ADAPTER.encodedSizeWithTag(50006, value.my_message_option_six) : 0)
+          + (value.foreign_message_option != null ? ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, MessageOptions value) throws IOException {
+      if (value.message_set_wire_format != null) ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.message_set_wire_format);
+      if (value.no_standard_descriptor_accessor != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.no_standard_descriptor_accessor);
+      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
+      if (value.map_entry != null) ProtoAdapter.BOOL.encodeWithTag(writer, 7, value.map_entry);
+      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      if (value.my_message_option_one != null) FooBar.ADAPTER.encodeWithTag(writer, 50001, value.my_message_option_one);
+      if (value.my_message_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 50002, value.my_message_option_two);
+      if (value.my_message_option_three != null) FooBar.ADAPTER.encodeWithTag(writer, 50003, value.my_message_option_three);
+      if (value.my_message_option_four != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 50004, value.my_message_option_four);
+      if (value.my_message_option_five != null) FooBar.ADAPTER.encodeWithTag(writer, 50005, value.my_message_option_five);
+      if (value.my_message_option_six != null) FooBar.ADAPTER.encodeWithTag(writer, 50006, value.my_message_option_six);
+      if (value.foreign_message_option != null) ForeignMessage.ADAPTER.encodeWithTag(writer, 50007, value.foreign_message_option);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public MessageOptions decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.message_set_wire_format(ProtoAdapter.BOOL.decode(reader)); break;
+          case 2: builder.no_standard_descriptor_accessor(ProtoAdapter.BOOL.decode(reader)); break;
+          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
+          case 7: builder.map_entry(ProtoAdapter.BOOL.decode(reader)); break;
+          case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 50001: builder.my_message_option_one(FooBar.ADAPTER.decode(reader)); break;
+          case 50002: builder.my_message_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 50003: builder.my_message_option_three(FooBar.ADAPTER.decode(reader)); break;
+          case 50004: {
+            try {
+              builder.my_message_option_four(FooBar.FooBarBazEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 50005: builder.my_message_option_five(FooBar.ADAPTER.decode(reader)); break;
+          case 50006: builder.my_message_option_six(FooBar.ADAPTER.decode(reader)); break;
+          case 50007: builder.foreign_message_option(ForeignMessage.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public MessageOptions redact(MessageOptions value) {
+      Builder builder = value.newBuilder();
+      WireInternal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      if (builder.my_message_option_one != null) builder.my_message_option_one = FooBar.ADAPTER.redact(builder.my_message_option_one);
+      if (builder.my_message_option_three != null) builder.my_message_option_three = FooBar.ADAPTER.redact(builder.my_message_option_three);
+      if (builder.my_message_option_five != null) builder.my_message_option_five = FooBar.ADAPTER.redact(builder.my_message_option_five);
+      if (builder.my_message_option_six != null) builder.my_message_option_six = FooBar.ADAPTER.redact(builder.my_message_option_six);
+      if (builder.foreign_message_option != null) builder.foreign_message_option = ForeignMessage.ADAPTER.redact(builder.foreign_message_option);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

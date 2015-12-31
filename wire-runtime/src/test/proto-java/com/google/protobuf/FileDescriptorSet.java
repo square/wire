@@ -7,6 +7,8 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -20,7 +22,85 @@ import okio.ByteString;
  * files it parses.
  */
 public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDescriptorSet.Builder> {
-  public static final ProtoAdapter<FileDescriptorSet> ADAPTER = new ProtoAdapter<FileDescriptorSet>(FieldEncoding.LENGTH_DELIMITED, FileDescriptorSet.class) {
+  public static final ProtoAdapter<FileDescriptorSet> ADAPTER = new ProtoAdapter_FileDescriptorSet();
+
+  private static final long serialVersionUID = 0L;
+
+  @WireField(
+      tag = 1,
+      adapter = "com.google.protobuf.FileDescriptorProto#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
+  public final List<FileDescriptorProto> file;
+
+  public FileDescriptorSet(List<FileDescriptorProto> file) {
+    this(file, ByteString.EMPTY);
+  }
+
+  public FileDescriptorSet(List<FileDescriptorProto> file, ByteString unknownFields) {
+    super(unknownFields);
+    this.file = WireInternal.immutableCopyOf("file", file);
+  }
+
+  @Override
+  public Builder newBuilder() {
+    Builder builder = new Builder();
+    builder.file = WireInternal.copyOf("file", file);
+    builder.addUnknownFields(unknownFields());
+    return builder;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) return true;
+    if (!(other instanceof FileDescriptorSet)) return false;
+    FileDescriptorSet o = (FileDescriptorSet) other;
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(file, o.file);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode;
+    if (result == 0) {
+      result = unknownFields().hashCode();
+      result = result * 37 + (file != null ? file.hashCode() : 1);
+      super.hashCode = result;
+    }
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    if (file != null) builder.append(", file=").append(file);
+    return builder.replace(0, 2, "FileDescriptorSet{").append('}').toString();
+  }
+
+  public static final class Builder extends Message.Builder<FileDescriptorSet, Builder> {
+    public List<FileDescriptorProto> file;
+
+    public Builder() {
+      file = WireInternal.newMutableList();
+    }
+
+    public Builder file(List<FileDescriptorProto> file) {
+      WireInternal.checkElementsNotNull(file);
+      this.file = file;
+      return this;
+    }
+
+    @Override
+    public FileDescriptorSet build() {
+      return new FileDescriptorSet(file, buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_FileDescriptorSet extends ProtoAdapter<FileDescriptorSet> {
+    ProtoAdapter_FileDescriptorSet() {
+      super(FieldEncoding.LENGTH_DELIMITED, FileDescriptorSet.class);
+    }
+
     @Override
     public int encodedSize(FileDescriptorSet value) {
       return FileDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(1, value.file)
@@ -54,76 +134,9 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
     @Override
     public FileDescriptorSet redact(FileDescriptorSet value) {
       Builder builder = value.newBuilder();
-      redactElements(builder.file, FileDescriptorProto.ADAPTER);
+      WireInternal.redactElements(builder.file, FileDescriptorProto.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
-    }
-  };
-
-  private static final long serialVersionUID = 0L;
-
-  public final List<FileDescriptorProto> file;
-
-  public FileDescriptorSet(List<FileDescriptorProto> file) {
-    this(file, ByteString.EMPTY);
-  }
-
-  public FileDescriptorSet(List<FileDescriptorProto> file, ByteString unknownFields) {
-    super(unknownFields);
-    this.file = immutableCopyOf("file", file);
-  }
-
-  @Override
-  public Builder newBuilder() {
-    Builder builder = new Builder();
-    builder.file = copyOf("file", file);
-    builder.addUnknownFields(unknownFields());
-    return builder;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other == this) return true;
-    if (!(other instanceof FileDescriptorSet)) return false;
-    FileDescriptorSet o = (FileDescriptorSet) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(file, o.file);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode;
-    if (result == 0) {
-      result = unknownFields().hashCode();
-      result = result * 37 + (file != null ? file.hashCode() : 1);
-      super.hashCode = result;
-    }
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    if (file != null) builder.append(", file=").append(file);
-    return builder.replace(0, 2, "FileDescriptorSet{").append('}').toString();
-  }
-
-  public static final class Builder extends Message.Builder<FileDescriptorSet, Builder> {
-    public List<FileDescriptorProto> file;
-
-    public Builder() {
-      file = newMutableList();
-    }
-
-    public Builder file(List<FileDescriptorProto> file) {
-      checkElementsNotNull(file);
-      this.file = file;
-      return this;
-    }
-
-    @Override
-    public FileDescriptorSet build() {
-      return new FileDescriptorSet(file, buildUnknownFields());
     }
   }
 }

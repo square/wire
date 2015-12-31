@@ -8,6 +8,8 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireField;
+import com.squareup.wire.WireInternal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -20,83 +22,7 @@ import okio.ByteString;
  * Describes a field within a message.
  */
 public final class FieldDescriptorProto extends Message<FieldDescriptorProto, FieldDescriptorProto.Builder> {
-  public static final ProtoAdapter<FieldDescriptorProto> ADAPTER = new ProtoAdapter<FieldDescriptorProto>(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class) {
-    @Override
-    public int encodedSize(FieldDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + (value.number != null ? ProtoAdapter.INT32.encodedSizeWithTag(3, value.number) : 0)
-          + (value.label != null ? Label.ADAPTER.encodedSizeWithTag(4, value.label) : 0)
-          + (value.type != null ? Type.ADAPTER.encodedSizeWithTag(5, value.type) : 0)
-          + (value.type_name != null ? ProtoAdapter.STRING.encodedSizeWithTag(6, value.type_name) : 0)
-          + (value.extendee != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.extendee) : 0)
-          + (value.default_value != null ? ProtoAdapter.STRING.encodedSizeWithTag(7, value.default_value) : 0)
-          + (value.oneof_index != null ? ProtoAdapter.INT32.encodedSizeWithTag(9, value.oneof_index) : 0)
-          + (value.options != null ? FieldOptions.ADAPTER.encodedSizeWithTag(8, value.options) : 0)
-          + value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, FieldDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.number != null) ProtoAdapter.INT32.encodeWithTag(writer, 3, value.number);
-      if (value.label != null) Label.ADAPTER.encodeWithTag(writer, 4, value.label);
-      if (value.type != null) Type.ADAPTER.encodeWithTag(writer, 5, value.type);
-      if (value.type_name != null) ProtoAdapter.STRING.encodeWithTag(writer, 6, value.type_name);
-      if (value.extendee != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.extendee);
-      if (value.default_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 7, value.default_value);
-      if (value.oneof_index != null) ProtoAdapter.INT32.encodeWithTag(writer, 9, value.oneof_index);
-      if (value.options != null) FieldOptions.ADAPTER.encodeWithTag(writer, 8, value.options);
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public FieldDescriptorProto decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
-          case 3: builder.number(ProtoAdapter.INT32.decode(reader)); break;
-          case 4: {
-            try {
-              builder.label(Label.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 5: {
-            try {
-              builder.type(Type.ADAPTER.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
-          case 6: builder.type_name(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.extendee(ProtoAdapter.STRING.decode(reader)); break;
-          case 7: builder.default_value(ProtoAdapter.STRING.decode(reader)); break;
-          case 9: builder.oneof_index(ProtoAdapter.INT32.decode(reader)); break;
-          case 8: builder.options(FieldOptions.ADAPTER.decode(reader)); break;
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public FieldDescriptorProto redact(FieldDescriptorProto value) {
-      Builder builder = value.newBuilder();
-      if (builder.options != null) builder.options = FieldOptions.ADAPTER.redact(builder.options);
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<FieldDescriptorProto> ADAPTER = new ProtoAdapter_FieldDescriptorProto();
 
   private static final long serialVersionUID = 0L;
 
@@ -116,16 +42,32 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
   public static final Integer DEFAULT_ONEOF_INDEX = 0;
 
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String name;
 
+  @WireField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer number;
 
+  @WireField(
+      tag = 4,
+      adapter = "com.google.protobuf.FieldDescriptorProto$Label#ADAPTER"
+  )
   public final Label label;
 
   /**
    * If type_name is set, this need not be set.  If both this and type_name
    * are set, this must be one of TYPE_ENUM, TYPE_MESSAGE or TYPE_GROUP.
    */
+  @WireField(
+      tag = 5,
+      adapter = "com.google.protobuf.FieldDescriptorProto$Type#ADAPTER"
+  )
   public final Type type;
 
   /**
@@ -135,12 +77,20 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
    * message are searched, then within the parent, on up to the root
    * namespace).
    */
+  @WireField(
+      tag = 6,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String type_name;
 
   /**
    * For extensions, this is the name of the type being extended.  It is
    * resolved in the same manner as type_name.
    */
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String extendee;
 
   /**
@@ -150,14 +100,26 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
    * For bytes, contains the C escaped value.  All bytes >= 128 are escaped.
    * TODO(kenton):  Base-64 encode?
    */
+  @WireField(
+      tag = 7,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
   public final String default_value;
 
   /**
    * If set, gives the index of a oneof in the containing type's oneof_decl
    * list.  This field is a member of that oneof.
    */
+  @WireField(
+      tag = 9,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
   public final Integer oneof_index;
 
+  @WireField(
+      tag = 8,
+      adapter = "com.google.protobuf.FieldOptions#ADAPTER"
+  )
   public final FieldOptions options;
 
   public FieldDescriptorProto(String name, Integer number, Label label, Type type, String type_name, String extendee, String default_value, Integer oneof_index, FieldOptions options) {
@@ -198,16 +160,16 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     if (other == this) return true;
     if (!(other instanceof FieldDescriptorProto)) return false;
     FieldDescriptorProto o = (FieldDescriptorProto) other;
-    return equals(unknownFields(), o.unknownFields())
-        && equals(name, o.name)
-        && equals(number, o.number)
-        && equals(label, o.label)
-        && equals(type, o.type)
-        && equals(type_name, o.type_name)
-        && equals(extendee, o.extendee)
-        && equals(default_value, o.default_value)
-        && equals(oneof_index, o.oneof_index)
-        && equals(options, o.options);
+    return WireInternal.equals(unknownFields(), o.unknownFields())
+        && WireInternal.equals(name, o.name)
+        && WireInternal.equals(number, o.number)
+        && WireInternal.equals(label, o.label)
+        && WireInternal.equals(type, o.type)
+        && WireInternal.equals(type_name, o.type_name)
+        && WireInternal.equals(extendee, o.extendee)
+        && WireInternal.equals(default_value, o.default_value)
+        && WireInternal.equals(oneof_index, o.oneof_index)
+        && WireInternal.equals(options, o.options);
   }
 
   @Override
@@ -481,6 +443,88 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     @Override
     public int getValue() {
       return value;
+    }
+  }
+
+  private static final class ProtoAdapter_FieldDescriptorProto extends ProtoAdapter<FieldDescriptorProto> {
+    ProtoAdapter_FieldDescriptorProto() {
+      super(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class);
+    }
+
+    @Override
+    public int encodedSize(FieldDescriptorProto value) {
+      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+          + (value.number != null ? ProtoAdapter.INT32.encodedSizeWithTag(3, value.number) : 0)
+          + (value.label != null ? Label.ADAPTER.encodedSizeWithTag(4, value.label) : 0)
+          + (value.type != null ? Type.ADAPTER.encodedSizeWithTag(5, value.type) : 0)
+          + (value.type_name != null ? ProtoAdapter.STRING.encodedSizeWithTag(6, value.type_name) : 0)
+          + (value.extendee != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.extendee) : 0)
+          + (value.default_value != null ? ProtoAdapter.STRING.encodedSizeWithTag(7, value.default_value) : 0)
+          + (value.oneof_index != null ? ProtoAdapter.INT32.encodedSizeWithTag(9, value.oneof_index) : 0)
+          + (value.options != null ? FieldOptions.ADAPTER.encodedSizeWithTag(8, value.options) : 0)
+          + value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, FieldDescriptorProto value) throws IOException {
+      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (value.number != null) ProtoAdapter.INT32.encodeWithTag(writer, 3, value.number);
+      if (value.label != null) Label.ADAPTER.encodeWithTag(writer, 4, value.label);
+      if (value.type != null) Type.ADAPTER.encodeWithTag(writer, 5, value.type);
+      if (value.type_name != null) ProtoAdapter.STRING.encodeWithTag(writer, 6, value.type_name);
+      if (value.extendee != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.extendee);
+      if (value.default_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 7, value.default_value);
+      if (value.oneof_index != null) ProtoAdapter.INT32.encodeWithTag(writer, 9, value.oneof_index);
+      if (value.options != null) FieldOptions.ADAPTER.encodeWithTag(writer, 8, value.options);
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public FieldDescriptorProto decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 3: builder.number(ProtoAdapter.INT32.decode(reader)); break;
+          case 4: {
+            try {
+              builder.label(Label.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 5: {
+            try {
+              builder.type(Type.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
+          case 6: builder.type_name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.extendee(ProtoAdapter.STRING.decode(reader)); break;
+          case 7: builder.default_value(ProtoAdapter.STRING.decode(reader)); break;
+          case 9: builder.oneof_index(ProtoAdapter.INT32.decode(reader)); break;
+          case 8: builder.options(FieldOptions.ADAPTER.decode(reader)); break;
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public FieldDescriptorProto redact(FieldDescriptorProto value) {
+      Builder builder = value.newBuilder();
+      if (builder.options != null) builder.options = FieldOptions.ADAPTER.redact(builder.options);
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }

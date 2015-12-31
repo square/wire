@@ -15,41 +15,7 @@ import java.lang.StringBuilder;
 import okio.ByteString;
 
 public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
-  public static final ProtoAdapter<TheRequest> ADAPTER = new ProtoAdapter<TheRequest>(FieldEncoding.LENGTH_DELIMITED, TheRequest.class) {
-    @Override
-    public int encodedSize(TheRequest value) {
-      return value.unknownFields().size();
-    }
-
-    @Override
-    public void encode(ProtoWriter writer, TheRequest value) throws IOException {
-      writer.writeBytes(value.unknownFields());
-    }
-
-    @Override
-    public TheRequest decode(ProtoReader reader) throws IOException {
-      Builder builder = new Builder();
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
-          }
-        }
-      }
-      reader.endMessage(token);
-      return builder.build();
-    }
-
-    @Override
-    public TheRequest redact(TheRequest value) {
-      Builder builder = value.newBuilder();
-      builder.clearUnknownFields();
-      return builder.build();
-    }
-  };
+  public static final ProtoAdapter<TheRequest> ADAPTER = new ProtoAdapter_TheRequest();
 
   private static final long serialVersionUID = 0L;
 
@@ -91,6 +57,46 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
     @Override
     public TheRequest build() {
       return new TheRequest(buildUnknownFields());
+    }
+  }
+
+  private static final class ProtoAdapter_TheRequest extends ProtoAdapter<TheRequest> {
+    ProtoAdapter_TheRequest() {
+      super(FieldEncoding.LENGTH_DELIMITED, TheRequest.class);
+    }
+
+    @Override
+    public int encodedSize(TheRequest value) {
+      return value.unknownFields().size();
+    }
+
+    @Override
+    public void encode(ProtoWriter writer, TheRequest value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public TheRequest decode(ProtoReader reader) throws IOException {
+      Builder builder = new Builder();
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          default: {
+            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+            builder.addUnknownField(tag, fieldEncoding, value);
+          }
+        }
+      }
+      reader.endMessage(token);
+      return builder.build();
+    }
+
+    @Override
+    public TheRequest redact(TheRequest value) {
+      Builder builder = value.newBuilder();
+      builder.clearUnknownFields();
+      return builder.build();
     }
   }
 }
