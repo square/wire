@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Methods for generated code only. Not subject to public API rules. */
+/** Methods for generated code use only. Not subject to public API rules. */
 public final class WireInternal {
   private WireInternal() {
   }

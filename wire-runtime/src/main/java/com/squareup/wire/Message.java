@@ -18,6 +18,7 @@ package com.squareup.wire;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.util.List;
 import okio.Buffer;
 import okio.ByteString;
 
@@ -133,4 +134,54 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     public abstract T build();
   }
 
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static <T> List<T> newMutableList() {
+    return WireInternal.newMutableList();
+  }
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static <T> List<T> copyOf(String name, List<T> list) {
+    return WireInternal.copyOf(name, list);
+  }
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static <T> List<T> immutableCopyOf(String name, List<T> list) {
+    return WireInternal.immutableCopyOf(name, list);
+  }
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static <T> void redactElements(List<T> list, ProtoAdapter<T> adapter) {
+    WireInternal.redactElements(list, adapter);
+  }
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static boolean equals(Object a, Object b) {
+    return WireInternal.equals(a, b);
+  }
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static IllegalStateException missingRequiredFields(Object... args) {
+    return WireInternal.missingRequiredFields(args);
+  }
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static void checkElementsNotNull(List<?> list) {
+    WireInternal.checkElementsNotNull(list);
+  }
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static int countNotNull(Object a, Object b) {
+    return WireInternal.countNonNull(a, b);
+  }
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static int countNotNull(Object a, Object b, Object c) {
+    return WireInternal.countNonNull(a, b, c);
+  }
+  /** For generated code only. */
+  @Deprecated // TODO remove for 2.1.
+  public static int countNotNull(Object a, Object b, Object c, Object d, Object... rest) {
+    return WireInternal.countNonNull(a, b, c, d, rest);
+  }
 }
