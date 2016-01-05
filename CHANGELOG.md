@@ -6,6 +6,8 @@ Version 2.0.3 *(2016-01-04)*
 
  * New: `ProtoAdapter.get` overload which returns an adapter given an instance of a message.
  * New: `@Nullable` annotations are emitted for `optional` fields when using `--android`.
+ * Fix: Remove the need for `javac` to generate synthetic accessor methods in the generated code.
+   This results in smaller code size and less method references (for Android users).
 
 
 Version 2.0.2 *(2015-12-14)*
