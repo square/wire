@@ -382,13 +382,13 @@ public abstract class ProtoAdapter<E> {
     return this;
   }
 
-  /** Returns an adapter for {@link E} but as a packed, repeated value. */
+  /** Returns an adapter for {@code E} but as a packed, repeated value. */
   public final ProtoAdapter<List<E>> asPacked() {
     ProtoAdapter<List<E>> adapter = packedAdapter;
     return adapter != null ? adapter : (packedAdapter = createPacked());
   }
 
-  /** Returns an adapter for {@link E} but as a repeated value. */
+  /** Returns an adapter for {@code E} but as a repeated value. */
   public final ProtoAdapter<List<E>> asRepeated() {
     ProtoAdapter<List<E>> adapter = repeatedAdapter;
     return adapter != null ? adapter : (repeatedAdapter = createRepeated());
