@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -275,7 +275,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     this.cc_enable_arenas = cc_enable_arenas;
     this.objc_class_prefix = objc_class_prefix;
     this.csharp_namespace = csharp_namespace;
-    this.uninterpreted_option = WireInternal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
   @Override
@@ -295,7 +295,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     builder.cc_enable_arenas = cc_enable_arenas;
     builder.objc_class_prefix = objc_class_prefix;
     builder.csharp_namespace = csharp_namespace;
-    builder.uninterpreted_option = WireInternal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -305,22 +305,22 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     if (other == this) return true;
     if (!(other instanceof FileOptions)) return false;
     FileOptions o = (FileOptions) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(java_package, o.java_package)
-        && WireInternal.equals(java_outer_classname, o.java_outer_classname)
-        && WireInternal.equals(java_multiple_files, o.java_multiple_files)
-        && WireInternal.equals(java_generate_equals_and_hash, o.java_generate_equals_and_hash)
-        && WireInternal.equals(java_string_check_utf8, o.java_string_check_utf8)
-        && WireInternal.equals(optimize_for, o.optimize_for)
-        && WireInternal.equals(go_package, o.go_package)
-        && WireInternal.equals(cc_generic_services, o.cc_generic_services)
-        && WireInternal.equals(java_generic_services, o.java_generic_services)
-        && WireInternal.equals(py_generic_services, o.py_generic_services)
-        && WireInternal.equals(deprecated, o.deprecated)
-        && WireInternal.equals(cc_enable_arenas, o.cc_enable_arenas)
-        && WireInternal.equals(objc_class_prefix, o.objc_class_prefix)
-        && WireInternal.equals(csharp_namespace, o.csharp_namespace)
-        && WireInternal.equals(uninterpreted_option, o.uninterpreted_option);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(java_package, o.java_package)
+        && Internal.equals(java_outer_classname, o.java_outer_classname)
+        && Internal.equals(java_multiple_files, o.java_multiple_files)
+        && Internal.equals(java_generate_equals_and_hash, o.java_generate_equals_and_hash)
+        && Internal.equals(java_string_check_utf8, o.java_string_check_utf8)
+        && Internal.equals(optimize_for, o.optimize_for)
+        && Internal.equals(go_package, o.go_package)
+        && Internal.equals(cc_generic_services, o.cc_generic_services)
+        && Internal.equals(java_generic_services, o.java_generic_services)
+        && Internal.equals(py_generic_services, o.py_generic_services)
+        && Internal.equals(deprecated, o.deprecated)
+        && Internal.equals(cc_enable_arenas, o.cc_enable_arenas)
+        && Internal.equals(objc_class_prefix, o.objc_class_prefix)
+        && Internal.equals(csharp_namespace, o.csharp_namespace)
+        && Internal.equals(uninterpreted_option, o.uninterpreted_option);
   }
 
   @Override
@@ -401,7 +401,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
-      uninterpreted_option = WireInternal.newMutableList();
+      uninterpreted_option = Internal.newMutableList();
     }
 
     /**
@@ -555,7 +555,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      WireInternal.checkElementsNotNull(uninterpreted_option);
+      Internal.checkElementsNotNull(uninterpreted_option);
       this.uninterpreted_option = uninterpreted_option;
       return this;
     }
@@ -699,7 +699,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     @Override
     public FileOptions redact(FileOptions value) {
       Builder builder = value.newBuilder();
-      WireInternal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      Internal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

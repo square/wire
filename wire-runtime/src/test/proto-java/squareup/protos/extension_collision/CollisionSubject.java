@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -59,8 +59,8 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
     if (other == this) return true;
     if (!(other instanceof CollisionSubject)) return false;
     CollisionSubject o = (CollisionSubject) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(f, o.f);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(f, o.f);
   }
 
   @Override

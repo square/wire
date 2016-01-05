@@ -11,7 +11,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -160,11 +160,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     this.bar = bar;
     this.baz = baz;
     this.qux = qux;
-    this.fred = WireInternal.immutableCopyOf("fred", fred);
+    this.fred = Internal.immutableCopyOf("fred", fred);
     this.daisy = daisy;
-    this.nested = WireInternal.immutableCopyOf("nested", nested);
+    this.nested = Internal.immutableCopyOf("nested", nested);
     this.ext = ext;
-    this.rep = WireInternal.immutableCopyOf("rep", rep);
+    this.rep = Internal.immutableCopyOf("rep", rep);
   }
 
   @Override
@@ -174,11 +174,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     builder.bar = bar;
     builder.baz = baz;
     builder.qux = qux;
-    builder.fred = WireInternal.copyOf("fred", fred);
+    builder.fred = Internal.copyOf("fred", fred);
     builder.daisy = daisy;
-    builder.nested = WireInternal.copyOf("nested", nested);
+    builder.nested = Internal.copyOf("nested", nested);
     builder.ext = ext;
-    builder.rep = WireInternal.copyOf("rep", rep);
+    builder.rep = Internal.copyOf("rep", rep);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -188,16 +188,16 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     if (other == this) return true;
     if (!(other instanceof FooBar)) return false;
     FooBar o = (FooBar) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(foo, o.foo)
-        && WireInternal.equals(bar, o.bar)
-        && WireInternal.equals(baz, o.baz)
-        && WireInternal.equals(qux, o.qux)
-        && WireInternal.equals(fred, o.fred)
-        && WireInternal.equals(daisy, o.daisy)
-        && WireInternal.equals(nested, o.nested)
-        && WireInternal.equals(ext, o.ext)
-        && WireInternal.equals(rep, o.rep);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(foo, o.foo)
+        && Internal.equals(bar, o.bar)
+        && Internal.equals(baz, o.baz)
+        && Internal.equals(qux, o.qux)
+        && Internal.equals(fred, o.fred)
+        && Internal.equals(daisy, o.daisy)
+        && Internal.equals(nested, o.nested)
+        && Internal.equals(ext, o.ext)
+        && Internal.equals(rep, o.rep);
   }
 
   @Override
@@ -254,9 +254,9 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     public List<FooBarBazEnum> rep;
 
     public Builder() {
-      fred = WireInternal.newMutableList();
-      nested = WireInternal.newMutableList();
-      rep = WireInternal.newMutableList();
+      fred = Internal.newMutableList();
+      nested = Internal.newMutableList();
+      rep = Internal.newMutableList();
     }
 
     public Builder foo(Integer foo) {
@@ -280,7 +280,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
 
     public Builder fred(List<Float> fred) {
-      WireInternal.checkElementsNotNull(fred);
+      Internal.checkElementsNotNull(fred);
       this.fred = fred;
       return this;
     }
@@ -291,7 +291,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
 
     public Builder nested(List<FooBar> nested) {
-      WireInternal.checkElementsNotNull(nested);
+      Internal.checkElementsNotNull(nested);
       this.nested = nested;
       return this;
     }
@@ -302,7 +302,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
 
     public Builder rep(List<FooBarBazEnum> rep) {
-      WireInternal.checkElementsNotNull(rep);
+      Internal.checkElementsNotNull(rep);
       this.rep = rep;
       return this;
     }
@@ -348,8 +348,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       if (other == this) return true;
       if (!(other instanceof Nested)) return false;
       Nested o = (Nested) other;
-      return WireInternal.equals(unknownFields(), o.unknownFields())
-          && WireInternal.equals(value, o.value);
+      return Internal.equals(unknownFields(), o.unknownFields())
+          && Internal.equals(value, o.value);
     }
 
     @Override
@@ -456,13 +456,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     public More(List<Integer> serial, ByteString unknownFields) {
       super(unknownFields);
-      this.serial = WireInternal.immutableCopyOf("serial", serial);
+      this.serial = Internal.immutableCopyOf("serial", serial);
     }
 
     @Override
     public Builder newBuilder() {
       Builder builder = new Builder();
-      builder.serial = WireInternal.copyOf("serial", serial);
+      builder.serial = Internal.copyOf("serial", serial);
       builder.addUnknownFields(unknownFields());
       return builder;
     }
@@ -472,8 +472,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       if (other == this) return true;
       if (!(other instanceof More)) return false;
       More o = (More) other;
-      return WireInternal.equals(unknownFields(), o.unknownFields())
-          && WireInternal.equals(serial, o.serial);
+      return Internal.equals(unknownFields(), o.unknownFields())
+          && Internal.equals(serial, o.serial);
     }
 
     @Override
@@ -498,11 +498,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       public List<Integer> serial;
 
       public Builder() {
-        serial = WireInternal.newMutableList();
+        serial = Internal.newMutableList();
       }
 
       public Builder serial(List<Integer> serial) {
-        WireInternal.checkElementsNotNull(serial);
+        Internal.checkElementsNotNull(serial);
         this.serial = serial;
         return this;
       }
@@ -684,7 +684,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     public FooBar redact(FooBar value) {
       Builder builder = value.newBuilder();
       if (builder.baz != null) builder.baz = Nested.ADAPTER.redact(builder.baz);
-      WireInternal.redactElements(builder.nested, FooBar.ADAPTER);
+      Internal.redactElements(builder.nested, FooBar.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

@@ -8,7 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -53,7 +53,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   public EnumDescriptorProto(String name, List<EnumValueDescriptorProto> value, EnumOptions options, ByteString unknownFields) {
     super(unknownFields);
     this.name = name;
-    this.value = WireInternal.immutableCopyOf("value", value);
+    this.value = Internal.immutableCopyOf("value", value);
     this.options = options;
   }
 
@@ -61,7 +61,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.name = name;
-    builder.value = WireInternal.copyOf("value", value);
+    builder.value = Internal.copyOf("value", value);
     builder.options = options;
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -72,10 +72,10 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     if (other == this) return true;
     if (!(other instanceof EnumDescriptorProto)) return false;
     EnumDescriptorProto o = (EnumDescriptorProto) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(name, o.name)
-        && WireInternal.equals(value, o.value)
-        && WireInternal.equals(options, o.options);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(name, o.name)
+        && Internal.equals(value, o.value)
+        && Internal.equals(options, o.options);
   }
 
   @Override
@@ -108,7 +108,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     public EnumOptions options;
 
     public Builder() {
-      value = WireInternal.newMutableList();
+      value = Internal.newMutableList();
     }
 
     public Builder name(String name) {
@@ -117,7 +117,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     }
 
     public Builder value(List<EnumValueDescriptorProto> value) {
-      WireInternal.checkElementsNotNull(value);
+      Internal.checkElementsNotNull(value);
       this.value = value;
       return this;
     }
@@ -177,7 +177,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     @Override
     public EnumDescriptorProto redact(EnumDescriptorProto value) {
       Builder builder = value.newBuilder();
-      WireInternal.redactElements(builder.value, EnumValueDescriptorProto.ADAPTER);
+      Internal.redactElements(builder.value, EnumValueDescriptorProto.ADAPTER);
       if (builder.options != null) builder.options = EnumOptions.ADAPTER.redact(builder.options);
       builder.clearUnknownFields();
       return builder.build();

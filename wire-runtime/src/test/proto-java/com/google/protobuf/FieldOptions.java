@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import com.squareup.wire.protos.custom_options.FooBar;
 import java.io.IOException;
 import java.lang.Boolean;
@@ -258,7 +258,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     this.lazy = lazy;
     this.deprecated = deprecated;
     this.weak = weak;
-    this.uninterpreted_option = WireInternal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.my_field_option_one = my_field_option_one;
     this.my_field_option_two = my_field_option_two;
     this.my_field_option_three = my_field_option_three;
@@ -279,7 +279,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     builder.lazy = lazy;
     builder.deprecated = deprecated;
     builder.weak = weak;
-    builder.uninterpreted_option = WireInternal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.my_field_option_one = my_field_option_one;
     builder.my_field_option_two = my_field_option_two;
     builder.my_field_option_three = my_field_option_three;
@@ -298,23 +298,23 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     if (other == this) return true;
     if (!(other instanceof FieldOptions)) return false;
     FieldOptions o = (FieldOptions) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(ctype, o.ctype)
-        && WireInternal.equals(packed, o.packed)
-        && WireInternal.equals(jstype, o.jstype)
-        && WireInternal.equals(lazy, o.lazy)
-        && WireInternal.equals(deprecated, o.deprecated)
-        && WireInternal.equals(weak, o.weak)
-        && WireInternal.equals(uninterpreted_option, o.uninterpreted_option)
-        && WireInternal.equals(my_field_option_one, o.my_field_option_one)
-        && WireInternal.equals(my_field_option_two, o.my_field_option_two)
-        && WireInternal.equals(my_field_option_three, o.my_field_option_three)
-        && WireInternal.equals(my_field_option_four, o.my_field_option_four)
-        && WireInternal.equals(squareup_protos_extension_collision_1_a, o.squareup_protos_extension_collision_1_a)
-        && WireInternal.equals(b, o.b)
-        && WireInternal.equals(squareup_protos_extension_collision_2_a, o.squareup_protos_extension_collision_2_a)
-        && WireInternal.equals(c, o.c)
-        && WireInternal.equals(redacted, o.redacted);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(ctype, o.ctype)
+        && Internal.equals(packed, o.packed)
+        && Internal.equals(jstype, o.jstype)
+        && Internal.equals(lazy, o.lazy)
+        && Internal.equals(deprecated, o.deprecated)
+        && Internal.equals(weak, o.weak)
+        && Internal.equals(uninterpreted_option, o.uninterpreted_option)
+        && Internal.equals(my_field_option_one, o.my_field_option_one)
+        && Internal.equals(my_field_option_two, o.my_field_option_two)
+        && Internal.equals(my_field_option_three, o.my_field_option_three)
+        && Internal.equals(my_field_option_four, o.my_field_option_four)
+        && Internal.equals(squareup_protos_extension_collision_1_a, o.squareup_protos_extension_collision_1_a)
+        && Internal.equals(b, o.b)
+        && Internal.equals(squareup_protos_extension_collision_2_a, o.squareup_protos_extension_collision_2_a)
+        && Internal.equals(c, o.c)
+        && Internal.equals(redacted, o.redacted);
   }
 
   @Override
@@ -399,7 +399,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     public Boolean redacted;
 
     public Builder() {
-      uninterpreted_option = WireInternal.newMutableList();
+      uninterpreted_option = Internal.newMutableList();
     }
 
     /**
@@ -499,7 +499,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      WireInternal.checkElementsNotNull(uninterpreted_option);
+      Internal.checkElementsNotNull(uninterpreted_option);
       this.uninterpreted_option = uninterpreted_option;
       return this;
     }
@@ -740,7 +740,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     @Override
     public FieldOptions redact(FieldOptions value) {
       Builder builder = value.newBuilder();
-      WireInternal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      Internal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
       if (builder.my_field_option_four != null) builder.my_field_option_four = FooBar.ADAPTER.redact(builder.my_field_option_four);
       builder.clearUnknownFields();
       return builder.build();

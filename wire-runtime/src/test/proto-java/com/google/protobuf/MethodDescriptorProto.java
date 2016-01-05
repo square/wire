@@ -8,7 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -113,13 +113,13 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
     if (other == this) return true;
     if (!(other instanceof MethodDescriptorProto)) return false;
     MethodDescriptorProto o = (MethodDescriptorProto) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(name, o.name)
-        && WireInternal.equals(input_type, o.input_type)
-        && WireInternal.equals(output_type, o.output_type)
-        && WireInternal.equals(options, o.options)
-        && WireInternal.equals(client_streaming, o.client_streaming)
-        && WireInternal.equals(server_streaming, o.server_streaming);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(name, o.name)
+        && Internal.equals(input_type, o.input_type)
+        && Internal.equals(output_type, o.output_type)
+        && Internal.equals(options, o.options)
+        && Internal.equals(client_streaming, o.client_streaming)
+        && Internal.equals(server_streaming, o.server_streaming);
   }
 
   @Override

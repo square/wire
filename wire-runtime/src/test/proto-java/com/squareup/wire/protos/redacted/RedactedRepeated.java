@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -52,15 +52,15 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
 
   public RedactedRepeated(List<String> a, List<Redacted> b, ByteString unknownFields) {
     super(unknownFields);
-    this.a = WireInternal.immutableCopyOf("a", a);
-    this.b = WireInternal.immutableCopyOf("b", b);
+    this.a = Internal.immutableCopyOf("a", a);
+    this.b = Internal.immutableCopyOf("b", b);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.a = WireInternal.copyOf("a", a);
-    builder.b = WireInternal.copyOf("b", b);
+    builder.a = Internal.copyOf("a", a);
+    builder.b = Internal.copyOf("b", b);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -70,9 +70,9 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     if (other == this) return true;
     if (!(other instanceof RedactedRepeated)) return false;
     RedactedRepeated o = (RedactedRepeated) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(a, o.a)
-        && WireInternal.equals(b, o.b);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(a, o.a)
+        && Internal.equals(b, o.b);
   }
 
   @Override
@@ -101,12 +101,12 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     public List<Redacted> b;
 
     public Builder() {
-      a = WireInternal.newMutableList();
-      b = WireInternal.newMutableList();
+      a = Internal.newMutableList();
+      b = Internal.newMutableList();
     }
 
     public Builder a(List<String> a) {
-      WireInternal.checkElementsNotNull(a);
+      Internal.checkElementsNotNull(a);
       this.a = a;
       return this;
     }
@@ -115,7 +115,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
      * Values in the repeated type need redacting.
      */
     public Builder b(List<Redacted> b) {
-      WireInternal.checkElementsNotNull(b);
+      Internal.checkElementsNotNull(b);
       this.b = b;
       return this;
     }
@@ -168,7 +168,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     public RedactedRepeated redact(RedactedRepeated value) {
       Builder builder = value.newBuilder();
       builder.a = Collections.emptyList();
-      WireInternal.redactElements(builder.b, Redacted.ADAPTER);
+      Internal.redactElements(builder.b, Redacted.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

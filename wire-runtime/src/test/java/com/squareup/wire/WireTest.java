@@ -348,7 +348,11 @@ public class WireTest {
         .id(1)
         .name("Joe Schmoe")
         .build();
-    assertThat(personWithPhone.phone).isInstanceOf(ImmutableList.class);
+    try {
+      personWithPhone.phone.set(0, null);
+      fail();
+    } catch (UnsupportedOperationException expected) {
+    }
     assertThat(personNoPhone.phone).isSameAs(Collections.emptyList());
 
     // Round-trip these instances through the builder and ensure the lists are the same instances.

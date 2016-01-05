@@ -8,7 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -65,9 +65,9 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
     if (other == this) return true;
     if (!(other instanceof ForeignMessage)) return false;
     ForeignMessage o = (ForeignMessage) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(i, o.i)
-        && WireInternal.equals(j, o.j);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(i, o.i)
+        && Internal.equals(j, o.j);
   }
 
   @Override

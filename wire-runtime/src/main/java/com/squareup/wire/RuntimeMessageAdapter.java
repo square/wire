@@ -15,6 +15,7 @@
  */
 package com.squareup.wire;
 
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -126,7 +127,7 @@ final class RuntimeMessageAdapter<M extends Message<M, B>, B extends Builder<M, 
         List<Object> values = (List<Object>) fieldBinding.getFromBuilder(builder);
         //noinspection unchecked
         ProtoAdapter<Object> adapter = (ProtoAdapter<Object>) fieldBinding.singleAdapter();
-        WireInternal.redactElements(values, adapter);
+        Internal.redactElements(values, adapter);
       }
     }
     builder.clearUnknownFields();
