@@ -8,7 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
@@ -61,7 +61,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
 
   public OneOfMessage(Integer foo, String bar, String baz, ByteString unknownFields) {
     super(unknownFields);
-    if (WireInternal.countNonNull(foo, bar, baz) > 1) {
+    if (Internal.countNonNull(foo, bar, baz) > 1) {
       throw new IllegalArgumentException("at most one of foo, bar, baz may be non-null");
     }
     this.foo = foo;
@@ -84,10 +84,10 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     if (other == this) return true;
     if (!(other instanceof OneOfMessage)) return false;
     OneOfMessage o = (OneOfMessage) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(foo, o.foo)
-        && WireInternal.equals(bar, o.bar)
-        && WireInternal.equals(baz, o.baz);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(foo, o.foo)
+        && Internal.equals(bar, o.bar)
+        && Internal.equals(baz, o.baz);
   }
 
   @Override

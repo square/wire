@@ -8,7 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -98,7 +98,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
   public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value, ByteString unknownFields) {
     super(unknownFields);
-    this.name = WireInternal.immutableCopyOf("name", name);
+    this.name = Internal.immutableCopyOf("name", name);
     this.identifier_value = identifier_value;
     this.positive_int_value = positive_int_value;
     this.negative_int_value = negative_int_value;
@@ -110,7 +110,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.name = WireInternal.copyOf("name", name);
+    builder.name = Internal.copyOf("name", name);
     builder.identifier_value = identifier_value;
     builder.positive_int_value = positive_int_value;
     builder.negative_int_value = negative_int_value;
@@ -126,14 +126,14 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     if (other == this) return true;
     if (!(other instanceof UninterpretedOption)) return false;
     UninterpretedOption o = (UninterpretedOption) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(name, o.name)
-        && WireInternal.equals(identifier_value, o.identifier_value)
-        && WireInternal.equals(positive_int_value, o.positive_int_value)
-        && WireInternal.equals(negative_int_value, o.negative_int_value)
-        && WireInternal.equals(double_value, o.double_value)
-        && WireInternal.equals(string_value, o.string_value)
-        && WireInternal.equals(aggregate_value, o.aggregate_value);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(name, o.name)
+        && Internal.equals(identifier_value, o.identifier_value)
+        && Internal.equals(positive_int_value, o.positive_int_value)
+        && Internal.equals(negative_int_value, o.negative_int_value)
+        && Internal.equals(double_value, o.double_value)
+        && Internal.equals(string_value, o.string_value)
+        && Internal.equals(aggregate_value, o.aggregate_value);
   }
 
   @Override
@@ -182,11 +182,11 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     public String aggregate_value;
 
     public Builder() {
-      name = WireInternal.newMutableList();
+      name = Internal.newMutableList();
     }
 
     public Builder name(List<NamePart> name) {
-      WireInternal.checkElementsNotNull(name);
+      Internal.checkElementsNotNull(name);
       this.name = name;
       return this;
     }
@@ -285,9 +285,9 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       if (other == this) return true;
       if (!(other instanceof NamePart)) return false;
       NamePart o = (NamePart) other;
-      return WireInternal.equals(unknownFields(), o.unknownFields())
-          && WireInternal.equals(name_part, o.name_part)
-          && WireInternal.equals(is_extension, o.is_extension);
+      return Internal.equals(unknownFields(), o.unknownFields())
+          && Internal.equals(name_part, o.name_part)
+          && Internal.equals(is_extension, o.is_extension);
     }
 
     @Override
@@ -332,7 +332,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       public NamePart build() {
         if (name_part == null
             || is_extension == null) {
-          throw WireInternal.missingRequiredFields(name_part, "name_part",
+          throw Internal.missingRequiredFields(name_part, "name_part",
               is_extension, "is_extension");
         }
         return new NamePart(name_part, is_extension, buildUnknownFields());
@@ -442,7 +442,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     @Override
     public UninterpretedOption redact(UninterpretedOption value) {
       Builder builder = value.newBuilder();
-      WireInternal.redactElements(builder.name, NamePart.ADAPTER);
+      Internal.redactElements(builder.name, NamePart.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

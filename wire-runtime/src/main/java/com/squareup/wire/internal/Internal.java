@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire.internal;
 
+import com.squareup.wire.ProtoAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /** Methods for generated code use only. Not subject to public API rules. */
-public final class WireInternal {
-  private WireInternal() {
+public final class Internal {
+  private Internal() {
   }
 
   public static <T> List<T> newMutableList() {

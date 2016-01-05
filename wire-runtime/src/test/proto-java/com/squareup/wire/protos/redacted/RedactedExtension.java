@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -67,9 +67,9 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
     if (other == this) return true;
     if (!(other instanceof RedactedExtension)) return false;
     RedactedExtension o = (RedactedExtension) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(d, o.d)
-        && WireInternal.equals(e, o.e);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(d, o.d)
+        && Internal.equals(e, o.e);
   }
 
   @Override

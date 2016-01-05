@@ -8,7 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -35,13 +35,13 @@ public final class Foos extends Message<Foos, Foos.Builder> {
 
   public Foos(List<Foo> foos, ByteString unknownFields) {
     super(unknownFields);
-    this.foos = WireInternal.immutableCopyOf("foos", foos);
+    this.foos = Internal.immutableCopyOf("foos", foos);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.foos = WireInternal.copyOf("foos", foos);
+    builder.foos = Internal.copyOf("foos", foos);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -51,8 +51,8 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     if (other == this) return true;
     if (!(other instanceof Foos)) return false;
     Foos o = (Foos) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(foos, o.foos);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(foos, o.foos);
   }
 
   @Override
@@ -77,11 +77,11 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     public List<Foo> foos;
 
     public Builder() {
-      foos = WireInternal.newMutableList();
+      foos = Internal.newMutableList();
     }
 
     public Builder foos(List<Foo> foos) {
-      WireInternal.checkElementsNotNull(foos);
+      Internal.checkElementsNotNull(foos);
       this.foos = foos;
       return this;
     }
@@ -130,7 +130,7 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     @Override
     public Foos redact(Foos value) {
       Builder builder = value.newBuilder();
-      WireInternal.redactElements(builder.foos, Foo.ADAPTER);
+      Internal.redactElements(builder.foos, Foo.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

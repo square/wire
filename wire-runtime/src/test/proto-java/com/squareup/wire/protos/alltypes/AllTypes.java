@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -1194,37 +1194,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.req_bytes = req_bytes;
     this.req_nested_enum = req_nested_enum;
     this.req_nested_message = req_nested_message;
-    this.rep_int32 = WireInternal.immutableCopyOf("rep_int32", rep_int32);
-    this.rep_uint32 = WireInternal.immutableCopyOf("rep_uint32", rep_uint32);
-    this.rep_sint32 = WireInternal.immutableCopyOf("rep_sint32", rep_sint32);
-    this.rep_fixed32 = WireInternal.immutableCopyOf("rep_fixed32", rep_fixed32);
-    this.rep_sfixed32 = WireInternal.immutableCopyOf("rep_sfixed32", rep_sfixed32);
-    this.rep_int64 = WireInternal.immutableCopyOf("rep_int64", rep_int64);
-    this.rep_uint64 = WireInternal.immutableCopyOf("rep_uint64", rep_uint64);
-    this.rep_sint64 = WireInternal.immutableCopyOf("rep_sint64", rep_sint64);
-    this.rep_fixed64 = WireInternal.immutableCopyOf("rep_fixed64", rep_fixed64);
-    this.rep_sfixed64 = WireInternal.immutableCopyOf("rep_sfixed64", rep_sfixed64);
-    this.rep_bool = WireInternal.immutableCopyOf("rep_bool", rep_bool);
-    this.rep_float = WireInternal.immutableCopyOf("rep_float", rep_float);
-    this.rep_double = WireInternal.immutableCopyOf("rep_double", rep_double);
-    this.rep_string = WireInternal.immutableCopyOf("rep_string", rep_string);
-    this.rep_bytes = WireInternal.immutableCopyOf("rep_bytes", rep_bytes);
-    this.rep_nested_enum = WireInternal.immutableCopyOf("rep_nested_enum", rep_nested_enum);
-    this.rep_nested_message = WireInternal.immutableCopyOf("rep_nested_message", rep_nested_message);
-    this.pack_int32 = WireInternal.immutableCopyOf("pack_int32", pack_int32);
-    this.pack_uint32 = WireInternal.immutableCopyOf("pack_uint32", pack_uint32);
-    this.pack_sint32 = WireInternal.immutableCopyOf("pack_sint32", pack_sint32);
-    this.pack_fixed32 = WireInternal.immutableCopyOf("pack_fixed32", pack_fixed32);
-    this.pack_sfixed32 = WireInternal.immutableCopyOf("pack_sfixed32", pack_sfixed32);
-    this.pack_int64 = WireInternal.immutableCopyOf("pack_int64", pack_int64);
-    this.pack_uint64 = WireInternal.immutableCopyOf("pack_uint64", pack_uint64);
-    this.pack_sint64 = WireInternal.immutableCopyOf("pack_sint64", pack_sint64);
-    this.pack_fixed64 = WireInternal.immutableCopyOf("pack_fixed64", pack_fixed64);
-    this.pack_sfixed64 = WireInternal.immutableCopyOf("pack_sfixed64", pack_sfixed64);
-    this.pack_bool = WireInternal.immutableCopyOf("pack_bool", pack_bool);
-    this.pack_float = WireInternal.immutableCopyOf("pack_float", pack_float);
-    this.pack_double = WireInternal.immutableCopyOf("pack_double", pack_double);
-    this.pack_nested_enum = WireInternal.immutableCopyOf("pack_nested_enum", pack_nested_enum);
+    this.rep_int32 = Internal.immutableCopyOf("rep_int32", rep_int32);
+    this.rep_uint32 = Internal.immutableCopyOf("rep_uint32", rep_uint32);
+    this.rep_sint32 = Internal.immutableCopyOf("rep_sint32", rep_sint32);
+    this.rep_fixed32 = Internal.immutableCopyOf("rep_fixed32", rep_fixed32);
+    this.rep_sfixed32 = Internal.immutableCopyOf("rep_sfixed32", rep_sfixed32);
+    this.rep_int64 = Internal.immutableCopyOf("rep_int64", rep_int64);
+    this.rep_uint64 = Internal.immutableCopyOf("rep_uint64", rep_uint64);
+    this.rep_sint64 = Internal.immutableCopyOf("rep_sint64", rep_sint64);
+    this.rep_fixed64 = Internal.immutableCopyOf("rep_fixed64", rep_fixed64);
+    this.rep_sfixed64 = Internal.immutableCopyOf("rep_sfixed64", rep_sfixed64);
+    this.rep_bool = Internal.immutableCopyOf("rep_bool", rep_bool);
+    this.rep_float = Internal.immutableCopyOf("rep_float", rep_float);
+    this.rep_double = Internal.immutableCopyOf("rep_double", rep_double);
+    this.rep_string = Internal.immutableCopyOf("rep_string", rep_string);
+    this.rep_bytes = Internal.immutableCopyOf("rep_bytes", rep_bytes);
+    this.rep_nested_enum = Internal.immutableCopyOf("rep_nested_enum", rep_nested_enum);
+    this.rep_nested_message = Internal.immutableCopyOf("rep_nested_message", rep_nested_message);
+    this.pack_int32 = Internal.immutableCopyOf("pack_int32", pack_int32);
+    this.pack_uint32 = Internal.immutableCopyOf("pack_uint32", pack_uint32);
+    this.pack_sint32 = Internal.immutableCopyOf("pack_sint32", pack_sint32);
+    this.pack_fixed32 = Internal.immutableCopyOf("pack_fixed32", pack_fixed32);
+    this.pack_sfixed32 = Internal.immutableCopyOf("pack_sfixed32", pack_sfixed32);
+    this.pack_int64 = Internal.immutableCopyOf("pack_int64", pack_int64);
+    this.pack_uint64 = Internal.immutableCopyOf("pack_uint64", pack_uint64);
+    this.pack_sint64 = Internal.immutableCopyOf("pack_sint64", pack_sint64);
+    this.pack_fixed64 = Internal.immutableCopyOf("pack_fixed64", pack_fixed64);
+    this.pack_sfixed64 = Internal.immutableCopyOf("pack_sfixed64", pack_sfixed64);
+    this.pack_bool = Internal.immutableCopyOf("pack_bool", pack_bool);
+    this.pack_float = Internal.immutableCopyOf("pack_float", pack_float);
+    this.pack_double = Internal.immutableCopyOf("pack_double", pack_double);
+    this.pack_nested_enum = Internal.immutableCopyOf("pack_nested_enum", pack_nested_enum);
     this.default_int32 = default_int32;
     this.default_uint32 = default_uint32;
     this.default_sint32 = default_sint32;
@@ -1258,37 +1258,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.ext_opt_bytes = ext_opt_bytes;
     this.ext_opt_nested_enum = ext_opt_nested_enum;
     this.ext_opt_nested_message = ext_opt_nested_message;
-    this.ext_rep_int32 = WireInternal.immutableCopyOf("ext_rep_int32", ext_rep_int32);
-    this.ext_rep_uint32 = WireInternal.immutableCopyOf("ext_rep_uint32", ext_rep_uint32);
-    this.ext_rep_sint32 = WireInternal.immutableCopyOf("ext_rep_sint32", ext_rep_sint32);
-    this.ext_rep_fixed32 = WireInternal.immutableCopyOf("ext_rep_fixed32", ext_rep_fixed32);
-    this.ext_rep_sfixed32 = WireInternal.immutableCopyOf("ext_rep_sfixed32", ext_rep_sfixed32);
-    this.ext_rep_int64 = WireInternal.immutableCopyOf("ext_rep_int64", ext_rep_int64);
-    this.ext_rep_uint64 = WireInternal.immutableCopyOf("ext_rep_uint64", ext_rep_uint64);
-    this.ext_rep_sint64 = WireInternal.immutableCopyOf("ext_rep_sint64", ext_rep_sint64);
-    this.ext_rep_fixed64 = WireInternal.immutableCopyOf("ext_rep_fixed64", ext_rep_fixed64);
-    this.ext_rep_sfixed64 = WireInternal.immutableCopyOf("ext_rep_sfixed64", ext_rep_sfixed64);
-    this.ext_rep_bool = WireInternal.immutableCopyOf("ext_rep_bool", ext_rep_bool);
-    this.ext_rep_float = WireInternal.immutableCopyOf("ext_rep_float", ext_rep_float);
-    this.ext_rep_double = WireInternal.immutableCopyOf("ext_rep_double", ext_rep_double);
-    this.ext_rep_string = WireInternal.immutableCopyOf("ext_rep_string", ext_rep_string);
-    this.ext_rep_bytes = WireInternal.immutableCopyOf("ext_rep_bytes", ext_rep_bytes);
-    this.ext_rep_nested_enum = WireInternal.immutableCopyOf("ext_rep_nested_enum", ext_rep_nested_enum);
-    this.ext_rep_nested_message = WireInternal.immutableCopyOf("ext_rep_nested_message", ext_rep_nested_message);
-    this.ext_pack_int32 = WireInternal.immutableCopyOf("ext_pack_int32", ext_pack_int32);
-    this.ext_pack_uint32 = WireInternal.immutableCopyOf("ext_pack_uint32", ext_pack_uint32);
-    this.ext_pack_sint32 = WireInternal.immutableCopyOf("ext_pack_sint32", ext_pack_sint32);
-    this.ext_pack_fixed32 = WireInternal.immutableCopyOf("ext_pack_fixed32", ext_pack_fixed32);
-    this.ext_pack_sfixed32 = WireInternal.immutableCopyOf("ext_pack_sfixed32", ext_pack_sfixed32);
-    this.ext_pack_int64 = WireInternal.immutableCopyOf("ext_pack_int64", ext_pack_int64);
-    this.ext_pack_uint64 = WireInternal.immutableCopyOf("ext_pack_uint64", ext_pack_uint64);
-    this.ext_pack_sint64 = WireInternal.immutableCopyOf("ext_pack_sint64", ext_pack_sint64);
-    this.ext_pack_fixed64 = WireInternal.immutableCopyOf("ext_pack_fixed64", ext_pack_fixed64);
-    this.ext_pack_sfixed64 = WireInternal.immutableCopyOf("ext_pack_sfixed64", ext_pack_sfixed64);
-    this.ext_pack_bool = WireInternal.immutableCopyOf("ext_pack_bool", ext_pack_bool);
-    this.ext_pack_float = WireInternal.immutableCopyOf("ext_pack_float", ext_pack_float);
-    this.ext_pack_double = WireInternal.immutableCopyOf("ext_pack_double", ext_pack_double);
-    this.ext_pack_nested_enum = WireInternal.immutableCopyOf("ext_pack_nested_enum", ext_pack_nested_enum);
+    this.ext_rep_int32 = Internal.immutableCopyOf("ext_rep_int32", ext_rep_int32);
+    this.ext_rep_uint32 = Internal.immutableCopyOf("ext_rep_uint32", ext_rep_uint32);
+    this.ext_rep_sint32 = Internal.immutableCopyOf("ext_rep_sint32", ext_rep_sint32);
+    this.ext_rep_fixed32 = Internal.immutableCopyOf("ext_rep_fixed32", ext_rep_fixed32);
+    this.ext_rep_sfixed32 = Internal.immutableCopyOf("ext_rep_sfixed32", ext_rep_sfixed32);
+    this.ext_rep_int64 = Internal.immutableCopyOf("ext_rep_int64", ext_rep_int64);
+    this.ext_rep_uint64 = Internal.immutableCopyOf("ext_rep_uint64", ext_rep_uint64);
+    this.ext_rep_sint64 = Internal.immutableCopyOf("ext_rep_sint64", ext_rep_sint64);
+    this.ext_rep_fixed64 = Internal.immutableCopyOf("ext_rep_fixed64", ext_rep_fixed64);
+    this.ext_rep_sfixed64 = Internal.immutableCopyOf("ext_rep_sfixed64", ext_rep_sfixed64);
+    this.ext_rep_bool = Internal.immutableCopyOf("ext_rep_bool", ext_rep_bool);
+    this.ext_rep_float = Internal.immutableCopyOf("ext_rep_float", ext_rep_float);
+    this.ext_rep_double = Internal.immutableCopyOf("ext_rep_double", ext_rep_double);
+    this.ext_rep_string = Internal.immutableCopyOf("ext_rep_string", ext_rep_string);
+    this.ext_rep_bytes = Internal.immutableCopyOf("ext_rep_bytes", ext_rep_bytes);
+    this.ext_rep_nested_enum = Internal.immutableCopyOf("ext_rep_nested_enum", ext_rep_nested_enum);
+    this.ext_rep_nested_message = Internal.immutableCopyOf("ext_rep_nested_message", ext_rep_nested_message);
+    this.ext_pack_int32 = Internal.immutableCopyOf("ext_pack_int32", ext_pack_int32);
+    this.ext_pack_uint32 = Internal.immutableCopyOf("ext_pack_uint32", ext_pack_uint32);
+    this.ext_pack_sint32 = Internal.immutableCopyOf("ext_pack_sint32", ext_pack_sint32);
+    this.ext_pack_fixed32 = Internal.immutableCopyOf("ext_pack_fixed32", ext_pack_fixed32);
+    this.ext_pack_sfixed32 = Internal.immutableCopyOf("ext_pack_sfixed32", ext_pack_sfixed32);
+    this.ext_pack_int64 = Internal.immutableCopyOf("ext_pack_int64", ext_pack_int64);
+    this.ext_pack_uint64 = Internal.immutableCopyOf("ext_pack_uint64", ext_pack_uint64);
+    this.ext_pack_sint64 = Internal.immutableCopyOf("ext_pack_sint64", ext_pack_sint64);
+    this.ext_pack_fixed64 = Internal.immutableCopyOf("ext_pack_fixed64", ext_pack_fixed64);
+    this.ext_pack_sfixed64 = Internal.immutableCopyOf("ext_pack_sfixed64", ext_pack_sfixed64);
+    this.ext_pack_bool = Internal.immutableCopyOf("ext_pack_bool", ext_pack_bool);
+    this.ext_pack_float = Internal.immutableCopyOf("ext_pack_float", ext_pack_float);
+    this.ext_pack_double = Internal.immutableCopyOf("ext_pack_double", ext_pack_double);
+    this.ext_pack_nested_enum = Internal.immutableCopyOf("ext_pack_nested_enum", ext_pack_nested_enum);
   }
 
   @Override
@@ -1328,37 +1328,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.req_bytes = req_bytes;
     builder.req_nested_enum = req_nested_enum;
     builder.req_nested_message = req_nested_message;
-    builder.rep_int32 = WireInternal.copyOf("rep_int32", rep_int32);
-    builder.rep_uint32 = WireInternal.copyOf("rep_uint32", rep_uint32);
-    builder.rep_sint32 = WireInternal.copyOf("rep_sint32", rep_sint32);
-    builder.rep_fixed32 = WireInternal.copyOf("rep_fixed32", rep_fixed32);
-    builder.rep_sfixed32 = WireInternal.copyOf("rep_sfixed32", rep_sfixed32);
-    builder.rep_int64 = WireInternal.copyOf("rep_int64", rep_int64);
-    builder.rep_uint64 = WireInternal.copyOf("rep_uint64", rep_uint64);
-    builder.rep_sint64 = WireInternal.copyOf("rep_sint64", rep_sint64);
-    builder.rep_fixed64 = WireInternal.copyOf("rep_fixed64", rep_fixed64);
-    builder.rep_sfixed64 = WireInternal.copyOf("rep_sfixed64", rep_sfixed64);
-    builder.rep_bool = WireInternal.copyOf("rep_bool", rep_bool);
-    builder.rep_float = WireInternal.copyOf("rep_float", rep_float);
-    builder.rep_double = WireInternal.copyOf("rep_double", rep_double);
-    builder.rep_string = WireInternal.copyOf("rep_string", rep_string);
-    builder.rep_bytes = WireInternal.copyOf("rep_bytes", rep_bytes);
-    builder.rep_nested_enum = WireInternal.copyOf("rep_nested_enum", rep_nested_enum);
-    builder.rep_nested_message = WireInternal.copyOf("rep_nested_message", rep_nested_message);
-    builder.pack_int32 = WireInternal.copyOf("pack_int32", pack_int32);
-    builder.pack_uint32 = WireInternal.copyOf("pack_uint32", pack_uint32);
-    builder.pack_sint32 = WireInternal.copyOf("pack_sint32", pack_sint32);
-    builder.pack_fixed32 = WireInternal.copyOf("pack_fixed32", pack_fixed32);
-    builder.pack_sfixed32 = WireInternal.copyOf("pack_sfixed32", pack_sfixed32);
-    builder.pack_int64 = WireInternal.copyOf("pack_int64", pack_int64);
-    builder.pack_uint64 = WireInternal.copyOf("pack_uint64", pack_uint64);
-    builder.pack_sint64 = WireInternal.copyOf("pack_sint64", pack_sint64);
-    builder.pack_fixed64 = WireInternal.copyOf("pack_fixed64", pack_fixed64);
-    builder.pack_sfixed64 = WireInternal.copyOf("pack_sfixed64", pack_sfixed64);
-    builder.pack_bool = WireInternal.copyOf("pack_bool", pack_bool);
-    builder.pack_float = WireInternal.copyOf("pack_float", pack_float);
-    builder.pack_double = WireInternal.copyOf("pack_double", pack_double);
-    builder.pack_nested_enum = WireInternal.copyOf("pack_nested_enum", pack_nested_enum);
+    builder.rep_int32 = Internal.copyOf("rep_int32", rep_int32);
+    builder.rep_uint32 = Internal.copyOf("rep_uint32", rep_uint32);
+    builder.rep_sint32 = Internal.copyOf("rep_sint32", rep_sint32);
+    builder.rep_fixed32 = Internal.copyOf("rep_fixed32", rep_fixed32);
+    builder.rep_sfixed32 = Internal.copyOf("rep_sfixed32", rep_sfixed32);
+    builder.rep_int64 = Internal.copyOf("rep_int64", rep_int64);
+    builder.rep_uint64 = Internal.copyOf("rep_uint64", rep_uint64);
+    builder.rep_sint64 = Internal.copyOf("rep_sint64", rep_sint64);
+    builder.rep_fixed64 = Internal.copyOf("rep_fixed64", rep_fixed64);
+    builder.rep_sfixed64 = Internal.copyOf("rep_sfixed64", rep_sfixed64);
+    builder.rep_bool = Internal.copyOf("rep_bool", rep_bool);
+    builder.rep_float = Internal.copyOf("rep_float", rep_float);
+    builder.rep_double = Internal.copyOf("rep_double", rep_double);
+    builder.rep_string = Internal.copyOf("rep_string", rep_string);
+    builder.rep_bytes = Internal.copyOf("rep_bytes", rep_bytes);
+    builder.rep_nested_enum = Internal.copyOf("rep_nested_enum", rep_nested_enum);
+    builder.rep_nested_message = Internal.copyOf("rep_nested_message", rep_nested_message);
+    builder.pack_int32 = Internal.copyOf("pack_int32", pack_int32);
+    builder.pack_uint32 = Internal.copyOf("pack_uint32", pack_uint32);
+    builder.pack_sint32 = Internal.copyOf("pack_sint32", pack_sint32);
+    builder.pack_fixed32 = Internal.copyOf("pack_fixed32", pack_fixed32);
+    builder.pack_sfixed32 = Internal.copyOf("pack_sfixed32", pack_sfixed32);
+    builder.pack_int64 = Internal.copyOf("pack_int64", pack_int64);
+    builder.pack_uint64 = Internal.copyOf("pack_uint64", pack_uint64);
+    builder.pack_sint64 = Internal.copyOf("pack_sint64", pack_sint64);
+    builder.pack_fixed64 = Internal.copyOf("pack_fixed64", pack_fixed64);
+    builder.pack_sfixed64 = Internal.copyOf("pack_sfixed64", pack_sfixed64);
+    builder.pack_bool = Internal.copyOf("pack_bool", pack_bool);
+    builder.pack_float = Internal.copyOf("pack_float", pack_float);
+    builder.pack_double = Internal.copyOf("pack_double", pack_double);
+    builder.pack_nested_enum = Internal.copyOf("pack_nested_enum", pack_nested_enum);
     builder.default_int32 = default_int32;
     builder.default_uint32 = default_uint32;
     builder.default_sint32 = default_sint32;
@@ -1392,37 +1392,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.ext_opt_bytes = ext_opt_bytes;
     builder.ext_opt_nested_enum = ext_opt_nested_enum;
     builder.ext_opt_nested_message = ext_opt_nested_message;
-    builder.ext_rep_int32 = WireInternal.copyOf("ext_rep_int32", ext_rep_int32);
-    builder.ext_rep_uint32 = WireInternal.copyOf("ext_rep_uint32", ext_rep_uint32);
-    builder.ext_rep_sint32 = WireInternal.copyOf("ext_rep_sint32", ext_rep_sint32);
-    builder.ext_rep_fixed32 = WireInternal.copyOf("ext_rep_fixed32", ext_rep_fixed32);
-    builder.ext_rep_sfixed32 = WireInternal.copyOf("ext_rep_sfixed32", ext_rep_sfixed32);
-    builder.ext_rep_int64 = WireInternal.copyOf("ext_rep_int64", ext_rep_int64);
-    builder.ext_rep_uint64 = WireInternal.copyOf("ext_rep_uint64", ext_rep_uint64);
-    builder.ext_rep_sint64 = WireInternal.copyOf("ext_rep_sint64", ext_rep_sint64);
-    builder.ext_rep_fixed64 = WireInternal.copyOf("ext_rep_fixed64", ext_rep_fixed64);
-    builder.ext_rep_sfixed64 = WireInternal.copyOf("ext_rep_sfixed64", ext_rep_sfixed64);
-    builder.ext_rep_bool = WireInternal.copyOf("ext_rep_bool", ext_rep_bool);
-    builder.ext_rep_float = WireInternal.copyOf("ext_rep_float", ext_rep_float);
-    builder.ext_rep_double = WireInternal.copyOf("ext_rep_double", ext_rep_double);
-    builder.ext_rep_string = WireInternal.copyOf("ext_rep_string", ext_rep_string);
-    builder.ext_rep_bytes = WireInternal.copyOf("ext_rep_bytes", ext_rep_bytes);
-    builder.ext_rep_nested_enum = WireInternal.copyOf("ext_rep_nested_enum", ext_rep_nested_enum);
-    builder.ext_rep_nested_message = WireInternal.copyOf("ext_rep_nested_message", ext_rep_nested_message);
-    builder.ext_pack_int32 = WireInternal.copyOf("ext_pack_int32", ext_pack_int32);
-    builder.ext_pack_uint32 = WireInternal.copyOf("ext_pack_uint32", ext_pack_uint32);
-    builder.ext_pack_sint32 = WireInternal.copyOf("ext_pack_sint32", ext_pack_sint32);
-    builder.ext_pack_fixed32 = WireInternal.copyOf("ext_pack_fixed32", ext_pack_fixed32);
-    builder.ext_pack_sfixed32 = WireInternal.copyOf("ext_pack_sfixed32", ext_pack_sfixed32);
-    builder.ext_pack_int64 = WireInternal.copyOf("ext_pack_int64", ext_pack_int64);
-    builder.ext_pack_uint64 = WireInternal.copyOf("ext_pack_uint64", ext_pack_uint64);
-    builder.ext_pack_sint64 = WireInternal.copyOf("ext_pack_sint64", ext_pack_sint64);
-    builder.ext_pack_fixed64 = WireInternal.copyOf("ext_pack_fixed64", ext_pack_fixed64);
-    builder.ext_pack_sfixed64 = WireInternal.copyOf("ext_pack_sfixed64", ext_pack_sfixed64);
-    builder.ext_pack_bool = WireInternal.copyOf("ext_pack_bool", ext_pack_bool);
-    builder.ext_pack_float = WireInternal.copyOf("ext_pack_float", ext_pack_float);
-    builder.ext_pack_double = WireInternal.copyOf("ext_pack_double", ext_pack_double);
-    builder.ext_pack_nested_enum = WireInternal.copyOf("ext_pack_nested_enum", ext_pack_nested_enum);
+    builder.ext_rep_int32 = Internal.copyOf("ext_rep_int32", ext_rep_int32);
+    builder.ext_rep_uint32 = Internal.copyOf("ext_rep_uint32", ext_rep_uint32);
+    builder.ext_rep_sint32 = Internal.copyOf("ext_rep_sint32", ext_rep_sint32);
+    builder.ext_rep_fixed32 = Internal.copyOf("ext_rep_fixed32", ext_rep_fixed32);
+    builder.ext_rep_sfixed32 = Internal.copyOf("ext_rep_sfixed32", ext_rep_sfixed32);
+    builder.ext_rep_int64 = Internal.copyOf("ext_rep_int64", ext_rep_int64);
+    builder.ext_rep_uint64 = Internal.copyOf("ext_rep_uint64", ext_rep_uint64);
+    builder.ext_rep_sint64 = Internal.copyOf("ext_rep_sint64", ext_rep_sint64);
+    builder.ext_rep_fixed64 = Internal.copyOf("ext_rep_fixed64", ext_rep_fixed64);
+    builder.ext_rep_sfixed64 = Internal.copyOf("ext_rep_sfixed64", ext_rep_sfixed64);
+    builder.ext_rep_bool = Internal.copyOf("ext_rep_bool", ext_rep_bool);
+    builder.ext_rep_float = Internal.copyOf("ext_rep_float", ext_rep_float);
+    builder.ext_rep_double = Internal.copyOf("ext_rep_double", ext_rep_double);
+    builder.ext_rep_string = Internal.copyOf("ext_rep_string", ext_rep_string);
+    builder.ext_rep_bytes = Internal.copyOf("ext_rep_bytes", ext_rep_bytes);
+    builder.ext_rep_nested_enum = Internal.copyOf("ext_rep_nested_enum", ext_rep_nested_enum);
+    builder.ext_rep_nested_message = Internal.copyOf("ext_rep_nested_message", ext_rep_nested_message);
+    builder.ext_pack_int32 = Internal.copyOf("ext_pack_int32", ext_pack_int32);
+    builder.ext_pack_uint32 = Internal.copyOf("ext_pack_uint32", ext_pack_uint32);
+    builder.ext_pack_sint32 = Internal.copyOf("ext_pack_sint32", ext_pack_sint32);
+    builder.ext_pack_fixed32 = Internal.copyOf("ext_pack_fixed32", ext_pack_fixed32);
+    builder.ext_pack_sfixed32 = Internal.copyOf("ext_pack_sfixed32", ext_pack_sfixed32);
+    builder.ext_pack_int64 = Internal.copyOf("ext_pack_int64", ext_pack_int64);
+    builder.ext_pack_uint64 = Internal.copyOf("ext_pack_uint64", ext_pack_uint64);
+    builder.ext_pack_sint64 = Internal.copyOf("ext_pack_sint64", ext_pack_sint64);
+    builder.ext_pack_fixed64 = Internal.copyOf("ext_pack_fixed64", ext_pack_fixed64);
+    builder.ext_pack_sfixed64 = Internal.copyOf("ext_pack_sfixed64", ext_pack_sfixed64);
+    builder.ext_pack_bool = Internal.copyOf("ext_pack_bool", ext_pack_bool);
+    builder.ext_pack_float = Internal.copyOf("ext_pack_float", ext_pack_float);
+    builder.ext_pack_double = Internal.copyOf("ext_pack_double", ext_pack_double);
+    builder.ext_pack_nested_enum = Internal.copyOf("ext_pack_nested_enum", ext_pack_nested_enum);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -1432,136 +1432,136 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (other == this) return true;
     if (!(other instanceof AllTypes)) return false;
     AllTypes o = (AllTypes) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(opt_int32, o.opt_int32)
-        && WireInternal.equals(opt_uint32, o.opt_uint32)
-        && WireInternal.equals(opt_sint32, o.opt_sint32)
-        && WireInternal.equals(opt_fixed32, o.opt_fixed32)
-        && WireInternal.equals(opt_sfixed32, o.opt_sfixed32)
-        && WireInternal.equals(opt_int64, o.opt_int64)
-        && WireInternal.equals(opt_uint64, o.opt_uint64)
-        && WireInternal.equals(opt_sint64, o.opt_sint64)
-        && WireInternal.equals(opt_fixed64, o.opt_fixed64)
-        && WireInternal.equals(opt_sfixed64, o.opt_sfixed64)
-        && WireInternal.equals(opt_bool, o.opt_bool)
-        && WireInternal.equals(opt_float, o.opt_float)
-        && WireInternal.equals(opt_double, o.opt_double)
-        && WireInternal.equals(opt_string, o.opt_string)
-        && WireInternal.equals(opt_bytes, o.opt_bytes)
-        && WireInternal.equals(opt_nested_enum, o.opt_nested_enum)
-        && WireInternal.equals(opt_nested_message, o.opt_nested_message)
-        && WireInternal.equals(req_int32, o.req_int32)
-        && WireInternal.equals(req_uint32, o.req_uint32)
-        && WireInternal.equals(req_sint32, o.req_sint32)
-        && WireInternal.equals(req_fixed32, o.req_fixed32)
-        && WireInternal.equals(req_sfixed32, o.req_sfixed32)
-        && WireInternal.equals(req_int64, o.req_int64)
-        && WireInternal.equals(req_uint64, o.req_uint64)
-        && WireInternal.equals(req_sint64, o.req_sint64)
-        && WireInternal.equals(req_fixed64, o.req_fixed64)
-        && WireInternal.equals(req_sfixed64, o.req_sfixed64)
-        && WireInternal.equals(req_bool, o.req_bool)
-        && WireInternal.equals(req_float, o.req_float)
-        && WireInternal.equals(req_double, o.req_double)
-        && WireInternal.equals(req_string, o.req_string)
-        && WireInternal.equals(req_bytes, o.req_bytes)
-        && WireInternal.equals(req_nested_enum, o.req_nested_enum)
-        && WireInternal.equals(req_nested_message, o.req_nested_message)
-        && WireInternal.equals(rep_int32, o.rep_int32)
-        && WireInternal.equals(rep_uint32, o.rep_uint32)
-        && WireInternal.equals(rep_sint32, o.rep_sint32)
-        && WireInternal.equals(rep_fixed32, o.rep_fixed32)
-        && WireInternal.equals(rep_sfixed32, o.rep_sfixed32)
-        && WireInternal.equals(rep_int64, o.rep_int64)
-        && WireInternal.equals(rep_uint64, o.rep_uint64)
-        && WireInternal.equals(rep_sint64, o.rep_sint64)
-        && WireInternal.equals(rep_fixed64, o.rep_fixed64)
-        && WireInternal.equals(rep_sfixed64, o.rep_sfixed64)
-        && WireInternal.equals(rep_bool, o.rep_bool)
-        && WireInternal.equals(rep_float, o.rep_float)
-        && WireInternal.equals(rep_double, o.rep_double)
-        && WireInternal.equals(rep_string, o.rep_string)
-        && WireInternal.equals(rep_bytes, o.rep_bytes)
-        && WireInternal.equals(rep_nested_enum, o.rep_nested_enum)
-        && WireInternal.equals(rep_nested_message, o.rep_nested_message)
-        && WireInternal.equals(pack_int32, o.pack_int32)
-        && WireInternal.equals(pack_uint32, o.pack_uint32)
-        && WireInternal.equals(pack_sint32, o.pack_sint32)
-        && WireInternal.equals(pack_fixed32, o.pack_fixed32)
-        && WireInternal.equals(pack_sfixed32, o.pack_sfixed32)
-        && WireInternal.equals(pack_int64, o.pack_int64)
-        && WireInternal.equals(pack_uint64, o.pack_uint64)
-        && WireInternal.equals(pack_sint64, o.pack_sint64)
-        && WireInternal.equals(pack_fixed64, o.pack_fixed64)
-        && WireInternal.equals(pack_sfixed64, o.pack_sfixed64)
-        && WireInternal.equals(pack_bool, o.pack_bool)
-        && WireInternal.equals(pack_float, o.pack_float)
-        && WireInternal.equals(pack_double, o.pack_double)
-        && WireInternal.equals(pack_nested_enum, o.pack_nested_enum)
-        && WireInternal.equals(default_int32, o.default_int32)
-        && WireInternal.equals(default_uint32, o.default_uint32)
-        && WireInternal.equals(default_sint32, o.default_sint32)
-        && WireInternal.equals(default_fixed32, o.default_fixed32)
-        && WireInternal.equals(default_sfixed32, o.default_sfixed32)
-        && WireInternal.equals(default_int64, o.default_int64)
-        && WireInternal.equals(default_uint64, o.default_uint64)
-        && WireInternal.equals(default_sint64, o.default_sint64)
-        && WireInternal.equals(default_fixed64, o.default_fixed64)
-        && WireInternal.equals(default_sfixed64, o.default_sfixed64)
-        && WireInternal.equals(default_bool, o.default_bool)
-        && WireInternal.equals(default_float, o.default_float)
-        && WireInternal.equals(default_double, o.default_double)
-        && WireInternal.equals(default_string, o.default_string)
-        && WireInternal.equals(default_bytes, o.default_bytes)
-        && WireInternal.equals(default_nested_enum, o.default_nested_enum)
-        && WireInternal.equals(ext_opt_int32, o.ext_opt_int32)
-        && WireInternal.equals(ext_opt_uint32, o.ext_opt_uint32)
-        && WireInternal.equals(ext_opt_sint32, o.ext_opt_sint32)
-        && WireInternal.equals(ext_opt_fixed32, o.ext_opt_fixed32)
-        && WireInternal.equals(ext_opt_sfixed32, o.ext_opt_sfixed32)
-        && WireInternal.equals(ext_opt_int64, o.ext_opt_int64)
-        && WireInternal.equals(ext_opt_uint64, o.ext_opt_uint64)
-        && WireInternal.equals(ext_opt_sint64, o.ext_opt_sint64)
-        && WireInternal.equals(ext_opt_fixed64, o.ext_opt_fixed64)
-        && WireInternal.equals(ext_opt_sfixed64, o.ext_opt_sfixed64)
-        && WireInternal.equals(ext_opt_bool, o.ext_opt_bool)
-        && WireInternal.equals(ext_opt_float, o.ext_opt_float)
-        && WireInternal.equals(ext_opt_double, o.ext_opt_double)
-        && WireInternal.equals(ext_opt_string, o.ext_opt_string)
-        && WireInternal.equals(ext_opt_bytes, o.ext_opt_bytes)
-        && WireInternal.equals(ext_opt_nested_enum, o.ext_opt_nested_enum)
-        && WireInternal.equals(ext_opt_nested_message, o.ext_opt_nested_message)
-        && WireInternal.equals(ext_rep_int32, o.ext_rep_int32)
-        && WireInternal.equals(ext_rep_uint32, o.ext_rep_uint32)
-        && WireInternal.equals(ext_rep_sint32, o.ext_rep_sint32)
-        && WireInternal.equals(ext_rep_fixed32, o.ext_rep_fixed32)
-        && WireInternal.equals(ext_rep_sfixed32, o.ext_rep_sfixed32)
-        && WireInternal.equals(ext_rep_int64, o.ext_rep_int64)
-        && WireInternal.equals(ext_rep_uint64, o.ext_rep_uint64)
-        && WireInternal.equals(ext_rep_sint64, o.ext_rep_sint64)
-        && WireInternal.equals(ext_rep_fixed64, o.ext_rep_fixed64)
-        && WireInternal.equals(ext_rep_sfixed64, o.ext_rep_sfixed64)
-        && WireInternal.equals(ext_rep_bool, o.ext_rep_bool)
-        && WireInternal.equals(ext_rep_float, o.ext_rep_float)
-        && WireInternal.equals(ext_rep_double, o.ext_rep_double)
-        && WireInternal.equals(ext_rep_string, o.ext_rep_string)
-        && WireInternal.equals(ext_rep_bytes, o.ext_rep_bytes)
-        && WireInternal.equals(ext_rep_nested_enum, o.ext_rep_nested_enum)
-        && WireInternal.equals(ext_rep_nested_message, o.ext_rep_nested_message)
-        && WireInternal.equals(ext_pack_int32, o.ext_pack_int32)
-        && WireInternal.equals(ext_pack_uint32, o.ext_pack_uint32)
-        && WireInternal.equals(ext_pack_sint32, o.ext_pack_sint32)
-        && WireInternal.equals(ext_pack_fixed32, o.ext_pack_fixed32)
-        && WireInternal.equals(ext_pack_sfixed32, o.ext_pack_sfixed32)
-        && WireInternal.equals(ext_pack_int64, o.ext_pack_int64)
-        && WireInternal.equals(ext_pack_uint64, o.ext_pack_uint64)
-        && WireInternal.equals(ext_pack_sint64, o.ext_pack_sint64)
-        && WireInternal.equals(ext_pack_fixed64, o.ext_pack_fixed64)
-        && WireInternal.equals(ext_pack_sfixed64, o.ext_pack_sfixed64)
-        && WireInternal.equals(ext_pack_bool, o.ext_pack_bool)
-        && WireInternal.equals(ext_pack_float, o.ext_pack_float)
-        && WireInternal.equals(ext_pack_double, o.ext_pack_double)
-        && WireInternal.equals(ext_pack_nested_enum, o.ext_pack_nested_enum);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(opt_int32, o.opt_int32)
+        && Internal.equals(opt_uint32, o.opt_uint32)
+        && Internal.equals(opt_sint32, o.opt_sint32)
+        && Internal.equals(opt_fixed32, o.opt_fixed32)
+        && Internal.equals(opt_sfixed32, o.opt_sfixed32)
+        && Internal.equals(opt_int64, o.opt_int64)
+        && Internal.equals(opt_uint64, o.opt_uint64)
+        && Internal.equals(opt_sint64, o.opt_sint64)
+        && Internal.equals(opt_fixed64, o.opt_fixed64)
+        && Internal.equals(opt_sfixed64, o.opt_sfixed64)
+        && Internal.equals(opt_bool, o.opt_bool)
+        && Internal.equals(opt_float, o.opt_float)
+        && Internal.equals(opt_double, o.opt_double)
+        && Internal.equals(opt_string, o.opt_string)
+        && Internal.equals(opt_bytes, o.opt_bytes)
+        && Internal.equals(opt_nested_enum, o.opt_nested_enum)
+        && Internal.equals(opt_nested_message, o.opt_nested_message)
+        && Internal.equals(req_int32, o.req_int32)
+        && Internal.equals(req_uint32, o.req_uint32)
+        && Internal.equals(req_sint32, o.req_sint32)
+        && Internal.equals(req_fixed32, o.req_fixed32)
+        && Internal.equals(req_sfixed32, o.req_sfixed32)
+        && Internal.equals(req_int64, o.req_int64)
+        && Internal.equals(req_uint64, o.req_uint64)
+        && Internal.equals(req_sint64, o.req_sint64)
+        && Internal.equals(req_fixed64, o.req_fixed64)
+        && Internal.equals(req_sfixed64, o.req_sfixed64)
+        && Internal.equals(req_bool, o.req_bool)
+        && Internal.equals(req_float, o.req_float)
+        && Internal.equals(req_double, o.req_double)
+        && Internal.equals(req_string, o.req_string)
+        && Internal.equals(req_bytes, o.req_bytes)
+        && Internal.equals(req_nested_enum, o.req_nested_enum)
+        && Internal.equals(req_nested_message, o.req_nested_message)
+        && Internal.equals(rep_int32, o.rep_int32)
+        && Internal.equals(rep_uint32, o.rep_uint32)
+        && Internal.equals(rep_sint32, o.rep_sint32)
+        && Internal.equals(rep_fixed32, o.rep_fixed32)
+        && Internal.equals(rep_sfixed32, o.rep_sfixed32)
+        && Internal.equals(rep_int64, o.rep_int64)
+        && Internal.equals(rep_uint64, o.rep_uint64)
+        && Internal.equals(rep_sint64, o.rep_sint64)
+        && Internal.equals(rep_fixed64, o.rep_fixed64)
+        && Internal.equals(rep_sfixed64, o.rep_sfixed64)
+        && Internal.equals(rep_bool, o.rep_bool)
+        && Internal.equals(rep_float, o.rep_float)
+        && Internal.equals(rep_double, o.rep_double)
+        && Internal.equals(rep_string, o.rep_string)
+        && Internal.equals(rep_bytes, o.rep_bytes)
+        && Internal.equals(rep_nested_enum, o.rep_nested_enum)
+        && Internal.equals(rep_nested_message, o.rep_nested_message)
+        && Internal.equals(pack_int32, o.pack_int32)
+        && Internal.equals(pack_uint32, o.pack_uint32)
+        && Internal.equals(pack_sint32, o.pack_sint32)
+        && Internal.equals(pack_fixed32, o.pack_fixed32)
+        && Internal.equals(pack_sfixed32, o.pack_sfixed32)
+        && Internal.equals(pack_int64, o.pack_int64)
+        && Internal.equals(pack_uint64, o.pack_uint64)
+        && Internal.equals(pack_sint64, o.pack_sint64)
+        && Internal.equals(pack_fixed64, o.pack_fixed64)
+        && Internal.equals(pack_sfixed64, o.pack_sfixed64)
+        && Internal.equals(pack_bool, o.pack_bool)
+        && Internal.equals(pack_float, o.pack_float)
+        && Internal.equals(pack_double, o.pack_double)
+        && Internal.equals(pack_nested_enum, o.pack_nested_enum)
+        && Internal.equals(default_int32, o.default_int32)
+        && Internal.equals(default_uint32, o.default_uint32)
+        && Internal.equals(default_sint32, o.default_sint32)
+        && Internal.equals(default_fixed32, o.default_fixed32)
+        && Internal.equals(default_sfixed32, o.default_sfixed32)
+        && Internal.equals(default_int64, o.default_int64)
+        && Internal.equals(default_uint64, o.default_uint64)
+        && Internal.equals(default_sint64, o.default_sint64)
+        && Internal.equals(default_fixed64, o.default_fixed64)
+        && Internal.equals(default_sfixed64, o.default_sfixed64)
+        && Internal.equals(default_bool, o.default_bool)
+        && Internal.equals(default_float, o.default_float)
+        && Internal.equals(default_double, o.default_double)
+        && Internal.equals(default_string, o.default_string)
+        && Internal.equals(default_bytes, o.default_bytes)
+        && Internal.equals(default_nested_enum, o.default_nested_enum)
+        && Internal.equals(ext_opt_int32, o.ext_opt_int32)
+        && Internal.equals(ext_opt_uint32, o.ext_opt_uint32)
+        && Internal.equals(ext_opt_sint32, o.ext_opt_sint32)
+        && Internal.equals(ext_opt_fixed32, o.ext_opt_fixed32)
+        && Internal.equals(ext_opt_sfixed32, o.ext_opt_sfixed32)
+        && Internal.equals(ext_opt_int64, o.ext_opt_int64)
+        && Internal.equals(ext_opt_uint64, o.ext_opt_uint64)
+        && Internal.equals(ext_opt_sint64, o.ext_opt_sint64)
+        && Internal.equals(ext_opt_fixed64, o.ext_opt_fixed64)
+        && Internal.equals(ext_opt_sfixed64, o.ext_opt_sfixed64)
+        && Internal.equals(ext_opt_bool, o.ext_opt_bool)
+        && Internal.equals(ext_opt_float, o.ext_opt_float)
+        && Internal.equals(ext_opt_double, o.ext_opt_double)
+        && Internal.equals(ext_opt_string, o.ext_opt_string)
+        && Internal.equals(ext_opt_bytes, o.ext_opt_bytes)
+        && Internal.equals(ext_opt_nested_enum, o.ext_opt_nested_enum)
+        && Internal.equals(ext_opt_nested_message, o.ext_opt_nested_message)
+        && Internal.equals(ext_rep_int32, o.ext_rep_int32)
+        && Internal.equals(ext_rep_uint32, o.ext_rep_uint32)
+        && Internal.equals(ext_rep_sint32, o.ext_rep_sint32)
+        && Internal.equals(ext_rep_fixed32, o.ext_rep_fixed32)
+        && Internal.equals(ext_rep_sfixed32, o.ext_rep_sfixed32)
+        && Internal.equals(ext_rep_int64, o.ext_rep_int64)
+        && Internal.equals(ext_rep_uint64, o.ext_rep_uint64)
+        && Internal.equals(ext_rep_sint64, o.ext_rep_sint64)
+        && Internal.equals(ext_rep_fixed64, o.ext_rep_fixed64)
+        && Internal.equals(ext_rep_sfixed64, o.ext_rep_sfixed64)
+        && Internal.equals(ext_rep_bool, o.ext_rep_bool)
+        && Internal.equals(ext_rep_float, o.ext_rep_float)
+        && Internal.equals(ext_rep_double, o.ext_rep_double)
+        && Internal.equals(ext_rep_string, o.ext_rep_string)
+        && Internal.equals(ext_rep_bytes, o.ext_rep_bytes)
+        && Internal.equals(ext_rep_nested_enum, o.ext_rep_nested_enum)
+        && Internal.equals(ext_rep_nested_message, o.ext_rep_nested_message)
+        && Internal.equals(ext_pack_int32, o.ext_pack_int32)
+        && Internal.equals(ext_pack_uint32, o.ext_pack_uint32)
+        && Internal.equals(ext_pack_sint32, o.ext_pack_sint32)
+        && Internal.equals(ext_pack_fixed32, o.ext_pack_fixed32)
+        && Internal.equals(ext_pack_sfixed32, o.ext_pack_sfixed32)
+        && Internal.equals(ext_pack_int64, o.ext_pack_int64)
+        && Internal.equals(ext_pack_uint64, o.ext_pack_uint64)
+        && Internal.equals(ext_pack_sint64, o.ext_pack_sint64)
+        && Internal.equals(ext_pack_fixed64, o.ext_pack_fixed64)
+        && Internal.equals(ext_pack_sfixed64, o.ext_pack_sfixed64)
+        && Internal.equals(ext_pack_bool, o.ext_pack_bool)
+        && Internal.equals(ext_pack_float, o.ext_pack_float)
+        && Internal.equals(ext_pack_double, o.ext_pack_double)
+        && Internal.equals(ext_pack_nested_enum, o.ext_pack_nested_enum);
   }
 
   @Override
@@ -2098,68 +2098,68 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     public List<NestedEnum> ext_pack_nested_enum;
 
     public Builder() {
-      rep_int32 = WireInternal.newMutableList();
-      rep_uint32 = WireInternal.newMutableList();
-      rep_sint32 = WireInternal.newMutableList();
-      rep_fixed32 = WireInternal.newMutableList();
-      rep_sfixed32 = WireInternal.newMutableList();
-      rep_int64 = WireInternal.newMutableList();
-      rep_uint64 = WireInternal.newMutableList();
-      rep_sint64 = WireInternal.newMutableList();
-      rep_fixed64 = WireInternal.newMutableList();
-      rep_sfixed64 = WireInternal.newMutableList();
-      rep_bool = WireInternal.newMutableList();
-      rep_float = WireInternal.newMutableList();
-      rep_double = WireInternal.newMutableList();
-      rep_string = WireInternal.newMutableList();
-      rep_bytes = WireInternal.newMutableList();
-      rep_nested_enum = WireInternal.newMutableList();
-      rep_nested_message = WireInternal.newMutableList();
-      pack_int32 = WireInternal.newMutableList();
-      pack_uint32 = WireInternal.newMutableList();
-      pack_sint32 = WireInternal.newMutableList();
-      pack_fixed32 = WireInternal.newMutableList();
-      pack_sfixed32 = WireInternal.newMutableList();
-      pack_int64 = WireInternal.newMutableList();
-      pack_uint64 = WireInternal.newMutableList();
-      pack_sint64 = WireInternal.newMutableList();
-      pack_fixed64 = WireInternal.newMutableList();
-      pack_sfixed64 = WireInternal.newMutableList();
-      pack_bool = WireInternal.newMutableList();
-      pack_float = WireInternal.newMutableList();
-      pack_double = WireInternal.newMutableList();
-      pack_nested_enum = WireInternal.newMutableList();
-      ext_rep_int32 = WireInternal.newMutableList();
-      ext_rep_uint32 = WireInternal.newMutableList();
-      ext_rep_sint32 = WireInternal.newMutableList();
-      ext_rep_fixed32 = WireInternal.newMutableList();
-      ext_rep_sfixed32 = WireInternal.newMutableList();
-      ext_rep_int64 = WireInternal.newMutableList();
-      ext_rep_uint64 = WireInternal.newMutableList();
-      ext_rep_sint64 = WireInternal.newMutableList();
-      ext_rep_fixed64 = WireInternal.newMutableList();
-      ext_rep_sfixed64 = WireInternal.newMutableList();
-      ext_rep_bool = WireInternal.newMutableList();
-      ext_rep_float = WireInternal.newMutableList();
-      ext_rep_double = WireInternal.newMutableList();
-      ext_rep_string = WireInternal.newMutableList();
-      ext_rep_bytes = WireInternal.newMutableList();
-      ext_rep_nested_enum = WireInternal.newMutableList();
-      ext_rep_nested_message = WireInternal.newMutableList();
-      ext_pack_int32 = WireInternal.newMutableList();
-      ext_pack_uint32 = WireInternal.newMutableList();
-      ext_pack_sint32 = WireInternal.newMutableList();
-      ext_pack_fixed32 = WireInternal.newMutableList();
-      ext_pack_sfixed32 = WireInternal.newMutableList();
-      ext_pack_int64 = WireInternal.newMutableList();
-      ext_pack_uint64 = WireInternal.newMutableList();
-      ext_pack_sint64 = WireInternal.newMutableList();
-      ext_pack_fixed64 = WireInternal.newMutableList();
-      ext_pack_sfixed64 = WireInternal.newMutableList();
-      ext_pack_bool = WireInternal.newMutableList();
-      ext_pack_float = WireInternal.newMutableList();
-      ext_pack_double = WireInternal.newMutableList();
-      ext_pack_nested_enum = WireInternal.newMutableList();
+      rep_int32 = Internal.newMutableList();
+      rep_uint32 = Internal.newMutableList();
+      rep_sint32 = Internal.newMutableList();
+      rep_fixed32 = Internal.newMutableList();
+      rep_sfixed32 = Internal.newMutableList();
+      rep_int64 = Internal.newMutableList();
+      rep_uint64 = Internal.newMutableList();
+      rep_sint64 = Internal.newMutableList();
+      rep_fixed64 = Internal.newMutableList();
+      rep_sfixed64 = Internal.newMutableList();
+      rep_bool = Internal.newMutableList();
+      rep_float = Internal.newMutableList();
+      rep_double = Internal.newMutableList();
+      rep_string = Internal.newMutableList();
+      rep_bytes = Internal.newMutableList();
+      rep_nested_enum = Internal.newMutableList();
+      rep_nested_message = Internal.newMutableList();
+      pack_int32 = Internal.newMutableList();
+      pack_uint32 = Internal.newMutableList();
+      pack_sint32 = Internal.newMutableList();
+      pack_fixed32 = Internal.newMutableList();
+      pack_sfixed32 = Internal.newMutableList();
+      pack_int64 = Internal.newMutableList();
+      pack_uint64 = Internal.newMutableList();
+      pack_sint64 = Internal.newMutableList();
+      pack_fixed64 = Internal.newMutableList();
+      pack_sfixed64 = Internal.newMutableList();
+      pack_bool = Internal.newMutableList();
+      pack_float = Internal.newMutableList();
+      pack_double = Internal.newMutableList();
+      pack_nested_enum = Internal.newMutableList();
+      ext_rep_int32 = Internal.newMutableList();
+      ext_rep_uint32 = Internal.newMutableList();
+      ext_rep_sint32 = Internal.newMutableList();
+      ext_rep_fixed32 = Internal.newMutableList();
+      ext_rep_sfixed32 = Internal.newMutableList();
+      ext_rep_int64 = Internal.newMutableList();
+      ext_rep_uint64 = Internal.newMutableList();
+      ext_rep_sint64 = Internal.newMutableList();
+      ext_rep_fixed64 = Internal.newMutableList();
+      ext_rep_sfixed64 = Internal.newMutableList();
+      ext_rep_bool = Internal.newMutableList();
+      ext_rep_float = Internal.newMutableList();
+      ext_rep_double = Internal.newMutableList();
+      ext_rep_string = Internal.newMutableList();
+      ext_rep_bytes = Internal.newMutableList();
+      ext_rep_nested_enum = Internal.newMutableList();
+      ext_rep_nested_message = Internal.newMutableList();
+      ext_pack_int32 = Internal.newMutableList();
+      ext_pack_uint32 = Internal.newMutableList();
+      ext_pack_sint32 = Internal.newMutableList();
+      ext_pack_fixed32 = Internal.newMutableList();
+      ext_pack_sfixed32 = Internal.newMutableList();
+      ext_pack_int64 = Internal.newMutableList();
+      ext_pack_uint64 = Internal.newMutableList();
+      ext_pack_sint64 = Internal.newMutableList();
+      ext_pack_fixed64 = Internal.newMutableList();
+      ext_pack_sfixed64 = Internal.newMutableList();
+      ext_pack_bool = Internal.newMutableList();
+      ext_pack_float = Internal.newMutableList();
+      ext_pack_double = Internal.newMutableList();
+      ext_pack_nested_enum = Internal.newMutableList();
     }
 
     public Builder opt_int32(Integer opt_int32) {
@@ -2333,187 +2333,187 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     public Builder rep_int32(List<Integer> rep_int32) {
-      WireInternal.checkElementsNotNull(rep_int32);
+      Internal.checkElementsNotNull(rep_int32);
       this.rep_int32 = rep_int32;
       return this;
     }
 
     public Builder rep_uint32(List<Integer> rep_uint32) {
-      WireInternal.checkElementsNotNull(rep_uint32);
+      Internal.checkElementsNotNull(rep_uint32);
       this.rep_uint32 = rep_uint32;
       return this;
     }
 
     public Builder rep_sint32(List<Integer> rep_sint32) {
-      WireInternal.checkElementsNotNull(rep_sint32);
+      Internal.checkElementsNotNull(rep_sint32);
       this.rep_sint32 = rep_sint32;
       return this;
     }
 
     public Builder rep_fixed32(List<Integer> rep_fixed32) {
-      WireInternal.checkElementsNotNull(rep_fixed32);
+      Internal.checkElementsNotNull(rep_fixed32);
       this.rep_fixed32 = rep_fixed32;
       return this;
     }
 
     public Builder rep_sfixed32(List<Integer> rep_sfixed32) {
-      WireInternal.checkElementsNotNull(rep_sfixed32);
+      Internal.checkElementsNotNull(rep_sfixed32);
       this.rep_sfixed32 = rep_sfixed32;
       return this;
     }
 
     public Builder rep_int64(List<Long> rep_int64) {
-      WireInternal.checkElementsNotNull(rep_int64);
+      Internal.checkElementsNotNull(rep_int64);
       this.rep_int64 = rep_int64;
       return this;
     }
 
     public Builder rep_uint64(List<Long> rep_uint64) {
-      WireInternal.checkElementsNotNull(rep_uint64);
+      Internal.checkElementsNotNull(rep_uint64);
       this.rep_uint64 = rep_uint64;
       return this;
     }
 
     public Builder rep_sint64(List<Long> rep_sint64) {
-      WireInternal.checkElementsNotNull(rep_sint64);
+      Internal.checkElementsNotNull(rep_sint64);
       this.rep_sint64 = rep_sint64;
       return this;
     }
 
     public Builder rep_fixed64(List<Long> rep_fixed64) {
-      WireInternal.checkElementsNotNull(rep_fixed64);
+      Internal.checkElementsNotNull(rep_fixed64);
       this.rep_fixed64 = rep_fixed64;
       return this;
     }
 
     public Builder rep_sfixed64(List<Long> rep_sfixed64) {
-      WireInternal.checkElementsNotNull(rep_sfixed64);
+      Internal.checkElementsNotNull(rep_sfixed64);
       this.rep_sfixed64 = rep_sfixed64;
       return this;
     }
 
     public Builder rep_bool(List<Boolean> rep_bool) {
-      WireInternal.checkElementsNotNull(rep_bool);
+      Internal.checkElementsNotNull(rep_bool);
       this.rep_bool = rep_bool;
       return this;
     }
 
     public Builder rep_float(List<Float> rep_float) {
-      WireInternal.checkElementsNotNull(rep_float);
+      Internal.checkElementsNotNull(rep_float);
       this.rep_float = rep_float;
       return this;
     }
 
     public Builder rep_double(List<Double> rep_double) {
-      WireInternal.checkElementsNotNull(rep_double);
+      Internal.checkElementsNotNull(rep_double);
       this.rep_double = rep_double;
       return this;
     }
 
     public Builder rep_string(List<String> rep_string) {
-      WireInternal.checkElementsNotNull(rep_string);
+      Internal.checkElementsNotNull(rep_string);
       this.rep_string = rep_string;
       return this;
     }
 
     public Builder rep_bytes(List<ByteString> rep_bytes) {
-      WireInternal.checkElementsNotNull(rep_bytes);
+      Internal.checkElementsNotNull(rep_bytes);
       this.rep_bytes = rep_bytes;
       return this;
     }
 
     public Builder rep_nested_enum(List<NestedEnum> rep_nested_enum) {
-      WireInternal.checkElementsNotNull(rep_nested_enum);
+      Internal.checkElementsNotNull(rep_nested_enum);
       this.rep_nested_enum = rep_nested_enum;
       return this;
     }
 
     public Builder rep_nested_message(List<NestedMessage> rep_nested_message) {
-      WireInternal.checkElementsNotNull(rep_nested_message);
+      Internal.checkElementsNotNull(rep_nested_message);
       this.rep_nested_message = rep_nested_message;
       return this;
     }
 
     public Builder pack_int32(List<Integer> pack_int32) {
-      WireInternal.checkElementsNotNull(pack_int32);
+      Internal.checkElementsNotNull(pack_int32);
       this.pack_int32 = pack_int32;
       return this;
     }
 
     public Builder pack_uint32(List<Integer> pack_uint32) {
-      WireInternal.checkElementsNotNull(pack_uint32);
+      Internal.checkElementsNotNull(pack_uint32);
       this.pack_uint32 = pack_uint32;
       return this;
     }
 
     public Builder pack_sint32(List<Integer> pack_sint32) {
-      WireInternal.checkElementsNotNull(pack_sint32);
+      Internal.checkElementsNotNull(pack_sint32);
       this.pack_sint32 = pack_sint32;
       return this;
     }
 
     public Builder pack_fixed32(List<Integer> pack_fixed32) {
-      WireInternal.checkElementsNotNull(pack_fixed32);
+      Internal.checkElementsNotNull(pack_fixed32);
       this.pack_fixed32 = pack_fixed32;
       return this;
     }
 
     public Builder pack_sfixed32(List<Integer> pack_sfixed32) {
-      WireInternal.checkElementsNotNull(pack_sfixed32);
+      Internal.checkElementsNotNull(pack_sfixed32);
       this.pack_sfixed32 = pack_sfixed32;
       return this;
     }
 
     public Builder pack_int64(List<Long> pack_int64) {
-      WireInternal.checkElementsNotNull(pack_int64);
+      Internal.checkElementsNotNull(pack_int64);
       this.pack_int64 = pack_int64;
       return this;
     }
 
     public Builder pack_uint64(List<Long> pack_uint64) {
-      WireInternal.checkElementsNotNull(pack_uint64);
+      Internal.checkElementsNotNull(pack_uint64);
       this.pack_uint64 = pack_uint64;
       return this;
     }
 
     public Builder pack_sint64(List<Long> pack_sint64) {
-      WireInternal.checkElementsNotNull(pack_sint64);
+      Internal.checkElementsNotNull(pack_sint64);
       this.pack_sint64 = pack_sint64;
       return this;
     }
 
     public Builder pack_fixed64(List<Long> pack_fixed64) {
-      WireInternal.checkElementsNotNull(pack_fixed64);
+      Internal.checkElementsNotNull(pack_fixed64);
       this.pack_fixed64 = pack_fixed64;
       return this;
     }
 
     public Builder pack_sfixed64(List<Long> pack_sfixed64) {
-      WireInternal.checkElementsNotNull(pack_sfixed64);
+      Internal.checkElementsNotNull(pack_sfixed64);
       this.pack_sfixed64 = pack_sfixed64;
       return this;
     }
 
     public Builder pack_bool(List<Boolean> pack_bool) {
-      WireInternal.checkElementsNotNull(pack_bool);
+      Internal.checkElementsNotNull(pack_bool);
       this.pack_bool = pack_bool;
       return this;
     }
 
     public Builder pack_float(List<Float> pack_float) {
-      WireInternal.checkElementsNotNull(pack_float);
+      Internal.checkElementsNotNull(pack_float);
       this.pack_float = pack_float;
       return this;
     }
 
     public Builder pack_double(List<Double> pack_double) {
-      WireInternal.checkElementsNotNull(pack_double);
+      Internal.checkElementsNotNull(pack_double);
       this.pack_double = pack_double;
       return this;
     }
 
     public Builder pack_nested_enum(List<NestedEnum> pack_nested_enum) {
-      WireInternal.checkElementsNotNull(pack_nested_enum);
+      Internal.checkElementsNotNull(pack_nested_enum);
       this.pack_nested_enum = pack_nested_enum;
       return this;
     }
@@ -2684,187 +2684,187 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     public Builder ext_rep_int32(List<Integer> ext_rep_int32) {
-      WireInternal.checkElementsNotNull(ext_rep_int32);
+      Internal.checkElementsNotNull(ext_rep_int32);
       this.ext_rep_int32 = ext_rep_int32;
       return this;
     }
 
     public Builder ext_rep_uint32(List<Integer> ext_rep_uint32) {
-      WireInternal.checkElementsNotNull(ext_rep_uint32);
+      Internal.checkElementsNotNull(ext_rep_uint32);
       this.ext_rep_uint32 = ext_rep_uint32;
       return this;
     }
 
     public Builder ext_rep_sint32(List<Integer> ext_rep_sint32) {
-      WireInternal.checkElementsNotNull(ext_rep_sint32);
+      Internal.checkElementsNotNull(ext_rep_sint32);
       this.ext_rep_sint32 = ext_rep_sint32;
       return this;
     }
 
     public Builder ext_rep_fixed32(List<Integer> ext_rep_fixed32) {
-      WireInternal.checkElementsNotNull(ext_rep_fixed32);
+      Internal.checkElementsNotNull(ext_rep_fixed32);
       this.ext_rep_fixed32 = ext_rep_fixed32;
       return this;
     }
 
     public Builder ext_rep_sfixed32(List<Integer> ext_rep_sfixed32) {
-      WireInternal.checkElementsNotNull(ext_rep_sfixed32);
+      Internal.checkElementsNotNull(ext_rep_sfixed32);
       this.ext_rep_sfixed32 = ext_rep_sfixed32;
       return this;
     }
 
     public Builder ext_rep_int64(List<Long> ext_rep_int64) {
-      WireInternal.checkElementsNotNull(ext_rep_int64);
+      Internal.checkElementsNotNull(ext_rep_int64);
       this.ext_rep_int64 = ext_rep_int64;
       return this;
     }
 
     public Builder ext_rep_uint64(List<Long> ext_rep_uint64) {
-      WireInternal.checkElementsNotNull(ext_rep_uint64);
+      Internal.checkElementsNotNull(ext_rep_uint64);
       this.ext_rep_uint64 = ext_rep_uint64;
       return this;
     }
 
     public Builder ext_rep_sint64(List<Long> ext_rep_sint64) {
-      WireInternal.checkElementsNotNull(ext_rep_sint64);
+      Internal.checkElementsNotNull(ext_rep_sint64);
       this.ext_rep_sint64 = ext_rep_sint64;
       return this;
     }
 
     public Builder ext_rep_fixed64(List<Long> ext_rep_fixed64) {
-      WireInternal.checkElementsNotNull(ext_rep_fixed64);
+      Internal.checkElementsNotNull(ext_rep_fixed64);
       this.ext_rep_fixed64 = ext_rep_fixed64;
       return this;
     }
 
     public Builder ext_rep_sfixed64(List<Long> ext_rep_sfixed64) {
-      WireInternal.checkElementsNotNull(ext_rep_sfixed64);
+      Internal.checkElementsNotNull(ext_rep_sfixed64);
       this.ext_rep_sfixed64 = ext_rep_sfixed64;
       return this;
     }
 
     public Builder ext_rep_bool(List<Boolean> ext_rep_bool) {
-      WireInternal.checkElementsNotNull(ext_rep_bool);
+      Internal.checkElementsNotNull(ext_rep_bool);
       this.ext_rep_bool = ext_rep_bool;
       return this;
     }
 
     public Builder ext_rep_float(List<Float> ext_rep_float) {
-      WireInternal.checkElementsNotNull(ext_rep_float);
+      Internal.checkElementsNotNull(ext_rep_float);
       this.ext_rep_float = ext_rep_float;
       return this;
     }
 
     public Builder ext_rep_double(List<Double> ext_rep_double) {
-      WireInternal.checkElementsNotNull(ext_rep_double);
+      Internal.checkElementsNotNull(ext_rep_double);
       this.ext_rep_double = ext_rep_double;
       return this;
     }
 
     public Builder ext_rep_string(List<String> ext_rep_string) {
-      WireInternal.checkElementsNotNull(ext_rep_string);
+      Internal.checkElementsNotNull(ext_rep_string);
       this.ext_rep_string = ext_rep_string;
       return this;
     }
 
     public Builder ext_rep_bytes(List<ByteString> ext_rep_bytes) {
-      WireInternal.checkElementsNotNull(ext_rep_bytes);
+      Internal.checkElementsNotNull(ext_rep_bytes);
       this.ext_rep_bytes = ext_rep_bytes;
       return this;
     }
 
     public Builder ext_rep_nested_enum(List<NestedEnum> ext_rep_nested_enum) {
-      WireInternal.checkElementsNotNull(ext_rep_nested_enum);
+      Internal.checkElementsNotNull(ext_rep_nested_enum);
       this.ext_rep_nested_enum = ext_rep_nested_enum;
       return this;
     }
 
     public Builder ext_rep_nested_message(List<NestedMessage> ext_rep_nested_message) {
-      WireInternal.checkElementsNotNull(ext_rep_nested_message);
+      Internal.checkElementsNotNull(ext_rep_nested_message);
       this.ext_rep_nested_message = ext_rep_nested_message;
       return this;
     }
 
     public Builder ext_pack_int32(List<Integer> ext_pack_int32) {
-      WireInternal.checkElementsNotNull(ext_pack_int32);
+      Internal.checkElementsNotNull(ext_pack_int32);
       this.ext_pack_int32 = ext_pack_int32;
       return this;
     }
 
     public Builder ext_pack_uint32(List<Integer> ext_pack_uint32) {
-      WireInternal.checkElementsNotNull(ext_pack_uint32);
+      Internal.checkElementsNotNull(ext_pack_uint32);
       this.ext_pack_uint32 = ext_pack_uint32;
       return this;
     }
 
     public Builder ext_pack_sint32(List<Integer> ext_pack_sint32) {
-      WireInternal.checkElementsNotNull(ext_pack_sint32);
+      Internal.checkElementsNotNull(ext_pack_sint32);
       this.ext_pack_sint32 = ext_pack_sint32;
       return this;
     }
 
     public Builder ext_pack_fixed32(List<Integer> ext_pack_fixed32) {
-      WireInternal.checkElementsNotNull(ext_pack_fixed32);
+      Internal.checkElementsNotNull(ext_pack_fixed32);
       this.ext_pack_fixed32 = ext_pack_fixed32;
       return this;
     }
 
     public Builder ext_pack_sfixed32(List<Integer> ext_pack_sfixed32) {
-      WireInternal.checkElementsNotNull(ext_pack_sfixed32);
+      Internal.checkElementsNotNull(ext_pack_sfixed32);
       this.ext_pack_sfixed32 = ext_pack_sfixed32;
       return this;
     }
 
     public Builder ext_pack_int64(List<Long> ext_pack_int64) {
-      WireInternal.checkElementsNotNull(ext_pack_int64);
+      Internal.checkElementsNotNull(ext_pack_int64);
       this.ext_pack_int64 = ext_pack_int64;
       return this;
     }
 
     public Builder ext_pack_uint64(List<Long> ext_pack_uint64) {
-      WireInternal.checkElementsNotNull(ext_pack_uint64);
+      Internal.checkElementsNotNull(ext_pack_uint64);
       this.ext_pack_uint64 = ext_pack_uint64;
       return this;
     }
 
     public Builder ext_pack_sint64(List<Long> ext_pack_sint64) {
-      WireInternal.checkElementsNotNull(ext_pack_sint64);
+      Internal.checkElementsNotNull(ext_pack_sint64);
       this.ext_pack_sint64 = ext_pack_sint64;
       return this;
     }
 
     public Builder ext_pack_fixed64(List<Long> ext_pack_fixed64) {
-      WireInternal.checkElementsNotNull(ext_pack_fixed64);
+      Internal.checkElementsNotNull(ext_pack_fixed64);
       this.ext_pack_fixed64 = ext_pack_fixed64;
       return this;
     }
 
     public Builder ext_pack_sfixed64(List<Long> ext_pack_sfixed64) {
-      WireInternal.checkElementsNotNull(ext_pack_sfixed64);
+      Internal.checkElementsNotNull(ext_pack_sfixed64);
       this.ext_pack_sfixed64 = ext_pack_sfixed64;
       return this;
     }
 
     public Builder ext_pack_bool(List<Boolean> ext_pack_bool) {
-      WireInternal.checkElementsNotNull(ext_pack_bool);
+      Internal.checkElementsNotNull(ext_pack_bool);
       this.ext_pack_bool = ext_pack_bool;
       return this;
     }
 
     public Builder ext_pack_float(List<Float> ext_pack_float) {
-      WireInternal.checkElementsNotNull(ext_pack_float);
+      Internal.checkElementsNotNull(ext_pack_float);
       this.ext_pack_float = ext_pack_float;
       return this;
     }
 
     public Builder ext_pack_double(List<Double> ext_pack_double) {
-      WireInternal.checkElementsNotNull(ext_pack_double);
+      Internal.checkElementsNotNull(ext_pack_double);
       this.ext_pack_double = ext_pack_double;
       return this;
     }
 
     public Builder ext_pack_nested_enum(List<NestedEnum> ext_pack_nested_enum) {
-      WireInternal.checkElementsNotNull(ext_pack_nested_enum);
+      Internal.checkElementsNotNull(ext_pack_nested_enum);
       this.ext_pack_nested_enum = ext_pack_nested_enum;
       return this;
     }
@@ -2888,7 +2888,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           || req_bytes == null
           || req_nested_enum == null
           || req_nested_message == null) {
-        throw WireInternal.missingRequiredFields(req_int32, "req_int32",
+        throw Internal.missingRequiredFields(req_int32, "req_int32",
             req_uint32, "req_uint32",
             req_sint32, "req_sint32",
             req_fixed32, "req_fixed32",
@@ -2972,8 +2972,8 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
       NestedMessage o = (NestedMessage) other;
-      return WireInternal.equals(unknownFields(), o.unknownFields())
-          && WireInternal.equals(a, o.a);
+      return Internal.equals(unknownFields(), o.unknownFields())
+          && Internal.equals(a, o.a);
     }
 
     @Override
@@ -3535,9 +3535,9 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       Builder builder = value.newBuilder();
       if (builder.opt_nested_message != null) builder.opt_nested_message = NestedMessage.ADAPTER.redact(builder.opt_nested_message);
       if (builder.req_nested_message != null) builder.req_nested_message = NestedMessage.ADAPTER.redact(builder.req_nested_message);
-      WireInternal.redactElements(builder.rep_nested_message, NestedMessage.ADAPTER);
+      Internal.redactElements(builder.rep_nested_message, NestedMessage.ADAPTER);
       if (builder.ext_opt_nested_message != null) builder.ext_opt_nested_message = NestedMessage.ADAPTER.redact(builder.ext_opt_nested_message);
-      WireInternal.redactElements(builder.ext_rep_nested_message, NestedMessage.ADAPTER);
+      Internal.redactElements(builder.ext_rep_nested_message, NestedMessage.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

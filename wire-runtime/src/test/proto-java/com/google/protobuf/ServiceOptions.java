@@ -8,7 +8,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
-import com.squareup.wire.WireInternal;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Object;
@@ -58,14 +58,14 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
   public ServiceOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
     super(unknownFields);
     this.deprecated = deprecated;
-    this.uninterpreted_option = WireInternal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.deprecated = deprecated;
-    builder.uninterpreted_option = WireInternal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -75,9 +75,9 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     if (other == this) return true;
     if (!(other instanceof ServiceOptions)) return false;
     ServiceOptions o = (ServiceOptions) other;
-    return WireInternal.equals(unknownFields(), o.unknownFields())
-        && WireInternal.equals(deprecated, o.deprecated)
-        && WireInternal.equals(uninterpreted_option, o.uninterpreted_option);
+    return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(deprecated, o.deprecated)
+        && Internal.equals(uninterpreted_option, o.uninterpreted_option);
   }
 
   @Override
@@ -106,7 +106,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     public List<UninterpretedOption> uninterpreted_option;
 
     public Builder() {
-      uninterpreted_option = WireInternal.newMutableList();
+      uninterpreted_option = Internal.newMutableList();
     }
 
     /**
@@ -128,7 +128,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
-      WireInternal.checkElementsNotNull(uninterpreted_option);
+      Internal.checkElementsNotNull(uninterpreted_option);
       this.uninterpreted_option = uninterpreted_option;
       return this;
     }
@@ -180,7 +180,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     @Override
     public ServiceOptions redact(ServiceOptions value) {
       Builder builder = value.newBuilder();
-      WireInternal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
+      Internal.redactElements(builder.uninterpreted_option, UninterpretedOption.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }
