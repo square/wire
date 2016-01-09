@@ -2,12 +2,12 @@
 
 set -e
 
-mvn clean package -pl wire-compiler -am -Dmaven.test.skip
+./gradlew -p wire-compiler clean installDist
 
 cd wire-runtime
 PROTOS=`find src/test/proto -name '*.proto' | sed 's|^src/test/proto/||'`
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java \
   google/protobuf/descriptor.proto \
@@ -15,7 +15,7 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
 
 # NO OPTIONS
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.noOptions \
   --excludes=google.protobuf.* \
@@ -28,7 +28,7 @@ cp src/test/proto-java.noOptions/com/squareup/wire/protos/custom_options/Message
 
 # INCLUDES / EXCLUDES
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.pruned \
   --includes=squareup.protos.roots.A \
@@ -42,7 +42,7 @@ cp src/test/proto-java.pruned/com/squareup/wire/protos/roots/D.java \
 
 # ANDROID
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.android \
   --android \
@@ -53,7 +53,7 @@ cp src/test/proto-java.android/com/squareup/wire/protos/person/Person.java \
 
 # COMPACT
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.compact \
   --compact \

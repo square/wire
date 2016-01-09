@@ -1,0 +1,7 @@
+apply plugin: "java"
+
+dependencies {
+  compile project(":wire-runtime")
+
+  compile dep.okio
+}

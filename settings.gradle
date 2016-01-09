@@ -1,0 +1,11 @@
+include ':wire-compiler'
+include ':wire-codegen-sample'
+include ':wire-gson-support'
+include ':wire-java-generator'
+include ':wire-maven-plugin'
+include ':wire-runtime'
+include ':wire-schema'
+
+//include ':sample'
+
+rootProject.name = 'wire-root'

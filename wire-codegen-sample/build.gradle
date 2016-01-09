@@ -1,0 +1,19 @@
+apply plugin: "java"
+
+dependencies {
+  compile project(":wire-java-generator")
+  compile project(":wire-runtime")
+  compile project(":wire-schema")
+
+  compile dep.guava
+  compile dep.javapoet
+  compile dep.okio
+  compile dep.mavenCore
+  compile dep.mavenPluginApi
+  compile dep.mavenPluginAnnotations
+
+  testCompile dep.assertj
+  testCompile dep.junit
+}
+
+apply from: rootProject.file("gradle/gradle-mvn-push.gradle")

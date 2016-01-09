@@ -1,0 +1,22 @@
+apply plugin: "java"
+apply plugin: "nebula.provided-base"
+
+sourceSets {
+  test {
+    java.srcDirs += "src/test/proto-java"
+  }
+}
+
+dependencies {
+  compile dep.okio
+
+  provided dep.intellijAnnotations
+
+  testCompile dep.assertj
+  testCompile dep.javaxInject
+  testCompile dep.junit
+  testCompile dep.retrofit
+  testCompile dep.rxjava
+}
+
+apply from: rootProject.file("gradle/gradle-mvn-push.gradle")

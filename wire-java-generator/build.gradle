@@ -1,0 +1,16 @@
+apply plugin: "java"
+apply plugin: "nebula.provided-base"
+
+dependencies {
+  compile project(":wire-runtime")
+  compile project(":wire-schema")
+
+  compile dep.guava
+  compile dep.javapoet
+  compile dep.okio
+
+  testCompile dep.assertj
+  testCompile dep.junit
+}
+
+apply from: rootProject.file("gradle/gradle-mvn-push.gradle")

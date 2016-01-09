@@ -7,6 +7,10 @@ classes
 .classpath
 .project
 
+# Gradle
+build/
+.gradle/
+
 # Maven
 target
 pom.xml.*
