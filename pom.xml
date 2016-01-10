@@ -44,6 +44,7 @@
   <modules>
     <module>sample</module>
     <module>wire-compiler</module>
+    <module>wire-codegen-sample</module>
     <module>wire-gson-support</module>
     <module>wire-java-generator</module>
     <module>wire-maven-plugin</module>
