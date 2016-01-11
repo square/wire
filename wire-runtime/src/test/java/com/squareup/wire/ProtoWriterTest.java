@@ -15,11 +15,14 @@
  */
 package com.squareup.wire;
 
-import java.io.IOException;
 import okio.Buffer;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public final class ProtoWriterTest {
   @Test public void utf8() throws IOException {
@@ -50,6 +53,55 @@ public final class ProtoWriterTest {
     assertUtf8("\ud800\ud800\udc00", "3ff0908080"); // High surrogate followed by surrogate pair.
     assertUtf8("\udc00A", "3f41"); // Unexpected low surrogate.
     assertUtf8("\udc00", "3f"); // Unexpected, dangling low surrogate.
+  }
+
+  @Test public void staticInt32Size() {
+    assertThat(ProtoWriter.int32Size(0)).isEqualTo(1);
+    assertThat(ProtoWriter.int32Size(127)).isEqualTo(1);
+    assertThat(ProtoWriter.int32Size(128)).isEqualTo(2);
+    assertThat(ProtoWriter.int32Size(16383)).isEqualTo(2);
+    assertThat(ProtoWriter.int32Size(16384)).isEqualTo(3);
+    assertThat(ProtoWriter.int32Size(2097151)).isEqualTo(3);
+    assertThat(ProtoWriter.int32Size(2097152)).isEqualTo(4);
+    assertThat(ProtoWriter.int32Size(268435455)).isEqualTo(4);
+    assertThat(ProtoWriter.int32Size(268435456)).isEqualTo(5);
+    assertThat(ProtoWriter.int32Size(Integer.MAX_VALUE)).isEqualTo(5);
+    assertThat(ProtoWriter.int32Size(Integer.MIN_VALUE)).isEqualTo(10);
+    assertThat(ProtoWriter.int32Size(-1)).isEqualTo(10);
+  }
+
+  @Test public void staticVarInt32Size() {
+    assertThat(ProtoWriter.varint32Size(0)).isEqualTo(1);
+    assertThat(ProtoWriter.varint32Size(127)).isEqualTo(1);
+    assertThat(ProtoWriter.varint32Size(128)).isEqualTo(2);
+    assertThat(ProtoWriter.varint32Size(16383)).isEqualTo(2);
+    assertThat(ProtoWriter.varint32Size(16384)).isEqualTo(3);
+    assertThat(ProtoWriter.varint32Size(2097151)).isEqualTo(3);
+    assertThat(ProtoWriter.varint32Size(2097152)).isEqualTo(4);
+    assertThat(ProtoWriter.varint32Size(268435455)).isEqualTo(4);
+    assertThat(ProtoWriter.varint32Size(268435456)).isEqualTo(5);
+  }
+
+  @Test public void staticVarInt64Size() {
+    assertThat(ProtoWriter.varint64Size(0L)).isEqualTo(1);
+    assertThat(ProtoWriter.varint64Size(127L)).isEqualTo(1);
+    assertThat(ProtoWriter.varint64Size(128L)).isEqualTo(2);
+    assertThat(ProtoWriter.varint64Size(16383L)).isEqualTo(2);
+    assertThat(ProtoWriter.varint64Size(16384L)).isEqualTo(3);
+    assertThat(ProtoWriter.varint64Size(2097151L)).isEqualTo(3);
+    assertThat(ProtoWriter.varint64Size(2097152L)).isEqualTo(4);
+    assertThat(ProtoWriter.varint64Size(268435455L)).isEqualTo(4);
+    assertThat(ProtoWriter.varint64Size(268435456L)).isEqualTo(5);
+    assertThat(ProtoWriter.varint64Size(34359738367L)).isEqualTo(5);
+    assertThat(ProtoWriter.varint64Size(34359738368L)).isEqualTo(6);
+    assertThat(ProtoWriter.varint64Size(4398046511103L)).isEqualTo(6);
+    assertThat(ProtoWriter.varint64Size(4398046511104L)).isEqualTo(7);
+    assertThat(ProtoWriter.varint64Size(562949953421311L)).isEqualTo(7);
+    assertThat(ProtoWriter.varint64Size(562949953421312L)).isEqualTo(8);
+    assertThat(ProtoWriter.varint64Size(72057594037927935L)).isEqualTo(8);
+    assertThat(ProtoWriter.varint64Size(72057594037927936L)).isEqualTo(9);
+    assertThat(ProtoWriter.varint64Size(9223372036854775807L)).isEqualTo(9);
+    assertThat(ProtoWriter.varint64Size(Long.MAX_VALUE)).isEqualTo(9);
   }
 
   private void assertUtf8(String string, String expectedHex) throws IOException {
