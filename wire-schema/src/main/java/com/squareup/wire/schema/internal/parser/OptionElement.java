@@ -85,7 +85,7 @@ public abstract class OptionElement {
         builder.append(']');
         return builder.toString();
       }
-      default:
+      default:    // unreachable statement
         throw new AssertionError();
     }
   }

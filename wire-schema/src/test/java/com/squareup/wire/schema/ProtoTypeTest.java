@@ -25,12 +25,53 @@ public final class ProtoTypeTest {
     assertThat(ProtoType.get("int32")).isSameAs(ProtoType.INT32);
     assertThat(ProtoType.get("Person")).isEqualTo(ProtoType.get("Person"));
     assertThat(ProtoType.get("squareup.protos.person", "Person"))
-        .isEqualTo(ProtoType.get("squareup.protos.person.Person"));
+      .isEqualTo(ProtoType.get("squareup.protos.person.Person"));
+    assertThat(ProtoType.get("Person")).isNotEqualTo(ProtoType.get("squareup.protos.person.Person"));
+    assertThat(ProtoType.get("int32")).isNotEqualTo("int32");
   }
 
   @Test public void simpleName() throws Exception {
     ProtoType person = ProtoType.get("squareup.protos.person.Person");
     assertThat(person.simpleName()).isEqualTo("Person");
+  }
+
+  @Test public void nullName() throws Exception {
+    try {
+      // when
+      ProtoType.get(null);
+
+      // then
+      fail("ProtoType should throw IllegalArgumentException when null is passed as type name");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("unexpected name: null");
+    }
+  }
+
+  @Test public void emptyName() throws Exception {
+    try {
+      // when
+      ProtoType.get("");
+
+      // then
+      fail("ProtoType should throw IllegalArgumentException when empty string is passed as type name");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("unexpected name: ");
+    }
+  }
+
+  @Test public void illegalSymbolsName() throws Exception {
+    try {
+      // when
+      ProtoType.get("illegal#Name");
+
+      // then
+      fail("ProtoType should throw IllegalArgumentException when string with illegal symbols is passed as type name");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("unexpected name: illegal#Name");
+    }
   }
 
   @Test public void scalarToString() throws Exception {
@@ -41,7 +82,46 @@ public final class ProtoTypeTest {
 
   @Test public void nestedType() throws Exception {
     assertThat(ProtoType.get("squareup.protos.person.Person").nestedType("PhoneType"))
-        .isEqualTo(ProtoType.get("squareup.protos.person.Person.PhoneType"));
+      .isEqualTo(ProtoType.get("squareup.protos.person.Person.PhoneType"));
+  }
+
+  @Test public void nullNestedType() throws Exception {
+    try {
+      // when
+      ProtoType.get("squareup.protos.person.Person").nestedType(null);
+
+      // then
+      fail("ProtoType should throw IllegalArgumentException when null is passed as nested type");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("unexpected name: null");
+    }
+  }
+
+  @Test public void emptyNestedType() throws Exception {
+    try {
+      // when
+      ProtoType.get("squareup.protos.person.Person").nestedType("");
+
+      // then
+      fail("ProtoType should throw IllegalArgumentException when empty string is passed as nested type");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("unexpected name: ");
+    }
+  }
+
+  @Test public void illegalSymbolsNestedType() throws Exception {
+    try {
+      // when
+      ProtoType.get("squareup.protos.person.Person").nestedType("Nested.Type");
+
+      // then
+      fail("ProtoType should throw IllegalArgumentException when string with illegal symbols is passed as nested type");
+    }
+    catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("unexpected name: Nested.Type");
+    }
   }
 
   @Test public void primitivesCannotNest() throws Exception {

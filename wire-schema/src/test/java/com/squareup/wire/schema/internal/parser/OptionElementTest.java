@@ -19,12 +19,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.OPTION;
 import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST;
 import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP;
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.OPTION;
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN;
+import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.NUMBER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public final class OptionElementTest {
   @Test public void simpleToSchema() {
@@ -54,14 +56,22 @@ public final class OptionElementTest {
 
   @Test public void mapToSchema() {
     OptionElement option = OptionElement.create("foo", MAP,
-        ImmutableMap.of("ping", "pong", "kit", ImmutableList.of("kat", "kot")));
+        ImmutableMap.of("ping", "pong",
+                        "kit", ImmutableList.of("kat", "kot"),
+                        "tic", ImmutableMap.of("tac", "tac", "toe", "toe"),
+                        "top", 5));
     String expected = ""
         + "foo = {\n"
         + "  ping: \"pong\",\n"
         + "  kit: [\n"
         + "    \"kat\",\n"
         + "    \"kot\"\n"
-        + "  ]\n"
+        + "  ],\n"
+        + "  tic: {\n"
+        + "    tac: \"tac\",\n"
+        + "    toe: \"toe\"\n"
+        + "  },\n"
+        + "  top: 5\n"
         + "}";
     assertThat(option.toSchema()).isEqualTo(expected);
   }
@@ -70,5 +80,30 @@ public final class OptionElementTest {
     OptionElement option = OptionElement.create("foo", BOOLEAN, "false");
     String expected = "foo = false";
     assertThat(option.toSchema()).isEqualTo(expected);
+  }
+
+  @Test public void numberToSchema() {
+    OptionElement option = OptionElement.create("foo", NUMBER, "50");
+    String expected = "foo = 50";
+    assertThat(option.toSchema()).isEqualTo(expected);
+  }
+
+  @Test public void enumToSchema() {
+    OptionElement option = OptionElement.create("foo", OptionElement.Kind.ENUM, "FakeEnum.UNDEFINED");
+    String expected = "foo = FakeEnum.UNDEFINED";
+    assertThat(option.toSchema()).isEqualTo(expected);
+  }
+
+  @Test public void createNullKindOptionElement() {
+    try {
+      // when
+      OptionElement.create("foo", null, "null");
+
+      // then
+      fail("OptionElement should throw NullPointerException when tries to convert to schema with null kind");
+    }
+    catch (NullPointerException e) {
+      assertThat(e).hasMessage("Null kind");
+    }
   }
 }

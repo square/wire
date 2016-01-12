@@ -40,6 +40,32 @@ public final class PrunerTest {
     assertThat(pruned.getType("MessageB")).isNull();
   }
 
+  @Test public void retainTypeWithOneOf() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("service.proto", ""
+        + "message MessageA {\n"
+        + "  oneof selection {\n"
+        + "    string a = 1;\n"
+        + "    string b = 2;\n"
+        + "  }\n"
+        + "}\n")
+      .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+      .include("MessageA")
+      .build());
+    assertThat(pruned.getType("MessageA")).isNotNull();
+
+    assertThat(((MessageType) pruned.getType("MessageA")).oneOfs().size()).isEqualTo(1);
+
+    OneOf prunedOneOf = ((MessageType) pruned.getType("MessageA")).oneOfs().get(0);
+    assertThat(prunedOneOf.name()).isEqualTo("selection");
+    assertThat(prunedOneOf.fields().size()).isEqualTo(2);
+    assertThat(prunedOneOf.fields().get(0).name()).isEqualTo("a");
+    assertThat(prunedOneOf.fields().get(0).tag()).isEqualTo(1);
+    assertThat(prunedOneOf.fields().get(1).name()).isEqualTo("b");
+    assertThat(prunedOneOf.fields().get(1).tag()).isEqualTo(2);
+  }
+
   @Test public void retainTypeRetainsEnclosingButNotNested() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""
@@ -123,9 +149,11 @@ public final class PrunerTest {
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA#b")
+        .include("MessageA#d")
         .build());
     assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
     assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("d")).isNull();
     assertThat(pruned.getType("MessageB")).isNull();
   }
 
@@ -155,6 +183,33 @@ public final class PrunerTest {
     assertThat(pruned.getType("MessageD")).isNull();
   }
 
+  @Test public void retainOneOfField() throws Exception {
+    Schema schema = new SchemaBuilder()
+      .add("service.proto", ""
+        + "message Message {\n"
+        + "  oneof selection {\n"
+        + "    string a = 1;\n"
+        + "    string b = 2;\n"
+        + "  }\n"
+        + "  optional string c = 3;\n"
+        + "}\n")
+      .build();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+      .include("Message#b")
+      .build());
+
+    MessageType prunedMessage = (MessageType) pruned.getType("Message");
+    assertThat(prunedMessage.oneOfs().size()).isEqualTo(1);
+
+    OneOf prunedOneOf = prunedMessage.oneOfs().get(0);
+    assertThat(prunedOneOf.name()).isEqualTo("selection");
+    assertThat(prunedOneOf.fields().size()).isEqualTo(1);
+
+    Field prunedOneOfField = prunedOneOf.fields().get(0);
+    assertThat(prunedOneOfField.name()).isEqualTo("b");
+    assertThat(prunedOneOfField.tag()).isEqualTo(2);
+  }
+
   @Test public void retainFieldPrunesOneOf() throws Exception {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""
@@ -176,6 +231,7 @@ public final class PrunerTest {
     Schema schema = new SchemaBuilder()
         .add("service.proto", ""
             + "message Message {\n"
+            + "  // oneOf comment\n"
             + "  oneof selection {\n"
             + "    string a = 1;\n"
             + "    string b = 2;\n"
@@ -189,6 +245,7 @@ public final class PrunerTest {
     MessageType message = (MessageType) pruned.getType("Message");
     OneOf onlyOneOf = getOnlyElement(message.oneOfs());
     assertThat(onlyOneOf.name()).isEqualTo("selection");
+    assertThat(onlyOneOf.documentation()).isEqualTo("oneOf comment");
     assertThat(getOnlyElement(onlyOneOf.fields()).name()).isEqualTo("b");
     assertThat(message.field("a")).isNull();
     assertThat(message.field("c")).isNull();
@@ -449,6 +506,8 @@ public final class PrunerTest {
             + "service ServiceA {\n"
             + "  rpc CallB (MessageB) returns (MessageB);\n"
             + "  rpc CallC (MessageC) returns (MessageC);\n"
+            + "  rpc CallD (MessageC) returns (MessageB);\n"
+            + "  rpc CallE (MessageB) returns (MessageC);\n"
             + "}\n"
             + "message MessageB {\n"
             + "}\n"
@@ -463,6 +522,8 @@ public final class PrunerTest {
     assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull();
     assertThat(pruned.getType("MessageC")).isNull();
     assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull();
+    assertThat(pruned.getService("ServiceA").rpc("CallD")).isNull();
+    assertThat(pruned.getService("ServiceA").rpc("CallE")).isNull();
   }
 
   @Test public void excludeRpcExcludesTypes() throws Exception {

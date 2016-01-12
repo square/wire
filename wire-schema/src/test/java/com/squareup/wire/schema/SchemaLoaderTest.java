@@ -15,16 +15,18 @@
  */
 package com.squareup.wire.schema;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -122,9 +124,9 @@ public final class SchemaLoaderTest {
         + "}");
     File message2 = tempFolder2.newFile("message.proto");
     writeFile(message2, ""
-        + "message Message {\n"
-        + "  optional string b = 2;\n"
-        + "}");
+      + "message Message {\n"
+      + "  optional string b = 2;\n"
+      + "}");
 
     Schema schema = new SchemaLoader()
         .addSource(tempFolder1.getRoot())
@@ -132,6 +134,36 @@ public final class SchemaLoaderTest {
         .load();
     MessageType message = (MessageType) schema.getType("Message");
     assertThat(message.field("a")).isNotNull();
+  }
+
+  @Test public void schemaLoaderSources() throws IOException {
+    File message1 = tempFolder1.newFile("message.proto");
+    tempFolder2.newFile("message.proto");
+
+    SchemaLoader schemaLoader = new SchemaLoader()
+      .addSource(tempFolder1.getRoot())
+      .addSource(tempFolder2.getRoot())
+      .addProto(message1.getName());
+
+    assertThat(schemaLoader.sources().size()).isEqualTo(2);
+    assertThat((Iterable<Path>) schemaLoader.sources().get(0)).isEqualTo(tempFolder1.getRoot().toPath());
+    assertThat((Iterable<Path>) schemaLoader.sources().get(1)).isEqualTo(tempFolder2.getRoot().toPath());
+
+    assertThat(schemaLoader.protos().size()).isEqualTo(1);
+    assertThat(schemaLoader.protos().get(0)).isEqualTo(message1.getName());
+  }
+
+  @Test public void loadWithoutSources() throws IOException {
+    try {
+      // when
+      new SchemaLoader().load();
+
+      // then
+      fail("SchemaLoader should throw IllegalStateException when no source is attached");
+    }
+    catch (IllegalStateException e) {
+      assertThat(e).hasMessage("No sources added.");
+    }
   }
 
   private void writeFile(File file, String content) throws IOException {
