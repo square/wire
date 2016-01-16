@@ -18,9 +18,11 @@ package com.squareup.wire;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.io.ObjectStreamException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
 import okio.Buffer;
+import okio.BufferedSink;
 import okio.ByteString;
 
 /** A protocol buffer message. */
@@ -70,6 +72,21 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
 
   protected final Object writeReplace() throws ObjectStreamException {
     return new MessageSerializedForm(this, getClass());
+  }
+
+  /** Encode this message and write it to {@code stream}. */
+  public final void encode(BufferedSink sink) throws IOException {
+    ProtoAdapter.get(this).encode(sink, this);
+  }
+
+  /** Encode this message as a {@code byte[]}. */
+  public final byte[] encode() {
+    return ProtoAdapter.get(this).encode(this);
+  }
+
+  /** Encode this message and write it to {@code stream}. */
+  public final void encode(OutputStream stream) throws IOException {
+    ProtoAdapter.get(this).encode(stream, this);
   }
 
   /**
