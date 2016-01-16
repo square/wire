@@ -32,7 +32,7 @@ public final class ProtoAdapterTest {
 
     ProtoAdapter<Person> personAdapter = ProtoAdapter.get(Person.class);
     assertThat(ByteString.of(personAdapter.encode(person))).isEqualTo(encoded);
-    assertThat(personAdapter.decode(encoded.toByteArray())).isEqualTo(person);
+    assertThat(personAdapter.decode(encoded)).isEqualTo(person);
   }
 
   @Test public void getFromInstanceSameAsFromClass() throws Exception {
