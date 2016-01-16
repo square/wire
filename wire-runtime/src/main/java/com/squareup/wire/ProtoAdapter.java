@@ -164,6 +164,12 @@ public abstract class ProtoAdapter<E> {
     return decode(new Buffer().write(bytes));
   }
 
+  /** Read an encoded message from {@code bytes}. */
+  public final E decode(ByteString bytes) throws IOException {
+    checkNotNull(bytes, "bytes == null");
+    return decode(new Buffer().write(bytes));
+  }
+
   /** Read an encoded message from {@code stream}. */
   public final E decode(InputStream stream) throws IOException {
     checkNotNull(stream, "stream == null");
