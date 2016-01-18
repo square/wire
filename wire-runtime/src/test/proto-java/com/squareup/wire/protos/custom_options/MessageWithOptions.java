@@ -83,7 +83,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
   }
 
   public MessageWithOptions(ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
   }
 
   @Override

@@ -155,7 +155,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   }
 
   public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.foo = foo;
     this.bar = bar;
     this.baz = baz;
@@ -331,7 +331,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
 
     public Nested(FooBarBazEnum value, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.value = value;
     }
 
@@ -455,7 +455,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
 
     public More(List<Integer> serial, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.serial = Internal.immutableCopyOf("serial", serial);
     }
 

@@ -34,7 +34,7 @@ public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataRe
   }
 
   public LetsDataResponse(ByteString data, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.data = data;
   }
 

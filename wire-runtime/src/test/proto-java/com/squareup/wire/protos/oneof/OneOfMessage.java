@@ -60,7 +60,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
   }
 
   public OneOfMessage(Integer foo, String bar, String baz, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     if (Internal.countNonNull(foo, bar, baz) > 1) {
       throw new IllegalArgumentException("at most one of foo, bar, baz may be non-null");
     }

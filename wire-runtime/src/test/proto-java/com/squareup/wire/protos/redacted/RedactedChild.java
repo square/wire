@@ -46,7 +46,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
   }
 
   public RedactedChild(String a, Redacted b, NotRedacted c, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.a = a;
     this.b = b;
     this.c = c;

@@ -85,7 +85,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   }
 
   public EnumValueOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Integer enum_value_option, FooBar.More complex_enum_value_option, Boolean foreign_enum_value_option, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.deprecated = deprecated;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.enum_value_option = enum_value_option;

@@ -35,7 +35,7 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
   }
 
   public ChildPackage(ForeignEnum inner_foreign_enum, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.inner_foreign_enum = inner_foreign_enum;
   }
 

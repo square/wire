@@ -75,7 +75,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
   }
 
   public EnumOptions(Boolean allow_alias, Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Boolean enum_option, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.allow_alias = allow_alias;
     this.deprecated = deprecated;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);

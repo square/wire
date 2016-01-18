@@ -105,7 +105,7 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
   }
 
   public Message(String unknownFields, String other, String o, String result, String hashCode, String serialVersionUID_, String ADAPTER_, String MESSAGE_OPTIONS_, String this_, String message, ByteString unknownFields_) {
-    super(unknownFields_);
+    super(ADAPTER, unknownFields_);
     this.unknownFields = unknownFields;
     this.other = other;
     this.o = o;

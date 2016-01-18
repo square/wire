@@ -35,7 +35,7 @@ public final class OneField extends Message<OneField, OneField.Builder> {
   }
 
   public OneField(Integer opt_int32, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.opt_int32 = opt_int32;
   }
 

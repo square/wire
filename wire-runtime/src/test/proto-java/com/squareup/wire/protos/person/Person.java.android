@@ -95,7 +95,7 @@ public final class Person extends Message<Person, Person.Builder> implements Par
   }
 
   public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.name = name;
     this.id = id;
     this.email = email;
@@ -302,7 +302,7 @@ public final class Person extends Message<Person, Person.Builder> implements Par
     }
 
     public PhoneNumber(String number, @Nullable PhoneType type, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.number = number;
       this.type = type;
     }

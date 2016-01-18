@@ -145,7 +145,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
   }
 
   public FileDescriptorProto(String name, String package_, List<String> dependency, List<Integer> public_dependency, List<Integer> weak_dependency, List<DescriptorProto> message_type, List<EnumDescriptorProto> enum_type, List<ServiceDescriptorProto> service, List<FieldDescriptorProto> extension, FileOptions options, SourceCodeInfo source_code_info, String syntax, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.name = name;
     this.package_ = package_;
     this.dependency = Internal.immutableCopyOf("dependency", dependency);

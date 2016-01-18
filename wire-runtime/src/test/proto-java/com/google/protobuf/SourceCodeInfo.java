@@ -86,7 +86,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
   }
 
   public SourceCodeInfo(List<Location> location, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.location = Internal.immutableCopyOf("location", location);
   }
 
@@ -317,7 +317,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     }
 
     public Location(List<Integer> path, List<Integer> span, String leading_comments, String trailing_comments, List<String> leading_detached_comments, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.path = Internal.immutableCopyOf("path", path);
       this.span = Internal.immutableCopyOf("span", span);
       this.leading_comments = leading_comments;

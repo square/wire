@@ -127,7 +127,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
   }
 
   public FieldDescriptorProto(String name, Integer number, Label label, Type type, String type_name, String extendee, String default_value, Integer oneof_index, FieldOptions options, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.name = name;
     this.number = number;
     this.label = label;

@@ -24,7 +24,7 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
   }
 
   public NoFields(ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
   }
 
   @Override

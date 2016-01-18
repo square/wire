@@ -86,7 +86,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
   }
 
   public MethodDescriptorProto(String name, String input_type, String output_type, MethodOptions options, Boolean client_streaming, Boolean server_streaming, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.name = name;
     this.input_type = input_type;
     this.output_type = output_type;

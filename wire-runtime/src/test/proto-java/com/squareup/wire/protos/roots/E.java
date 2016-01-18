@@ -41,7 +41,7 @@ public final class E extends Message<E, E.Builder> {
   }
 
   public E(F f, G g, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.f = f;
     this.g = g;
   }
@@ -127,7 +127,7 @@ public final class E extends Message<E, E.Builder> {
     }
 
     public F(Integer i, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.i = i;
     }
 

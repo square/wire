@@ -251,7 +251,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   }
 
   public FieldOptions(CType ctype, Boolean packed, JSType jstype, Boolean lazy, Boolean deprecated, Boolean weak, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one, Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three, FooBar my_field_option_four, String squareup_protos_extension_collision_1_a, String b, String squareup_protos_extension_collision_2_a, String c, Boolean redacted, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.ctype = ctype;
     this.packed = packed;
     this.jstype = jstype;

@@ -26,7 +26,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
   }
 
   public Bar(ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
   }
 
   @Override
@@ -72,7 +72,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     }
 
     public Baz(ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
     }
 
     @Override
@@ -126,7 +126,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
       }
 
       public Moo(String boo, ByteString unknownFields) {
-        super(unknownFields);
+        super(ADAPTER, unknownFields);
         this.boo = boo;
       }
 

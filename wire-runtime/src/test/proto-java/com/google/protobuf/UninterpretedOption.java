@@ -97,7 +97,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
   }
 
   public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.name = Internal.immutableCopyOf("name", name);
     this.identifier_value = identifier_value;
     this.positive_int_value = positive_int_value;
@@ -266,7 +266,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     }
 
     public NamePart(String name_part, Boolean is_extension, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.name_part = name_part;
       this.is_extension = is_extension;
     }

@@ -34,7 +34,7 @@ public final class Foos extends Message<Foos, Foos.Builder> {
   }
 
   public Foos(List<Foo> foos, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.foos = Internal.immutableCopyOf("foos", foos);
   }
 

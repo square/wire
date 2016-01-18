@@ -105,7 +105,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   }
 
   public DescriptorProto(String name, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, List<OneofDescriptorProto> oneof_decl, MessageOptions options, List<ReservedRange> reserved_range, List<String> reserved_name, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.name = name;
     this.field = Internal.immutableCopyOf("field", field);
     this.extension = Internal.immutableCopyOf("extension", extension);
@@ -315,7 +315,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     }
 
     public ExtensionRange(Integer start, Integer end, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.start = start;
       this.end = end;
     }
@@ -467,7 +467,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     }
 
     public ReservedRange(Integer start, Integer end, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.start = start;
       this.end = end;
     }

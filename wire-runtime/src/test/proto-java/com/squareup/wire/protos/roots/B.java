@@ -33,7 +33,7 @@ public final class B extends Message<B, B.Builder> {
   }
 
   public B(C c, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.c = c;
   }
 

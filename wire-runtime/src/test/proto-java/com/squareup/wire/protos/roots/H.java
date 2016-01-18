@@ -32,7 +32,7 @@ public final class H extends Message<H, H.Builder> {
   }
 
   public H(E.F ef, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.ef = ef;
   }
 

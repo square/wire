@@ -42,7 +42,7 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
   }
 
   public CollisionSubject(String f, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.f = f;
   }
 

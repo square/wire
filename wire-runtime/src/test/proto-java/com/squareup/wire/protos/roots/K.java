@@ -35,7 +35,7 @@ public final class K extends Message<K, K.Builder> {
   }
 
   public K(Integer i, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.i = i;
   }
 

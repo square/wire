@@ -48,13 +48,12 @@ public final class ProtoAdapterTest {
   }
 
   @Test public void getFromClassWrongType() throws Exception {
-    Message nonGeneratedMessage = new Message(ByteString.EMPTY) {
-      @Override public Builder newBuilder() {
-        throw new AssertionError();
-      }
-    };
     try {
-      ProtoAdapter.get(nonGeneratedMessage.getClass());
+      new Message(ByteString.EMPTY) {
+        @Override public Builder newBuilder() {
+          throw new AssertionError();
+        }
+      };
       fail();
     } catch (IllegalArgumentException expected) {
       assertThat(expected).hasMessageStartingWith("failed to access ");

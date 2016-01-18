@@ -24,7 +24,7 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
   }
 
   public TheRequest(ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
   }
 
   @Override

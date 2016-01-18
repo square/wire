@@ -56,7 +56,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
   }
 
   public ServiceOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.deprecated = deprecated;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }

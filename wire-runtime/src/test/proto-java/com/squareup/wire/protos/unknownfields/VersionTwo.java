@@ -76,7 +76,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
   }
 
   public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.i = i;
     this.v2_i = v2_i;
     this.v2_s = v2_s;

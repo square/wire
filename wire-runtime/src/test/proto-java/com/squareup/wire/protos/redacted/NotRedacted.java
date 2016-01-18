@@ -42,7 +42,7 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
   }
 
   public NotRedacted(String a, String b, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.a = a;
     this.b = b;
   }

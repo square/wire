@@ -35,7 +35,7 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
   }
 
   public VersionOne(Integer i, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.i = i;
   }
 

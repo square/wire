@@ -24,7 +24,7 @@ public final class TheResponse extends Message<TheResponse, TheResponse.Builder>
   }
 
   public TheResponse(ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
   }
 
   @Override

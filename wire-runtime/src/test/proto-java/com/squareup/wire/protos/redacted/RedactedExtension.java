@@ -48,7 +48,7 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
   }
 
   public RedactedExtension(String d, String e, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.d = d;
     this.e = e;
   }

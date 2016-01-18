@@ -44,7 +44,7 @@ public final class I extends Message<I, I.Builder> {
   }
 
   public I(Integer i, J j, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.i = i;
     this.j = j;
   }

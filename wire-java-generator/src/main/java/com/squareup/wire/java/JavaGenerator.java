@@ -873,17 +873,18 @@ public final class JavaGenerator {
   // Example:
   //
   // public SimpleMessage(int optional_int32, long optional_int64, ByteString unknownFields) {
-  //   super(unknownFields);
+  //   super(ADAPTER, unknownFields);
   //   this.optional_int32 = optional_int32;
   //   this.optional_int64 = optional_int64;
   // }
   //
   private MethodSpec messageFieldsAndUnknownFieldsConstructor(
       NameAllocator nameAllocator, MessageType type) {
+    String adapterName = nameAllocator.get("ADAPTER");
     String unknownFieldsName = nameAllocator.get("unknownFields");
     MethodSpec.Builder result = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addStatement("super($N)", unknownFieldsName);
+        .addStatement("super($N, $N)", adapterName, unknownFieldsName);
 
     for (OneOf oneOf : type.oneOfs()) {
       if (oneOf.fields().size() < 2) continue;
