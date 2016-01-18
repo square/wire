@@ -16,10 +16,14 @@
 package com.squareup.wire;
 
 import com.squareup.wire.protos.person.Person;
+import java.io.IOException;
 import okio.ByteString;
 import org.junit.Test;
+import squareup.protos.packed_encoding.EmbeddedMessage;
+import squareup.protos.packed_encoding.OuterMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public final class ProtoAdapterTest {
@@ -64,5 +68,18 @@ public final class ProtoAdapterTest {
     ProtoAdapter<?> adapter = ProtoAdapter.UINT64;
     assertThat(adapter.asRepeated()).isSameAs(adapter.asRepeated());
     assertThat(adapter.asPacked()).isSameAs(adapter.asPacked());
+  }
+
+  /** https://github.com/square/wire/issues/541 */
+  @Test public void embeddedEmptyPackedMessage() throws IOException {
+    OuterMessage outerMessage = new OuterMessage.Builder()
+        .outer_number_before(2)
+        .embedded_message(new EmbeddedMessage.Builder()
+            .inner_number_after(1)
+            .build())
+        .build();
+    OuterMessage outerMessagesAfterSerialisation = OuterMessage.ADAPTER.decode(
+        OuterMessage.ADAPTER.encode(outerMessage));
+    assertEquals(outerMessagesAfterSerialisation, outerMessage);
   }
 }

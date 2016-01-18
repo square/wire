@@ -420,6 +420,10 @@ public abstract class ProtoAdapter<E> {
         return size;
       }
 
+      @Override public int encodedSizeWithTag(int tag, List<E> value) {
+        return value.isEmpty() ? 0 : super.encodedSizeWithTag(tag, value);
+      }
+
       @Override public void encode(ProtoWriter writer, List<E> value) throws IOException {
         for (int i = 0, count = value.size(); i < count; i++) {
           ProtoAdapter.this.encode(writer, value.get(i));
