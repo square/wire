@@ -1,6 +1,18 @@
 Change Log
 ==========
 
+Version 2.1.0 *(2016-01-18)*
+----------------------------
+
+ * **Empty lists of packed values were being encoded incorrectly.** In Wire 2.0.x our message
+   adapters incorrectly included empty lists for `[packed=true]` rather than omitting them. This is
+   now fixed.
+ * New: `Message.encode()` to concisely encode a message.
+ * New: `MessageAdapter.decode(ByteString)` to decode a message from a byte string without an
+   intermediate byte array.
+ * New: Wire now includes a sample code generation for service interfaces.
+
+
 Version 2.0.3 *(2016-01-04)*
 ----------------------------
 

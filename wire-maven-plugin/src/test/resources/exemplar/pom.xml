@@ -33,7 +33,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.6</java.version>
     <!-- TODO(shawn) pass in dependencies of the currently built wire artifact. -->
-    <wire.version>2.0.0-SNAPSHOT</wire.version>
+    <wire.version>2.2.0-SNAPSHOT</wire.version>
   </properties>
 
   <dependencies>
