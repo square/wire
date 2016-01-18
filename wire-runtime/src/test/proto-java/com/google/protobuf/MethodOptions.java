@@ -56,7 +56,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   }
 
   public MethodOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.deprecated = deprecated;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }

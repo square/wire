@@ -74,7 +74,7 @@ public final class Person extends Message<Person, Person.Builder> {
   }
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.name = name;
     this.id = id;
     this.email = email;
@@ -254,7 +254,7 @@ public final class Person extends Message<Person, Person.Builder> {
     }
 
     public PhoneNumber(String number, PhoneType type, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.number = number;
       this.type = type;
     }

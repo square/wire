@@ -34,7 +34,7 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
   }
 
   public OneBytesField(ByteString opt_bytes, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.opt_bytes = opt_bytes;
   }
 

@@ -69,7 +69,7 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
   }
 
   public Redacted(String a, String b, String c, RedactedExtension extension, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.a = a;
     this.b = b;
     this.c = c;

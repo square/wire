@@ -164,7 +164,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
   }
 
   public SimpleMessage(Integer optional_int32, NestedMessage optional_nested_msg, ExternalMessage optional_external_msg, NestedEnum default_nested_enum, Integer required_int32, List<Double> repeated_double, ForeignEnum default_foreign_enum, ForeignEnum no_default_foreign_enum, String package_, String result, String other, String o, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.optional_int32 = optional_int32;
     this.optional_nested_msg = optional_nested_msg;
     this.optional_external_msg = optional_external_msg;
@@ -413,7 +413,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     }
 
     public NestedMessage(Integer bb, ByteString unknownFields) {
-      super(unknownFields);
+      super(ADAPTER, unknownFields);
       this.bb = bb;
     }
 

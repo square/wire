@@ -260,7 +260,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   }
 
   public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8, OptimizeMode optimize_for, String go_package, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, Boolean deprecated, Boolean cc_enable_arenas, String objc_class_prefix, String csharp_namespace, List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.java_package = java_package;
     this.java_outer_classname = java_outer_classname;
     this.java_multiple_files = java_multiple_files;

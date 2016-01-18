@@ -32,7 +32,7 @@ public final class J extends Message<J, J.Builder> {
   }
 
   public J(K k, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.k = k;
   }
 

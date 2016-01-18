@@ -33,7 +33,7 @@ public final class Foo extends Message<Foo, Foo.Builder> {
   }
 
   public Foo(Bar.Baz.Moo moo, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.moo = moo;
   }
 

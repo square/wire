@@ -52,7 +52,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   }
 
   public EnumValueDescriptorProto(String name, Integer number, EnumValueOptions options, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.name = name;
     this.number = number;
     this.options = options;

@@ -42,7 +42,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
   }
 
   public RedactedRequired(String a, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.a = a;
   }
 

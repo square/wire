@@ -53,7 +53,7 @@ public final class A extends Message<A, A.Builder> {
   }
 
   public A(B c, D d, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.c = c;
     this.d = d;
   }

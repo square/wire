@@ -41,7 +41,7 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
   }
 
   public Recursive(Integer value, Recursive recursive, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.value = value;
     this.recursive = recursive;
   }

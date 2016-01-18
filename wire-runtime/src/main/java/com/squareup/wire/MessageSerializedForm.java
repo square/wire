@@ -27,9 +27,8 @@ final class MessageSerializedForm<M extends Message<M, B>, B extends Message.Bui
   private final byte[] bytes;
   private final Class<M> messageClass;
 
-  public MessageSerializedForm(M message, Class<M> messageClass) {
-    //noinspection unchecked
-    this.bytes = ProtoAdapter.get(messageClass).encode(message);
+  public MessageSerializedForm(byte[] bytes, Class<M> messageClass) {
+    this.bytes = bytes;
     this.messageClass = messageClass;
   }
 

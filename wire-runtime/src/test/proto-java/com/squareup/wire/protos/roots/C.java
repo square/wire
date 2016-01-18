@@ -35,7 +35,7 @@ public final class C extends Message<C, C.Builder> {
   }
 
   public C(Integer i, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.i = i;
   }
 

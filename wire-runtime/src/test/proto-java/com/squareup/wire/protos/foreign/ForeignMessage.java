@@ -46,7 +46,7 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
   }
 
   public ForeignMessage(Integer i, Integer j, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.i = i;
     this.j = j;
   }

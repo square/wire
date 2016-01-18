@@ -89,7 +89,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   }
 
   public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.f = f;
     this.fooext = Internal.immutableCopyOf("fooext", fooext);
     this.barext = barext;

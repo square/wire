@@ -38,7 +38,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
   }
 
   public FileDescriptorSet(List<FileDescriptorProto> file, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.file = Internal.immutableCopyOf("file", file);
   }
 

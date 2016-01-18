@@ -37,7 +37,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
   }
 
   public OneofDescriptorProto(String name, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.name = name;
   }
 

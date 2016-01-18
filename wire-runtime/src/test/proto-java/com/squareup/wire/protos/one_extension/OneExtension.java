@@ -43,7 +43,7 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
   }
 
   public OneExtension(String id, Foo foo, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.id = id;
     this.foo = foo;
   }

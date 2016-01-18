@@ -30,6 +30,8 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     implements Serializable {
   private static final long serialVersionUID = 0L;
 
+  private final transient ProtoAdapter<M> adapter;
+
   /** Unknown fields, proto-encoded. We permit null to support magic deserialization. */
   private final transient ByteString unknownFields;
 
@@ -39,10 +41,18 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected transient int hashCode = 0;
 
+  protected Message(ProtoAdapter<M> adapter, ByteString unknownFields) {
+    if (adapter == null) throw new NullPointerException("adapter == null");
+    if (unknownFields == null) throw new NullPointerException("unknownFields == null");
+    this.adapter = adapter;
+    this.unknownFields = unknownFields;
+  }
+
+  @Deprecated // TODO remove for 2.1.
   protected Message(ByteString unknownFields) {
-    if (unknownFields == null) {
-      throw new NullPointerException("unknownFields == null");
-    }
+    if (unknownFields == null) throw new NullPointerException("unknownFields == null");
+    //noinspection unchecked
+    this.adapter = (ProtoAdapter<M>) ProtoAdapter.get(this);
     this.unknownFields = unknownFields;
   }
 
@@ -65,28 +75,37 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     return newBuilder().clearUnknownFields().build();
   }
 
-  @SuppressWarnings("unchecked")
   @Override public String toString() {
-    return ProtoAdapter.get(this).toString(this);
+    //noinspection unchecked
+    return adapter.toString((M) this);
   }
 
   protected final Object writeReplace() throws ObjectStreamException {
-    return new MessageSerializedForm(this, getClass());
+    //noinspection unchecked
+    return new MessageSerializedForm(encode(), getClass());
+  }
+
+  /** The {@link ProtoAdapter} for encoding and decoding messages of this type. */
+  public final ProtoAdapter<M> adapter() {
+    return adapter;
   }
 
   /** Encode this message and write it to {@code stream}. */
   public final void encode(BufferedSink sink) throws IOException {
-    ProtoAdapter.get(this).encode(sink, this);
+    //noinspection unchecked
+    adapter.encode(sink, (M) this);
   }
 
   /** Encode this message as a {@code byte[]}. */
   public final byte[] encode() {
-    return ProtoAdapter.get(this).encode(this);
+    //noinspection unchecked
+    return adapter.encode((M) this);
   }
 
   /** Encode this message and write it to {@code stream}. */
   public final void encode(OutputStream stream) throws IOException {
-    ProtoAdapter.get(this).encode(stream, this);
+    //noinspection unchecked
+    adapter.encode(stream, (M) this);
   }
 
   /**

@@ -32,7 +32,7 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
   }
 
   public RedactedCycleA(RedactedCycleB b, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.b = b;
   }
 

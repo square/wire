@@ -34,7 +34,7 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
   }
 
   public HeresAllTheDataRequest(ByteString data, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.data = data;
   }
 

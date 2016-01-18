@@ -51,7 +51,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
   }
 
   public RedactedRepeated(List<String> a, List<Redacted> b, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.a = Internal.immutableCopyOf("a", a);
     this.b = Internal.immutableCopyOf("b", b);
   }

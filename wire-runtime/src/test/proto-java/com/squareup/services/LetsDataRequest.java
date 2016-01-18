@@ -34,7 +34,7 @@ public final class LetsDataRequest extends Message<LetsDataRequest, LetsDataRequ
   }
 
   public LetsDataRequest(ByteString data, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.data = data;
   }
 

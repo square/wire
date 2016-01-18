@@ -24,7 +24,7 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
   }
 
   public UnnecessaryResponse(ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
   }
 
   @Override

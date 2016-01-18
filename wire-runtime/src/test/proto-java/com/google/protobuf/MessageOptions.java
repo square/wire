@@ -194,7 +194,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   }
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor, Boolean deprecated, Boolean map_entry, List<UninterpretedOption> uninterpreted_option, FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three, FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five, FooBar my_message_option_six, ForeignMessage foreign_message_option, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.message_set_wire_format = message_set_wire_format;
     this.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
     this.deprecated = deprecated;

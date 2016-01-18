@@ -34,7 +34,7 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
   }
 
   public SendDataRequest(ByteString data, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.data = data;
   }
 

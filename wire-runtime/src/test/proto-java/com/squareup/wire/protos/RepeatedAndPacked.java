@@ -42,7 +42,7 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
   }
 
   public RepeatedAndPacked(List<Integer> rep_int32, List<Integer> pack_int32, ByteString unknownFields) {
-    super(unknownFields);
+    super(ADAPTER, unknownFields);
     this.rep_int32 = Internal.immutableCopyOf("rep_int32", rep_int32);
     this.pack_int32 = Internal.immutableCopyOf("pack_int32", pack_int32);
   }
