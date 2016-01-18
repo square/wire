@@ -15,12 +15,10 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.List;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.ByteString;
@@ -45,14 +43,6 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     if (adapter == null) throw new NullPointerException("adapter == null");
     if (unknownFields == null) throw new NullPointerException("unknownFields == null");
     this.adapter = adapter;
-    this.unknownFields = unknownFields;
-  }
-
-  @Deprecated // TODO remove for 2.1.
-  protected Message(ByteString unknownFields) {
-    if (unknownFields == null) throw new NullPointerException("unknownFields == null");
-    //noinspection unchecked
-    this.adapter = (ProtoAdapter<M>) ProtoAdapter.get(this);
     this.unknownFields = unknownFields;
   }
 
@@ -169,56 +159,5 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
 
     /** Returns an immutable {@link Message} based on the fields that set in this builder. */
     public abstract T build();
-  }
-
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static <T> List<T> newMutableList() {
-    return Internal.newMutableList();
-  }
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static <T> List<T> copyOf(String name, List<T> list) {
-    return Internal.copyOf(name, list);
-  }
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static <T> List<T> immutableCopyOf(String name, List<T> list) {
-    return Internal.immutableCopyOf(name, list);
-  }
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static <T> void redactElements(List<T> list, ProtoAdapter<T> adapter) {
-    Internal.redactElements(list, adapter);
-  }
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static boolean equals(Object a, Object b) {
-    return Internal.equals(a, b);
-  }
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static IllegalStateException missingRequiredFields(Object... args) {
-    return Internal.missingRequiredFields(args);
-  }
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static void checkElementsNotNull(List<?> list) {
-    Internal.checkElementsNotNull(list);
-  }
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static int countNotNull(Object a, Object b) {
-    return Internal.countNonNull(a, b);
-  }
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static int countNotNull(Object a, Object b, Object c) {
-    return Internal.countNonNull(a, b, c);
-  }
-  /** For generated code only. */
-  @Deprecated // TODO remove for 2.1.
-  public static int countNotNull(Object a, Object b, Object c, Object d, Object... rest) {
-    return Internal.countNonNull(a, b, c, d, rest);
   }
 }

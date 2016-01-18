@@ -24,7 +24,6 @@ import squareup.protos.packed_encoding.OuterMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public final class ProtoAdapterTest {
   @Test public void getFromClass() throws Exception {
@@ -49,19 +48,6 @@ public final class ProtoAdapterTest {
     ProtoAdapter<Person> classAdapter = ProtoAdapter.get(Person.class);
 
     assertThat(instanceAdapter).isSameAs(classAdapter);
-  }
-
-  @Test public void getFromClassWrongType() throws Exception {
-    try {
-      new Message(ByteString.EMPTY) {
-        @Override public Builder newBuilder() {
-          throw new AssertionError();
-        }
-      };
-      fail();
-    } catch (IllegalArgumentException expected) {
-      assertThat(expected).hasMessageStartingWith("failed to access ");
-    }
   }
 
   @Test public void repeatedHelpersCacheInstances() {
