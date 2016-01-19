@@ -28,21 +28,25 @@ public final class EnumType extends Type {
   static final ProtoMember ALLOW_ALIAS = ProtoMember.get(ENUM_OPTIONS, "allow_alias");
 
   private final ProtoType protoType;
-  private final EnumElement element;
+  private final Location location;
+  private final String documentation;
+  private final String name;
   private final ImmutableList<EnumConstant> constants;
   private final Options options;
   private Object allowAlias;
 
-  EnumType(ProtoType protoType, EnumElement element,
+  private EnumType(ProtoType protoType, Location location, String documentation, String name,
       ImmutableList<EnumConstant> constants, Options options) {
     this.protoType = protoType;
-    this.element = element;
+    this.location = location;
+    this.documentation = documentation;
+    this.name = name;
     this.constants = constants;
     this.options = options;
   }
 
   @Override public Location location() {
-    return element.location();
+    return location;
   }
 
   @Override public ProtoType type() {
@@ -50,7 +54,7 @@ public final class EnumType extends Type {
   }
 
   @Override public String documentation() {
-    return element.documentation();
+    return documentation;
   }
 
   @Override public Options options() {
@@ -139,9 +143,26 @@ public final class EnumType extends Type {
       }
     }
 
-    EnumType result = new EnumType(protoType, element, retainedConstants.build(),
-        options.retainAll(schema, markSet));
+    EnumType result = new EnumType(protoType, location, documentation, name,
+        retainedConstants.build(), options.retainAll(schema, markSet));
     result.allowAlias = allowAlias;
     return result;
+  }
+
+  static EnumType fromElement(ProtoType protoType, EnumElement enumElement) {
+    ImmutableList<EnumConstant> constants = EnumConstant.fromElements(enumElement.constants());
+    Options options = new Options(Options.ENUM_OPTIONS, enumElement.options());
+
+    return new EnumType(protoType, enumElement.location(), enumElement.documentation(),
+        enumElement.name(), constants, options);
+  }
+
+  EnumElement toElement() {
+    return EnumElement.builder(location)
+        .name(name)
+        .documentation(documentation)
+        .constants(EnumConstant.toElements(constants))
+        .options(options.toElements())
+        .build();
   }
 }

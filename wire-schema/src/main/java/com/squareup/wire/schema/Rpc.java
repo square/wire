@@ -15,29 +15,39 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.RpcElement;
 
 public final class Rpc {
-  private final RpcElement element;
+  private final Location location;
+  private final String name;
+  private final String documentation;
+  private final String requestTypeElement;
+  private final String responseTypeElement;
   private final Options options;
   private ProtoType requestType;
   private ProtoType responseType;
 
-  Rpc(RpcElement element, Options options) {
-    this.element = element;
+  private Rpc(Location location, String name, String documentation, String requestType,
+      String responseType, Options options) {
+    this.location = location;
+    this.name = name;
+    this.documentation = documentation;
+    this.requestTypeElement = requestType;
+    this.responseTypeElement = responseType;
     this.options = options;
   }
 
   public Location location() {
-    return element.location();
+    return location;
   }
 
   public String name() {
-    return element.name();
+    return name;
   }
 
   public String documentation() {
-    return element.documentation();
+    return documentation;
   }
 
   public ProtoType requestType() {
@@ -54,8 +64,8 @@ public final class Rpc {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    requestType = linker.resolveMessageType(element.requestType());
-    responseType = linker.resolveMessageType(element.responseType());
+    requestType = linker.resolveMessageType(requestTypeElement);
+    responseType = linker.resolveMessageType(responseTypeElement);
   }
 
   void linkOptions(Linker linker) {
@@ -71,9 +81,34 @@ public final class Rpc {
 
   Rpc retainAll(Schema schema, MarkSet markSet) {
     if (!markSet.contains(requestType) || !markSet.contains(responseType)) return null;
-    Rpc result = new Rpc(element, options.retainAll(schema, markSet));
+    Rpc result = new Rpc(location, name, documentation, requestTypeElement, responseTypeElement,
+        options.retainAll(schema, markSet));
     result.requestType = requestType;
     result.responseType = responseType;
     return result;
+  }
+
+  static ImmutableList<Rpc> fromElements(ImmutableList<RpcElement> elements) {
+    ImmutableList.Builder<Rpc> rpcs = new ImmutableList.Builder<>();
+    for (RpcElement rpcElement : elements) {
+      rpcs.add(new Rpc(rpcElement.location(), rpcElement.name(), rpcElement.documentation(),
+          rpcElement.requestType(), rpcElement.responseType(),
+          new Options(Options.METHOD_OPTIONS, rpcElement.options())));
+    }
+    return rpcs.build();
+  }
+
+  static ImmutableList<RpcElement> toElements(ImmutableList<Rpc> rpcs) {
+    ImmutableList.Builder<RpcElement> elements = new ImmutableList.Builder<>();
+    for (Rpc rpc : rpcs) {
+      elements.add(RpcElement.builder(rpc.location)
+          .documentation(rpc.documentation)
+          .name(rpc.name)
+          .requestType(rpc.requestTypeElement)
+          .responseType(rpc.responseTypeElement)
+          .options(rpc.options.toElements())
+          .build());
+    }
+    return elements.build();
   }
 }

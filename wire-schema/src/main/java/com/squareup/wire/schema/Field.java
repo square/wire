@@ -26,22 +26,63 @@ public final class Field {
   static final ProtoMember PACKED = ProtoMember.get(FIELD_OPTIONS, "packed");
 
   private final String packageName;
-  private final FieldElement element;
+  private final Location location;
+  private final Label label;
+  private final String name;
+  private final String documentation;
+  private final int tag;
+  private final String defaultValue;
+  private final String elementType;
   private final boolean extension;
   private final Options options;
   private ProtoType type;
   private Object deprecated;
   private Object packed;
 
-  Field(String packageName, FieldElement element, Options options, boolean extension) {
+  private Field(String packageName, Location location, Label label, String name,
+      String documentation, int tag, String defaultValue, String elementType, Options options,
+      boolean extension) {
     this.packageName = packageName;
-    this.element = element;
+    this.location = location;
+    this.label = label;
+    this.name = name;
+    this.documentation = documentation;
+    this.tag = tag;
+    this.defaultValue = defaultValue;
+    this.elementType = elementType;
     this.extension = extension;
     this.options = options;
   }
 
+  static ImmutableList<Field> fromElements(String packageName,
+      ImmutableList<FieldElement> fieldElements, boolean extension) {
+    ImmutableList.Builder<Field> fields = ImmutableList.builder();
+    for (FieldElement field : fieldElements) {
+      fields.add(new Field(packageName, field.location(), field.label(), field.name(),
+          field.documentation(), field.tag(), field.defaultValue(), field.type(),
+          new Options(Options.FIELD_OPTIONS, field.options()), extension));
+    }
+    return fields.build();
+  }
+
+  static ImmutableList<FieldElement> toElements(ImmutableList<Field> fields) {
+    ImmutableList.Builder<FieldElement> elements = new ImmutableList.Builder<>();
+    for (Field field : fields) {
+      elements.add(FieldElement.builder(field.location)
+          .label(field.label)
+          .name(field.name)
+          .documentation(field.documentation)
+          .tag(field.tag)
+          .defaultValue(field.defaultValue)
+          .options(field.options.toElements())
+          .type(field.elementType)
+          .build());
+    }
+    return elements.build();
+  }
+
   public Location location() {
-    return element.location();
+    return location;
   }
 
   public String packageName() {
@@ -49,7 +90,7 @@ public final class Field {
   }
 
   public Label label() {
-    return element.label();
+    return label;
   }
 
   public boolean isRepeated() {
@@ -69,7 +110,7 @@ public final class Field {
   }
 
   public String name() {
-    return element.name();
+    return name;
   }
 
   /**
@@ -78,16 +119,16 @@ public final class Field {
    */
   public String qualifiedName() {
     return packageName != null
-        ? packageName + '.' + element.name()
-        : element.name();
+        ? packageName + '.' + name
+        : name;
   }
 
   public int tag() {
-    return element.tag();
+    return tag;
   }
 
   public String documentation() {
-    return element.documentation();
+    return documentation;
   }
 
   public Options options() {
@@ -103,7 +144,7 @@ public final class Field {
   }
 
   public String getDefault() {
-    return element.defaultValue();
+    return defaultValue;
   }
 
   private boolean isPackable(Linker linker, ProtoType type) {
@@ -118,7 +159,7 @@ public final class Field {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    type = linker.resolveType(element.type());
+    type = linker.resolveType(elementType);
   }
 
   void linkOptions(Linker linker) {
@@ -142,7 +183,8 @@ public final class Field {
   Field retainAll(Schema schema, MarkSet markSet) {
     if (!markSet.contains(type)) return null;
 
-    Field result = new Field(packageName, element, options.retainAll(schema, markSet), extension);
+    Field result = new Field(packageName, location, label, name, documentation, tag, defaultValue,
+        elementType, options.retainAll(schema, markSet), extension);
     result.type = type;
     result.deprecated = deprecated;
     result.packed = packed;

@@ -19,20 +19,22 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.OneOfElement;
 
 public final class OneOf {
-  private final OneOfElement element;
+  private final String name;
+  private final String documentation;
   private final ImmutableList<Field> fields;
 
-  public OneOf(OneOfElement element, ImmutableList<Field> fields) {
-    this.element = element;
+  private OneOf(String name, String documentation, ImmutableList<Field> fields) {
+    this.name = name;
+    this.documentation = documentation;
     this.fields = fields;
   }
 
   public String name() {
-    return element.name();
+    return name;
   }
 
   public String documentation() {
-    return element.documentation();
+    return documentation;
   }
 
   public ImmutableList<Field> fields() {
@@ -54,6 +56,28 @@ public final class OneOf {
   OneOf retainAll(Schema schema, MarkSet markSet, ProtoType enclosingType) {
     ImmutableList<Field> retainedFields = Field.retainAll(schema, markSet, enclosingType, fields);
     if (retainedFields.isEmpty()) return null;
-    return new OneOf(element, retainedFields);
+    return new OneOf(name, documentation, retainedFields);
+  }
+
+  static ImmutableList<OneOf> fromElements(String packageName,
+      ImmutableList<OneOfElement> elements, boolean extension) {
+    ImmutableList.Builder<OneOf> oneOfs = ImmutableList.builder();
+    for (OneOfElement oneOf : elements) {
+      oneOfs.add(new OneOf(oneOf.name(), oneOf.documentation(),
+          Field.fromElements(packageName, oneOf.fields(), extension)));
+    }
+    return oneOfs.build();
+  }
+
+  static ImmutableList<OneOfElement> toElements(ImmutableList<OneOf> oneOfs) {
+    ImmutableList.Builder<OneOfElement> elements = new ImmutableList.Builder<>();
+    for (OneOf oneOf : oneOfs) {
+      elements.add(OneOfElement.builder()
+          .documentation(oneOf.documentation)
+          .name(oneOf.name)
+          .fields(Field.toElements(oneOf.fields))
+          .build());
+    }
+    return elements.build();
   }
 }
