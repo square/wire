@@ -15,30 +15,55 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.Util;
 import com.squareup.wire.schema.internal.parser.ExtensionsElement;
 
 final class Extensions {
-  private final ExtensionsElement element;
+  private final Location location;
+  private final String documentation;
+  private final int start;
+  private final int end;
 
-  Extensions(ExtensionsElement element) {
-    this.element = element;
+  private Extensions(Location location, String documentation, int start, int end) {
+    this.location = location;
+    this.documentation = documentation;
+    this.start = start;
+    this.end = end;
   }
 
   public Location location() {
-    return element.location();
+    return location;
   }
 
   public String documentation() {
-    return element.documentation();
+    return documentation;
   }
 
   public int start() {
-    return element.start();
+    return start;
   }
 
   public int end() {
-    return element.end();
+    return end;
+  }
+
+  static ImmutableList<Extensions> fromElements(ImmutableList<ExtensionsElement> elements) {
+    ImmutableList.Builder<Extensions> extensions = ImmutableList.builder();
+    for (ExtensionsElement element : elements) {
+      extensions.add(new Extensions(element.location(), element.documentation(),
+          element.start(), element.end()));
+    }
+    return extensions.build();
+  }
+
+  static ImmutableList<ExtensionsElement> toElements(ImmutableList<Extensions> extensions) {
+    ImmutableList.Builder<ExtensionsElement> elements = new ImmutableList.Builder<>();
+    for (Extensions extension : extensions) {
+      elements.add(ExtensionsElement.create(extension.location, extension.start, extension.end,
+          extension.documentation));
+    }
+    return elements.build();
   }
 
   void validate(Linker linker) {

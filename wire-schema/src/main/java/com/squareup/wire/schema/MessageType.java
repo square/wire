@@ -17,6 +17,8 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.MessageElement;
+import com.squareup.wire.schema.internal.parser.TypeElement;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class MessageType extends Type {
   private final ProtoType protoType;
-  private final MessageElement element;
+  private final Location location;
+  private final String documentation;
+  private final String name;
   private final ImmutableList<Field> declaredFields;
   private final List<Field> extensionFields;
   private final ImmutableList<OneOf> oneOfs;
@@ -33,11 +37,13 @@ public final class MessageType extends Type {
   private final ImmutableList<Extensions> extensionsList;
   private final Options options;
 
-  MessageType(ProtoType protoType, MessageElement element, ImmutableList<Field> declaredFields,
-      List<Field> extensionFields, ImmutableList<OneOf> oneOfs, ImmutableList<Type> nestedTypes,
-      ImmutableList<Extensions> extensionsList, Options options) {
+  private MessageType(ProtoType protoType, Location location, String documentation, String name,
+      ImmutableList<Field> declaredFields, List<Field> extensionFields, ImmutableList<OneOf> oneOfs,
+      ImmutableList<Type> nestedTypes, ImmutableList<Extensions> extensionsList, Options options) {
     this.protoType = protoType;
-    this.element = element;
+    this.location = location;
+    this.documentation = documentation;
+    this.name = name;
     this.declaredFields = declaredFields;
     this.extensionFields = extensionFields;
     this.oneOfs = oneOfs;
@@ -47,7 +53,7 @@ public final class MessageType extends Type {
   }
 
   @Override public Location location() {
-    return element.location();
+    return location;
   }
 
   @Override public ProtoType type() {
@@ -55,7 +61,7 @@ public final class MessageType extends Type {
   }
 
   @Override public String documentation() {
-    return element.documentation();
+    return documentation;
   }
 
   @Override public ImmutableList<Type> nestedTypes() {
@@ -235,9 +241,47 @@ public final class MessageType extends Type {
     }
     ImmutableList<OneOf> retainedOneOfs = retainedOneOfsBuilder.build();
 
-    return new MessageType(protoType, element,
+    return new MessageType(protoType, location, documentation, name,
         Field.retainAll(schema, markSet, protoType, declaredFields),
         Field.retainAll(schema, markSet, protoType, extensionFields), retainedOneOfs,
         retainedNestedTypes, extensionsList, options.retainAll(schema, markSet));
+  }
+
+  static MessageType fromElement(String packageName, ProtoType protoType,
+      MessageElement messageElement) {
+
+    ImmutableList<Field> declaredFields =
+        Field.fromElements(packageName, messageElement.fields(), false);
+
+    // Extension fields be populated during linking.
+    List<Field> extensionFields = new ArrayList<>();
+
+    ImmutableList<OneOf> oneOfs = OneOf.fromElements(packageName, messageElement.oneOfs(), false);
+
+    ImmutableList.Builder<Type> nestedTypes = ImmutableList.builder();
+    for (TypeElement nestedType : messageElement.nestedTypes()) {
+      nestedTypes.add(Type.get(packageName, protoType.nestedType(nestedType.name()), nestedType));
+    }
+
+    ImmutableList<Extensions> extensionsList =
+        Extensions.fromElements(messageElement.extensions());
+
+    Options options = new Options(Options.MESSAGE_OPTIONS, messageElement.options());
+
+    return new MessageType(protoType, messageElement.location(), messageElement.documentation(),
+        messageElement.name(), declaredFields, extensionFields, oneOfs, nestedTypes.build(),
+        extensionsList, options);
+  }
+
+  MessageElement toElement() {
+    return MessageElement.builder(location)
+        .documentation(documentation)
+        .name(name)
+        .options(options.toElements())
+        .fields(Field.toElements(declaredFields))
+        .nestedTypes(Type.toElements(nestedTypes))
+        .oneOfs(OneOf.toElements(oneOfs))
+        .extensions(Extensions.toElements(extensionsList))
+        .build();
   }
 }

@@ -17,26 +17,46 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.ExtendElement;
-import com.squareup.wire.schema.internal.parser.FieldElement;
 
 final class Extend {
-  private final ExtendElement element;
+  private final Location location;
+  private final String documentation;
+  private final String name;
   private final ImmutableList<Field> fields;
   private ProtoType protoType;
 
-  Extend(String packageName, ExtendElement element) {
-    this.element = element;
+  private Extend(Location location, String documentation, String name,
+      ImmutableList<Field> fields) {
+    this.location = location;
+    this.documentation = documentation;
+    this.name = name;
+    this.fields = fields;
+  }
 
-    ImmutableList.Builder<Field> fields = ImmutableList.builder();
-    for (FieldElement field : element.fields()) {
-      fields.add(new Field(packageName, field,
-          new Options(Options.FIELD_OPTIONS, field.options()), true));
+  static ImmutableList<Extend> fromElements(String packageName,
+      ImmutableList<ExtendElement> extendElements) {
+    ImmutableList.Builder<Extend> extendBuilder = new ImmutableList.Builder<>();
+    for (ExtendElement extendElement : extendElements) {
+      extendBuilder.add(new Extend(extendElement.location(), extendElement.documentation(),
+          extendElement.name(), Field.fromElements(packageName, extendElement.fields(), true)));
     }
-    this.fields = fields.build();
+    return extendBuilder.build();
+  }
+
+  static ImmutableList<ExtendElement> toElements(ImmutableList<Extend> extendList) {
+    ImmutableList.Builder<ExtendElement> elements = new ImmutableList.Builder<>();
+    for (Extend extend : extendList) {
+      elements.add(ExtendElement.builder(extend.location)
+          .documentation(extend.documentation)
+          .name(extend.name)
+          .fields(Field.toElements(extend.fields))
+          .build());
+    }
+    return elements.build();
   }
 
   public Location location() {
-    return element.location();
+    return location;
   }
 
   public ProtoType type() {
@@ -44,7 +64,7 @@ final class Extend {
   }
 
   public String documentation() {
-    return element.documentation();
+    return documentation;
   }
 
   public ImmutableList<Field> fields() {
@@ -53,7 +73,7 @@ final class Extend {
 
   void link(Linker linker) {
     linker = linker.withContext(this);
-    protoType = linker.resolveMessageType(element.name());
+    protoType = linker.resolveMessageType(name);
     Type type = linker.get(protoType);
     if (type != null) {
       ((MessageType) type).addExtensionFields(fields);
