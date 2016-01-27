@@ -141,9 +141,6 @@ public final class ProtoParser {
       if (readChar() != ';') throw unexpected("expected ';'");
       return result;
     } else if (label.equals("reserved")) {
-      if (syntax != ProtoFile.Syntax.PROTO_3) {
-        throw unexpected(location, "'reserved' declaration requires proto3");
-      }
       return readReserved(location, documentation);
     } else if (label.equals("message")) {
       return readMessage(location, documentation);
