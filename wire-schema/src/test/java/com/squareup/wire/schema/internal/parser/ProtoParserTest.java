@@ -1184,6 +1184,29 @@ public final class ProtoParserTest {
         .isEqualTo(expected);
   }
 
+  @Test public void stringWithSingleQuotes() {
+    String proto = ""
+        + "message Foo {\n"
+        + "  optional string name = 1 [default = 'single\"quotes'];\n"
+        + "}";
+
+    FieldElement field = FieldElement.builder(location.at(2, 3))
+        .label(OPTIONAL)
+        .type("string")
+        .name("name")
+        .tag(1)
+        .defaultValue("single\"quotes")
+        .build();
+    TypeElement messageElement = MessageElement.builder(location.at(1, 1))
+        .name("Foo")
+        .fields(ImmutableList.of(field))
+        .build();
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .types(ImmutableList.of(messageElement))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
   @Test public void invalidHexStringEscape() throws Exception {
     String proto = ""
         + "message Foo {\n"
