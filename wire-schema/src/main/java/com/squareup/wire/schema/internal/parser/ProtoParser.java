@@ -355,7 +355,7 @@ public final class ProtoParser {
         break;
 
       default:
-        if (syntax != ProtoFile.Syntax.PROTO_3) {
+        if (syntax != ProtoFile.Syntax.PROTO_3 && (!word.equals("map") || peekChar() != '<')) {
           throw unexpected(location, "unexpected label: " + word);
         }
         label = null;
@@ -363,6 +363,9 @@ public final class ProtoParser {
         break;
     }
 
+    if (type.startsWith("map<") && label != null) {
+      throw unexpected(location, "'map' type cannot have label");
+    }
     if (type.equals("group")) {
       return readGroup(documentation, label);
     }

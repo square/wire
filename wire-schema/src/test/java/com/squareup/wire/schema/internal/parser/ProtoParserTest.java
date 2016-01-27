@@ -56,8 +56,8 @@ public final class ProtoParserTest {
         + "  required string f14 = 14;\n"
         + "  required uint32 f15 = 15;\n"
         + "  required uint64 f16 = 16;\n"
-        + "  required map<string, bool> f17 = 17;\n"
-        + "  required map<arbitrary, nested.nested> f18 = 18;\n"
+        + "  map<string, bool> f17 = 17;\n"
+        + "  map<arbitrary, nested.nested> f18 = 18;\n"
         + "  required arbitrary f19 = 19;\n"
         + "  required nested.nested f20 = 20;\n"
         + "}\n";
@@ -163,13 +163,11 @@ public final class ProtoParserTest {
                         .tag(16)
                         .build(),
                     FieldElement.builder(location.at(18, 3))
-                        .label(REQUIRED)
                         .type("map<string, bool>")
                         .name("f17")
                         .tag(17)
                         .build(),
                     FieldElement.builder(location.at(19, 3))
-                        .label(REQUIRED)
                         .type("map<arbitrary, nested.nested>")
                         .name("f18")
                         .tag(18)
@@ -189,6 +187,30 @@ public final class ProtoParserTest {
                 .build()))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
+  @Test public void mapWithLabelThrows() {
+    try {
+      ProtoParser.parse(location, "message Hey { required map<string, string> a = 1; }");
+      fail();
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage(
+          "Syntax error in file.proto at 1:15: 'map' type cannot have label");
+    }
+    try {
+      ProtoParser.parse(location, "message Hey { optional map<string, string> a = 1; }");
+      fail();
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage(
+          "Syntax error in file.proto at 1:15: 'map' type cannot have label");
+    }
+    try {
+      ProtoParser.parse(location, "message Hey { repeated map<string, string> a = 1; }");
+      fail();
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage(
+          "Syntax error in file.proto at 1:15: 'map' type cannot have label");
+    }
   }
 
   /** It looks like an option, but 'default' is special. It's missing from descriptor.proto! */
