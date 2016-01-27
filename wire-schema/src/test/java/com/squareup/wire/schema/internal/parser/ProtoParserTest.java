@@ -1593,18 +1593,47 @@ public final class ProtoParserTest {
 
   @Test public void reserved() {
     String proto = ""
+        + "syntax = \"proto3\";\n"
         + "message Foo {\n"
         + "  reserved 10, 12 to 14, 'foo';"
         + "}";
-    TypeElement message = MessageElement.builder(location.at(1, 1))
+    TypeElement message = MessageElement.builder(location.at(2, 1))
         .name("Foo")
-        .reserveds(ImmutableList.of(ReservedElement.create(location.at(2, 3), "",
+        .reserveds(ImmutableList.of(ReservedElement.create(location.at(3, 3), "",
             ImmutableList.<Object>of(10, Range.closed(12, 14), "foo"))))
         .build();
     ProtoFileElement expected = ProtoFileElement.builder(location)
+        .syntax(ProtoFile.Syntax.PROTO_3)
         .types(ImmutableList.of(message))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
+  @Test public void reservedRequiresProto3() {
+    // Implicit proto2 syntax.
+    try {
+      String proto = ""
+          + "message Foo {\n"
+          + "  reserved 10, 12 to 14, 'foo';"
+          + "}";
+      ProtoParser.parse(location, proto);
+      fail();
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 2:3: 'reserved' declaration requires proto3");
+    }
+
+    // Explicit proto2 syntax.
+    try {
+      String proto = ""
+          + "syntax = \"proto2\";\n"
+          + "message Foo {\n"
+          + "  reserved 10, 12 to 14, 'foo';"
+          + "}";
+      ProtoParser.parse(location, proto);
+      fail();
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 3:3: 'reserved' declaration requires proto3");
+    }
   }
 
   @Test public void noWhitespace() {
