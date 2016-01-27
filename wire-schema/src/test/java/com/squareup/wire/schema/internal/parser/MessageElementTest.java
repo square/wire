@@ -21,6 +21,8 @@ import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
 import org.junit.Test;
 
+import static com.squareup.wire.schema.Field.Label.OPTIONAL;
+import static com.squareup.wire.schema.Field.Label.REPEATED;
 import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -280,6 +282,48 @@ public final class MessageElementTest {
         + "  reserved 10;\n"
         + "  reserved 12 to 14;\n"
         + "  reserved \"foo\";\n"
+        + "}\n";
+    assertThat(element.toSchema()).isEqualTo(expected);
+  }
+
+  @Test public void groupToSchema() {
+    TypeElement element = MessageElement.builder(location.at(1, 1))
+        .name("SearchResponse")
+        .groups(ImmutableList.of(
+            GroupElement.builder()
+                .label(REPEATED)
+                .name("Result")
+                .tag(1)
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(3, 5))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("url")
+                        .tag(2)
+                        .build(),
+                    FieldElement.builder(location.at(4, 5))
+                        .label(OPTIONAL)
+                        .type("string")
+                        .name("title")
+                        .tag(3)
+                        .build(),
+                    FieldElement.builder(location.at(5, 5))
+                        .label(REPEATED)
+                        .type("string")
+                        .name("snippets")
+                        .tag(4)
+                        .build()
+                ))
+                .build()
+        ))
+        .build();
+    String expected = ""
+        + "message SearchResponse {\n"
+        + "  repeated group Result = 1 {\n"
+        + "    required string url = 2;\n"
+        + "    optional string title = 3;\n"
+        + "    repeated string snippets = 4;\n"
+        + "  }\n"
         + "}\n";
     assertThat(element.toSchema()).isEqualTo(expected);
   }

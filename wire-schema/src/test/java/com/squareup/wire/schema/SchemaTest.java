@@ -1047,4 +1047,21 @@ public final class SchemaTest {
           + "  in message a.b.c.MessageC (a_b_c.proto at 5:1)");
     }
   }
+
+  @Test public void groupsThrow() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("test.proto", ""
+              + "message SearchResponse {\n"
+              + "  repeated group Result = 1 {\n"
+              + "    required string url = 2;\n"
+              + "    optional string title = 3;\n"
+              + "    repeated string snippets = 4;\n"
+              + "  }\n"
+              + "}\n")
+          .build();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("'group' is not supported");
+    }
+  }
 }
