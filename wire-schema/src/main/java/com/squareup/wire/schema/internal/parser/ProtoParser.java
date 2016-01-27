@@ -731,6 +731,9 @@ public final class ProtoParser {
   /** Reads a scalar, map, or type name. */
   private String readDataType() {
     String name = readWord();
+    if (name.equals("group")) {
+      throw unexpected("'group' is not supported");
+    }
     return readDataType(name);
   }
 

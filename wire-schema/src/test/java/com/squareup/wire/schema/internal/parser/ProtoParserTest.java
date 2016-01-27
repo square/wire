@@ -731,6 +731,23 @@ public final class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
+  @Test public void groupThrows() throws Exception {
+    String proto = ""
+        + "message SearchRequest {\n"
+        + "  repeated group Result = 1 {\n"
+        + "    required string url = 2;\n"
+        + "    optional string title = 3;\n"
+        + "    repeated string snippets = 4;\n"
+        + "  }\n"
+        + "}";
+    try {
+      ProtoParser.parse(location, proto);
+      fail();
+    } catch (IllegalStateException e) {
+      assertThat(e).hasMessage("Syntax error in file.proto at 2:17: 'group' is not supported");
+    }
+  }
+
   @Test public void parseMessageAndOneOf() throws Exception {
     String proto = ""
         + "message SearchRequest {\n"
