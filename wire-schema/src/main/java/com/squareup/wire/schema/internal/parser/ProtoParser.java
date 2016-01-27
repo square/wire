@@ -748,7 +748,14 @@ public final class ProtoParser {
     StringBuilder result = new StringBuilder();
     while (pos < data.length) {
       char c = data[pos++];
-      if (c == startQuote) return result.toString();
+      if (c == startQuote) {
+        if (peekChar() == '"' || peekChar() == '\'') {
+          // Adjacent strings are concatenated. Consume new quote and continue reading.
+          startQuote = readChar();
+          continue;
+        }
+        return result.toString();
+      }
 
       if (c == '\\') {
         if (pos == data.length) throw unexpected("unexpected end of file");
