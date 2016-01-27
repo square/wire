@@ -732,21 +732,49 @@ public final class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
-  @Test public void groupThrows() throws Exception {
+  @Test public void group() throws Exception {
     String proto = ""
-        + "message SearchRequest {\n"
+        + "message SearchResponse {\n"
         + "  repeated group Result = 1 {\n"
         + "    required string url = 2;\n"
         + "    optional string title = 3;\n"
         + "    repeated string snippets = 4;\n"
         + "  }\n"
         + "}";
-    try {
-      ProtoParser.parse(location, proto);
-      fail();
-    } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Syntax error in file.proto at 2:17: 'group' is not supported");
-    }
+    TypeElement message = MessageElement.builder(location.at(1, 1))
+        .name("SearchResponse")
+        .groups(ImmutableList.of(
+            GroupElement.builder()
+                .label(REPEATED)
+                .name("Result")
+                .tag(1)
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(3, 5))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("url")
+                        .tag(2)
+                        .build(),
+                    FieldElement.builder(location.at(4, 5))
+                        .label(OPTIONAL)
+                        .type("string")
+                        .name("title")
+                        .tag(3)
+                        .build(),
+                    FieldElement.builder(location.at(5, 5))
+                        .label(REPEATED)
+                        .type("string")
+                        .name("snippets")
+                        .tag(4)
+                        .build()
+                ))
+                .build()
+        ))
+        .build();
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .types(ImmutableList.of(message))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void parseMessageAndOneOf() throws Exception {
@@ -782,6 +810,61 @@ public final class ProtoParserTest {
                                 .name("result_per_page")
                                 .tag(3)
                                 .build()))
+                        .build()))
+                .build()))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
+  @Test public void parseMessageAndOneOfWithGroup() throws Exception {
+    String proto = ""
+        + "message SearchRequest {\n"
+        + "  required string query = 1;\n"
+        + "  oneof page_info {\n"
+        + "    int32 page_number = 2;\n"
+        + "    group Stuff = 3 {\n"
+        + "      optional int32 result_per_page = 4;\n"
+        + "      optional int32 page_count = 5;\n"
+        + "    }\n"
+        + "  }\n"
+        + "}";
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .types(ImmutableList.<TypeElement>of(
+            MessageElement.builder(location.at(1, 1))
+                .name("SearchRequest")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("query")
+                        .tag(1)
+                        .build()))
+                .oneOfs(ImmutableList.of(
+                    OneOfElement.builder()
+                        .name("page_info")
+                        .fields(ImmutableList.of(FieldElement.builder(location.at(4, 5))
+                                .type("int32")
+                                .name("page_number")
+                                .tag(2)
+                                .build()))
+                        .groups(ImmutableList.of(GroupElement.builder()
+                            .name("Stuff")
+                            .tag(3)
+                            .fields(ImmutableList.of(
+                                FieldElement.builder(location.at(6, 7))
+                                    .label(OPTIONAL)
+                                    .type("int32")
+                                    .name("result_per_page")
+                                    .tag(4)
+                                    .build(),
+                                FieldElement.builder(location.at(7, 7))
+                                    .label(OPTIONAL)
+                                    .type("int32")
+                                    .name("page_count")
+                                    .tag(5)
+                                    .build()
+                            ))
+                            .build()))
                         .build()))
                 .build()))
         .build();

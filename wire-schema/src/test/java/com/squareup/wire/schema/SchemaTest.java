@@ -1041,10 +1041,50 @@ public final class SchemaTest {
               + "  optional .b.MessageB message_b = 1;\n"
               + "}\n")
           .build();
+      fail();
     } catch (SchemaException expected) {
       assertThat(expected).hasMessage("unable to resolve .b.MessageB\n"
           + "  for field message_b (a_b_c.proto at 6:3)\n"
           + "  in message a.b.c.MessageC (a_b_c.proto at 5:1)");
+    }
+  }
+
+  @Test public void groupsThrow() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("test.proto", ""
+              + "message SearchResponse {\n"
+              + "  repeated group Result = 1 {\n"
+              + "    required string url = 2;\n"
+              + "    optional string title = 3;\n"
+              + "    repeated string snippets = 4;\n"
+              + "  }\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("'group' is not supported");
+    }
+  }
+
+  @Test public void oneOfGroupsThrow() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("test.proto", ""
+              + "message Message {\n"
+              + "  oneof hi {\n"
+              + "    string name = 1;\n"
+              + "  \n"
+              + "    group Stuff = 3 {\n"
+              + "      optional int32 result_per_page = 4;\n"
+              + "      optional int32 page_count = 5;\n"
+              + "    }\n"
+              + "  }\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("'group' is not supported");
     }
   }
 }

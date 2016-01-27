@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Square, Inc.
+ * Copyright (C) 2016 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,38 +17,41 @@ package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.Field;
+import java.util.Locale;
 
 import static com.squareup.wire.schema.internal.Util.appendDocumentation;
 import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
-public abstract class OneOfElement {
+public abstract class GroupElement {
   public static Builder builder() {
-    return new AutoValue_OneOfElement.Builder()
+    return new AutoValue_GroupElement.Builder()
         .documentation("")
-        .fields(ImmutableList.<FieldElement>of())
-        .groups(ImmutableList.<GroupElement>of());
+        .fields(ImmutableList.<FieldElement>of());
   }
 
+  @Nullable public abstract Field.Label label();
   public abstract String name();
+  public abstract int tag();
   public abstract String documentation();
   public abstract ImmutableList<FieldElement> fields();
-  public abstract ImmutableList<GroupElement> groups();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
-    builder.append("oneof ").append(name()).append(" {");
+    if (label() != null) {
+      builder.append(label().name().toLowerCase(Locale.US)).append(' ');
+    }
+    builder.append("group ")
+        .append(name())
+        .append(" = ")
+        .append(tag())
+        .append(" {");
     if (!fields().isEmpty()) {
       builder.append('\n');
       for (FieldElement field : fields()) {
         appendIndented(builder, field.toSchema());
-      }
-    }
-    if (!groups().isEmpty()) {
-      builder.append('\n');
-      for (GroupElement group : groups()) {
-        appendIndented(builder, group.toSchema());
       }
     }
     return builder.append("}\n").toString();
@@ -56,10 +59,11 @@ public abstract class OneOfElement {
 
   @AutoValue.Builder
   public interface Builder {
+    Builder label(Field.Label label);
     Builder name(String name);
+    Builder tag(int value);
     Builder documentation(String documentation);
     Builder fields(ImmutableList<FieldElement> fields);
-    Builder groups(ImmutableList<GroupElement> groups);
-    OneOfElement build();
+    GroupElement build();
   }
 }

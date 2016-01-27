@@ -63,6 +63,9 @@ public final class OneOf {
       ImmutableList<OneOfElement> elements, boolean extension) {
     ImmutableList.Builder<OneOf> oneOfs = ImmutableList.builder();
     for (OneOfElement oneOf : elements) {
+      if (!oneOf.groups().isEmpty()) {
+        throw new IllegalStateException("'group' is not supported");
+      }
       oneOfs.add(new OneOf(oneOf.name(), oneOf.documentation(),
           Field.fromElements(packageName, oneOf.fields(), extension)));
     }
