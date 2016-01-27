@@ -211,6 +211,7 @@ public final class ProtoParser {
     ImmutableList.Builder<ExtensionsElement> extensions = ImmutableList.builder();
     ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
     ImmutableList.Builder<ReservedElement> reserveds = ImmutableList.builder();
+    ImmutableList.Builder<GroupElement> groups = ImmutableList.builder();
 
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
@@ -224,6 +225,8 @@ public final class ProtoParser {
         fields.add((FieldElement) declared);
       } else if (declared instanceof OneOfElement) {
         oneOfs.add((OneOfElement) declared);
+      } else if (declared instanceof GroupElement) {
+        groups.add((GroupElement) declared);
       } else if (declared instanceof TypeElement) {
         nestedTypes.add((TypeElement) declared);
       } else if (declared instanceof ExtensionsElement) {
@@ -245,6 +248,7 @@ public final class ProtoParser {
         .extensions(extensions.build())
         .options(options.build())
         .reserveds(reserveds.build())
+        .groups(groups.build())
         .build();
   }
 
@@ -362,6 +366,10 @@ public final class ProtoParser {
         break;
     }
 
+    if (type.equals("group")) {
+      return readGroup(documentation, label);
+    }
+
     return readField(location, documentation, label, type);
   }
 
@@ -425,6 +433,40 @@ public final class ProtoParser {
       String type = readDataType();
       fields.add(readField(location, nestedDocumentation, null, type));
     }
+    return builder.fields(fields.build())
+        .build();
+  }
+
+  private GroupElement readGroup(String documentation, Field.Label label) {
+    String name = readWord();
+    if (readChar() != '=') {
+      throw unexpected("expected '='");
+    }
+    int tag = readInt();
+
+    GroupElement.Builder builder = GroupElement.builder()
+        .label(label)
+        .name(name)
+        .tag(tag)
+        .documentation(documentation);
+    ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
+
+    if (readChar() != '{') throw unexpected("expected '{'");
+    while (true) {
+      String nestedDocumentation = readDocumentation();
+      if (peekChar() == '}') {
+        pos++;
+        break;
+      }
+      Location location = location();
+      String fieldLabel = readWord();
+      Object field = readField(nestedDocumentation, location, fieldLabel);
+      if (!(field instanceof FieldElement)) {
+        throw unexpected("expected field declaration, was " + field);
+      }
+      fields.add((FieldElement) field);
+    }
+
     return builder.fields(fields.build())
         .build();
   }
@@ -778,9 +820,6 @@ public final class ProtoParser {
   /** Reads a scalar, map, or type name. */
   private String readDataType() {
     String name = readWord();
-    if (name.equals("group")) {
-      throw unexpected("'group' is not supported");
-    }
     return readDataType(name);
   }
 

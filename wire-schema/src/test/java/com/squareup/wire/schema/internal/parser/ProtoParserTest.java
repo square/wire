@@ -732,21 +732,49 @@ public final class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
-  @Test public void groupThrows() throws Exception {
+  @Test public void group() throws Exception {
     String proto = ""
-        + "message SearchRequest {\n"
+        + "message SearchResponse {\n"
         + "  repeated group Result = 1 {\n"
         + "    required string url = 2;\n"
         + "    optional string title = 3;\n"
         + "    repeated string snippets = 4;\n"
         + "  }\n"
         + "}";
-    try {
-      ProtoParser.parse(location, proto);
-      fail();
-    } catch (IllegalStateException e) {
-      assertThat(e).hasMessage("Syntax error in file.proto at 2:17: 'group' is not supported");
-    }
+    TypeElement message = MessageElement.builder(location.at(1, 1))
+        .name("SearchResponse")
+        .groups(ImmutableList.of(
+            GroupElement.builder()
+                .label(REPEATED)
+                .name("Result")
+                .tag(1)
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(3, 5))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("url")
+                        .tag(2)
+                        .build(),
+                    FieldElement.builder(location.at(4, 5))
+                        .label(OPTIONAL)
+                        .type("string")
+                        .name("title")
+                        .tag(3)
+                        .build(),
+                    FieldElement.builder(location.at(5, 5))
+                        .label(REPEATED)
+                        .type("string")
+                        .name("snippets")
+                        .tag(4)
+                        .build()
+                ))
+                .build()
+        ))
+        .build();
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .types(ImmutableList.of(message))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void parseMessageAndOneOf() throws Exception {
