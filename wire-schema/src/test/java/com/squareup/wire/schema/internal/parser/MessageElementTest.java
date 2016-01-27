@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal.parser;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Range;
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
 import org.junit.Test;
@@ -262,6 +263,25 @@ public final class MessageElementTest {
         .oneOfs(ImmutableList.of(hi, hey))
         .build();
     assertThat(element.oneOfs()).hasSize(2);
+  }
+
+  @Test public void reservedToSchema() {
+    TypeElement element = MessageElement.builder(location)
+        .name("Message")
+        .reserveds(ImmutableList.of(
+            ReservedElement.create(location, "", ImmutableList.<Object>of(10, Range.closed(12, 14), "foo")),
+            ReservedElement.create(location, "", ImmutableList.<Object>of(10)),
+            ReservedElement.create(location, "", ImmutableList.<Object>of(Range.closed(12, 14))),
+            ReservedElement.create(location, "", ImmutableList.<Object>of("foo"))))
+        .build();
+    String expected = ""
+        + "message Message {\n"
+        + "  reserved 10, 12 to 14, \"foo\";\n"
+        + "  reserved 10;\n"
+        + "  reserved 12 to 14;\n"
+        + "  reserved \"foo\";\n"
+        + "}\n";
+    assertThat(element.toSchema()).isEqualTo(expected);
   }
 
   @Test public void multipleEverythingToSchema() {

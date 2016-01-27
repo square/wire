@@ -17,10 +17,11 @@ package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.Util;
+import com.google.common.collect.Range;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
+import com.squareup.wire.schema.internal.Util;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -139,6 +140,8 @@ public final class ProtoParser {
       OptionElement result = readOption('=');
       if (readChar() != ';') throw unexpected("expected ';'");
       return result;
+    } else if (label.equals("reserved")) {
+      return readReserved(location, documentation);
     } else if (label.equals("message")) {
       return readMessage(location, documentation);
     } else if (label.equals("enum")) {
@@ -204,6 +207,7 @@ public final class ProtoParser {
     ImmutableList.Builder<TypeElement> nestedTypes = ImmutableList.builder();
     ImmutableList.Builder<ExtensionsElement> extensions = ImmutableList.builder();
     ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
+    ImmutableList.Builder<ReservedElement> reserveds = ImmutableList.builder();
 
     if (readChar() != '{') throw unexpected("expected '{'");
     while (true) {
@@ -226,6 +230,8 @@ public final class ProtoParser {
       } else if (declared instanceof ExtendElement) {
         // Extend declarations always add in a global scope regardless of nesting.
         extendsList.add((ExtendElement) declared);
+      } else if (declared instanceof ReservedElement) {
+        reserveds.add((ReservedElement) declared);
       }
     }
     prefix = previousPrefix;
@@ -235,6 +241,7 @@ public final class ProtoParser {
         .nestedTypes(nestedTypes.build())
         .extensions(extensions.build())
         .options(options.build())
+        .reserveds(reserveds.build())
         .build();
   }
 
@@ -417,6 +424,40 @@ public final class ProtoParser {
     }
     return builder.fields(fields.build())
         .build();
+  }
+
+  /** Reads a reserved tags and names list like "reserved 10, 12 to 14, 'foo';". */
+  private ReservedElement readReserved(Location location, String documentation) {
+    ImmutableList.Builder<Object> valuesBuilder = ImmutableList.builder();
+
+    while (true) {
+      char c = peekChar();
+      if (c == '"' || c == '\'') {
+        valuesBuilder.add(readQuotedString());
+      } else {
+        int tagStart = readInt();
+
+        c = peekChar();
+        if (c != ',' && c != ';') {
+          if (!readWord().equals("to")) {
+            throw unexpected("expected ',', ';', or 'to'");
+          }
+          int tagEnd = readInt();
+          valuesBuilder.add(Range.closed(tagStart, tagEnd));
+        } else {
+          valuesBuilder.add(tagStart);
+        }
+      }
+      c = readChar();
+      if (c == ';') break;
+      if (c != ',') throw unexpected("expected ',' or ';'");
+    }
+
+    ImmutableList<Object> values = valuesBuilder.build();
+    if (values.isEmpty()) {
+      throw unexpected("'reserved' must have at least one field name or tag");
+    }
+    return ReservedElement.create(location, documentation, values);
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
