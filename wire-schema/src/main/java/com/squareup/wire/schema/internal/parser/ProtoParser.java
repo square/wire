@@ -486,6 +486,7 @@ public final class ProtoParser {
       case '[':
         return OptionKindAndValue.of(OptionElement.Kind.LIST, readList());
       case '"':
+      case '\'':
         return OptionKindAndValue.of(OptionElement.Kind.STRING, readString());
       default:
         if (Character.isDigit(peeked) || peeked == '-') {
@@ -648,15 +649,17 @@ public final class ProtoParser {
   /** Reads a quoted or unquoted string and returns it. */
   private String readString() {
     skipWhitespace(true);
-    return peekChar() == '"' ? readQuotedString() : readWord();
+    char c = peekChar();
+    return c == '"' || c == '\'' ? readQuotedString() : readWord();
   }
 
   private String readQuotedString() {
-    if (readChar() != '"') throw new AssertionError();
+    char startQuote = readChar();
+    if (startQuote != '"' && startQuote != '\'') throw new AssertionError();
     StringBuilder result = new StringBuilder();
     while (pos < data.length) {
       char c = data[pos++];
-      if (c == '"') return result.toString();
+      if (c == startQuote) return result.toString();
 
       if (c == '\\') {
         if (pos == data.length) throw unexpected("unexpected end of file");
