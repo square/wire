@@ -33,7 +33,8 @@ public abstract class MessageElement implements TypeElement {
         .nestedTypes(ImmutableList.<TypeElement>of())
         .extensions(ImmutableList.<ExtensionsElement>of())
         .options(ImmutableList.<OptionElement>of())
-        .reserveds(ImmutableList.<ReservedElement>of());
+        .reserveds(ImmutableList.<ReservedElement>of())
+        .groups(ImmutableList.<GroupElement>of());
   }
 
   @Override public abstract Location location();
@@ -45,6 +46,7 @@ public abstract class MessageElement implements TypeElement {
   public abstract ImmutableList<FieldElement> fields();
   public abstract ImmutableList<OneOfElement> oneOfs();
   public abstract ImmutableList<ExtensionsElement> extensions();
+  public abstract ImmutableList<GroupElement> groups();
 
   @Override public final String toSchema() {
     StringBuilder builder = new StringBuilder();
@@ -76,6 +78,12 @@ public abstract class MessageElement implements TypeElement {
         appendIndented(builder, oneOf.toSchema());
       }
     }
+    if (!groups().isEmpty()) {
+      builder.append('\n');
+      for (GroupElement group : groups()) {
+        appendIndented(builder, group.toSchema());
+      }
+    }
     if (!extensions().isEmpty()) {
       builder.append('\n');
       for (ExtensionsElement extension : extensions()) {
@@ -102,6 +110,7 @@ public abstract class MessageElement implements TypeElement {
     Builder extensions(ImmutableList<ExtensionsElement> extensions);
     Builder options(ImmutableList<OptionElement> options);
     Builder reserveds(ImmutableList<ReservedElement> reserveds);
+    Builder groups(ImmutableList<GroupElement> groups);
     MessageElement build();
   }
 }

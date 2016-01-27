@@ -21,6 +21,8 @@ import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
 import com.squareup.wire.schema.Location;
 import org.junit.Test;
 
+import static com.squareup.wire.schema.Field.Label.OPTIONAL;
+import static com.squareup.wire.schema.Field.Label.REPEATED;
 import static com.squareup.wire.schema.Field.Label.REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -239,6 +241,52 @@ public final class MessageElementTest {
     assertThat(element.toSchema()).isEqualTo(expected);
   }
 
+  @Test public void oneOfWithGroupToSchema() {
+    TypeElement element = MessageElement.builder(location)
+        .name("Message")
+        .oneOfs(ImmutableList.of(
+            OneOfElement.builder()
+                .name("hi")
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location)
+                        .type("string")
+                        .name("name")
+                        .tag(1)
+                        .build()))
+            .groups(ImmutableList.of(GroupElement.builder()
+                .name("Stuff")
+                .tag(3)
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(6, 7))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("result_per_page")
+                        .tag(4)
+                        .build(),
+                    FieldElement.builder(location.at(7, 7))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("page_count")
+                        .tag(5)
+                        .build()
+                ))
+                .build()))
+            .build()))
+        .build();
+    String expected = ""
+        + "message Message {\n"
+        + "  oneof hi {\n"
+        + "    string name = 1;\n"
+        + "  \n"
+        + "    group Stuff = 3 {\n"
+        + "      optional int32 result_per_page = 4;\n"
+        + "      optional int32 page_count = 5;\n"
+        + "    }\n"
+        + "  }\n"
+        + "}\n";
+    assertThat(element.toSchema()).isEqualTo(expected);
+  }
+
   @Test public void addMultipleOneOfs() {
     OneOfElement hi = OneOfElement.builder()
         .name("hi")
@@ -280,6 +328,48 @@ public final class MessageElementTest {
         + "  reserved 10;\n"
         + "  reserved 12 to 14;\n"
         + "  reserved \"foo\";\n"
+        + "}\n";
+    assertThat(element.toSchema()).isEqualTo(expected);
+  }
+
+  @Test public void groupToSchema() {
+    TypeElement element = MessageElement.builder(location.at(1, 1))
+        .name("SearchResponse")
+        .groups(ImmutableList.of(
+            GroupElement.builder()
+                .label(REPEATED)
+                .name("Result")
+                .tag(1)
+                .fields(ImmutableList.of(
+                    FieldElement.builder(location.at(3, 5))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("url")
+                        .tag(2)
+                        .build(),
+                    FieldElement.builder(location.at(4, 5))
+                        .label(OPTIONAL)
+                        .type("string")
+                        .name("title")
+                        .tag(3)
+                        .build(),
+                    FieldElement.builder(location.at(5, 5))
+                        .label(REPEATED)
+                        .type("string")
+                        .name("snippets")
+                        .tag(4)
+                        .build()
+                ))
+                .build()
+        ))
+        .build();
+    String expected = ""
+        + "message SearchResponse {\n"
+        + "  repeated group Result = 1 {\n"
+        + "    required string url = 2;\n"
+        + "    optional string title = 3;\n"
+        + "    repeated string snippets = 4;\n"
+        + "  }\n"
         + "}\n";
     assertThat(element.toSchema()).isEqualTo(expected);
   }

@@ -249,6 +249,9 @@ public final class MessageType extends Type {
 
   static MessageType fromElement(String packageName, ProtoType protoType,
       MessageElement messageElement) {
+    if (!messageElement.groups().isEmpty()) {
+      throw new IllegalStateException("'group' is not supported");
+    }
 
     ImmutableList<Field> declaredFields =
         Field.fromElements(packageName, messageElement.fields(), false);
