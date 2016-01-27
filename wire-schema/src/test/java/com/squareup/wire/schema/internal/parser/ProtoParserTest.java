@@ -17,6 +17,7 @@ package com.squareup.wire.schema.internal.parser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Range;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.internal.Util;
@@ -1588,6 +1589,22 @@ public final class ProtoParserTest {
         .types(ImmutableList.of(expected))
         .build();
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(protoFile);
+  }
+
+  @Test public void reserved() {
+    String proto = ""
+        + "message Foo {\n"
+        + "  reserved 10, 12 to 14, 'foo';"
+        + "}";
+    TypeElement message = MessageElement.builder(location.at(1, 1))
+        .name("Foo")
+        .reserveds(ImmutableList.of(ReservedElement.create(location.at(2, 3), "",
+            ImmutableList.<Object>of(10, Range.closed(12, 14), "foo"))))
+        .build();
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .types(ImmutableList.of(message))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
   @Test public void noWhitespace() {
