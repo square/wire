@@ -1087,4 +1087,76 @@ public final class SchemaTest {
       assertThat(expected).hasMessage("'group' is not supported");
     }
   }
+
+  @Test public void reservedTagThrowsWhenUsed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("test.proto", ""
+              + "message Message {\n"
+              + "  reserved 1;\n"
+              + "  optional string name = 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("tag 1 is reserved (test.proto at 2:3)\n"
+          + "  for field name (test.proto at 3:3)\n"
+          + "  in message Message (test.proto at 1:1)");
+    }
+  }
+
+  @Test public void reservedTagRangeThrowsWhenUsed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("test.proto", ""
+              + "message Message {\n"
+              + "  reserved 1 to 3;\n"
+              + "  optional string name = 2;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("tag 2 is reserved (test.proto at 2:3)\n"
+          + "  for field name (test.proto at 3:3)\n"
+          + "  in message Message (test.proto at 1:1)");
+    }
+  }
+
+  @Test public void reservedNameThrowsWhenUsed() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("test.proto", ""
+              + "message Message {\n"
+              + "  reserved 'foo';\n"
+              + "  optional string foo = 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("name 'foo' is reserved (test.proto at 2:3)\n"
+          + "  for field foo (test.proto at 3:3)\n"
+          + "  in message Message (test.proto at 1:1)");
+    }
+  }
+
+  @Test public void reservedTagAndNameBothReported() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("test.proto", ""
+              + "message Message {\n"
+              + "  reserved 'foo';\n"
+              + "  reserved 1;\n"
+              + "  optional string foo = 1;\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage("name 'foo' is reserved (test.proto at 2:3)\n"
+          + "  for field foo (test.proto at 4:3)\n"
+          + "  in message Message (test.proto at 1:1)\n"
+          + "tag 1 is reserved (test.proto at 3:3)\n"
+          + "  for field foo (test.proto at 4:3)\n"
+          + "  in message Message (test.proto at 1:1)");
+    }
+  }
 }
