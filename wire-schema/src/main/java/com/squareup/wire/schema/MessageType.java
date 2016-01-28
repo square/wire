@@ -35,11 +35,13 @@ public final class MessageType extends Type {
   private final ImmutableList<OneOf> oneOfs;
   private final ImmutableList<Type> nestedTypes;
   private final ImmutableList<Extensions> extensionsList;
+  private final ImmutableList<Reserved> reserveds;
   private final Options options;
 
   private MessageType(ProtoType protoType, Location location, String documentation, String name,
       ImmutableList<Field> declaredFields, List<Field> extensionFields, ImmutableList<OneOf> oneOfs,
-      ImmutableList<Type> nestedTypes, ImmutableList<Extensions> extensionsList, Options options) {
+      ImmutableList<Type> nestedTypes, ImmutableList<Extensions> extensionsList,
+      ImmutableList<Reserved> reserveds, Options options) {
     this.protoType = protoType;
     this.location = location;
     this.documentation = documentation;
@@ -49,6 +51,7 @@ public final class MessageType extends Type {
     this.oneOfs = oneOfs;
     this.nestedTypes = nestedTypes;
     this.extensionsList = extensionsList;
+    this.reserveds = reserveds;
     this.options = checkNotNull(options);
   }
 
@@ -204,7 +207,7 @@ public final class MessageType extends Type {
 
   void validate(Linker linker) {
     linker = linker.withContext(this);
-    linker.validateFields(fieldsAndOneOfFields());
+    linker.validateFields(fieldsAndOneOfFields(), reserveds);
     linker.validateEnumConstantNameUniqueness(nestedTypes);
     for (Field field : fieldsAndOneOfFields()) {
       field.validate(linker);
@@ -244,7 +247,7 @@ public final class MessageType extends Type {
     return new MessageType(protoType, location, documentation, name,
         Field.retainAll(schema, markSet, protoType, declaredFields),
         Field.retainAll(schema, markSet, protoType, extensionFields), retainedOneOfs,
-        retainedNestedTypes, extensionsList, options.retainAll(schema, markSet));
+        retainedNestedTypes, extensionsList, reserveds, options.retainAll(schema, markSet));
   }
 
   static MessageType fromElement(String packageName, ProtoType protoType,
@@ -269,11 +272,13 @@ public final class MessageType extends Type {
     ImmutableList<Extensions> extensionsList =
         Extensions.fromElements(messageElement.extensions());
 
+    ImmutableList<Reserved> reserveds = Reserved.fromElements(messageElement.reserveds());
+
     Options options = new Options(Options.MESSAGE_OPTIONS, messageElement.options());
 
     return new MessageType(protoType, messageElement.location(), messageElement.documentation(),
         messageElement.name(), declaredFields, extensionFields, oneOfs, nestedTypes.build(),
-        extensionsList, options);
+        extensionsList, reserveds, options);
   }
 
   MessageElement toElement() {
@@ -285,6 +290,7 @@ public final class MessageType extends Type {
         .nestedTypes(Type.toElements(nestedTypes))
         .oneOfs(OneOf.toElements(oneOfs))
         .extensions(Extensions.toElements(extensionsList))
+        .reserveds(Reserved.toElements(reserveds))
         .build();
   }
 }
