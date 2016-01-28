@@ -24,14 +24,20 @@ import java.lang.reflect.Method;
  */
 final class RuntimeEnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
   private final Class<E> type;
-  private final Method fromValueMethod;
+  private Method fromValueMethod; // Loaded lazily to avoid reflection during class loading.
 
   RuntimeEnumAdapter(Class<E> type) {
     super(FieldEncoding.VARINT, type);
     this.type = type;
+  }
 
+  private Method getFromValueMethod() {
+    Method method = this.fromValueMethod;
+    if (method != null) {
+      return method;
+    }
     try {
-      fromValueMethod = type.getDeclaredMethod("fromValue", int.class);
+      return fromValueMethod = type.getMethod("fromValue", int.class);
     } catch (NoSuchMethodException e) {
       throw new AssertionError(e);
     }
@@ -50,7 +56,7 @@ final class RuntimeEnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
     E constant;
     try {
       //noinspection unchecked
-      constant = (E) fromValueMethod.invoke(null, value);
+      constant = (E) getFromValueMethod().invoke(null, value);
     } catch (IllegalAccessException | InvocationTargetException e) {
       throw new AssertionError(e);
     }
