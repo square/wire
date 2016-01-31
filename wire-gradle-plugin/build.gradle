@@ -1,0 +1,55 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+group = GROUP
+version = VERSION_NAME
+
+dependencies {
+  compile gradleApi()
+  compile localGroovy()
+
+  compile 'com.android.tools.build:gradle:1.2.3'
+  compile 'com.squareup.wire:wire-compiler:1.8.0'
+}
+
+repositories {
+  mavenCentral()
+}
+
+artifacts {
+  archives jar
+}
+
+def installer = install.repositories.mavenInstaller()
+def deployer = uploadArchives.repositories.mavenDeployer()
+
+[installer, deployer]*.pom*.whenConfigured { pom ->
+  pom.project {
+    name POM_NAME
+    description POM_DESCRIPTION
+    packaging POM_PACKAGING
+    url POM_URL
+    developers {
+      developer {
+        id POM_DEVELOPER_ID
+        name POM_DEVELOPER_NAME
+      }
+    }
+    issueManagement {
+      system POM_ISSUES_SYSTEM
+      url POM_ISSUES_URL
+    }
+    licenses {
+      license {
+        name POM_LICENSE_NAME
+        url POM_LICENSE_URL
+        distribution POM_LICENSE_DIST
+      }
+    }
+    scm {
+      url POM_SCM_URL
+      connection POM_SCM_CONNECTION
+      developerConnection POM_SCM_DEV_CONNECTION
+    }
+  }
+}
