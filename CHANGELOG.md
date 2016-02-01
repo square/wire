@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 2.1.1 *(2016-02-01)*
+----------------------------
+
+ * New: `reserved` keyword is now supported and enforced.
+ * Fix: Defer reflection-based lookup of enum method until first use to avoid
+   class loading race conditions.
+ * Fix: Support single-quoted string literals.
+ * Fix: Adjacent string literals are not correctly concatenated.
+
+
 Version 2.1.0 *(2016-01-18)*
 ----------------------------
 

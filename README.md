@@ -369,14 +369,14 @@ With Maven:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
 </dependency>
 ```
 
 With Gradle:
 
 ```groovy
-compile 'com.squareup.wire:wire-runtime:2.1.0'
+compile 'com.squareup.wire:wire-runtime:2.1.1'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
@@ -404,4 +404,3 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
  [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/
-
