@@ -1,0 +1,42 @@
+buildscript {
+  ext {
+    dep = [
+            assertj               : "org.assertj:assertj-core:1.7.0",
+            autoValue             : "com.google.auto.value:auto-value:1.1",
+            gson                  : "com.google.code.gson:gson:2.2.4",
+            guava                 : "com.google.guava:guava:18.0",
+            intellijAnnotations   : "com.intellij:annotations:12.0",
+            javapoet              : "com.squareup:javapoet:1.4.0",
+            javaxInject           : "javax.inject:javax.inject:1",
+            jimfs                 : "com.google.jimfs:jimfs:1.0",
+            junit                 : "junit:junit:4.10",
+            mavenCore             : "org.apache.maven:maven-core:3.1.1",
+            mavenPluginApi        : "org.apache.maven:maven-plugin-api:3.1.1",
+            mavenPluginAnnotations: "org.apache.maven.plugin-tools:maven-plugin-annotations:3.2",
+            okio                  : "com.squareup.okio:okio:1.5.0",
+            retrofit              : "com.squareup.retrofit:retrofit:1.2.2",
+            rxjava                : "com.netflix.rxjava:rxjava-core:0.18.3",
+    ]
+  }
+
+  repositories {
+    jcenter()
+  }
+
+  dependencies {
+    classpath "com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3"
+  }
+}
+
+allprojects {
+  repositories {
+    jcenter()
+  }
+
+  group = GROUP
+  version = VERSION_NAME
+}
+
+def isCi() {
+  return "true".equals(System.getenv("CI"))
+}

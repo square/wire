@@ -1,0 +1,13 @@
+apply plugin: "java"
+apply plugin: "nebula.provided-base"
+
+dependencies {
+  compile project(":wire-runtime")
+
+  compile dep.gson
+
+  testCompile dep.assertj
+  testCompile dep.junit
+}
+
+apply from: rootProject.file("gradle/gradle-mvn-push.gradle")
