@@ -1070,7 +1070,7 @@ public final class ProtoParser {
   }
 
   private RuntimeException unexpected(Location location, String message) {
-    throw new IllegalStateException(String.format("Syntax error in %s: %s", location, message));
+    return new IllegalStateException(String.format("Syntax error in %s: %s", location, message));
   }
 
   enum Context {
