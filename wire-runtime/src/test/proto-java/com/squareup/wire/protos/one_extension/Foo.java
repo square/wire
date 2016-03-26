@@ -79,6 +79,13 @@ public final class Foo extends Message<Foo, Foo.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        bar = DEFAULT_BAR;
+      }
+    }
+
     public Builder bar(String bar) {
       this.bar = bar;
       return this;

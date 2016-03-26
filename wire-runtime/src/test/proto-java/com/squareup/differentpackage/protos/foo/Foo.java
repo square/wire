@@ -78,6 +78,12 @@ public final class Foo extends Message<Foo, Foo.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder moo(Bar.Baz.Moo moo) {
       this.moo = moo;
       return this;

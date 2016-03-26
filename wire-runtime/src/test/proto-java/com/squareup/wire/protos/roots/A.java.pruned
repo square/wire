@@ -92,6 +92,12 @@ public final class A extends Message<A, A.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder d(D d) {
       this.d = d;
       return this;

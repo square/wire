@@ -94,6 +94,14 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        a = DEFAULT_A;
+        b = DEFAULT_B;
+      }
+    }
+
     public Builder a(String a) {
       this.a = a;
       return this;

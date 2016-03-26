@@ -111,6 +111,14 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        name = DEFAULT_NAME;
+        number = DEFAULT_NUMBER;
+      }
+    }
+
     public Builder name(String name) {
       this.name = name;
       return this;

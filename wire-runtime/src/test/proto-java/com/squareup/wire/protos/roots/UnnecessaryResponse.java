@@ -54,6 +54,12 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     @Override
     public UnnecessaryResponse build() {
       return new UnnecessaryResponse(buildUnknownFields());

@@ -170,6 +170,16 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
       fooext = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        f = DEFAULT_F;
+        barext = DEFAULT_BAREXT;
+        bazext = DEFAULT_BAZEXT;
+        nested_enum_ext = DEFAULT_NESTED_ENUM_EXT;
+      }
+    }
+
     public Builder f(Float f) {
       this.f = f;
       return this;

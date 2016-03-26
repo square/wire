@@ -93,6 +93,13 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        outer_number_before = DEFAULT_OUTER_NUMBER_BEFORE;
+      }
+    }
+
     public Builder outer_number_before(Integer outer_number_before) {
       this.outer_number_before = outer_number_before;
       return this;

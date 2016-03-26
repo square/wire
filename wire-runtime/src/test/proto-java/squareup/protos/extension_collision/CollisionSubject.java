@@ -87,6 +87,13 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        f = DEFAULT_F;
+      }
+    }
+
     public Builder f(String f) {
       this.f = f;
       return this;

@@ -2162,6 +2162,76 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ext_pack_nested_enum = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        opt_int32 = DEFAULT_OPT_INT32;
+        opt_uint32 = DEFAULT_OPT_UINT32;
+        opt_sint32 = DEFAULT_OPT_SINT32;
+        opt_fixed32 = DEFAULT_OPT_FIXED32;
+        opt_sfixed32 = DEFAULT_OPT_SFIXED32;
+        opt_int64 = DEFAULT_OPT_INT64;
+        opt_uint64 = DEFAULT_OPT_UINT64;
+        opt_sint64 = DEFAULT_OPT_SINT64;
+        opt_fixed64 = DEFAULT_OPT_FIXED64;
+        opt_sfixed64 = DEFAULT_OPT_SFIXED64;
+        opt_bool = DEFAULT_OPT_BOOL;
+        opt_float = DEFAULT_OPT_FLOAT;
+        opt_double = DEFAULT_OPT_DOUBLE;
+        opt_string = DEFAULT_OPT_STRING;
+        opt_bytes = DEFAULT_OPT_BYTES;
+        opt_nested_enum = DEFAULT_OPT_NESTED_ENUM;
+        req_int32 = DEFAULT_REQ_INT32;
+        req_uint32 = DEFAULT_REQ_UINT32;
+        req_sint32 = DEFAULT_REQ_SINT32;
+        req_fixed32 = DEFAULT_REQ_FIXED32;
+        req_sfixed32 = DEFAULT_REQ_SFIXED32;
+        req_int64 = DEFAULT_REQ_INT64;
+        req_uint64 = DEFAULT_REQ_UINT64;
+        req_sint64 = DEFAULT_REQ_SINT64;
+        req_fixed64 = DEFAULT_REQ_FIXED64;
+        req_sfixed64 = DEFAULT_REQ_SFIXED64;
+        req_bool = DEFAULT_REQ_BOOL;
+        req_float = DEFAULT_REQ_FLOAT;
+        req_double = DEFAULT_REQ_DOUBLE;
+        req_string = DEFAULT_REQ_STRING;
+        req_bytes = DEFAULT_REQ_BYTES;
+        req_nested_enum = DEFAULT_REQ_NESTED_ENUM;
+        default_int32 = DEFAULT_DEFAULT_INT32;
+        default_uint32 = DEFAULT_DEFAULT_UINT32;
+        default_sint32 = DEFAULT_DEFAULT_SINT32;
+        default_fixed32 = DEFAULT_DEFAULT_FIXED32;
+        default_sfixed32 = DEFAULT_DEFAULT_SFIXED32;
+        default_int64 = DEFAULT_DEFAULT_INT64;
+        default_uint64 = DEFAULT_DEFAULT_UINT64;
+        default_sint64 = DEFAULT_DEFAULT_SINT64;
+        default_fixed64 = DEFAULT_DEFAULT_FIXED64;
+        default_sfixed64 = DEFAULT_DEFAULT_SFIXED64;
+        default_bool = DEFAULT_DEFAULT_BOOL;
+        default_float = DEFAULT_DEFAULT_FLOAT;
+        default_double = DEFAULT_DEFAULT_DOUBLE;
+        default_string = DEFAULT_DEFAULT_STRING;
+        default_bytes = DEFAULT_DEFAULT_BYTES;
+        default_nested_enum = DEFAULT_DEFAULT_NESTED_ENUM;
+        ext_opt_int32 = DEFAULT_EXT_OPT_INT32;
+        ext_opt_uint32 = DEFAULT_EXT_OPT_UINT32;
+        ext_opt_sint32 = DEFAULT_EXT_OPT_SINT32;
+        ext_opt_fixed32 = DEFAULT_EXT_OPT_FIXED32;
+        ext_opt_sfixed32 = DEFAULT_EXT_OPT_SFIXED32;
+        ext_opt_int64 = DEFAULT_EXT_OPT_INT64;
+        ext_opt_uint64 = DEFAULT_EXT_OPT_UINT64;
+        ext_opt_sint64 = DEFAULT_EXT_OPT_SINT64;
+        ext_opt_fixed64 = DEFAULT_EXT_OPT_FIXED64;
+        ext_opt_sfixed64 = DEFAULT_EXT_OPT_SFIXED64;
+        ext_opt_bool = DEFAULT_EXT_OPT_BOOL;
+        ext_opt_float = DEFAULT_EXT_OPT_FLOAT;
+        ext_opt_double = DEFAULT_EXT_OPT_DOUBLE;
+        ext_opt_string = DEFAULT_EXT_OPT_STRING;
+        ext_opt_bytes = DEFAULT_EXT_OPT_BYTES;
+        ext_opt_nested_enum = DEFAULT_EXT_OPT_NESTED_ENUM;
+      }
+    }
+
     public Builder opt_int32(Integer opt_int32) {
       this.opt_int32 = opt_int32;
       return this;
@@ -2998,6 +3068,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       public Integer a;
 
       public Builder() {
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+          a = DEFAULT_A;
+        }
       }
 
       public Builder a(Integer a) {

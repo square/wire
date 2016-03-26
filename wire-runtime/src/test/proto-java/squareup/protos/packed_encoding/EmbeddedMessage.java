@@ -96,6 +96,13 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
       inner_repeated_number = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        inner_number_after = DEFAULT_INNER_NUMBER_AFTER;
+      }
+    }
+
     public Builder inner_repeated_number(List<Integer> inner_repeated_number) {
       Internal.checkElementsNotNull(inner_repeated_number);
       this.inner_repeated_number = inner_repeated_number;

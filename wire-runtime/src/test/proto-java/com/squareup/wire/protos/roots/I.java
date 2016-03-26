@@ -96,6 +96,13 @@ public final class I extends Message<I, I.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        i = DEFAULT_I;
+      }
+    }
+
     public Builder i(Integer i) {
       this.i = i;
       return this;

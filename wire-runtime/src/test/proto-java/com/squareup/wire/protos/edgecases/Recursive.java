@@ -93,6 +93,13 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        value = DEFAULT_VALUE;
+      }
+    }
+
     public Builder value(Integer value) {
       this.value = value;
       return this;

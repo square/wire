@@ -96,6 +96,12 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
       pack_int32 = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder rep_int32(List<Integer> rep_int32) {
       Internal.checkElementsNotNull(rep_int32);
       this.rep_int32 = rep_int32;

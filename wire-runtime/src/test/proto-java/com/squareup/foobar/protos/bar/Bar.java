@@ -56,6 +56,12 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     @Override
     public Bar build() {
       return new Bar(buildUnknownFields());
@@ -100,6 +106,12 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     public static final class Builder extends Message.Builder<Baz, Builder> {
       public Builder() {
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+        }
       }
 
       @Override
@@ -169,6 +181,13 @@ public final class Bar extends Message<Bar, Bar.Builder> {
         public String boo;
 
         public Builder() {
+        }
+
+        public Builder(boolean useDefaults) {
+          this();
+          if (useDefaults) {
+            boo = DEFAULT_BOO;
+          }
         }
 
         public Builder boo(String boo) {

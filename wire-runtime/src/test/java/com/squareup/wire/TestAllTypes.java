@@ -297,6 +297,20 @@ public class TestAllTypes {
   }
 
   @Test
+  public void testBuilderWithDefaults() throws Exception {
+    AllTypes.Builder builder = new AllTypes.Builder(true);
+
+    assertThat(builder.default_int32).isEqualTo(2147483647);
+    assertThat(builder.default_bool).isEqualTo(true);
+    assertThat(builder.default_string).isEqualTo("çok\u0007\b\f\n\r\t\u000b\u0001\u0001"
+        + "\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel");
+    assertThat(new String(builder.default_bytes.toByteArray(), "ISO-8859-1")).isEqualTo(
+        "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
+            + "\u0011güzel");
+    assertThat(builder.default_nested_enum).isEqualTo(A);
+  }
+
+  @Test
   public void testInitBuilder() {
     AllTypes.Builder builder = allTypes.newBuilder();
     assertThat(builder.build()).isEqualTo(allTypes);
@@ -462,7 +476,7 @@ public class TestAllTypes {
   public void testDefaults() throws Exception {
     assertThat(AllTypes.DEFAULT_DEFAULT_BOOL).isEqualTo((Object) true);
     // original: "<c-cedilla>ok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11g<u umlaut>zel"
-    assertThat(AllTypes.DEFAULT_DEFAULT_STRING).isEqualTo( "çok\u0007\b\f\n\r\t\u000b\u0001\u0001"
+    assertThat(AllTypes.DEFAULT_DEFAULT_STRING).isEqualTo("çok\u0007\b\f\n\r\t\u000b\u0001\u0001"
         + "\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel");
     assertThat(new String(AllTypes.DEFAULT_DEFAULT_BYTES.toByteArray(), "ISO-8859-1")).isEqualTo(
         "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"

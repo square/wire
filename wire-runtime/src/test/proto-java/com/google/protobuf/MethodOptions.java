@@ -109,6 +109,13 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
       uninterpreted_option = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        deprecated = DEFAULT_DEPRECATED;
+      }
+    }
+
     /**
      * Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
      *   framework.  We apologize for hoarding these numbers to ourselves, but

@@ -54,6 +54,12 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     @Override
     public TheRequest build() {
       return new TheRequest(buildUnknownFields());

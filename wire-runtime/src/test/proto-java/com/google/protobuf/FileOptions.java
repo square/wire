@@ -404,6 +404,26 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       uninterpreted_option = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        java_package = DEFAULT_JAVA_PACKAGE;
+        java_outer_classname = DEFAULT_JAVA_OUTER_CLASSNAME;
+        java_multiple_files = DEFAULT_JAVA_MULTIPLE_FILES;
+        java_generate_equals_and_hash = DEFAULT_JAVA_GENERATE_EQUALS_AND_HASH;
+        java_string_check_utf8 = DEFAULT_JAVA_STRING_CHECK_UTF8;
+        optimize_for = DEFAULT_OPTIMIZE_FOR;
+        go_package = DEFAULT_GO_PACKAGE;
+        cc_generic_services = DEFAULT_CC_GENERIC_SERVICES;
+        java_generic_services = DEFAULT_JAVA_GENERIC_SERVICES;
+        py_generic_services = DEFAULT_PY_GENERIC_SERVICES;
+        deprecated = DEFAULT_DEPRECATED;
+        cc_enable_arenas = DEFAULT_CC_ENABLE_ARENAS;
+        objc_class_prefix = DEFAULT_OBJC_CLASS_PREFIX;
+        csharp_namespace = DEFAULT_CSHARP_NAMESPACE;
+      }
+    }
+
     /**
      * Sets the Java package where classes generated from this .proto will be
      * placed.  By default, the proto package is used, but this is often

@@ -82,6 +82,13 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        name = DEFAULT_NAME;
+      }
+    }
+
     public Builder name(String name) {
       this.name = name;
       return this;

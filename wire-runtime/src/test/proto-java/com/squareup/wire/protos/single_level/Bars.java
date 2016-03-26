@@ -80,6 +80,12 @@ public final class Bars extends Message<Bars, Bars.Builder> {
       bars = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder bars(List<Bar> bars) {
       Internal.checkElementsNotNull(bars);
       this.bars = bars;

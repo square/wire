@@ -111,6 +111,13 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
       value = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        name = DEFAULT_NAME;
+      }
+    }
+
     public Builder name(String name) {
       this.name = name;
       return this;

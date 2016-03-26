@@ -800,10 +800,14 @@ public final class JavaGenerator {
   // public static final Integer DEFAULT_OPT_INT32 = 123;
   //
   private FieldSpec defaultField(NameAllocator nameAllocator, Field field, TypeName fieldType) {
-    String defaultFieldName = "DEFAULT_" + nameAllocator.get(field).toUpperCase(Locale.US);
+    String defaultFieldName = defaultFieldName(nameAllocator, field);
     return FieldSpec.builder(fieldType, defaultFieldName, PUBLIC, STATIC, FINAL)
         .initializer(defaultValue(field))
         .build();
+  }
+
+  private String defaultFieldName(NameAllocator nameAllocator, Field field) {
+    return "DEFAULT_" + nameAllocator.get(field).toUpperCase(Locale.US);
   }
 
   // Example:
@@ -1046,6 +1050,7 @@ public final class JavaGenerator {
     }
 
     result.addMethod(builderNoArgsConstructor(nameAllocator, type));
+    result.addMethod(builderUseDefaultsConstructor(nameAllocator, type));
 
     for (Field field : type.fields()) {
       result.addMethod(setter(nameAllocator, builderType, null, field));
@@ -1075,6 +1080,36 @@ public final class JavaGenerator {
         result.addStatement("$L = $T.newMutableList()", fieldName, Internal.class);
       }
     }
+    return result.build();
+  }
+
+  // Example:
+  //
+  // public Builder(boolean useDefaults) {
+  //   this();
+  //   if (useDefaults) {
+  //     builder.optional_int32 = DEFAULT_OPTIONAL_INT32;
+  //   }
+  // }
+  //
+  private MethodSpec builderUseDefaultsConstructor(NameAllocator nameAllocator, MessageType type) {
+    MethodSpec.Builder result = MethodSpec.constructorBuilder()
+        .addParameter(TypeName.BOOLEAN, "useDefaults")
+        .addModifiers(PUBLIC);
+    result.addStatement("this()");
+
+    result.beginControlFlow("if (useDefaults)");
+    for (Field field : type.fieldsAndOneOfFields()) {
+      if ((field.type().isScalar() || isEnum(field.type()))
+          && !field.isRepeated()
+          && !field.isPacked()) {
+        String fieldName = nameAllocator.get(field);
+        String defaultFieldName = defaultFieldName(nameAllocator, field);
+        result.addStatement("$1L = $2L", fieldName, defaultFieldName);
+      }
+    }
+    result.endControlFlow();
+
     return result.build();
   }
 

@@ -77,6 +77,12 @@ public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder a(RedactedCycleA a) {
       this.a = a;
       return this;
