@@ -46,6 +46,13 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
     this.f = f;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private CollisionSubject() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

@@ -82,6 +82,13 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     this.enum_option = enum_option;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private EnumOptions() {
+    this(null, null, Internal.<UninterpretedOption>newMutableList(), null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

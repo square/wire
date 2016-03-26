@@ -95,6 +95,13 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
     this.server_streaming = server_streaming;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private MethodDescriptorProto() {
+    this(null, null, null, null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

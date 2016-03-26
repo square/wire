@@ -47,6 +47,13 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
     this.pack_int32 = Internal.immutableCopyOf("pack_int32", pack_int32);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private RepeatedAndPacked() {
+    this(Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

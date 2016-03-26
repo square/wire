@@ -46,6 +46,13 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
     this.embedded_message = embedded_message;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private OuterMessage() {
+    this(null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

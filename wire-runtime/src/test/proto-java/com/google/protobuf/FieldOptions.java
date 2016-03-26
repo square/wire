@@ -270,6 +270,13 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     this.redacted = redacted;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private FieldOptions() {
+    this(null, null, null, null, null, null, Internal.<UninterpretedOption>newMutableList(), null, null, null, null, null, null, null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

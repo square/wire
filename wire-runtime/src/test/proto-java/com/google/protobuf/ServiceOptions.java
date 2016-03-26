@@ -61,6 +61,13 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private ServiceOptions() {
+    this(null, Internal.<UninterpretedOption>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

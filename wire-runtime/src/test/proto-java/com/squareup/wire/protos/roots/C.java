@@ -39,6 +39,13 @@ public final class C extends Message<C, C.Builder> {
     this.i = i;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private C() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

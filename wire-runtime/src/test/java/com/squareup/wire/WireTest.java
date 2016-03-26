@@ -15,6 +15,8 @@
  */
 package com.squareup.wire;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.wire.protos.RepeatedAndPacked;
 import com.squareup.wire.protos.edgecases.NoFields;
 import com.squareup.wire.protos.person.Person;
@@ -371,6 +373,12 @@ public class WireTest {
     } catch (NullPointerException expected) {
       assertThat(expected).hasMessage("phone == null");
     }
+  }
+
+  @Test public void listDeserializesToNonNull() {
+    Gson gson = new GsonBuilder().create();
+    Person person = gson.fromJson("{}", Person.class);
+    assertThat(person.phone).isEmpty();
   }
 
   @Test public void listElementsMustBeNonNull() {

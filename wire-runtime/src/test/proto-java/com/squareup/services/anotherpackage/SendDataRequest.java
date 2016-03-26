@@ -38,6 +38,13 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
     this.data = data;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private SendDataRequest() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

@@ -39,6 +39,13 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     this.i = i;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private VersionOne() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

@@ -56,6 +56,13 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     this.b = Internal.immutableCopyOf("b", b);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private RedactedRepeated() {
+    this(Internal.<String>newMutableList(), Internal.<Redacted>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

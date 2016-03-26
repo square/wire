@@ -53,6 +53,13 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
     this.e = e;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private RedactedExtension() {
+    this(null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

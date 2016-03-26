@@ -90,6 +90,13 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     this.location = Internal.immutableCopyOf("location", location);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private SourceCodeInfo() {
+    this(Internal.<Location>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
@@ -323,6 +330,13 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       this.leading_comments = leading_comments;
       this.trailing_comments = trailing_comments;
       this.leading_detached_comments = Internal.immutableCopyOf("leading_detached_comments", leading_detached_comments);
+    }
+
+    /**
+     * Used for deserialization.
+     */
+    private Location() {
+      this(Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), null, null, Internal.<String>newMutableList(), ByteString.EMPTY);
     }
 
     @Override

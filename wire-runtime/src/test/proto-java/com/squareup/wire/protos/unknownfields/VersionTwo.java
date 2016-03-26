@@ -85,6 +85,13 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     this.v2_rs = Internal.immutableCopyOf("v2_rs", v2_rs);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private VersionTwo() {
+    this(null, null, null, null, null, Internal.<String>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

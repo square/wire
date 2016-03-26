@@ -38,6 +38,13 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
     this.opt_bytes = opt_bytes;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private OneBytesField() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

@@ -58,6 +58,13 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
     this.options = options;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private EnumValueDescriptorProto() {
+    this(null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

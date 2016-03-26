@@ -48,6 +48,13 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
     this.foo = foo;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private OneExtension() {
+    this(null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

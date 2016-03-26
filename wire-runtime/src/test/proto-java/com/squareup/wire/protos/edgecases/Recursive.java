@@ -46,6 +46,13 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
     this.recursive = recursive;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private Recursive() {
+    this(null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

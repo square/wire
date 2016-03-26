@@ -38,6 +38,13 @@ public final class SendDataResponse extends Message<SendDataResponse, SendDataRe
     this.data = data;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private SendDataResponse() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

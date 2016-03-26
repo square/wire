@@ -118,6 +118,13 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     this.reserved_name = Internal.immutableCopyOf("reserved_name", reserved_name);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private DescriptorProto() {
+    this(null, Internal.<FieldDescriptorProto>newMutableList(), Internal.<FieldDescriptorProto>newMutableList(), Internal.<DescriptorProto>newMutableList(), Internal.<EnumDescriptorProto>newMutableList(), Internal.<ExtensionRange>newMutableList(), Internal.<OneofDescriptorProto>newMutableList(), null, Internal.<ReservedRange>newMutableList(), Internal.<String>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
@@ -320,6 +327,13 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       this.end = end;
     }
 
+    /**
+     * Used for deserialization.
+     */
+    private ExtensionRange() {
+      this(null, null, ByteString.EMPTY);
+    }
+
     @Override
     public Builder newBuilder() {
       Builder builder = new Builder();
@@ -470,6 +484,13 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       super(ADAPTER, unknownFields);
       this.start = start;
       this.end = end;
+    }
+
+    /**
+     * Used for deserialization.
+     */
+    private ReservedRange() {
+      this(null, null, ByteString.EMPTY);
     }
 
     @Override

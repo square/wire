@@ -179,6 +179,13 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     this.o = o;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private SimpleMessage() {
+    this(null, null, null, null, null, Internal.<Double>newMutableList(), null, null, null, null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
@@ -415,6 +422,13 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     public NestedMessage(Integer bb, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.bb = bb;
+    }
+
+    /**
+     * Used for deserialization.
+     */
+    private NestedMessage() {
+      this(null, ByteString.EMPTY);
     }
 
     @Override

@@ -47,6 +47,13 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
     this.b = b;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private NotRedacted() {
+    this(null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

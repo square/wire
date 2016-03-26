@@ -38,6 +38,13 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     this.foos = Internal.immutableCopyOf("foos", foos);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private Foos() {
+    this(Internal.<Foo>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

@@ -477,55 +477,16 @@ public final class JavaGenerator {
 
     builder.addMethod(messageFieldsConstructor(nameAllocator, type));
     builder.addMethod(messageFieldsAndUnknownFieldsConstructor(nameAllocator, type));
+    // If there are no fields, then we already created a public no-args constructor.
+    if (!type.fieldsAndOneOfFields().isEmpty()) {
+      builder.addMethod(messageNoArgsConstructor(type));
+    }
     builder.addMethod(newBuilder(nameAllocator, type));
     builder.addMethod(messageEquals(nameAllocator, type));
     builder.addMethod(messageHashCode(nameAllocator, type));
 
     if (emitAndroid) {
-      String adapterName = nameAllocator.get("ADAPTER");
-
-      builder.addSuperinterface(PARCELABLE);
-
-      builder.addMethod(MethodSpec.methodBuilder("writeToParcel")
-          .addAnnotation(Override.class)
-          .addModifiers(PUBLIC)
-          .addParameter(PARCEL, "out")
-          .addParameter(int.class, "flags")
-          .addStatement("out.writeByteArray($N.encode(this))", adapterName)
-          .build());
-
-      builder.addMethod(MethodSpec.methodBuilder("describeContents")
-          .addAnnotation(Override.class)
-          .addModifiers(PUBLIC)
-          .returns(int.class)
-          .addStatement("return 0")
-          .build());
-
-      TypeName creatorType = creatorOf(javaType);
-      builder.addField(
-          FieldSpec.builder(creatorType, nameAllocator.get("CREATOR"), PUBLIC, STATIC, FINAL)
-              .initializer("$L", TypeSpec.anonymousClassBuilder("")
-                  .superclass(creatorType)
-                  .addMethod(MethodSpec.methodBuilder("createFromParcel")
-                      .addAnnotation(Override.class)
-                      .addModifiers(PUBLIC)
-                      .returns(javaType)
-                      .addParameter(PARCEL, "in")
-                      .beginControlFlow("try")
-                      .addStatement("return $N.decode(in.createByteArray())", adapterName)
-                      .nextControlFlow("catch ($T e)", IOException.class)
-                      .addStatement("throw new $T(e)", RuntimeException.class)
-                      .endControlFlow()
-                      .build())
-                  .addMethod(MethodSpec.methodBuilder("newArray")
-                      .addAnnotation(Override.class)
-                      .addModifiers(PUBLIC)
-                      .returns(ArrayTypeName.of(javaType))
-                      .addParameter(int.class, "size")
-                      .addStatement("return new $T[size]", javaType)
-                      .build())
-                  .build())
-              .build());
+      emitAndroidMessageContent(nameAllocator, javaType, builder);
     }
 
     if (!emitCompact) {
@@ -548,6 +509,54 @@ public final class JavaGenerator {
     }
 
     return builder.build();
+  }
+
+  private void emitAndroidMessageContent(NameAllocator nameAllocator, ClassName javaType,
+      TypeSpec.Builder builder) {
+    String adapterName = nameAllocator.get("ADAPTER");
+
+    builder.addSuperinterface(PARCELABLE);
+
+    builder.addMethod(MethodSpec.methodBuilder("writeToParcel")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .addParameter(PARCEL, "out")
+        .addParameter(int.class, "flags")
+        .addStatement("out.writeByteArray($N.encode(this))", adapterName)
+        .build());
+
+    builder.addMethod(MethodSpec.methodBuilder("describeContents")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(int.class)
+        .addStatement("return 0")
+        .build());
+
+    TypeName creatorType = creatorOf(javaType);
+    builder.addField(
+        FieldSpec.builder(creatorType, nameAllocator.get("CREATOR"), PUBLIC, STATIC, FINAL)
+            .initializer("$L", TypeSpec.anonymousClassBuilder("")
+                .superclass(creatorType)
+                .addMethod(MethodSpec.methodBuilder("createFromParcel")
+                    .addAnnotation(Override.class)
+                    .addModifiers(PUBLIC)
+                    .returns(javaType)
+                    .addParameter(PARCEL, "in")
+                    .beginControlFlow("try")
+                    .addStatement("return $N.decode(in.createByteArray())", adapterName)
+                    .nextControlFlow("catch ($T e)", IOException.class)
+                    .addStatement("throw new $T(e)", RuntimeException.class)
+                    .endControlFlow()
+                    .build())
+                .addMethod(MethodSpec.methodBuilder("newArray")
+                    .addAnnotation(Override.class)
+                    .addModifiers(PUBLIC)
+                    .returns(ArrayTypeName.of(javaType))
+                    .addParameter(int.class, "size")
+                    .addStatement("return new $T[size]", javaType)
+                    .build())
+                .build())
+            .build());
   }
 
   /** Returns the set of names that are not unique within {@code fields}. */
@@ -849,7 +858,7 @@ public final class JavaGenerator {
   // Example:
   //
   // public SimpleMessage(int optional_int32, long optional_int64) {
-  //   this(builder.optional_int32, builder.optional_int64, null);
+  //   this(builder.optional_int32, builder.optional_int64, ByteString.EMPTY);
   // }
   //
   private MethodSpec messageFieldsConstructor(NameAllocator nameAllocator, MessageType type) {
@@ -919,6 +928,29 @@ public final class JavaGenerator {
 
     result.addParameter(BYTE_STRING, unknownFieldsName);
 
+    return result.build();
+  }
+
+  /** The private no-arg constructor is used when an object is deserialized. */
+  // Example:
+  //
+  // private SimpleMessage() {
+  //   this(null, Internal.newMutableList(), ByteString.EMPTY);
+  // }
+  //
+  private MethodSpec messageNoArgsConstructor(MessageType type) {
+    MethodSpec.Builder result = MethodSpec.constructorBuilder().addModifiers(PRIVATE);
+    result.addJavadoc("Used for deserialization.\n");
+    result.addCode("this(");
+    for (Field field : type.fieldsAndOneOfFields()) {
+      if (field.isPacked() || field.isRepeated()) {
+        TypeName javaType = typeName(field.type());
+        result.addCode("$1T.<$2T>newMutableList(), ", Internal.class, javaType);
+      } else {
+        result.addCode("null, ");
+      }
+    }
+    result.addCode("$T.EMPTY);\n", BYTE_STRING);
     return result.build();
   }
 

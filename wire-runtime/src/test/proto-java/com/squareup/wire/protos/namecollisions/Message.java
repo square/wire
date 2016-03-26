@@ -118,6 +118,13 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
     this.message = message;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private Message() {
+    this(null, null, null, null, null, null, null, null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
