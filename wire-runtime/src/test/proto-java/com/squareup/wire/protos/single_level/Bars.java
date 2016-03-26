@@ -38,6 +38,13 @@ public final class Bars extends Message<Bars, Bars.Builder> {
     this.bars = Internal.immutableCopyOf("bars", bars);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private Bars() {
+    this(Internal.<Bar>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

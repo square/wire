@@ -69,6 +69,13 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     this.baz = baz;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private OneOfMessage() {
+    this(null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

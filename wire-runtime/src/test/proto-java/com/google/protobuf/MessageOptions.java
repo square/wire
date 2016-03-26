@@ -209,6 +209,13 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     this.foreign_message_option = foreign_message_option;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private MessageOptions() {
+    this(null, null, null, null, Internal.<UninterpretedOption>newMutableList(), null, null, null, null, null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

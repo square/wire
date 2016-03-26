@@ -130,6 +130,13 @@ public final class Bar extends Message<Bar, Bar.Builder> {
         this.boo = boo;
       }
 
+      /**
+       * Used for deserialization.
+       */
+      private Moo() {
+        this(null, ByteString.EMPTY);
+      }
+
       @Override
       public Builder newBuilder() {
         Builder builder = new Builder();

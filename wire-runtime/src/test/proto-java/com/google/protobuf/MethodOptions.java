@@ -61,6 +61,13 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private MethodOptions() {
+    this(null, Internal.<UninterpretedOption>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

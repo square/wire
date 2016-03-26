@@ -42,6 +42,13 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
     this.file = Internal.immutableCopyOf("file", file);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private FileDescriptorSet() {
+    this(Internal.<FileDescriptorProto>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

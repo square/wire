@@ -1286,6 +1286,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.ext_pack_nested_enum = Internal.immutableCopyOf("ext_pack_nested_enum", ext_pack_nested_enum);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private AllTypes() {
+    this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Boolean>newMutableList(), Internal.<Float>newMutableList(), Internal.<Double>newMutableList(), Internal.<String>newMutableList(), Internal.<ByteString>newMutableList(), Internal.<NestedEnum>newMutableList(), Internal.<NestedMessage>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Boolean>newMutableList(), Internal.<Float>newMutableList(), Internal.<Double>newMutableList(), Internal.<NestedEnum>newMutableList(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Boolean>newMutableList(), Internal.<Float>newMutableList(), Internal.<Double>newMutableList(), Internal.<String>newMutableList(), Internal.<ByteString>newMutableList(), Internal.<NestedEnum>newMutableList(), Internal.<NestedMessage>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Long>newMutableList(), Internal.<Boolean>newMutableList(), Internal.<Float>newMutableList(), Internal.<Double>newMutableList(), Internal.<NestedEnum>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
@@ -2817,6 +2824,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     public NestedMessage(Integer a, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.a = a;
+    }
+
+    /**
+     * Used for deserialization.
+     */
+    private NestedMessage() {
+      this(null, ByteString.EMPTY);
     }
 
     @Override

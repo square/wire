@@ -52,6 +52,13 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
     this.c = c;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private RedactedChild() {
+    this(null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

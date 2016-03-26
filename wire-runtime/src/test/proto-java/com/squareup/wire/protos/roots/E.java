@@ -46,6 +46,13 @@ public final class E extends Message<E, E.Builder> {
     this.g = g;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private E() {
+    this(null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
@@ -129,6 +136,13 @@ public final class E extends Message<E, E.Builder> {
     public F(Integer i, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.i = i;
+    }
+
+    /**
+     * Used for deserialization.
+     */
+    private F() {
+      this(null, ByteString.EMPTY);
     }
 
     @Override

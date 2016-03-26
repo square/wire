@@ -38,6 +38,13 @@ public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataRe
     this.data = data;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private LetsDataResponse() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

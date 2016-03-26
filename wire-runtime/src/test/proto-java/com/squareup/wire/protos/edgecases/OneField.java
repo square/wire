@@ -39,6 +39,13 @@ public final class OneField extends Message<OneField, OneField.Builder> {
     this.opt_int32 = opt_int32;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private OneField() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

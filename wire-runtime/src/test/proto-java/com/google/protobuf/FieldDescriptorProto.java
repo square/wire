@@ -139,6 +139,13 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     this.options = options;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private FieldDescriptorProto() {
+    this(null, null, null, null, null, null, null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

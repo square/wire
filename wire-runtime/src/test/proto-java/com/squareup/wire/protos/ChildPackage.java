@@ -39,6 +39,13 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
     this.inner_foreign_enum = inner_foreign_enum;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private ChildPackage() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

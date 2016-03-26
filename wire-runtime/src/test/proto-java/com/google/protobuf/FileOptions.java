@@ -278,6 +278,13 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private FileOptions() {
+    this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, Internal.<UninterpretedOption>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

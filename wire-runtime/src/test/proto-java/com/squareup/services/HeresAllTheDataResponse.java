@@ -38,6 +38,13 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
     this.data = data;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private HeresAllTheDataResponse() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

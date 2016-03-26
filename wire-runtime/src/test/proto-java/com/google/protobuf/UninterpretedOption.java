@@ -107,6 +107,13 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     this.aggregate_value = aggregate_value;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private UninterpretedOption() {
+    this(Internal.<NamePart>newMutableList(), null, null, null, null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
@@ -269,6 +276,13 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       super(ADAPTER, unknownFields);
       this.name_part = name_part;
       this.is_extension = is_extension;
+    }
+
+    /**
+     * Used for deserialization.
+     */
+    private NamePart() {
+      this(null, null, ByteString.EMPTY);
     }
 
     @Override

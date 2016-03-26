@@ -36,6 +36,13 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
     this.b = b;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private RedactedCycleA() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

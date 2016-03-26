@@ -41,6 +41,13 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     this.name = name;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private OneofDescriptorProto() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

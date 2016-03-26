@@ -160,6 +160,13 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     this.syntax = syntax;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private FileDescriptorProto() {
+    this(null, null, Internal.<String>newMutableList(), Internal.<Integer>newMutableList(), Internal.<Integer>newMutableList(), Internal.<DescriptorProto>newMutableList(), Internal.<EnumDescriptorProto>newMutableList(), Internal.<ServiceDescriptorProto>newMutableList(), Internal.<FieldDescriptorProto>newMutableList(), null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

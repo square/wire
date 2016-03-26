@@ -57,6 +57,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     this.options = options;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private ServiceDescriptorProto() {
+    this(null, Internal.<MethodDescriptorProto>newMutableList(), null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

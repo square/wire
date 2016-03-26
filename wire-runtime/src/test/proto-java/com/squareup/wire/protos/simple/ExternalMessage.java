@@ -98,6 +98,13 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
     this.nested_enum_ext = nested_enum_ext;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private ExternalMessage() {
+    this(null, Internal.<Integer>newMutableList(), null, null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

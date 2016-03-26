@@ -36,6 +36,13 @@ public final class J extends Message<J, J.Builder> {
     this.k = k;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private J() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

@@ -167,6 +167,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     this.rep = Internal.immutableCopyOf("rep", rep);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private FooBar() {
+    this(null, null, null, null, Internal.<Float>newMutableList(), null, Internal.<FooBar>newMutableList(), null, Internal.<FooBarBazEnum>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
@@ -335,6 +342,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       this.value = value;
     }
 
+    /**
+     * Used for deserialization.
+     */
+    private Nested() {
+      this(null, ByteString.EMPTY);
+    }
+
     @Override
     public Builder newBuilder() {
       Builder builder = new Builder();
@@ -457,6 +471,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     public More(List<Integer> serial, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.serial = Internal.immutableCopyOf("serial", serial);
+    }
+
+    /**
+     * Used for deserialization.
+     */
+    private More() {
+      this(Internal.<Integer>newMutableList(), ByteString.EMPTY);
     }
 
     @Override

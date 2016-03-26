@@ -51,6 +51,13 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
     this.j = j;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private ForeignMessage() {
+    this(null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

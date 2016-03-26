@@ -46,6 +46,13 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
     this.a = a;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private RedactedRequired() {
+    this(null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

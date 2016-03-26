@@ -48,6 +48,13 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
     this.inner_number_after = inner_number_after;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private EmbeddedMessage() {
+    this(Internal.<Integer>newMutableList(), null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

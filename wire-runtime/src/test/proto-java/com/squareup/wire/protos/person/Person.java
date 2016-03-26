@@ -81,6 +81,13 @@ public final class Person extends Message<Person, Person.Builder> {
     this.phone = Internal.immutableCopyOf("phone", phone);
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private Person() {
+    this(null, null, null, Internal.<PhoneNumber>newMutableList(), ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
@@ -257,6 +264,13 @@ public final class Person extends Message<Person, Person.Builder> {
       super(ADAPTER, unknownFields);
       this.number = number;
       this.type = type;
+    }
+
+    /**
+     * Used for deserialization.
+     */
+    private PhoneNumber() {
+      this(null, null, ByteString.EMPTY);
     }
 
     @Override

@@ -76,6 +76,13 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
     this.extension = extension;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private Redacted() {
+    this(null, null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();

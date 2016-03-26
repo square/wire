@@ -93,6 +93,13 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     this.foreign_enum_value_option = foreign_enum_value_option;
   }
 
+  /**
+   * Used for deserialization.
+   */
+  private EnumValueOptions() {
+    this(null, Internal.<UninterpretedOption>newMutableList(), null, null, null, ByteString.EMPTY);
+  }
+
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
