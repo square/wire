@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +136,10 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
 
   private Object parseValue(Label label, Type valueType, JsonElement valueElement) {
     if (label.isRepeated()) {
+      if (valueElement.isJsonNull()) {
+        return Collections.emptyList();
+      }
+
       List<Object> valueList = new ArrayList<>();
       for (JsonElement element : valueElement.getAsJsonArray()) {
         valueList.add(readJson(valueType, element));

@@ -66,6 +66,8 @@ cp src/test/proto-java.compact/com/squareup/wire/protos/alltypes/AllTypes.java \
 
 cp src/test/proto-java.compact/com/squareup/wire/protos/alltypes/AllTypes.java \
    ../wire-gson-support/src/test/java/com/squareup/wire/protos/alltypes/AllTypes.java
+cp src/test/proto-java/com/squareup/wire/protos/RepeatedAndPacked.java \
+   ../wire-gson-support/src/test/java/com/squareup/wire/protos/RepeatedAndPacked.java
 
 rm -r src/test/proto-java.noOptions
 rm -r src/test/proto-java.pruned

@@ -17,6 +17,7 @@ package com.squareup.wire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.wire.protos.RepeatedAndPacked;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import java.util.Arrays;
 import java.util.List;
@@ -268,5 +269,12 @@ public class GsonTest {
     AllTypes allTypes = builder.build();
     String json = gson.toJson(allTypes);
     assertThat(json).isEqualTo(JSON);
+  }
+
+  @Test public void testNullRepeatedField() {
+    Gson gson = createGson();
+    RepeatedAndPacked parsed = gson.fromJson("{rep_int32=null,pack_int32=null}", RepeatedAndPacked.class);
+    assertThat(parsed.rep_int32).isEmpty();
+    assertThat(parsed.pack_int32).isEmpty();
   }
 }
