@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 2.1.2 *(2016-04-15)*
+----------------------------
+
+ * Fix: Gson type adapter now deserializes JSON null literals to empty list for repeated fields.
+
+
 Version 2.1.1 *(2016-02-01)*
 ----------------------------
 
