@@ -19,34 +19,31 @@ import okio.ByteString;
 
 class TestAllTypesData {
 
-  public static final String expectedToString =
-      "AllTypes{opt_int32=111, opt_uint32=112, opt_sint32=113, opt_fixed32=114, opt_sfixed32=115, " +
-      "opt_int64=116, opt_uint64=117, opt_sint64=118, opt_fixed64=119, opt_sfixed64=120, opt_bool=true, " +
-      "opt_float=122.0, opt_double=123.0, opt_string=124, opt_bytes=ByteString[size=2 data=7de1], " +
-      "opt_nested_enum=A, opt_nested_message=NestedMessage{a=999}, " +
-      "req_int32=111, req_uint32=112, req_sint32=113, req_fixed32=114, req_sfixed32=115, req_int64=116, " +
-      "req_uint64=117, req_sint64=118, req_fixed64=119, req_sfixed64=120, req_bool=true, req_float=122.0, " +
-      "req_double=123.0, req_string=124, req_bytes=ByteString[size=2 data=7de1], req_nested_enum=A, " +
-      "req_nested_message=NestedMessage{a=999}, rep_int32=[111, 111], rep_uint32=[112, 112], " +
-      "rep_sint32=[113, 113], rep_fixed32=[114, 114], rep_sfixed32=[115, 115], rep_int64=[116, 116], " +
-      "rep_uint64=[117, 117], rep_sint64=[118, 118], rep_fixed64=[119, 119], rep_sfixed64=[120, 120], " +
-      "rep_bool=[true, true], rep_float=[122.0, 122.0], rep_double=[123.0, 123.0], " +
-      "rep_string=[124, 124], rep_bytes=[ByteString[size=2 data=7de1], ByteString[size=2 data=7de1]], " +
-      "rep_nested_enum=[A, A], rep_nested_message=[NestedMessage{a=999}, NestedMessage{a=999}], " +
-      "pack_int32=[111, 111], pack_uint32=[112, 112], pack_sint32=[113, 113], " +
-      "pack_fixed32=[114, 114], pack_sfixed32=[115, 115], pack_int64=[116, 116], " +
-      "pack_uint64=[117, 117], pack_sint64=[118, 118], pack_fixed64=[119, 119], " +
-      "pack_sfixed64=[120, 120], pack_bool=[true, true], pack_float=[122.0, 122.0], " +
-      "pack_double=[123.0, 123.0], pack_nested_enum=[A, A], " +
-      "ext_opt_bool=true, ext_rep_int32=[], ext_rep_uint32=[], ext_rep_sint32=[], ext_rep_fixed32=[], " +
-      "ext_rep_sfixed32=[], ext_rep_int64=[], ext_rep_uint64=[], ext_rep_sint64=[], ext_rep_fixed64=[], " +
-      "ext_rep_sfixed64=[], ext_rep_bool=[true, true], ext_rep_float=[], ext_rep_double=[], " +
-      "ext_rep_string=[], ext_rep_bytes=[], ext_rep_nested_enum=[], ext_rep_nested_message=[], " +
-      "ext_pack_int32=[], ext_pack_uint32=[], ext_pack_sint32=[], ext_pack_fixed32=[], " +
-      "ext_pack_sfixed32=[], ext_pack_int64=[], ext_pack_uint64=[], ext_pack_sint64=[], " +
-      "ext_pack_fixed64=[], ext_pack_sfixed64=[], ext_pack_bool=[true, true], ext_pack_float=[]," +
-      " ext_pack_double=[], ext_pack_nested_enum=[]}";
-
+  public static final String expectedToString = ""
+      + "AllTypes{opt_int32=111, opt_uint32=112, opt_sint32=113, opt_fixed32=114, opt_sfixed32=115,"
+      + " opt_int64=116, opt_uint64=117, opt_sint64=118, opt_fixed64=119, opt_sfixed64=120, opt_boo"
+      + "l=true, opt_float=122.0, opt_double=123.0, opt_string=124, opt_bytes=[hex=7de1], opt_neste"
+      + "d_enum=A, opt_nested_message=NestedMessage{a=999}, req_int32=111, req_uint32=112, req_sint"
+      + "32=113, req_fixed32=114, req_sfixed32=115, req_int64=116, req_uint64=117, req_sint64=118, "
+      + "req_fixed64=119, req_sfixed64=120, req_bool=true, req_float=122.0, req_double=123.0, req_s"
+      + "tring=124, req_bytes=[hex=7de1], req_nested_enum=A, req_nested_message=NestedMessage{a=999"
+      + "}, rep_int32=[111, 111], rep_uint32=[112, 112], rep_sint32=[113, 113], rep_fixed32=[114, 1"
+      + "14], rep_sfixed32=[115, 115], rep_int64=[116, 116], rep_uint64=[117, 117], rep_sint64=[118"
+      + ", 118], rep_fixed64=[119, 119], rep_sfixed64=[120, 120], rep_bool=[true, true], rep_float="
+      + "[122.0, 122.0], rep_double=[123.0, 123.0], rep_string=[124, 124], rep_bytes=[[hex=7de1], ["
+      + "hex=7de1]], rep_nested_enum=[A, A], rep_nested_message=[NestedMessage{a=999}, NestedMessag"
+      + "e{a=999}], pack_int32=[111, 111], pack_uint32=[112, 112], pack_sint32=[113, 113], pack_fix"
+      + "ed32=[114, 114], pack_sfixed32=[115, 115], pack_int64=[116, 116], pack_uint64=[117, 117], "
+      + "pack_sint64=[118, 118], pack_fixed64=[119, 119], pack_sfixed64=[120, 120], pack_bool=[true"
+      + ", true], pack_float=[122.0, 122.0], pack_double=[123.0, 123.0], pack_nested_enum=[A, A], e"
+      + "xt_opt_bool=true, ext_rep_int32=[], ext_rep_uint32=[], ext_rep_sint32=[], ext_rep_fixed32="
+      + "[], ext_rep_sfixed32=[], ext_rep_int64=[], ext_rep_uint64=[], ext_rep_sint64=[], ext_rep_f"
+      + "ixed64=[], ext_rep_sfixed64=[], ext_rep_bool=[true, true], ext_rep_float=[], ext_rep_doubl"
+      + "e=[], ext_rep_string=[], ext_rep_bytes=[], ext_rep_nested_enum=[], ext_rep_nested_message="
+      + "[], ext_pack_int32=[], ext_pack_uint32=[], ext_pack_sint32=[], ext_pack_fixed32=[], ext_pa"
+      + "ck_sfixed32=[], ext_pack_int64=[], ext_pack_uint64=[], ext_pack_sint64=[], ext_pack_fixed6"
+      + "4=[], ext_pack_sfixed64=[], ext_pack_bool=[true, true], ext_pack_float=[], ext_pack_double"
+      + "=[], ext_pack_nested_enum=[]}";
     public static final ByteString expectedOutput = ByteString.decodeHex(""
       // optional
 
