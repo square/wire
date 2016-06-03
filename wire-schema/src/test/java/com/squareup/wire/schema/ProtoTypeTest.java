@@ -52,6 +52,46 @@ public final class ProtoTypeTest {
     }
   }
 
+  @Test public void mapsCannotNest() throws Exception {
+    try {
+      ProtoType.get("map<string, string>").nestedType("PhoneType");
+      fail();
+    } catch (UnsupportedOperationException expected) {
+    }
+  }
+
+  @Test public void mapFormat() throws Exception {
+    try {
+      ProtoType.get("map<string>");
+      fail();
+    } catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("expected ',' in map type: map<string>");
+    }
+  }
+
+  @Test public void mapKeyScalarType() throws Exception {
+    try {
+      ProtoType.get("map<bytes, string>");
+      fail();
+    } catch (IllegalArgumentException expected) {
+    }
+    try {
+      ProtoType.get("map<double, string>");
+      fail();
+    } catch (IllegalArgumentException expected) {
+    }
+    try {
+      ProtoType.get("map<float, string>");
+      fail();
+    } catch (IllegalArgumentException expected) {
+    }
+    try {
+      ProtoType.get("map<some.Message, string>");
+      fail();
+    } catch (IllegalArgumentException expected) {
+    }
+  }
+
   @Test public void messageToString() throws Exception {
     ProtoType person = ProtoType.get("squareup.protos.person.Person");
     assertThat(person.toString()).isEqualTo("squareup.protos.person.Person");

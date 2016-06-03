@@ -150,12 +150,21 @@ final class Linker {
   }
 
   private ProtoType resolveType(String name, boolean messageOnly) {
-    ProtoType scalar = ProtoType.get(name);
-    if (scalar.isScalar()) {
+    ProtoType type = ProtoType.get(name);
+    if (type.isScalar()) {
       if (messageOnly) {
         addError("expected a message but was %s", name);
       }
-      return scalar;
+      return type;
+    }
+
+    if (type.isMap()) {
+      if (messageOnly) {
+        addError("expected a message but was %s", name);
+      }
+      ProtoType keyType = resolveType(type.keyType().toString(), false);
+      ProtoType valueType = resolveType(type.valueType().toString(), false);
+      return new ProtoType(keyType, valueType, name);
     }
 
     Type resolved = resolve(name, protoTypeNames);
@@ -323,7 +332,11 @@ final class Linker {
   }
 
   void validateImport(Location location, ProtoType type) {
+    // Map key type is always scalar. No need to validate it.
+    if (type.isMap()) type = type.valueType();
+
     if (type.isScalar()) return;
+
     String path = location.path();
     String requiredImport = get(type).location().path();
     if (!path.equals(requiredImport) && !imports.containsEntry(path, requiredImport)) {

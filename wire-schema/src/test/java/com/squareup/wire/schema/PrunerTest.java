@@ -68,7 +68,7 @@ public final class PrunerTest {
             + "  optional MessageB b = 1;\n"
             + "}\n"
             + "message MessageB {\n"
-            + "  optional MessageC c = 1;\n"
+            + "  map<string, MessageC> c = 1;\n"
             + "}\n"
             + "message MessageC {\n"
             + "}\n"
@@ -116,7 +116,7 @@ public final class PrunerTest {
         .add("service.proto", ""
             + "message MessageA {\n"
             + "  optional string b = 1;\n"
-            + "  optional string c = 2;\n"
+            + "  map<string, string> c = 2;\n"
             + "}\n"
             + "message MessageB {\n"
             + "}\n")
@@ -426,7 +426,7 @@ public final class PrunerTest {
         .add("service.proto", ""
             + "message MessageA {\n"
             + "  optional MessageB b = 1;\n"
-            + "  optional MessageC c = 2;\n"
+            + "  map<string, MessageC> c = 2;\n"
             + "}\n"
             + "message MessageB {\n"
             + "}\n"
@@ -493,20 +493,26 @@ public final class PrunerTest {
             + "message MessageA {\n"
             + "  optional MessageB b = 1;\n"
             + "  optional MessageC c = 2;\n"
+            + "  map<string, MessageD> d = 3;\n"
             + "}\n"
             + "message MessageB {\n"
             + "}\n"
             + "message MessageC {\n"
+            + "}\n"
+            + "message MessageD {\n"
             + "}\n")
         .build();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA")
         .exclude("MessageA#c")
+        .exclude("MessageA#d")
         .build());
     assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
     assertThat(pruned.getType("MessageB")).isNotNull();
     assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
     assertThat(pruned.getType("MessageC")).isNull();
+    assertThat(((MessageType) pruned.getType("MessageA")).field("d")).isNull();
+    assertThat(pruned.getType("MessageD")).isNull();
   }
 
   @Test public void excludeEnumExcludesOptions() throws Exception {

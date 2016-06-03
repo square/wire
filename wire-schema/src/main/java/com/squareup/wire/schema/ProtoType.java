@@ -19,10 +19,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Names a protocol buffer message, enumerated type, service, or a scalar. This class models a
+ * Names a protocol buffer message, enumerated type, service, map, or a scalar. This class models a
  * fully-qualified name using the protocol buffer package.
  */
 public final class ProtoType {
@@ -65,11 +66,33 @@ public final class ProtoType {
 
   private final boolean isScalar;
   private final String string;
+  private final boolean isMap;
+  private final ProtoType keyType;
+  private final ProtoType valueType;
 
+  /** Creates a scalar or message type. */
   private ProtoType(boolean isScalar, String string) {
     checkNotNull(string, "string == null");
     this.isScalar = isScalar;
     this.string = string;
+    this.isMap = false;
+    this.keyType = null;
+    this.valueType = null;
+  }
+
+  /** Creates a map type. */
+  ProtoType(ProtoType keyType, ProtoType valueType, String string) {
+    checkNotNull(keyType, "keyType == null");
+    checkNotNull(valueType, "valueType == null");
+    checkNotNull(string, "string == null");
+    checkArgument(
+        keyType.isScalar() && !keyType.equals(BYTES) && !keyType.equals(DOUBLE) && !keyType.equals(
+            FLOAT), "map key must be non-byte, non-floating point scalar: %s", keyType);
+    this.isScalar = false;
+    this.string = string;
+    this.isMap = true;
+    this.keyType = keyType; // TODO restrict what's allowed here
+    this.valueType = valueType;
   }
 
   public String simpleName() {
@@ -87,6 +110,20 @@ public final class ProtoType {
     return isScalar;
   }
 
+  public boolean isMap() {
+    return isMap;
+  }
+
+  /** The type of the map's keys. Only present when {@link #isMap} is true. */
+  public ProtoType keyType() {
+    return keyType;
+  }
+
+  /** The type of the map's values. Only present when {@link #isMap} is true. */
+  public ProtoType valueType() {
+    return valueType;
+  }
+
   public static ProtoType get(String enclosingTypeOrPackage, String typeName) {
     return enclosingTypeOrPackage != null
         ? get(enclosingTypeOrPackage + '.' + typeName)
@@ -100,12 +137,24 @@ public final class ProtoType {
     if (name == null || name.isEmpty() || name.contains("#")) {
       throw new IllegalArgumentException("unexpected name: " + name);
     }
+
+    if (name.startsWith("map<") && name.endsWith(">")) {
+      int comma = name.indexOf(',');
+      if (comma == -1) throw new IllegalArgumentException("expected ',' in map type: " + name);
+      ProtoType key = get(name.substring(4, comma).trim());
+      ProtoType value = get(name.substring(comma + 1, name.length() - 1).trim());
+      return new ProtoType(key, value, name);
+    }
+
     return new ProtoType(false, name);
   }
 
   public ProtoType nestedType(String name) {
     if (isScalar) {
       throw new UnsupportedOperationException("scalar cannot have a nested type");
+    }
+    if (isMap) {
+      throw new UnsupportedOperationException("map cannot have a nested type");
     }
     if (name == null || name.contains(".") || name.isEmpty()) {
       throw new IllegalArgumentException("unexpected name: " + name);

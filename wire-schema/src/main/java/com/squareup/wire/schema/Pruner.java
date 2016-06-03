@@ -175,6 +175,9 @@ final class Pruner {
   }
 
   private void mark(ProtoType type) {
+    // Map key type is always scalar. No need to mark it.
+    if (type.isMap()) type = type.valueType();
+
     if (marks.mark(type)) {
       queue.add(type); // The transitive dependencies of this type must be visited.
     }

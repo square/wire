@@ -181,6 +181,9 @@ public final class Field {
   }
 
   Field retainAll(Schema schema, MarkSet markSet) {
+    // For map types only the value can participate in pruning as the key will always be scalar.
+    if (type.isMap() && !markSet.contains(type.valueType())) return null;
+
     if (!markSet.contains(type)) return null;
 
     Field result = new Field(packageName, location, label, name, documentation, tag, defaultValue,
