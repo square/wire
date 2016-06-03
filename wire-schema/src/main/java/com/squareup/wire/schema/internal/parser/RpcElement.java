@@ -28,7 +28,9 @@ public abstract class RpcElement {
     return new AutoValue_RpcElement.Builder()
         .documentation("")
         .location(location)
-        .options(ImmutableList.<OptionElement>of());
+        .options(ImmutableList.<OptionElement>of())
+        .clientStreaming(false)
+        .serverStreaming(false);
   }
 
   public abstract Location location();
@@ -37,16 +39,24 @@ public abstract class RpcElement {
   public abstract String requestType();
   public abstract String responseType();
   public abstract ImmutableList<OptionElement> options();
+  public abstract boolean clientStreaming();
+  public abstract boolean serverStreaming();
 
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append("rpc ")
         .append(name())
-        .append(" (")
-        .append(requestType())
-        .append(") returns (")
-        .append(responseType())
+        .append(" (");
+    if (clientStreaming()) {
+      builder.append("stream ");
+    }
+    builder.append(requestType())
+        .append(") returns (");
+    if (serverStreaming()) {
+      builder.append("stream ");
+    }
+    builder.append(responseType())
         .append(')');
     if (!options().isEmpty()) {
       builder.append(" {\n");
@@ -66,6 +76,8 @@ public abstract class RpcElement {
     Builder requestType(String requestType);
     Builder responseType(String responseType);
     Builder options(ImmutableList<OptionElement> options);
+    Builder clientStreaming(boolean clientStreaming);
+    Builder serverStreaming(boolean serverStreaming);
     RpcElement build();
   }
 }

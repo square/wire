@@ -27,14 +27,18 @@ public final class Rpc {
   private final Options options;
   private ProtoType requestType;
   private ProtoType responseType;
+  private final boolean clientStreaming;
+  private final boolean serverStreaming;
 
   private Rpc(Location location, String name, String documentation, String requestType,
-      String responseType, Options options) {
+      String responseType, boolean clientStreaming, boolean serverStreaming, Options options) {
     this.location = location;
     this.name = name;
     this.documentation = documentation;
     this.requestTypeElement = requestType;
     this.responseTypeElement = responseType;
+    this.clientStreaming = clientStreaming;
+    this.serverStreaming = serverStreaming;
     this.options = options;
   }
 
@@ -56,6 +60,14 @@ public final class Rpc {
 
   public ProtoType responseType() {
     return responseType;
+  }
+
+  public boolean clientStreaming() {
+    return clientStreaming;
+  }
+
+  public boolean serverStreaming() {
+    return serverStreaming;
   }
 
   public Options options() {
@@ -82,7 +94,7 @@ public final class Rpc {
   Rpc retainAll(Schema schema, MarkSet markSet) {
     if (!markSet.contains(requestType) || !markSet.contains(responseType)) return null;
     Rpc result = new Rpc(location, name, documentation, requestTypeElement, responseTypeElement,
-        options.retainAll(schema, markSet));
+            clientStreaming, serverStreaming, options.retainAll(schema, markSet));
     result.requestType = requestType;
     result.responseType = responseType;
     return result;
@@ -93,6 +105,7 @@ public final class Rpc {
     for (RpcElement rpcElement : elements) {
       rpcs.add(new Rpc(rpcElement.location(), rpcElement.name(), rpcElement.documentation(),
           rpcElement.requestType(), rpcElement.responseType(),
+          rpcElement.clientStreaming(), rpcElement.serverStreaming(),
           new Options(Options.METHOD_OPTIONS, rpcElement.options())));
     }
     return rpcs.build();
@@ -106,6 +119,8 @@ public final class Rpc {
           .name(rpc.name)
           .requestType(rpc.requestTypeElement)
           .responseType(rpc.responseTypeElement)
+          .clientStreaming(rpc.clientStreaming)
+          .serverStreaming(rpc.serverStreaming)
           .options(rpc.options.toElements())
           .build());
     }
