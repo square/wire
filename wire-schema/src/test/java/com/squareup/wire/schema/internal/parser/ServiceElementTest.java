@@ -177,4 +177,26 @@ public final class ServiceElementTest {
         + "};\n";
     assertThat(rpc.toSchema()).isEqualTo(expected);
   }
+
+  @Test public void rpcWithRequestStreamingToSchema() {
+    RpcElement rpc = RpcElement.builder(location)
+            .name("Name")
+            .requestType("RequestType")
+            .responseType("ResponseType")
+            .requestStreaming(true)
+            .build();
+    String expected = "rpc Name (stream RequestType) returns (ResponseType);\n";
+    assertThat(rpc.toSchema()).isEqualTo(expected);
+  }
+
+  @Test public void rpcWithResponseStreamingToSchema() {
+    RpcElement rpc = RpcElement.builder(location)
+            .name("Name")
+            .requestType("RequestType")
+            .responseType("ResponseType")
+            .responseStreaming(true)
+            .build();
+    String expected = "rpc Name (RequestType) returns (stream ResponseType);\n";
+    assertThat(rpc.toSchema()).isEqualTo(expected);
+  }
 }

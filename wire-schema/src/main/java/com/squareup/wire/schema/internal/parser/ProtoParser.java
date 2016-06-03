@@ -690,15 +690,28 @@ public final class ProtoParser {
         .documentation(documentation);
 
     if (readChar() != '(') throw unexpected("expected '('");
-    String requestType = readDataType();
-    builder.requestType(requestType);
+    String type;
+    String word = readWord();
+    if (word.equals("stream")) {
+      builder.requestStreaming(true);
+      type = readDataType();
+    } else {
+      type = readDataType(word);
+    }
+    builder.requestType(type);
     if (readChar() != ')') throw unexpected("expected ')'");
 
     if (!readWord().equals("returns")) throw unexpected("expected 'returns'");
 
     if (readChar() != '(') throw unexpected("expected '('");
-    String responseType = readDataType();
-    builder.responseType(responseType);
+    word = readWord();
+    if (word.equals("stream")) {
+      builder.responseStreaming(true);
+      type = readDataType();
+    } else {
+      type = readDataType(word);
+    }
+    builder.responseType(type);
     if (readChar() != ')') throw unexpected("expected ')'");
 
     if (peekChar() == '{') {

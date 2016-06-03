@@ -1413,6 +1413,48 @@ public final class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
   }
 
+  @Test public void streamingService() throws Exception {
+    String proto = ""
+        + "service RouteGuide {\n"
+        + "  rpc GetFeature(Point) returns (Feature) {}\n"
+        + "  rpc ListFeatures(Rectangle) returns (stream Feature) {}\n"
+        + "  rpc RecordRoute(stream Point) returns (RouteSummary) {}\n"
+        + "  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}\n"
+        + "}";
+    ProtoFileElement expected = ProtoFileElement.builder(location)
+        .services(ImmutableList.of(
+            ServiceElement.builder(location.at(1, 1))
+                .name("RouteGuide")
+                .rpcs(ImmutableList.of(
+                    RpcElement.builder(location.at(2, 3))
+                        .name("GetFeature")
+                        .requestType("Point")
+                        .responseType("Feature")
+                        .build(),
+                    RpcElement.builder(location.at(3, 3))
+                        .name("ListFeatures")
+                        .requestType("Rectangle")
+                        .responseType("Feature")
+                        .responseStreaming(true)
+                        .build(),
+                    RpcElement.builder(location.at(4, 3))
+                        .name("RecordRoute")
+                        .requestType("Point")
+                        .responseType("RouteSummary")
+                        .requestStreaming(true)
+                        .build(),
+                    RpcElement.builder(location.at(5, 3))
+                        .name("RouteChat")
+                        .requestType("RouteNote")
+                        .responseType("RouteNote")
+                        .requestStreaming(true)
+                        .responseStreaming(true)
+                        .build()))
+                .build()))
+        .build();
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected);
+  }
+
   @Test public void hexTag() throws Exception {
     String proto = ""
         + "message HexTag {\n"
