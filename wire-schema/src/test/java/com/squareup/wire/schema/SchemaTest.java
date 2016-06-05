@@ -51,16 +51,22 @@ public final class SchemaTest {
             + "import \"foo.proto\";\n"
             + "message Message {\n"
             + "  optional foo_package.Foo field = 1;\n"
+            + "  map<string, foo_package.Bar> bars = 2;\n"
             + "}\n")
         .add("foo.proto", ""
             + "package foo_package;\n"
             + "message Foo {\n"
+            + "}\n"
+            + "message Bar {\n"
             + "}\n")
         .build();
 
     MessageType message = (MessageType) schema.getType("Message");
     Field field = message.field("field");
     assertThat(field.type()).isEqualTo(schema.getType("foo_package.Foo").type());
+    ProtoType bars = message.field("bars").type();
+    assertThat(bars.keyType()).isEqualTo(ProtoType.STRING);
+    assertThat(bars.valueType()).isEqualTo(schema.getType("foo_package.Bar").type());
   }
 
   @Test public void isValidTag() {
@@ -751,6 +757,24 @@ public final class SchemaTest {
     assertThat(a.field("b").type()).isEqualTo(b.type());
   }
 
+  @Test public void fieldMapTypeImported() throws Exception {
+    Schema schema = new SchemaBuilder()
+        .add("a.proto", ""
+            + "package pa;\n"
+            + "import \"b.proto\";\n"
+            + "message A {\n"
+            + "  map<string, pb.B> b = 1;\n"
+            + "}\n")
+        .add("b.proto", ""
+            + "package pb;\n"
+            + "message B {\n"
+            + "}\n")
+        .build();
+    MessageType a = (MessageType) schema.getType("pa.A");
+    MessageType b = (MessageType) schema.getType("pb.B");
+    assertThat(a.field("b").type().valueType()).isEqualTo(b.type());
+  }
+
   @Test public void fieldTypeNotImported() throws Exception {
     try {
       new SchemaBuilder()
@@ -758,6 +782,27 @@ public final class SchemaTest {
               + "package pa;\n"
               + "message A {\n"
               + "  optional pb.B b = 1;\n"
+              + "}\n")
+          .add("b.proto", ""
+              + "package pb;\n"
+              + "message B {\n"
+              + "}\n")
+          .build();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import b.proto\n"
+          + "  for field b (a.proto at 3:3)\n"
+          + "  in message pa.A (a.proto at 2:1)");
+    }
+  }
+
+  @Test public void fieldMapTypeNotImported() throws Exception {
+    try {
+      new SchemaBuilder()
+          .add("a.proto", ""
+              + "package pa;\n"
+              + "message A {\n"
+              + "  map<string, pb.B> b = 1;\n"
               + "}\n")
           .add("b.proto", ""
               + "package pb;\n"

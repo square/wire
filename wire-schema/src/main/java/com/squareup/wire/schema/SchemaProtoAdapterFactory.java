@@ -56,6 +56,8 @@ final class SchemaProtoAdapterFactory {
   }
 
   public ProtoAdapter<Object> get(ProtoType protoType) {
+    if (protoType.isMap()) throw new UnsupportedOperationException("map types not supported");
+
     ProtoAdapter<?> result = adapterMap.get(protoType);
     if (result != null) {
       return (ProtoAdapter<Object>) result;
