@@ -339,7 +339,7 @@ dependencies. This is useful when sharing a schema between projects: a Java serv
 may each use a subset of a larger shared schema.
 
 If you don't use Maven, the compiler also has a command line interface. Just substitute
-`wire-compiler-VERSION-jar-with-dependencies.jar` with the path to your jar. [Download](https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST) the latest precompiled jar.
+`wire-compiler-VERSION-jar-with-dependencies.jar` with the path to your jar. [Download](https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&c=jar-with-dependencies&v=LATEST) the latest precompiled jar.
 
     % java -jar wire-compiler-VERSION-jar-with-dependencies.jar \
         --proto_path=src/main/proto \
