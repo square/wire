@@ -349,6 +349,8 @@ If you don't use Maven, the compiler also has a command line interface. Just sub
     Writing com.squareup.dinosaurs.Dinosaur to out
     Writing com.squareup.geology.Period to out
 
+Supplying the `--android` flag to the compiler causes Wire messages to implement `Parcelable`.
+
 If you use Proguard, then you need to add `keep` rules.  The simplest option is to tell Proguard not
 to touch the Wire runtime library and your generated protocol buffers (of course these simple rules
 will miss opportunities to shrink and optimize the code):
