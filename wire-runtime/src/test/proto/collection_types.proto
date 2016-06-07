@@ -17,7 +17,8 @@ package squareup.protos.alltypes;
 
 option java_package = "com.squareup.wire.protos";
 
-message RepeatedAndPacked {
+message RepeatedPackedAndMap {
   repeated int32 rep_int32 = 201;
   repeated int32 pack_int32 = 301 [packed = true];
+  map<int32, int32> map_int32_int32 = 401;
 }

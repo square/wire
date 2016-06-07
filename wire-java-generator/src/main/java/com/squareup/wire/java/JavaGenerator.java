@@ -219,10 +219,17 @@ public final class JavaGenerator {
   }
 
   private CodeBlock singleAdapterFor(Field field) {
-    ProtoType type = field.type();
+    return field.type().isMap()
+        ? CodeBlock.of("$N", field.name())
+        : singleAdapterFor(field.type());
+  }
+
+  private CodeBlock singleAdapterFor(ProtoType type) {
     CodeBlock.Builder result = CodeBlock.builder();
     if (type.isScalar()) {
       result.add("$T.$L", ADAPTER, type.simpleName().toUpperCase(Locale.US));
+    } else if (type.isMap()) {
+      throw new IllegalArgumentException("Cannot create single adapter for map type " + type);
     } else {
       result.add("$T.ADAPTER", typeName(type));
     }
@@ -584,6 +591,18 @@ public final class JavaGenerator {
     adapter.addMethod(messageAdapterEncode(nameAllocator, type, javaType));
     adapter.addMethod(messageAdapterDecode(nameAllocator, type, javaType, builderJavaType));
     adapter.addMethod(messageAdapterRedact(nameAllocator, type, javaType, builderJavaType));
+
+    for (Field field : type.fieldsAndOneOfFields()) {
+      if (field.type().isMap()) {
+        TypeName adapterType = adapterOf(fieldType(field));
+        adapter.addField(FieldSpec.builder(adapterType, field.name(), PRIVATE, FINAL)
+            .initializer("$T.newMapAdapter($L, $L)", ADAPTER,
+                singleAdapterFor(field.type().keyType()),
+                singleAdapterFor(field.type().valueType()))
+            .build());
+      }
+    }
+
     return adapter.build();
   }
 
@@ -601,7 +620,7 @@ public final class JavaGenerator {
       int fieldTag = field.tag();
       String fieldName = nameAllocator.get(field);
       CodeBlock adapter = adapterFor(field);
-      if (field.isRequired() || field.isRepeated()) {
+      if (field.isRequired() || field.isRepeated() || field.type().isMap()) {
         result.addCode("$L $L.encodedSizeWithTag($L, value.$L)",
             leading, adapter, fieldTag, fieldName);
       } else {
@@ -628,7 +647,7 @@ public final class JavaGenerator {
       int fieldTag = field.tag();
       String fieldName = nameAllocator.get(field);
       CodeBlock adapter = adapterFor(field);
-      if (!field.isRequired() && !field.isRepeated()) {
+      if (!field.isRequired() && !field.isRepeated() && !field.type().isMap()) {
         result.addCode("if (value.$L != null) ", fieldName);
       }
       result.addStatement("$L.encodeWithTag(writer, $L, value.$L)", adapter, fieldTag, fieldName);
@@ -674,6 +693,9 @@ public final class JavaGenerator {
       } else {
         if (field.isRepeated()) {
           result.addStatement("case $L: builder.$L.add($L.decode(reader)); break", fieldTag,
+              fieldName, adapter);
+        } else if (field.type().isMap()) {
+          result.addStatement("case $L: builder.$L.putAll($L.decode(reader)); break", fieldTag,
               fieldName, adapter);
         } else {
           result.addStatement("case $L: builder.$L($L.decode(reader)); break", fieldTag, fieldName,
@@ -724,6 +746,8 @@ public final class JavaGenerator {
       if (field.isRedacted()) {
         if (field.isRepeated()) {
           result.addStatement("builder.$N = $T.emptyList()", fieldName, Collections.class);
+        } else if (field.type().isMap()) {
+          result.addStatement("builder.$N = $T.emptyMap()", fieldName, Collections.class);
         } else {
           result.addStatement("builder.$N = null", fieldName);
         }
@@ -732,6 +756,13 @@ public final class JavaGenerator {
           CodeBlock adapter = singleAdapterFor(field);
           result.addStatement("$T.redactElements(builder.$N, $L)", Internal.class, fieldName,
               adapter);
+        } else if (field.type().isMap()) {
+          // We only need to ask the values to redact themselves if the type is a message.
+          if (!field.type().valueType().isScalar() && !isEnum(field.type().valueType())) {
+            CodeBlock adapter = singleAdapterFor(field.type().valueType());
+            result.addStatement("$T.redactElements(builder.$N, $L)", Internal.class, fieldName,
+                adapter);
+          }
         } else {
           CodeBlock adapter = adapterFor(field);
           if (!field.isRequired()) {
@@ -787,7 +818,13 @@ public final class JavaGenerator {
   }
 
   private TypeName fieldType(Field field) {
-    TypeName messageType = typeName(field.type());
+    ProtoType type = field.type();
+    if (type.isMap()) {
+      return ParameterizedTypeName.get(ClassName.get(Map.class),
+          typeName(type.keyType()),
+          typeName(type.valueType()));
+    }
+    TypeName messageType = typeName(type);
     return field.isRepeated() ? listOf(messageType) : messageType;
   }
 
@@ -814,7 +851,12 @@ public final class JavaGenerator {
 
     int tag = field.tag();
     result.addMember("tag", String.valueOf(tag));
-    result.addMember("adapter", "$S", adapterString(field.type()));
+    if (field.type().isMap()) {
+      result.addMember("keyAdapter", "$S", adapterString(field.type().keyType()));
+      result.addMember("adapter", "$S", adapterString(field.type().valueType()));
+    } else {
+      result.addMember("adapter", "$S", adapterString(field.type()));
+    }
 
     if (!field.isOptional()) {
       if (field.isPacked()) {
@@ -906,7 +948,7 @@ public final class JavaGenerator {
         param.addAnnotation(NULLABLE);
       }
       result.addParameter(param.build());
-      if (field.isRepeated()) {
+      if (field.isRepeated() || field.type().isMap()) {
         result.addStatement("this.$1L = $2T.immutableCopyOf($1S, $1L)", fieldName,
             Internal.class);
       } else {
@@ -954,7 +996,7 @@ public final class JavaGenerator {
     result.addCode("$[return unknownFields().equals($N.unknownFields())", oName);
     for (Field field : fields) {
       String fieldName = localNameAllocator.get(field);
-      if (field.isRequired() || field.isRepeated()) {
+      if (field.isRequired() || field.isRepeated() || field.type().isMap()) {
         result.addCode("\n&& $1L.equals($2N.$1L)", fieldName, oName);
       } else {
         result.addCode("\n&& $1T.equals($2L, $3N.$2L)", Internal.class, fieldName, oName);
@@ -1002,7 +1044,7 @@ public final class JavaGenerator {
     for (Field field : fields) {
       String fieldName = localNameAllocator.get(field);
       result.addCode("$1N = $1N * 37 + ", resultName);
-      if (field.isRepeated() || field.isRequired()) {
+      if (field.isRepeated() || field.isRequired() || field.type().isMap()) {
         result.addStatement("$L.hashCode()", fieldName);
       } else {
         result.addStatement("($1L != null ? $1L.hashCode() : 0)", fieldName);
@@ -1027,7 +1069,7 @@ public final class JavaGenerator {
 
     for (Field field : type.fieldsAndOneOfFields()) {
       String fieldName = nameAllocator.get(field);
-      if (field.isRepeated()) {
+      if (field.isRepeated() || field.type().isMap()) {
         result.addCode("if (!$N.isEmpty()) ", fieldName);
       } else if (!field.isRequired()) {
         result.addCode("if ($N != null) ", fieldName);
@@ -1083,9 +1125,11 @@ public final class JavaGenerator {
   private MethodSpec builderNoArgsConstructor(NameAllocator nameAllocator, MessageType type) {
     MethodSpec.Builder result = MethodSpec.constructorBuilder().addModifiers(PUBLIC);
     for (Field field : type.fieldsAndOneOfFields()) {
+      String fieldName = nameAllocator.get(field);
       if (field.isPacked() || field.isRepeated()) {
-        String fieldName = nameAllocator.get(field);
         result.addStatement("$L = $T.newMutableList()", fieldName, Internal.class);
+      } else if (field.type().isMap()) {
+        result.addStatement("$L = $T.newMutableMap()", fieldName, Internal.class);
       }
     }
     return result.build();
@@ -1117,7 +1161,7 @@ public final class JavaGenerator {
     List<Field> fields = message.fieldsAndOneOfFields();
     for (Field field : fields) {
       String fieldName = localNameAllocator.get(field);
-      if (field.isRepeated()) {
+      if (field.isRepeated() || field.type().isMap()) {
         result.addStatement("$1L.$2L = $3T.copyOf($2S, $2L)", builderName, fieldName,
             Internal.class);
       } else {
@@ -1148,7 +1192,7 @@ public final class JavaGenerator {
       result.addAnnotation(Deprecated.class);
     }
 
-    if (field.isRepeated()) {
+    if (field.isRepeated() || field.type().isMap()) {
       result.addStatement("$T.checkElementsNotNull($L)", Internal.class, fieldName);
     }
     result.addStatement("this.$L = $L", fieldName, fieldName);

@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package com.squareup.wire.map;
+
+message Mappy {
+  map<string, Thing> things = 1;
+}
+
+message Thing {
+  optional string name = 1;
+}

@@ -31,9 +31,17 @@ public @interface WireField {
   int tag();
 
   /**
-   * Reference to the static field that holds a {@link ProtoAdapter} that can encode and decode this
-   * field. The reference is a string like {@code com.squareup.wire.protos.person.Person#ADAPTER}
-   * and contains a fully-qualified class name followed by a hash symbol and a field name.
+   * Reference to the static field that holds a {@link ProtoAdapter} that can encode and decode
+   * this field's keys. This only applies to maps. See {@link #adapter()} for a description
+   * of the value format.
+   */
+  String keyAdapter() default "";
+
+  /**
+   * Reference to the static field that holds a {@link ProtoAdapter} that can encode and decode
+   * this field's values. The reference is a string like
+   * {@code com.squareup.wire.protos.person.Person#ADAPTER} and contains a fully-qualified class
+   * name followed by a hash symbol and a field name.
    */
   String adapter();
 

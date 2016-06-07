@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Read, write, and describe a tag within a message. This class knows how to assign fields to a
@@ -45,7 +46,8 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
   public final WireField.Label label;
   public final String name;
   public final int tag;
-  public final String adapterString;
+  private final String keyAdapterString;
+  private final String adapterString;
   public final boolean redacted;
   private final Field messageField;
   private final Field builderField;
@@ -53,12 +55,14 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
 
   // Delegate adapters are created lazily; otherwise we could stack overflow!
   private ProtoAdapter<?> singleAdapter;
+  private ProtoAdapter<?> keyAdapter;
   private ProtoAdapter<Object> adapter;
 
   FieldBinding(WireField wireField, Field messageField, Class<B> builderType) {
     this.label = wireField.label();
     this.name = messageField.getName();
     this.tag = wireField.tag();
+    this.keyAdapterString = wireField.keyAdapter();
     this.adapterString = wireField.adapter();
     this.redacted = wireField.redacted();
     this.messageField = messageField;
@@ -66,27 +70,43 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
     this.builderMethod = getBuilderMethod(builderType, name, messageField.getType());
   }
 
+  boolean isMap() {
+    return !keyAdapterString.isEmpty();
+  }
+
   ProtoAdapter<?> singleAdapter() {
     ProtoAdapter<?> result = singleAdapter;
-    return result != null ? result : (singleAdapter = ProtoAdapter.get(adapterString));
+    if (result != null) return result;
+    return singleAdapter = ProtoAdapter.get(adapterString);
+  }
+
+  ProtoAdapter<?> keyAdapter() {
+    ProtoAdapter<?> result = keyAdapter;
+    if (result != null) return result;
+    return keyAdapter = ProtoAdapter.get(keyAdapterString);
   }
 
   ProtoAdapter<Object> adapter() {
     ProtoAdapter<Object> result = adapter;
-    return result != null
-        ? result
-        : (adapter = (ProtoAdapter<Object>) singleAdapter().withLabel(label));
+    if (result != null) return result;
+    if (isMap()) {
+      ProtoAdapter<Object> keyAdapter = (ProtoAdapter<Object>) keyAdapter();
+      ProtoAdapter<Object> valueAdapter = (ProtoAdapter<Object>) singleAdapter();
+      return adapter =
+          (ProtoAdapter<Object>) (ProtoAdapter<?>) ProtoAdapter.newMapAdapter(keyAdapter,
+              valueAdapter);
+    }
+    return adapter = (ProtoAdapter<Object>) singleAdapter().withLabel(label);
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
   void value(B builder, Object value) {
     if (label.isRepeated()) {
-      try {
-        List<Object> list = (List<Object>) builderField.get(builder);
-        list.add(value);
-      } catch (IllegalAccessException e) {
-        throw new AssertionError(e);
-      }
+      List<Object> list = (List<Object>) getFromBuilder(builder);
+      list.add(value);
+    } else if (!keyAdapterString.isEmpty()) {
+      Map<Object, Object> map = (Map<Object, Object>) getFromBuilder(builder);
+      map.putAll((Map<?, ?>) value);
     } else {
       set(builder, value);
     }
