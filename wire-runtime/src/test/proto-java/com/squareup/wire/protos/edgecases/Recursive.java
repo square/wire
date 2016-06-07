@@ -60,7 +60,7 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
     if (other == this) return true;
     if (!(other instanceof Recursive)) return false;
     Recursive o = (Recursive) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(value, o.value)
         && Internal.equals(recursive, o.recursive);
   }

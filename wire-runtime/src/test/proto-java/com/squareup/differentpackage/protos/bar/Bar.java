@@ -143,7 +143,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
         if (other == this) return true;
         if (!(other instanceof Moo)) return false;
         Moo o = (Moo) other;
-        return Internal.equals(unknownFields(), o.unknownFields())
+        return unknownFields().equals(o.unknownFields())
             && Internal.equals(boo, o.boo);
       }
 

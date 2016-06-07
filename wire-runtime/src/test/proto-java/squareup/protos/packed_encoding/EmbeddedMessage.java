@@ -62,8 +62,8 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
     if (other == this) return true;
     if (!(other instanceof EmbeddedMessage)) return false;
     EmbeddedMessage o = (EmbeddedMessage) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(inner_repeated_number, o.inner_repeated_number)
+    return unknownFields().equals(o.unknownFields())
+        && inner_repeated_number.equals(o.inner_repeated_number)
         && Internal.equals(inner_number_after, o.inner_number_after);
   }
 
@@ -72,7 +72,7 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (inner_repeated_number != null ? inner_repeated_number.hashCode() : 1);
+      result = result * 37 + inner_repeated_number.hashCode();
       result = result * 37 + (inner_number_after != null ? inner_number_after.hashCode() : 0);
       super.hashCode = result;
     }
@@ -82,7 +82,7 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (inner_repeated_number != null) builder.append(", inner_repeated_number=").append(inner_repeated_number);
+    if (!inner_repeated_number.isEmpty()) builder.append(", inner_repeated_number=").append(inner_repeated_number);
     if (inner_number_after != null) builder.append(", inner_number_after=").append(inner_number_after);
     return builder.replace(0, 2, "EmbeddedMessage{").append('}').toString();
   }
@@ -127,7 +127,7 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
 
     @Override
     public void encode(ProtoWriter writer, EmbeddedMessage value) throws IOException {
-      if (value.inner_repeated_number != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number);
+      ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number);
       if (value.inner_number_after != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after);
       writer.writeBytes(value.unknownFields());
     }

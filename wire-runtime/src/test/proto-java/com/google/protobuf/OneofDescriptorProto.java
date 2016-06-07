@@ -54,7 +54,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     if (other == this) return true;
     if (!(other instanceof OneofDescriptorProto)) return false;
     OneofDescriptorProto o = (OneofDescriptorProto) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(name, o.name);
   }
 

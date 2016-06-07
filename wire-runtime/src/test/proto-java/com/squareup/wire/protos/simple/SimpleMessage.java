@@ -203,13 +203,13 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     if (other_ == this) return true;
     if (!(other_ instanceof SimpleMessage)) return false;
     SimpleMessage o_ = (SimpleMessage) other_;
-    return Internal.equals(unknownFields(), o_.unknownFields())
+    return unknownFields().equals(o_.unknownFields())
         && Internal.equals(optional_int32, o_.optional_int32)
         && Internal.equals(optional_nested_msg, o_.optional_nested_msg)
         && Internal.equals(optional_external_msg, o_.optional_external_msg)
         && Internal.equals(default_nested_enum, o_.default_nested_enum)
-        && Internal.equals(required_int32, o_.required_int32)
-        && Internal.equals(repeated_double, o_.repeated_double)
+        && required_int32.equals(o_.required_int32)
+        && repeated_double.equals(o_.repeated_double)
         && Internal.equals(default_foreign_enum, o_.default_foreign_enum)
         && Internal.equals(no_default_foreign_enum, o_.no_default_foreign_enum)
         && Internal.equals(package_, o_.package_)
@@ -227,8 +227,8 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       result_ = result_ * 37 + (optional_nested_msg != null ? optional_nested_msg.hashCode() : 0);
       result_ = result_ * 37 + (optional_external_msg != null ? optional_external_msg.hashCode() : 0);
       result_ = result_ * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
-      result_ = result_ * 37 + (required_int32 != null ? required_int32.hashCode() : 0);
-      result_ = result_ * 37 + (repeated_double != null ? repeated_double.hashCode() : 1);
+      result_ = result_ * 37 + required_int32.hashCode();
+      result_ = result_ * 37 + repeated_double.hashCode();
       result_ = result_ * 37 + (default_foreign_enum != null ? default_foreign_enum.hashCode() : 0);
       result_ = result_ * 37 + (no_default_foreign_enum != null ? no_default_foreign_enum.hashCode() : 0);
       result_ = result_ * 37 + (package_ != null ? package_.hashCode() : 0);
@@ -247,8 +247,8 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     if (optional_nested_msg != null) builder.append(", optional_nested_msg=").append(optional_nested_msg);
     if (optional_external_msg != null) builder.append(", optional_external_msg=").append(optional_external_msg);
     if (default_nested_enum != null) builder.append(", default_nested_enum=").append(default_nested_enum);
-    if (required_int32 != null) builder.append(", required_int32=").append(required_int32);
-    if (repeated_double != null) builder.append(", repeated_double=").append(repeated_double);
+    builder.append(", required_int32=").append(required_int32);
+    if (!repeated_double.isEmpty()) builder.append(", repeated_double=").append(repeated_double);
     if (default_foreign_enum != null) builder.append(", default_foreign_enum=").append(default_foreign_enum);
     if (no_default_foreign_enum != null) builder.append(", no_default_foreign_enum=").append(no_default_foreign_enum);
     if (package_ != null) builder.append(", package=").append(package_);
@@ -430,7 +430,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
       NestedMessage o = (NestedMessage) other;
-      return Internal.equals(unknownFields(), o.unknownFields())
+      return unknownFields().equals(o.unknownFields())
           && Internal.equals(bb, o.bb);
     }
 
@@ -588,7 +588,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       if (value.optional_external_msg != null) ExternalMessage.ADAPTER.encodeWithTag(writer, 3, value.optional_external_msg);
       if (value.default_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 4, value.default_nested_enum);
       ProtoAdapter.INT32.encodeWithTag(writer, 5, value.required_int32);
-      if (value.repeated_double != null) ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 6, value.repeated_double);
+      ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 6, value.repeated_double);
       if (value.default_foreign_enum != null) ForeignEnum.ADAPTER.encodeWithTag(writer, 7, value.default_foreign_enum);
       if (value.no_default_foreign_enum != null) ForeignEnum.ADAPTER.encodeWithTag(writer, 8, value.no_default_foreign_enum);
       if (value.package_ != null) ProtoAdapter.STRING.encodeWithTag(writer, 9, value.package_);

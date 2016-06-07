@@ -160,7 +160,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     if (other == this) return true;
     if (!(other instanceof FieldDescriptorProto)) return false;
     FieldDescriptorProto o = (FieldDescriptorProto) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(name, o.name)
         && Internal.equals(number, o.number)
         && Internal.equals(label, o.label)

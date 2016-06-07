@@ -140,17 +140,17 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     if (other == this) return true;
     if (!(other instanceof DescriptorProto)) return false;
     DescriptorProto o = (DescriptorProto) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(name, o.name)
-        && Internal.equals(field, o.field)
-        && Internal.equals(extension, o.extension)
-        && Internal.equals(nested_type, o.nested_type)
-        && Internal.equals(enum_type, o.enum_type)
-        && Internal.equals(extension_range, o.extension_range)
-        && Internal.equals(oneof_decl, o.oneof_decl)
+        && field.equals(o.field)
+        && extension.equals(o.extension)
+        && nested_type.equals(o.nested_type)
+        && enum_type.equals(o.enum_type)
+        && extension_range.equals(o.extension_range)
+        && oneof_decl.equals(o.oneof_decl)
         && Internal.equals(options, o.options)
-        && Internal.equals(reserved_range, o.reserved_range)
-        && Internal.equals(reserved_name, o.reserved_name);
+        && reserved_range.equals(o.reserved_range)
+        && reserved_name.equals(o.reserved_name);
   }
 
   @Override
@@ -159,15 +159,15 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
-      result = result * 37 + (field != null ? field.hashCode() : 1);
-      result = result * 37 + (extension != null ? extension.hashCode() : 1);
-      result = result * 37 + (nested_type != null ? nested_type.hashCode() : 1);
-      result = result * 37 + (enum_type != null ? enum_type.hashCode() : 1);
-      result = result * 37 + (extension_range != null ? extension_range.hashCode() : 1);
-      result = result * 37 + (oneof_decl != null ? oneof_decl.hashCode() : 1);
+      result = result * 37 + field.hashCode();
+      result = result * 37 + extension.hashCode();
+      result = result * 37 + nested_type.hashCode();
+      result = result * 37 + enum_type.hashCode();
+      result = result * 37 + extension_range.hashCode();
+      result = result * 37 + oneof_decl.hashCode();
       result = result * 37 + (options != null ? options.hashCode() : 0);
-      result = result * 37 + (reserved_range != null ? reserved_range.hashCode() : 1);
-      result = result * 37 + (reserved_name != null ? reserved_name.hashCode() : 1);
+      result = result * 37 + reserved_range.hashCode();
+      result = result * 37 + reserved_name.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -177,15 +177,15 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (name != null) builder.append(", name=").append(name);
-    if (field != null) builder.append(", field=").append(field);
-    if (extension != null) builder.append(", extension=").append(extension);
-    if (nested_type != null) builder.append(", nested_type=").append(nested_type);
-    if (enum_type != null) builder.append(", enum_type=").append(enum_type);
-    if (extension_range != null) builder.append(", extension_range=").append(extension_range);
-    if (oneof_decl != null) builder.append(", oneof_decl=").append(oneof_decl);
+    if (!field.isEmpty()) builder.append(", field=").append(field);
+    if (!extension.isEmpty()) builder.append(", extension=").append(extension);
+    if (!nested_type.isEmpty()) builder.append(", nested_type=").append(nested_type);
+    if (!enum_type.isEmpty()) builder.append(", enum_type=").append(enum_type);
+    if (!extension_range.isEmpty()) builder.append(", extension_range=").append(extension_range);
+    if (!oneof_decl.isEmpty()) builder.append(", oneof_decl=").append(oneof_decl);
     if (options != null) builder.append(", options=").append(options);
-    if (reserved_range != null) builder.append(", reserved_range=").append(reserved_range);
-    if (reserved_name != null) builder.append(", reserved_name=").append(reserved_name);
+    if (!reserved_range.isEmpty()) builder.append(", reserved_range=").append(reserved_range);
+    if (!reserved_name.isEmpty()) builder.append(", reserved_name=").append(reserved_name);
     return builder.replace(0, 2, "DescriptorProto{").append('}').toString();
   }
 
@@ -334,7 +334,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       if (other == this) return true;
       if (!(other instanceof ExtensionRange)) return false;
       ExtensionRange o = (ExtensionRange) other;
-      return Internal.equals(unknownFields(), o.unknownFields())
+      return unknownFields().equals(o.unknownFields())
           && Internal.equals(start, o.start)
           && Internal.equals(end, o.end);
     }
@@ -486,7 +486,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       if (other == this) return true;
       if (!(other instanceof ReservedRange)) return false;
       ReservedRange o = (ReservedRange) other;
-      return Internal.equals(unknownFields(), o.unknownFields())
+      return unknownFields().equals(o.unknownFields())
           && Internal.equals(start, o.start)
           && Internal.equals(end, o.end);
     }
@@ -611,15 +611,15 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     @Override
     public void encode(ProtoWriter writer, DescriptorProto value) throws IOException {
       if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.field != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.field);
-      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension);
-      if (value.nested_type != null) DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.nested_type);
-      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.enum_type);
-      if (value.extension_range != null) ExtensionRange.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.extension_range);
-      if (value.oneof_decl != null) OneofDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 8, value.oneof_decl);
+      FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.field);
+      FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension);
+      DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.nested_type);
+      EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.enum_type);
+      ExtensionRange.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.extension_range);
+      OneofDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 8, value.oneof_decl);
       if (value.options != null) MessageOptions.ADAPTER.encodeWithTag(writer, 7, value.options);
-      if (value.reserved_range != null) ReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 9, value.reserved_range);
-      if (value.reserved_name != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 10, value.reserved_name);
+      ReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 9, value.reserved_range);
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 10, value.reserved_name);
       writer.writeBytes(value.unknownFields());
     }
 

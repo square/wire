@@ -51,7 +51,7 @@ public final class LetsDataRequest extends Message<LetsDataRequest, LetsDataRequ
     if (other == this) return true;
     if (!(other instanceof LetsDataRequest)) return false;
     LetsDataRequest o = (LetsDataRequest) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(data, o.data);
   }
 

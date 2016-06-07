@@ -98,10 +98,10 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     if (other == this) return true;
     if (!(other instanceof EnumOptions)) return false;
     EnumOptions o = (EnumOptions) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(allow_alias, o.allow_alias)
         && Internal.equals(deprecated, o.deprecated)
-        && Internal.equals(uninterpreted_option, o.uninterpreted_option)
+        && uninterpreted_option.equals(o.uninterpreted_option)
         && Internal.equals(enum_option, o.enum_option);
   }
 
@@ -112,7 +112,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
       result = unknownFields().hashCode();
       result = result * 37 + (allow_alias != null ? allow_alias.hashCode() : 0);
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + uninterpreted_option.hashCode();
       result = result * 37 + (enum_option != null ? enum_option.hashCode() : 0);
       super.hashCode = result;
     }
@@ -124,7 +124,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     StringBuilder builder = new StringBuilder();
     if (allow_alias != null) builder.append(", allow_alias=").append(allow_alias);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
-    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     if (enum_option != null) builder.append(", enum_option=").append(enum_option);
     return builder.replace(0, 2, "EnumOptions{").append('}').toString();
   }
@@ -200,7 +200,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     public void encode(ProtoWriter writer, EnumOptions value) throws IOException {
       if (value.allow_alias != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.allow_alias);
       if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       if (value.enum_option != null) ProtoAdapter.BOOL.encodeWithTag(writer, 71000, value.enum_option);
       writer.writeBytes(value.unknownFields());
     }

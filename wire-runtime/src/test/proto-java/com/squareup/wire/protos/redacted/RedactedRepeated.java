@@ -70,9 +70,9 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     if (other == this) return true;
     if (!(other instanceof RedactedRepeated)) return false;
     RedactedRepeated o = (RedactedRepeated) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(a, o.a)
-        && Internal.equals(b, o.b);
+    return unknownFields().equals(o.unknownFields())
+        && a.equals(o.a)
+        && b.equals(o.b);
   }
 
   @Override
@@ -80,8 +80,8 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (a != null ? a.hashCode() : 1);
-      result = result * 37 + (b != null ? b.hashCode() : 1);
+      result = result * 37 + a.hashCode();
+      result = result * 37 + b.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -90,8 +90,8 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (a != null) builder.append(", a=██");
-    if (b != null) builder.append(", b=").append(b);
+    if (!a.isEmpty()) builder.append(", a=██");
+    if (!b.isEmpty()) builder.append(", b=").append(b);
     return builder.replace(0, 2, "RedactedRepeated{").append('}').toString();
   }
 
@@ -140,8 +140,8 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
 
     @Override
     public void encode(ProtoWriter writer, RedactedRepeated value) throws IOException {
-      if (value.a != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a);
-      if (value.b != null) Redacted.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b);
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a);
+      Redacted.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b);
       writer.writeBytes(value.unknownFields());
     }
 

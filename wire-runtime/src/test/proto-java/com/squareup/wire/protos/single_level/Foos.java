@@ -51,8 +51,8 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     if (other == this) return true;
     if (!(other instanceof Foos)) return false;
     Foos o = (Foos) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(foos, o.foos);
+    return unknownFields().equals(o.unknownFields())
+        && foos.equals(o.foos);
   }
 
   @Override
@@ -60,7 +60,7 @@ public final class Foos extends Message<Foos, Foos.Builder> {
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (foos != null ? foos.hashCode() : 1);
+      result = result * 37 + foos.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -69,7 +69,7 @@ public final class Foos extends Message<Foos, Foos.Builder> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (foos != null) builder.append(", foos=").append(foos);
+    if (!foos.isEmpty()) builder.append(", foos=").append(foos);
     return builder.replace(0, 2, "Foos{").append('}').toString();
   }
 
@@ -105,7 +105,7 @@ public final class Foos extends Message<Foos, Foos.Builder> {
 
     @Override
     public void encode(ProtoWriter writer, Foos value) throws IOException {
-      if (value.foos != null) Foo.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.foos);
+      Foo.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.foos);
       writer.writeBytes(value.unknownFields());
     }
 

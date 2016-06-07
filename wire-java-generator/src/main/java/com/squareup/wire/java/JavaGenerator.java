@@ -422,8 +422,7 @@ public final class JavaGenerator {
     builder.superclass(messageOf(javaType, builderJavaType));
 
     String protoAdapterName = "ProtoAdapter_" + javaType.simpleName();
-    // TODO(jw): Update this to use the single-argument newName when JavaPoet is updated.
-    String protoAdapterClassName = nameAllocator.newName(protoAdapterName, protoAdapterName);
+    String protoAdapterClassName = nameAllocator.newName(protoAdapterName);
     ClassName adapterJavaType = javaType.nestedClass(protoAdapterClassName);
     builder.addField(messageAdapterField(nameAllocator, javaType, adapterJavaType));
     // Note: The non-compact implementation is added at the very bottom of the surrounding type.
@@ -632,12 +631,10 @@ public final class JavaGenerator {
       int fieldTag = field.tag();
       String fieldName = nameAllocator.get(field);
       CodeBlock adapter = adapterFor(field);
-      if (field.isRequired()) {
-        result.addStatement("$L.encodeWithTag(writer, $L, value.$L)", adapter, fieldTag, fieldName);
-      } else {
-        result.addStatement("if (value.$3L != null) $1L.encodeWithTag(writer, $2L, value.$3L)",
-            adapter, fieldTag, fieldName);
+      if (!field.isRequired() && !field.isRepeated()) {
+        result.addCode("if (value.$L != null) ", fieldName);
       }
+      result.addStatement("$L.encodeWithTag(writer, $L, value.$L)", adapter, fieldTag, fieldName);
     }
     result.addStatement("writer.writeBytes(value.unknownFields())");
 
@@ -740,8 +737,10 @@ public final class JavaGenerator {
               adapter);
         } else {
           CodeBlock adapter = adapterFor(field);
-          result.addStatement("if (builder.$1N != null) builder.$1N = $2L.redact(builder.$1N)",
-              fieldName, adapter);
+          if (!field.isRequired()) {
+            result.addCode("if (builder.$N != null) ", fieldName);
+          }
+          result.addStatement("builder.$1N = $2L.redact(builder.$1N)", fieldName, adapter);
         }
       }
     }
@@ -953,11 +952,14 @@ public final class JavaGenerator {
     result.addStatement("if (!($N instanceof $T)) return false", otherName, javaType);
 
     result.addStatement("$T $N = ($T) $N", javaType, oName, javaType, otherName);
-    result.addCode("$[return $T.equals(unknownFields(), $N.unknownFields())", Internal.class,
-        oName);
+    result.addCode("$[return unknownFields().equals($N.unknownFields())", oName);
     for (Field field : fields) {
       String fieldName = nameAllocator.get(field);
-      result.addCode("\n&& $T.equals($L, $N.$L)", Internal.class, fieldName, oName, fieldName);
+      if (field.isRequired() || field.isRepeated()) {
+        result.addCode("\n&& $1L.equals($2N.$1L)", fieldName, oName);
+      } else {
+        result.addCode("\n&& $1T.equals($2L, $3N.$2L)", Internal.class, fieldName, oName);
+      }
     }
     result.addCode(";\n$]");
 
@@ -998,8 +1000,12 @@ public final class JavaGenerator {
     result.addStatement("$N = unknownFields().hashCode()", resultName);
     for (Field field : fields) {
       String fieldName = nameAllocator.get(field);
-      result.addStatement("$N = $N * 37 + ($L != null ? $L.hashCode() : $L)",
-          resultName, resultName, fieldName, fieldName, nullHashValue(field));
+      result.addCode("$1N = $1N * 37 + ", resultName);
+      if (field.isRepeated() || field.isRequired()) {
+        result.addStatement("$L.hashCode()", fieldName);
+      } else {
+        result.addStatement("($1L != null ? $1L.hashCode() : 0)", fieldName);
+      }
     }
     result.addStatement("super.hashCode = $N", resultName);
     result.endControlFlow();
@@ -1018,12 +1024,16 @@ public final class JavaGenerator {
 
     for (Field field : type.fieldsAndOneOfFields()) {
       String fieldName = nameAllocator.get(field);
+      if (field.isRepeated()) {
+        result.addCode("if (!$N.isEmpty()) ", fieldName);
+      } else if (!field.isRequired()) {
+        result.addCode("if ($N != null) ", fieldName);
+      }
       if (isRedacted(field)) {
-        result.addStatement("if ($L != null) $N.append(\", $N=██\")", fieldName, builderName,
-            field.name());
+        result.addStatement("$N.append(\", $N=██\")", builderName, field.name());
       } else {
-        result.addStatement("if ($1L != null) $2N.append(\", $3N=\").append($1L)", fieldName,
-            builderName, field.name());
+        result.addStatement("$N.append(\", $N=\").append($L)", builderName, field.name(),
+            fieldName);
       }
     }
 
@@ -1238,48 +1248,40 @@ public final class JavaGenerator {
       return builder.build();
 
     } else if (javaType.equals(TypeName.BOOLEAN.box())) {
-      return codeBlock("$L", value != null ? value : false);
+      return CodeBlock.of("$L", value != null ? value : false);
 
     } else if (javaType.equals(TypeName.INT.box())) {
-      return codeBlock("$L", value != null
+      return CodeBlock.of("$L", value != null
           ? new BigDecimal(String.valueOf(value)).intValue()
           : 0);
 
     } else if (javaType.equals(TypeName.LONG.box())) {
-      return codeBlock("$LL", value != null
+      return CodeBlock.of("$LL", value != null
           ? Long.toString(new BigDecimal(String.valueOf(value)).longValue())
           : 0L);
 
     } else if (javaType.equals(TypeName.FLOAT.box())) {
-      return codeBlock("$Lf", value != null ? String.valueOf(value) : 0f);
+      return CodeBlock.of("$Lf", value != null ? String.valueOf(value) : 0f);
 
     } else if (javaType.equals(TypeName.DOUBLE.box())) {
-      return codeBlock("$Ld", value != null ? String.valueOf(value) : 0d);
+      return CodeBlock.of("$Ld", value != null ? String.valueOf(value) : 0d);
 
     } else if (javaType.equals(STRING)) {
-      return codeBlock("$S", value != null ? (String) value : "");
+      return CodeBlock.of("$S", value != null ? (String) value : "");
 
     } else if (javaType.equals(BYTE_STRING)) {
       if (value == null) {
-        return codeBlock("$T.EMPTY", ByteString.class);
+        return CodeBlock.of("$T.EMPTY", ByteString.class);
       } else {
-        return codeBlock("$T.decodeBase64($S)", ByteString.class,
+        return CodeBlock.of("$T.decodeBase64($S)", ByteString.class,
             ByteString.of(String.valueOf(value).getBytes(Charsets.ISO_8859_1)).base64());
       }
 
     } else if (isEnum(type) && value != null) {
-      return codeBlock("$T.$L", javaType, value);
+      return CodeBlock.of("$T.$L", javaType, value);
 
     } else {
       throw new IllegalStateException(type + " is not an allowed scalar type");
     }
-  }
-
-  private static CodeBlock codeBlock(String format, Object... args) {
-    return CodeBlock.builder().add(format, args).build();
-  }
-
-  private int nullHashValue(Field field) {
-    return field.isRepeated() ? 1 : 0;
   }
 }

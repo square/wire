@@ -51,7 +51,7 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
     if (other == this) return true;
     if (!(other instanceof SendDataRequest)) return false;
     SendDataRequest o = (SendDataRequest) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(data, o.data);
   }
 

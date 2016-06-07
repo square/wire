@@ -305,7 +305,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     if (other == this) return true;
     if (!(other instanceof FileOptions)) return false;
     FileOptions o = (FileOptions) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(java_package, o.java_package)
         && Internal.equals(java_outer_classname, o.java_outer_classname)
         && Internal.equals(java_multiple_files, o.java_multiple_files)
@@ -320,7 +320,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
         && Internal.equals(cc_enable_arenas, o.cc_enable_arenas)
         && Internal.equals(objc_class_prefix, o.objc_class_prefix)
         && Internal.equals(csharp_namespace, o.csharp_namespace)
-        && Internal.equals(uninterpreted_option, o.uninterpreted_option);
+        && uninterpreted_option.equals(o.uninterpreted_option);
   }
 
   @Override
@@ -342,7 +342,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       result = result * 37 + (cc_enable_arenas != null ? cc_enable_arenas.hashCode() : 0);
       result = result * 37 + (objc_class_prefix != null ? objc_class_prefix.hashCode() : 0);
       result = result * 37 + (csharp_namespace != null ? csharp_namespace.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + uninterpreted_option.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -365,7 +365,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     if (cc_enable_arenas != null) builder.append(", cc_enable_arenas=").append(cc_enable_arenas);
     if (objc_class_prefix != null) builder.append(", objc_class_prefix=").append(objc_class_prefix);
     if (csharp_namespace != null) builder.append(", csharp_namespace=").append(csharp_namespace);
-    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     return builder.replace(0, 2, "FileOptions{").append('}').toString();
   }
 
@@ -653,7 +653,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       if (value.cc_enable_arenas != null) ProtoAdapter.BOOL.encodeWithTag(writer, 31, value.cc_enable_arenas);
       if (value.objc_class_prefix != null) ProtoAdapter.STRING.encodeWithTag(writer, 36, value.objc_class_prefix);
       if (value.csharp_namespace != null) ProtoAdapter.STRING.encodeWithTag(writer, 37, value.csharp_namespace);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }
 

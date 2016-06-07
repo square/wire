@@ -62,7 +62,7 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
     if (other == this) return true;
     if (!(other instanceof OneExtension)) return false;
     OneExtension o = (OneExtension) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(id, o.id)
         && Internal.equals(foo, o.foo);
   }

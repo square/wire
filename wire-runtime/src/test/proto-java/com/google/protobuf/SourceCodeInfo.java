@@ -103,8 +103,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     if (other == this) return true;
     if (!(other instanceof SourceCodeInfo)) return false;
     SourceCodeInfo o = (SourceCodeInfo) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(location, o.location);
+    return unknownFields().equals(o.unknownFields())
+        && location.equals(o.location);
   }
 
   @Override
@@ -112,7 +112,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (location != null ? location.hashCode() : 1);
+      result = result * 37 + location.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -121,7 +121,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (location != null) builder.append(", location=").append(location);
+    if (!location.isEmpty()) builder.append(", location=").append(location);
     return builder.replace(0, 2, "SourceCodeInfo{").append('}').toString();
   }
 
@@ -342,12 +342,12 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       if (other == this) return true;
       if (!(other instanceof Location)) return false;
       Location o = (Location) other;
-      return Internal.equals(unknownFields(), o.unknownFields())
-          && Internal.equals(path, o.path)
-          && Internal.equals(span, o.span)
+      return unknownFields().equals(o.unknownFields())
+          && path.equals(o.path)
+          && span.equals(o.span)
           && Internal.equals(leading_comments, o.leading_comments)
           && Internal.equals(trailing_comments, o.trailing_comments)
-          && Internal.equals(leading_detached_comments, o.leading_detached_comments);
+          && leading_detached_comments.equals(o.leading_detached_comments);
     }
 
     @Override
@@ -355,11 +355,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       int result = super.hashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
-        result = result * 37 + (path != null ? path.hashCode() : 1);
-        result = result * 37 + (span != null ? span.hashCode() : 1);
+        result = result * 37 + path.hashCode();
+        result = result * 37 + span.hashCode();
         result = result * 37 + (leading_comments != null ? leading_comments.hashCode() : 0);
         result = result * 37 + (trailing_comments != null ? trailing_comments.hashCode() : 0);
-        result = result * 37 + (leading_detached_comments != null ? leading_detached_comments.hashCode() : 1);
+        result = result * 37 + leading_detached_comments.hashCode();
         super.hashCode = result;
       }
       return result;
@@ -368,11 +368,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
-      if (path != null) builder.append(", path=").append(path);
-      if (span != null) builder.append(", span=").append(span);
+      if (!path.isEmpty()) builder.append(", path=").append(path);
+      if (!span.isEmpty()) builder.append(", span=").append(span);
       if (leading_comments != null) builder.append(", leading_comments=").append(leading_comments);
       if (trailing_comments != null) builder.append(", trailing_comments=").append(trailing_comments);
-      if (leading_detached_comments != null) builder.append(", leading_detached_comments=").append(leading_detached_comments);
+      if (!leading_detached_comments.isEmpty()) builder.append(", leading_detached_comments=").append(leading_detached_comments);
       return builder.replace(0, 2, "Location{").append('}').toString();
     }
 
@@ -525,11 +525,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
       @Override
       public void encode(ProtoWriter writer, Location value) throws IOException {
-        if (value.path != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.path);
-        if (value.span != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value.span);
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.path);
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value.span);
         if (value.leading_comments != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.leading_comments);
         if (value.trailing_comments != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.trailing_comments);
-        if (value.leading_detached_comments != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.leading_detached_comments);
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.leading_detached_comments);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -577,7 +577,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
     @Override
     public void encode(ProtoWriter writer, SourceCodeInfo value) throws IOException {
-      if (value.location != null) Location.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.location);
+      Location.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.location);
       writer.writeBytes(value.unknownFields());
     }
 

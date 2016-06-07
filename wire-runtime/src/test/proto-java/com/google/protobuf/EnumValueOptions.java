@@ -110,9 +110,9 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     if (other == this) return true;
     if (!(other instanceof EnumValueOptions)) return false;
     EnumValueOptions o = (EnumValueOptions) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(deprecated, o.deprecated)
-        && Internal.equals(uninterpreted_option, o.uninterpreted_option)
+        && uninterpreted_option.equals(o.uninterpreted_option)
         && Internal.equals(enum_value_option, o.enum_value_option)
         && Internal.equals(complex_enum_value_option, o.complex_enum_value_option)
         && Internal.equals(foreign_enum_value_option, o.foreign_enum_value_option);
@@ -124,7 +124,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + uninterpreted_option.hashCode();
       result = result * 37 + (enum_value_option != null ? enum_value_option.hashCode() : 0);
       result = result * 37 + (complex_enum_value_option != null ? complex_enum_value_option.hashCode() : 0);
       result = result * 37 + (foreign_enum_value_option != null ? foreign_enum_value_option.hashCode() : 0);
@@ -137,7 +137,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
-    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     if (enum_value_option != null) builder.append(", enum_value_option=").append(enum_value_option);
     if (complex_enum_value_option != null) builder.append(", complex_enum_value_option=").append(complex_enum_value_option);
     if (foreign_enum_value_option != null) builder.append(", foreign_enum_value_option=").append(foreign_enum_value_option);
@@ -218,7 +218,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     @Override
     public void encode(ProtoWriter writer, EnumValueOptions value) throws IOException {
       if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.deprecated);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       if (value.enum_value_option != null) ProtoAdapter.INT32.encodeWithTag(writer, 70000, value.enum_value_option);
       if (value.complex_enum_value_option != null) FooBar.More.ADAPTER.encodeWithTag(writer, 70001, value.complex_enum_value_option);
       if (value.foreign_enum_value_option != null) ProtoAdapter.BOOL.encodeWithTag(writer, 70002, value.foreign_enum_value_option);

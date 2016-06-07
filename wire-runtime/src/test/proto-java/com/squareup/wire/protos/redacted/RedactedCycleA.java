@@ -49,7 +49,7 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
     if (other == this) return true;
     if (!(other instanceof RedactedCycleA)) return false;
     RedactedCycleA o = (RedactedCycleA) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(b, o.b);
   }
 

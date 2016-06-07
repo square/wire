@@ -51,7 +51,7 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
     if (other == this) return true;
     if (!(other instanceof OneBytesField)) return false;
     OneBytesField o = (OneBytesField) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(opt_bytes, o.opt_bytes);
   }
 

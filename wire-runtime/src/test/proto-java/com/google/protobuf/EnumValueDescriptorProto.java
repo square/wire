@@ -73,7 +73,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
     if (other == this) return true;
     if (!(other instanceof EnumValueDescriptorProto)) return false;
     EnumValueDescriptorProto o = (EnumValueDescriptorProto) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(name, o.name)
         && Internal.equals(number, o.number)
         && Internal.equals(options, o.options);

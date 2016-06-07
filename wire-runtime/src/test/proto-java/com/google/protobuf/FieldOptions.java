@@ -298,14 +298,14 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     if (other == this) return true;
     if (!(other instanceof FieldOptions)) return false;
     FieldOptions o = (FieldOptions) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(ctype, o.ctype)
         && Internal.equals(packed, o.packed)
         && Internal.equals(jstype, o.jstype)
         && Internal.equals(lazy, o.lazy)
         && Internal.equals(deprecated, o.deprecated)
         && Internal.equals(weak, o.weak)
-        && Internal.equals(uninterpreted_option, o.uninterpreted_option)
+        && uninterpreted_option.equals(o.uninterpreted_option)
         && Internal.equals(my_field_option_one, o.my_field_option_one)
         && Internal.equals(my_field_option_two, o.my_field_option_two)
         && Internal.equals(my_field_option_three, o.my_field_option_three)
@@ -328,7 +328,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       result = result * 37 + (lazy != null ? lazy.hashCode() : 0);
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
       result = result * 37 + (weak != null ? weak.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + uninterpreted_option.hashCode();
       result = result * 37 + (my_field_option_one != null ? my_field_option_one.hashCode() : 0);
       result = result * 37 + (my_field_option_two != null ? my_field_option_two.hashCode() : 0);
       result = result * 37 + (my_field_option_three != null ? my_field_option_three.hashCode() : 0);
@@ -352,7 +352,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     if (lazy != null) builder.append(", lazy=").append(lazy);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (weak != null) builder.append(", weak=").append(weak);
-    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     if (my_field_option_one != null) builder.append(", my_field_option_one=").append(my_field_option_one);
     if (my_field_option_two != null) builder.append(", my_field_option_two=").append(my_field_option_two);
     if (my_field_option_three != null) builder.append(", my_field_option_three=").append(my_field_option_three);
@@ -670,7 +670,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       if (value.lazy != null) ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.lazy);
       if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
       if (value.weak != null) ProtoAdapter.BOOL.encodeWithTag(writer, 10, value.weak);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       if (value.my_field_option_one != null) ProtoAdapter.INT32.encodeWithTag(writer, 60001, value.my_field_option_one);
       if (value.my_field_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 60002, value.my_field_option_two);
       if (value.my_field_option_three != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 60003, value.my_field_option_three);

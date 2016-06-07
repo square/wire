@@ -126,8 +126,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     if (other == this) return true;
     if (!(other instanceof UninterpretedOption)) return false;
     UninterpretedOption o = (UninterpretedOption) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(name, o.name)
+    return unknownFields().equals(o.unknownFields())
+        && name.equals(o.name)
         && Internal.equals(identifier_value, o.identifier_value)
         && Internal.equals(positive_int_value, o.positive_int_value)
         && Internal.equals(negative_int_value, o.negative_int_value)
@@ -141,7 +141,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (name != null ? name.hashCode() : 1);
+      result = result * 37 + name.hashCode();
       result = result * 37 + (identifier_value != null ? identifier_value.hashCode() : 0);
       result = result * 37 + (positive_int_value != null ? positive_int_value.hashCode() : 0);
       result = result * 37 + (negative_int_value != null ? negative_int_value.hashCode() : 0);
@@ -156,7 +156,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (name != null) builder.append(", name=").append(name);
+    if (!name.isEmpty()) builder.append(", name=").append(name);
     if (identifier_value != null) builder.append(", identifier_value=").append(identifier_value);
     if (positive_int_value != null) builder.append(", positive_int_value=").append(positive_int_value);
     if (negative_int_value != null) builder.append(", negative_int_value=").append(negative_int_value);
@@ -285,9 +285,9 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       if (other == this) return true;
       if (!(other instanceof NamePart)) return false;
       NamePart o = (NamePart) other;
-      return Internal.equals(unknownFields(), o.unknownFields())
-          && Internal.equals(name_part, o.name_part)
-          && Internal.equals(is_extension, o.is_extension);
+      return unknownFields().equals(o.unknownFields())
+          && name_part.equals(o.name_part)
+          && is_extension.equals(o.is_extension);
     }
 
     @Override
@@ -295,8 +295,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       int result = super.hashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
-        result = result * 37 + (name_part != null ? name_part.hashCode() : 0);
-        result = result * 37 + (is_extension != null ? is_extension.hashCode() : 0);
+        result = result * 37 + name_part.hashCode();
+        result = result * 37 + is_extension.hashCode();
         super.hashCode = result;
       }
       return result;
@@ -305,8 +305,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
-      if (name_part != null) builder.append(", name_part=").append(name_part);
-      if (is_extension != null) builder.append(", is_extension=").append(is_extension);
+      builder.append(", name_part=").append(name_part);
+      builder.append(", is_extension=").append(is_extension);
       return builder.replace(0, 2, "NamePart{").append('}').toString();
     }
 
@@ -405,7 +405,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
     @Override
     public void encode(ProtoWriter writer, UninterpretedOption value) throws IOException {
-      if (value.name != null) NamePart.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.name);
+      NamePart.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.name);
       if (value.identifier_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.identifier_value);
       if (value.positive_int_value != null) ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.positive_int_value);
       if (value.negative_int_value != null) ProtoAdapter.INT64.encodeWithTag(writer, 5, value.negative_int_value);
