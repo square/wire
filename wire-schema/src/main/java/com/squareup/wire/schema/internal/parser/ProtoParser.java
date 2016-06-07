@@ -693,7 +693,7 @@ public final class ProtoParser {
     String type;
     String word = readWord();
     if (word.equals("stream")) {
-      builder.clientStreaming(true);
+      builder.requestStreaming(true);
       type = readDataType();
     } else {
       type = readDataType(word);
@@ -706,7 +706,7 @@ public final class ProtoParser {
     if (readChar() != '(') throw unexpected("expected '('");
     word = readWord();
     if (word.equals("stream")) {
-      builder.serverStreaming(true);
+      builder.responseStreaming(true);
       type = readDataType();
     } else {
       type = readDataType(word);
