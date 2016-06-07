@@ -145,11 +145,6 @@ public final class Person extends Message<Person, Person.Builder> implements Par
   }
 
   @Override
-  public int describeContents() {
-    return 0;
-  }
-
-  @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (name != null) builder.append(", name=").append(name);
@@ -341,11 +336,6 @@ public final class Person extends Message<Person, Person.Builder> implements Par
     @Override
     public void writeToParcel(Parcel out, int flags) {
       out.writeByteArray(ADAPTER.encode(this));
-    }
-
-    @Override
-    public int describeContents() {
-      return 0;
     }
 
     @Override

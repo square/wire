@@ -494,13 +494,6 @@ public final class JavaGenerator {
           .addStatement("out.writeByteArray($N.encode(this))", adapterName)
           .build());
 
-      builder.addMethod(MethodSpec.methodBuilder("describeContents")
-          .addAnnotation(Override.class)
-          .addModifiers(PUBLIC)
-          .returns(int.class)
-          .addStatement("return 0")
-          .build());
-
       TypeName creatorType = creatorOf(javaType);
       builder.addField(
           FieldSpec.builder(creatorType, nameAllocator.get("CREATOR"), PUBLIC, STATIC, FINAL)
