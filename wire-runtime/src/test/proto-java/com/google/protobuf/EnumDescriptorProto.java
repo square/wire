@@ -72,9 +72,9 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     if (other == this) return true;
     if (!(other instanceof EnumDescriptorProto)) return false;
     EnumDescriptorProto o = (EnumDescriptorProto) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(name, o.name)
-        && Internal.equals(value, o.value)
+        && value.equals(o.value)
         && Internal.equals(options, o.options);
   }
 
@@ -84,7 +84,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
-      result = result * 37 + (value != null ? value.hashCode() : 1);
+      result = result * 37 + value.hashCode();
       result = result * 37 + (options != null ? options.hashCode() : 0);
       super.hashCode = result;
     }
@@ -95,7 +95,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (name != null) builder.append(", name=").append(name);
-    if (value != null) builder.append(", value=").append(value);
+    if (!value.isEmpty()) builder.append(", value=").append(value);
     if (options != null) builder.append(", options=").append(options);
     return builder.replace(0, 2, "EnumDescriptorProto{").append('}').toString();
   }
@@ -149,7 +149,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
     @Override
     public void encode(ProtoWriter writer, EnumDescriptorProto value) throws IOException {
       if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.value != null) EnumValueDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.value);
+      EnumValueDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.value);
       if (value.options != null) EnumOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
       writer.writeBytes(value.unknownFields());
     }

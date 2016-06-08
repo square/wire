@@ -97,11 +97,11 @@ public final class Person extends Message<Person, Person.Builder> {
     if (other == this) return true;
     if (!(other instanceof Person)) return false;
     Person o = (Person) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(name, o.name)
-        && Internal.equals(id, o.id)
+    return unknownFields().equals(o.unknownFields())
+        && name.equals(o.name)
+        && id.equals(o.id)
         && Internal.equals(email, o.email)
-        && Internal.equals(phone, o.phone);
+        && phone.equals(o.phone);
   }
 
   @Override
@@ -109,10 +109,10 @@ public final class Person extends Message<Person, Person.Builder> {
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (name != null ? name.hashCode() : 0);
-      result = result * 37 + (id != null ? id.hashCode() : 0);
+      result = result * 37 + name.hashCode();
+      result = result * 37 + id.hashCode();
       result = result * 37 + (email != null ? email.hashCode() : 0);
-      result = result * 37 + (phone != null ? phone.hashCode() : 1);
+      result = result * 37 + phone.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -121,10 +121,10 @@ public final class Person extends Message<Person, Person.Builder> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (name != null) builder.append(", name=").append(name);
-    if (id != null) builder.append(", id=").append(id);
+    builder.append(", name=").append(name);
+    builder.append(", id=").append(id);
     if (email != null) builder.append(", email=").append(email);
-    if (phone != null) builder.append(", phone=").append(phone);
+    if (!phone.isEmpty()) builder.append(", phone=").append(phone);
     return builder.replace(0, 2, "Person{").append('}').toString();
   }
 
@@ -273,8 +273,8 @@ public final class Person extends Message<Person, Person.Builder> {
       if (other == this) return true;
       if (!(other instanceof PhoneNumber)) return false;
       PhoneNumber o = (PhoneNumber) other;
-      return Internal.equals(unknownFields(), o.unknownFields())
-          && Internal.equals(number, o.number)
+      return unknownFields().equals(o.unknownFields())
+          && number.equals(o.number)
           && Internal.equals(type, o.type);
     }
 
@@ -283,7 +283,7 @@ public final class Person extends Message<Person, Person.Builder> {
       int result = super.hashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
-        result = result * 37 + (number != null ? number.hashCode() : 0);
+        result = result * 37 + number.hashCode();
         result = result * 37 + (type != null ? type.hashCode() : 0);
         super.hashCode = result;
       }
@@ -293,7 +293,7 @@ public final class Person extends Message<Person, Person.Builder> {
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
-      if (number != null) builder.append(", number=").append(number);
+      builder.append(", number=").append(number);
       if (type != null) builder.append(", type=").append(type);
       return builder.replace(0, 2, "PhoneNumber{").append('}').toString();
     }
@@ -404,7 +404,7 @@ public final class Person extends Message<Person, Person.Builder> {
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
       if (value.email != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
-      if (value.phone != null) PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
+      PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
       writer.writeBytes(value.unknownFields());
     }
 

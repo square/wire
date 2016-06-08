@@ -52,7 +52,7 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
     if (other == this) return true;
     if (!(other instanceof ChildPackage)) return false;
     ChildPackage o = (ChildPackage) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(inner_foreign_enum, o.inner_foreign_enum);
   }
 

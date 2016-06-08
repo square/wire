@@ -84,7 +84,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     if (other == this) return true;
     if (!(other instanceof OneOfMessage)) return false;
     OneOfMessage o = (OneOfMessage) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(foo, o.foo)
         && Internal.equals(bar, o.bar)
         && Internal.equals(baz, o.baz);

@@ -59,8 +59,8 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
     if (other == this) return true;
     if (!(other instanceof RedactedRequired)) return false;
     RedactedRequired o = (RedactedRequired) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(a, o.a);
+    return unknownFields().equals(o.unknownFields())
+        && a.equals(o.a);
   }
 
   @Override
@@ -68,7 +68,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (a != null ? a.hashCode() : 0);
+      result = result * 37 + a.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -77,7 +77,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (a != null) builder.append(", a=██");
+    builder.append(", a=██");
     return builder.replace(0, 2, "RedactedRequired{").append('}').toString();
   }
 

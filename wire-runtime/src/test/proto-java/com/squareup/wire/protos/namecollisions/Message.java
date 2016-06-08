@@ -140,7 +140,7 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
     if (other_ == this) return true;
     if (!(other_ instanceof Message)) return false;
     Message o_ = (Message) other_;
-    return Internal.equals(unknownFields(), o_.unknownFields())
+    return unknownFields().equals(o_.unknownFields())
         && Internal.equals(unknownFields, o_.unknownFields)
         && Internal.equals(other, o_.other)
         && Internal.equals(o, o_.o)

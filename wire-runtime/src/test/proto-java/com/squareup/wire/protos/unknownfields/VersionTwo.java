@@ -103,13 +103,13 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     if (other == this) return true;
     if (!(other instanceof VersionTwo)) return false;
     VersionTwo o = (VersionTwo) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(i, o.i)
         && Internal.equals(v2_i, o.v2_i)
         && Internal.equals(v2_s, o.v2_s)
         && Internal.equals(v2_f32, o.v2_f32)
         && Internal.equals(v2_f64, o.v2_f64)
-        && Internal.equals(v2_rs, o.v2_rs);
+        && v2_rs.equals(o.v2_rs);
   }
 
   @Override
@@ -122,7 +122,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
       result = result * 37 + (v2_s != null ? v2_s.hashCode() : 0);
       result = result * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
       result = result * 37 + (v2_f64 != null ? v2_f64.hashCode() : 0);
-      result = result * 37 + (v2_rs != null ? v2_rs.hashCode() : 1);
+      result = result * 37 + v2_rs.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -136,7 +136,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     if (v2_s != null) builder.append(", v2_s=").append(v2_s);
     if (v2_f32 != null) builder.append(", v2_f32=").append(v2_f32);
     if (v2_f64 != null) builder.append(", v2_f64=").append(v2_f64);
-    if (v2_rs != null) builder.append(", v2_rs=").append(v2_rs);
+    if (!v2_rs.isEmpty()) builder.append(", v2_rs=").append(v2_rs);
     return builder.replace(0, 2, "VersionTwo{").append('}').toString();
   }
 
@@ -217,7 +217,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
       if (value.v2_s != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s);
       if (value.v2_f32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.v2_f32);
       if (value.v2_f64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64);
-      if (value.v2_rs != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs);
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs);
       writer.writeBytes(value.unknownFields());
     }
 

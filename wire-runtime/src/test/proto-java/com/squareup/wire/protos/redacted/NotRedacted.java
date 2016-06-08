@@ -61,7 +61,7 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
     if (other == this) return true;
     if (!(other instanceof NotRedacted)) return false;
     NotRedacted o = (NotRedacted) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(a, o.a)
         && Internal.equals(b, o.b);
   }

@@ -184,16 +184,16 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     if (other == this) return true;
     if (!(other instanceof FileDescriptorProto)) return false;
     FileDescriptorProto o = (FileDescriptorProto) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(name, o.name)
         && Internal.equals(package_, o.package_)
-        && Internal.equals(dependency, o.dependency)
-        && Internal.equals(public_dependency, o.public_dependency)
-        && Internal.equals(weak_dependency, o.weak_dependency)
-        && Internal.equals(message_type, o.message_type)
-        && Internal.equals(enum_type, o.enum_type)
-        && Internal.equals(service, o.service)
-        && Internal.equals(extension, o.extension)
+        && dependency.equals(o.dependency)
+        && public_dependency.equals(o.public_dependency)
+        && weak_dependency.equals(o.weak_dependency)
+        && message_type.equals(o.message_type)
+        && enum_type.equals(o.enum_type)
+        && service.equals(o.service)
+        && extension.equals(o.extension)
         && Internal.equals(options, o.options)
         && Internal.equals(source_code_info, o.source_code_info)
         && Internal.equals(syntax, o.syntax);
@@ -206,13 +206,13 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + (package_ != null ? package_.hashCode() : 0);
-      result = result * 37 + (dependency != null ? dependency.hashCode() : 1);
-      result = result * 37 + (public_dependency != null ? public_dependency.hashCode() : 1);
-      result = result * 37 + (weak_dependency != null ? weak_dependency.hashCode() : 1);
-      result = result * 37 + (message_type != null ? message_type.hashCode() : 1);
-      result = result * 37 + (enum_type != null ? enum_type.hashCode() : 1);
-      result = result * 37 + (service != null ? service.hashCode() : 1);
-      result = result * 37 + (extension != null ? extension.hashCode() : 1);
+      result = result * 37 + dependency.hashCode();
+      result = result * 37 + public_dependency.hashCode();
+      result = result * 37 + weak_dependency.hashCode();
+      result = result * 37 + message_type.hashCode();
+      result = result * 37 + enum_type.hashCode();
+      result = result * 37 + service.hashCode();
+      result = result * 37 + extension.hashCode();
       result = result * 37 + (options != null ? options.hashCode() : 0);
       result = result * 37 + (source_code_info != null ? source_code_info.hashCode() : 0);
       result = result * 37 + (syntax != null ? syntax.hashCode() : 0);
@@ -226,13 +226,13 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     StringBuilder builder = new StringBuilder();
     if (name != null) builder.append(", name=").append(name);
     if (package_ != null) builder.append(", package=").append(package_);
-    if (dependency != null) builder.append(", dependency=").append(dependency);
-    if (public_dependency != null) builder.append(", public_dependency=").append(public_dependency);
-    if (weak_dependency != null) builder.append(", weak_dependency=").append(weak_dependency);
-    if (message_type != null) builder.append(", message_type=").append(message_type);
-    if (enum_type != null) builder.append(", enum_type=").append(enum_type);
-    if (service != null) builder.append(", service=").append(service);
-    if (extension != null) builder.append(", extension=").append(extension);
+    if (!dependency.isEmpty()) builder.append(", dependency=").append(dependency);
+    if (!public_dependency.isEmpty()) builder.append(", public_dependency=").append(public_dependency);
+    if (!weak_dependency.isEmpty()) builder.append(", weak_dependency=").append(weak_dependency);
+    if (!message_type.isEmpty()) builder.append(", message_type=").append(message_type);
+    if (!enum_type.isEmpty()) builder.append(", enum_type=").append(enum_type);
+    if (!service.isEmpty()) builder.append(", service=").append(service);
+    if (!extension.isEmpty()) builder.append(", extension=").append(extension);
     if (options != null) builder.append(", options=").append(options);
     if (source_code_info != null) builder.append(", source_code_info=").append(source_code_info);
     if (syntax != null) builder.append(", syntax=").append(syntax);
@@ -402,13 +402,13 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     public void encode(ProtoWriter writer, FileDescriptorProto value) throws IOException {
       if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       if (value.package_ != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.package_);
-      if (value.dependency != null) ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 3, value.dependency);
-      if (value.public_dependency != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 10, value.public_dependency);
-      if (value.weak_dependency != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 11, value.weak_dependency);
-      if (value.message_type != null) DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.message_type);
-      if (value.enum_type != null) EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enum_type);
-      if (value.service != null) ServiceDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.service);
-      if (value.extension != null) FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.extension);
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 3, value.dependency);
+      ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 10, value.public_dependency);
+      ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 11, value.weak_dependency);
+      DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.message_type);
+      EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enum_type);
+      ServiceDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.service);
+      FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.extension);
       if (value.options != null) FileOptions.ADAPTER.encodeWithTag(writer, 8, value.options);
       if (value.source_code_info != null) SourceCodeInfo.ADAPTER.encodeWithTag(writer, 9, value.source_code_info);
       if (value.syntax != null) ProtoAdapter.STRING.encodeWithTag(writer, 12, value.syntax);

@@ -72,9 +72,9 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     if (other == this) return true;
     if (!(other instanceof ServiceDescriptorProto)) return false;
     ServiceDescriptorProto o = (ServiceDescriptorProto) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(name, o.name)
-        && Internal.equals(method, o.method)
+        && method.equals(o.method)
         && Internal.equals(options, o.options);
   }
 
@@ -84,7 +84,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
-      result = result * 37 + (method != null ? method.hashCode() : 1);
+      result = result * 37 + method.hashCode();
       result = result * 37 + (options != null ? options.hashCode() : 0);
       super.hashCode = result;
     }
@@ -95,7 +95,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (name != null) builder.append(", name=").append(name);
-    if (method != null) builder.append(", method=").append(method);
+    if (!method.isEmpty()) builder.append(", method=").append(method);
     if (options != null) builder.append(", options=").append(options);
     return builder.replace(0, 2, "ServiceDescriptorProto{").append('}').toString();
   }
@@ -149,7 +149,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
     @Override
     public void encode(ProtoWriter writer, ServiceDescriptorProto value) throws IOException {
       if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.method != null) MethodDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.method);
+      MethodDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.method);
       if (value.options != null) ServiceOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
       writer.writeBytes(value.unknownFields());
     }

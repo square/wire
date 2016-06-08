@@ -113,7 +113,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
     if (other == this) return true;
     if (!(other instanceof MethodDescriptorProto)) return false;
     MethodDescriptorProto o = (MethodDescriptorProto) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(name, o.name)
         && Internal.equals(input_type, o.input_type)
         && Internal.equals(output_type, o.output_type)

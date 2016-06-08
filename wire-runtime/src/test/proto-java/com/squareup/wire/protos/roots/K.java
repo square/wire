@@ -52,7 +52,7 @@ public final class K extends Message<K, K.Builder> {
     if (other == this) return true;
     if (!(other instanceof K)) return false;
     K o = (K) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(i, o.i);
   }
 

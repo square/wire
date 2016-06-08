@@ -1427,7 +1427,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (other == this) return true;
     if (!(other instanceof AllTypes)) return false;
     AllTypes o = (AllTypes) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(opt_int32, o.opt_int32)
         && Internal.equals(opt_uint32, o.opt_uint32)
         && Internal.equals(opt_sint32, o.opt_sint32)
@@ -1445,54 +1445,54 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         && Internal.equals(opt_bytes, o.opt_bytes)
         && Internal.equals(opt_nested_enum, o.opt_nested_enum)
         && Internal.equals(opt_nested_message, o.opt_nested_message)
-        && Internal.equals(req_int32, o.req_int32)
-        && Internal.equals(req_uint32, o.req_uint32)
-        && Internal.equals(req_sint32, o.req_sint32)
-        && Internal.equals(req_fixed32, o.req_fixed32)
-        && Internal.equals(req_sfixed32, o.req_sfixed32)
-        && Internal.equals(req_int64, o.req_int64)
-        && Internal.equals(req_uint64, o.req_uint64)
-        && Internal.equals(req_sint64, o.req_sint64)
-        && Internal.equals(req_fixed64, o.req_fixed64)
-        && Internal.equals(req_sfixed64, o.req_sfixed64)
-        && Internal.equals(req_bool, o.req_bool)
-        && Internal.equals(req_float, o.req_float)
-        && Internal.equals(req_double, o.req_double)
-        && Internal.equals(req_string, o.req_string)
-        && Internal.equals(req_bytes, o.req_bytes)
-        && Internal.equals(req_nested_enum, o.req_nested_enum)
-        && Internal.equals(req_nested_message, o.req_nested_message)
-        && Internal.equals(rep_int32, o.rep_int32)
-        && Internal.equals(rep_uint32, o.rep_uint32)
-        && Internal.equals(rep_sint32, o.rep_sint32)
-        && Internal.equals(rep_fixed32, o.rep_fixed32)
-        && Internal.equals(rep_sfixed32, o.rep_sfixed32)
-        && Internal.equals(rep_int64, o.rep_int64)
-        && Internal.equals(rep_uint64, o.rep_uint64)
-        && Internal.equals(rep_sint64, o.rep_sint64)
-        && Internal.equals(rep_fixed64, o.rep_fixed64)
-        && Internal.equals(rep_sfixed64, o.rep_sfixed64)
-        && Internal.equals(rep_bool, o.rep_bool)
-        && Internal.equals(rep_float, o.rep_float)
-        && Internal.equals(rep_double, o.rep_double)
-        && Internal.equals(rep_string, o.rep_string)
-        && Internal.equals(rep_bytes, o.rep_bytes)
-        && Internal.equals(rep_nested_enum, o.rep_nested_enum)
-        && Internal.equals(rep_nested_message, o.rep_nested_message)
-        && Internal.equals(pack_int32, o.pack_int32)
-        && Internal.equals(pack_uint32, o.pack_uint32)
-        && Internal.equals(pack_sint32, o.pack_sint32)
-        && Internal.equals(pack_fixed32, o.pack_fixed32)
-        && Internal.equals(pack_sfixed32, o.pack_sfixed32)
-        && Internal.equals(pack_int64, o.pack_int64)
-        && Internal.equals(pack_uint64, o.pack_uint64)
-        && Internal.equals(pack_sint64, o.pack_sint64)
-        && Internal.equals(pack_fixed64, o.pack_fixed64)
-        && Internal.equals(pack_sfixed64, o.pack_sfixed64)
-        && Internal.equals(pack_bool, o.pack_bool)
-        && Internal.equals(pack_float, o.pack_float)
-        && Internal.equals(pack_double, o.pack_double)
-        && Internal.equals(pack_nested_enum, o.pack_nested_enum)
+        && req_int32.equals(o.req_int32)
+        && req_uint32.equals(o.req_uint32)
+        && req_sint32.equals(o.req_sint32)
+        && req_fixed32.equals(o.req_fixed32)
+        && req_sfixed32.equals(o.req_sfixed32)
+        && req_int64.equals(o.req_int64)
+        && req_uint64.equals(o.req_uint64)
+        && req_sint64.equals(o.req_sint64)
+        && req_fixed64.equals(o.req_fixed64)
+        && req_sfixed64.equals(o.req_sfixed64)
+        && req_bool.equals(o.req_bool)
+        && req_float.equals(o.req_float)
+        && req_double.equals(o.req_double)
+        && req_string.equals(o.req_string)
+        && req_bytes.equals(o.req_bytes)
+        && req_nested_enum.equals(o.req_nested_enum)
+        && req_nested_message.equals(o.req_nested_message)
+        && rep_int32.equals(o.rep_int32)
+        && rep_uint32.equals(o.rep_uint32)
+        && rep_sint32.equals(o.rep_sint32)
+        && rep_fixed32.equals(o.rep_fixed32)
+        && rep_sfixed32.equals(o.rep_sfixed32)
+        && rep_int64.equals(o.rep_int64)
+        && rep_uint64.equals(o.rep_uint64)
+        && rep_sint64.equals(o.rep_sint64)
+        && rep_fixed64.equals(o.rep_fixed64)
+        && rep_sfixed64.equals(o.rep_sfixed64)
+        && rep_bool.equals(o.rep_bool)
+        && rep_float.equals(o.rep_float)
+        && rep_double.equals(o.rep_double)
+        && rep_string.equals(o.rep_string)
+        && rep_bytes.equals(o.rep_bytes)
+        && rep_nested_enum.equals(o.rep_nested_enum)
+        && rep_nested_message.equals(o.rep_nested_message)
+        && pack_int32.equals(o.pack_int32)
+        && pack_uint32.equals(o.pack_uint32)
+        && pack_sint32.equals(o.pack_sint32)
+        && pack_fixed32.equals(o.pack_fixed32)
+        && pack_sfixed32.equals(o.pack_sfixed32)
+        && pack_int64.equals(o.pack_int64)
+        && pack_uint64.equals(o.pack_uint64)
+        && pack_sint64.equals(o.pack_sint64)
+        && pack_fixed64.equals(o.pack_fixed64)
+        && pack_sfixed64.equals(o.pack_sfixed64)
+        && pack_bool.equals(o.pack_bool)
+        && pack_float.equals(o.pack_float)
+        && pack_double.equals(o.pack_double)
+        && pack_nested_enum.equals(o.pack_nested_enum)
         && Internal.equals(default_int32, o.default_int32)
         && Internal.equals(default_uint32, o.default_uint32)
         && Internal.equals(default_sint32, o.default_sint32)
@@ -1526,37 +1526,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         && Internal.equals(ext_opt_bytes, o.ext_opt_bytes)
         && Internal.equals(ext_opt_nested_enum, o.ext_opt_nested_enum)
         && Internal.equals(ext_opt_nested_message, o.ext_opt_nested_message)
-        && Internal.equals(ext_rep_int32, o.ext_rep_int32)
-        && Internal.equals(ext_rep_uint32, o.ext_rep_uint32)
-        && Internal.equals(ext_rep_sint32, o.ext_rep_sint32)
-        && Internal.equals(ext_rep_fixed32, o.ext_rep_fixed32)
-        && Internal.equals(ext_rep_sfixed32, o.ext_rep_sfixed32)
-        && Internal.equals(ext_rep_int64, o.ext_rep_int64)
-        && Internal.equals(ext_rep_uint64, o.ext_rep_uint64)
-        && Internal.equals(ext_rep_sint64, o.ext_rep_sint64)
-        && Internal.equals(ext_rep_fixed64, o.ext_rep_fixed64)
-        && Internal.equals(ext_rep_sfixed64, o.ext_rep_sfixed64)
-        && Internal.equals(ext_rep_bool, o.ext_rep_bool)
-        && Internal.equals(ext_rep_float, o.ext_rep_float)
-        && Internal.equals(ext_rep_double, o.ext_rep_double)
-        && Internal.equals(ext_rep_string, o.ext_rep_string)
-        && Internal.equals(ext_rep_bytes, o.ext_rep_bytes)
-        && Internal.equals(ext_rep_nested_enum, o.ext_rep_nested_enum)
-        && Internal.equals(ext_rep_nested_message, o.ext_rep_nested_message)
-        && Internal.equals(ext_pack_int32, o.ext_pack_int32)
-        && Internal.equals(ext_pack_uint32, o.ext_pack_uint32)
-        && Internal.equals(ext_pack_sint32, o.ext_pack_sint32)
-        && Internal.equals(ext_pack_fixed32, o.ext_pack_fixed32)
-        && Internal.equals(ext_pack_sfixed32, o.ext_pack_sfixed32)
-        && Internal.equals(ext_pack_int64, o.ext_pack_int64)
-        && Internal.equals(ext_pack_uint64, o.ext_pack_uint64)
-        && Internal.equals(ext_pack_sint64, o.ext_pack_sint64)
-        && Internal.equals(ext_pack_fixed64, o.ext_pack_fixed64)
-        && Internal.equals(ext_pack_sfixed64, o.ext_pack_sfixed64)
-        && Internal.equals(ext_pack_bool, o.ext_pack_bool)
-        && Internal.equals(ext_pack_float, o.ext_pack_float)
-        && Internal.equals(ext_pack_double, o.ext_pack_double)
-        && Internal.equals(ext_pack_nested_enum, o.ext_pack_nested_enum);
+        && ext_rep_int32.equals(o.ext_rep_int32)
+        && ext_rep_uint32.equals(o.ext_rep_uint32)
+        && ext_rep_sint32.equals(o.ext_rep_sint32)
+        && ext_rep_fixed32.equals(o.ext_rep_fixed32)
+        && ext_rep_sfixed32.equals(o.ext_rep_sfixed32)
+        && ext_rep_int64.equals(o.ext_rep_int64)
+        && ext_rep_uint64.equals(o.ext_rep_uint64)
+        && ext_rep_sint64.equals(o.ext_rep_sint64)
+        && ext_rep_fixed64.equals(o.ext_rep_fixed64)
+        && ext_rep_sfixed64.equals(o.ext_rep_sfixed64)
+        && ext_rep_bool.equals(o.ext_rep_bool)
+        && ext_rep_float.equals(o.ext_rep_float)
+        && ext_rep_double.equals(o.ext_rep_double)
+        && ext_rep_string.equals(o.ext_rep_string)
+        && ext_rep_bytes.equals(o.ext_rep_bytes)
+        && ext_rep_nested_enum.equals(o.ext_rep_nested_enum)
+        && ext_rep_nested_message.equals(o.ext_rep_nested_message)
+        && ext_pack_int32.equals(o.ext_pack_int32)
+        && ext_pack_uint32.equals(o.ext_pack_uint32)
+        && ext_pack_sint32.equals(o.ext_pack_sint32)
+        && ext_pack_fixed32.equals(o.ext_pack_fixed32)
+        && ext_pack_sfixed32.equals(o.ext_pack_sfixed32)
+        && ext_pack_int64.equals(o.ext_pack_int64)
+        && ext_pack_uint64.equals(o.ext_pack_uint64)
+        && ext_pack_sint64.equals(o.ext_pack_sint64)
+        && ext_pack_fixed64.equals(o.ext_pack_fixed64)
+        && ext_pack_sfixed64.equals(o.ext_pack_sfixed64)
+        && ext_pack_bool.equals(o.ext_pack_bool)
+        && ext_pack_float.equals(o.ext_pack_float)
+        && ext_pack_double.equals(o.ext_pack_double)
+        && ext_pack_nested_enum.equals(o.ext_pack_nested_enum);
   }
 
   @Override
@@ -1581,54 +1581,54 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result = result * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
       result = result * 37 + (opt_nested_enum != null ? opt_nested_enum.hashCode() : 0);
       result = result * 37 + (opt_nested_message != null ? opt_nested_message.hashCode() : 0);
-      result = result * 37 + (req_int32 != null ? req_int32.hashCode() : 0);
-      result = result * 37 + (req_uint32 != null ? req_uint32.hashCode() : 0);
-      result = result * 37 + (req_sint32 != null ? req_sint32.hashCode() : 0);
-      result = result * 37 + (req_fixed32 != null ? req_fixed32.hashCode() : 0);
-      result = result * 37 + (req_sfixed32 != null ? req_sfixed32.hashCode() : 0);
-      result = result * 37 + (req_int64 != null ? req_int64.hashCode() : 0);
-      result = result * 37 + (req_uint64 != null ? req_uint64.hashCode() : 0);
-      result = result * 37 + (req_sint64 != null ? req_sint64.hashCode() : 0);
-      result = result * 37 + (req_fixed64 != null ? req_fixed64.hashCode() : 0);
-      result = result * 37 + (req_sfixed64 != null ? req_sfixed64.hashCode() : 0);
-      result = result * 37 + (req_bool != null ? req_bool.hashCode() : 0);
-      result = result * 37 + (req_float != null ? req_float.hashCode() : 0);
-      result = result * 37 + (req_double != null ? req_double.hashCode() : 0);
-      result = result * 37 + (req_string != null ? req_string.hashCode() : 0);
-      result = result * 37 + (req_bytes != null ? req_bytes.hashCode() : 0);
-      result = result * 37 + (req_nested_enum != null ? req_nested_enum.hashCode() : 0);
-      result = result * 37 + (req_nested_message != null ? req_nested_message.hashCode() : 0);
-      result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 1);
-      result = result * 37 + (rep_uint32 != null ? rep_uint32.hashCode() : 1);
-      result = result * 37 + (rep_sint32 != null ? rep_sint32.hashCode() : 1);
-      result = result * 37 + (rep_fixed32 != null ? rep_fixed32.hashCode() : 1);
-      result = result * 37 + (rep_sfixed32 != null ? rep_sfixed32.hashCode() : 1);
-      result = result * 37 + (rep_int64 != null ? rep_int64.hashCode() : 1);
-      result = result * 37 + (rep_uint64 != null ? rep_uint64.hashCode() : 1);
-      result = result * 37 + (rep_sint64 != null ? rep_sint64.hashCode() : 1);
-      result = result * 37 + (rep_fixed64 != null ? rep_fixed64.hashCode() : 1);
-      result = result * 37 + (rep_sfixed64 != null ? rep_sfixed64.hashCode() : 1);
-      result = result * 37 + (rep_bool != null ? rep_bool.hashCode() : 1);
-      result = result * 37 + (rep_float != null ? rep_float.hashCode() : 1);
-      result = result * 37 + (rep_double != null ? rep_double.hashCode() : 1);
-      result = result * 37 + (rep_string != null ? rep_string.hashCode() : 1);
-      result = result * 37 + (rep_bytes != null ? rep_bytes.hashCode() : 1);
-      result = result * 37 + (rep_nested_enum != null ? rep_nested_enum.hashCode() : 1);
-      result = result * 37 + (rep_nested_message != null ? rep_nested_message.hashCode() : 1);
-      result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
-      result = result * 37 + (pack_uint32 != null ? pack_uint32.hashCode() : 1);
-      result = result * 37 + (pack_sint32 != null ? pack_sint32.hashCode() : 1);
-      result = result * 37 + (pack_fixed32 != null ? pack_fixed32.hashCode() : 1);
-      result = result * 37 + (pack_sfixed32 != null ? pack_sfixed32.hashCode() : 1);
-      result = result * 37 + (pack_int64 != null ? pack_int64.hashCode() : 1);
-      result = result * 37 + (pack_uint64 != null ? pack_uint64.hashCode() : 1);
-      result = result * 37 + (pack_sint64 != null ? pack_sint64.hashCode() : 1);
-      result = result * 37 + (pack_fixed64 != null ? pack_fixed64.hashCode() : 1);
-      result = result * 37 + (pack_sfixed64 != null ? pack_sfixed64.hashCode() : 1);
-      result = result * 37 + (pack_bool != null ? pack_bool.hashCode() : 1);
-      result = result * 37 + (pack_float != null ? pack_float.hashCode() : 1);
-      result = result * 37 + (pack_double != null ? pack_double.hashCode() : 1);
-      result = result * 37 + (pack_nested_enum != null ? pack_nested_enum.hashCode() : 1);
+      result = result * 37 + req_int32.hashCode();
+      result = result * 37 + req_uint32.hashCode();
+      result = result * 37 + req_sint32.hashCode();
+      result = result * 37 + req_fixed32.hashCode();
+      result = result * 37 + req_sfixed32.hashCode();
+      result = result * 37 + req_int64.hashCode();
+      result = result * 37 + req_uint64.hashCode();
+      result = result * 37 + req_sint64.hashCode();
+      result = result * 37 + req_fixed64.hashCode();
+      result = result * 37 + req_sfixed64.hashCode();
+      result = result * 37 + req_bool.hashCode();
+      result = result * 37 + req_float.hashCode();
+      result = result * 37 + req_double.hashCode();
+      result = result * 37 + req_string.hashCode();
+      result = result * 37 + req_bytes.hashCode();
+      result = result * 37 + req_nested_enum.hashCode();
+      result = result * 37 + req_nested_message.hashCode();
+      result = result * 37 + rep_int32.hashCode();
+      result = result * 37 + rep_uint32.hashCode();
+      result = result * 37 + rep_sint32.hashCode();
+      result = result * 37 + rep_fixed32.hashCode();
+      result = result * 37 + rep_sfixed32.hashCode();
+      result = result * 37 + rep_int64.hashCode();
+      result = result * 37 + rep_uint64.hashCode();
+      result = result * 37 + rep_sint64.hashCode();
+      result = result * 37 + rep_fixed64.hashCode();
+      result = result * 37 + rep_sfixed64.hashCode();
+      result = result * 37 + rep_bool.hashCode();
+      result = result * 37 + rep_float.hashCode();
+      result = result * 37 + rep_double.hashCode();
+      result = result * 37 + rep_string.hashCode();
+      result = result * 37 + rep_bytes.hashCode();
+      result = result * 37 + rep_nested_enum.hashCode();
+      result = result * 37 + rep_nested_message.hashCode();
+      result = result * 37 + pack_int32.hashCode();
+      result = result * 37 + pack_uint32.hashCode();
+      result = result * 37 + pack_sint32.hashCode();
+      result = result * 37 + pack_fixed32.hashCode();
+      result = result * 37 + pack_sfixed32.hashCode();
+      result = result * 37 + pack_int64.hashCode();
+      result = result * 37 + pack_uint64.hashCode();
+      result = result * 37 + pack_sint64.hashCode();
+      result = result * 37 + pack_fixed64.hashCode();
+      result = result * 37 + pack_sfixed64.hashCode();
+      result = result * 37 + pack_bool.hashCode();
+      result = result * 37 + pack_float.hashCode();
+      result = result * 37 + pack_double.hashCode();
+      result = result * 37 + pack_nested_enum.hashCode();
       result = result * 37 + (default_int32 != null ? default_int32.hashCode() : 0);
       result = result * 37 + (default_uint32 != null ? default_uint32.hashCode() : 0);
       result = result * 37 + (default_sint32 != null ? default_sint32.hashCode() : 0);
@@ -1662,37 +1662,37 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result = result * 37 + (ext_opt_bytes != null ? ext_opt_bytes.hashCode() : 0);
       result = result * 37 + (ext_opt_nested_enum != null ? ext_opt_nested_enum.hashCode() : 0);
       result = result * 37 + (ext_opt_nested_message != null ? ext_opt_nested_message.hashCode() : 0);
-      result = result * 37 + (ext_rep_int32 != null ? ext_rep_int32.hashCode() : 1);
-      result = result * 37 + (ext_rep_uint32 != null ? ext_rep_uint32.hashCode() : 1);
-      result = result * 37 + (ext_rep_sint32 != null ? ext_rep_sint32.hashCode() : 1);
-      result = result * 37 + (ext_rep_fixed32 != null ? ext_rep_fixed32.hashCode() : 1);
-      result = result * 37 + (ext_rep_sfixed32 != null ? ext_rep_sfixed32.hashCode() : 1);
-      result = result * 37 + (ext_rep_int64 != null ? ext_rep_int64.hashCode() : 1);
-      result = result * 37 + (ext_rep_uint64 != null ? ext_rep_uint64.hashCode() : 1);
-      result = result * 37 + (ext_rep_sint64 != null ? ext_rep_sint64.hashCode() : 1);
-      result = result * 37 + (ext_rep_fixed64 != null ? ext_rep_fixed64.hashCode() : 1);
-      result = result * 37 + (ext_rep_sfixed64 != null ? ext_rep_sfixed64.hashCode() : 1);
-      result = result * 37 + (ext_rep_bool != null ? ext_rep_bool.hashCode() : 1);
-      result = result * 37 + (ext_rep_float != null ? ext_rep_float.hashCode() : 1);
-      result = result * 37 + (ext_rep_double != null ? ext_rep_double.hashCode() : 1);
-      result = result * 37 + (ext_rep_string != null ? ext_rep_string.hashCode() : 1);
-      result = result * 37 + (ext_rep_bytes != null ? ext_rep_bytes.hashCode() : 1);
-      result = result * 37 + (ext_rep_nested_enum != null ? ext_rep_nested_enum.hashCode() : 1);
-      result = result * 37 + (ext_rep_nested_message != null ? ext_rep_nested_message.hashCode() : 1);
-      result = result * 37 + (ext_pack_int32 != null ? ext_pack_int32.hashCode() : 1);
-      result = result * 37 + (ext_pack_uint32 != null ? ext_pack_uint32.hashCode() : 1);
-      result = result * 37 + (ext_pack_sint32 != null ? ext_pack_sint32.hashCode() : 1);
-      result = result * 37 + (ext_pack_fixed32 != null ? ext_pack_fixed32.hashCode() : 1);
-      result = result * 37 + (ext_pack_sfixed32 != null ? ext_pack_sfixed32.hashCode() : 1);
-      result = result * 37 + (ext_pack_int64 != null ? ext_pack_int64.hashCode() : 1);
-      result = result * 37 + (ext_pack_uint64 != null ? ext_pack_uint64.hashCode() : 1);
-      result = result * 37 + (ext_pack_sint64 != null ? ext_pack_sint64.hashCode() : 1);
-      result = result * 37 + (ext_pack_fixed64 != null ? ext_pack_fixed64.hashCode() : 1);
-      result = result * 37 + (ext_pack_sfixed64 != null ? ext_pack_sfixed64.hashCode() : 1);
-      result = result * 37 + (ext_pack_bool != null ? ext_pack_bool.hashCode() : 1);
-      result = result * 37 + (ext_pack_float != null ? ext_pack_float.hashCode() : 1);
-      result = result * 37 + (ext_pack_double != null ? ext_pack_double.hashCode() : 1);
-      result = result * 37 + (ext_pack_nested_enum != null ? ext_pack_nested_enum.hashCode() : 1);
+      result = result * 37 + ext_rep_int32.hashCode();
+      result = result * 37 + ext_rep_uint32.hashCode();
+      result = result * 37 + ext_rep_sint32.hashCode();
+      result = result * 37 + ext_rep_fixed32.hashCode();
+      result = result * 37 + ext_rep_sfixed32.hashCode();
+      result = result * 37 + ext_rep_int64.hashCode();
+      result = result * 37 + ext_rep_uint64.hashCode();
+      result = result * 37 + ext_rep_sint64.hashCode();
+      result = result * 37 + ext_rep_fixed64.hashCode();
+      result = result * 37 + ext_rep_sfixed64.hashCode();
+      result = result * 37 + ext_rep_bool.hashCode();
+      result = result * 37 + ext_rep_float.hashCode();
+      result = result * 37 + ext_rep_double.hashCode();
+      result = result * 37 + ext_rep_string.hashCode();
+      result = result * 37 + ext_rep_bytes.hashCode();
+      result = result * 37 + ext_rep_nested_enum.hashCode();
+      result = result * 37 + ext_rep_nested_message.hashCode();
+      result = result * 37 + ext_pack_int32.hashCode();
+      result = result * 37 + ext_pack_uint32.hashCode();
+      result = result * 37 + ext_pack_sint32.hashCode();
+      result = result * 37 + ext_pack_fixed32.hashCode();
+      result = result * 37 + ext_pack_sfixed32.hashCode();
+      result = result * 37 + ext_pack_int64.hashCode();
+      result = result * 37 + ext_pack_uint64.hashCode();
+      result = result * 37 + ext_pack_sint64.hashCode();
+      result = result * 37 + ext_pack_fixed64.hashCode();
+      result = result * 37 + ext_pack_sfixed64.hashCode();
+      result = result * 37 + ext_pack_bool.hashCode();
+      result = result * 37 + ext_pack_float.hashCode();
+      result = result * 37 + ext_pack_double.hashCode();
+      result = result * 37 + ext_pack_nested_enum.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -2832,7 +2832,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       if (other == this) return true;
       if (!(other instanceof NestedMessage)) return false;
       NestedMessage o = (NestedMessage) other;
-      return Internal.equals(unknownFields(), o.unknownFields())
+      return unknownFields().equals(o.unknownFields())
           && Internal.equals(a, o.a);
     }
 

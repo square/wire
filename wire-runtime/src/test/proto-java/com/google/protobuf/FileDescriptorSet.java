@@ -55,8 +55,8 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
     if (other == this) return true;
     if (!(other instanceof FileDescriptorSet)) return false;
     FileDescriptorSet o = (FileDescriptorSet) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(file, o.file);
+    return unknownFields().equals(o.unknownFields())
+        && file.equals(o.file);
   }
 
   @Override
@@ -64,7 +64,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (file != null ? file.hashCode() : 1);
+      result = result * 37 + file.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -73,7 +73,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (file != null) builder.append(", file=").append(file);
+    if (!file.isEmpty()) builder.append(", file=").append(file);
     return builder.replace(0, 2, "FileDescriptorSet{").append('}').toString();
   }
 
@@ -109,7 +109,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
 
     @Override
     public void encode(ProtoWriter writer, FileDescriptorSet value) throws IOException {
-      if (value.file != null) FileDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.file);
+      FileDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.file);
       writer.writeBytes(value.unknownFields());
     }
 

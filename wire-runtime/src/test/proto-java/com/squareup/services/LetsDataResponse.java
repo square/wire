@@ -51,7 +51,7 @@ public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataRe
     if (other == this) return true;
     if (!(other instanceof LetsDataResponse)) return false;
     LetsDataResponse o = (LetsDataResponse) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(data, o.data);
   }
 

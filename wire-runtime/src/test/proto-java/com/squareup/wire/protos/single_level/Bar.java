@@ -52,7 +52,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     if (other == this) return true;
     if (!(other instanceof Bar)) return false;
     Bar o = (Bar) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(baz, o.baz);
   }
 

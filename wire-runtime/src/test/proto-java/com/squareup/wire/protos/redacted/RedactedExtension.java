@@ -67,7 +67,7 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
     if (other == this) return true;
     if (!(other instanceof RedactedExtension)) return false;
     RedactedExtension o = (RedactedExtension) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(d, o.d)
         && Internal.equals(e, o.e);
   }

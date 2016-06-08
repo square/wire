@@ -188,16 +188,16 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     if (other == this) return true;
     if (!(other instanceof FooBar)) return false;
     FooBar o = (FooBar) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(foo, o.foo)
         && Internal.equals(bar, o.bar)
         && Internal.equals(baz, o.baz)
         && Internal.equals(qux, o.qux)
-        && Internal.equals(fred, o.fred)
+        && fred.equals(o.fred)
         && Internal.equals(daisy, o.daisy)
-        && Internal.equals(nested, o.nested)
+        && nested.equals(o.nested)
         && Internal.equals(ext, o.ext)
-        && Internal.equals(rep, o.rep);
+        && rep.equals(o.rep);
   }
 
   @Override
@@ -209,11 +209,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
       result = result * 37 + (baz != null ? baz.hashCode() : 0);
       result = result * 37 + (qux != null ? qux.hashCode() : 0);
-      result = result * 37 + (fred != null ? fred.hashCode() : 1);
+      result = result * 37 + fred.hashCode();
       result = result * 37 + (daisy != null ? daisy.hashCode() : 0);
-      result = result * 37 + (nested != null ? nested.hashCode() : 1);
+      result = result * 37 + nested.hashCode();
       result = result * 37 + (ext != null ? ext.hashCode() : 0);
-      result = result * 37 + (rep != null ? rep.hashCode() : 1);
+      result = result * 37 + rep.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -226,11 +226,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     if (bar != null) builder.append(", bar=").append(bar);
     if (baz != null) builder.append(", baz=").append(baz);
     if (qux != null) builder.append(", qux=").append(qux);
-    if (fred != null) builder.append(", fred=").append(fred);
+    if (!fred.isEmpty()) builder.append(", fred=").append(fred);
     if (daisy != null) builder.append(", daisy=").append(daisy);
-    if (nested != null) builder.append(", nested=").append(nested);
+    if (!nested.isEmpty()) builder.append(", nested=").append(nested);
     if (ext != null) builder.append(", ext=").append(ext);
-    if (rep != null) builder.append(", rep=").append(rep);
+    if (!rep.isEmpty()) builder.append(", rep=").append(rep);
     return builder.replace(0, 2, "FooBar{").append('}').toString();
   }
 
@@ -348,7 +348,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       if (other == this) return true;
       if (!(other instanceof Nested)) return false;
       Nested o = (Nested) other;
-      return Internal.equals(unknownFields(), o.unknownFields())
+      return unknownFields().equals(o.unknownFields())
           && Internal.equals(value, o.value);
     }
 
@@ -472,8 +472,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       if (other == this) return true;
       if (!(other instanceof More)) return false;
       More o = (More) other;
-      return Internal.equals(unknownFields(), o.unknownFields())
-          && Internal.equals(serial, o.serial);
+      return unknownFields().equals(o.unknownFields())
+          && serial.equals(o.serial);
     }
 
     @Override
@@ -481,7 +481,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       int result = super.hashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
-        result = result * 37 + (serial != null ? serial.hashCode() : 1);
+        result = result * 37 + serial.hashCode();
         super.hashCode = result;
       }
       return result;
@@ -490,7 +490,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
-      if (serial != null) builder.append(", serial=").append(serial);
+      if (!serial.isEmpty()) builder.append(", serial=").append(serial);
       return builder.replace(0, 2, "More{").append('}').toString();
     }
 
@@ -526,7 +526,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       @Override
       public void encode(ProtoWriter writer, More value) throws IOException {
-        if (value.serial != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial);
+        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -632,11 +632,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar);
       if (value.baz != null) Nested.ADAPTER.encodeWithTag(writer, 3, value.baz);
       if (value.qux != null) ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.qux);
-      if (value.fred != null) ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 5, value.fred);
+      ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 5, value.fred);
       if (value.daisy != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.daisy);
-      if (value.nested != null) FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested);
+      FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested);
       if (value.ext != null) FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
-      if (value.rep != null) FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
+      FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
       writer.writeBytes(value.unknownFields());
     }
 

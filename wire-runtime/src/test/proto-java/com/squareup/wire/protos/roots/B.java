@@ -50,8 +50,8 @@ public final class B extends Message<B, B.Builder> {
     if (other == this) return true;
     if (!(other instanceof B)) return false;
     B o = (B) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(c, o.c);
+    return unknownFields().equals(o.unknownFields())
+        && c.equals(o.c);
   }
 
   @Override
@@ -59,7 +59,7 @@ public final class B extends Message<B, B.Builder> {
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (c != null ? c.hashCode() : 0);
+      result = result * 37 + c.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -68,7 +68,7 @@ public final class B extends Message<B, B.Builder> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (c != null) builder.append(", c=").append(c);
+    builder.append(", c=").append(c);
     return builder.replace(0, 2, "B{").append('}').toString();
   }
 
@@ -130,7 +130,7 @@ public final class B extends Message<B, B.Builder> {
     @Override
     public B redact(B value) {
       Builder builder = value.newBuilder();
-      if (builder.c != null) builder.c = C.ADAPTER.redact(builder.c);
+      builder.c = C.ADAPTER.redact(builder.c);
       builder.clearUnknownFields();
       return builder.build();
     }

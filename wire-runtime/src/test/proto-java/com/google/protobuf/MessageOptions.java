@@ -233,12 +233,12 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     if (other == this) return true;
     if (!(other instanceof MessageOptions)) return false;
     MessageOptions o = (MessageOptions) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(message_set_wire_format, o.message_set_wire_format)
         && Internal.equals(no_standard_descriptor_accessor, o.no_standard_descriptor_accessor)
         && Internal.equals(deprecated, o.deprecated)
         && Internal.equals(map_entry, o.map_entry)
-        && Internal.equals(uninterpreted_option, o.uninterpreted_option)
+        && uninterpreted_option.equals(o.uninterpreted_option)
         && Internal.equals(my_message_option_one, o.my_message_option_one)
         && Internal.equals(my_message_option_two, o.my_message_option_two)
         && Internal.equals(my_message_option_three, o.my_message_option_three)
@@ -257,7 +257,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
       result = result * 37 + (no_standard_descriptor_accessor != null ? no_standard_descriptor_accessor.hashCode() : 0);
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
       result = result * 37 + (map_entry != null ? map_entry.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + uninterpreted_option.hashCode();
       result = result * 37 + (my_message_option_one != null ? my_message_option_one.hashCode() : 0);
       result = result * 37 + (my_message_option_two != null ? my_message_option_two.hashCode() : 0);
       result = result * 37 + (my_message_option_three != null ? my_message_option_three.hashCode() : 0);
@@ -277,7 +277,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     if (no_standard_descriptor_accessor != null) builder.append(", no_standard_descriptor_accessor=").append(no_standard_descriptor_accessor);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (map_entry != null) builder.append(", map_entry=").append(map_entry);
-    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     if (my_message_option_one != null) builder.append(", my_message_option_one=").append(my_message_option_one);
     if (my_message_option_two != null) builder.append(", my_message_option_two=").append(my_message_option_two);
     if (my_message_option_three != null) builder.append(", my_message_option_three=").append(my_message_option_three);
@@ -469,7 +469,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
       if (value.no_standard_descriptor_accessor != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.no_standard_descriptor_accessor);
       if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
       if (value.map_entry != null) ProtoAdapter.BOOL.encodeWithTag(writer, 7, value.map_entry);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       if (value.my_message_option_one != null) FooBar.ADAPTER.encodeWithTag(writer, 50001, value.my_message_option_one);
       if (value.my_message_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 50002, value.my_message_option_two);
       if (value.my_message_option_three != null) FooBar.ADAPTER.encodeWithTag(writer, 50003, value.my_message_option_three);

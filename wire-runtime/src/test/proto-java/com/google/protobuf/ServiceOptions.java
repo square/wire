@@ -75,9 +75,9 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     if (other == this) return true;
     if (!(other instanceof ServiceOptions)) return false;
     ServiceOptions o = (ServiceOptions) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(deprecated, o.deprecated)
-        && Internal.equals(uninterpreted_option, o.uninterpreted_option);
+        && uninterpreted_option.equals(o.uninterpreted_option);
   }
 
   @Override
@@ -86,7 +86,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
-      result = result * 37 + (uninterpreted_option != null ? uninterpreted_option.hashCode() : 1);
+      result = result * 37 + uninterpreted_option.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -96,7 +96,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
-    if (uninterpreted_option != null) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     return builder.replace(0, 2, "ServiceOptions{").append('}').toString();
   }
 
@@ -154,7 +154,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     @Override
     public void encode(ProtoWriter writer, ServiceOptions value) throws IOException {
       if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
-      if (value.uninterpreted_option != null) UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }
 

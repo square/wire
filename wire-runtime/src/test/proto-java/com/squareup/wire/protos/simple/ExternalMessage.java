@@ -116,9 +116,9 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
     if (other == this) return true;
     if (!(other instanceof ExternalMessage)) return false;
     ExternalMessage o = (ExternalMessage) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(f, o.f)
-        && Internal.equals(fooext, o.fooext)
+        && fooext.equals(o.fooext)
         && Internal.equals(barext, o.barext)
         && Internal.equals(bazext, o.bazext)
         && Internal.equals(nested_message_ext, o.nested_message_ext)
@@ -131,7 +131,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (f != null ? f.hashCode() : 0);
-      result = result * 37 + (fooext != null ? fooext.hashCode() : 1);
+      result = result * 37 + fooext.hashCode();
       result = result * 37 + (barext != null ? barext.hashCode() : 0);
       result = result * 37 + (bazext != null ? bazext.hashCode() : 0);
       result = result * 37 + (nested_message_ext != null ? nested_message_ext.hashCode() : 0);
@@ -145,7 +145,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (f != null) builder.append(", f=").append(f);
-    if (fooext != null) builder.append(", fooext=").append(fooext);
+    if (!fooext.isEmpty()) builder.append(", fooext=").append(fooext);
     if (barext != null) builder.append(", barext=").append(barext);
     if (bazext != null) builder.append(", bazext=").append(bazext);
     if (nested_message_ext != null) builder.append(", nested_message_ext=").append(nested_message_ext);
@@ -226,7 +226,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
     @Override
     public void encode(ProtoWriter writer, ExternalMessage value) throws IOException {
       if (value.f != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f);
-      if (value.fooext != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 125, value.fooext);
+      ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 125, value.fooext);
       if (value.barext != null) ProtoAdapter.INT32.encodeWithTag(writer, 126, value.barext);
       if (value.bazext != null) ProtoAdapter.INT32.encodeWithTag(writer, 127, value.bazext);
       if (value.nested_message_ext != null) SimpleMessage.NestedMessage.ADAPTER.encodeWithTag(writer, 128, value.nested_message_ext);

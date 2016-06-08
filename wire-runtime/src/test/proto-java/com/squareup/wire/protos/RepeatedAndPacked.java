@@ -61,9 +61,9 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
     if (other == this) return true;
     if (!(other instanceof RepeatedAndPacked)) return false;
     RepeatedAndPacked o = (RepeatedAndPacked) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
-        && Internal.equals(rep_int32, o.rep_int32)
-        && Internal.equals(pack_int32, o.pack_int32);
+    return unknownFields().equals(o.unknownFields())
+        && rep_int32.equals(o.rep_int32)
+        && pack_int32.equals(o.pack_int32);
   }
 
   @Override
@@ -71,8 +71,8 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (rep_int32 != null ? rep_int32.hashCode() : 1);
-      result = result * 37 + (pack_int32 != null ? pack_int32.hashCode() : 1);
+      result = result * 37 + rep_int32.hashCode();
+      result = result * 37 + pack_int32.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -81,8 +81,8 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (rep_int32 != null) builder.append(", rep_int32=").append(rep_int32);
-    if (pack_int32 != null) builder.append(", pack_int32=").append(pack_int32);
+    if (!rep_int32.isEmpty()) builder.append(", rep_int32=").append(rep_int32);
+    if (!pack_int32.isEmpty()) builder.append(", pack_int32=").append(pack_int32);
     return builder.replace(0, 2, "RepeatedAndPacked{").append('}').toString();
   }
 
@@ -128,8 +128,8 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
 
     @Override
     public void encode(ProtoWriter writer, RepeatedAndPacked value) throws IOException {
-      if (value.rep_int32 != null) ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
-      if (value.pack_int32 != null) ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
+      ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
+      ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
       writer.writeBytes(value.unknownFields());
     }
 

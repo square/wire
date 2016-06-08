@@ -59,7 +59,7 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
     if (other == this) return true;
     if (!(other instanceof CollisionSubject)) return false;
     CollisionSubject o = (CollisionSubject) other;
-    return Internal.equals(unknownFields(), o.unknownFields())
+    return unknownFields().equals(o.unknownFields())
         && Internal.equals(f, o.f);
   }
 
