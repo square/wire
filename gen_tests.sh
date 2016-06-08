@@ -51,6 +51,18 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
 cp src/test/proto-java.android/com/squareup/wire/protos/person/Person.java \
    src/test/proto-java/com/squareup/wire/protos/person/Person.java.android
 
+# ANDROID COMPACT
+
+java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+  --proto_path=../wire-runtime/src/test/proto \
+  --java_out=../wire-runtime/src/test/proto-java.android.compact \
+  --android \
+  --compact \
+  person.proto
+
+cp src/test/proto-java.android.compact/com/squareup/wire/protos/person/Person.java \
+   src/test/proto-java/com/squareup/wire/protos/person/Person.java.android.compact
+
 # COMPACT
 
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
@@ -73,3 +85,4 @@ rm -r src/test/proto-java.noOptions
 rm -r src/test/proto-java.pruned
 rm -r src/test/proto-java.compact
 rm -r src/test/proto-java.android
+rm -r src/test/proto-java.android.compact
