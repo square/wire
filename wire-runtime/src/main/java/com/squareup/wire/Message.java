@@ -98,14 +98,6 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     adapter.encode(stream, (M) this);
   }
 
-  /** Flags used by Android's Parcelable implementation. Always returns 0. */
-  @SuppressWarnings("unused") //
-  public final int describeContents() {
-    // This method overrides one defined in Android's Parcelable interface. By defining it here we
-    // save having to generate it on every Parcelable message which saves methods.
-    return 0;
-  }
-
   /**
    * Superclass for protocol buffer message builders.
    */
