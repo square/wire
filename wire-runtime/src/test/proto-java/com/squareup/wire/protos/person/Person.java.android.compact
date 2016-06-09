@@ -2,25 +2,25 @@
 // Source file: person.proto at 21:1
 package com.squareup.wire.protos.person;
 
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import com.squareup.wire.AndroidMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
-import java.io.IOException;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
-import java.lang.RuntimeException;
 import java.lang.String;
 import java.util.List;
 import okio.ByteString;
 
-public final class Person extends Message<Person, Person.Builder> implements Parcelable {
+public final class Person extends AndroidMessage<Person, Person.Builder> {
   public static final ProtoAdapter<Person> ADAPTER = ProtoAdapter.newMessageAdapter(Person.class);
+
+  public static final Parcelable.Creator<Person> CREATOR = AndroidMessage.newCreator(ADAPTER);
 
   private static final long serialVersionUID = 0L;
 
@@ -29,22 +29,6 @@ public final class Person extends Message<Person, Person.Builder> implements Par
   public static final Integer DEFAULT_ID = 0;
 
   public static final String DEFAULT_EMAIL = "";
-
-  public static final Parcelable.Creator<Person> CREATOR = new Parcelable.Creator<Person>() {
-    @Override
-    public Person createFromParcel(Parcel in) {
-      try {
-        return ADAPTER.decode(in.createByteArray());
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public Person[] newArray(int size) {
-      return new Person[size];
-    }
-  };
 
   /**
    * The customer's full name.
@@ -133,11 +117,6 @@ public final class Person extends Message<Person, Person.Builder> implements Par
       super.hashCode = result;
     }
     return result;
-  }
-
-  @Override
-  public void writeToParcel(Parcel out, int flags) {
-    out.writeByteArray(ADAPTER.encode(this));
   }
 
   public static final class Builder extends Message.Builder<Person, Builder> {
@@ -233,30 +212,16 @@ public final class Person extends Message<Person, Person.Builder> implements Par
     }
   }
 
-  public static final class PhoneNumber extends Message<PhoneNumber, PhoneNumber.Builder> implements Parcelable {
+  public static final class PhoneNumber extends AndroidMessage<PhoneNumber, PhoneNumber.Builder> {
     public static final ProtoAdapter<PhoneNumber> ADAPTER = ProtoAdapter.newMessageAdapter(PhoneNumber.class);
+
+    public static final Parcelable.Creator<PhoneNumber> CREATOR = AndroidMessage.newCreator(ADAPTER);
 
     private static final long serialVersionUID = 0L;
 
     public static final String DEFAULT_NUMBER = "";
 
     public static final PhoneType DEFAULT_TYPE = PhoneType.HOME;
-
-    public static final Parcelable.Creator<PhoneNumber> CREATOR = new Parcelable.Creator<PhoneNumber>() {
-      @Override
-      public PhoneNumber createFromParcel(Parcel in) {
-        try {
-          return ADAPTER.decode(in.createByteArray());
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      }
-
-      @Override
-      public PhoneNumber[] newArray(int size) {
-        return new PhoneNumber[size];
-      }
-    };
 
     /**
      * The customer's phone number.
@@ -317,11 +282,6 @@ public final class Person extends Message<Person, Person.Builder> implements Par
         super.hashCode = result;
       }
       return result;
-    }
-
-    @Override
-    public void writeToParcel(Parcel out, int flags) {
-      out.writeByteArray(ADAPTER.encode(this));
     }
 
     public static final class Builder extends Message.Builder<PhoneNumber, Builder> {

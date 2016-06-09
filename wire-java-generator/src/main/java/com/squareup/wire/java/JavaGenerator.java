@@ -24,7 +24,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -94,12 +93,11 @@ public final class JavaGenerator {
   static final ClassName STRING = ClassName.get(String.class);
   static final ClassName LIST = ClassName.get(List.class);
   static final ClassName MESSAGE = ClassName.get(Message.class);
+  static final ClassName ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage");
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
-  static final ClassName PARCEL = ClassName.get("android.os", "Parcel");
-  static final ClassName PARCELABLE = ClassName.get("android.os", "Parcelable");
   static final ClassName NULLABLE = ClassName.get("android.support.annotation", "Nullable");
-  static final ClassName CREATOR = PARCELABLE.nestedClass("Creator");
+  static final ClassName CREATOR = ClassName.get("android.os", "Parcelable", "Creator");
 
   private static final Map<ProtoType, TypeName> BUILT_IN_TYPES_MAP =
       ImmutableMap.<ProtoType, TypeName>builder()
@@ -270,8 +268,8 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(LIST, type);
   }
 
-  static TypeName messageOf(TypeName type, ClassName builderType) {
-    return ParameterizedTypeName.get(MESSAGE, type, builderType);
+  static TypeName messageOf(ClassName messageType, TypeName type, ClassName builderType) {
+    return ParameterizedTypeName.get(messageType, type, builderType);
   }
 
   static TypeName adapterOf(TypeName messageType) {
@@ -419,13 +417,23 @@ public final class JavaGenerator {
       builder.addJavadoc("$L\n", sanitizeJavadoc(type.documentation()));
     }
 
-    builder.superclass(messageOf(javaType, builderJavaType));
+    ClassName messageType = emitAndroid ? ANDROID_MESSAGE : MESSAGE;
+    builder.superclass(messageOf(messageType, javaType, builderJavaType));
 
+    String adapterName = nameAllocator.get("ADAPTER");
     String protoAdapterName = "ProtoAdapter_" + javaType.simpleName();
     String protoAdapterClassName = nameAllocator.newName(protoAdapterName);
     ClassName adapterJavaType = javaType.nestedClass(protoAdapterClassName);
-    builder.addField(messageAdapterField(nameAllocator, javaType, adapterJavaType));
+    builder.addField(messageAdapterField(adapterName, javaType, adapterJavaType));
     // Note: The non-compact implementation is added at the very bottom of the surrounding type.
+
+    if (emitAndroid) {
+      TypeName creatorType = creatorOf(javaType);
+      String creatorName = nameAllocator.get("CREATOR");
+      builder.addField(FieldSpec.builder(creatorType, creatorName, PUBLIC, STATIC, FINAL)
+          .initializer("$T.newCreator($L)", ANDROID_MESSAGE, adapterName)
+          .build());
+    }
 
     builder.addField(FieldSpec.builder(TypeName.LONG, nameAllocator.get("serialVersionUID"))
         .addModifiers(PRIVATE, STATIC, FINAL)
@@ -476,50 +484,11 @@ public final class JavaGenerator {
 
     builder.addMethod(messageFieldsConstructor(nameAllocator, type));
     builder.addMethod(messageFieldsAndUnknownFieldsConstructor(nameAllocator, type));
+
     builder.addMethod(newBuilder(nameAllocator, type));
+
     builder.addMethod(messageEquals(nameAllocator, type));
     builder.addMethod(messageHashCode(nameAllocator, type));
-
-    if (emitAndroid) {
-      String adapterName = nameAllocator.get("ADAPTER");
-
-      builder.addSuperinterface(PARCELABLE);
-
-      builder.addMethod(MethodSpec.methodBuilder("writeToParcel")
-          .addAnnotation(Override.class)
-          .addModifiers(PUBLIC)
-          .addParameter(PARCEL, "out")
-          .addParameter(int.class, "flags")
-          .addStatement("out.writeByteArray($N.encode(this))", adapterName)
-          .build());
-
-      TypeName creatorType = creatorOf(javaType);
-      builder.addField(
-          FieldSpec.builder(creatorType, nameAllocator.get("CREATOR"), PUBLIC, STATIC, FINAL)
-              .initializer("$L", TypeSpec.anonymousClassBuilder("")
-                  .superclass(creatorType)
-                  .addMethod(MethodSpec.methodBuilder("createFromParcel")
-                      .addAnnotation(Override.class)
-                      .addModifiers(PUBLIC)
-                      .returns(javaType)
-                      .addParameter(PARCEL, "in")
-                      .beginControlFlow("try")
-                      .addStatement("return $N.decode(in.createByteArray())", adapterName)
-                      .nextControlFlow("catch ($T e)", IOException.class)
-                      .addStatement("throw new $T(e)", RuntimeException.class)
-                      .endControlFlow()
-                      .build())
-                  .addMethod(MethodSpec.methodBuilder("newArray")
-                      .addAnnotation(Override.class)
-                      .addModifiers(PUBLIC)
-                      .returns(ArrayTypeName.of(javaType))
-                      .addParameter(int.class, "size")
-                      .addStatement("return new $T[size]", javaType)
-                      .build())
-                  .build())
-              .build());
-    }
-
     if (!emitCompact) {
       builder.addMethod(messageToString(nameAllocator, type));
     }
@@ -554,9 +523,9 @@ public final class JavaGenerator {
     return collidingNames;
   }
 
-  private FieldSpec messageAdapterField(NameAllocator nameAllocator, ClassName javaType,
+  private FieldSpec messageAdapterField(String adapterName, ClassName javaType,
       ClassName adapterJavaType) {
-    FieldSpec.Builder result = FieldSpec.builder(adapterOf(javaType), nameAllocator.get("ADAPTER"))
+    FieldSpec.Builder result = FieldSpec.builder(adapterOf(javaType), adapterName)
         .addModifiers(PUBLIC, STATIC, FINAL);
     if (emitCompact) {
       result.initializer("$T.newMessageAdapter($T.class)", ProtoAdapter.class, javaType);
