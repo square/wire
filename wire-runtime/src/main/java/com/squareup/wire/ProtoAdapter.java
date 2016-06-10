@@ -455,7 +455,7 @@ public abstract class ProtoAdapter<E> {
         return size;
       }
 
-      @Override public void encode(ProtoWriter writer, List<E> value) throws IOException {
+      @Override public void encode(ProtoWriter writer, List<E> value) {
         throw new UnsupportedOperationException("Repeated values can only be encoded with a tag.");
       }
 
