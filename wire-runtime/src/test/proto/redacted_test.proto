@@ -18,6 +18,7 @@ package squareup.protos.redacted_test;
 option java_package = "com.squareup.wire.protos.redacted";
 
 import "google/protobuf/descriptor.proto";
+import "option_redacted.proto";
 
 message NotRedacted {
   optional string a = 1;
@@ -25,8 +26,8 @@ message NotRedacted {
 }
 
 message Redacted {
-  optional string a = 1 [(squareup.protos.redacted_test.redacted) = true];
-  optional string b = 2 [(squareup.protos.redacted_test.redacted) = false];
+  optional string a = 1 [(squareup.protos.redacted_option.redacted) = true];
+  optional string b = 2 [(squareup.protos.redacted_option.redacted) = false];
   optional string c = 3;
   extensions 10 to 20;
 }
@@ -46,24 +47,18 @@ message RedactedCycleB {
 }
 
 message RedactedRepeated {
-  repeated string a = 1 [(squareup.protos.redacted_test.redacted) = true];
+  repeated string a = 1 [(squareup.protos.redacted_option.redacted) = true];
 
   // Values in the repeated type need redacting.
   repeated Redacted b = 2;
 }
 
 message RedactedRequired {
-  required string a = 1 [(squareup.protos.redacted_test.redacted) = true];
-}
-
-extend google.protobuf.FieldOptions {
-
-  /** Fields marked with redacted are not to be logged, generally for PCI or PII. */
-  optional bool redacted = 22200;
+  required string a = 1 [(squareup.protos.redacted_option.redacted) = true];
 }
 
 message RedactedExtension {
-  optional string d = 1 [(squareup.protos.redacted_test.redacted) = true];
+  optional string d = 1 [(squareup.protos.redacted_option.redacted) = true];
   optional string e = 2;
 }
 

@@ -5,7 +5,7 @@ set -e
 mvn clean package -pl wire-compiler -am -Dmaven.test.skip
 
 cd wire-runtime
-PROTOS=`find src/test/proto -name '*.proto' | sed 's|^src/test/proto/||'`
+PROTOS=`find src/test/proto -name '*.proto' | sed 's|^src/test/proto/||' | sort`
 
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
   --proto_path=../wire-runtime/src/test/proto \

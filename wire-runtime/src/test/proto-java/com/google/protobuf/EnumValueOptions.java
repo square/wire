@@ -54,7 +54,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
-   * Extension source: custom_options.proto at 71:3
+   * Extension source: custom_options.proto at 72:3
    */
   @WireField(
       tag = 70000,
@@ -63,7 +63,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   public final Integer enum_value_option;
 
   /**
-   * Extension source: custom_options.proto at 72:3
+   * Extension source: custom_options.proto at 73:3
    */
   @WireField(
       tag = 70001,

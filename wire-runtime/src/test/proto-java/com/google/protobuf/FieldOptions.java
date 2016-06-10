@@ -165,7 +165,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
-   * Extension source: custom_options.proto at 64:3
+   * Extension source: custom_options.proto at 65:3
    */
   @WireField(
       tag = 60001,
@@ -174,7 +174,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   public final Integer my_field_option_one;
 
   /**
-   * Extension source: custom_options.proto at 65:3
+   * Extension source: custom_options.proto at 66:3
    */
   @WireField(
       tag = 60002,
@@ -183,7 +183,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   public final Float my_field_option_two;
 
   /**
-   * Extension source: custom_options.proto at 66:3
+   * Extension source: custom_options.proto at 67:3
    */
   @WireField(
       tag = 60003,
@@ -192,7 +192,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   public final FooBar.FooBarBazEnum my_field_option_three;
 
   /**
-   * Extension source: custom_options.proto at 67:3
+   * Extension source: custom_options.proto at 68:3
    */
   @WireField(
       tag = 60004,
@@ -238,7 +238,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
   /**
    * Fields marked with redacted are not to be logged, generally for PCI or PII.
-   * Extension source: redacted_test.proto at 62:3
+   * Extension source: option_redacted.proto at 25:3
    */
   @WireField(
       tag = 22200,
