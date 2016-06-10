@@ -110,20 +110,4 @@ public final class Rpc {
     }
     return rpcs.build();
   }
-
-  static ImmutableList<RpcElement> toElements(ImmutableList<Rpc> rpcs) {
-    ImmutableList.Builder<RpcElement> elements = new ImmutableList.Builder<>();
-    for (Rpc rpc : rpcs) {
-      elements.add(RpcElement.builder(rpc.location)
-          .documentation(rpc.documentation)
-          .name(rpc.name)
-          .requestType(rpc.requestTypeElement)
-          .responseType(rpc.responseTypeElement)
-          .requestStreaming(rpc.requestStreaming)
-          .responseStreaming(rpc.responseStreaming)
-          .options(rpc.options.toElements())
-          .build());
-    }
-    return elements.build();
-  }
 }

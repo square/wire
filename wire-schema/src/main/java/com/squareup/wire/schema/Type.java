@@ -51,24 +51,4 @@ public abstract class Type {
     }
     return types.build();
   }
-
-  static TypeElement toElement(Type type) {
-    if (type instanceof EnumType) {
-      return ((EnumType) type).toElement();
-
-    } else if (type instanceof MessageType) {
-      return ((MessageType) type).toElement();
-
-    } else {
-      throw new IllegalArgumentException("unexpected type: " + type.getClass());
-    }
-  }
-
-  static ImmutableList<TypeElement> toElements(ImmutableList<Type> types) {
-    ImmutableList.Builder<TypeElement> elements = new ImmutableList.Builder<>();
-    for (Type type : types) {
-      elements.add(Type.toElement(type));
-    }
-    return elements.build();
-  }
 }

@@ -20,11 +20,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.squareup.wire.schema.Location;
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-
 @AutoValue
 public abstract class ReservedElement {
-  public static ReservedElement create(Location location, String documentation,
+  static ReservedElement create(Location location, String documentation,
       ImmutableList<Object> values) {
     return new AutoValue_ReservedElement(location, documentation, values);
   }
@@ -33,27 +31,4 @@ public abstract class ReservedElement {
   public abstract String documentation();
   /** A {@link String} name or {@link Integer} or {@link Range Range&lt;Integer>} tag. */
   public abstract ImmutableList<Object> values();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("reserved ");
-    ImmutableList<Object> value = values();
-    for (int i = 0; i < value.size(); i++) {
-      if (i > 0) builder.append(", ");
-
-      Object reservation = value.get(i);
-      if (reservation instanceof String) {
-        builder.append('"').append(reservation).append('"');
-      } else if (reservation instanceof Integer) {
-        builder.append(reservation);
-      } else if (reservation instanceof Range) {
-        Range<Integer> range = (Range<Integer>) reservation;
-        builder.append(range.lowerEndpoint()).append(" to ").append(range.upperEndpoint());
-      } else {
-        throw new AssertionError();
-      }
-    }
-    return builder.append(";\n").toString();
-  }
 }

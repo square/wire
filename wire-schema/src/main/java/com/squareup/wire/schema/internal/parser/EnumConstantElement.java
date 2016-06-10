@@ -19,12 +19,9 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.parser.OptionElement.formatOptionList;
-
 @AutoValue
 public abstract class EnumConstantElement {
-  public static Builder builder(Location location) {
+  static Builder builder(Location location) {
     return new AutoValue_EnumConstantElement.Builder()
         .location(location)
         .documentation("")
@@ -37,22 +34,8 @@ public abstract class EnumConstantElement {
   public abstract String documentation();
   public abstract ImmutableList<OptionElement> options();
 
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append(name())
-        .append(" = ")
-        .append(tag());
-    if (!options().isEmpty()) {
-      builder.append(" [\n");
-      formatOptionList(builder, options());
-      builder.append(']');
-    }
-    return builder.append(";\n").toString();
-  }
-
   @AutoValue.Builder
-  public interface Builder {
+  interface Builder {
     Builder location(Location location);
     Builder name(String name);
     Builder tag(int tag);

@@ -19,12 +19,9 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
-
 @AutoValue
 public abstract class ServiceElement {
-  public static Builder builder(Location location) {
+  static Builder builder(Location location) {
     return new AutoValue_ServiceElement.Builder()
         .location(location)
         .documentation("")
@@ -38,29 +35,8 @@ public abstract class ServiceElement {
   public abstract ImmutableList<RpcElement> rpcs();
   public abstract ImmutableList<OptionElement> options();
 
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("service ")
-        .append(name())
-        .append(" {");
-    if (!options().isEmpty()) {
-      builder.append('\n');
-      for (OptionElement option : options()) {
-        appendIndented(builder, option.toSchemaDeclaration());
-      }
-    }
-    if (!rpcs().isEmpty()) {
-      builder.append('\n');
-      for (RpcElement rpc : rpcs()) {
-        appendIndented(builder, rpc.toSchema());
-      }
-    }
-    return builder.append("}\n").toString();
-  }
-
   @AutoValue.Builder
-  public interface Builder {
+  interface Builder {
     Builder location(Location location);
     Builder name(String name);
     Builder documentation(String documentation);

@@ -57,15 +57,6 @@ final class Extensions {
     return extensions.build();
   }
 
-  static ImmutableList<ExtensionsElement> toElements(ImmutableList<Extensions> extensions) {
-    ImmutableList.Builder<ExtensionsElement> elements = new ImmutableList.Builder<>();
-    for (Extensions extension : extensions) {
-      elements.add(ExtensionsElement.create(extension.location, extension.start, extension.end,
-          extension.documentation));
-    }
-    return elements.build();
-  }
-
   void validate(Linker linker) {
     if (!Util.isValidTag(start()) || !Util.isValidTag(end())) {
       linker.withContext(this).addError("tags are out of range: %s to %s", start(), end());

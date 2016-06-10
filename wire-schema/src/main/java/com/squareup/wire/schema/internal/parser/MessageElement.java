@@ -19,12 +19,9 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
-
 @AutoValue
 public abstract class MessageElement implements TypeElement {
-  public static Builder builder(Location location) {
+  static Builder builder(Location location) {
     return new AutoValue_MessageElement.Builder()
         .location(location)
         .documentation("")
@@ -48,59 +45,8 @@ public abstract class MessageElement implements TypeElement {
   public abstract ImmutableList<ExtensionsElement> extensions();
   public abstract ImmutableList<GroupElement> groups();
 
-  @Override public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("message ")
-        .append(name())
-        .append(" {");
-    if (!reserveds().isEmpty()) {
-      builder.append('\n');
-      for (ReservedElement reserved : reserveds()) {
-        appendIndented(builder, reserved.toSchema());
-      }
-    }
-    if (!options().isEmpty()) {
-      builder.append('\n');
-      for (OptionElement option : options()) {
-        appendIndented(builder, option.toSchemaDeclaration());
-      }
-    }
-    if (!fields().isEmpty()) {
-      builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
-      }
-    }
-    if (!oneOfs().isEmpty()) {
-      builder.append('\n');
-      for (OneOfElement oneOf : oneOfs()) {
-        appendIndented(builder, oneOf.toSchema());
-      }
-    }
-    if (!groups().isEmpty()) {
-      builder.append('\n');
-      for (GroupElement group : groups()) {
-        appendIndented(builder, group.toSchema());
-      }
-    }
-    if (!extensions().isEmpty()) {
-      builder.append('\n');
-      for (ExtensionsElement extension : extensions()) {
-        appendIndented(builder, extension.toSchema());
-      }
-    }
-    if (!nestedTypes().isEmpty()) {
-      builder.append('\n');
-      for (TypeElement type : nestedTypes()) {
-        appendIndented(builder, type.toSchema());
-      }
-    }
-    return builder.append("}\n").toString();
-  }
-
   @AutoValue.Builder
-  public interface Builder {
+  interface Builder {
     Builder location(Location location);
     Builder name(String name);
     Builder documentation(String documentation);

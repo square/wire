@@ -19,14 +19,10 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Location;
-import java.util.Locale;
-
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class FieldElement {
-  public static Builder builder(Location location) {
+  static Builder builder(Location location) {
     return new AutoValue_FieldElement.Builder()
         .documentation("")
         .options(ImmutableList.<OptionElement>of())
@@ -42,29 +38,8 @@ public abstract class FieldElement {
   public abstract String documentation();
   public abstract ImmutableList<OptionElement> options();
 
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    if (label() != null) {
-      builder.append(label().name().toLowerCase(Locale.US)).append(' ');
-    }
-    builder.append(type())
-        .append(' ')
-        .append(name())
-        .append(" = ")
-        .append(tag());
-    if (!options().isEmpty()) {
-      builder.append(" [\n");
-      for (OptionElement option : options()) {
-        appendIndented(builder, option.toSchema());
-      }
-      builder.append(']');
-    }
-    return builder.append(";\n").toString();
-  }
-
   @AutoValue.Builder
-  public interface Builder {
+  interface Builder {
     Builder location(Location location);
     Builder label(@Nullable Field.Label label);
     Builder type(String type);

@@ -65,22 +65,6 @@ public final class Field {
     return fields.build();
   }
 
-  static ImmutableList<FieldElement> toElements(ImmutableList<Field> fields) {
-    ImmutableList.Builder<FieldElement> elements = new ImmutableList.Builder<>();
-    for (Field field : fields) {
-      elements.add(FieldElement.builder(field.location)
-          .label(field.label)
-          .name(field.name)
-          .documentation(field.documentation)
-          .tag(field.tag)
-          .defaultValue(field.defaultValue)
-          .options(field.options.toElements())
-          .type(field.elementType)
-          .build());
-    }
-    return elements.build();
-  }
-
   public Location location() {
     return location;
   }

@@ -43,18 +43,6 @@ final class Extend {
     return extendBuilder.build();
   }
 
-  static ImmutableList<ExtendElement> toElements(ImmutableList<Extend> extendList) {
-    ImmutableList.Builder<ExtendElement> elements = new ImmutableList.Builder<>();
-    for (Extend extend : extendList) {
-      elements.add(ExtendElement.builder(extend.location)
-          .documentation(extend.documentation)
-          .name(extend.name)
-          .fields(Field.toElements(extend.fields))
-          .build());
-    }
-    return elements.build();
-  }
-
   public Location location() {
     return location;
   }

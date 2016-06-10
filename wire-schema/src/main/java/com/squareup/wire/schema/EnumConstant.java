@@ -54,18 +54,9 @@ public final class EnumConstant {
     return options;
   }
 
-  static EnumConstant fromElement(EnumConstantElement element) {
+  private static EnumConstant fromElement(EnumConstantElement element) {
     return new EnumConstant(element.location(), element.name(), element.tag(),
         element.documentation(), new Options(Options.ENUM_VALUE_OPTIONS, element.options()));
-  }
-
-  EnumConstantElement toElement() {
-    return EnumConstantElement.builder(location)
-        .documentation(documentation)
-        .name(name)
-        .tag(tag)
-        .options(options.toElements())
-        .build();
   }
 
   void linkOptions(Linker linker) {
@@ -82,13 +73,5 @@ public final class EnumConstant {
       constants.add(fromElement(element));
     }
     return constants.build();
-  }
-
-  static ImmutableList<EnumConstantElement> toElements(ImmutableList<EnumConstant> constants) {
-    ImmutableList.Builder<EnumConstantElement> elements = new ImmutableList.Builder<>();
-    for (EnumConstant constant : constants) {
-      elements.add(constant.toElement());
-    }
-    return elements.build();
   }
 }

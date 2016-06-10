@@ -36,7 +36,7 @@ public final class Service {
     this.options = options;
   }
 
-  static Service fromElement(ProtoType protoType, ServiceElement element) {
+  private static Service fromElement(ProtoType protoType, ServiceElement element) {
     ImmutableList<Rpc> rpcs = Rpc.fromElements(element.rpcs());
     Options options = new Options(Options.SERVICE_OPTIONS, element.options());
 
@@ -126,18 +126,5 @@ public final class Service {
       services.add(Service.fromElement(protoType, service));
     }
     return services.build();
-  }
-
-  static ImmutableList<ServiceElement> toElements(ImmutableList<Service> services) {
-    ImmutableList.Builder<ServiceElement> elements = new ImmutableList.Builder<>();
-    for (Service service : services) {
-      elements.add(ServiceElement.builder(service.location)
-          .documentation(service.documentation)
-          .name(service.name)
-          .rpcs(Rpc.toElements(service.rpcs))
-          .options(service.options.toElements())
-          .build());
-    }
-    return elements.build();
   }
 }

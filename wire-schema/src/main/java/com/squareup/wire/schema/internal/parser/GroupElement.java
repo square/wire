@@ -18,14 +18,10 @@ package com.squareup.wire.schema.internal.parser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Field;
-import java.util.Locale;
-
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
-public abstract class GroupElement {
-  public static Builder builder() {
+abstract class GroupElement {
+  static Builder builder() {
     return new AutoValue_GroupElement.Builder()
         .documentation("")
         .fields(ImmutableList.<FieldElement>of());
@@ -37,28 +33,8 @@ public abstract class GroupElement {
   public abstract String documentation();
   public abstract ImmutableList<FieldElement> fields();
 
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    if (label() != null) {
-      builder.append(label().name().toLowerCase(Locale.US)).append(' ');
-    }
-    builder.append("group ")
-        .append(name())
-        .append(" = ")
-        .append(tag())
-        .append(" {");
-    if (!fields().isEmpty()) {
-      builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
-      }
-    }
-    return builder.append("}\n").toString();
-  }
-
   @AutoValue.Builder
-  public interface Builder {
+  interface Builder {
     Builder label(Field.Label label);
     Builder name(String name);
     Builder tag(int value);

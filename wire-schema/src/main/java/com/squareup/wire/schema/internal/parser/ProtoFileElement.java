@@ -24,7 +24,7 @@ import java.util.Collection;
 /** A single {@code .proto} file. */
 @AutoValue
 public abstract class ProtoFileElement {
-  public static Builder builder(Location location) {
+  static Builder builder(Location location) {
     return new AutoValue_ProtoFileElement.Builder()
         .location(location)
         .imports(ImmutableList.<String>of())
@@ -45,53 +45,8 @@ public abstract class ProtoFileElement {
   public abstract ImmutableList<ExtendElement> extendDeclarations();
   public abstract ImmutableList<OptionElement> options();
 
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("// ").append(location()).append('\n');
-    if (packageName() != null) {
-      builder.append("package ").append(packageName()).append(";\n");
-    }
-    if (syntax() != null) {
-      builder.append("syntax \"").append(syntax()).append("\";\n");
-    }
-    if (!imports().isEmpty() || !publicImports().isEmpty()) {
-      builder.append('\n');
-      for (String file : imports()) {
-        builder.append("import \"").append(file).append("\";\n");
-      }
-      for (String file : publicImports()) {
-        builder.append("import public \"").append(file).append("\";\n");
-      }
-    }
-    if (!options().isEmpty()) {
-      builder.append('\n');
-      for (OptionElement option : options()) {
-        builder.append(option.toSchemaDeclaration());
-      }
-    }
-    if (!types().isEmpty()) {
-      builder.append('\n');
-      for (TypeElement typeElement : types()) {
-        builder.append(typeElement.toSchema());
-      }
-    }
-    if (!extendDeclarations().isEmpty()) {
-      builder.append('\n');
-      for (ExtendElement extendDeclaration : extendDeclarations()) {
-        builder.append(extendDeclaration.toSchema());
-      }
-    }
-    if (!services().isEmpty()) {
-      builder.append('\n');
-      for (ServiceElement service : services()) {
-        builder.append(service.toSchema());
-      }
-    }
-    return builder.toString();
-  }
-
   @AutoValue.Builder
-  public interface Builder {
+  interface Builder {
     Builder location(Location location);
     Builder packageName(@Nullable String packageName);
     Builder syntax(@Nullable ProtoFile.Syntax syntax);

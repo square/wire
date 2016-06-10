@@ -18,12 +18,9 @@ package com.squareup.wire.schema.internal.parser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
-
 @AutoValue
 public abstract class OneOfElement {
-  public static Builder builder() {
+  static Builder builder() {
     return new AutoValue_OneOfElement.Builder()
         .documentation("")
         .fields(ImmutableList.<FieldElement>of())
@@ -35,27 +32,8 @@ public abstract class OneOfElement {
   public abstract ImmutableList<FieldElement> fields();
   public abstract ImmutableList<GroupElement> groups();
 
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("oneof ").append(name()).append(" {");
-    if (!fields().isEmpty()) {
-      builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
-      }
-    }
-    if (!groups().isEmpty()) {
-      builder.append('\n');
-      for (GroupElement group : groups()) {
-        appendIndented(builder, group.toSchema());
-      }
-    }
-    return builder.append("}\n").toString();
-  }
-
   @AutoValue.Builder
-  public interface Builder {
+  interface Builder {
     Builder name(String name);
     Builder documentation(String documentation);
     Builder fields(ImmutableList<FieldElement> fields);

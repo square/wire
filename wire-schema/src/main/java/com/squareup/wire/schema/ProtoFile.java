@@ -67,19 +67,6 @@ public final class ProtoFile {
         protoFileElement.syntax());
   }
 
-  ProtoFileElement toElement() {
-    return ProtoFileElement.builder(location)
-        .imports(imports)
-        .publicImports(publicImports)
-        .packageName(packageName)
-        .types(Type.toElements(types))
-        .services(Service.toElements(services))
-        .extendDeclarations(Extend.toElements(extendList))
-        .options(options.toElements())
-        .syntax(syntax)
-        .build();
-  }
-
   public Location location() {
     return location;
   }

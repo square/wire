@@ -156,13 +156,4 @@ public final class EnumType extends Type {
     return new EnumType(protoType, enumElement.location(), enumElement.documentation(),
         enumElement.name(), constants, options);
   }
-
-  EnumElement toElement() {
-    return EnumElement.builder(location)
-        .name(name)
-        .documentation(documentation)
-        .constants(EnumConstant.toElements(constants))
-        .options(options.toElements())
-        .build();
-  }
 }
