@@ -184,7 +184,7 @@ public final class ProtoReader {
    * Returns the encoding of the next field value. {@link #nextTag()} must be called before
    * this method.
    */
-  public FieldEncoding peekFieldEncoding() throws IOException {
+  public FieldEncoding peekFieldEncoding() {
     return nextFieldEncoding;
   }
 
