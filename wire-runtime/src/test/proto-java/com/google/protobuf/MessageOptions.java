@@ -127,7 +127,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
-   * Extension source: custom_options.proto at 55:3
+   * Extension source: custom_options.proto at 56:3
    */
   @WireField(
       tag = 50001,
@@ -136,7 +136,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   public final FooBar my_message_option_one;
 
   /**
-   * Extension source: custom_options.proto at 56:3
+   * Extension source: custom_options.proto at 57:3
    */
   @WireField(
       tag = 50002,
@@ -145,7 +145,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   public final Float my_message_option_two;
 
   /**
-   * Extension source: custom_options.proto at 57:3
+   * Extension source: custom_options.proto at 58:3
    */
   @WireField(
       tag = 50003,
@@ -154,7 +154,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   public final FooBar my_message_option_three;
 
   /**
-   * Extension source: custom_options.proto at 58:3
+   * Extension source: custom_options.proto at 59:3
    */
   @WireField(
       tag = 50004,
@@ -163,7 +163,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   public final FooBar.FooBarBazEnum my_message_option_four;
 
   /**
-   * Extension source: custom_options.proto at 59:3
+   * Extension source: custom_options.proto at 60:3
    */
   @WireField(
       tag = 50005,
@@ -172,7 +172,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   public final FooBar my_message_option_five;
 
   /**
-   * Extension source: custom_options.proto at 60:3
+   * Extension source: custom_options.proto at 61:3
    */
   @WireField(
       tag = 50006,

@@ -38,6 +38,7 @@ public final class Field {
   private ProtoType type;
   private Object deprecated;
   private Object packed;
+  private boolean redacted;
 
   private Field(String packageName, Location location, Label label, String name,
       String documentation, int tag, String defaultValue, String elementType, Options options,
@@ -143,6 +144,10 @@ public final class Field {
     return "true".equals(packed);
   }
 
+  public boolean isRedacted() {
+    return redacted;
+  }
+
   public String getDefault() {
     return defaultValue;
   }
@@ -167,6 +172,8 @@ public final class Field {
     options.link(linker);
     deprecated = options().get(DEPRECATED);
     packed = options().get(PACKED);
+    // We allow any package name to be used as long as it ends with '.redacted'.
+    redacted = options().optionMatches(".*\\.redacted", "true");
   }
 
   void validate(Linker linker) {
@@ -191,6 +198,7 @@ public final class Field {
     result.type = type;
     result.deprecated = deprecated;
     result.packed = packed;
+    result.redacted = redacted;
     return result;
   }
 

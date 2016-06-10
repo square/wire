@@ -19,6 +19,7 @@ option java_package = "com.squareup.wire.protos.custom_options";
 
 import "google/protobuf/descriptor.proto";
 import "foreign.proto";
+import "option_redacted.proto";
 
 message FooBar {
   extensions 100 to 200;
@@ -33,7 +34,7 @@ message FooBar {
   }, my_field_option_two = 99.9];
   optional double daisy = 6 [my_field_option_four.baz.value = FOO];
 
-  repeated FooBar nested = 7;
+  repeated FooBar nested = 7 [(squareup.protos.redacted_option.redacted) = true];
 
   message Nested {
     optional FooBarBazEnum value = 1;

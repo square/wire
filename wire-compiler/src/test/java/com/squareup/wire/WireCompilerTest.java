@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -217,7 +216,8 @@ public class WireCompilerTest {
 
   @Test public void testCustomOptions() throws Exception {
     String[] sources = {
-        "custom_options.proto"
+        "custom_options.proto",
+        "option_redacted.proto"
     };
     invokeCompiler(sources, "--named_files_only");
 
@@ -230,7 +230,8 @@ public class WireCompilerTest {
 
   @Test public void testCustomOptionsNoOptions() throws Exception {
     String[] sources = {
-        "custom_options.proto"
+        "custom_options.proto",
+        "option_redacted.proto"
     };
     invokeCompiler(sources, "--excludes=google.protobuf.*", "--named_files_only");
 
@@ -243,7 +244,8 @@ public class WireCompilerTest {
 
   @Test public void testRedacted() throws Exception {
     String[] sources = {
-        "redacted_test.proto"
+        "redacted_test.proto",
+        "option_redacted.proto"
     };
     invokeCompiler(sources);
 

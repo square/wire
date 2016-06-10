@@ -284,10 +284,6 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(CREATOR, messageType);
   }
 
-  private static boolean isRedacted(Field field) {
-    return field.options().optionMatches(".*\\.redacted", "true");
-  }
-
   /** A grab-bag of fixes for things that can go wrong when converting to javadoc. */
   static String sanitizeJavadoc(String documentation) {
     // Remove trailing whitespace on each line.
@@ -670,7 +666,7 @@ public final class JavaGenerator {
 
     List<String> requiredRedacted = new ArrayList<>();
     for (Field field : type.fieldsAndOneOfFields()) {
-      if (field.isRequired() && isRedacted(field)) {
+      if (field.isRequired() && field.isRedacted()) {
         requiredRedacted.add(nameAllocator.get(field));
       }
     }
@@ -686,7 +682,7 @@ public final class JavaGenerator {
 
     for (Field field : type.fieldsAndOneOfFields()) {
       String fieldName = nameAllocator.get(field);
-      if (isRedacted(field)) {
+      if (field.isRedacted()) {
         if (field.isRepeated()) {
           result.addStatement("builder.$N = $T.emptyList()", fieldName, Collections.class);
         } else {
@@ -789,8 +785,7 @@ public final class JavaGenerator {
       }
     }
 
-    // We allow any package name to be used as long as it ends with '.redacted'.
-    if (isRedacted(field)) {
+    if (field.isRedacted()) {
       result.addMember("redacted", "true");
     }
 
@@ -991,7 +986,7 @@ public final class JavaGenerator {
       } else if (!field.isRequired()) {
         result.addCode("if ($N != null) ", fieldName);
       }
-      if (isRedacted(field)) {
+      if (field.isRedacted()) {
         result.addStatement("$N.append(\", $N=██\")", builderName, field.name());
       } else {
         result.addStatement("$N.append(\", $N=\").append($L)", builderName, field.name(),
