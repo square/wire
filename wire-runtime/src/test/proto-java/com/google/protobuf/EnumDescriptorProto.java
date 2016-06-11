@@ -129,7 +129,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
     @Override
     public EnumDescriptorProto build() {
-      return new EnumDescriptorProto(name, value, options, buildUnknownFields());
+      return new EnumDescriptorProto(name, value, options, super.buildUnknownFields());
     }
   }
 

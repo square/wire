@@ -88,7 +88,7 @@ public final class Bars extends Message<Bars, Bars.Builder> {
 
     @Override
     public Bars build() {
-      return new Bars(bars, buildUnknownFields());
+      return new Bars(bars, super.buildUnknownFields());
     }
   }
 

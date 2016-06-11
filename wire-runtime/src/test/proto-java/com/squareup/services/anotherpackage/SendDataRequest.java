@@ -86,7 +86,7 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
 
     @Override
     public SendDataRequest build() {
-      return new SendDataRequest(data, buildUnknownFields());
+      return new SendDataRequest(data, super.buildUnknownFields());
     }
   }
 

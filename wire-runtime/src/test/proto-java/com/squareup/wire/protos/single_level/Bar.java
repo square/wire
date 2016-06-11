@@ -87,7 +87,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     @Override
     public Bar build() {
-      return new Bar(baz, buildUnknownFields());
+      return new Bar(baz, super.buildUnknownFields());
     }
   }
 

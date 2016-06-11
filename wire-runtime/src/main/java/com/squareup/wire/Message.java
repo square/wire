@@ -106,13 +106,10 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     Buffer unknownFieldsBuffer;
     ProtoWriter unknownFieldsWriter;
 
-    /**
-     * Constructs a Builder with no unknown field data.
-     */
-    public Builder() {
+    protected Builder() {
     }
 
-    public Builder<T, B> addUnknownFields(ByteString unknownFields) {
+    public final Builder<T, B> addUnknownFields(ByteString unknownFields) {
       if (unknownFields.size() > 0) {
         if (unknownFieldsWriter == null) {
           unknownFieldsBuffer = new Buffer();
@@ -127,7 +124,7 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
       return this;
     }
 
-    public Builder<T, B> addUnknownField(int tag, FieldEncoding fieldEncoding, Object value) {
+    public final Builder<T, B> addUnknownField(int tag, FieldEncoding fieldEncoding, Object value) {
       if (unknownFieldsWriter == null) {
         unknownFieldsBuffer = new Buffer();
         unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
@@ -141,7 +138,7 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
       return this;
     }
 
-    public Builder<T, B> clearUnknownFields() {
+    public final Builder<T, B> clearUnknownFields() {
       unknownFieldsWriter = null;
       unknownFieldsBuffer = null;
       return this;
@@ -151,7 +148,7 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
      * Returns a byte string with this message's unknown fields. Returns an empty byte string if
      * this message has no unknown fields.
      */
-    public ByteString buildUnknownFields() {
+    public final ByteString buildUnknownFields() {
       return unknownFieldsBuffer != null
           ? unknownFieldsBuffer.clone().readByteString()
           : ByteString.EMPTY;

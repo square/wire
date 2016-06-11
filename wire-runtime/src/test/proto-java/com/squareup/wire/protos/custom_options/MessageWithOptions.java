@@ -115,7 +115,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
 
     @Override
     public MessageWithOptions build() {
-      return new MessageWithOptions(buildUnknownFields());
+      return new MessageWithOptions(super.buildUnknownFields());
     }
   }
 

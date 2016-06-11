@@ -107,7 +107,7 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
 
     @Override
     public OneExtension build() {
-      return new OneExtension(id, foo, buildUnknownFields());
+      return new OneExtension(id, foo, super.buildUnknownFields());
     }
   }
 

@@ -112,7 +112,7 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
 
     @Override
     public RedactedExtension build() {
-      return new RedactedExtension(d, e, buildUnknownFields());
+      return new RedactedExtension(d, e, super.buildUnknownFields());
     }
   }
 

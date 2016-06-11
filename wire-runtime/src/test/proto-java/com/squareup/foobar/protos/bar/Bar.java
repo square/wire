@@ -58,7 +58,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     @Override
     public Bar build() {
-      return new Bar(buildUnknownFields());
+      return new Bar(super.buildUnknownFields());
     }
   }
 
@@ -104,7 +104,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
       @Override
       public Baz build() {
-        return new Baz(buildUnknownFields());
+        return new Baz(super.buildUnknownFields());
       }
     }
 
@@ -178,7 +178,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
         @Override
         public Moo build() {
-          return new Moo(boo, buildUnknownFields());
+          return new Moo(boo, super.buildUnknownFields());
         }
       }
 

@@ -110,7 +110,7 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
 
     @Override
     public ForeignMessage build() {
-      return new ForeignMessage(i, j, buildUnknownFields());
+      return new ForeignMessage(i, j, super.buildUnknownFields());
     }
   }
 

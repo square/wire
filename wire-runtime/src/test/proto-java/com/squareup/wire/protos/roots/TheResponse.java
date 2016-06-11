@@ -56,7 +56,7 @@ public final class TheResponse extends Message<TheResponse, TheResponse.Builder>
 
     @Override
     public TheResponse build() {
-      return new TheResponse(buildUnknownFields());
+      return new TheResponse(super.buildUnknownFields());
     }
   }
 

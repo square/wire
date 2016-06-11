@@ -135,7 +135,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
     @Override
     public MethodOptions build() {
-      return new MethodOptions(deprecated, uninterpreted_option, buildUnknownFields());
+      return new MethodOptions(deprecated, uninterpreted_option, super.buildUnknownFields());
     }
   }
 

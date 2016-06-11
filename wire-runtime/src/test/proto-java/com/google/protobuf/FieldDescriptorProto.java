@@ -301,7 +301,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     @Override
     public FieldDescriptorProto build() {
-      return new FieldDescriptorProto(name, number, label, type, type_name, extendee, default_value, oneof_index, options, buildUnknownFields());
+      return new FieldDescriptorProto(name, number, label, type, type_name, extendee, default_value, oneof_index, options, super.buildUnknownFields());
     }
   }
 

@@ -285,7 +285,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     @Override
     public DescriptorProto build() {
-      return new DescriptorProto(name, field, extension, nested_type, enum_type, extension_range, oneof_decl, options, reserved_range, reserved_name, buildUnknownFields());
+      return new DescriptorProto(name, field, extension, nested_type, enum_type, extension_range, oneof_decl, options, reserved_range, reserved_name, super.buildUnknownFields());
     }
   }
 
@@ -379,7 +379,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
       @Override
       public ExtensionRange build() {
-        return new ExtensionRange(start, end, buildUnknownFields());
+        return new ExtensionRange(start, end, super.buildUnknownFields());
       }
     }
 
@@ -537,7 +537,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
       @Override
       public ReservedRange build() {
-        return new ReservedRange(start, end, buildUnknownFields());
+        return new ReservedRange(start, end, super.buildUnknownFields());
       }
     }
 

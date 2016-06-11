@@ -203,7 +203,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
 
     @Override
     public ExternalMessage build() {
-      return new ExternalMessage(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, buildUnknownFields());
+      return new ExternalMessage(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, super.buildUnknownFields());
     }
   }
 

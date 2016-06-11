@@ -128,7 +128,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
     @Override
     public EnumValueDescriptorProto build() {
-      return new EnumValueDescriptorProto(name, number, options, buildUnknownFields());
+      return new EnumValueDescriptorProto(name, number, options, super.buildUnknownFields());
     }
   }
 

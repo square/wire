@@ -87,7 +87,7 @@ public final class Foo extends Message<Foo, Foo.Builder> {
 
     @Override
     public Foo build() {
-      return new Foo(bar, buildUnknownFields());
+      return new Foo(bar, super.buildUnknownFields());
     }
   }
 

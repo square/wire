@@ -437,7 +437,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
 
     @Override
     public MessageOptions build() {
-      return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, deprecated, map_entry, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, buildUnknownFields());
+      return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, deprecated, map_entry, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, super.buildUnknownFields());
     }
   }
 

@@ -109,7 +109,7 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
 
     @Override
     public EmbeddedMessage build() {
-      return new EmbeddedMessage(inner_repeated_number, inner_number_after, buildUnknownFields());
+      return new EmbeddedMessage(inner_repeated_number, inner_number_after, super.buildUnknownFields());
     }
   }
 

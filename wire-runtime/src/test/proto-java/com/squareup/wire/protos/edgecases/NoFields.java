@@ -56,7 +56,7 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
 
     @Override
     public NoFields build() {
-      return new NoFields(buildUnknownFields());
+      return new NoFields(super.buildUnknownFields());
     }
   }
 

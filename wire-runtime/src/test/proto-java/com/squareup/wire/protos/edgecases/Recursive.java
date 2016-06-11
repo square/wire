@@ -105,7 +105,7 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
 
     @Override
     public Recursive build() {
-      return new Recursive(value, recursive, buildUnknownFields());
+      return new Recursive(value, recursive, super.buildUnknownFields());
     }
   }
 

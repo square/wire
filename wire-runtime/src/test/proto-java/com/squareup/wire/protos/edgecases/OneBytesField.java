@@ -86,7 +86,7 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
 
     @Override
     public OneBytesField build() {
-      return new OneBytesField(opt_bytes, buildUnknownFields());
+      return new OneBytesField(opt_bytes, super.buildUnknownFields());
     }
   }
 

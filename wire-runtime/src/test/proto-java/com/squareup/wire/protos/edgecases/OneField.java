@@ -87,7 +87,7 @@ public final class OneField extends Message<OneField, OneField.Builder> {
 
     @Override
     public OneField build() {
-      return new OneField(opt_int32, buildUnknownFields());
+      return new OneField(opt_int32, super.buildUnknownFields());
     }
   }
 

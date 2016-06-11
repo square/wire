@@ -105,7 +105,7 @@ public final class E extends Message<E, E.Builder> {
 
     @Override
     public E build() {
-      return new E(f, g, buildUnknownFields());
+      return new E(f, g, super.buildUnknownFields());
     }
   }
 
@@ -179,7 +179,7 @@ public final class E extends Message<E, E.Builder> {
 
       @Override
       public F build() {
-        return new F(i, buildUnknownFields());
+        return new F(i, super.buildUnknownFields());
       }
     }
 

@@ -92,7 +92,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
 
     @Override
     public FileDescriptorSet build() {
-      return new FileDescriptorSet(file, buildUnknownFields());
+      return new FileDescriptorSet(file, super.buildUnknownFields());
     }
   }
 

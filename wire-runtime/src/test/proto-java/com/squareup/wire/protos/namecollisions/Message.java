@@ -265,7 +265,7 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
     @Override
     public Message build() {
-      return new Message(unknownFields, other, o, result, hashCode, serialVersionUID_, ADAPTER_, MESSAGE_OPTIONS_, this_, message, buildUnknownFields());
+      return new Message(unknownFields, other, o, result, hashCode, serialVersionUID_, ADAPTER_, MESSAGE_OPTIONS_, this_, message, super.buildUnknownFields());
     }
   }
 

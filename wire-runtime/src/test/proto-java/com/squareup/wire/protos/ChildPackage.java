@@ -87,7 +87,7 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
 
     @Override
     public ChildPackage build() {
-      return new ChildPackage(inner_foreign_enum, buildUnknownFields());
+      return new ChildPackage(inner_foreign_enum, super.buildUnknownFields());
     }
   }
 

@@ -84,7 +84,7 @@ public final class H extends Message<H, H.Builder> {
 
     @Override
     public H build() {
-      return new H(ef, buildUnknownFields());
+      return new H(ef, super.buildUnknownFields());
     }
   }
 

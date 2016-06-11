@@ -372,7 +372,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
 
     @Override
     public FileDescriptorProto build() {
-      return new FileDescriptorProto(name, package_, dependency, public_dependency, weak_dependency, message_type, enum_type, service, extension, options, source_code_info, syntax, buildUnknownFields());
+      return new FileDescriptorProto(name, package_, dependency, public_dependency, weak_dependency, message_type, enum_type, service, extension, options, source_code_info, syntax, super.buildUnknownFields());
     }
   }
 

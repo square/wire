@@ -105,7 +105,7 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
 
     @Override
     public OuterMessage build() {
-      return new OuterMessage(outer_number_before, embedded_message, buildUnknownFields());
+      return new OuterMessage(outer_number_before, embedded_message, super.buildUnknownFields());
     }
   }
 

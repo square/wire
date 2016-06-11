@@ -87,7 +87,7 @@ public final class C extends Message<C, C.Builder> {
 
     @Override
     public C build() {
-      return new C(i, buildUnknownFields());
+      return new C(i, super.buildUnknownFields());
     }
   }
 

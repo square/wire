@@ -1162,7 +1162,7 @@ public final class JavaGenerator {
     for (Field field : message.fieldsAndOneOfFields()) {
       result.addCode("$L, ", nameAllocator.get(field));
     }
-    result.addCode("buildUnknownFields());\n");
+    result.addCode("super.buildUnknownFields());\n");
     return result.build();
   }
 

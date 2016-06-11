@@ -94,7 +94,7 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
 
     @Override
     public CollisionSubject build() {
-      return new CollisionSubject(f, buildUnknownFields());
+      return new CollisionSubject(f, super.buildUnknownFields());
     }
   }
 

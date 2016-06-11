@@ -196,7 +196,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
 
     @Override
     public EnumValueOptions build() {
-      return new EnumValueOptions(deprecated, uninterpreted_option, enum_value_option, complex_enum_value_option, foreign_enum_value_option, buildUnknownFields());
+      return new EnumValueOptions(deprecated, uninterpreted_option, enum_value_option, complex_enum_value_option, foreign_enum_value_option, super.buildUnknownFields());
     }
   }
 

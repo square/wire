@@ -154,7 +154,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
 
     @Override
     public OneOfMessage build() {
-      return new OneOfMessage(foo, bar, baz, buildUnknownFields());
+      return new OneOfMessage(foo, bar, baz, super.buildUnknownFields());
     }
   }
 

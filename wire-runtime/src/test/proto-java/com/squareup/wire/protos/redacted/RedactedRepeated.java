@@ -122,7 +122,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
 
     @Override
     public RedactedRepeated build() {
-      return new RedactedRepeated(a, b, buildUnknownFields());
+      return new RedactedRepeated(a, b, super.buildUnknownFields());
     }
   }
 

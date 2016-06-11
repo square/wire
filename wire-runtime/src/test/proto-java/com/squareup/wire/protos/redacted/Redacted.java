@@ -157,7 +157,7 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
 
     @Override
     public Redacted build() {
-      return new Redacted(a, b, c, extension, buildUnknownFields());
+      return new Redacted(a, b, c, extension, super.buildUnknownFields());
     }
   }
 

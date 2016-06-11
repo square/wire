@@ -181,7 +181,7 @@ public final class Person extends Message<Person, Person.Builder> {
         throw Internal.missingRequiredFields(name, "name",
             id, "id");
       }
-      return new Person(name, id, email, phone, buildUnknownFields());
+      return new Person(name, id, email, phone, super.buildUnknownFields());
     }
   }
 
@@ -327,7 +327,7 @@ public final class Person extends Message<Person, Person.Builder> {
         if (number == null) {
           throw Internal.missingRequiredFields(number, "number");
         }
-        return new PhoneNumber(number, type, buildUnknownFields());
+        return new PhoneNumber(number, type, super.buildUnknownFields());
       }
     }
 
