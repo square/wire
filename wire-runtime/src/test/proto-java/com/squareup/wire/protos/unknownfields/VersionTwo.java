@@ -190,7 +190,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
 
     @Override
     public VersionTwo build() {
-      return new VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, buildUnknownFields());
+      return new VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, super.buildUnknownFields());
     }
   }
 

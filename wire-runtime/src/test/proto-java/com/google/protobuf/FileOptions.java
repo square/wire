@@ -562,7 +562,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
     @Override
     public FileOptions build() {
-      return new FileOptions(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, java_string_check_utf8, optimize_for, go_package, cc_generic_services, java_generic_services, py_generic_services, deprecated, cc_enable_arenas, objc_class_prefix, csharp_namespace, uninterpreted_option, buildUnknownFields());
+      return new FileOptions(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, java_string_check_utf8, optimize_for, go_package, cc_generic_services, java_generic_services, py_generic_services, deprecated, cc_enable_arenas, objc_class_prefix, csharp_namespace, uninterpreted_option, super.buildUnknownFields());
     }
   }
 

@@ -87,7 +87,7 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
 
     @Override
     public VersionOne build() {
-      return new VersionOne(i, buildUnknownFields());
+      return new VersionOne(i, super.buildUnknownFields());
     }
   }
 

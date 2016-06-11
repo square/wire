@@ -99,7 +99,7 @@ public final class A extends Message<A, A.Builder> {
 
     @Override
     public A build() {
-      return new A(d, buildUnknownFields());
+      return new A(d, super.buildUnknownFields());
     }
   }
 

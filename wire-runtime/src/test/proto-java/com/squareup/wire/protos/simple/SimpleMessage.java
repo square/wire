@@ -388,7 +388,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       if (required_int32 == null) {
         throw Internal.missingRequiredFields(required_int32, "required_int32");
       }
-      return new SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, package_, result, other, o, buildUnknownFields());
+      return new SimpleMessage(optional_int32, optional_nested_msg, optional_external_msg, default_nested_enum, required_int32, repeated_double, default_foreign_enum, no_default_foreign_enum, package_, result, other, o, super.buildUnknownFields());
     }
   }
 
@@ -468,7 +468,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
       @Override
       public NestedMessage build() {
-        return new NestedMessage(bb, buildUnknownFields());
+        return new NestedMessage(bb, super.buildUnknownFields());
       }
     }
 

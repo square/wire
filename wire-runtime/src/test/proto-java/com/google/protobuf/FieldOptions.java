@@ -554,7 +554,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     @Override
     public FieldOptions build() {
-      return new FieldOptions(ctype, packed, jstype, lazy, deprecated, weak, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, squareup_protos_extension_collision_1_a, b, squareup_protos_extension_collision_2_a, c, redacted, buildUnknownFields());
+      return new FieldOptions(ctype, packed, jstype, lazy, deprecated, weak, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, squareup_protos_extension_collision_1_a, b, squareup_protos_extension_collision_2_a, c, redacted, super.buildUnknownFields());
     }
   }
 

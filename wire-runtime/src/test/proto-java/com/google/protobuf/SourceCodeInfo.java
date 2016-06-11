@@ -185,7 +185,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
     @Override
     public SourceCodeInfo build() {
-      return new SourceCodeInfo(location, buildUnknownFields());
+      return new SourceCodeInfo(location, super.buildUnknownFields());
     }
   }
 
@@ -504,7 +504,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
       @Override
       public Location build() {
-        return new Location(path, span, leading_comments, trailing_comments, leading_detached_comments, buildUnknownFields());
+        return new Location(path, span, leading_comments, trailing_comments, leading_detached_comments, super.buildUnknownFields());
       }
     }
 

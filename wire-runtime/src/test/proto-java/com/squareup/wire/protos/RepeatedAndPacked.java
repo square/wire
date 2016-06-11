@@ -110,7 +110,7 @@ public final class RepeatedAndPacked extends Message<RepeatedAndPacked, Repeated
 
     @Override
     public RepeatedAndPacked build() {
-      return new RepeatedAndPacked(rep_int32, pack_int32, buildUnknownFields());
+      return new RepeatedAndPacked(rep_int32, pack_int32, super.buildUnknownFields());
     }
   }
 

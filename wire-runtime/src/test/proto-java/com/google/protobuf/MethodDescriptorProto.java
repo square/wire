@@ -208,7 +208,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
 
     @Override
     public MethodDescriptorProto build() {
-      return new MethodDescriptorProto(name, input_type, output_type, options, client_streaming, server_streaming, buildUnknownFields());
+      return new MethodDescriptorProto(name, input_type, output_type, options, client_streaming, server_streaming, super.buildUnknownFields());
     }
   }
 

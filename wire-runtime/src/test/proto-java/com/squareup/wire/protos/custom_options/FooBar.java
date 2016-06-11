@@ -315,7 +315,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     @Override
     public FooBar build() {
-      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, buildUnknownFields());
+      return new FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, super.buildUnknownFields());
     }
   }
 
@@ -389,7 +389,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       @Override
       public Nested build() {
-        return new Nested(value, buildUnknownFields());
+        return new Nested(value, super.buildUnknownFields());
       }
     }
 
@@ -515,7 +515,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       @Override
       public More build() {
-        return new More(serial, buildUnknownFields());
+        return new More(serial, super.buildUnknownFields());
       }
     }
 

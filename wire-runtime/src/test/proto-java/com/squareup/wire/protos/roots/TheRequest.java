@@ -56,7 +56,7 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
 
     @Override
     public TheRequest build() {
-      return new TheRequest(buildUnknownFields());
+      return new TheRequest(super.buildUnknownFields());
     }
   }
 

@@ -86,7 +86,7 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
 
     @Override
     public HeresAllTheDataRequest build() {
-      return new HeresAllTheDataRequest(data, buildUnknownFields());
+      return new HeresAllTheDataRequest(data, super.buildUnknownFields());
     }
   }
 

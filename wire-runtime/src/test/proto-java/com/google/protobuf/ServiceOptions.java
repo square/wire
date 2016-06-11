@@ -135,7 +135,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
 
     @Override
     public ServiceOptions build() {
-      return new ServiceOptions(deprecated, uninterpreted_option, buildUnknownFields());
+      return new ServiceOptions(deprecated, uninterpreted_option, super.buildUnknownFields());
     }
   }
 

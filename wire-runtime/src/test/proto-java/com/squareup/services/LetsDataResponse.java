@@ -86,7 +86,7 @@ public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataRe
 
     @Override
     public LetsDataResponse build() {
-      return new LetsDataResponse(data, buildUnknownFields());
+      return new LetsDataResponse(data, super.buildUnknownFields());
     }
   }
 

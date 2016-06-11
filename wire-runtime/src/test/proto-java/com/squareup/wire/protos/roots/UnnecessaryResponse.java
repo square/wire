@@ -56,7 +56,7 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
 
     @Override
     public UnnecessaryResponse build() {
-      return new UnnecessaryResponse(buildUnknownFields());
+      return new UnnecessaryResponse(super.buildUnknownFields());
     }
   }
 

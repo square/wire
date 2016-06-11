@@ -84,7 +84,7 @@ public final class J extends Message<J, J.Builder> {
 
     @Override
     public J build() {
-      return new J(k, buildUnknownFields());
+      return new J(k, super.buildUnknownFields());
     }
   }
 

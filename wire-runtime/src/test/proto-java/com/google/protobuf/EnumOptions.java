@@ -178,7 +178,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
 
     @Override
     public EnumOptions build() {
-      return new EnumOptions(allow_alias, deprecated, uninterpreted_option, enum_option, buildUnknownFields());
+      return new EnumOptions(allow_alias, deprecated, uninterpreted_option, enum_option, super.buildUnknownFields());
     }
   }
 

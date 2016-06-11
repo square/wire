@@ -227,7 +227,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
     @Override
     public UninterpretedOption build() {
-      return new UninterpretedOption(name, identifier_value, positive_int_value, negative_int_value, double_value, string_value, aggregate_value, buildUnknownFields());
+      return new UninterpretedOption(name, identifier_value, positive_int_value, negative_int_value, double_value, string_value, aggregate_value, super.buildUnknownFields());
     }
   }
 
@@ -335,7 +335,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
           throw Internal.missingRequiredFields(name_part, "name_part",
               is_extension, "is_extension");
         }
-        return new NamePart(name_part, is_extension, buildUnknownFields());
+        return new NamePart(name_part, is_extension, super.buildUnknownFields());
       }
     }
 

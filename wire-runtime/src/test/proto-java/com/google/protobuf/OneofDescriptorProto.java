@@ -89,7 +89,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
 
     @Override
     public OneofDescriptorProto build() {
-      return new OneofDescriptorProto(name, buildUnknownFields());
+      return new OneofDescriptorProto(name, super.buildUnknownFields());
     }
   }
 

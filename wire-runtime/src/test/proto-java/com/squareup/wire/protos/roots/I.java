@@ -108,7 +108,7 @@ public final class I extends Message<I, I.Builder> {
 
     @Override
     public I build() {
-      return new I(i, j, buildUnknownFields());
+      return new I(i, j, super.buildUnknownFields());
     }
   }
 

@@ -122,7 +122,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
 
     @Override
     public RedactedChild build() {
-      return new RedactedChild(a, b, c, buildUnknownFields());
+      return new RedactedChild(a, b, c, super.buildUnknownFields());
     }
   }
 

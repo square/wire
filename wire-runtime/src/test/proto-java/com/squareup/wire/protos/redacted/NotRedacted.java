@@ -106,7 +106,7 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
 
     @Override
     public NotRedacted build() {
-      return new NotRedacted(a, b, buildUnknownFields());
+      return new NotRedacted(a, b, super.buildUnknownFields());
     }
   }
 

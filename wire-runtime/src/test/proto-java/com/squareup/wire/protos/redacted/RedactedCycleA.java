@@ -84,7 +84,7 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
 
     @Override
     public RedactedCycleA build() {
-      return new RedactedCycleA(b, buildUnknownFields());
+      return new RedactedCycleA(b, super.buildUnknownFields());
     }
   }
 

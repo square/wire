@@ -129,7 +129,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
     @Override
     public ServiceDescriptorProto build() {
-      return new ServiceDescriptorProto(name, method, options, buildUnknownFields());
+      return new ServiceDescriptorProto(name, method, options, super.buildUnknownFields());
     }
   }
 
