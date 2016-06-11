@@ -42,6 +42,7 @@ import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
+import com.squareup.wire.schema.EnclosingType;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Field;
@@ -291,6 +292,23 @@ public final class JavaGenerator {
   }
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
+  public TypeSpec generateType(Type type) {
+    if (type instanceof MessageType) {
+      //noinspection deprecation: Only deprecated as a public API.
+      return generateMessage((MessageType) type);
+    }
+    if (type instanceof EnumType) {
+      //noinspection deprecation: Only deprecated as a public API.
+      return generateEnum((EnumType) type);
+    }
+    if (type instanceof EnclosingType) {
+      return generateEnclosingType((EnclosingType) type);
+    }
+    throw new IllegalStateException("Unknown type: " + type);
+  }
+
+  /** @deprecated Use {@link #generateType(Type)} */
+  @Deprecated
   public TypeSpec generateEnum(EnumType type) {
     ClassName javaType = (ClassName) typeName(type.type());
 
@@ -389,7 +407,8 @@ public final class JavaGenerator {
     return builder.build();
   }
 
-  /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
+  /** @deprecated Use {@link #generateType(Type)} */
+  @Deprecated
   public TypeSpec generateMessage(MessageType type) {
     NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
 
@@ -486,16 +505,42 @@ public final class JavaGenerator {
     builder.addType(builder(nameAllocator, type, javaType, builderJavaType));
 
     for (Type nestedType : type.nestedTypes()) {
-      TypeSpec typeSpec = nestedType instanceof MessageType
-          ? generateMessage((MessageType) nestedType)
-          : generateEnum((EnumType) nestedType);
-      builder.addType(typeSpec);
+      builder.addType(generateType(nestedType));
     }
 
     if (!emitCompact) {
       // Add the ProtoAdapter implementation at the very bottom since it's ugly serialization code.
       builder.addType(
            messageAdapter(nameAllocator, type, javaType, adapterJavaType, builderJavaType));
+    }
+
+    return builder.build();
+  }
+
+  private TypeSpec generateEnclosingType(EnclosingType type) {
+    ClassName javaType = (ClassName) typeName(type.type());
+
+    TypeSpec.Builder builder = TypeSpec.classBuilder(javaType.simpleName())
+        .addModifiers(PUBLIC, FINAL);
+    if (javaType.enclosingClassName() != null) {
+      builder.addModifiers(STATIC);
+    }
+
+    String documentation = type.documentation();
+    if (!documentation.isEmpty()) {
+      documentation += "\n\n";
+    }
+    documentation += "<b>NOTE:</b> This type only exists to maintain class structure"
+        + " for its nested types and is not an actual message.\n";
+    builder.addJavadoc(documentation);
+
+    builder.addMethod(MethodSpec.constructorBuilder()
+        .addModifiers(PRIVATE)
+        .addStatement("throw new $T()", AssertionError.class)
+        .build());
+
+    for (Type nestedType : type.nestedTypes()) {
+      builder.addType(generateType(nestedType));
     }
 
     return builder.build();

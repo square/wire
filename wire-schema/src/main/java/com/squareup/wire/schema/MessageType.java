@@ -229,10 +229,14 @@ public final class MessageType extends Type {
       }
     }
 
-    // If this type is not retained, and none of its nested types are retained, prune it.
     ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
-    if (!markSet.contains(protoType) && retainedNestedTypes.isEmpty()) {
-      return null;
+    if (!markSet.contains(protoType)) {
+      // If this type is not retained, and none of its nested types are retained, prune it.
+      if (retainedNestedTypes.isEmpty()) {
+        return null;
+      }
+      // If this type is not retained but retained nested types, replace it with an enclosing type.
+      return new EnclosingType(location, protoType, documentation, retainedNestedTypes);
     }
 
     ImmutableList.Builder<OneOf> retainedOneOfsBuilder = ImmutableList.builder();

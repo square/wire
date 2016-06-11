@@ -347,10 +347,9 @@ public class WireCompilerTest {
 
     String[] outputs = {
         "com/squareup/wire/protos/roots/E.java",
-        "com/squareup/wire/protos/roots/G.java",
         "com/squareup/wire/protos/roots/H.java"
     };
-    assertOutputs(outputs);
+    assertOutputs(outputs, ".pruned");
   }
 
   @Test public void testRootsI() throws Exception {
