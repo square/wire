@@ -55,8 +55,8 @@ public final class PrunerTest {
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("A.B")
         .build());
-    assertThat(pruned.getType("A")).isNotNull();
-    assertThat(pruned.getType("A.B")).isNotNull();
+    assertThat(pruned.getType("A")).isInstanceOf(EnclosingType.class);
+    assertThat(pruned.getType("A.B")).isInstanceOf(MessageType.class);
     assertThat(pruned.getType("A.B.C")).isNull();
     assertThat(pruned.getType("A.D")).isNull();
   }

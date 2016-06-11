@@ -19,10 +19,8 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.java.JavaGenerator;
-import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.Location;
-import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaLoader;
@@ -234,10 +232,8 @@ public final class WireCompiler {
       }
 
       for (Type type : protoFile.types()) {
+        TypeSpec typeSpec = javaGenerator.generateType(type);
         ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.type());
-        TypeSpec typeSpec = type instanceof MessageType
-            ? javaGenerator.generateMessage((MessageType) type)
-            : javaGenerator.generateEnum((EnumType) type);
         writeJavaFile(javaTypeName, typeSpec, type.location());
       }
     }

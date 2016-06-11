@@ -31,7 +31,7 @@ cp src/test/proto-java.noOptions/com/squareup/wire/protos/custom_options/Message
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.pruned \
-  --includes=squareup.protos.roots.A \
+  --includes=squareup.protos.roots.A,squareup.protos.roots.H \
   --excludes=squareup.protos.roots.B \
   roots.proto
 
@@ -39,6 +39,10 @@ cp src/test/proto-java.pruned/com/squareup/wire/protos/roots/A.java \
    src/test/proto-java/com/squareup/wire/protos/roots/A.java.pruned
 cp src/test/proto-java.pruned/com/squareup/wire/protos/roots/D.java \
    src/test/proto-java/com/squareup/wire/protos/roots/D.java.pruned
+cp src/test/proto-java.pruned/com/squareup/wire/protos/roots/E.java \
+   src/test/proto-java/com/squareup/wire/protos/roots/E.java.pruned
+cp src/test/proto-java.pruned/com/squareup/wire/protos/roots/H.java \
+   src/test/proto-java/com/squareup/wire/protos/roots/H.java.pruned
 
 # ANDROID
 

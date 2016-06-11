@@ -192,12 +192,6 @@ final class Pruner {
   private void markType(Type type) {
     markOptions(type.options());
 
-    String enclosingTypeOrPackage = type.type().enclosingTypeOrPackage();
-    Type enclosingType = schema.getType(enclosingTypeOrPackage);
-    if (enclosingType != null) {
-      mark(enclosingType.type());
-    }
-
     if (marks.containsAllMembers(type.type())) {
       if (type instanceof MessageType) {
         markMessage((MessageType) type);
