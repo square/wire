@@ -126,12 +126,12 @@ public final class JavaGenerator {
   /**
    * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
    * order, so names we're stuck with (serialVersionUID etc.) occur before proto field names are
-   * assigned. Names we aren't stuck with (typically for locals) yield to message fields.
+   * assigned.
    *
    * <p>Name allocations are computed once and reused because some types may be needed when
    * generating other types.
    */
-  private final LoadingCache<MessageType, NameAllocator> typeToNameAllocator
+  private final LoadingCache<MessageType, NameAllocator> nameAllocators
       = CacheBuilder.newBuilder().build(new CacheLoader<MessageType, NameAllocator>() {
     @Override public NameAllocator load(MessageType type) throws Exception {
       NameAllocator nameAllocator = new NameAllocator();
@@ -148,12 +148,6 @@ public final class JavaGenerator {
             : field.name();
         nameAllocator.newName(suggestion, field);
       }
-      nameAllocator.newName("unknownFields", "unknownFields");
-      nameAllocator.newName("result", "result");
-      nameAllocator.newName("message", "message");
-      nameAllocator.newName("other", "other");
-      nameAllocator.newName("o", "o");
-      nameAllocator.newName("builder", "builder");
       return nameAllocator;
     }
   });
@@ -397,7 +391,7 @@ public final class JavaGenerator {
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateMessage(MessageType type) {
-    NameAllocator nameAllocator = typeToNameAllocator.getUnchecked(type);
+    NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
 
     ClassName javaType = (ClassName) typeName(type.type());
     ClassName builderJavaType = javaType.nestedClass("Builder");
@@ -743,7 +737,7 @@ public final class JavaGenerator {
 
   private String fieldName(ProtoType type, Field field) {
     MessageType messageType = (MessageType) schema.getType(type);
-    NameAllocator names = typeToNameAllocator.getUnchecked(messageType);
+    NameAllocator names = nameAllocators.getUnchecked(messageType);
     return names.get(field);
   }
 
@@ -836,8 +830,10 @@ public final class JavaGenerator {
   //
   private MethodSpec messageFieldsAndUnknownFieldsConstructor(
       NameAllocator nameAllocator, MessageType type) {
-    String adapterName = nameAllocator.get("ADAPTER");
-    String unknownFieldsName = nameAllocator.get("unknownFields");
+    NameAllocator localNameAllocator = nameAllocator.clone();
+
+    String adapterName = localNameAllocator.get("ADAPTER");
+    String unknownFieldsName = localNameAllocator.newName("unknownFields");
     MethodSpec.Builder result = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addStatement("super($N, $N)", adapterName, unknownFieldsName);
@@ -848,7 +844,7 @@ public final class JavaGenerator {
       boolean first = true;
       for (Field field : oneOf.fields()) {
         if (!first) fieldNamesBuilder.add(", ");
-        fieldNamesBuilder.add("$N", nameAllocator.get(field));
+        fieldNamesBuilder.add("$N", localNameAllocator.get(field));
         first = false;
       }
       CodeBlock fieldNames = fieldNamesBuilder.build();
@@ -859,7 +855,7 @@ public final class JavaGenerator {
     }
     for (Field field : type.fieldsAndOneOfFields()) {
       TypeName javaType = fieldType(field);
-      String fieldName = nameAllocator.get(field);
+      String fieldName = localNameAllocator.get(field);
       ParameterSpec.Builder param = ParameterSpec.builder(javaType, fieldName);
       if (emitAndroid && field.isOptional()) {
         param.addAnnotation(NULLABLE);
@@ -889,8 +885,9 @@ public final class JavaGenerator {
   //       && equals(optional_int32, o.optional_int32);
   //
   private MethodSpec messageEquals(NameAllocator nameAllocator, MessageType type) {
-    String otherName = nameAllocator.get("other");
-    String oName = nameAllocator.get("o");
+    NameAllocator localNameAllocator = nameAllocator.clone();
+    String otherName = localNameAllocator.newName("other");
+    String oName = localNameAllocator.newName("o");
 
     TypeName javaType = typeName(type.type());
     MethodSpec.Builder result = MethodSpec.methodBuilder("equals")
@@ -911,7 +908,7 @@ public final class JavaGenerator {
     result.addStatement("$T $N = ($T) $N", javaType, oName, javaType, otherName);
     result.addCode("$[return unknownFields().equals($N.unknownFields())", oName);
     for (Field field : fields) {
-      String fieldName = nameAllocator.get(field);
+      String fieldName = localNameAllocator.get(field);
       if (field.isRequired() || field.isRepeated()) {
         result.addCode("\n&& $1L.equals($2N.$1L)", fieldName, oName);
       } else {
@@ -940,7 +937,9 @@ public final class JavaGenerator {
   // in order to be the same as the system hash code for an empty list.
   //
   private MethodSpec messageHashCode(NameAllocator nameAllocator, MessageType type) {
-    String resultName = nameAllocator.get("result");
+    NameAllocator localNameAllocator = nameAllocator.clone();
+
+    String resultName = localNameAllocator.newName("result");
     MethodSpec.Builder result = MethodSpec.methodBuilder("hashCode")
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
@@ -956,7 +955,7 @@ public final class JavaGenerator {
     result.beginControlFlow("if ($N == 0)", resultName);
     result.addStatement("$N = unknownFields().hashCode()", resultName);
     for (Field field : fields) {
-      String fieldName = nameAllocator.get(field);
+      String fieldName = localNameAllocator.get(field);
       result.addCode("$1N = $1N * 37 + ", resultName);
       if (field.isRepeated() || field.isRequired()) {
         result.addStatement("$L.hashCode()", fieldName);
@@ -971,12 +970,14 @@ public final class JavaGenerator {
   }
 
   private MethodSpec messageToString(NameAllocator nameAllocator, MessageType type) {
-    String builderName = nameAllocator.get("builder");
+    NameAllocator localNameAllocator = nameAllocator.clone();
+
     MethodSpec.Builder result = MethodSpec.methodBuilder("toString")
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .returns(String.class);
 
+    String builderName = localNameAllocator.newName("builder");
     result.addStatement("$1T $2N = new $1T()", StringBuilder.class, builderName);
 
     for (Field field : type.fieldsAndOneOfFields()) {
@@ -1056,7 +1057,9 @@ public final class JavaGenerator {
   //   return builder;
   // }
   private MethodSpec newBuilder(NameAllocator nameAllocator, MessageType message) {
-    String builderName = nameAllocator.get("builder");
+    NameAllocator localNameAllocator = nameAllocator.clone();
+
+    String builderName = localNameAllocator.newName("builder");
     ClassName javaType = (ClassName) typeName(message.type());
     ClassName builderJavaType = javaType.nestedClass("Builder");
 
@@ -1068,7 +1071,7 @@ public final class JavaGenerator {
 
     List<Field> fields = message.fieldsAndOneOfFields();
     for (Field field : fields) {
-      String fieldName = nameAllocator.get(field);
+      String fieldName = localNameAllocator.get(field);
       if (field.isRepeated()) {
         result.addStatement("$1L.$2L = $3T.copyOf($2S, $2L)", builderName, fieldName,
             Internal.class);
