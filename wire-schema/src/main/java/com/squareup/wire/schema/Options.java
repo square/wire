@@ -87,10 +87,6 @@ public final class Options {
     return false;
   }
 
-  ImmutableList<OptionElement> toElements() {
-    return optionElements;
-  }
-
   void link(Linker linker) {
     ImmutableMap<ProtoMember, Object> map = ImmutableMap.of();
     for (OptionElement option : optionElements) {

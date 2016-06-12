@@ -284,17 +284,4 @@ public final class MessageType extends Type {
         messageElement.name(), declaredFields, extensionFields, oneOfs, nestedTypes.build(),
         extensionsList, reserveds, options);
   }
-
-  MessageElement toElement() {
-    return MessageElement.builder(location)
-        .documentation(documentation)
-        .name(name)
-        .options(options.toElements())
-        .fields(Field.toElements(declaredFields))
-        .nestedTypes(Type.toElements(nestedTypes))
-        .oneOfs(OneOf.toElements(oneOfs))
-        .extensions(Extensions.toElements(extensionsList))
-        .reserveds(Reserved.toElements(reserveds))
-        .build();
-  }
 }

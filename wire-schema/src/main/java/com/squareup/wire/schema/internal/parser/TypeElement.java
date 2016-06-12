@@ -25,5 +25,4 @@ public interface TypeElement {
   String documentation();
   ImmutableList<OptionElement> options();
   ImmutableList<TypeElement> nestedTypes();
-  String toSchema();
 }

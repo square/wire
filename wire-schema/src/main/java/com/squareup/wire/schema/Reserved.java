@@ -70,13 +70,4 @@ final class Reserved {
     }
     return builder.build();
   }
-
-  static ImmutableList<ReservedElement> toElements(ImmutableList<Reserved> reserveds) {
-    ImmutableList.Builder<ReservedElement> builder = ImmutableList.builder();
-    for (Reserved reserved : reserveds) {
-      builder.add(
-          ReservedElement.create(reserved.location(), reserved.documentation(), reserved.values()));
-    }
-    return builder.build();
-  }
 }

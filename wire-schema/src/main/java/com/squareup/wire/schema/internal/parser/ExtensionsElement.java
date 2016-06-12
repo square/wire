@@ -16,15 +16,11 @@
 package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
-import com.squareup.wire.schema.internal.Util;
 import com.squareup.wire.schema.Location;
-
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
 
 @AutoValue
 public abstract class ExtensionsElement {
-  public static ExtensionsElement create(
-      Location location, int start, int end, String documentation) {
+  static ExtensionsElement create(Location location, int start, int end, String documentation) {
     return new AutoValue_ExtensionsElement(location, documentation, start, end);
   }
 
@@ -32,20 +28,4 @@ public abstract class ExtensionsElement {
   public abstract String documentation();
   public abstract int start();
   public abstract int end();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("extensions ")
-        .append(start());
-    if (start() != end()) {
-      builder.append(" to ");
-      if (end() < Util.MAX_TAG_VALUE) {
-        builder.append(end());
-      } else {
-        builder.append("max");
-      }
-    }
-    return builder.append(";\n").toString();
-  }
 }

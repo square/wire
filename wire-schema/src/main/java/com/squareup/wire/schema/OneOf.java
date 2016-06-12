@@ -71,16 +71,4 @@ public final class OneOf {
     }
     return oneOfs.build();
   }
-
-  static ImmutableList<OneOfElement> toElements(ImmutableList<OneOf> oneOfs) {
-    ImmutableList.Builder<OneOfElement> elements = new ImmutableList.Builder<>();
-    for (OneOf oneOf : oneOfs) {
-      elements.add(OneOfElement.builder()
-          .documentation(oneOf.documentation)
-          .name(oneOf.name)
-          .fields(Field.toElements(oneOf.fields))
-          .build());
-    }
-    return elements.build();
-  }
 }
