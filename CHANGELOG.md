@@ -1,6 +1,22 @@
 Change Log
 ==========
 
+Version 2.2.0 *(2016-06-17)*
+----------------------------
+
+ * New: Support for `map` type in the schema, compiler, and runtime!
+ * New: `AndroidMessage` base class consolidates everything required for supporting Android and will
+   now be used for generating code with `--android`.
+ * New: `stream` keyword in RPC definitions is now parsed and exposed in the schema.
+ * Fix: Nested types which are retained no longer cause their enclosing type to be retained. Instead,
+   non-instantiable empty types will be generated for pruned enclosing types.
+ * Fix: Remove per-type `Parcelable.Creator` classes and instead use a single type which delegates
+   to the message's `ProtoAdapter`.
+ * Fix: Retain information on redacted fields even when options were pruned.
+ * Fix: Do not generate code for handling `null` from list types (and now map types) which are
+   guaranteed to never be `null`.
+
+
 Version 2.1.2 *(2016-04-15)*
 ----------------------------
 
