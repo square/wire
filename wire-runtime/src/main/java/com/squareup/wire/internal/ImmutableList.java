@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.RandomAccess;
 
 final class ImmutableList<T> extends AbstractList<T> implements RandomAccess, Serializable {
-  final List<T> list;
+  private final ArrayList<T> list;
 
   ImmutableList(List<T> list) {
     this.list = new ArrayList<>(list);
@@ -36,6 +36,10 @@ final class ImmutableList<T> extends AbstractList<T> implements RandomAccess, Se
 
   @Override public T get(int i) {
     return list.get(i);
+  }
+
+  @Override public Object[] toArray() {
+    return list.toArray(); // Optimizing for mutable copy by MutableOnWriteList.
   }
 
   private Object writeReplace() throws ObjectStreamException {
