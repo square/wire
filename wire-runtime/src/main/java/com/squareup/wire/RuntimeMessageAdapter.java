@@ -167,7 +167,10 @@ final class RuntimeMessageAdapter<M extends Message<M, B>, B extends Builder<M, 
       FieldBinding<M, B> fieldBinding = fieldBindings.get(tag);
       try {
         if (fieldBinding != null) {
-          Object value = fieldBinding.singleAdapter().decode(reader);
+          ProtoAdapter<?> adapter = fieldBinding.isMap()
+              ? fieldBinding.adapter()
+              : fieldBinding.singleAdapter();
+          Object value = adapter.decode(reader);
           fieldBinding.value(builder, value);
         } else {
           FieldEncoding fieldEncoding = reader.peekFieldEncoding();

@@ -16,14 +16,15 @@
 package com.squareup.wire;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -110,51 +111,63 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
       return null;
     }
 
+    TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
     B builder = messageAdapter.newBuilder();
-    in.beginObject();
 
-    while (in.peek() == JsonToken.NAME) {
+    in.beginObject();
+    while (in.peek() != JsonToken.END_OBJECT) {
       String name = in.nextName();
 
       FieldBinding<M, B> fieldBinding = fieldBindings.get(name);
-      if (fieldBinding != null) {
-        Object value = parseValue(fieldBinding.label, singleType(fieldBinding), parse(in));
+      if (fieldBinding == null) {
+        in.skipValue();
+      } else {
+        JsonElement element = elementAdapter.read(in);
+        Object value = parseValue(fieldBinding, element);
         fieldBinding.set(builder, value);
-        continue;
       }
-
-      in.skipValue();
     }
 
     in.endObject();
     return builder.build();
   }
 
-  private JsonElement parse(JsonReader in) {
-    return gson.fromJson(in, JsonElement.class);
-  }
-
-  private Object parseValue(Label label, Type valueType, JsonElement valueElement) {
-    if (label.isRepeated()) {
-      if (valueElement.isJsonNull()) {
+  private Object parseValue(FieldBinding<?, ?> fieldBinding, JsonElement element) {
+    if (fieldBinding.label.isRepeated()) {
+      if (element.isJsonNull()) {
         return Collections.emptyList();
       }
 
-      List<Object> valueList = new ArrayList<>();
-      for (JsonElement element : valueElement.getAsJsonArray()) {
-        valueList.add(readJson(valueType, element));
+      Class<?> itemType = fieldBinding.singleAdapter().javaType;
+
+      JsonArray array = element.getAsJsonArray();
+      List<Object> result = new ArrayList<>(array.size());
+      for (JsonElement item : array) {
+        result.add(gson.fromJson(item, itemType));
       }
-      return valueList;
-    } else {
-      return readJson(valueType, valueElement);
+      return result;
     }
-  }
 
-  private Object readJson(Type valueType, JsonElement element) {
-    return gson.fromJson(element, valueType);
-  }
+    if (fieldBinding.isMap()) {
+      if (element.isJsonNull()) {
+        return Collections.emptyMap();
+      }
 
-  private Type singleType(FieldBinding<M, B> tagBinding) {
-    return tagBinding.singleAdapter().javaType;
+      Class<?> keyType = fieldBinding.keyAdapter().javaType;
+      Class<?> valueType = fieldBinding.singleAdapter().javaType;
+
+      JsonObject object = element.getAsJsonObject();
+      // TODO Pre-size this collection when https://github.com/google/gson/pull/872 is released.
+      Map<Object, Object> result = new LinkedHashMap<>();
+      for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+        Object key = gson.fromJson(entry.getKey(), keyType);
+        Object value = gson.fromJson(entry.getValue(), valueType);
+        result.put(key, value);
+      }
+      return result;
+    }
+
+    Class<?> elementType = fieldBinding.singleAdapter().javaType;
+    return gson.fromJson(element, elementType);
   }
 }

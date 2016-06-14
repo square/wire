@@ -66,7 +66,7 @@ final class Linker {
       }
     }
 
-    // Link proto files and services.
+    // Link proto types and services.
     for (ProtoFile protoFile : protoFiles) {
       Linker linker = withContext(protoFile);
       for (Type type : protoFile.types()) {

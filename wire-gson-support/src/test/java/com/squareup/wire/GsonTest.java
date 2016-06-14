@@ -17,13 +17,14 @@ package com.squareup.wire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.wire.protos.RepeatedAndPacked;
+import com.squareup.wire.protos.RepeatedPackedAndMap;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import java.util.Arrays;
 import java.util.List;
 import okio.ByteString;
 import org.junit.Test;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
@@ -92,6 +93,10 @@ public class GsonTest {
       + "\"pack_float\":[122.0,122.0],"
       + "\"pack_double\":[123.0,123.0],"
       + "\"pack_nested_enum\":[\"A\",\"A\"],"
+      + "\"map_int32_int32\":{\"1\":2},"
+      + "\"map_string_string\":{\"key\":\"value\"},"
+      + "\"map_string_message\":{\"message\":{\"a\":1}},"
+      + "\"map_string_enum\":{\"enum\":\"A\"},"
       + "\"ext_opt_int32\":2147483647,"
       + "\"ext_opt_int64\":-4611686018427387726,"
       + "\"ext_opt_uint64\":13835058055282163890,"
@@ -131,7 +136,11 @@ public class GsonTest {
       + "\"ext_pack_bool\":[true,true],"
       + "\"ext_pack_float\":[1234500.0,1234500.0],"
       + "\"ext_pack_double\":[1.2345E67,1.2345E67],"
-      + "\"ext_pack_nested_enum\":[\"A\",\"A\"]}";
+      + "\"ext_pack_nested_enum\":[\"A\",\"A\"],"
+      + "\"ext_map_int32_int32\":{\"1\":2},"
+      + "\"ext_map_string_string\":{\"key\":\"value\"},"
+      + "\"ext_map_string_message\":{\"message\":{\"a\":1}},"
+      + "\"ext_map_string_enum\":{\"enum\":\"A\"}}";
 
   // Return a two-element list with a given repeated value
   @SuppressWarnings("unchecked")
@@ -208,6 +217,10 @@ public class GsonTest {
         .pack_float(list(122.0F))
         .pack_double(list(123.0))
         .pack_nested_enum(list(AllTypes.NestedEnum.A))
+        .map_int32_int32(singletonMap(1, 2))
+        .map_string_string(singletonMap("key", "value"))
+        .map_string_message(singletonMap("message", new AllTypes.NestedMessage(1)))
+        .map_string_enum(singletonMap("enum", AllTypes.NestedEnum.A))
         .ext_opt_int32(Integer.MAX_VALUE)
         .ext_opt_int64(Long.MIN_VALUE / 2 + 178)
         .ext_opt_uint64(Long.MIN_VALUE / 2 + 178)
@@ -231,34 +244,33 @@ public class GsonTest {
         .ext_pack_bool(list(true))
         .ext_pack_float(list(1.2345e6F))
         .ext_pack_double(list(1.2345e67))
-        .ext_pack_nested_enum(list(AllTypes.NestedEnum.A));
-
+        .ext_pack_nested_enum(list(AllTypes.NestedEnum.A))
+        .ext_map_int32_int32(singletonMap(1, 2))
+        .ext_map_string_string(singletonMap("key", "value"))
+        .ext_map_string_message(singletonMap("message", new AllTypes.NestedMessage(1)))
+        .ext_map_string_enum(singletonMap("enum", AllTypes.NestedEnum.A));
   }
 
-  private Gson createGson() {
-    return new GsonBuilder()
-        .registerTypeAdapterFactory(new WireTypeAdapterFactory())
-        .disableHtmlEscaping()
-        .create();
-  }
+  private final Gson gson = new GsonBuilder()
+      .registerTypeAdapterFactory(new WireTypeAdapterFactory())
+      .disableHtmlEscaping()
+      .create();
 
-  @Test
-  public void testGson() {
-    Gson gson = createGson();
-
+  @Test public void serializationOfAllTypes() {
     AllTypes allTypes = createBuilder().build();
     String json = gson.toJson(allTypes);
     assertThat(json).isEqualTo(JSON);
+  }
 
-    AllTypes parsed = gson.fromJson(json, AllTypes.class);
+  @Test public void deserializationOfAllTypes() {
+    AllTypes allTypes = createBuilder().build();
+    AllTypes parsed = gson.fromJson(JSON, AllTypes.class);
     assertThat(parsed).isEqualTo(allTypes);
     assertThat(parsed.toString()).isEqualTo(allTypes.toString());
     assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
   }
 
-  @Test public void testGsonOmitsUnknownFields() {
-    Gson gson = createGson();
-
+  @Test public void omitsUnknownFields() {
     AllTypes.Builder builder = createBuilder();
     builder.addUnknownField(9000, FieldEncoding.FIXED32, 9000);
     builder.addUnknownField(9001, FieldEncoding.FIXED64, 9001L);
@@ -271,10 +283,12 @@ public class GsonTest {
     assertThat(json).isEqualTo(JSON);
   }
 
-  @Test public void testNullRepeatedField() {
-    Gson gson = createGson();
-    RepeatedAndPacked parsed = gson.fromJson("{rep_int32=null,pack_int32=null}", RepeatedAndPacked.class);
+  @Test public void nullRepeatedField() {
+    RepeatedPackedAndMap parsed =
+        gson.fromJson("{rep_int32=null,pack_int32=null,map_int32_int32=null}",
+            RepeatedPackedAndMap.class);
     assertThat(parsed.rep_int32).isEmpty();
     assertThat(parsed.pack_int32).isEmpty();
+    assertThat(parsed.map_int32_int32).isEmpty();
   }
 }

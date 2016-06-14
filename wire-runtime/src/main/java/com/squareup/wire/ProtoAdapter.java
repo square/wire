@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -64,6 +65,18 @@ public abstract class ProtoAdapter<E> {
   /** Creates a new proto adapter for {@code type}. */
   public static <E extends WireEnum> RuntimeEnumAdapter<E> newEnumAdapter(Class<E> type) {
     return new RuntimeEnumAdapter<>(type);
+  }
+
+  /**
+   * Creates a new proto adapter for a map using {@code keyAdapter} and {@code valueAdapter}.
+   * <p>
+   * Note: Map entries are not required to be encoded sequentially. Thus, when decoding using
+   * the returned adapter, only single-element maps will be returned and it is the caller's
+   * responsibility to merge them into the final map.
+   */
+  public static <K, V> ProtoAdapter<Map<K, V>> newMapAdapter(ProtoAdapter<K> keyAdapter,
+      ProtoAdapter<V> valueAdapter) {
+    return new MapProtoAdapter<>(keyAdapter, valueAdapter);
   }
 
   /** Returns the adapter for the type of {@code Message}. */
@@ -394,7 +407,13 @@ public abstract class ProtoAdapter<E> {
     return adapter != null ? adapter : (packedAdapter = createPacked());
   }
 
-  /** Returns an adapter for {@code E} but as a repeated value. */
+  /**
+   * Returns an adapter for {@code E} but as a repeated value.
+   * <p>
+   * Note: Repeated items are not required to be encoded sequentially. Thus, when decoding using
+   * the returned adapter, only single-element lists will be returned and it is the caller's
+   * responsibility to merge them into the final list.
+   */
   public final ProtoAdapter<List<E>> asRepeated() {
     ProtoAdapter<List<E>> adapter = repeatedAdapter;
     return adapter != null ? adapter : (repeatedAdapter = createRepeated());
@@ -483,6 +502,86 @@ public abstract class ProtoAdapter<E> {
     EnumConstantNotFoundException(int value, Class<?> type) {
       super("Unknown enum tag " + value + " for " + type.getCanonicalName());
       this.value = value;
+    }
+  }
+
+  private static final class MapProtoAdapter<K, V> extends ProtoAdapter<Map<K, V>> {
+    private final MapEntryProtoAdapter<K, V> entryAdapter;
+
+    MapProtoAdapter(ProtoAdapter<K> keyAdapter, ProtoAdapter<V> valueAdapter) {
+      super(FieldEncoding.LENGTH_DELIMITED, null);
+      entryAdapter = new MapEntryProtoAdapter<>(keyAdapter, valueAdapter);
+    }
+
+    @Override public int encodedSize(Map<K, V> value) {
+      throw new UnsupportedOperationException("Repeated values can only be sized with a tag.");
+    }
+
+    @Override public int encodedSizeWithTag(int tag, Map<K, V> value) {
+      int size = 0;
+      for (Map.Entry<K, V> entry : value.entrySet()) {
+        size += entryAdapter.encodedSizeWithTag(tag, entry);
+      }
+      return size;
+    }
+
+    @Override public void encode(ProtoWriter writer, Map<K, V> value) {
+      throw new UnsupportedOperationException("Repeated values can only be encoded with a tag.");
+    }
+
+    @Override public void encodeWithTag(ProtoWriter writer, int tag, Map<K, V> value)
+        throws IOException {
+      for (Map.Entry<K, V> entry : value.entrySet()) {
+        entryAdapter.encodeWithTag(writer, tag, entry);
+      }
+    }
+
+    @Override public Map<K, V> decode(ProtoReader reader) throws IOException {
+      K key = null;
+      V value = null;
+
+      long token = reader.beginMessage();
+      for (int tag; (tag = reader.nextTag()) != -1;) {
+        switch (tag) {
+          case 1: key = entryAdapter.keyAdapter.decode(reader); break;
+          case 2: value = entryAdapter.valueAdapter.decode(reader); break;
+          default: // Ignore unknown tags in map entries.
+        }
+      }
+      reader.endMessage(token);
+
+      if (key == null) throw new IllegalStateException("Map entry with null key");
+      if (value == null) throw new IllegalStateException("Map entry with null value");
+      return Collections.singletonMap(key, value);
+    }
+
+    @Override public Map<K, V> redact(Map<K, V> value) {
+      return Collections.emptyMap();
+    }
+  }
+
+  private static final class MapEntryProtoAdapter<K, V> extends ProtoAdapter<Map.Entry<K, V>> {
+    final ProtoAdapter<K> keyAdapter;
+    final ProtoAdapter<V> valueAdapter;
+
+    MapEntryProtoAdapter(ProtoAdapter<K> keyAdapter, ProtoAdapter<V> valueAdapter) {
+      super(FieldEncoding.LENGTH_DELIMITED, null);
+      this.keyAdapter = keyAdapter;
+      this.valueAdapter = valueAdapter;
+    }
+
+    @Override public int encodedSize(Map.Entry<K, V> value) {
+      return keyAdapter.encodedSizeWithTag(1, value.getKey())
+          + valueAdapter.encodedSizeWithTag(2, value.getValue());
+    }
+
+    @Override public void encode(ProtoWriter writer, Map.Entry<K, V> value) throws IOException {
+      keyAdapter.encodeWithTag(writer, 1, value.getKey());
+      valueAdapter.encodeWithTag(writer, 2, value.getValue());
+    }
+
+    @Override public Map.Entry<K, V> decode(ProtoReader reader) {
+      throw new UnsupportedOperationException();
     }
   }
 }

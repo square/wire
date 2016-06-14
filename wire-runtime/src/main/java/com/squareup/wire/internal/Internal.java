@@ -18,7 +18,9 @@ package com.squareup.wire.internal;
 import com.squareup.wire.ProtoAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Methods for generated code use only. Not subject to public API rules. */
 public final class Internal {
@@ -29,12 +31,21 @@ public final class Internal {
     return new MutableOnWriteList<>(Collections.<T>emptyList());
   }
 
+  public static <K, V> Map<K, V> newMutableMap() {
+    return new LinkedHashMap<>();
+  }
+
   public static <T> List<T> copyOf(String name, List<T> list) {
     if (list == null) throw new NullPointerException(name + " == null");
     if (list == Collections.emptyList() || list instanceof ImmutableList) {
       return new MutableOnWriteList<>(list);
     }
     return new ArrayList<>(list);
+  }
+
+  public static <K, V> Map<K, V> copyOf(String name, Map<K, V> map) {
+    if (map == null) throw new NullPointerException(name + " == null");
+    return new LinkedHashMap<>(map);
   }
 
   public static <T> List<T> immutableCopyOf(String name, List<T> list) {
@@ -53,9 +64,31 @@ public final class Internal {
     return result;
   }
 
+  public static <K, V> Map<K, V> immutableCopyOf(String name, Map<K, V> map) {
+    if (map == null) throw new NullPointerException(name + " == null");
+    if (map.isEmpty()) {
+      return Collections.emptyMap();
+    }
+    Map<K, V> result = new LinkedHashMap<>(map);
+    // Check after the map has been copied to defend against races.
+    if (result.containsKey(null)) {
+      throw new IllegalArgumentException(name + ".containsKey(null)");
+    }
+    if (result.containsValue(null)) {
+      throw new IllegalArgumentException(name + ".containsValue(null)");
+    }
+    return Collections.unmodifiableMap(result);
+  }
+
   public static <T> void redactElements(List<T> list, ProtoAdapter<T> adapter) {
     for (int i = 0, count = list.size(); i < count; i++) {
       list.set(i, adapter.redact(list.get(i)));
+    }
+  }
+
+  public static <T> void redactElements(Map<?, T> map, ProtoAdapter<T> adapter) {
+    for (Map.Entry<?, T> entry : map.entrySet()) {
+      entry.setValue(adapter.redact(entry.getValue()));
     }
   }
 
@@ -90,6 +123,19 @@ public final class Internal {
       Object element = list.get(i);
       if (element == null) {
         throw new NullPointerException("Element at index " + i + " is null");
+      }
+    }
+  }
+
+  /** Throw {@link NullPointerException} if {@code map} or one of its keys or values are null. */
+  public static void checkElementsNotNull(Map<?, ?> map) {
+    if (map == null) throw new NullPointerException("map == null");
+    for (Map.Entry<?, ?> entry : map.entrySet()) {
+      if (entry.getKey() == null) {
+        throw new NullPointerException("map.containsKey(null)");
+      }
+      if (entry.getValue() == null) {
+        throw new NullPointerException("Value for key " + entry.getKey() + " is null");
       }
     }
   }

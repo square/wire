@@ -21,6 +21,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
+import java.util.Map;
 import okio.ByteString;
 
 public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
@@ -691,8 +692,36 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   )
   public final NestedEnum default_nested_enum;
 
+  @WireField(
+      tag = 501,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Map<Integer, Integer> map_int32_int32;
+
+  @WireField(
+      tag = 502,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final Map<String, String> map_string_string;
+
+  @WireField(
+      tag = 503,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER"
+  )
+  public final Map<String, NestedMessage> map_string_message;
+
+  @WireField(
+      tag = 504,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER"
+  )
+  public final Map<String, NestedEnum> map_string_enum;
+
   /**
-   * Extension source: all_types.proto at 123:3
+   * Extension source: all_types.proto at 128:3
    */
   @WireField(
       tag = 1001,
@@ -701,7 +730,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Integer ext_opt_int32;
 
   /**
-   * Extension source: all_types.proto at 124:3
+   * Extension source: all_types.proto at 129:3
    */
   @WireField(
       tag = 1002,
@@ -710,7 +739,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Integer ext_opt_uint32;
 
   /**
-   * Extension source: all_types.proto at 125:3
+   * Extension source: all_types.proto at 130:3
    */
   @WireField(
       tag = 1003,
@@ -719,7 +748,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Integer ext_opt_sint32;
 
   /**
-   * Extension source: all_types.proto at 126:3
+   * Extension source: all_types.proto at 131:3
    */
   @WireField(
       tag = 1004,
@@ -728,7 +757,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Integer ext_opt_fixed32;
 
   /**
-   * Extension source: all_types.proto at 127:3
+   * Extension source: all_types.proto at 132:3
    */
   @WireField(
       tag = 1005,
@@ -737,7 +766,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Integer ext_opt_sfixed32;
 
   /**
-   * Extension source: all_types.proto at 128:3
+   * Extension source: all_types.proto at 133:3
    */
   @WireField(
       tag = 1006,
@@ -746,7 +775,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Long ext_opt_int64;
 
   /**
-   * Extension source: all_types.proto at 129:3
+   * Extension source: all_types.proto at 134:3
    */
   @WireField(
       tag = 1007,
@@ -755,7 +784,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Long ext_opt_uint64;
 
   /**
-   * Extension source: all_types.proto at 130:3
+   * Extension source: all_types.proto at 135:3
    */
   @WireField(
       tag = 1008,
@@ -764,7 +793,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Long ext_opt_sint64;
 
   /**
-   * Extension source: all_types.proto at 131:3
+   * Extension source: all_types.proto at 136:3
    */
   @WireField(
       tag = 1009,
@@ -773,7 +802,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Long ext_opt_fixed64;
 
   /**
-   * Extension source: all_types.proto at 132:3
+   * Extension source: all_types.proto at 137:3
    */
   @WireField(
       tag = 1010,
@@ -782,7 +811,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Long ext_opt_sfixed64;
 
   /**
-   * Extension source: all_types.proto at 133:3
+   * Extension source: all_types.proto at 138:3
    */
   @WireField(
       tag = 1011,
@@ -791,7 +820,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Boolean ext_opt_bool;
 
   /**
-   * Extension source: all_types.proto at 134:3
+   * Extension source: all_types.proto at 139:3
    */
   @WireField(
       tag = 1012,
@@ -800,7 +829,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Float ext_opt_float;
 
   /**
-   * Extension source: all_types.proto at 135:3
+   * Extension source: all_types.proto at 140:3
    */
   @WireField(
       tag = 1013,
@@ -809,7 +838,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final Double ext_opt_double;
 
   /**
-   * Extension source: all_types.proto at 136:3
+   * Extension source: all_types.proto at 141:3
    */
   @WireField(
       tag = 1014,
@@ -818,7 +847,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final String ext_opt_string;
 
   /**
-   * Extension source: all_types.proto at 137:3
+   * Extension source: all_types.proto at 142:3
    */
   @WireField(
       tag = 1015,
@@ -827,7 +856,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final ByteString ext_opt_bytes;
 
   /**
-   * Extension source: all_types.proto at 138:3
+   * Extension source: all_types.proto at 143:3
    */
   @WireField(
       tag = 1016,
@@ -836,7 +865,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final NestedEnum ext_opt_nested_enum;
 
   /**
-   * Extension source: all_types.proto at 139:3
+   * Extension source: all_types.proto at 144:3
    */
   @WireField(
       tag = 1017,
@@ -845,7 +874,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final NestedMessage ext_opt_nested_message;
 
   /**
-   * Extension source: all_types.proto at 141:3
+   * Extension source: all_types.proto at 146:3
    */
   @WireField(
       tag = 1101,
@@ -855,7 +884,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_rep_int32;
 
   /**
-   * Extension source: all_types.proto at 142:3
+   * Extension source: all_types.proto at 147:3
    */
   @WireField(
       tag = 1102,
@@ -865,7 +894,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_rep_uint32;
 
   /**
-   * Extension source: all_types.proto at 143:3
+   * Extension source: all_types.proto at 148:3
    */
   @WireField(
       tag = 1103,
@@ -875,7 +904,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_rep_sint32;
 
   /**
-   * Extension source: all_types.proto at 144:3
+   * Extension source: all_types.proto at 149:3
    */
   @WireField(
       tag = 1104,
@@ -885,7 +914,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_rep_fixed32;
 
   /**
-   * Extension source: all_types.proto at 145:3
+   * Extension source: all_types.proto at 150:3
    */
   @WireField(
       tag = 1105,
@@ -895,7 +924,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_rep_sfixed32;
 
   /**
-   * Extension source: all_types.proto at 146:3
+   * Extension source: all_types.proto at 151:3
    */
   @WireField(
       tag = 1106,
@@ -905,7 +934,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_rep_int64;
 
   /**
-   * Extension source: all_types.proto at 147:3
+   * Extension source: all_types.proto at 152:3
    */
   @WireField(
       tag = 1107,
@@ -915,7 +944,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_rep_uint64;
 
   /**
-   * Extension source: all_types.proto at 148:3
+   * Extension source: all_types.proto at 153:3
    */
   @WireField(
       tag = 1108,
@@ -925,7 +954,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_rep_sint64;
 
   /**
-   * Extension source: all_types.proto at 149:3
+   * Extension source: all_types.proto at 154:3
    */
   @WireField(
       tag = 1109,
@@ -935,7 +964,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_rep_fixed64;
 
   /**
-   * Extension source: all_types.proto at 150:3
+   * Extension source: all_types.proto at 155:3
    */
   @WireField(
       tag = 1110,
@@ -945,7 +974,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_rep_sfixed64;
 
   /**
-   * Extension source: all_types.proto at 151:3
+   * Extension source: all_types.proto at 156:3
    */
   @WireField(
       tag = 1111,
@@ -955,7 +984,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Boolean> ext_rep_bool;
 
   /**
-   * Extension source: all_types.proto at 152:3
+   * Extension source: all_types.proto at 157:3
    */
   @WireField(
       tag = 1112,
@@ -965,7 +994,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Float> ext_rep_float;
 
   /**
-   * Extension source: all_types.proto at 153:3
+   * Extension source: all_types.proto at 158:3
    */
   @WireField(
       tag = 1113,
@@ -975,7 +1004,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Double> ext_rep_double;
 
   /**
-   * Extension source: all_types.proto at 154:3
+   * Extension source: all_types.proto at 159:3
    */
   @WireField(
       tag = 1114,
@@ -985,7 +1014,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<String> ext_rep_string;
 
   /**
-   * Extension source: all_types.proto at 155:3
+   * Extension source: all_types.proto at 160:3
    */
   @WireField(
       tag = 1115,
@@ -995,7 +1024,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<ByteString> ext_rep_bytes;
 
   /**
-   * Extension source: all_types.proto at 156:3
+   * Extension source: all_types.proto at 161:3
    */
   @WireField(
       tag = 1116,
@@ -1005,7 +1034,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<NestedEnum> ext_rep_nested_enum;
 
   /**
-   * Extension source: all_types.proto at 157:3
+   * Extension source: all_types.proto at 162:3
    */
   @WireField(
       tag = 1117,
@@ -1015,7 +1044,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<NestedMessage> ext_rep_nested_message;
 
   /**
-   * Extension source: all_types.proto at 159:3
+   * Extension source: all_types.proto at 164:3
    */
   @WireField(
       tag = 1201,
@@ -1025,7 +1054,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_pack_int32;
 
   /**
-   * Extension source: all_types.proto at 160:3
+   * Extension source: all_types.proto at 165:3
    */
   @WireField(
       tag = 1202,
@@ -1035,7 +1064,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_pack_uint32;
 
   /**
-   * Extension source: all_types.proto at 161:3
+   * Extension source: all_types.proto at 166:3
    */
   @WireField(
       tag = 1203,
@@ -1045,7 +1074,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_pack_sint32;
 
   /**
-   * Extension source: all_types.proto at 162:3
+   * Extension source: all_types.proto at 167:3
    */
   @WireField(
       tag = 1204,
@@ -1055,7 +1084,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_pack_fixed32;
 
   /**
-   * Extension source: all_types.proto at 163:3
+   * Extension source: all_types.proto at 168:3
    */
   @WireField(
       tag = 1205,
@@ -1065,7 +1094,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Integer> ext_pack_sfixed32;
 
   /**
-   * Extension source: all_types.proto at 164:3
+   * Extension source: all_types.proto at 169:3
    */
   @WireField(
       tag = 1206,
@@ -1075,7 +1104,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_pack_int64;
 
   /**
-   * Extension source: all_types.proto at 165:3
+   * Extension source: all_types.proto at 170:3
    */
   @WireField(
       tag = 1207,
@@ -1085,7 +1114,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_pack_uint64;
 
   /**
-   * Extension source: all_types.proto at 166:3
+   * Extension source: all_types.proto at 171:3
    */
   @WireField(
       tag = 1208,
@@ -1095,7 +1124,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_pack_sint64;
 
   /**
-   * Extension source: all_types.proto at 167:3
+   * Extension source: all_types.proto at 172:3
    */
   @WireField(
       tag = 1209,
@@ -1105,7 +1134,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_pack_fixed64;
 
   /**
-   * Extension source: all_types.proto at 168:3
+   * Extension source: all_types.proto at 173:3
    */
   @WireField(
       tag = 1210,
@@ -1115,7 +1144,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Long> ext_pack_sfixed64;
 
   /**
-   * Extension source: all_types.proto at 169:3
+   * Extension source: all_types.proto at 174:3
    */
   @WireField(
       tag = 1211,
@@ -1125,7 +1154,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Boolean> ext_pack_bool;
 
   /**
-   * Extension source: all_types.proto at 170:3
+   * Extension source: all_types.proto at 175:3
    */
   @WireField(
       tag = 1212,
@@ -1135,7 +1164,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Float> ext_pack_float;
 
   /**
-   * Extension source: all_types.proto at 171:3
+   * Extension source: all_types.proto at 176:3
    */
   @WireField(
       tag = 1213,
@@ -1145,7 +1174,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public final List<Double> ext_pack_double;
 
   /**
-   * Extension source: all_types.proto at 172:3
+   * Extension source: all_types.proto at 177:3
    */
   @WireField(
       tag = 1216,
@@ -1154,11 +1183,51 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   )
   public final List<NestedEnum> ext_pack_nested_enum;
 
-  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum, Integer ext_opt_int32, Integer ext_opt_uint32, Integer ext_opt_sint32, Integer ext_opt_fixed32, Integer ext_opt_sfixed32, Long ext_opt_int64, Long ext_opt_uint64, Long ext_opt_sint64, Long ext_opt_fixed64, Long ext_opt_sfixed64, Boolean ext_opt_bool, Float ext_opt_float, Double ext_opt_double, String ext_opt_string, ByteString ext_opt_bytes, NestedEnum ext_opt_nested_enum, NestedMessage ext_opt_nested_message, List<Integer> ext_rep_int32, List<Integer> ext_rep_uint32, List<Integer> ext_rep_sint32, List<Integer> ext_rep_fixed32, List<Integer> ext_rep_sfixed32, List<Long> ext_rep_int64, List<Long> ext_rep_uint64, List<Long> ext_rep_sint64, List<Long> ext_rep_fixed64, List<Long> ext_rep_sfixed64, List<Boolean> ext_rep_bool, List<Float> ext_rep_float, List<Double> ext_rep_double, List<String> ext_rep_string, List<ByteString> ext_rep_bytes, List<NestedEnum> ext_rep_nested_enum, List<NestedMessage> ext_rep_nested_message, List<Integer> ext_pack_int32, List<Integer> ext_pack_uint32, List<Integer> ext_pack_sint32, List<Integer> ext_pack_fixed32, List<Integer> ext_pack_sfixed32, List<Long> ext_pack_int64, List<Long> ext_pack_uint64, List<Long> ext_pack_sint64, List<Long> ext_pack_fixed64, List<Long> ext_pack_sfixed64, List<Boolean> ext_pack_bool, List<Float> ext_pack_float, List<Double> ext_pack_double, List<NestedEnum> ext_pack_nested_enum) {
-    this(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum, ByteString.EMPTY);
+  /**
+   * Extension source: all_types.proto at 179:3
+   */
+  @WireField(
+      tag = 1301,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Map<Integer, Integer> ext_map_int32_int32;
+
+  /**
+   * Extension source: all_types.proto at 180:3
+   */
+  @WireField(
+      tag = 1402,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final Map<String, String> ext_map_string_string;
+
+  /**
+   * Extension source: all_types.proto at 181:3
+   */
+  @WireField(
+      tag = 1503,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER"
+  )
+  public final Map<String, NestedMessage> ext_map_string_message;
+
+  /**
+   * Extension source: all_types.proto at 182:3
+   */
+  @WireField(
+      tag = 1504,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER"
+  )
+  public final Map<String, NestedEnum> ext_map_string_enum;
+
+  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum, Map<Integer, Integer> map_int32_int32, Map<String, String> map_string_string, Map<String, NestedMessage> map_string_message, Map<String, NestedEnum> map_string_enum, Integer ext_opt_int32, Integer ext_opt_uint32, Integer ext_opt_sint32, Integer ext_opt_fixed32, Integer ext_opt_sfixed32, Long ext_opt_int64, Long ext_opt_uint64, Long ext_opt_sint64, Long ext_opt_fixed64, Long ext_opt_sfixed64, Boolean ext_opt_bool, Float ext_opt_float, Double ext_opt_double, String ext_opt_string, ByteString ext_opt_bytes, NestedEnum ext_opt_nested_enum, NestedMessage ext_opt_nested_message, List<Integer> ext_rep_int32, List<Integer> ext_rep_uint32, List<Integer> ext_rep_sint32, List<Integer> ext_rep_fixed32, List<Integer> ext_rep_sfixed32, List<Long> ext_rep_int64, List<Long> ext_rep_uint64, List<Long> ext_rep_sint64, List<Long> ext_rep_fixed64, List<Long> ext_rep_sfixed64, List<Boolean> ext_rep_bool, List<Float> ext_rep_float, List<Double> ext_rep_double, List<String> ext_rep_string, List<ByteString> ext_rep_bytes, List<NestedEnum> ext_rep_nested_enum, List<NestedMessage> ext_rep_nested_message, List<Integer> ext_pack_int32, List<Integer> ext_pack_uint32, List<Integer> ext_pack_sint32, List<Integer> ext_pack_fixed32, List<Integer> ext_pack_sfixed32, List<Long> ext_pack_int64, List<Long> ext_pack_uint64, List<Long> ext_pack_sint64, List<Long> ext_pack_fixed64, List<Long> ext_pack_sfixed64, List<Boolean> ext_pack_bool, List<Float> ext_pack_float, List<Double> ext_pack_double, List<NestedEnum> ext_pack_nested_enum, Map<Integer, Integer> ext_map_int32_int32, Map<String, String> ext_map_string_string, Map<String, NestedMessage> ext_map_string_message, Map<String, NestedEnum> ext_map_string_enum) {
+    this(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, map_int32_int32, map_string_string, map_string_message, map_string_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum, ext_map_int32_int32, ext_map_string_string, ext_map_string_message, ext_map_string_enum, ByteString.EMPTY);
   }
 
-  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum, Integer ext_opt_int32, Integer ext_opt_uint32, Integer ext_opt_sint32, Integer ext_opt_fixed32, Integer ext_opt_sfixed32, Long ext_opt_int64, Long ext_opt_uint64, Long ext_opt_sint64, Long ext_opt_fixed64, Long ext_opt_sfixed64, Boolean ext_opt_bool, Float ext_opt_float, Double ext_opt_double, String ext_opt_string, ByteString ext_opt_bytes, NestedEnum ext_opt_nested_enum, NestedMessage ext_opt_nested_message, List<Integer> ext_rep_int32, List<Integer> ext_rep_uint32, List<Integer> ext_rep_sint32, List<Integer> ext_rep_fixed32, List<Integer> ext_rep_sfixed32, List<Long> ext_rep_int64, List<Long> ext_rep_uint64, List<Long> ext_rep_sint64, List<Long> ext_rep_fixed64, List<Long> ext_rep_sfixed64, List<Boolean> ext_rep_bool, List<Float> ext_rep_float, List<Double> ext_rep_double, List<String> ext_rep_string, List<ByteString> ext_rep_bytes, List<NestedEnum> ext_rep_nested_enum, List<NestedMessage> ext_rep_nested_message, List<Integer> ext_pack_int32, List<Integer> ext_pack_uint32, List<Integer> ext_pack_sint32, List<Integer> ext_pack_fixed32, List<Integer> ext_pack_sfixed32, List<Long> ext_pack_int64, List<Long> ext_pack_uint64, List<Long> ext_pack_sint64, List<Long> ext_pack_fixed64, List<Long> ext_pack_sfixed64, List<Boolean> ext_pack_bool, List<Float> ext_pack_float, List<Double> ext_pack_double, List<NestedEnum> ext_pack_nested_enum, ByteString unknownFields) {
+  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32, Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64, Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string, ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message, Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32, Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64, Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string, ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message, List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32, List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64, List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double, List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum, List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32, List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32, List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool, List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum, Integer default_int32, Integer default_uint32, Integer default_sint32, Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64, Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool, Float default_float, Double default_double, String default_string, ByteString default_bytes, NestedEnum default_nested_enum, Map<Integer, Integer> map_int32_int32, Map<String, String> map_string_string, Map<String, NestedMessage> map_string_message, Map<String, NestedEnum> map_string_enum, Integer ext_opt_int32, Integer ext_opt_uint32, Integer ext_opt_sint32, Integer ext_opt_fixed32, Integer ext_opt_sfixed32, Long ext_opt_int64, Long ext_opt_uint64, Long ext_opt_sint64, Long ext_opt_fixed64, Long ext_opt_sfixed64, Boolean ext_opt_bool, Float ext_opt_float, Double ext_opt_double, String ext_opt_string, ByteString ext_opt_bytes, NestedEnum ext_opt_nested_enum, NestedMessage ext_opt_nested_message, List<Integer> ext_rep_int32, List<Integer> ext_rep_uint32, List<Integer> ext_rep_sint32, List<Integer> ext_rep_fixed32, List<Integer> ext_rep_sfixed32, List<Long> ext_rep_int64, List<Long> ext_rep_uint64, List<Long> ext_rep_sint64, List<Long> ext_rep_fixed64, List<Long> ext_rep_sfixed64, List<Boolean> ext_rep_bool, List<Float> ext_rep_float, List<Double> ext_rep_double, List<String> ext_rep_string, List<ByteString> ext_rep_bytes, List<NestedEnum> ext_rep_nested_enum, List<NestedMessage> ext_rep_nested_message, List<Integer> ext_pack_int32, List<Integer> ext_pack_uint32, List<Integer> ext_pack_sint32, List<Integer> ext_pack_fixed32, List<Integer> ext_pack_sfixed32, List<Long> ext_pack_int64, List<Long> ext_pack_uint64, List<Long> ext_pack_sint64, List<Long> ext_pack_fixed64, List<Long> ext_pack_sfixed64, List<Boolean> ext_pack_bool, List<Float> ext_pack_float, List<Double> ext_pack_double, List<NestedEnum> ext_pack_nested_enum, Map<Integer, Integer> ext_map_int32_int32, Map<String, String> ext_map_string_string, Map<String, NestedMessage> ext_map_string_message, Map<String, NestedEnum> ext_map_string_enum, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.opt_int32 = opt_int32;
     this.opt_uint32 = opt_uint32;
@@ -1241,6 +1310,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.default_string = default_string;
     this.default_bytes = default_bytes;
     this.default_nested_enum = default_nested_enum;
+    this.map_int32_int32 = Internal.immutableCopyOf("map_int32_int32", map_int32_int32);
+    this.map_string_string = Internal.immutableCopyOf("map_string_string", map_string_string);
+    this.map_string_message = Internal.immutableCopyOf("map_string_message", map_string_message);
+    this.map_string_enum = Internal.immutableCopyOf("map_string_enum", map_string_enum);
     this.ext_opt_int32 = ext_opt_int32;
     this.ext_opt_uint32 = ext_opt_uint32;
     this.ext_opt_sint32 = ext_opt_sint32;
@@ -1289,6 +1362,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.ext_pack_float = Internal.immutableCopyOf("ext_pack_float", ext_pack_float);
     this.ext_pack_double = Internal.immutableCopyOf("ext_pack_double", ext_pack_double);
     this.ext_pack_nested_enum = Internal.immutableCopyOf("ext_pack_nested_enum", ext_pack_nested_enum);
+    this.ext_map_int32_int32 = Internal.immutableCopyOf("ext_map_int32_int32", ext_map_int32_int32);
+    this.ext_map_string_string = Internal.immutableCopyOf("ext_map_string_string", ext_map_string_string);
+    this.ext_map_string_message = Internal.immutableCopyOf("ext_map_string_message", ext_map_string_message);
+    this.ext_map_string_enum = Internal.immutableCopyOf("ext_map_string_enum", ext_map_string_enum);
   }
 
   @Override
@@ -1375,6 +1452,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.default_string = default_string;
     builder.default_bytes = default_bytes;
     builder.default_nested_enum = default_nested_enum;
+    builder.map_int32_int32 = Internal.copyOf("map_int32_int32", map_int32_int32);
+    builder.map_string_string = Internal.copyOf("map_string_string", map_string_string);
+    builder.map_string_message = Internal.copyOf("map_string_message", map_string_message);
+    builder.map_string_enum = Internal.copyOf("map_string_enum", map_string_enum);
     builder.ext_opt_int32 = ext_opt_int32;
     builder.ext_opt_uint32 = ext_opt_uint32;
     builder.ext_opt_sint32 = ext_opt_sint32;
@@ -1423,6 +1504,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.ext_pack_float = Internal.copyOf("ext_pack_float", ext_pack_float);
     builder.ext_pack_double = Internal.copyOf("ext_pack_double", ext_pack_double);
     builder.ext_pack_nested_enum = Internal.copyOf("ext_pack_nested_enum", ext_pack_nested_enum);
+    builder.ext_map_int32_int32 = Internal.copyOf("ext_map_int32_int32", ext_map_int32_int32);
+    builder.ext_map_string_string = Internal.copyOf("ext_map_string_string", ext_map_string_string);
+    builder.ext_map_string_message = Internal.copyOf("ext_map_string_message", ext_map_string_message);
+    builder.ext_map_string_enum = Internal.copyOf("ext_map_string_enum", ext_map_string_enum);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -1514,6 +1599,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         && Internal.equals(default_string, o.default_string)
         && Internal.equals(default_bytes, o.default_bytes)
         && Internal.equals(default_nested_enum, o.default_nested_enum)
+        && map_int32_int32.equals(o.map_int32_int32)
+        && map_string_string.equals(o.map_string_string)
+        && map_string_message.equals(o.map_string_message)
+        && map_string_enum.equals(o.map_string_enum)
         && Internal.equals(ext_opt_int32, o.ext_opt_int32)
         && Internal.equals(ext_opt_uint32, o.ext_opt_uint32)
         && Internal.equals(ext_opt_sint32, o.ext_opt_sint32)
@@ -1561,7 +1650,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         && ext_pack_bool.equals(o.ext_pack_bool)
         && ext_pack_float.equals(o.ext_pack_float)
         && ext_pack_double.equals(o.ext_pack_double)
-        && ext_pack_nested_enum.equals(o.ext_pack_nested_enum);
+        && ext_pack_nested_enum.equals(o.ext_pack_nested_enum)
+        && ext_map_int32_int32.equals(o.ext_map_int32_int32)
+        && ext_map_string_string.equals(o.ext_map_string_string)
+        && ext_map_string_message.equals(o.ext_map_string_message)
+        && ext_map_string_enum.equals(o.ext_map_string_enum);
   }
 
   @Override
@@ -1650,6 +1743,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result = result * 37 + (default_string != null ? default_string.hashCode() : 0);
       result = result * 37 + (default_bytes != null ? default_bytes.hashCode() : 0);
       result = result * 37 + (default_nested_enum != null ? default_nested_enum.hashCode() : 0);
+      result = result * 37 + map_int32_int32.hashCode();
+      result = result * 37 + map_string_string.hashCode();
+      result = result * 37 + map_string_message.hashCode();
+      result = result * 37 + map_string_enum.hashCode();
       result = result * 37 + (ext_opt_int32 != null ? ext_opt_int32.hashCode() : 0);
       result = result * 37 + (ext_opt_uint32 != null ? ext_opt_uint32.hashCode() : 0);
       result = result * 37 + (ext_opt_sint32 != null ? ext_opt_sint32.hashCode() : 0);
@@ -1698,6 +1795,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result = result * 37 + ext_pack_float.hashCode();
       result = result * 37 + ext_pack_double.hashCode();
       result = result * 37 + ext_pack_nested_enum.hashCode();
+      result = result * 37 + ext_map_int32_int32.hashCode();
+      result = result * 37 + ext_map_string_string.hashCode();
+      result = result * 37 + ext_map_string_message.hashCode();
+      result = result * 37 + ext_map_string_enum.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -1787,6 +1888,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (default_string != null) builder.append(", default_string=").append(default_string);
     if (default_bytes != null) builder.append(", default_bytes=").append(default_bytes);
     if (default_nested_enum != null) builder.append(", default_nested_enum=").append(default_nested_enum);
+    if (!map_int32_int32.isEmpty()) builder.append(", map_int32_int32=").append(map_int32_int32);
+    if (!map_string_string.isEmpty()) builder.append(", map_string_string=").append(map_string_string);
+    if (!map_string_message.isEmpty()) builder.append(", map_string_message=").append(map_string_message);
+    if (!map_string_enum.isEmpty()) builder.append(", map_string_enum=").append(map_string_enum);
     if (ext_opt_int32 != null) builder.append(", ext_opt_int32=").append(ext_opt_int32);
     if (ext_opt_uint32 != null) builder.append(", ext_opt_uint32=").append(ext_opt_uint32);
     if (ext_opt_sint32 != null) builder.append(", ext_opt_sint32=").append(ext_opt_sint32);
@@ -1835,6 +1940,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (!ext_pack_float.isEmpty()) builder.append(", ext_pack_float=").append(ext_pack_float);
     if (!ext_pack_double.isEmpty()) builder.append(", ext_pack_double=").append(ext_pack_double);
     if (!ext_pack_nested_enum.isEmpty()) builder.append(", ext_pack_nested_enum=").append(ext_pack_nested_enum);
+    if (!ext_map_int32_int32.isEmpty()) builder.append(", ext_map_int32_int32=").append(ext_map_int32_int32);
+    if (!ext_map_string_string.isEmpty()) builder.append(", ext_map_string_string=").append(ext_map_string_string);
+    if (!ext_map_string_message.isEmpty()) builder.append(", ext_map_string_message=").append(ext_map_string_message);
+    if (!ext_map_string_enum.isEmpty()) builder.append(", ext_map_string_enum=").append(ext_map_string_enum);
     return builder.replace(0, 2, "AllTypes{").append('}').toString();
   }
 
@@ -2001,6 +2110,14 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public NestedEnum default_nested_enum;
 
+    public Map<Integer, Integer> map_int32_int32;
+
+    public Map<String, String> map_string_string;
+
+    public Map<String, NestedMessage> map_string_message;
+
+    public Map<String, NestedEnum> map_string_enum;
+
     public Integer ext_opt_int32;
 
     public Integer ext_opt_uint32;
@@ -2097,6 +2214,14 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public List<NestedEnum> ext_pack_nested_enum;
 
+    public Map<Integer, Integer> ext_map_int32_int32;
+
+    public Map<String, String> ext_map_string_string;
+
+    public Map<String, NestedMessage> ext_map_string_message;
+
+    public Map<String, NestedEnum> ext_map_string_enum;
+
     public Builder() {
       rep_int32 = Internal.newMutableList();
       rep_uint32 = Internal.newMutableList();
@@ -2129,6 +2254,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       pack_float = Internal.newMutableList();
       pack_double = Internal.newMutableList();
       pack_nested_enum = Internal.newMutableList();
+      map_int32_int32 = Internal.newMutableMap();
+      map_string_string = Internal.newMutableMap();
+      map_string_message = Internal.newMutableMap();
+      map_string_enum = Internal.newMutableMap();
       ext_rep_int32 = Internal.newMutableList();
       ext_rep_uint32 = Internal.newMutableList();
       ext_rep_sint32 = Internal.newMutableList();
@@ -2160,6 +2289,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ext_pack_float = Internal.newMutableList();
       ext_pack_double = Internal.newMutableList();
       ext_pack_nested_enum = Internal.newMutableList();
+      ext_map_int32_int32 = Internal.newMutableMap();
+      ext_map_string_string = Internal.newMutableMap();
+      ext_map_string_message = Internal.newMutableMap();
+      ext_map_string_enum = Internal.newMutableMap();
     }
 
     public Builder opt_int32(Integer opt_int32) {
@@ -2598,6 +2731,30 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
+    public Builder map_int32_int32(Map<Integer, Integer> map_int32_int32) {
+      Internal.checkElementsNotNull(map_int32_int32);
+      this.map_int32_int32 = map_int32_int32;
+      return this;
+    }
+
+    public Builder map_string_string(Map<String, String> map_string_string) {
+      Internal.checkElementsNotNull(map_string_string);
+      this.map_string_string = map_string_string;
+      return this;
+    }
+
+    public Builder map_string_message(Map<String, NestedMessage> map_string_message) {
+      Internal.checkElementsNotNull(map_string_message);
+      this.map_string_message = map_string_message;
+      return this;
+    }
+
+    public Builder map_string_enum(Map<String, NestedEnum> map_string_enum) {
+      Internal.checkElementsNotNull(map_string_enum);
+      this.map_string_enum = map_string_enum;
+      return this;
+    }
+
     public Builder ext_opt_int32(Integer ext_opt_int32) {
       this.ext_opt_int32 = ext_opt_int32;
       return this;
@@ -2869,6 +3026,30 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
+    public Builder ext_map_int32_int32(Map<Integer, Integer> ext_map_int32_int32) {
+      Internal.checkElementsNotNull(ext_map_int32_int32);
+      this.ext_map_int32_int32 = ext_map_int32_int32;
+      return this;
+    }
+
+    public Builder ext_map_string_string(Map<String, String> ext_map_string_string) {
+      Internal.checkElementsNotNull(ext_map_string_string);
+      this.ext_map_string_string = ext_map_string_string;
+      return this;
+    }
+
+    public Builder ext_map_string_message(Map<String, NestedMessage> ext_map_string_message) {
+      Internal.checkElementsNotNull(ext_map_string_message);
+      this.ext_map_string_message = ext_map_string_message;
+      return this;
+    }
+
+    public Builder ext_map_string_enum(Map<String, NestedEnum> ext_map_string_enum) {
+      Internal.checkElementsNotNull(ext_map_string_enum);
+      this.ext_map_string_enum = ext_map_string_enum;
+      return this;
+    }
+
     @Override
     public AllTypes build() {
       if (req_int32 == null
@@ -2906,7 +3087,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             req_nested_enum, "req_nested_enum",
             req_nested_message, "req_nested_message");
       }
-      return new AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum, super.buildUnknownFields());
+      return new AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, map_int32_int32, map_string_string, map_string_message, map_string_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum, ext_map_int32_int32, ext_map_string_string, ext_map_string_message, ext_map_string_enum, super.buildUnknownFields());
     }
   }
 
@@ -3056,6 +3237,22 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   private static final class ProtoAdapter_AllTypes extends ProtoAdapter<AllTypes> {
+    private final ProtoAdapter<Map<Integer, Integer>> map_int32_int32 = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
+
+    private final ProtoAdapter<Map<String, String>> map_string_string = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
+
+    private final ProtoAdapter<Map<String, NestedMessage>> map_string_message = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER);
+
+    private final ProtoAdapter<Map<String, NestedEnum>> map_string_enum = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
+
+    private final ProtoAdapter<Map<Integer, Integer>> ext_map_int32_int32 = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
+
+    private final ProtoAdapter<Map<String, String>> ext_map_string_string = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
+
+    private final ProtoAdapter<Map<String, NestedMessage>> ext_map_string_message = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER);
+
+    private final ProtoAdapter<Map<String, NestedEnum>> ext_map_string_enum = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
+
     ProtoAdapter_AllTypes() {
       super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class);
     }
@@ -3143,6 +3340,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           + (value.default_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string) : 0)
           + (value.default_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes) : 0)
           + (value.default_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum) : 0)
+          + map_int32_int32.encodedSizeWithTag(501, value.map_int32_int32)
+          + map_string_string.encodedSizeWithTag(502, value.map_string_string)
+          + map_string_message.encodedSizeWithTag(503, value.map_string_message)
+          + map_string_enum.encodedSizeWithTag(504, value.map_string_enum)
           + (value.ext_opt_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32) : 0)
           + (value.ext_opt_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32) : 0)
           + (value.ext_opt_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32) : 0)
@@ -3191,6 +3392,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float)
           + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double)
           + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum)
+          + ext_map_int32_int32.encodedSizeWithTag(1301, value.ext_map_int32_int32)
+          + ext_map_string_string.encodedSizeWithTag(1402, value.ext_map_string_string)
+          + ext_map_string_message.encodedSizeWithTag(1503, value.ext_map_string_message)
+          + ext_map_string_enum.encodedSizeWithTag(1504, value.ext_map_string_enum)
           + value.unknownFields().size();
     }
 
@@ -3277,6 +3482,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       if (value.default_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 414, value.default_string);
       if (value.default_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 415, value.default_bytes);
       if (value.default_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 416, value.default_nested_enum);
+      map_int32_int32.encodeWithTag(writer, 501, value.map_int32_int32);
+      map_string_string.encodeWithTag(writer, 502, value.map_string_string);
+      map_string_message.encodeWithTag(writer, 503, value.map_string_message);
+      map_string_enum.encodeWithTag(writer, 504, value.map_string_enum);
       if (value.ext_opt_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32);
       if (value.ext_opt_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32);
       if (value.ext_opt_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32);
@@ -3325,6 +3534,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1212, value.ext_pack_float);
       ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1213, value.ext_pack_double);
       NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1216, value.ext_pack_nested_enum);
+      ext_map_int32_int32.encodeWithTag(writer, 1301, value.ext_map_int32_int32);
+      ext_map_string_string.encodeWithTag(writer, 1402, value.ext_map_string_string);
+      ext_map_string_message.encodeWithTag(writer, 1503, value.ext_map_string_message);
+      ext_map_string_enum.encodeWithTag(writer, 1504, value.ext_map_string_enum);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -3450,6 +3663,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             }
             break;
           }
+          case 501: builder.map_int32_int32.putAll(map_int32_int32.decode(reader)); break;
+          case 502: builder.map_string_string.putAll(map_string_string.decode(reader)); break;
+          case 503: builder.map_string_message.putAll(map_string_message.decode(reader)); break;
+          case 504: builder.map_string_enum.putAll(map_string_enum.decode(reader)); break;
           case 1001: builder.ext_opt_int32(ProtoAdapter.INT32.decode(reader)); break;
           case 1002: builder.ext_opt_uint32(ProtoAdapter.UINT32.decode(reader)); break;
           case 1003: builder.ext_opt_sint32(ProtoAdapter.SINT32.decode(reader)); break;
@@ -3519,6 +3736,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             }
             break;
           }
+          case 1301: builder.ext_map_int32_int32.putAll(ext_map_int32_int32.decode(reader)); break;
+          case 1402: builder.ext_map_string_string.putAll(ext_map_string_string.decode(reader)); break;
+          case 1503: builder.ext_map_string_message.putAll(ext_map_string_message.decode(reader)); break;
+          case 1504: builder.ext_map_string_enum.putAll(ext_map_string_enum.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
             Object value = fieldEncoding.rawProtoAdapter().decode(reader);
@@ -3536,8 +3757,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       if (builder.opt_nested_message != null) builder.opt_nested_message = NestedMessage.ADAPTER.redact(builder.opt_nested_message);
       builder.req_nested_message = NestedMessage.ADAPTER.redact(builder.req_nested_message);
       Internal.redactElements(builder.rep_nested_message, NestedMessage.ADAPTER);
+      Internal.redactElements(builder.map_string_message, NestedMessage.ADAPTER);
       if (builder.ext_opt_nested_message != null) builder.ext_opt_nested_message = NestedMessage.ADAPTER.redact(builder.ext_opt_nested_message);
       Internal.redactElements(builder.ext_rep_nested_message, NestedMessage.ADAPTER);
+      Internal.redactElements(builder.ext_map_string_message, NestedMessage.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }
