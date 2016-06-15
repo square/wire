@@ -372,9 +372,9 @@ public class WireCompilerTest {
     };
     invokeCompiler(sources, "--includes=squareup.wire.protos.roots.TheService", "--dry_run", "--quiet");
 
-    assertThat(logger.getLog()).isEqualTo(""
-        + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n"
-        + testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
+    assertThat(logger.getLog()).contains(
+        testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheRequest\n",
+        testDir.getAbsolutePath() + " com.squareup.wire.protos.roots.TheResponse\n");
   }
 
   @Test public void noFiles() throws Exception {
