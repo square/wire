@@ -157,8 +157,7 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
       Class<?> valueType = fieldBinding.singleAdapter().javaType;
 
       JsonObject object = element.getAsJsonObject();
-      // TODO Pre-size this collection when https://github.com/google/gson/pull/872 is released.
-      Map<Object, Object> result = new LinkedHashMap<>();
+      Map<Object, Object> result = new LinkedHashMap<>(object.size());
       for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
         Object key = gson.fromJson(entry.getKey(), keyType);
         Object value = gson.fromJson(entry.getValue(), valueType);
