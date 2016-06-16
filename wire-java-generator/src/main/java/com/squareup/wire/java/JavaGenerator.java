@@ -36,6 +36,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoField;
 import com.squareup.wire.ProtoAdapter.EnumConstantNotFoundException;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
@@ -154,24 +155,40 @@ public final class JavaGenerator {
   });
 
   private final Schema schema;
+  private final ImmutableMap<ProtoType, TypeName> nameToWireJavaName;
   private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
+  private final ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter;
   private final boolean emitAndroid;
   private final boolean emitCompact;
 
-  private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToJavaName,
+  private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToWireJavaName,
+      ImmutableMap<ProtoType, TypeName> nameToJavaName,
+      ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter,
       boolean emitAndroid, boolean emitCompact) {
     this.schema = schema;
+    this.nameToWireJavaName = nameToWireJavaName;
     this.nameToJavaName = nameToJavaName;
+    this.protoTypeToAdapter = protoTypeToAdapter;
     this.emitAndroid = emitAndroid;
     this.emitCompact = emitCompact;
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToJavaName, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToWireJavaName, nameToJavaName, protoTypeToAdapter,
+        emitAndroid, emitCompact);
   }
 
   public JavaGenerator withCompact(boolean compactGeneration) {
-    return new JavaGenerator(schema, nameToJavaName, emitAndroid, compactGeneration);
+    return new JavaGenerator(schema, nameToWireJavaName, nameToJavaName, protoTypeToAdapter,
+        emitAndroid, compactGeneration);
+  }
+
+  public JavaGenerator withCustomProtoAdapter(Map<ProtoType, TypeName> nameToJavaName,
+      ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter) {
+    Map<ProtoType, TypeName> clone = new LinkedHashMap<>(this.nameToJavaName);
+    clone.putAll(nameToJavaName);
+    return new JavaGenerator(schema, nameToWireJavaName, ImmutableMap.copyOf(clone),
+        ImmutableMap.copyOf(protoTypeToAdapter), emitAndroid, emitCompact);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -188,7 +205,9 @@ public final class JavaGenerator {
       }
     }
 
-    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToJavaName), false, false);
+    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToJavaName),
+        ImmutableMap.copyOf(nameToJavaName),
+        ImmutableMap.<ProtoType, Map.Entry<ClassName, String>>of(), false, false);
   }
 
   private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
@@ -218,6 +237,12 @@ public final class JavaGenerator {
     return candidate;
   }
 
+  public TypeName wireTypeName(ProtoType protoType) {
+    TypeName candidate = nameToWireJavaName.get(protoType);
+    checkArgument(candidate != null, "unexpected type %s", protoType);
+    return candidate;
+  }
+
   private CodeBlock singleAdapterFor(Field field) {
     return field.type().isMap()
         ? CodeBlock.of("$N", field.name())
@@ -231,7 +256,12 @@ public final class JavaGenerator {
     } else if (type.isMap()) {
       throw new IllegalArgumentException("Cannot create single adapter for map type " + type);
     } else {
-      result.add("$T.ADAPTER", typeName(type));
+      Map.Entry<ClassName, String> adapter = protoTypeToAdapter.get(type);
+      if (adapter != null) {
+        result.add("$T.$L", adapter.getKey(), adapter.getValue());
+      } else {
+        result.add("$T.ADAPTER", typeName(type));
+      }
     }
     return result.build();
   }
@@ -301,6 +331,9 @@ public final class JavaGenerator {
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateType(Type type) {
     if (type instanceof MessageType) {
+      if (protoTypeToAdapter.containsKey(type.type())) {
+        return generateProtoFields((MessageType) type);
+      }
       //noinspection deprecation: Only deprecated as a public API.
       return generateMessage((MessageType) type);
     }
@@ -550,6 +583,50 @@ public final class JavaGenerator {
       builder.addType(generateType(nestedType));
     }
 
+    return builder.build();
+  }
+
+  /** Returns generated code that maps field names to field tags. */
+  public TypeSpec generateProtoFields(MessageType type) {
+    NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
+
+    ClassName javaType = (ClassName) wireTypeName(type.type());
+    TypeSpec.Builder builder = TypeSpec.classBuilder(javaType.simpleName() + "ProtoFields");
+    builder.addModifiers(PUBLIC, FINAL);
+
+    for (Field field : type.fieldsAndOneOfFields()) {
+      String fieldName = nameAllocator.get(field);
+
+      TypeName typeName =
+          ParameterizedTypeName.get(ClassName.get(ProtoField.class), fieldType(field));
+      FieldSpec.Builder fieldBuilder =
+          FieldSpec.builder(typeName, fieldName, PUBLIC, STATIC, FINAL);
+
+      CodeBlock adapter;
+      if (field.type().isMap()) {
+        adapter = CodeBlock.of("$T.newMapAdapter($L, $L)", ADAPTER,
+            singleAdapterFor(field.type().keyType()),
+            singleAdapterFor(field.type().valueType()));
+      } else if (field.isPacked()) {
+        adapter = singleAdapterFor(field).toBuilder().add(".asPacked()").build();
+      } else if (field.isRepeated()) {
+        adapter = singleAdapterFor(field).toBuilder().add(".asRepeated()").build();
+      } else {
+        adapter = singleAdapterFor(field);
+      }
+
+      CodeBlock defaultVal = CodeBlock.of("null");
+      if ((field.type().isScalar() || isEnum(field.type()))
+          && !field.isRepeated()
+          && !field.isPacked()) {
+        defaultVal = defaultValue(field);
+      }
+
+      fieldBuilder.initializer("new $T($L, $L, $L)", ClassName.get(ProtoField.class), field.tag(),
+          adapter, defaultVal);
+
+      builder.addField(fieldBuilder.build());
+    }
     return builder.build();
   }
 
@@ -874,9 +951,14 @@ public final class JavaGenerator {
   }
 
   private String adapterString(ProtoType type) {
-    return type.isScalar()
-          ? ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US)
-          : reflectionName((ClassName) typeName(type)) + "#ADAPTER";
+    if (type.isScalar()) {
+      return ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US);
+    } else if (protoTypeToAdapter.containsKey(type)) {
+      Map.Entry<ClassName, String> adapter = protoTypeToAdapter.get(type);
+      return reflectionName(adapter.getKey()) + "#" + adapter.getValue();
+    } else {
+      return reflectionName((ClassName) typeName(type)) + "#ADAPTER";
+    }
   }
 
   private String reflectionName(ClassName className) {
