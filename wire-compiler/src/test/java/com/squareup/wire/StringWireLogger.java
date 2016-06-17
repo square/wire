@@ -11,7 +11,7 @@ final class StringWireLogger implements WireLogger {
     this.quiet = quiet;
   }
 
-  @Override public void artifact(Path outputPath, JavaFile javaFile) {
+  @Override public synchronized void artifact(Path outputPath, JavaFile javaFile) {
     buffer.append(outputPath);
     buffer.append(" ");
     buffer.append(javaFile.packageName);
@@ -20,7 +20,7 @@ final class StringWireLogger implements WireLogger {
     buffer.append('\n');
   }
 
-  @Override public void info(String message) {
+  @Override public synchronized void info(String message) {
     if (!quiet) {
       buffer.append(message);
       buffer.append('\n');
