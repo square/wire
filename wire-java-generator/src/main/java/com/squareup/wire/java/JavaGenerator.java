@@ -535,7 +535,7 @@ public final class JavaGenerator {
 
     String documentation = type.documentation();
     if (!documentation.isEmpty()) {
-      documentation += "\n\n";
+      documentation += "\n\n<p>";
     }
     documentation += "<b>NOTE:</b> This type only exists to maintain class structure"
         + " for its nested types and is not an actual message.\n";
