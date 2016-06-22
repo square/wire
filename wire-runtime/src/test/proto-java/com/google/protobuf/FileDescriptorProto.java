@@ -424,14 +424,14 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
           case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
           case 2: builder.package_(ProtoAdapter.STRING.decode(reader)); break;
           case 3: builder.dependency.add(ProtoAdapter.STRING.decode(reader)); break;
-          case 10: builder.public_dependency.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 11: builder.weak_dependency.add(ProtoAdapter.INT32.decode(reader)); break;
           case 4: builder.message_type.add(DescriptorProto.ADAPTER.decode(reader)); break;
           case 5: builder.enum_type.add(EnumDescriptorProto.ADAPTER.decode(reader)); break;
           case 6: builder.service.add(ServiceDescriptorProto.ADAPTER.decode(reader)); break;
           case 7: builder.extension.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
           case 8: builder.options(FileOptions.ADAPTER.decode(reader)); break;
           case 9: builder.source_code_info(SourceCodeInfo.ADAPTER.decode(reader)); break;
+          case 10: builder.public_dependency.add(ProtoAdapter.INT32.decode(reader)); break;
+          case 11: builder.weak_dependency.add(ProtoAdapter.INT32.decode(reader)); break;
           case 12: builder.syntax(ProtoAdapter.STRING.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
