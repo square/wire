@@ -600,6 +600,17 @@ public final class JavaGenerator {
     TypeSpec.Builder builder = TypeSpec.classBuilder(javaType.simpleName() + "ProtoFields");
     builder.addModifiers(PUBLIC, FINAL);
 
+    for (Type nestedType : type.nestedTypes()) {
+      if (!protoTypeToAdapter.containsKey(nestedType.type())) {
+        throw new IllegalArgumentException("Missing custom proto adapter for "
+            + nestedType.type().enclosingTypeOrPackage() + "." + nestedType.type().simpleName()
+            + " when enclosing proto has custom proto adapter.");
+      }
+      if (nestedType instanceof MessageType) {
+        builder.addType(generateProtoFields((MessageType) nestedType));
+      }
+    }
+
     for (Field field : type.fieldsAndOneOfFields()) {
       String fieldName = nameAllocator.get(field);
 
