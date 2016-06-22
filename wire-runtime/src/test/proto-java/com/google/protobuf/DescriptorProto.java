@@ -631,12 +631,12 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
         switch (tag) {
           case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
           case 2: builder.field.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
-          case 6: builder.extension.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
           case 3: builder.nested_type.add(DescriptorProto.ADAPTER.decode(reader)); break;
           case 4: builder.enum_type.add(EnumDescriptorProto.ADAPTER.decode(reader)); break;
           case 5: builder.extension_range.add(ExtensionRange.ADAPTER.decode(reader)); break;
-          case 8: builder.oneof_decl.add(OneofDescriptorProto.ADAPTER.decode(reader)); break;
+          case 6: builder.extension.add(FieldDescriptorProto.ADAPTER.decode(reader)); break;
           case 7: builder.options(MessageOptions.ADAPTER.decode(reader)); break;
+          case 8: builder.oneof_decl.add(OneofDescriptorProto.ADAPTER.decode(reader)); break;
           case 9: builder.reserved_range.add(ReservedRange.ADAPTER.decode(reader)); break;
           case 10: builder.reserved_name.add(ProtoAdapter.STRING.decode(reader)); break;
           default: {

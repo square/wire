@@ -486,6 +486,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
           case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.extendee(ProtoAdapter.STRING.decode(reader)); break;
           case 3: builder.number(ProtoAdapter.INT32.decode(reader)); break;
           case 4: {
             try {
@@ -504,10 +505,9 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
             break;
           }
           case 6: builder.type_name(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.extendee(ProtoAdapter.STRING.decode(reader)); break;
           case 7: builder.default_value(ProtoAdapter.STRING.decode(reader)); break;
-          case 9: builder.oneof_index(ProtoAdapter.INT32.decode(reader)); break;
           case 8: builder.options(FieldOptions.ADAPTER.decode(reader)); break;
+          case 9: builder.oneof_index(ProtoAdapter.INT32.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
             Object value = fieldEncoding.rawProtoAdapter().decode(reader);

@@ -665,9 +665,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
         switch (tag) {
           case 1: builder.java_package(ProtoAdapter.STRING.decode(reader)); break;
           case 8: builder.java_outer_classname(ProtoAdapter.STRING.decode(reader)); break;
-          case 10: builder.java_multiple_files(ProtoAdapter.BOOL.decode(reader)); break;
-          case 20: builder.java_generate_equals_and_hash(ProtoAdapter.BOOL.decode(reader)); break;
-          case 27: builder.java_string_check_utf8(ProtoAdapter.BOOL.decode(reader)); break;
           case 9: {
             try {
               builder.optimize_for(OptimizeMode.ADAPTER.decode(reader));
@@ -676,11 +673,14 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
             }
             break;
           }
+          case 10: builder.java_multiple_files(ProtoAdapter.BOOL.decode(reader)); break;
           case 11: builder.go_package(ProtoAdapter.STRING.decode(reader)); break;
           case 16: builder.cc_generic_services(ProtoAdapter.BOOL.decode(reader)); break;
           case 17: builder.java_generic_services(ProtoAdapter.BOOL.decode(reader)); break;
           case 18: builder.py_generic_services(ProtoAdapter.BOOL.decode(reader)); break;
+          case 20: builder.java_generate_equals_and_hash(ProtoAdapter.BOOL.decode(reader)); break;
           case 23: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
+          case 27: builder.java_string_check_utf8(ProtoAdapter.BOOL.decode(reader)); break;
           case 31: builder.cc_enable_arenas(ProtoAdapter.BOOL.decode(reader)); break;
           case 36: builder.objc_class_prefix(ProtoAdapter.STRING.decode(reader)); break;
           case 37: builder.csharp_namespace(ProtoAdapter.STRING.decode(reader)); break;

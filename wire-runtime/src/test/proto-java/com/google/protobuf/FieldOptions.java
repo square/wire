@@ -698,6 +698,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
             break;
           }
           case 2: builder.packed(ProtoAdapter.BOOL.decode(reader)); break;
+          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
+          case 5: builder.lazy(ProtoAdapter.BOOL.decode(reader)); break;
           case 6: {
             try {
               builder.jstype(JSType.ADAPTER.decode(reader));
@@ -706,10 +708,13 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
             }
             break;
           }
-          case 5: builder.lazy(ProtoAdapter.BOOL.decode(reader)); break;
-          case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
           case 10: builder.weak(ProtoAdapter.BOOL.decode(reader)); break;
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 22101: builder.squareup_protos_extension_collision_1_a(ProtoAdapter.STRING.decode(reader)); break;
+          case 22102: builder.b(ProtoAdapter.STRING.decode(reader)); break;
+          case 22103: builder.squareup_protos_extension_collision_2_a(ProtoAdapter.STRING.decode(reader)); break;
+          case 22104: builder.c(ProtoAdapter.STRING.decode(reader)); break;
+          case 22200: builder.redacted(ProtoAdapter.BOOL.decode(reader)); break;
           case 60001: builder.my_field_option_one(ProtoAdapter.INT32.decode(reader)); break;
           case 60002: builder.my_field_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
           case 60003: {
@@ -721,11 +726,6 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
             break;
           }
           case 60004: builder.my_field_option_four(FooBar.ADAPTER.decode(reader)); break;
-          case 22101: builder.squareup_protos_extension_collision_1_a(ProtoAdapter.STRING.decode(reader)); break;
-          case 22102: builder.b(ProtoAdapter.STRING.decode(reader)); break;
-          case 22103: builder.squareup_protos_extension_collision_2_a(ProtoAdapter.STRING.decode(reader)); break;
-          case 22104: builder.c(ProtoAdapter.STRING.decode(reader)); break;
-          case 22200: builder.redacted(ProtoAdapter.BOOL.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
             Object value = fieldEncoding.rawProtoAdapter().decode(reader);

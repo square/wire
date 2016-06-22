@@ -23,6 +23,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Ordering;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -60,6 +61,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -99,6 +101,12 @@ public final class JavaGenerator {
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
   static final ClassName NULLABLE = ClassName.get("android.support.annotation", "Nullable");
   static final ClassName CREATOR = ClassName.get("android.os", "Parcelable", "Creator");
+
+  private static final Ordering<Field> TAG_ORDERING = Ordering.from(new Comparator<Field>() {
+    @Override public int compare(Field o1, Field o2) {
+      return Integer.compare(o1.tag(), o2.tag());
+    }
+  });
 
   private static final Map<ProtoType, TypeName> BUILT_IN_TYPES_MAP =
       ImmutableMap.<ProtoType, TypeName>builder()
@@ -671,7 +679,7 @@ public final class JavaGenerator {
     result.beginControlFlow("for (int tag; (tag = reader.nextTag()) != -1;)");
     result.beginControlFlow("switch (tag)");
 
-    for (Field field : type.fieldsAndOneOfFields()) {
+    for (Field field : TAG_ORDERING.sortedCopy(type.fieldsAndOneOfFields())) {
       int fieldTag = field.tag();
       String fieldName = nameAllocator.get(field);
       CodeBlock adapter = singleAdapterFor(field);
