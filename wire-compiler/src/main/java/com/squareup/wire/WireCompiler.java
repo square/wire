@@ -309,7 +309,11 @@ public final class WireCompiler {
         }
 
         TypeSpec typeSpec = javaGenerator.generateType(type);
-        ClassName javaTypeName = (ClassName) javaGenerator.wireTypeName(type.type());
+        TypeName typeName = javaGenerator.protoFieldsTypeName(type.type());
+        if (typeName == null) {
+          typeName = javaGenerator.typeName(type.type());
+        }
+        ClassName javaTypeName = (ClassName) typeName;
         Location location = type.location();
 
         JavaFile.Builder builder = JavaFile.builder(javaTypeName.packageName(), typeSpec)

@@ -15,11 +15,18 @@
  */
 package com.squareup.wire.java;
 
+import com.google.common.collect.ImmutableMap;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.schema.MessageType;
+import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaBuilder;
+import java.util.AbstractMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +69,20 @@ public final class JavaGeneratorTest {
 
     MessageType message = (MessageType) schema.getType("Message");
 
-    JavaGenerator javaGenerator = JavaGenerator.get(schema);
+    ProtoType protoType = ProtoType.get("Message");
+    ClassName className = ClassName.bestGuess("Message");
+
+    Map<ProtoType, TypeName> nameToJavaName = new LinkedHashMap<>();
+    nameToJavaName.put(protoType, className);
+
+    Map<ProtoType, Map.Entry<ClassName, String>> nameToAdapter = new LinkedHashMap<>();
+    Map.Entry<ClassName, String> adapter =
+        new AbstractMap.SimpleImmutableEntry<>(className, "ADAPTER");
+    nameToAdapter.put(protoType, adapter);
+
+    JavaGenerator javaGenerator = JavaGenerator.get(schema)
+        .withCustomProtoAdapter(ImmutableMap.copyOf(nameToJavaName),
+            ImmutableMap.copyOf(nameToAdapter));
     TypeSpec typeSpec = javaGenerator.generateProtoFields(message);
 
     assertThat(JavaFile.builder("com.squareup.message", typeSpec).build().toString()).isEqualTo(""

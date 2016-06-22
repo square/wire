@@ -155,18 +155,18 @@ public final class JavaGenerator {
   });
 
   private final Schema schema;
-  private final ImmutableMap<ProtoType, TypeName> nameToWireJavaName;
+  private final ImmutableMap<ProtoType, TypeName> nameToProtoFieldsJavaName;
   private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
   private final ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter;
   private final boolean emitAndroid;
   private final boolean emitCompact;
 
-  private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToWireJavaName,
+  private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToProtoFieldsJavaName,
       ImmutableMap<ProtoType, TypeName> nameToJavaName,
       ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter,
       boolean emitAndroid, boolean emitCompact) {
     this.schema = schema;
-    this.nameToWireJavaName = nameToWireJavaName;
+    this.nameToProtoFieldsJavaName = nameToProtoFieldsJavaName;
     this.nameToJavaName = nameToJavaName;
     this.protoTypeToAdapter = protoTypeToAdapter;
     this.emitAndroid = emitAndroid;
@@ -174,21 +174,28 @@ public final class JavaGenerator {
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToWireJavaName, nameToJavaName, protoTypeToAdapter,
+    return new JavaGenerator(schema, nameToProtoFieldsJavaName, nameToJavaName, protoTypeToAdapter,
         emitAndroid, emitCompact);
   }
 
   public JavaGenerator withCompact(boolean compactGeneration) {
-    return new JavaGenerator(schema, nameToWireJavaName, nameToJavaName, protoTypeToAdapter,
+    return new JavaGenerator(schema, nameToProtoFieldsJavaName, nameToJavaName, protoTypeToAdapter,
         emitAndroid, compactGeneration);
   }
 
-  public JavaGenerator withCustomProtoAdapter(Map<ProtoType, TypeName> nameToJavaName,
+  public JavaGenerator withCustomProtoAdapter(ImmutableMap<ProtoType, TypeName> nameToJavaName,
       ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter) {
     Map<ProtoType, TypeName> clone = new LinkedHashMap<>(this.nameToJavaName);
-    clone.putAll(nameToJavaName);
-    return new JavaGenerator(schema, nameToWireJavaName, ImmutableMap.copyOf(clone),
-        ImmutableMap.copyOf(protoTypeToAdapter), emitAndroid, emitCompact);
+    Map<ProtoType, TypeName> nameToProtoFieldsJavaName = new LinkedHashMap<>();
+
+    for (Map.Entry<ProtoType, TypeName> entry : nameToJavaName.entrySet()) {
+      TypeName protoFieldsJavaName = clone.put(entry.getKey(), entry.getValue());
+      nameToProtoFieldsJavaName.put(entry.getKey(), protoFieldsJavaName);
+    }
+
+    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToProtoFieldsJavaName),
+        ImmutableMap.copyOf(clone), ImmutableMap.copyOf(protoTypeToAdapter),
+        emitAndroid, emitCompact);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -205,7 +212,7 @@ public final class JavaGenerator {
       }
     }
 
-    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToJavaName),
+    return new JavaGenerator(schema, ImmutableMap.<ProtoType, TypeName>of(),
         ImmutableMap.copyOf(nameToJavaName),
         ImmutableMap.<ProtoType, Map.Entry<ClassName, String>>of(), false, false);
   }
@@ -237,9 +244,8 @@ public final class JavaGenerator {
     return candidate;
   }
 
-  public TypeName wireTypeName(ProtoType protoType) {
-    TypeName candidate = nameToWireJavaName.get(protoType);
-    checkArgument(candidate != null, "unexpected type %s", protoType);
+  public TypeName protoFieldsTypeName(ProtoType protoType) {
+    TypeName candidate = nameToProtoFieldsJavaName.get(protoType);
     return candidate;
   }
 
@@ -590,7 +596,7 @@ public final class JavaGenerator {
   public TypeSpec generateProtoFields(MessageType type) {
     NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
 
-    ClassName javaType = (ClassName) wireTypeName(type.type());
+    ClassName javaType = (ClassName) protoFieldsTypeName(type.type());
     TypeSpec.Builder builder = TypeSpec.classBuilder(javaType.simpleName() + "ProtoFields");
     builder.addModifiers(PUBLIC, FINAL);
 
