@@ -157,13 +157,13 @@ public final class JavaGenerator {
   private final Schema schema;
   private final ImmutableMap<ProtoType, TypeName> nameToProtoFieldsJavaName;
   private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
-  private final ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter;
+  private final ImmutableMap<ProtoType, AdapterEntry> protoTypeToAdapter;
   private final boolean emitAndroid;
   private final boolean emitCompact;
 
   private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToProtoFieldsJavaName,
       ImmutableMap<ProtoType, TypeName> nameToJavaName,
-      ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter,
+      ImmutableMap<ProtoType, AdapterEntry> protoTypeToAdapter,
       boolean emitAndroid, boolean emitCompact) {
     this.schema = schema;
     this.nameToProtoFieldsJavaName = nameToProtoFieldsJavaName;
@@ -183,18 +183,28 @@ public final class JavaGenerator {
         emitAndroid, compactGeneration);
   }
 
-  public JavaGenerator withCustomProtoAdapter(ImmutableMap<ProtoType, TypeName> nameToJavaName,
-      ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter) {
-    Map<ProtoType, TypeName> clone = new LinkedHashMap<>(this.nameToJavaName);
+  public JavaGenerator withCustomProtoAdapter(
+      ImmutableMap<ProtoType, TypeName> protoTypeToCustomJavaName,
+      ImmutableMap<ProtoType, AdapterEntry> protoTypeToAdapter) {
+    if (!this.nameToProtoFieldsJavaName.isEmpty()) {
+      throw new UnsupportedOperationException("Custom proto adapters were already assigned.");
+    }
+
+    Map<ProtoType, TypeName> nameToJavaName = new LinkedHashMap<>(this.nameToJavaName);
     Map<ProtoType, TypeName> nameToProtoFieldsJavaName = new LinkedHashMap<>();
 
-    for (Map.Entry<ProtoType, TypeName> entry : nameToJavaName.entrySet()) {
-      TypeName protoFieldsJavaName = clone.put(entry.getKey(), entry.getValue());
-      nameToProtoFieldsJavaName.put(entry.getKey(), protoFieldsJavaName);
+    for (Map.Entry<ProtoType, TypeName> entry : protoTypeToCustomJavaName.entrySet()) {
+      ClassName protoFieldsJavaName = (ClassName) nameToJavaName.put(entry.getKey(), entry.getValue());
+      if (protoFieldsJavaName == null) {
+        throw new IllegalArgumentException("Custom proto adapter specified for missing proto.");
+      }
+
+      nameToProtoFieldsJavaName.put(entry.getKey(),
+          protoFieldsJavaName.peerClass(protoFieldsJavaName.simpleName() + "ProtoFields"));
     }
 
     return new JavaGenerator(schema, ImmutableMap.copyOf(nameToProtoFieldsJavaName),
-        ImmutableMap.copyOf(clone), ImmutableMap.copyOf(protoTypeToAdapter),
+        ImmutableMap.copyOf(nameToJavaName), ImmutableMap.copyOf(protoTypeToAdapter),
         emitAndroid, emitCompact);
   }
 
@@ -214,7 +224,7 @@ public final class JavaGenerator {
 
     return new JavaGenerator(schema, ImmutableMap.<ProtoType, TypeName>of(),
         ImmutableMap.copyOf(nameToJavaName),
-        ImmutableMap.<ProtoType, Map.Entry<ClassName, String>>of(), false, false);
+        ImmutableMap.<ProtoType, AdapterEntry>of(), false, false);
   }
 
   private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
@@ -244,9 +254,17 @@ public final class JavaGenerator {
     return candidate;
   }
 
-  public TypeName protoFieldsTypeName(ProtoType protoType) {
-    TypeName candidate = nameToProtoFieldsJavaName.get(protoType);
-    return candidate;
+  /**
+   * Returns the Java type of the ProtoFields helper class generated for a corresponding
+   * {@code protoType} that has a custom adapter. If null, then the provided {@code protoType}
+   * is not using a custom proto adapter.
+   */
+  public ClassName protoFieldsTypeName(ProtoType protoType) {
+    TypeName typeName = nameToProtoFieldsJavaName.get(protoType);
+    if (typeName == null) {
+      return null;
+    }
+    return (ClassName) typeName;
   }
 
   private CodeBlock singleAdapterFor(Field field) {
@@ -262,9 +280,9 @@ public final class JavaGenerator {
     } else if (type.isMap()) {
       throw new IllegalArgumentException("Cannot create single adapter for map type " + type);
     } else {
-      Map.Entry<ClassName, String> adapter = protoTypeToAdapter.get(type);
+      AdapterEntry adapter = protoTypeToAdapter.get(type);
       if (adapter != null) {
-        result.add("$T.$L", adapter.getKey(), adapter.getValue());
+        result.add("$T.$L", adapter.className, adapter.adapterName);
       } else {
         result.add("$T.ADAPTER", typeName(type));
       }
@@ -596,8 +614,8 @@ public final class JavaGenerator {
   public TypeSpec generateProtoFields(MessageType type) {
     NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
 
-    ClassName javaType = (ClassName) protoFieldsTypeName(type.type());
-    TypeSpec.Builder builder = TypeSpec.classBuilder(javaType.simpleName() + "ProtoFields");
+    ClassName javaType = protoFieldsTypeName(type.type());
+    TypeSpec.Builder builder = TypeSpec.classBuilder(javaType.simpleName());
     builder.addModifiers(PUBLIC, FINAL);
 
     for (Type nestedType : type.nestedTypes()) {
@@ -624,12 +642,8 @@ public final class JavaGenerator {
         adapter = CodeBlock.of("$T.newMapAdapter($L, $L)", ADAPTER,
             singleAdapterFor(field.type().keyType()),
             singleAdapterFor(field.type().valueType()));
-      } else if (field.isPacked()) {
-        adapter = singleAdapterFor(field).toBuilder().add(".asPacked()").build();
-      } else if (field.isRepeated()) {
-        adapter = singleAdapterFor(field).toBuilder().add(".asRepeated()").build();
       } else {
-        adapter = singleAdapterFor(field);
+        adapter = adapterFor(field);
       }
 
       CodeBlock defaultVal = CodeBlock.of("null");
@@ -971,8 +985,8 @@ public final class JavaGenerator {
     if (type.isScalar()) {
       return ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US);
     } else if (protoTypeToAdapter.containsKey(type)) {
-      Map.Entry<ClassName, String> adapter = protoTypeToAdapter.get(type);
-      return reflectionName(adapter.getKey()) + "#" + adapter.getValue();
+      AdapterEntry adapter = protoTypeToAdapter.get(type);
+      return reflectionName(adapter.className) + "#" + adapter.adapterName;
     } else {
       return reflectionName((ClassName) typeName(type)) + "#ADAPTER";
     }

@@ -20,6 +20,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.java.AdapterEntry;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.Location;
@@ -34,7 +35,6 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -119,13 +119,13 @@ public final class WireCompiler {
   final boolean emitAndroid;
   final boolean emitCompact;
   final ImmutableMap<ProtoType, TypeName> protoTypeToJavaClassName;
-  final ImmutableMap<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter;
+  final ImmutableMap<ProtoType, AdapterEntry> protoTypeToAdapter;
 
   WireCompiler(FileSystem fs, WireLogger log, List<String> protoPaths, String javaOut,
       List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
       boolean namedFilesOnly, boolean emitAndroid, boolean emitCompact,
       Map<ProtoType, TypeName> protoTypeToJavaClassName,
-      Map<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter) {
+      Map<ProtoType, AdapterEntry> protoTypeToAdapter) {
     this.fs = fs;
     this.log = log;
     this.protoPaths = protoPaths;
@@ -167,7 +167,7 @@ public final class WireCompiler {
     boolean emitAndroid = false;
     boolean emitCompact = false;
     Map<ProtoType, TypeName> protoTypeToJavaClass = new LinkedHashMap<>();
-    Map<ProtoType, Map.Entry<ClassName, String>> protoTypeToAdapter = new LinkedHashMap<>();
+    Map<ProtoType, AdapterEntry> protoTypeToAdapter = new LinkedHashMap<>();
 
     for (String arg : args) {
       if (arg.startsWith(PROTO_PATH_FLAG)) {
@@ -199,13 +199,9 @@ public final class WireCompiler {
 
         ProtoType protoType = ProtoType.get(customProtoAdapterArgs.get(0).trim());
         ClassName javaClassName = ClassName.bestGuess(customProtoAdapterArgs.get(1).trim());
-        String[] adapterStrings = customProtoAdapterArgs.get(2).trim().split("#");
-        ClassName adapterClassName = ClassName.bestGuess(adapterStrings[0]);
-        String adapterName = adapterStrings[1];
 
         protoTypeToJavaClass.put(protoType, javaClassName);
-        protoTypeToAdapter.put(protoType,
-            new AbstractMap.SimpleImmutableEntry(adapterClassName, adapterName));
+        protoTypeToAdapter.put(protoType, new AdapterEntry(customProtoAdapterArgs.get(2).trim()));
       } else if (arg.equals(QUIET_FLAG)) {
         quiet = true;
       } else if (arg.equals(DRY_RUN_FLAG)) {

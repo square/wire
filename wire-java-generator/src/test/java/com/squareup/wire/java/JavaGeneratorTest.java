@@ -24,7 +24,6 @@ import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaBuilder;
-import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.Test;
@@ -75,9 +74,8 @@ public final class JavaGeneratorTest {
     Map<ProtoType, TypeName> nameToJavaName = new LinkedHashMap<>();
     nameToJavaName.put(protoType, className);
 
-    Map<ProtoType, Map.Entry<ClassName, String>> nameToAdapter = new LinkedHashMap<>();
-    Map.Entry<ClassName, String> adapter =
-        new AbstractMap.SimpleImmutableEntry<>(className, "ADAPTER");
+    Map<ProtoType, AdapterEntry> nameToAdapter = new LinkedHashMap<>();
+    AdapterEntry adapter = new AdapterEntry(className, "ADAPTER");
     nameToAdapter.put(protoType, adapter);
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
