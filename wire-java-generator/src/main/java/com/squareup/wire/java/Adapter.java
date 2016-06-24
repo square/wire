@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2016 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,16 @@ package com.squareup.wire.java;
 
 import com.squareup.javapoet.ClassName;
 
-public class AdapterEntry {
+public final class Adapter {
   public final ClassName className;
   public final String adapterName;
 
-  public AdapterEntry(ClassName className, String adapterName) {
+  public Adapter(ClassName className, String adapterName) {
     this.className = className;
     this.adapterName = adapterName;
   }
 
-  public AdapterEntry(String adapter) {
+  public Adapter(String adapter) {
     String[] names = adapter.split("#");
     if (names.length != 2) {
       throw new IllegalArgumentException("Illegally formatted adapter: " + adapter + ".");

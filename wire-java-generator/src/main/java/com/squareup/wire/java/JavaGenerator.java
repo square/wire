@@ -157,13 +157,13 @@ public final class JavaGenerator {
   private final Schema schema;
   private final ImmutableMap<ProtoType, TypeName> nameToProtoFieldsJavaName;
   private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
-  private final ImmutableMap<ProtoType, AdapterEntry> protoTypeToAdapter;
+  private final ImmutableMap<ProtoType, Adapter> protoTypeToAdapter;
   private final boolean emitAndroid;
   private final boolean emitCompact;
 
   private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToProtoFieldsJavaName,
       ImmutableMap<ProtoType, TypeName> nameToJavaName,
-      ImmutableMap<ProtoType, AdapterEntry> protoTypeToAdapter,
+      ImmutableMap<ProtoType, Adapter> protoTypeToAdapter,
       boolean emitAndroid, boolean emitCompact) {
     this.schema = schema;
     this.nameToProtoFieldsJavaName = nameToProtoFieldsJavaName;
@@ -185,7 +185,7 @@ public final class JavaGenerator {
 
   public JavaGenerator withCustomProtoAdapter(
       ImmutableMap<ProtoType, TypeName> protoTypeToCustomJavaName,
-      ImmutableMap<ProtoType, AdapterEntry> protoTypeToAdapter) {
+      ImmutableMap<ProtoType, Adapter> protoTypeToAdapter) {
     if (!this.nameToProtoFieldsJavaName.isEmpty()) {
       throw new UnsupportedOperationException("Custom proto adapters were already assigned.");
     }
@@ -194,7 +194,8 @@ public final class JavaGenerator {
     Map<ProtoType, TypeName> nameToProtoFieldsJavaName = new LinkedHashMap<>();
 
     for (Map.Entry<ProtoType, TypeName> entry : protoTypeToCustomJavaName.entrySet()) {
-      ClassName protoFieldsJavaName = (ClassName) nameToJavaName.put(entry.getKey(), entry.getValue());
+      ClassName protoFieldsJavaName =
+          (ClassName) nameToJavaName.put(entry.getKey(), entry.getValue());
       if (protoFieldsJavaName == null) {
         throw new IllegalArgumentException("Custom proto adapter specified for missing proto.");
       }
@@ -224,7 +225,7 @@ public final class JavaGenerator {
 
     return new JavaGenerator(schema, ImmutableMap.<ProtoType, TypeName>of(),
         ImmutableMap.copyOf(nameToJavaName),
-        ImmutableMap.<ProtoType, AdapterEntry>of(), false, false);
+        ImmutableMap.<ProtoType, Adapter>of(), false, false);
   }
 
   private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
@@ -280,7 +281,7 @@ public final class JavaGenerator {
     } else if (type.isMap()) {
       throw new IllegalArgumentException("Cannot create single adapter for map type " + type);
     } else {
-      AdapterEntry adapter = protoTypeToAdapter.get(type);
+      Adapter adapter = protoTypeToAdapter.get(type);
       if (adapter != null) {
         result.add("$T.$L", adapter.className, adapter.adapterName);
       } else {
@@ -646,6 +647,7 @@ public final class JavaGenerator {
         adapter = adapterFor(field);
       }
 
+
       CodeBlock defaultVal = CodeBlock.of("null");
       if ((field.type().isScalar() || isEnum(field.type()))
           && !field.isRepeated()
@@ -984,12 +986,14 @@ public final class JavaGenerator {
   private String adapterString(ProtoType type) {
     if (type.isScalar()) {
       return ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US);
-    } else if (protoTypeToAdapter.containsKey(type)) {
-      AdapterEntry adapter = protoTypeToAdapter.get(type);
-      return reflectionName(adapter.className) + "#" + adapter.adapterName;
-    } else {
-      return reflectionName((ClassName) typeName(type)) + "#ADAPTER";
     }
+
+    Adapter adapter = protoTypeToAdapter.get(type);
+    if (adapter != null) {
+      return reflectionName(adapter.className) + "#" + adapter.adapterName;
+    }
+
+    return reflectionName((ClassName) typeName(type)) + "#ADAPTER";
   }
 
   private String reflectionName(ClassName className) {

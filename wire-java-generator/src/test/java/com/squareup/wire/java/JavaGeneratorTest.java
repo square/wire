@@ -74,8 +74,8 @@ public final class JavaGeneratorTest {
     Map<ProtoType, TypeName> nameToJavaName = new LinkedHashMap<>();
     nameToJavaName.put(protoType, className);
 
-    Map<ProtoType, AdapterEntry> nameToAdapter = new LinkedHashMap<>();
-    AdapterEntry adapter = new AdapterEntry(className, "ADAPTER");
+    Map<ProtoType, Adapter> nameToAdapter = new LinkedHashMap<>();
+    Adapter adapter = new Adapter(className, "ADAPTER");
     nameToAdapter.put(protoType, adapter);
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)

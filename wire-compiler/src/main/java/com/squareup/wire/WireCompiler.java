@@ -20,7 +20,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.java.AdapterEntry;
+import com.squareup.wire.java.Adapter;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.Location;
@@ -119,13 +119,13 @@ public final class WireCompiler {
   final boolean emitAndroid;
   final boolean emitCompact;
   final ImmutableMap<ProtoType, TypeName> protoTypeToJavaClassName;
-  final ImmutableMap<ProtoType, AdapterEntry> protoTypeToAdapter;
+  final ImmutableMap<ProtoType, Adapter> protoTypeToAdapter;
 
   WireCompiler(FileSystem fs, WireLogger log, List<String> protoPaths, String javaOut,
       List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
       boolean namedFilesOnly, boolean emitAndroid, boolean emitCompact,
       Map<ProtoType, TypeName> protoTypeToJavaClassName,
-      Map<ProtoType, AdapterEntry> protoTypeToAdapter) {
+      Map<ProtoType, Adapter> protoTypeToAdapter) {
     this.fs = fs;
     this.log = log;
     this.protoPaths = protoPaths;
@@ -167,7 +167,7 @@ public final class WireCompiler {
     boolean emitAndroid = false;
     boolean emitCompact = false;
     Map<ProtoType, TypeName> protoTypeToJavaClass = new LinkedHashMap<>();
-    Map<ProtoType, AdapterEntry> protoTypeToAdapter = new LinkedHashMap<>();
+    Map<ProtoType, Adapter> protoTypeToAdapter = new LinkedHashMap<>();
 
     for (String arg : args) {
       if (arg.startsWith(PROTO_PATH_FLAG)) {
@@ -201,7 +201,7 @@ public final class WireCompiler {
         ClassName javaClassName = ClassName.bestGuess(customProtoAdapterArgs.get(1).trim());
 
         protoTypeToJavaClass.put(protoType, javaClassName);
-        protoTypeToAdapter.put(protoType, new AdapterEntry(customProtoAdapterArgs.get(2).trim()));
+        protoTypeToAdapter.put(protoType, new Adapter(customProtoAdapterArgs.get(2).trim()));
       } else if (arg.equals(QUIET_FLAG)) {
         quiet = true;
       } else if (arg.equals(DRY_RUN_FLAG)) {
