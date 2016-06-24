@@ -29,7 +29,7 @@ import okio.Source;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /** Builds schemas for testing. */
-class SchemaBuilder {
+public final class SchemaBuilder {
   final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
   final Path root = fs.getPath("/");
   final SchemaLoader schemaLoader = new SchemaLoader().addSource(root);
