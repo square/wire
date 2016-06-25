@@ -38,6 +38,7 @@ import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoAdapter.EnumConstantNotFoundException;
+import com.squareup.wire.ProtoField;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
@@ -108,23 +109,23 @@ public final class JavaGenerator {
     }
   });
 
-  private static final Map<ProtoType, TypeName> BUILT_IN_TYPES_MAP =
-      ImmutableMap.<ProtoType, TypeName>builder()
-          .put(ProtoType.BOOL, TypeName.BOOLEAN.box())
+  private static final Map<ProtoType, ClassName> BUILT_IN_TYPES_MAP =
+      ImmutableMap.<ProtoType, ClassName>builder()
+          .put(ProtoType.BOOL, (ClassName) TypeName.BOOLEAN.box())
           .put(ProtoType.BYTES, ClassName.get(ByteString.class))
-          .put(ProtoType.DOUBLE, TypeName.DOUBLE.box())
-          .put(ProtoType.FLOAT, TypeName.FLOAT.box())
-          .put(ProtoType.FIXED32, TypeName.INT.box())
-          .put(ProtoType.FIXED64, TypeName.LONG.box())
-          .put(ProtoType.INT32, TypeName.INT.box())
-          .put(ProtoType.INT64, TypeName.LONG.box())
-          .put(ProtoType.SFIXED32, TypeName.INT.box())
-          .put(ProtoType.SFIXED64, TypeName.LONG.box())
-          .put(ProtoType.SINT32, TypeName.INT.box())
-          .put(ProtoType.SINT64, TypeName.LONG.box())
+          .put(ProtoType.DOUBLE, (ClassName) TypeName.DOUBLE.box())
+          .put(ProtoType.FLOAT, (ClassName) TypeName.FLOAT.box())
+          .put(ProtoType.FIXED32, (ClassName) TypeName.INT.box())
+          .put(ProtoType.FIXED64, (ClassName) TypeName.LONG.box())
+          .put(ProtoType.INT32, (ClassName) TypeName.INT.box())
+          .put(ProtoType.INT64, (ClassName) TypeName.LONG.box())
+          .put(ProtoType.SFIXED32, (ClassName) TypeName.INT.box())
+          .put(ProtoType.SFIXED64, (ClassName) TypeName.LONG.box())
+          .put(ProtoType.SINT32, (ClassName) TypeName.INT.box())
+          .put(ProtoType.SINT64, (ClassName) TypeName.LONG.box())
           .put(ProtoType.STRING, ClassName.get(String.class))
-          .put(ProtoType.UINT32, TypeName.INT.box())
-          .put(ProtoType.UINT64, TypeName.LONG.box())
+          .put(ProtoType.UINT32, (ClassName) TypeName.INT.box())
+          .put(ProtoType.UINT64, (ClassName) TypeName.LONG.box())
           .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
           .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
           .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
@@ -162,28 +163,61 @@ public final class JavaGenerator {
   });
 
   private final Schema schema;
-  private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
+  private final ImmutableMap<ProtoType, ClassName> nameToProtoFieldsJavaName;
+  private final ImmutableMap<ProtoType, ClassName> nameToJavaName;
+  private final ImmutableMap<ProtoType, AdapterConstant> protoTypeToAdapterConstant;
   private final boolean emitAndroid;
   private final boolean emitCompact;
 
-  private JavaGenerator(Schema schema, ImmutableMap<ProtoType, TypeName> nameToJavaName,
+  private JavaGenerator(Schema schema, ImmutableMap<ProtoType, ClassName> nameToProtoFieldsJavaName,
+      ImmutableMap<ProtoType, ClassName> nameToJavaName,
+      ImmutableMap<ProtoType, AdapterConstant> protoTypeToAdapterConstant,
       boolean emitAndroid, boolean emitCompact) {
     this.schema = schema;
+    this.nameToProtoFieldsJavaName = nameToProtoFieldsJavaName;
     this.nameToJavaName = nameToJavaName;
+    this.protoTypeToAdapterConstant = protoTypeToAdapterConstant;
     this.emitAndroid = emitAndroid;
     this.emitCompact = emitCompact;
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToJavaName, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToProtoFieldsJavaName, nameToJavaName,
+        protoTypeToAdapterConstant, emitAndroid, emitCompact);
   }
 
   public JavaGenerator withCompact(boolean compactGeneration) {
-    return new JavaGenerator(schema, nameToJavaName, emitAndroid, compactGeneration);
+    return new JavaGenerator(schema, nameToProtoFieldsJavaName, nameToJavaName,
+        protoTypeToAdapterConstant, emitAndroid, compactGeneration);
+  }
+
+  public JavaGenerator withCustomProtoAdapter(
+      ImmutableMap<ProtoType, ClassName> protoTypeToCustomJavaName,
+      ImmutableMap<ProtoType, AdapterConstant> protoTypeToAdapterConstant) {
+    if (!this.nameToProtoFieldsJavaName.isEmpty()) {
+      throw new IllegalStateException();
+    }
+
+    Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>(this.nameToJavaName);
+    Map<ProtoType, ClassName> nameToProtoFieldsJavaName = new LinkedHashMap<>();
+
+    for (Map.Entry<ProtoType, ClassName> entry : protoTypeToCustomJavaName.entrySet()) {
+      ClassName protoFieldsJavaName = nameToJavaName.put(entry.getKey(), entry.getValue());
+      if (protoFieldsJavaName == null) {
+        throw new IllegalArgumentException("Custom proto adapter specified for missing proto.");
+      }
+
+      nameToProtoFieldsJavaName.put(entry.getKey(),
+          protoFieldsJavaName.peerClass(protoFieldsJavaName.simpleName() + "ProtoFields"));
+    }
+
+    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToProtoFieldsJavaName),
+        ImmutableMap.copyOf(nameToJavaName), ImmutableMap.copyOf(protoTypeToAdapterConstant),
+        emitAndroid, emitCompact);
   }
 
   public static JavaGenerator get(Schema schema) {
-    Map<ProtoType, TypeName> nameToJavaName = new LinkedHashMap<>();
+    Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>();
     nameToJavaName.putAll(BUILT_IN_TYPES_MAP);
 
     for (ProtoFile protoFile : schema.protoFiles()) {
@@ -196,10 +230,12 @@ public final class JavaGenerator {
       }
     }
 
-    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToJavaName), false, false);
+    return new JavaGenerator(schema, ImmutableMap.<ProtoType, ClassName>of(),
+        ImmutableMap.copyOf(nameToJavaName),
+        ImmutableMap.<ProtoType, AdapterConstant>of(), false, false);
   }
 
-  private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
+  private static void putAll(Map<ProtoType, ClassName> wireToJava, String javaPackage,
       ClassName enclosingClassName, List<Type> types) {
     for (Type type : types) {
       ClassName className = enclosingClassName != null
@@ -226,6 +262,15 @@ public final class JavaGenerator {
     return candidate;
   }
 
+  /**
+   * Returns the Java type of the ProtoFields helper class generated for a corresponding
+   * {@code protoType} that has a custom adapter. Returns null if {@code protoType} is not using a
+   * custom proto adapter.
+   */
+  public ClassName protoFieldsTypeName(ProtoType protoType) {
+    return nameToProtoFieldsJavaName.get(protoType);
+  }
+
   private CodeBlock singleAdapterFor(Field field) {
     return field.type().isMap()
         ? CodeBlock.of("$N", field.name())
@@ -239,7 +284,12 @@ public final class JavaGenerator {
     } else if (type.isMap()) {
       throw new IllegalArgumentException("Cannot create single adapter for map type " + type);
     } else {
-      result.add("$T.ADAPTER", typeName(type));
+      AdapterConstant adapterConstant = protoTypeToAdapterConstant.get(type);
+      if (adapterConstant != null) {
+        result.add("$T.$L", adapterConstant.className, adapterConstant.adapterName);
+      } else {
+        result.add("$T.ADAPTER", typeName(type));
+      }
     }
     return result.build();
   }
@@ -309,6 +359,9 @@ public final class JavaGenerator {
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateType(Type type) {
     if (type instanceof MessageType) {
+      if (protoTypeToAdapterConstant.containsKey(type.type())) {
+        return generateProtoFields((MessageType) type);
+      }
       //noinspection deprecation: Only deprecated as a public API.
       return generateMessage((MessageType) type);
     }
@@ -558,6 +611,57 @@ public final class JavaGenerator {
       builder.addType(generateType(nestedType));
     }
 
+    return builder.build();
+  }
+
+  /** Returns generated code that maps field names to field tags. */
+  public TypeSpec generateProtoFields(MessageType type) {
+    NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
+
+    ClassName javaType = protoFieldsTypeName(type.type());
+    TypeSpec.Builder builder = TypeSpec.classBuilder(javaType.simpleName());
+    builder.addModifiers(PUBLIC, FINAL);
+
+    for (Type nestedType : type.nestedTypes()) {
+      if (!protoTypeToAdapterConstant.containsKey(nestedType.type())) {
+        throw new IllegalArgumentException("Missing custom proto adapter for "
+            + nestedType.type().enclosingTypeOrPackage() + "." + nestedType.type().simpleName()
+            + " when enclosing proto has custom proto adapter.");
+      }
+      if (nestedType instanceof MessageType) {
+        builder.addType(generateProtoFields((MessageType) nestedType));
+      }
+    }
+
+    for (Field field : type.fieldsAndOneOfFields()) {
+      String fieldName = nameAllocator.get(field);
+
+      TypeName typeName =
+          ParameterizedTypeName.get(ClassName.get(ProtoField.class), fieldType(field));
+      FieldSpec.Builder fieldBuilder =
+          FieldSpec.builder(typeName, fieldName, PUBLIC, STATIC, FINAL);
+
+      CodeBlock adapter;
+      if (field.type().isMap()) {
+        adapter = CodeBlock.of("$T.newMapAdapter($L, $L)", ADAPTER,
+            singleAdapterFor(field.type().keyType()),
+            singleAdapterFor(field.type().valueType()));
+      } else {
+        adapter = adapterFor(field);
+      }
+
+      CodeBlock defaultVal = CodeBlock.of("null");
+      if ((field.type().isScalar() || isEnum(field.type()))
+          && !field.isRepeated()
+          && !field.isPacked()) {
+        defaultVal = defaultValue(field);
+      }
+
+      fieldBuilder.initializer("new $T($L, $L, $L)", ClassName.get(ProtoField.class), field.tag(),
+          adapter, defaultVal);
+
+      builder.addField(fieldBuilder.build());
+    }
     return builder.build();
   }
 
@@ -882,9 +986,16 @@ public final class JavaGenerator {
   }
 
   private String adapterString(ProtoType type) {
-    return type.isScalar()
-          ? ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US)
-          : reflectionName((ClassName) typeName(type)) + "#ADAPTER";
+    if (type.isScalar()) {
+      return ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US);
+    }
+
+    AdapterConstant adapterConstant = protoTypeToAdapterConstant.get(type);
+    if (adapterConstant != null) {
+      return reflectionName(adapterConstant.className) + "#" + adapterConstant.adapterName;
+    }
+
+    return reflectionName((ClassName) typeName(type)) + "#ADAPTER";
   }
 
   private String reflectionName(ClassName className) {
