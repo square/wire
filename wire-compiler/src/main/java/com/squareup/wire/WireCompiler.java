@@ -202,7 +202,8 @@ public final class WireCompiler {
         ClassName javaClassName = ClassName.bestGuess(customProtoAdapterArgs.get(1).trim());
 
         protoTypeToJavaClass.put(protoType, javaClassName);
-        protoTypeToAdapter.put(protoType, new AdapterConstant(customProtoAdapterArgs.get(2).trim()));
+        protoTypeToAdapter.put(protoType, new AdapterConstant(
+            customProtoAdapterArgs.get(2).trim()));
       } else if (arg.equals(QUIET_FLAG)) {
         quiet = true;
       } else if (arg.equals(DRY_RUN_FLAG)) {
