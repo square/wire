@@ -195,7 +195,7 @@ public final class JavaGenerator {
       ImmutableMap<ProtoType, ClassName> protoTypeToCustomJavaName,
       ImmutableMap<ProtoType, AdapterConstant> protoTypeToAdapterConstant) {
     if (!this.nameToProtoFieldsJavaName.isEmpty()) {
-      throw new IllegalStateException();
+      throw new IllegalStateException("Redefining custom proto adapter is illegal.");
     }
 
     Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>(this.nameToJavaName);
