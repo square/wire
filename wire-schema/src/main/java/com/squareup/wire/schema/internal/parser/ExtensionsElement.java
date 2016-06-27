@@ -16,8 +16,8 @@
 package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
-import com.squareup.wire.schema.internal.Util;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.internal.Util;
 
 import static com.squareup.wire.schema.internal.Util.appendDocumentation;
 
