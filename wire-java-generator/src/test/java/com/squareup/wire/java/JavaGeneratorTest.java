@@ -48,6 +48,26 @@ public final class JavaGeneratorTest {
     assertThat(JavaGenerator.sanitizeJavadoc(input)).isEqualTo(expected);
   }
 
+  @Test public void generateTypeUsesNameAllocatorInMessageBuilderBuild() {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  required float long = 1;\n"
+            + "}\n")
+        .build();
+    MessageType message = (MessageType) schema.getType("Message");
+    JavaGenerator javaGenerator = JavaGenerator.get(schema);
+    TypeSpec typeSpec = javaGenerator.generateType(message);
+    assertThat(JavaFile.builder("com.squareup.message", typeSpec).build().toString()).contains(""
+        + "    @Override\n"
+        + "    public Message build() {\n"
+        + "      if (long_ == null) {\n"
+        + "        throw Internal.missingRequiredFields(long_, \"long\");\n"
+        + "      }\n"
+        + "      return new Message(long_, super.buildUnknownFields());\n"
+        + "    }\n");
+  }
+
   @Test public void generateProtoFields() {
     Schema schema = new SchemaBuilder()
         .add("message.proto", ""

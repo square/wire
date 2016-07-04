@@ -1355,9 +1355,10 @@ public final class JavaGenerator {
       for (int i = 0; i < requiredFields.size(); i++) {
         Field requiredField = requiredFields.get(i);
         if (i > 0) conditionals.add("\n|| ");
-        conditionals.add("$L == null", requiredField.name());
+        conditionals.add("$L == null", nameAllocator.get(requiredField));
         if (i > 0) missingArgs.add(",\n");
-        missingArgs.add("$1L, $1S", requiredField.name());
+        missingArgs.add("$1L, $2S", nameAllocator.get(requiredField),
+            requiredField.name());
       }
 
       result.beginControlFlow("if ($L)", conditionals.add("$]").build())
