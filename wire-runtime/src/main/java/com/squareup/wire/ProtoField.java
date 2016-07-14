@@ -15,6 +15,9 @@
  */
 package com.squareup.wire;
 
+import java.io.IOException;
+
+/** A field that can be decided from or encoded to a protocol buffer message. */
 public final class ProtoField<E> {
   public final int tag;
   public final ProtoAdapter<E> protoAdapter;
@@ -24,5 +27,18 @@ public final class ProtoField<E> {
     this.tag = tag;
     this.protoAdapter = protoAdapter;
     this.defaultValue = defaultValue;
+  }
+
+  /** Returns the encoded size of {@code value}, or 0 if it is null. */
+  public int encodedSize(E value) {
+    return value != null ? protoAdapter.encodedSizeWithTag(tag, value) : 0;
+  }
+
+  /**
+   * Encodes {@code value} with this field's tag to writer. This will not encode anything bytes if
+   * {@code value} is null.
+   */
+  public void encode(ProtoWriter writer, E value) throws IOException {
+    if (value != null) protoAdapter.encodeWithTag(writer, tag, value);
   }
 }

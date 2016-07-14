@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.java;
 
-import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
@@ -23,8 +22,7 @@ import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaBuilder;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,50 +69,48 @@ public final class JavaGeneratorTest {
   @Test public void generateProtoFields() {
     Schema schema = new SchemaBuilder()
         .add("message.proto", ""
+            + "package original.proto;\n"
+            + "option java_package = \"original.java\";\n"
             + "import \"foo.proto\";\n"
-            + "message Message {\n"
-            + "  optional foo_package.Foo field = 1;\n"
-            + "  map<string, foo_package.Bar> bars = 2;\n"
+            + "message ProtoMessage {\n"
+            + "  optional foo.proto.Foo field = 1;\n"
+            + "  map<string, foo.proto.Bar> bars = 2;\n"
             + "  repeated int32 numbers = 3;\n"
             + "}\n")
         .add("foo.proto", ""
-            + "package foo_package;\n"
+            + "package foo.proto;\n"
+            + "option java_package = \"foo.java\";\n"
             + "message Foo {\n"
             + "}\n"
             + "message Bar {\n"
             + "}\n")
         .build();
 
-    MessageType message = (MessageType) schema.getType("Message");
+    ProtoType protoType = ProtoType.get("original.proto", "ProtoMessage");
+    ClassName className = ClassName.get("target.java", "JavaMessage");
 
-    ProtoType protoType = ProtoType.get("Message");
-    ClassName className = ClassName.bestGuess("Message");
-
-    Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>();
-    nameToJavaName.put(protoType, className);
-
-    Map<ProtoType, AdapterConstant> nameToAdapter = new LinkedHashMap<>();
-    AdapterConstant adapterConstant = new AdapterConstant(className, "ADAPTER");
-    nameToAdapter.put(protoType, adapterConstant);
+    MessageType message = (MessageType) schema.getType(protoType);
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
-        .withCustomProtoAdapter(ImmutableMap.copyOf(nameToJavaName),
-            ImmutableMap.copyOf(nameToAdapter));
+        .withCustomProtoAdapter(
+            Collections.singletonMap(protoType, className),
+            Collections.singletonMap(protoType, new AdapterConstant(className, "ADAPTER")));
     TypeSpec typeSpec = javaGenerator.generateProtoFields(message);
+    ClassName typeName = javaGenerator.protoFieldsTypeName(protoType);
 
-    assertThat(JavaFile.builder("com.squareup.message", typeSpec).build().toString()).isEqualTo(""
-        + "package com.squareup.message;\n"
+    assertThat(JavaFile.builder(typeName.packageName(), typeSpec).build().toString()).isEqualTo(""
+        + "package original.java;\n"
         + "\n"
         + "import com.squareup.wire.ProtoAdapter;\n"
         + "import com.squareup.wire.ProtoField;\n"
-        + "import foo_package.Bar;\n"
-        + "import foo_package.Foo;\n"
+        + "import foo.java.Bar;\n"
+        + "import foo.java.Foo;\n"
         + "import java.lang.Integer;\n"
         + "import java.lang.String;\n"
         + "import java.util.List;\n"
         + "import java.util.Map;\n"
         + "\n"
-        + "public final class MessageProtoFields {\n"
+        + "public final class ProtoMessageProtoFields {\n"
         + "  public static final ProtoField<Foo> field = new ProtoField(1, Foo.ADAPTER, null);\n"
         + "\n"
         + "  public static final ProtoField<Map<String, Bar>> bars = new ProtoField(2, ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Bar.ADAPTER), null);\n"

@@ -6,4 +6,12 @@ option java_generic_services = true;
 
 message MuchAwesome {
   optional string very_proto = 1;
+  optional Locale locale = 2;
+}
+
+/** Proto message for locale. Generated code will use java.util.Locale. */
+message Locale {
+  optional string language = 1;
+  optional string country = 2;
+  optional string variant = 3;
 }
