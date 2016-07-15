@@ -192,9 +192,9 @@ public final class JavaGenerator {
   }
 
   public JavaGenerator withCustomProtoAdapter(
-      ImmutableMap<ProtoType, ClassName> protoTypeToCustomJavaName,
-      ImmutableMap<ProtoType, AdapterConstant> protoTypeToAdapterConstant) {
-    if (!this.nameToProtoFieldsJavaName.isEmpty()) {
+      Map<ProtoType, ClassName> protoTypeToCustomJavaName,
+      Map<ProtoType, AdapterConstant> protoTypeToAdapterConstant) {
+    if (!nameToProtoFieldsJavaName.isEmpty()) {
       throw new IllegalStateException("Redefining custom proto adapter is illegal.");
     }
 
@@ -354,6 +354,14 @@ public final class JavaGenerator {
     documentation = documentation.replaceAll(
         "@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
     return documentation;
+  }
+
+  /** Returns the full name of the class generated for {@code type}. */
+  public ClassName generatedTypeName(Type type) {
+    ClassName protoFieldsTypeName = protoFieldsTypeName(type.type());
+    return protoFieldsTypeName != null
+        ? protoFieldsTypeName
+        : (ClassName) typeName(type.type());
   }
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */

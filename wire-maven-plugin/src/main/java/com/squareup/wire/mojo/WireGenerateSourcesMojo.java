@@ -4,10 +4,12 @@ import com.google.common.base.Stopwatch;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.java.AdapterConstant;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
+import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaLoader;
 import com.squareup.wire.schema.Type;
@@ -15,7 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -55,6 +59,10 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.protoFiles", required = true)
   private String[] protoFiles;
 
+  /** List of proto adapter options. */
+  @Parameter(property = "wire.protoAdapters")
+  private ProtoAdapterParameter[] protoAdapters;
+
   @Parameter(
       property = "wire.generatedSourceDirectory",
       defaultValue = "${project.build.directory}/generated-sources/wire")
@@ -82,9 +90,17 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
         schema = retainRoots(identifierSet, schema);
       }
 
+      Map<ProtoType, ClassName> protoTypeToCustomJavaName = new LinkedHashMap<>();
+      Map<ProtoType, AdapterConstant> protoTypeToAdapterConstant = new LinkedHashMap<>();
+      for (ProtoAdapterParameter parameter : protoAdapters) {
+        protoTypeToCustomJavaName.put(parameter.protoType(), parameter.javaName());
+        protoTypeToAdapterConstant.put(parameter.protoType(), parameter.adapter());
+      }
+
       JavaGenerator javaGenerator = JavaGenerator.get(schema)
           .withAndroid(emitAndroid)
-          .withCompact(emitCompact);
+          .withCompact(emitCompact)
+          .withCustomProtoAdapter(protoTypeToCustomJavaName, protoTypeToAdapterConstant);
 
       for (ProtoFile protoFile : schema.protoFiles()) {
         if (!protoFilesList.contains(protoFile.location().path())) {
@@ -94,7 +110,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
         for (Type type : protoFile.types()) {
           Stopwatch stopwatch = Stopwatch.createStarted();
           TypeSpec typeSpec = javaGenerator.generateType(type);
-          ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.type());
+          ClassName javaTypeName = javaGenerator.generatedTypeName(type);
           writeJavaFile(javaTypeName, typeSpec, type.location().withoutBase());
           getLog().info(String.format("Generated %s in %s", javaTypeName, stopwatch));
         }

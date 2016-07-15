@@ -18,7 +18,6 @@ package com.squareup.wire;
 import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.java.AdapterConstant;
 import com.squareup.wire.java.JavaGenerator;
@@ -307,11 +306,7 @@ public final class WireCompiler {
         }
 
         TypeSpec typeSpec = javaGenerator.generateType(type);
-        TypeName typeName = javaGenerator.protoFieldsTypeName(type.type());
-        if (typeName == null) {
-          typeName = javaGenerator.typeName(type.type());
-        }
-        ClassName javaTypeName = (ClassName) typeName;
+        ClassName javaTypeName = javaGenerator.generatedTypeName(type);
         Location location = type.location();
 
         JavaFile.Builder builder = JavaFile.builder(javaTypeName.packageName(), typeSpec)
