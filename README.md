@@ -320,10 +320,11 @@ automatically add the generated Java code to your project's source roots.
             <goal>generate-sources</goal>
           </goals>
           <configuration>
-            <protoFiles>
-              <param>squareup/dinosaurs/dinosaur.proto</param>
-              <param>squareup/geology/period.proto</param>
-            </protoFiles>
+            <includes>
+              <!-- proto package names to generate code for -->
+              <include>squareup.dinosaurs.*</include>
+              <include>squareup.geology.*</include>
+            </includes>
           </configuration>
         </execution>
       </executions>

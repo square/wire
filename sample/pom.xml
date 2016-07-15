@@ -35,10 +35,10 @@
               <goal>generate-sources</goal>
             </goals>
             <configuration>
-              <protoFiles>
-                <param>squareup/dinosaurs/dinosaur.proto</param>
-                <param>squareup/geology/period.proto</param>
-              </protoFiles>
+              <includes>
+                <include>squareup.dinosaurs.*</include>
+                <include>squareup.geology.*</include>
+              </includes>
             </configuration>
           </execution>
         </executions>
