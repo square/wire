@@ -103,7 +103,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           .withCustomProtoAdapter(protoTypeToCustomJavaName, protoTypeToAdapterConstant);
 
       for (ProtoFile protoFile : schema.protoFiles()) {
-        if (!protoFilesList.contains(protoFile.location().path())) {
+        if (!protoFilesList.isEmpty() && !protoFilesList.contains(protoFile.location().path())) {
           continue; // Don't emit anything for files not explicitly compiled.
         }
 
