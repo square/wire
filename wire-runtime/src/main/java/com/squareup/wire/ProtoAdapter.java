@@ -117,10 +117,12 @@ public abstract class ProtoAdapter<E> {
   public abstract int encodedSize(E value);
 
   /**
-   * The size of {@code tag} and non-null {@code value} in the wire format. This size includes the
-   * tag, type, length-delimited prefix (should the type require one), and value.
+   * The size of {@code tag} and {@code value} in the wire format. This size includes the tag, type,
+   * length-delimited prefix (should the type require one), and value. Returns 0 if {@code value} is
+   * null.
    */
   public int encodedSizeWithTag(int tag, E value) {
+    if (value == null) return 0;
     int size = encodedSize(value);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       size += varint32Size(size);
@@ -131,8 +133,9 @@ public abstract class ProtoAdapter<E> {
   /** Write non-null {@code value} to {@code writer}. */
   public abstract void encode(ProtoWriter writer, E value) throws IOException;
 
-  /** Write {@code tag} and non-null {@code value} to {@code writer}. */
+  /** Write {@code tag} and {@code value} to {@code writer}. If value is null this does nothing. */
   public void encodeWithTag(ProtoWriter writer, int tag, E value) throws IOException {
+    if (value == null) return;
     writer.writeTag(tag, fieldEncoding);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
       writer.writeVarint32(encodedSize(value));

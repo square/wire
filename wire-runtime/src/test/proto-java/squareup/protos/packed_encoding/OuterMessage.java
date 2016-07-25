@@ -110,21 +110,21 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
   }
 
   private static final class ProtoAdapter_OuterMessage extends ProtoAdapter<OuterMessage> {
-    ProtoAdapter_OuterMessage() {
+    public ProtoAdapter_OuterMessage() {
       super(FieldEncoding.LENGTH_DELIMITED, OuterMessage.class);
     }
 
     @Override
     public int encodedSize(OuterMessage value) {
-      return (value.outer_number_before != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before) : 0)
-          + (value.embedded_message != null ? EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message) : 0)
+      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before)
+          + EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OuterMessage value) throws IOException {
-      if (value.outer_number_before != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before);
-      if (value.embedded_message != null) EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before);
+      EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message);
       writer.writeBytes(value.unknownFields());
     }
 

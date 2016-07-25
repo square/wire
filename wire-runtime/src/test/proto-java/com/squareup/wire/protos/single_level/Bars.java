@@ -93,7 +93,7 @@ public final class Bars extends Message<Bars, Bars.Builder> {
   }
 
   private static final class ProtoAdapter_Bars extends ProtoAdapter<Bars> {
-    ProtoAdapter_Bars() {
+    public ProtoAdapter_Bars() {
       super(FieldEncoding.LENGTH_DELIMITED, Bars.class);
     }
 

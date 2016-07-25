@@ -95,7 +95,7 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
   private static final class ProtoAdapter_Mappy extends ProtoAdapter<Mappy> {
     private final ProtoAdapter<Map<String, Thing>> things = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER);
 
-    ProtoAdapter_Mappy() {
+    public ProtoAdapter_Mappy() {
       super(FieldEncoding.LENGTH_DELIMITED, Mappy.class);
     }
 

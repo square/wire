@@ -637,49 +637,49 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   }
 
   private static final class ProtoAdapter_FieldOptions extends ProtoAdapter<FieldOptions> {
-    ProtoAdapter_FieldOptions() {
+    public ProtoAdapter_FieldOptions() {
       super(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class);
     }
 
     @Override
     public int encodedSize(FieldOptions value) {
-      return (value.ctype != null ? CType.ADAPTER.encodedSizeWithTag(1, value.ctype) : 0)
-          + (value.packed != null ? ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed) : 0)
-          + (value.jstype != null ? JSType.ADAPTER.encodedSizeWithTag(6, value.jstype) : 0)
-          + (value.lazy != null ? ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy) : 0)
-          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) : 0)
-          + (value.weak != null ? ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak) : 0)
+      return CType.ADAPTER.encodedSizeWithTag(1, value.ctype)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed)
+          + JSType.ADAPTER.encodedSizeWithTag(6, value.jstype)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak)
           + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + (value.my_field_option_one != null ? ProtoAdapter.INT32.encodedSizeWithTag(60001, value.my_field_option_one) : 0)
-          + (value.my_field_option_two != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(60002, value.my_field_option_two) : 0)
-          + (value.my_field_option_three != null ? FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(60003, value.my_field_option_three) : 0)
-          + (value.my_field_option_four != null ? FooBar.ADAPTER.encodedSizeWithTag(60004, value.my_field_option_four) : 0)
-          + (value.squareup_protos_extension_collision_1_a != null ? ProtoAdapter.STRING.encodedSizeWithTag(22101, value.squareup_protos_extension_collision_1_a) : 0)
-          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(22102, value.b) : 0)
-          + (value.squareup_protos_extension_collision_2_a != null ? ProtoAdapter.STRING.encodedSizeWithTag(22103, value.squareup_protos_extension_collision_2_a) : 0)
-          + (value.c != null ? ProtoAdapter.STRING.encodedSizeWithTag(22104, value.c) : 0)
-          + (value.redacted != null ? ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted) : 0)
+          + ProtoAdapter.INT32.encodedSizeWithTag(60001, value.my_field_option_one)
+          + ProtoAdapter.FLOAT.encodedSizeWithTag(60002, value.my_field_option_two)
+          + FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(60003, value.my_field_option_three)
+          + FooBar.ADAPTER.encodedSizeWithTag(60004, value.my_field_option_four)
+          + ProtoAdapter.STRING.encodedSizeWithTag(22101, value.squareup_protos_extension_collision_1_a)
+          + ProtoAdapter.STRING.encodedSizeWithTag(22102, value.b)
+          + ProtoAdapter.STRING.encodedSizeWithTag(22103, value.squareup_protos_extension_collision_2_a)
+          + ProtoAdapter.STRING.encodedSizeWithTag(22104, value.c)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, FieldOptions value) throws IOException {
-      if (value.ctype != null) CType.ADAPTER.encodeWithTag(writer, 1, value.ctype);
-      if (value.packed != null) ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.packed);
-      if (value.jstype != null) JSType.ADAPTER.encodeWithTag(writer, 6, value.jstype);
-      if (value.lazy != null) ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.lazy);
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
-      if (value.weak != null) ProtoAdapter.BOOL.encodeWithTag(writer, 10, value.weak);
+      CType.ADAPTER.encodeWithTag(writer, 1, value.ctype);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.packed);
+      JSType.ADAPTER.encodeWithTag(writer, 6, value.jstype);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.lazy);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.deprecated);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 10, value.weak);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
-      if (value.my_field_option_one != null) ProtoAdapter.INT32.encodeWithTag(writer, 60001, value.my_field_option_one);
-      if (value.my_field_option_two != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 60002, value.my_field_option_two);
-      if (value.my_field_option_three != null) FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 60003, value.my_field_option_three);
-      if (value.my_field_option_four != null) FooBar.ADAPTER.encodeWithTag(writer, 60004, value.my_field_option_four);
-      if (value.squareup_protos_extension_collision_1_a != null) ProtoAdapter.STRING.encodeWithTag(writer, 22101, value.squareup_protos_extension_collision_1_a);
-      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 22102, value.b);
-      if (value.squareup_protos_extension_collision_2_a != null) ProtoAdapter.STRING.encodeWithTag(writer, 22103, value.squareup_protos_extension_collision_2_a);
-      if (value.c != null) ProtoAdapter.STRING.encodeWithTag(writer, 22104, value.c);
-      if (value.redacted != null) ProtoAdapter.BOOL.encodeWithTag(writer, 22200, value.redacted);
+      ProtoAdapter.INT32.encodeWithTag(writer, 60001, value.my_field_option_one);
+      ProtoAdapter.FLOAT.encodeWithTag(writer, 60002, value.my_field_option_two);
+      FooBar.FooBarBazEnum.ADAPTER.encodeWithTag(writer, 60003, value.my_field_option_three);
+      FooBar.ADAPTER.encodeWithTag(writer, 60004, value.my_field_option_four);
+      ProtoAdapter.STRING.encodeWithTag(writer, 22101, value.squareup_protos_extension_collision_1_a);
+      ProtoAdapter.STRING.encodeWithTag(writer, 22102, value.b);
+      ProtoAdapter.STRING.encodeWithTag(writer, 22103, value.squareup_protos_extension_collision_2_a);
+      ProtoAdapter.STRING.encodeWithTag(writer, 22104, value.c);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 22200, value.redacted);
       writer.writeBytes(value.unknownFields());
     }
 

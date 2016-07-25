@@ -102,7 +102,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
   }
 
   private static final class ProtoAdapter_RedactedRequired extends ProtoAdapter<RedactedRequired> {
-    ProtoAdapter_RedactedRequired() {
+    public ProtoAdapter_RedactedRequired() {
       super(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class);
     }
 

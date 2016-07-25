@@ -3193,19 +3193,19 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
-      ProtoAdapter_NestedMessage() {
+      public ProtoAdapter_NestedMessage() {
         super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class);
       }
 
       @Override
       public int encodedSize(NestedMessage value) {
-        return (value.a != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.a) : 0)
+        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, NestedMessage value) throws IOException {
-        if (value.a != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a);
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -3253,29 +3253,29 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private final ProtoAdapter<Map<String, NestedEnum>> ext_map_string_enum = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
 
-    ProtoAdapter_AllTypes() {
+    public ProtoAdapter_AllTypes() {
       super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class);
     }
 
     @Override
     public int encodedSize(AllTypes value) {
-      return (value.opt_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32) : 0)
-          + (value.opt_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32) : 0)
-          + (value.opt_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(3, value.opt_sint32) : 0)
-          + (value.opt_fixed32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.opt_fixed32) : 0)
-          + (value.opt_sfixed32 != null ? ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.opt_sfixed32) : 0)
-          + (value.opt_int64 != null ? ProtoAdapter.INT64.encodedSizeWithTag(6, value.opt_int64) : 0)
-          + (value.opt_uint64 != null ? ProtoAdapter.UINT64.encodedSizeWithTag(7, value.opt_uint64) : 0)
-          + (value.opt_sint64 != null ? ProtoAdapter.SINT64.encodedSizeWithTag(8, value.opt_sint64) : 0)
-          + (value.opt_fixed64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.opt_fixed64) : 0)
-          + (value.opt_sfixed64 != null ? ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.opt_sfixed64) : 0)
-          + (value.opt_bool != null ? ProtoAdapter.BOOL.encodedSizeWithTag(11, value.opt_bool) : 0)
-          + (value.opt_float != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.opt_float) : 0)
-          + (value.opt_double != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.opt_double) : 0)
-          + (value.opt_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(14, value.opt_string) : 0)
-          + (value.opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(15, value.opt_bytes) : 0)
-          + (value.opt_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(16, value.opt_nested_enum) : 0)
-          + (value.opt_nested_message != null ? NestedMessage.ADAPTER.encodedSizeWithTag(17, value.opt_nested_message) : 0)
+      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
+          + ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32)
+          + ProtoAdapter.SINT32.encodedSizeWithTag(3, value.opt_sint32)
+          + ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.opt_fixed32)
+          + ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.opt_sfixed32)
+          + ProtoAdapter.INT64.encodedSizeWithTag(6, value.opt_int64)
+          + ProtoAdapter.UINT64.encodedSizeWithTag(7, value.opt_uint64)
+          + ProtoAdapter.SINT64.encodedSizeWithTag(8, value.opt_sint64)
+          + ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.opt_fixed64)
+          + ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.opt_sfixed64)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(11, value.opt_bool)
+          + ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.opt_float)
+          + ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.opt_double)
+          + ProtoAdapter.STRING.encodedSizeWithTag(14, value.opt_string)
+          + ProtoAdapter.BYTES.encodedSizeWithTag(15, value.opt_bytes)
+          + NestedEnum.ADAPTER.encodedSizeWithTag(16, value.opt_nested_enum)
+          + NestedMessage.ADAPTER.encodedSizeWithTag(17, value.opt_nested_message)
           + ProtoAdapter.INT32.encodedSizeWithTag(101, value.req_int32)
           + ProtoAdapter.UINT32.encodedSizeWithTag(102, value.req_uint32)
           + ProtoAdapter.SINT32.encodedSizeWithTag(103, value.req_sint32)
@@ -3324,43 +3324,43 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float)
           + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double)
           + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum)
-          + (value.default_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(401, value.default_int32) : 0)
-          + (value.default_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(402, value.default_uint32) : 0)
-          + (value.default_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(403, value.default_sint32) : 0)
-          + (value.default_fixed32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(404, value.default_fixed32) : 0)
-          + (value.default_sfixed32 != null ? ProtoAdapter.SFIXED32.encodedSizeWithTag(405, value.default_sfixed32) : 0)
-          + (value.default_int64 != null ? ProtoAdapter.INT64.encodedSizeWithTag(406, value.default_int64) : 0)
-          + (value.default_uint64 != null ? ProtoAdapter.UINT64.encodedSizeWithTag(407, value.default_uint64) : 0)
-          + (value.default_sint64 != null ? ProtoAdapter.SINT64.encodedSizeWithTag(408, value.default_sint64) : 0)
-          + (value.default_fixed64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(409, value.default_fixed64) : 0)
-          + (value.default_sfixed64 != null ? ProtoAdapter.SFIXED64.encodedSizeWithTag(410, value.default_sfixed64) : 0)
-          + (value.default_bool != null ? ProtoAdapter.BOOL.encodedSizeWithTag(411, value.default_bool) : 0)
-          + (value.default_float != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(412, value.default_float) : 0)
-          + (value.default_double != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(413, value.default_double) : 0)
-          + (value.default_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string) : 0)
-          + (value.default_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes) : 0)
-          + (value.default_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum) : 0)
+          + ProtoAdapter.INT32.encodedSizeWithTag(401, value.default_int32)
+          + ProtoAdapter.UINT32.encodedSizeWithTag(402, value.default_uint32)
+          + ProtoAdapter.SINT32.encodedSizeWithTag(403, value.default_sint32)
+          + ProtoAdapter.FIXED32.encodedSizeWithTag(404, value.default_fixed32)
+          + ProtoAdapter.SFIXED32.encodedSizeWithTag(405, value.default_sfixed32)
+          + ProtoAdapter.INT64.encodedSizeWithTag(406, value.default_int64)
+          + ProtoAdapter.UINT64.encodedSizeWithTag(407, value.default_uint64)
+          + ProtoAdapter.SINT64.encodedSizeWithTag(408, value.default_sint64)
+          + ProtoAdapter.FIXED64.encodedSizeWithTag(409, value.default_fixed64)
+          + ProtoAdapter.SFIXED64.encodedSizeWithTag(410, value.default_sfixed64)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(411, value.default_bool)
+          + ProtoAdapter.FLOAT.encodedSizeWithTag(412, value.default_float)
+          + ProtoAdapter.DOUBLE.encodedSizeWithTag(413, value.default_double)
+          + ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string)
+          + ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes)
+          + NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum)
           + map_int32_int32.encodedSizeWithTag(501, value.map_int32_int32)
           + map_string_string.encodedSizeWithTag(502, value.map_string_string)
           + map_string_message.encodedSizeWithTag(503, value.map_string_message)
           + map_string_enum.encodedSizeWithTag(504, value.map_string_enum)
-          + (value.ext_opt_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32) : 0)
-          + (value.ext_opt_uint32 != null ? ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32) : 0)
-          + (value.ext_opt_sint32 != null ? ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32) : 0)
-          + (value.ext_opt_fixed32 != null ? ProtoAdapter.FIXED32.encodedSizeWithTag(1004, value.ext_opt_fixed32) : 0)
-          + (value.ext_opt_sfixed32 != null ? ProtoAdapter.SFIXED32.encodedSizeWithTag(1005, value.ext_opt_sfixed32) : 0)
-          + (value.ext_opt_int64 != null ? ProtoAdapter.INT64.encodedSizeWithTag(1006, value.ext_opt_int64) : 0)
-          + (value.ext_opt_uint64 != null ? ProtoAdapter.UINT64.encodedSizeWithTag(1007, value.ext_opt_uint64) : 0)
-          + (value.ext_opt_sint64 != null ? ProtoAdapter.SINT64.encodedSizeWithTag(1008, value.ext_opt_sint64) : 0)
-          + (value.ext_opt_fixed64 != null ? ProtoAdapter.FIXED64.encodedSizeWithTag(1009, value.ext_opt_fixed64) : 0)
-          + (value.ext_opt_sfixed64 != null ? ProtoAdapter.SFIXED64.encodedSizeWithTag(1010, value.ext_opt_sfixed64) : 0)
-          + (value.ext_opt_bool != null ? ProtoAdapter.BOOL.encodedSizeWithTag(1011, value.ext_opt_bool) : 0)
-          + (value.ext_opt_float != null ? ProtoAdapter.FLOAT.encodedSizeWithTag(1012, value.ext_opt_float) : 0)
-          + (value.ext_opt_double != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(1013, value.ext_opt_double) : 0)
-          + (value.ext_opt_string != null ? ProtoAdapter.STRING.encodedSizeWithTag(1014, value.ext_opt_string) : 0)
-          + (value.ext_opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1015, value.ext_opt_bytes) : 0)
-          + (value.ext_opt_nested_enum != null ? NestedEnum.ADAPTER.encodedSizeWithTag(1016, value.ext_opt_nested_enum) : 0)
-          + (value.ext_opt_nested_message != null ? NestedMessage.ADAPTER.encodedSizeWithTag(1017, value.ext_opt_nested_message) : 0)
+          + ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32)
+          + ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32)
+          + ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32)
+          + ProtoAdapter.FIXED32.encodedSizeWithTag(1004, value.ext_opt_fixed32)
+          + ProtoAdapter.SFIXED32.encodedSizeWithTag(1005, value.ext_opt_sfixed32)
+          + ProtoAdapter.INT64.encodedSizeWithTag(1006, value.ext_opt_int64)
+          + ProtoAdapter.UINT64.encodedSizeWithTag(1007, value.ext_opt_uint64)
+          + ProtoAdapter.SINT64.encodedSizeWithTag(1008, value.ext_opt_sint64)
+          + ProtoAdapter.FIXED64.encodedSizeWithTag(1009, value.ext_opt_fixed64)
+          + ProtoAdapter.SFIXED64.encodedSizeWithTag(1010, value.ext_opt_sfixed64)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(1011, value.ext_opt_bool)
+          + ProtoAdapter.FLOAT.encodedSizeWithTag(1012, value.ext_opt_float)
+          + ProtoAdapter.DOUBLE.encodedSizeWithTag(1013, value.ext_opt_double)
+          + ProtoAdapter.STRING.encodedSizeWithTag(1014, value.ext_opt_string)
+          + ProtoAdapter.BYTES.encodedSizeWithTag(1015, value.ext_opt_bytes)
+          + NestedEnum.ADAPTER.encodedSizeWithTag(1016, value.ext_opt_nested_enum)
+          + NestedMessage.ADAPTER.encodedSizeWithTag(1017, value.ext_opt_nested_message)
           + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1101, value.ext_rep_int32)
           + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(1102, value.ext_rep_uint32)
           + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(1103, value.ext_rep_sint32)
@@ -3401,23 +3401,23 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     @Override
     public void encode(ProtoWriter writer, AllTypes value) throws IOException {
-      if (value.opt_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32);
-      if (value.opt_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.opt_uint32);
-      if (value.opt_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.opt_sint32);
-      if (value.opt_fixed32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.opt_fixed32);
-      if (value.opt_sfixed32 != null) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.opt_sfixed32);
-      if (value.opt_int64 != null) ProtoAdapter.INT64.encodeWithTag(writer, 6, value.opt_int64);
-      if (value.opt_uint64 != null) ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.opt_uint64);
-      if (value.opt_sint64 != null) ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.opt_sint64);
-      if (value.opt_fixed64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.opt_fixed64);
-      if (value.opt_sfixed64 != null) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10, value.opt_sfixed64);
-      if (value.opt_bool != null) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.opt_bool);
-      if (value.opt_float != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.opt_float);
-      if (value.opt_double != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.opt_double);
-      if (value.opt_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 14, value.opt_string);
-      if (value.opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.opt_bytes);
-      if (value.opt_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.opt_nested_enum);
-      if (value.opt_nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.opt_nested_message);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32);
+      ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.opt_uint32);
+      ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.opt_sint32);
+      ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.opt_fixed32);
+      ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.opt_sfixed32);
+      ProtoAdapter.INT64.encodeWithTag(writer, 6, value.opt_int64);
+      ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.opt_uint64);
+      ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.opt_sint64);
+      ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.opt_fixed64);
+      ProtoAdapter.SFIXED64.encodeWithTag(writer, 10, value.opt_sfixed64);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.opt_bool);
+      ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.opt_float);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.opt_double);
+      ProtoAdapter.STRING.encodeWithTag(writer, 14, value.opt_string);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.opt_bytes);
+      NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.opt_nested_enum);
+      NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.opt_nested_message);
       ProtoAdapter.INT32.encodeWithTag(writer, 101, value.req_int32);
       ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.req_uint32);
       ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.req_sint32);
@@ -3466,43 +3466,43 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 312, value.pack_float);
       ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 313, value.pack_double);
       NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 316, value.pack_nested_enum);
-      if (value.default_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 401, value.default_int32);
-      if (value.default_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 402, value.default_uint32);
-      if (value.default_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 403, value.default_sint32);
-      if (value.default_fixed32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 404, value.default_fixed32);
-      if (value.default_sfixed32 != null) ProtoAdapter.SFIXED32.encodeWithTag(writer, 405, value.default_sfixed32);
-      if (value.default_int64 != null) ProtoAdapter.INT64.encodeWithTag(writer, 406, value.default_int64);
-      if (value.default_uint64 != null) ProtoAdapter.UINT64.encodeWithTag(writer, 407, value.default_uint64);
-      if (value.default_sint64 != null) ProtoAdapter.SINT64.encodeWithTag(writer, 408, value.default_sint64);
-      if (value.default_fixed64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 409, value.default_fixed64);
-      if (value.default_sfixed64 != null) ProtoAdapter.SFIXED64.encodeWithTag(writer, 410, value.default_sfixed64);
-      if (value.default_bool != null) ProtoAdapter.BOOL.encodeWithTag(writer, 411, value.default_bool);
-      if (value.default_float != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 412, value.default_float);
-      if (value.default_double != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 413, value.default_double);
-      if (value.default_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 414, value.default_string);
-      if (value.default_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 415, value.default_bytes);
-      if (value.default_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 416, value.default_nested_enum);
+      ProtoAdapter.INT32.encodeWithTag(writer, 401, value.default_int32);
+      ProtoAdapter.UINT32.encodeWithTag(writer, 402, value.default_uint32);
+      ProtoAdapter.SINT32.encodeWithTag(writer, 403, value.default_sint32);
+      ProtoAdapter.FIXED32.encodeWithTag(writer, 404, value.default_fixed32);
+      ProtoAdapter.SFIXED32.encodeWithTag(writer, 405, value.default_sfixed32);
+      ProtoAdapter.INT64.encodeWithTag(writer, 406, value.default_int64);
+      ProtoAdapter.UINT64.encodeWithTag(writer, 407, value.default_uint64);
+      ProtoAdapter.SINT64.encodeWithTag(writer, 408, value.default_sint64);
+      ProtoAdapter.FIXED64.encodeWithTag(writer, 409, value.default_fixed64);
+      ProtoAdapter.SFIXED64.encodeWithTag(writer, 410, value.default_sfixed64);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 411, value.default_bool);
+      ProtoAdapter.FLOAT.encodeWithTag(writer, 412, value.default_float);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 413, value.default_double);
+      ProtoAdapter.STRING.encodeWithTag(writer, 414, value.default_string);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 415, value.default_bytes);
+      NestedEnum.ADAPTER.encodeWithTag(writer, 416, value.default_nested_enum);
       map_int32_int32.encodeWithTag(writer, 501, value.map_int32_int32);
       map_string_string.encodeWithTag(writer, 502, value.map_string_string);
       map_string_message.encodeWithTag(writer, 503, value.map_string_message);
       map_string_enum.encodeWithTag(writer, 504, value.map_string_enum);
-      if (value.ext_opt_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32);
-      if (value.ext_opt_uint32 != null) ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32);
-      if (value.ext_opt_sint32 != null) ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32);
-      if (value.ext_opt_fixed32 != null) ProtoAdapter.FIXED32.encodeWithTag(writer, 1004, value.ext_opt_fixed32);
-      if (value.ext_opt_sfixed32 != null) ProtoAdapter.SFIXED32.encodeWithTag(writer, 1005, value.ext_opt_sfixed32);
-      if (value.ext_opt_int64 != null) ProtoAdapter.INT64.encodeWithTag(writer, 1006, value.ext_opt_int64);
-      if (value.ext_opt_uint64 != null) ProtoAdapter.UINT64.encodeWithTag(writer, 1007, value.ext_opt_uint64);
-      if (value.ext_opt_sint64 != null) ProtoAdapter.SINT64.encodeWithTag(writer, 1008, value.ext_opt_sint64);
-      if (value.ext_opt_fixed64 != null) ProtoAdapter.FIXED64.encodeWithTag(writer, 1009, value.ext_opt_fixed64);
-      if (value.ext_opt_sfixed64 != null) ProtoAdapter.SFIXED64.encodeWithTag(writer, 1010, value.ext_opt_sfixed64);
-      if (value.ext_opt_bool != null) ProtoAdapter.BOOL.encodeWithTag(writer, 1011, value.ext_opt_bool);
-      if (value.ext_opt_float != null) ProtoAdapter.FLOAT.encodeWithTag(writer, 1012, value.ext_opt_float);
-      if (value.ext_opt_double != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 1013, value.ext_opt_double);
-      if (value.ext_opt_string != null) ProtoAdapter.STRING.encodeWithTag(writer, 1014, value.ext_opt_string);
-      if (value.ext_opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1015, value.ext_opt_bytes);
-      if (value.ext_opt_nested_enum != null) NestedEnum.ADAPTER.encodeWithTag(writer, 1016, value.ext_opt_nested_enum);
-      if (value.ext_opt_nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 1017, value.ext_opt_nested_message);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32);
+      ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32);
+      ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32);
+      ProtoAdapter.FIXED32.encodeWithTag(writer, 1004, value.ext_opt_fixed32);
+      ProtoAdapter.SFIXED32.encodeWithTag(writer, 1005, value.ext_opt_sfixed32);
+      ProtoAdapter.INT64.encodeWithTag(writer, 1006, value.ext_opt_int64);
+      ProtoAdapter.UINT64.encodeWithTag(writer, 1007, value.ext_opt_uint64);
+      ProtoAdapter.SINT64.encodeWithTag(writer, 1008, value.ext_opt_sint64);
+      ProtoAdapter.FIXED64.encodeWithTag(writer, 1009, value.ext_opt_fixed64);
+      ProtoAdapter.SFIXED64.encodeWithTag(writer, 1010, value.ext_opt_sfixed64);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 1011, value.ext_opt_bool);
+      ProtoAdapter.FLOAT.encodeWithTag(writer, 1012, value.ext_opt_float);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 1013, value.ext_opt_double);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1014, value.ext_opt_string);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 1015, value.ext_opt_bytes);
+      NestedEnum.ADAPTER.encodeWithTag(writer, 1016, value.ext_opt_nested_enum);
+      NestedMessage.ADAPTER.encodeWithTag(writer, 1017, value.ext_opt_nested_message);
       ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1101, value.ext_rep_int32);
       ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 1102, value.ext_rep_uint32);
       ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 1103, value.ext_rep_sint32);

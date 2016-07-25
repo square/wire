@@ -162,25 +162,25 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
   }
 
   private static final class ProtoAdapter_Redacted extends ProtoAdapter<Redacted> {
-    ProtoAdapter_Redacted() {
+    public ProtoAdapter_Redacted() {
       super(FieldEncoding.LENGTH_DELIMITED, Redacted.class);
     }
 
     @Override
     public int encodedSize(Redacted value) {
-      return (value.a != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) : 0)
-          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) : 0)
-          + (value.c != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.c) : 0)
-          + (value.extension != null ? RedactedExtension.ADAPTER.encodedSizeWithTag(10, value.extension) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
+          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
+          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.c)
+          + RedactedExtension.ADAPTER.encodedSizeWithTag(10, value.extension)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, Redacted value) throws IOException {
-      if (value.a != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
-      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b);
-      if (value.c != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.c);
-      if (value.extension != null) RedactedExtension.ADAPTER.encodeWithTag(writer, 10, value.extension);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.c);
+      RedactedExtension.ADAPTER.encodeWithTag(writer, 10, value.extension);
       writer.writeBytes(value.unknownFields());
     }
 

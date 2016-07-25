@@ -61,7 +61,7 @@ public final class TheResponse extends Message<TheResponse, TheResponse.Builder>
   }
 
   private static final class ProtoAdapter_TheResponse extends ProtoAdapter<TheResponse> {
-    ProtoAdapter_TheResponse() {
+    public ProtoAdapter_TheResponse() {
       super(FieldEncoding.LENGTH_DELIMITED, TheResponse.class);
     }
 

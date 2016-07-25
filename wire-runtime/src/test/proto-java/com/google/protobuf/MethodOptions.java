@@ -140,20 +140,20 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   }
 
   private static final class ProtoAdapter_MethodOptions extends ProtoAdapter<MethodOptions> {
-    ProtoAdapter_MethodOptions() {
+    public ProtoAdapter_MethodOptions() {
       super(FieldEncoding.LENGTH_DELIMITED, MethodOptions.class);
     }
 
     @Override
     public int encodedSize(MethodOptions value) {
-      return (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated) : 0)
+      return ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
           + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, MethodOptions value) throws IOException {
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }

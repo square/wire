@@ -89,19 +89,19 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
   }
 
   private static final class ProtoAdapter_RedactedCycleA extends ProtoAdapter<RedactedCycleA> {
-    ProtoAdapter_RedactedCycleA() {
+    public ProtoAdapter_RedactedCycleA() {
       super(FieldEncoding.LENGTH_DELIMITED, RedactedCycleA.class);
     }
 
     @Override
     public int encodedSize(RedactedCycleA value) {
-      return (value.b != null ? RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b) : 0)
+      return RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, RedactedCycleA value) throws IOException {
-      if (value.b != null) RedactedCycleB.ADAPTER.encodeWithTag(writer, 1, value.b);
+      RedactedCycleB.ADAPTER.encodeWithTag(writer, 1, value.b);
       writer.writeBytes(value.unknownFields());
     }
 

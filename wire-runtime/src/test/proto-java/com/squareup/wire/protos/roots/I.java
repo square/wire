@@ -113,21 +113,21 @@ public final class I extends Message<I, I.Builder> {
   }
 
   private static final class ProtoAdapter_I extends ProtoAdapter<I> {
-    ProtoAdapter_I() {
+    public ProtoAdapter_I() {
       super(FieldEncoding.LENGTH_DELIMITED, I.class);
     }
 
     @Override
     public int encodedSize(I value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
-          + (value.j != null ? J.ADAPTER.encodedSizeWithTag(1000, value.j) : 0)
+      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
+          + J.ADAPTER.encodedSizeWithTag(1000, value.j)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, I value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
-      if (value.j != null) J.ADAPTER.encodeWithTag(writer, 1000, value.j);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      J.ADAPTER.encodeWithTag(writer, 1000, value.j);
       writer.writeBytes(value.unknownFields());
     }
 

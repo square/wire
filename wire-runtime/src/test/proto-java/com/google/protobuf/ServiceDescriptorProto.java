@@ -134,23 +134,23 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   }
 
   private static final class ProtoAdapter_ServiceDescriptorProto extends ProtoAdapter<ServiceDescriptorProto> {
-    ProtoAdapter_ServiceDescriptorProto() {
+    public ProtoAdapter_ServiceDescriptorProto() {
       super(FieldEncoding.LENGTH_DELIMITED, ServiceDescriptorProto.class);
     }
 
     @Override
     public int encodedSize(ServiceDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
           + MethodDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.method)
-          + (value.options != null ? ServiceOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
+          + ServiceOptions.ADAPTER.encodedSizeWithTag(3, value.options)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, ServiceDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       MethodDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.method);
-      if (value.options != null) ServiceOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
+      ServiceOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
       writer.writeBytes(value.unknownFields());
     }
 

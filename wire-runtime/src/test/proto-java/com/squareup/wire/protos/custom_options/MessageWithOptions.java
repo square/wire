@@ -120,7 +120,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
   }
 
   private static final class ProtoAdapter_MessageWithOptions extends ProtoAdapter<MessageWithOptions> {
-    ProtoAdapter_MessageWithOptions() {
+    public ProtoAdapter_MessageWithOptions() {
       super(FieldEncoding.LENGTH_DELIMITED, MessageWithOptions.class);
     }
 

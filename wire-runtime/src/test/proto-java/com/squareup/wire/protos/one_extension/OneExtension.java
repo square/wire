@@ -112,21 +112,21 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
   }
 
   private static final class ProtoAdapter_OneExtension extends ProtoAdapter<OneExtension> {
-    ProtoAdapter_OneExtension() {
+    public ProtoAdapter_OneExtension() {
       super(FieldEncoding.LENGTH_DELIMITED, OneExtension.class);
     }
 
     @Override
     public int encodedSize(OneExtension value) {
-      return (value.id != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.id) : 0)
-          + (value.foo != null ? Foo.ADAPTER.encodedSizeWithTag(1000, value.foo) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.id)
+          + Foo.ADAPTER.encodedSizeWithTag(1000, value.foo)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneExtension value) throws IOException {
-      if (value.id != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.id);
-      if (value.foo != null) Foo.ADAPTER.encodeWithTag(writer, 1000, value.foo);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.id);
+      Foo.ADAPTER.encodeWithTag(writer, 1000, value.foo);
       writer.writeBytes(value.unknownFields());
     }
 

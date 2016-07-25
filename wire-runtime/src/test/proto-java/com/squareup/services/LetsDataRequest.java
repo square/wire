@@ -91,19 +91,19 @@ public final class LetsDataRequest extends Message<LetsDataRequest, LetsDataRequ
   }
 
   private static final class ProtoAdapter_LetsDataRequest extends ProtoAdapter<LetsDataRequest> {
-    ProtoAdapter_LetsDataRequest() {
+    public ProtoAdapter_LetsDataRequest() {
       super(FieldEncoding.LENGTH_DELIMITED, LetsDataRequest.class);
     }
 
     @Override
     public int encodedSize(LetsDataRequest value) {
-      return (value.data != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data) : 0)
+      return ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, LetsDataRequest value) throws IOException {
-      if (value.data != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
       writer.writeBytes(value.unknownFields());
     }
 

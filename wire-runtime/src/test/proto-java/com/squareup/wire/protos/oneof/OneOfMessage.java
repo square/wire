@@ -159,23 +159,23 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
   }
 
   private static final class ProtoAdapter_OneOfMessage extends ProtoAdapter<OneOfMessage> {
-    ProtoAdapter_OneOfMessage() {
+    public ProtoAdapter_OneOfMessage() {
       super(FieldEncoding.LENGTH_DELIMITED, OneOfMessage.class);
     }
 
     @Override
     public int encodedSize(OneOfMessage value) {
-      return (value.foo != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) : 0)
-          + (value.bar != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) : 0)
-          + (value.baz != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) : 0)
+      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
+          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar)
+          + ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneOfMessage value) throws IOException {
-      if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
-      if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar);
-      if (value.baz != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar);
+      ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz);
       writer.writeBytes(value.unknownFields());
     }
 

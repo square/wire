@@ -61,7 +61,7 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
   }
 
   private static final class ProtoAdapter_NoFields extends ProtoAdapter<NoFields> {
-    ProtoAdapter_NoFields() {
+    public ProtoAdapter_NoFields() {
       super(FieldEncoding.LENGTH_DELIMITED, NoFields.class);
     }
 

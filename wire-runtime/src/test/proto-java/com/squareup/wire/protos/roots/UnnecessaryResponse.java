@@ -61,7 +61,7 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
   }
 
   private static final class ProtoAdapter_UnnecessaryResponse extends ProtoAdapter<UnnecessaryResponse> {
-    ProtoAdapter_UnnecessaryResponse() {
+    public ProtoAdapter_UnnecessaryResponse() {
       super(FieldEncoding.LENGTH_DELIMITED, UnnecessaryResponse.class);
     }
 

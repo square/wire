@@ -92,19 +92,19 @@ public final class OneField extends Message<OneField, OneField.Builder> {
   }
 
   private static final class ProtoAdapter_OneField extends ProtoAdapter<OneField> {
-    ProtoAdapter_OneField() {
+    public ProtoAdapter_OneField() {
       super(FieldEncoding.LENGTH_DELIMITED, OneField.class);
     }
 
     @Override
     public int encodedSize(OneField value) {
-      return (value.opt_int32 != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32) : 0)
+      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneField value) throws IOException {
-      if (value.opt_int32 != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32);
       writer.writeBytes(value.unknownFields());
     }
 

@@ -92,19 +92,19 @@ public final class Bar extends Message<Bar, Bar.Builder> {
   }
 
   private static final class ProtoAdapter_Bar extends ProtoAdapter<Bar> {
-    ProtoAdapter_Bar() {
+    public ProtoAdapter_Bar() {
       super(FieldEncoding.LENGTH_DELIMITED, Bar.class);
     }
 
     @Override
     public int encodedSize(Bar value) {
-      return (value.baz != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.baz) : 0)
+      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.baz)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, Bar value) throws IOException {
-      if (value.baz != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.baz);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.baz);
       writer.writeBytes(value.unknownFields());
     }
 

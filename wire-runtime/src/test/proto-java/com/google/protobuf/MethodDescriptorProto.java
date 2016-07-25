@@ -213,29 +213,29 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
   }
 
   private static final class ProtoAdapter_MethodDescriptorProto extends ProtoAdapter<MethodDescriptorProto> {
-    ProtoAdapter_MethodDescriptorProto() {
+    public ProtoAdapter_MethodDescriptorProto() {
       super(FieldEncoding.LENGTH_DELIMITED, MethodDescriptorProto.class);
     }
 
     @Override
     public int encodedSize(MethodDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + (value.input_type != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.input_type) : 0)
-          + (value.output_type != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.output_type) : 0)
-          + (value.options != null ? MethodOptions.ADAPTER.encodedSizeWithTag(4, value.options) : 0)
-          + (value.client_streaming != null ? ProtoAdapter.BOOL.encodedSizeWithTag(5, value.client_streaming) : 0)
-          + (value.server_streaming != null ? ProtoAdapter.BOOL.encodedSizeWithTag(6, value.server_streaming) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.input_type)
+          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.output_type)
+          + MethodOptions.ADAPTER.encodedSizeWithTag(4, value.options)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(5, value.client_streaming)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(6, value.server_streaming)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, MethodDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.input_type != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.input_type);
-      if (value.output_type != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.output_type);
-      if (value.options != null) MethodOptions.ADAPTER.encodeWithTag(writer, 4, value.options);
-      if (value.client_streaming != null) ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.client_streaming);
-      if (value.server_streaming != null) ProtoAdapter.BOOL.encodeWithTag(writer, 6, value.server_streaming);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.input_type);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.output_type);
+      MethodOptions.ADAPTER.encodeWithTag(writer, 4, value.options);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.client_streaming);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 6, value.server_streaming);
       writer.writeBytes(value.unknownFields());
     }
 
