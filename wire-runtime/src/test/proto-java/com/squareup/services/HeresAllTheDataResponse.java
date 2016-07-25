@@ -91,19 +91,19 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
   }
 
   private static final class ProtoAdapter_HeresAllTheDataResponse extends ProtoAdapter<HeresAllTheDataResponse> {
-    ProtoAdapter_HeresAllTheDataResponse() {
+    public ProtoAdapter_HeresAllTheDataResponse() {
       super(FieldEncoding.LENGTH_DELIMITED, HeresAllTheDataResponse.class);
     }
 
     @Override
     public int encodedSize(HeresAllTheDataResponse value) {
-      return (value.data != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data) : 0)
+      return ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, HeresAllTheDataResponse value) throws IOException {
-      if (value.data != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
       writer.writeBytes(value.unknownFields());
     }
 

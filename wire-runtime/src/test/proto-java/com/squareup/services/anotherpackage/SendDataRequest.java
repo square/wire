@@ -91,19 +91,19 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
   }
 
   private static final class ProtoAdapter_SendDataRequest extends ProtoAdapter<SendDataRequest> {
-    ProtoAdapter_SendDataRequest() {
+    public ProtoAdapter_SendDataRequest() {
       super(FieldEncoding.LENGTH_DELIMITED, SendDataRequest.class);
     }
 
     @Override
     public int encodedSize(SendDataRequest value) {
-      return (value.data != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data) : 0)
+      return ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, SendDataRequest value) throws IOException {
-      if (value.data != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.data);
       writer.writeBytes(value.unknownFields());
     }
 

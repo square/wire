@@ -447,35 +447,35 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
   }
 
   private static final class ProtoAdapter_FieldDescriptorProto extends ProtoAdapter<FieldDescriptorProto> {
-    ProtoAdapter_FieldDescriptorProto() {
+    public ProtoAdapter_FieldDescriptorProto() {
       super(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class);
     }
 
     @Override
     public int encodedSize(FieldDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + (value.number != null ? ProtoAdapter.INT32.encodedSizeWithTag(3, value.number) : 0)
-          + (value.label != null ? Label.ADAPTER.encodedSizeWithTag(4, value.label) : 0)
-          + (value.type != null ? Type.ADAPTER.encodedSizeWithTag(5, value.type) : 0)
-          + (value.type_name != null ? ProtoAdapter.STRING.encodedSizeWithTag(6, value.type_name) : 0)
-          + (value.extendee != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.extendee) : 0)
-          + (value.default_value != null ? ProtoAdapter.STRING.encodedSizeWithTag(7, value.default_value) : 0)
-          + (value.oneof_index != null ? ProtoAdapter.INT32.encodedSizeWithTag(9, value.oneof_index) : 0)
-          + (value.options != null ? FieldOptions.ADAPTER.encodedSizeWithTag(8, value.options) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+          + ProtoAdapter.INT32.encodedSizeWithTag(3, value.number)
+          + Label.ADAPTER.encodedSizeWithTag(4, value.label)
+          + Type.ADAPTER.encodedSizeWithTag(5, value.type)
+          + ProtoAdapter.STRING.encodedSizeWithTag(6, value.type_name)
+          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.extendee)
+          + ProtoAdapter.STRING.encodedSizeWithTag(7, value.default_value)
+          + ProtoAdapter.INT32.encodedSizeWithTag(9, value.oneof_index)
+          + FieldOptions.ADAPTER.encodedSizeWithTag(8, value.options)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, FieldDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.number != null) ProtoAdapter.INT32.encodeWithTag(writer, 3, value.number);
-      if (value.label != null) Label.ADAPTER.encodeWithTag(writer, 4, value.label);
-      if (value.type != null) Type.ADAPTER.encodeWithTag(writer, 5, value.type);
-      if (value.type_name != null) ProtoAdapter.STRING.encodeWithTag(writer, 6, value.type_name);
-      if (value.extendee != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.extendee);
-      if (value.default_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 7, value.default_value);
-      if (value.oneof_index != null) ProtoAdapter.INT32.encodeWithTag(writer, 9, value.oneof_index);
-      if (value.options != null) FieldOptions.ADAPTER.encodeWithTag(writer, 8, value.options);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.INT32.encodeWithTag(writer, 3, value.number);
+      Label.ADAPTER.encodeWithTag(writer, 4, value.label);
+      Type.ADAPTER.encodeWithTag(writer, 5, value.type);
+      ProtoAdapter.STRING.encodeWithTag(writer, 6, value.type_name);
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.extendee);
+      ProtoAdapter.STRING.encodeWithTag(writer, 7, value.default_value);
+      ProtoAdapter.INT32.encodeWithTag(writer, 9, value.oneof_index);
+      FieldOptions.ADAPTER.encodeWithTag(writer, 8, value.options);
       writer.writeBytes(value.unknownFields());
     }
 

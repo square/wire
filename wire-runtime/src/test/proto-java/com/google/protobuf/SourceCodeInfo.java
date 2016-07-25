@@ -509,7 +509,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     }
 
     private static final class ProtoAdapter_Location extends ProtoAdapter<Location> {
-      ProtoAdapter_Location() {
+      public ProtoAdapter_Location() {
         super(FieldEncoding.LENGTH_DELIMITED, Location.class);
       }
 
@@ -517,8 +517,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       public int encodedSize(Location value) {
         return ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path)
             + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(2, value.span)
-            + (value.leading_comments != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.leading_comments) : 0)
-            + (value.trailing_comments != null ? ProtoAdapter.STRING.encodedSizeWithTag(4, value.trailing_comments) : 0)
+            + ProtoAdapter.STRING.encodedSizeWithTag(3, value.leading_comments)
+            + ProtoAdapter.STRING.encodedSizeWithTag(4, value.trailing_comments)
             + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.leading_detached_comments)
             + value.unknownFields().size();
       }
@@ -527,8 +527,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       public void encode(ProtoWriter writer, Location value) throws IOException {
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.path);
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value.span);
-        if (value.leading_comments != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.leading_comments);
-        if (value.trailing_comments != null) ProtoAdapter.STRING.encodeWithTag(writer, 4, value.trailing_comments);
+        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.leading_comments);
+        ProtoAdapter.STRING.encodeWithTag(writer, 4, value.trailing_comments);
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.leading_detached_comments);
         writer.writeBytes(value.unknownFields());
       }
@@ -565,7 +565,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
   }
 
   private static final class ProtoAdapter_SourceCodeInfo extends ProtoAdapter<SourceCodeInfo> {
-    ProtoAdapter_SourceCodeInfo() {
+    public ProtoAdapter_SourceCodeInfo() {
       super(FieldEncoding.LENGTH_DELIMITED, SourceCodeInfo.class);
     }
 

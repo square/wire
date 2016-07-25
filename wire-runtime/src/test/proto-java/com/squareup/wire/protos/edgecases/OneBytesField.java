@@ -91,19 +91,19 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
   }
 
   private static final class ProtoAdapter_OneBytesField extends ProtoAdapter<OneBytesField> {
-    ProtoAdapter_OneBytesField() {
+    public ProtoAdapter_OneBytesField() {
       super(FieldEncoding.LENGTH_DELIMITED, OneBytesField.class);
     }
 
     @Override
     public int encodedSize(OneBytesField value) {
-      return (value.opt_bytes != null ? ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes) : 0)
+      return ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneBytesField value) throws IOException {
-      if (value.opt_bytes != null) ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes);
       writer.writeBytes(value.unknownFields());
     }
 

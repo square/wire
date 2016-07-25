@@ -140,20 +140,20 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
   }
 
   private static final class ProtoAdapter_ServiceOptions extends ProtoAdapter<ServiceOptions> {
-    ProtoAdapter_ServiceOptions() {
+    public ProtoAdapter_ServiceOptions() {
       super(FieldEncoding.LENGTH_DELIMITED, ServiceOptions.class);
     }
 
     @Override
     public int encodedSize(ServiceOptions value) {
-      return (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated) : 0)
+      return ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
           + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, ServiceOptions value) throws IOException {
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }

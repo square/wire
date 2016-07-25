@@ -384,21 +384,21 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     }
 
     private static final class ProtoAdapter_ExtensionRange extends ProtoAdapter<ExtensionRange> {
-      ProtoAdapter_ExtensionRange() {
+      public ProtoAdapter_ExtensionRange() {
         super(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class);
       }
 
       @Override
       public int encodedSize(ExtensionRange value) {
-        return (value.start != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) : 0)
-            + (value.end != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.end) : 0)
+        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.start)
+            + ProtoAdapter.INT32.encodedSizeWithTag(2, value.end)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, ExtensionRange value) throws IOException {
-        if (value.start != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start);
-        if (value.end != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.end);
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start);
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.end);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -542,21 +542,21 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     }
 
     private static final class ProtoAdapter_ReservedRange extends ProtoAdapter<ReservedRange> {
-      ProtoAdapter_ReservedRange() {
+      public ProtoAdapter_ReservedRange() {
         super(FieldEncoding.LENGTH_DELIMITED, ReservedRange.class);
       }
 
       @Override
       public int encodedSize(ReservedRange value) {
-        return (value.start != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) : 0)
-            + (value.end != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.end) : 0)
+        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.start)
+            + ProtoAdapter.INT32.encodedSizeWithTag(2, value.end)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, ReservedRange value) throws IOException {
-        if (value.start != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start);
-        if (value.end != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.end);
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start);
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.end);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -589,20 +589,20 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   }
 
   private static final class ProtoAdapter_DescriptorProto extends ProtoAdapter<DescriptorProto> {
-    ProtoAdapter_DescriptorProto() {
+    public ProtoAdapter_DescriptorProto() {
       super(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class);
     }
 
     @Override
     public int encodedSize(DescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
           + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.field)
           + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.extension)
           + DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(3, value.nested_type)
           + EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.enum_type)
           + ExtensionRange.ADAPTER.asRepeated().encodedSizeWithTag(5, value.extension_range)
           + OneofDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(8, value.oneof_decl)
-          + (value.options != null ? MessageOptions.ADAPTER.encodedSizeWithTag(7, value.options) : 0)
+          + MessageOptions.ADAPTER.encodedSizeWithTag(7, value.options)
           + ReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(9, value.reserved_range)
           + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(10, value.reserved_name)
           + value.unknownFields().size();
@@ -610,14 +610,14 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     @Override
     public void encode(ProtoWriter writer, DescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.field);
       FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension);
       DescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.nested_type);
       EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.enum_type);
       ExtensionRange.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.extension_range);
       OneofDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 8, value.oneof_decl);
-      if (value.options != null) MessageOptions.ADAPTER.encodeWithTag(writer, 7, value.options);
+      MessageOptions.ADAPTER.encodeWithTag(writer, 7, value.options);
       ReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 9, value.reserved_range);
       ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 10, value.reserved_name);
       writer.writeBytes(value.unknownFields());

@@ -114,21 +114,21 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
   }
 
   private static final class ProtoAdapter_EmbeddedMessage extends ProtoAdapter<EmbeddedMessage> {
-    ProtoAdapter_EmbeddedMessage() {
+    public ProtoAdapter_EmbeddedMessage() {
       super(FieldEncoding.LENGTH_DELIMITED, EmbeddedMessage.class);
     }
 
     @Override
     public int encodedSize(EmbeddedMessage value) {
       return ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.inner_repeated_number)
-          + (value.inner_number_after != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.inner_number_after) : 0)
+          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.inner_number_after)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, EmbeddedMessage value) throws IOException {
       ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number);
-      if (value.inner_number_after != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after);
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after);
       writer.writeBytes(value.unknownFields());
     }
 

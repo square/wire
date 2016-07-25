@@ -133,23 +133,23 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   }
 
   private static final class ProtoAdapter_EnumValueDescriptorProto extends ProtoAdapter<EnumValueDescriptorProto> {
-    ProtoAdapter_EnumValueDescriptorProto() {
+    public ProtoAdapter_EnumValueDescriptorProto() {
       super(FieldEncoding.LENGTH_DELIMITED, EnumValueDescriptorProto.class);
     }
 
     @Override
     public int encodedSize(EnumValueDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
-          + (value.number != null ? ProtoAdapter.INT32.encodedSizeWithTag(2, value.number) : 0)
-          + (value.options != null ? EnumValueOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.number)
+          + EnumValueOptions.ADAPTER.encodedSizeWithTag(3, value.options)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, EnumValueDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      if (value.number != null) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.number);
-      if (value.options != null) EnumValueOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.number);
+      EnumValueOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
       writer.writeBytes(value.unknownFields());
     }
 

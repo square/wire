@@ -91,19 +91,19 @@ public final class Thing extends Message<Thing, Thing.Builder> {
   }
 
   private static final class ProtoAdapter_Thing extends ProtoAdapter<Thing> {
-    ProtoAdapter_Thing() {
+    public ProtoAdapter_Thing() {
       super(FieldEncoding.LENGTH_DELIMITED, Thing.class);
     }
 
     @Override
     public int encodedSize(Thing value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, Thing value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       writer.writeBytes(value.unknownFields());
     }
 

@@ -92,19 +92,19 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
   }
 
   private static final class ProtoAdapter_VersionOne extends ProtoAdapter<VersionOne> {
-    ProtoAdapter_VersionOne() {
+    public ProtoAdapter_VersionOne() {
       super(FieldEncoding.LENGTH_DELIMITED, VersionOne.class);
     }
 
     @Override
     public int encodedSize(VersionOne value) {
-      return (value.i != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) : 0)
+      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, VersionOne value) throws IOException {
-      if (value.i != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
       writer.writeBytes(value.unknownFields());
     }
 

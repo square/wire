@@ -117,21 +117,21 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
   }
 
   private static final class ProtoAdapter_RedactedExtension extends ProtoAdapter<RedactedExtension> {
-    ProtoAdapter_RedactedExtension() {
+    public ProtoAdapter_RedactedExtension() {
       super(FieldEncoding.LENGTH_DELIMITED, RedactedExtension.class);
     }
 
     @Override
     public int encodedSize(RedactedExtension value) {
-      return (value.d != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.d) : 0)
-          + (value.e != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.e) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.d)
+          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.e)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, RedactedExtension value) throws IOException {
-      if (value.d != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d);
-      if (value.e != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d);
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e);
       writer.writeBytes(value.unknownFields());
     }
 

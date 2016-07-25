@@ -94,19 +94,19 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
   }
 
   private static final class ProtoAdapter_OneofDescriptorProto extends ProtoAdapter<OneofDescriptorProto> {
-    ProtoAdapter_OneofDescriptorProto() {
+    public ProtoAdapter_OneofDescriptorProto() {
       super(FieldEncoding.LENGTH_DELIMITED, OneofDescriptorProto.class);
     }
 
     @Override
     public int encodedSize(OneofDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneofDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       writer.writeBytes(value.unknownFields());
     }
 

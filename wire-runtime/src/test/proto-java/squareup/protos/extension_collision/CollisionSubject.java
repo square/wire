@@ -99,19 +99,19 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
   }
 
   private static final class ProtoAdapter_CollisionSubject extends ProtoAdapter<CollisionSubject> {
-    ProtoAdapter_CollisionSubject() {
+    public ProtoAdapter_CollisionSubject() {
       super(FieldEncoding.LENGTH_DELIMITED, CollisionSubject.class);
     }
 
     @Override
     public int encodedSize(CollisionSubject value) {
-      return (value.f != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.f) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.f)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, CollisionSubject value) throws IOException {
-      if (value.f != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.f);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.f);
       writer.writeBytes(value.unknownFields());
     }
 

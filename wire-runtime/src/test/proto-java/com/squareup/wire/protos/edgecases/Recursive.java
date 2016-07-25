@@ -110,21 +110,21 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
   }
 
   private static final class ProtoAdapter_Recursive extends ProtoAdapter<Recursive> {
-    ProtoAdapter_Recursive() {
+    public ProtoAdapter_Recursive() {
       super(FieldEncoding.LENGTH_DELIMITED, Recursive.class);
     }
 
     @Override
     public int encodedSize(Recursive value) {
-      return (value.value != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.value) : 0)
-          + (value.recursive != null ? Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive) : 0)
+      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.value)
+          + Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, Recursive value) throws IOException {
-      if (value.value != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value);
-      if (value.recursive != null) Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value);
+      Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive);
       writer.writeBytes(value.unknownFields());
     }
 

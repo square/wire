@@ -22,9 +22,10 @@ import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaBuilder;
-import java.util.Collections;
+import java.io.IOException;
 import org.junit.Test;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class JavaGeneratorTest {
@@ -66,7 +67,7 @@ public final class JavaGeneratorTest {
         + "    }\n");
   }
 
-  @Test public void generateProtoFields() {
+  @Test public void generateAbstractAdapter() {
     Schema schema = new SchemaBuilder()
         .add("message.proto", ""
             + "package original.proto;\n"
@@ -93,29 +94,111 @@ public final class JavaGeneratorTest {
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
         .withCustomProtoAdapter(
-            Collections.singletonMap(protoType, className),
-            Collections.singletonMap(protoType, new AdapterConstant(className, "ADAPTER")));
-    TypeSpec typeSpec = javaGenerator.generateProtoFields(message);
-    ClassName typeName = javaGenerator.protoFieldsTypeName(protoType);
+            singletonMap(protoType, className),
+            singletonMap(protoType, new AdapterConstant(className, "ADAPTER")));
+    TypeSpec typeSpec = javaGenerator.generateAbstractAdapter(message);
+    ClassName typeName = javaGenerator.abstractAdapterName(protoType);
 
     assertThat(JavaFile.builder(typeName.packageName(), typeSpec).build().toString()).isEqualTo(""
         + "package original.java;\n"
         + "\n"
+        + "import com.squareup.wire.FieldEncoding;\n"
         + "import com.squareup.wire.ProtoAdapter;\n"
-        + "import com.squareup.wire.ProtoField;\n"
+        + "import com.squareup.wire.ProtoReader;\n"
+        + "import com.squareup.wire.ProtoWriter;\n"
+        + "import com.squareup.wire.internal.Internal;\n"
         + "import foo.java.Bar;\n"
         + "import foo.java.Foo;\n"
+        + "import java.io.IOException;\n"
         + "import java.lang.Integer;\n"
+        + "import java.lang.Override;\n"
         + "import java.lang.String;\n"
         + "import java.util.List;\n"
         + "import java.util.Map;\n"
+        + "import target.java.JavaMessage;\n"
         + "\n"
-        + "public final class ProtoMessageProtoFields {\n"
-        + "  public static final ProtoField<Foo> field = new ProtoField(1, Foo.ADAPTER, null);\n"
+        + "public abstract class AbstractProtoMessageAdapter extends ProtoAdapter<JavaMessage> {\n"
+        + "  private final ProtoAdapter<Map<String, Bar>> bars = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Bar.ADAPTER);\n"
         + "\n"
-        + "  public static final ProtoField<Map<String, Bar>> bars = new ProtoField(2, ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Bar.ADAPTER), null);\n"
+        + "  public AbstractProtoMessageAdapter() {\n"
+        + "    super(FieldEncoding.LENGTH_DELIMITED, JavaMessage.class);\n"
+        + "  }\n"
         + "\n"
-        + "  public static final ProtoField<List<Integer>> numbers = new ProtoField(3, ProtoAdapter.INT32.asRepeated(), null);\n"
+        + "  public abstract Foo field(JavaMessage value);\n"
+        + "\n"
+        + "  public abstract Map<String, Bar> bars(JavaMessage value);\n"
+        + "\n"
+        + "  public abstract List<Integer> numbers(JavaMessage value);\n"
+        + "\n"
+        + "  public abstract JavaMessage fromProto(Foo field, Map<String, Bar> bars, List<Integer> numbers);\n"
+        + "\n"
+        + "  @Override\n"
+        + "  public int encodedSize(JavaMessage value) {\n"
+        + "    return Foo.ADAPTER.encodedSizeWithTag(1, field(value))\n"
+        + "        + bars.encodedSizeWithTag(2, bars(value))\n"
+        + "        + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(3, numbers(value));\n"
+        + "  }\n"
+        + "\n"
+        + "  @Override\n"
+        + "  public void encode(ProtoWriter writer, JavaMessage value) throws IOException {\n"
+        + "    Foo.ADAPTER.encodeWithTag(writer, 1, field(value));\n"
+        + "    bars.encodeWithTag(writer, 2, bars(value));\n"
+        + "    ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 3, numbers(value));\n"
+        + "  }\n"
+        + "\n"
+        + "  @Override\n"
+        + "  public JavaMessage decode(ProtoReader reader) throws IOException {\n"
+        + "    Foo field = null;\n"
+        + "    Map<String, Bar> bars = Internal.newMutableMap();\n"
+        + "    List<Integer> numbers = Internal.newMutableList();\n"
+        + "    long token = reader.beginMessage();\n"
+        + "    for (int tag; (tag = reader.nextTag()) != -1;) {\n"
+        + "      switch (tag) {\n"
+        + "        case 1: field = Foo.ADAPTER.decode(reader); break;\n"
+        + "        case 2: bars.putAll(bars.decode(reader)); break;\n"
+        + "        case 3: numbers.add(ProtoAdapter.INT32.decode(reader)); break;\n"
+        + "        default: {\n"
+        + "          reader.skip();\n"
+        + "        }\n"
+        + "      }\n"
+        + "    }\n"
+        + "    reader.endMessage(token);\n"
+        + "    return fromProto(field, bars, numbers);\n"
+        + "  }\n"
+        + "\n"
+        + "  @Override\n"
+        + "  public JavaMessage redact(JavaMessage value) {\n"
+        + "    return value;\n"
+        + "  }\n"
         + "}\n");
+  }
+
+  @Test public void generateAbstractAdapterWithRedactedField() throws IOException {
+    Schema schema = new SchemaBuilder()
+        .add("message.proto", ""
+            + "import \"option_redacted.proto\";\n"
+            + "message ProtoMessage {\n"
+            + "  optional string secret = 1 [(squareup.protos.redacted_option.redacted) = true];\n"
+            + "}\n")
+        .add("option_redacted.proto")
+        .build();
+
+    ProtoType protoType = ProtoType.get("ProtoMessage");
+    ClassName className = ClassName.get("", "JavaMessage");
+
+    MessageType message = (MessageType) schema.getType(protoType);
+
+    JavaGenerator javaGenerator = JavaGenerator.get(schema)
+        .withCustomProtoAdapter(
+            singletonMap(protoType, className),
+            singletonMap(protoType, new AdapterConstant(className, "ADAPTER")));
+    TypeSpec typeSpec = javaGenerator.generateAbstractAdapter(message);
+    ClassName typeName = javaGenerator.abstractAdapterName(protoType);
+
+    assertThat(JavaFile.builder(typeName.packageName(), typeSpec).build().toString()).contains(""
+        + "  @Override\n"
+        + "  public JavaMessage redact(JavaMessage value) {\n"
+        + "    return null;\n"
+        + "  }\n");
   }
 }

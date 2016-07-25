@@ -61,7 +61,7 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
   }
 
   private static final class ProtoAdapter_TheRequest extends ProtoAdapter<TheRequest> {
-    ProtoAdapter_TheRequest() {
+    public ProtoAdapter_TheRequest() {
       super(FieldEncoding.LENGTH_DELIMITED, TheRequest.class);
     }
 

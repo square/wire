@@ -340,7 +340,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     }
 
     private static final class ProtoAdapter_NamePart extends ProtoAdapter<NamePart> {
-      ProtoAdapter_NamePart() {
+      public ProtoAdapter_NamePart() {
         super(FieldEncoding.LENGTH_DELIMITED, NamePart.class);
       }
 
@@ -387,31 +387,31 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
   }
 
   private static final class ProtoAdapter_UninterpretedOption extends ProtoAdapter<UninterpretedOption> {
-    ProtoAdapter_UninterpretedOption() {
+    public ProtoAdapter_UninterpretedOption() {
       super(FieldEncoding.LENGTH_DELIMITED, UninterpretedOption.class);
     }
 
     @Override
     public int encodedSize(UninterpretedOption value) {
       return NamePart.ADAPTER.asRepeated().encodedSizeWithTag(2, value.name)
-          + (value.identifier_value != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.identifier_value) : 0)
-          + (value.positive_int_value != null ? ProtoAdapter.UINT64.encodedSizeWithTag(4, value.positive_int_value) : 0)
-          + (value.negative_int_value != null ? ProtoAdapter.INT64.encodedSizeWithTag(5, value.negative_int_value) : 0)
-          + (value.double_value != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.double_value) : 0)
-          + (value.string_value != null ? ProtoAdapter.BYTES.encodedSizeWithTag(7, value.string_value) : 0)
-          + (value.aggregate_value != null ? ProtoAdapter.STRING.encodedSizeWithTag(8, value.aggregate_value) : 0)
+          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.identifier_value)
+          + ProtoAdapter.UINT64.encodedSizeWithTag(4, value.positive_int_value)
+          + ProtoAdapter.INT64.encodedSizeWithTag(5, value.negative_int_value)
+          + ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.double_value)
+          + ProtoAdapter.BYTES.encodedSizeWithTag(7, value.string_value)
+          + ProtoAdapter.STRING.encodedSizeWithTag(8, value.aggregate_value)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, UninterpretedOption value) throws IOException {
       NamePart.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.name);
-      if (value.identifier_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.identifier_value);
-      if (value.positive_int_value != null) ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.positive_int_value);
-      if (value.negative_int_value != null) ProtoAdapter.INT64.encodeWithTag(writer, 5, value.negative_int_value);
-      if (value.double_value != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.double_value);
-      if (value.string_value != null) ProtoAdapter.BYTES.encodeWithTag(writer, 7, value.string_value);
-      if (value.aggregate_value != null) ProtoAdapter.STRING.encodeWithTag(writer, 8, value.aggregate_value);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.identifier_value);
+      ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.positive_int_value);
+      ProtoAdapter.INT64.encodeWithTag(writer, 5, value.negative_int_value);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.double_value);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 7, value.string_value);
+      ProtoAdapter.STRING.encodeWithTag(writer, 8, value.aggregate_value);
       writer.writeBytes(value.unknownFields());
     }
 

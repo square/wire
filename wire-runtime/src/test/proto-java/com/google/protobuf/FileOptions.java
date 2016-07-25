@@ -613,46 +613,46 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   }
 
   private static final class ProtoAdapter_FileOptions extends ProtoAdapter<FileOptions> {
-    ProtoAdapter_FileOptions() {
+    public ProtoAdapter_FileOptions() {
       super(FieldEncoding.LENGTH_DELIMITED, FileOptions.class);
     }
 
     @Override
     public int encodedSize(FileOptions value) {
-      return (value.java_package != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.java_package) : 0)
-          + (value.java_outer_classname != null ? ProtoAdapter.STRING.encodedSizeWithTag(8, value.java_outer_classname) : 0)
-          + (value.java_multiple_files != null ? ProtoAdapter.BOOL.encodedSizeWithTag(10, value.java_multiple_files) : 0)
-          + (value.java_generate_equals_and_hash != null ? ProtoAdapter.BOOL.encodedSizeWithTag(20, value.java_generate_equals_and_hash) : 0)
-          + (value.java_string_check_utf8 != null ? ProtoAdapter.BOOL.encodedSizeWithTag(27, value.java_string_check_utf8) : 0)
-          + (value.optimize_for != null ? OptimizeMode.ADAPTER.encodedSizeWithTag(9, value.optimize_for) : 0)
-          + (value.go_package != null ? ProtoAdapter.STRING.encodedSizeWithTag(11, value.go_package) : 0)
-          + (value.cc_generic_services != null ? ProtoAdapter.BOOL.encodedSizeWithTag(16, value.cc_generic_services) : 0)
-          + (value.java_generic_services != null ? ProtoAdapter.BOOL.encodedSizeWithTag(17, value.java_generic_services) : 0)
-          + (value.py_generic_services != null ? ProtoAdapter.BOOL.encodedSizeWithTag(18, value.py_generic_services) : 0)
-          + (value.deprecated != null ? ProtoAdapter.BOOL.encodedSizeWithTag(23, value.deprecated) : 0)
-          + (value.cc_enable_arenas != null ? ProtoAdapter.BOOL.encodedSizeWithTag(31, value.cc_enable_arenas) : 0)
-          + (value.objc_class_prefix != null ? ProtoAdapter.STRING.encodedSizeWithTag(36, value.objc_class_prefix) : 0)
-          + (value.csharp_namespace != null ? ProtoAdapter.STRING.encodedSizeWithTag(37, value.csharp_namespace) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.java_package)
+          + ProtoAdapter.STRING.encodedSizeWithTag(8, value.java_outer_classname)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(10, value.java_multiple_files)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(20, value.java_generate_equals_and_hash)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(27, value.java_string_check_utf8)
+          + OptimizeMode.ADAPTER.encodedSizeWithTag(9, value.optimize_for)
+          + ProtoAdapter.STRING.encodedSizeWithTag(11, value.go_package)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(16, value.cc_generic_services)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(17, value.java_generic_services)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(18, value.py_generic_services)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(23, value.deprecated)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(31, value.cc_enable_arenas)
+          + ProtoAdapter.STRING.encodedSizeWithTag(36, value.objc_class_prefix)
+          + ProtoAdapter.STRING.encodedSizeWithTag(37, value.csharp_namespace)
           + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, FileOptions value) throws IOException {
-      if (value.java_package != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.java_package);
-      if (value.java_outer_classname != null) ProtoAdapter.STRING.encodeWithTag(writer, 8, value.java_outer_classname);
-      if (value.java_multiple_files != null) ProtoAdapter.BOOL.encodeWithTag(writer, 10, value.java_multiple_files);
-      if (value.java_generate_equals_and_hash != null) ProtoAdapter.BOOL.encodeWithTag(writer, 20, value.java_generate_equals_and_hash);
-      if (value.java_string_check_utf8 != null) ProtoAdapter.BOOL.encodeWithTag(writer, 27, value.java_string_check_utf8);
-      if (value.optimize_for != null) OptimizeMode.ADAPTER.encodeWithTag(writer, 9, value.optimize_for);
-      if (value.go_package != null) ProtoAdapter.STRING.encodeWithTag(writer, 11, value.go_package);
-      if (value.cc_generic_services != null) ProtoAdapter.BOOL.encodeWithTag(writer, 16, value.cc_generic_services);
-      if (value.java_generic_services != null) ProtoAdapter.BOOL.encodeWithTag(writer, 17, value.java_generic_services);
-      if (value.py_generic_services != null) ProtoAdapter.BOOL.encodeWithTag(writer, 18, value.py_generic_services);
-      if (value.deprecated != null) ProtoAdapter.BOOL.encodeWithTag(writer, 23, value.deprecated);
-      if (value.cc_enable_arenas != null) ProtoAdapter.BOOL.encodeWithTag(writer, 31, value.cc_enable_arenas);
-      if (value.objc_class_prefix != null) ProtoAdapter.STRING.encodeWithTag(writer, 36, value.objc_class_prefix);
-      if (value.csharp_namespace != null) ProtoAdapter.STRING.encodeWithTag(writer, 37, value.csharp_namespace);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.java_package);
+      ProtoAdapter.STRING.encodeWithTag(writer, 8, value.java_outer_classname);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 10, value.java_multiple_files);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 20, value.java_generate_equals_and_hash);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 27, value.java_string_check_utf8);
+      OptimizeMode.ADAPTER.encodeWithTag(writer, 9, value.optimize_for);
+      ProtoAdapter.STRING.encodeWithTag(writer, 11, value.go_package);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 16, value.cc_generic_services);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 17, value.java_generic_services);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 18, value.py_generic_services);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 23, value.deprecated);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 31, value.cc_enable_arenas);
+      ProtoAdapter.STRING.encodeWithTag(writer, 36, value.objc_class_prefix);
+      ProtoAdapter.STRING.encodeWithTag(writer, 37, value.csharp_namespace);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }

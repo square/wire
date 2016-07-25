@@ -183,19 +183,19 @@ public final class Bar extends Message<Bar, Bar.Builder> {
       }
 
       private static final class ProtoAdapter_Moo extends ProtoAdapter<Moo> {
-        ProtoAdapter_Moo() {
+        public ProtoAdapter_Moo() {
           super(FieldEncoding.LENGTH_DELIMITED, Moo.class);
         }
 
         @Override
         public int encodedSize(Moo value) {
-          return (value.boo != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.boo) : 0)
+          return ProtoAdapter.STRING.encodedSizeWithTag(1, value.boo)
               + value.unknownFields().size();
         }
 
         @Override
         public void encode(ProtoWriter writer, Moo value) throws IOException {
-          if (value.boo != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.boo);
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.boo);
           writer.writeBytes(value.unknownFields());
         }
 
@@ -227,7 +227,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     }
 
     private static final class ProtoAdapter_Baz extends ProtoAdapter<Baz> {
-      ProtoAdapter_Baz() {
+      public ProtoAdapter_Baz() {
         super(FieldEncoding.LENGTH_DELIMITED, Baz.class);
       }
 
@@ -268,7 +268,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
   }
 
   private static final class ProtoAdapter_Bar extends ProtoAdapter<Bar> {
-    ProtoAdapter_Bar() {
+    public ProtoAdapter_Bar() {
       super(FieldEncoding.LENGTH_DELIMITED, Bar.class);
     }
 

@@ -111,21 +111,21 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
   }
 
   private static final class ProtoAdapter_NotRedacted extends ProtoAdapter<NotRedacted> {
-    ProtoAdapter_NotRedacted() {
+    public ProtoAdapter_NotRedacted() {
       super(FieldEncoding.LENGTH_DELIMITED, NotRedacted.class);
     }
 
     @Override
     public int encodedSize(NotRedacted value) {
-      return (value.a != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) : 0)
-          + (value.b != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
+          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, NotRedacted value) throws IOException {
-      if (value.a != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
-      if (value.b != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b);
       writer.writeBytes(value.unknownFields());
     }
 

@@ -134,23 +134,23 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   }
 
   private static final class ProtoAdapter_EnumDescriptorProto extends ProtoAdapter<EnumDescriptorProto> {
-    ProtoAdapter_EnumDescriptorProto() {
+    public ProtoAdapter_EnumDescriptorProto() {
       super(FieldEncoding.LENGTH_DELIMITED, EnumDescriptorProto.class);
     }
 
     @Override
     public int encodedSize(EnumDescriptorProto value) {
-      return (value.name != null ? ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) : 0)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
           + EnumValueDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.value)
-          + (value.options != null ? EnumOptions.ADAPTER.encodedSizeWithTag(3, value.options) : 0)
+          + EnumOptions.ADAPTER.encodedSizeWithTag(3, value.options)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, EnumDescriptorProto value) throws IOException {
-      if (value.name != null) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       EnumValueDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.value);
-      if (value.options != null) EnumOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
+      EnumOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
       writer.writeBytes(value.unknownFields());
     }
 

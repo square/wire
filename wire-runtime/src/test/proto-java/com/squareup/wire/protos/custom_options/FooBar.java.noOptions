@@ -340,19 +340,19 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
 
     private static final class ProtoAdapter_Nested extends ProtoAdapter<Nested> {
-      ProtoAdapter_Nested() {
+      public ProtoAdapter_Nested() {
         super(FieldEncoding.LENGTH_DELIMITED, Nested.class);
       }
 
       @Override
       public int encodedSize(Nested value) {
-        return (value.value != null ? FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value) : 0)
+        return FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, Nested value) throws IOException {
-        if (value.value != null) FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value);
+        FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -466,7 +466,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
 
     private static final class ProtoAdapter_More extends ProtoAdapter<More> {
-      ProtoAdapter_More() {
+      public ProtoAdapter_More() {
         super(FieldEncoding.LENGTH_DELIMITED, More.class);
       }
 
@@ -543,34 +543,34 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   }
 
   private static final class ProtoAdapter_FooBar extends ProtoAdapter<FooBar> {
-    ProtoAdapter_FooBar() {
+    public ProtoAdapter_FooBar() {
       super(FieldEncoding.LENGTH_DELIMITED, FooBar.class);
     }
 
     @Override
     public int encodedSize(FooBar value) {
-      return (value.foo != null ? ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) : 0)
-          + (value.bar != null ? ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar) : 0)
-          + (value.baz != null ? Nested.ADAPTER.encodedSizeWithTag(3, value.baz) : 0)
-          + (value.qux != null ? ProtoAdapter.UINT64.encodedSizeWithTag(4, value.qux) : 0)
+      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
+          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar)
+          + Nested.ADAPTER.encodedSizeWithTag(3, value.baz)
+          + ProtoAdapter.UINT64.encodedSizeWithTag(4, value.qux)
           + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(5, value.fred)
-          + (value.daisy != null ? ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy) : 0)
+          + ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy)
           + FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested)
-          + (value.ext != null ? FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext) : 0)
+          + FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext)
           + FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, FooBar value) throws IOException {
-      if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
-      if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar);
-      if (value.baz != null) Nested.ADAPTER.encodeWithTag(writer, 3, value.baz);
-      if (value.qux != null) ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.qux);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar);
+      Nested.ADAPTER.encodeWithTag(writer, 3, value.baz);
+      ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.qux);
       ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 5, value.fred);
-      if (value.daisy != null) ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.daisy);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.daisy);
       FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested);
-      if (value.ext != null) FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
+      FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
       FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
       writer.writeBytes(value.unknownFields());
     }

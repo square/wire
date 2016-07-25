@@ -92,19 +92,19 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
   }
 
   private static final class ProtoAdapter_ChildPackage extends ProtoAdapter<ChildPackage> {
-    ProtoAdapter_ChildPackage() {
+    public ProtoAdapter_ChildPackage() {
       super(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class);
     }
 
     @Override
     public int encodedSize(ChildPackage value) {
-      return (value.inner_foreign_enum != null ? ForeignEnum.ADAPTER.encodedSizeWithTag(1, value.inner_foreign_enum) : 0)
+      return ForeignEnum.ADAPTER.encodedSizeWithTag(1, value.inner_foreign_enum)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, ChildPackage value) throws IOException {
-      if (value.inner_foreign_enum != null) ForeignEnum.ADAPTER.encodeWithTag(writer, 1, value.inner_foreign_enum);
+      ForeignEnum.ADAPTER.encodeWithTag(writer, 1, value.inner_foreign_enum);
       writer.writeBytes(value.unknownFields());
     }
 

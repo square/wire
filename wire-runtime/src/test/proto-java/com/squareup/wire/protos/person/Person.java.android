@@ -341,21 +341,21 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     }
 
     private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
-      ProtoAdapter_PhoneNumber() {
+      public ProtoAdapter_PhoneNumber() {
         super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class);
       }
 
       @Override
       public int encodedSize(PhoneNumber value) {
         return ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
-            + (value.type != null ? PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) : 0)
+            + PhoneType.ADAPTER.encodedSizeWithTag(2, value.type)
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, PhoneNumber value) throws IOException {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
-        if (value.type != null) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
+        PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -395,7 +395,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   }
 
   private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
-    ProtoAdapter_Person() {
+    public ProtoAdapter_Person() {
       super(FieldEncoding.LENGTH_DELIMITED, Person.class);
     }
 
@@ -403,7 +403,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     public int encodedSize(Person value) {
       return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
           + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
-          + (value.email != null ? ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) : 0)
+          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
           + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
           + value.unknownFields().size();
     }
@@ -412,7 +412,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     public void encode(ProtoWriter writer, Person value) throws IOException {
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
-      if (value.email != null) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
       writer.writeBytes(value.unknownFields());
     }

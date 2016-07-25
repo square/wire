@@ -139,7 +139,7 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
   private static final class ProtoAdapter_RepeatedPackedAndMap extends ProtoAdapter<RepeatedPackedAndMap> {
     private final ProtoAdapter<Map<Integer, Integer>> map_int32_int32 = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
 
-    ProtoAdapter_RepeatedPackedAndMap() {
+    public ProtoAdapter_RepeatedPackedAndMap() {
       super(FieldEncoding.LENGTH_DELIMITED, RepeatedPackedAndMap.class);
     }
 
