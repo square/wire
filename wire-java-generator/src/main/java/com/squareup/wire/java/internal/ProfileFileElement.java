@@ -21,22 +21,22 @@ import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.internal.parser.Nullable;
 
 /**
- * A single {@code build.wire} file. This file is structured similarly to a {@code .proto} file, but
- * with different elements.
+ * A single {@code .wire} file. This file is structured similarly to a {@code .proto} file, but with
+ * different elements.
  *
  * <h3>File Structure</h3>
  *
- * A project may have 0 or more {@code build.wire} files. These files should be in the same
- * directory as the {@code .proto} files so they may be automatically discovered by Wire.
+ * A project may have 0 or more {@code .wire} files. These files should be in the same directory as
+ * the {@code .proto} files so they may be automatically discovered by Wire.
  *
  * <p>Each file starts with a syntax declaration. The syntax must be "wire2". This is followed by an
  * optional package declaration, which should match to the package declarations of the {@code
  * .proto} files in the directory.
  *
- * <p>Build configs may import any number of proto files. Note that it is an error to import {@code
- * build.wire} files. These imports are used to resolve types specified later in the file.
+ * <p>Profiles may import any number of proto files. Note that it is an error to import {@code
+ * .wire} files. These imports are used to resolve types specified later in the file.
  *
- * <p>Build configs may specify any number of type configurations. These specify a fully qualified
+ * <p>Profiles may specify any number of type configurations. These specify a fully qualified
  * type, its target Java type, and an adapter to do the encoding and decoding.
  *
  * <pre>   {@code
@@ -53,9 +53,9 @@ import com.squareup.wire.schema.internal.parser.Nullable;
  * }</pre>
  */
 @AutoValue
-public abstract class BuildConfigFileElement {
+public abstract class ProfileFileElement {
   public static Builder builder(Location location) {
-    return new AutoValue_BuildConfigFileElement.Builder()
+    return new AutoValue_ProfileFileElement.Builder()
         .location(location)
         .imports(ImmutableList.<String>of())
         .typeConfigs(ImmutableList.<TypeConfigElement>of());
@@ -94,6 +94,6 @@ public abstract class BuildConfigFileElement {
     Builder packageName(@Nullable String packageName);
     Builder imports(ImmutableList<String> imports);
     Builder typeConfigs(ImmutableList<TypeConfigElement> typeConfigs);
-    BuildConfigFileElement build();
+    ProfileFileElement build();
   }
 }
