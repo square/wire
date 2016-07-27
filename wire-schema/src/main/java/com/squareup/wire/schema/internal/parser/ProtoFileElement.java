@@ -48,11 +48,11 @@ public abstract class ProtoFileElement {
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     builder.append("// ").append(location()).append('\n');
-    if (packageName() != null) {
-      builder.append("package ").append(packageName()).append(";\n");
-    }
     if (syntax() != null) {
       builder.append("syntax \"").append(syntax()).append("\";\n");
+    }
+    if (packageName() != null) {
+      builder.append("package ").append(packageName()).append(";\n");
     }
     if (!imports().isEmpty() || !publicImports().isEmpty()) {
       builder.append('\n');
