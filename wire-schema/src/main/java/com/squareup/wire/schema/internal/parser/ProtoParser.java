@@ -29,13 +29,13 @@ import java.util.Map;
 
 /** Basic parser for {@code .proto} schema declarations. */
 public final class ProtoParser {
+  private final SyntaxReader reader;
+
   /** Parse a named {@code .proto} schema. */
   public static ProtoFileElement parse(Location location, String data) {
     return new ProtoParser(location, data.toCharArray()).readProtoFile();
   }
 
-  private final Location location;
-  private final char[] data;
   private final ProtoFileElement.Builder fileBuilder;
   private final ImmutableList.Builder<String> publicImports = ImmutableList.builder();
   private final ImmutableList.Builder<String> imports = ImmutableList.builder();
@@ -46,14 +46,10 @@ public final class ProtoParser {
 
   /** The number of declarations defined in the current file. */
   private int declarationCount = 0;
+
   /** The syntax of the file, or null if none is defined. */
   private ProtoFile.Syntax syntax;
-  /** Our cursor within the document. {@code data[pos]} is the next character to be read. */
-  private int pos;
-  /** The number of newline characters encountered thus far. */
-  private int line;
-  /** The index of the most recent newline character. */
-  private int lineStart;
+
   /** Output package name, or null if none yet encountered. */
   private String packageName;
 
@@ -61,15 +57,14 @@ public final class ProtoParser {
   private String prefix = "";
 
   ProtoParser(Location location, char[] data) {
-    this.location = location;
-    this.data = data;
+    this.reader = new SyntaxReader(data, location);
     this.fileBuilder = ProtoFileElement.builder(location);
   }
 
   ProtoFileElement readProtoFile() {
     while (true) {
-      String documentation = readDocumentation();
-      if (pos == data.length) {
+      String documentation = reader.readDocumentation();
+      if (reader.exhausted()) {
         return fileBuilder.syntax(syntax)
             .publicImports(publicImports.build())
             .imports(imports.build())
@@ -96,49 +91,47 @@ public final class ProtoParser {
     int index = declarationCount++;
 
     // Skip unnecessary semicolons, occasionally used after a nested message declaration.
-    if (peekChar() == ';') {
-      pos++;
-      return null;
-    }
+    if (reader.peekChar(';')) return null;
 
-    Location location = location();
-    String label = readWord();
+    Location location = reader.location();
+    String label = reader.readWord();
 
     if (label.equals("package")) {
-      if (!context.permitsPackage()) throw unexpected(location, "'package' in " + context);
-      if (packageName != null) throw unexpected(location, "too many package names");
-      packageName = readName();
+      if (!context.permitsPackage()) throw reader.unexpected(location, "'package' in " + context);
+      if (packageName != null) throw reader.unexpected(location, "too many package names");
+      packageName = reader.readName();
       fileBuilder.packageName(packageName);
       prefix = packageName + ".";
-      if (readChar() != ';') throw unexpected("expected ';'");
+      reader.require(';');
       return null;
     } else if (label.equals("import")) {
-      if (!context.permitsImport()) throw unexpected(location, "'import' in " + context);
-      String importString = readString();
+      if (!context.permitsImport()) throw reader.unexpected(location, "'import' in " + context);
+      String importString = reader.readString();
       if ("public".equals(importString)) {
-        publicImports.add(readString());
+        publicImports.add(reader.readString());
       } else {
         imports.add(importString);
       }
-      if (readChar() != ';') throw unexpected("expected ';'");
+      reader.require(';');
       return null;
     } else if (label.equals("syntax")) {
-      if (!context.permitsSyntax()) throw unexpected(location, "'syntax' in " + context);
-      if (readChar() != '=') throw unexpected("expected '='");
+      if (!context.permitsSyntax()) throw reader.unexpected(location, "'syntax' in " + context);
+      reader.require('=');
       if (index != 0) {
-        throw unexpected(location, "'syntax' element must be the first declaration in a file");
+        throw reader.unexpected(
+            location, "'syntax' element must be the first declaration in a file");
       }
-      String syntaxString = readQuotedString();
+      String syntaxString = reader.readQuotedString();
       try {
         syntax = ProtoFile.Syntax.get(syntaxString);
       } catch (IllegalArgumentException e) {
-        throw unexpected(location, e.getMessage());
+        throw reader.unexpected(location, e.getMessage());
       }
-      if (readChar() != ';') throw unexpected("expected ';'");
+      reader.require(';');
       return null;
     } else if (label.equals("option")) {
       OptionElement result = readOption('=');
-      if (readChar() != ';') throw unexpected("expected ';'");
+      reader.require(';');
       return result;
     } else if (label.equals("reserved")) {
       return readReserved(location, documentation);
@@ -151,50 +144,30 @@ public final class ProtoParser {
     } else if (label.equals("extend")) {
       return readExtend(location, documentation);
     } else if (label.equals("rpc")) {
-      if (!context.permitsRpc()) throw unexpected(location, "'rpc' in " + context);
+      if (!context.permitsRpc()) throw reader.unexpected(location, "'rpc' in " + context);
       return readRpc(location, documentation);
     } else if (label.equals("oneof")) {
-      if (!context.permitsOneOf()) throw unexpected(location, "'oneof' must be nested in message");
+      if (!context.permitsOneOf()) {
+        throw reader.unexpected(location, "'oneof' must be nested in message");
+      }
       return readOneOf(documentation);
     } else if (label.equals("extensions")) {
-      if (!context.permitsExtensions()) throw unexpected(location, "'extensions' must be nested");
+      if (!context.permitsExtensions()) {
+        throw reader.unexpected(location, "'extensions' must be nested");
+      }
       return readExtensions(location, documentation);
     } else if (context == Context.MESSAGE || context == Context.EXTEND) {
       return readField(documentation, location, label);
     } else if (context == Context.ENUM) {
-      if (readChar() != '=') throw unexpected("expected '='");
-
-      EnumConstantElement.Builder builder = EnumConstantElement.builder(location)
-          .name(label)
-          .tag(readInt());
-
-      ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
-      if (peekChar() == '[') {
-        readChar();
-        while (true) {
-          options.add(readOption('='));
-          char c = readChar();
-          if (c == ']') {
-            break;
-          }
-          if (c != ',') {
-            throw unexpected("Expected ',' or ']");
-          }
-        }
-      }
-      if (readChar() != ';') throw unexpected("expected ';'");
-      documentation = tryAppendTrailingDocumentation(documentation);
-      return builder.documentation(documentation)
-          .options(options.build())
-          .build();
+      return readEnumConstant(documentation, location, label);
     } else {
-      throw unexpected(location, "unexpected label: " + label);
+      throw reader.unexpected(location, "unexpected label: " + label);
     }
   }
 
   /** Reads a message declaration. */
   private MessageElement readMessage(Location location, String documentation) {
-    String name = readName();
+    String name = reader.readName();
     MessageElement.Builder builder = MessageElement.builder(location)
         .name(name)
         .documentation(documentation);
@@ -210,13 +183,11 @@ public final class ProtoParser {
     ImmutableList.Builder<ReservedElement> reserveds = ImmutableList.builder();
     ImmutableList.Builder<GroupElement> groups = ImmutableList.builder();
 
-    if (readChar() != '{') throw unexpected("expected '{'");
+    reader.require('{');
     while (true) {
-      String nestedDocumentation = readDocumentation();
-      if (peekChar() == '}') {
-        pos++;
-        break;
-      }
+      String nestedDocumentation = reader.readDocumentation();
+      if (reader.peekChar('}')) break;
+
       Object declared = readDeclaration(nestedDocumentation, Context.MESSAGE);
       if (declared instanceof FieldElement) {
         fields.add((FieldElement) declared);
@@ -251,19 +222,17 @@ public final class ProtoParser {
 
   /** Reads an extend declaration. */
   private ExtendElement readExtend(Location location, String documentation) {
-    String name = readName();
+    String name = reader.readName();
     ExtendElement.Builder builder = ExtendElement.builder(location)
         .name(name)
         .documentation(documentation);
 
-    if (readChar() != '{') throw unexpected("expected '{'");
+    reader.require('{');
     ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
     while (true) {
-      String nestedDocumentation = readDocumentation();
-      if (peekChar() == '}') {
-        pos++;
-        break;
-      }
+      String nestedDocumentation = reader.readDocumentation();
+      if (reader.peekChar('}')) break;
+
       Object declared = readDeclaration(nestedDocumentation, Context.EXTEND);
       if (declared instanceof FieldElement) {
         fields.add((FieldElement) declared);
@@ -275,20 +244,18 @@ public final class ProtoParser {
 
   /** Reads a service declaration and returns it. */
   private ServiceElement readService(Location location, String documentation) {
-    String name = readName();
+    String name = reader.readName();
     ServiceElement.Builder builder = ServiceElement.builder(location)
         .name(name)
         .documentation(documentation);
 
-    if (readChar() != '{') throw unexpected("expected '{'");
+    reader.require('{');
     ImmutableList.Builder<RpcElement> rpcs = ImmutableList.builder();
     ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
     while (true) {
-      String rpcDocumentation = readDocumentation();
-      if (peekChar() == '}') {
-        pos++;
-        break;
-      }
+      String rpcDocumentation = reader.readDocumentation();
+      if (reader.peekChar('}')) break;
+
       Object declared = readDeclaration(rpcDocumentation, Context.SERVICE);
       if (declared instanceof RpcElement) {
         rpcs.add((RpcElement) declared);
@@ -303,20 +270,18 @@ public final class ProtoParser {
 
   /** Reads an enumerated type declaration and returns it. */
   private EnumElement readEnumElement(Location location, String documentation) {
-    String name = readName();
+    String name = reader.readName();
     EnumElement.Builder builder = EnumElement.builder(location)
         .name(name)
         .documentation(documentation);
 
-    if (readChar() != '{') throw unexpected("expected '{'");
     ImmutableList.Builder<EnumConstantElement> constants = ImmutableList.builder();
     ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
+    reader.require('{');
     while (true) {
-      String valueDocumentation = readDocumentation();
-      if (peekChar() == '}') {
-        pos++;
-        break;
-      }
+      String valueDocumentation = reader.readDocumentation();
+      if (reader.peekChar('}')) break;
+
       Object declared = readDeclaration(valueDocumentation, Context.ENUM);
       if (declared instanceof EnumConstantElement) {
         constants.add((EnumConstantElement) declared);
@@ -335,36 +300,39 @@ public final class ProtoParser {
     switch (word) {
       case "required":
         if (syntax == ProtoFile.Syntax.PROTO_3) {
-          throw unexpected(location, "'required' label forbidden in proto3 field declarations");
+          throw reader.unexpected(
+              location, "'required' label forbidden in proto3 field declarations");
         }
         label = Field.Label.REQUIRED;
-        type = readDataType();
+        type = reader.readDataType();
         break;
 
       case "optional":
         if (syntax == ProtoFile.Syntax.PROTO_3) {
-          throw unexpected(location, "'optional' label forbidden in proto3 field declarations");
+          throw reader.unexpected(
+              location, "'optional' label forbidden in proto3 field declarations");
         }
         label = Field.Label.OPTIONAL;
-        type = readDataType();
+        type = reader.readDataType();
         break;
 
       case "repeated":
         label = Field.Label.REPEATED;
-        type = readDataType();
+        type = reader.readDataType();
         break;
 
       default:
-        if (syntax != ProtoFile.Syntax.PROTO_3 && (!word.equals("map") || peekChar() != '<')) {
-          throw unexpected(location, "unexpected label: " + word);
+        if (syntax != ProtoFile.Syntax.PROTO_3
+            && (!word.equals("map") || reader.peekChar() != '<')) {
+          throw reader.unexpected(location, "unexpected label: " + word);
         }
         label = null;
-        type = readDataType(word);
+        type = reader.readDataType(word);
         break;
     }
 
     if (type.startsWith("map<") && label != null) {
-      throw unexpected(location, "'map' type cannot have label");
+      throw reader.unexpected(location, "'map' type cannot have label");
     }
     if (type.equals("group")) {
       return readGroup(documentation, label);
@@ -376,9 +344,9 @@ public final class ProtoParser {
   /** Reads an field declaration and returns it. */
   private FieldElement readField(
       Location location, String documentation, @Nullable Field.Label label, String type) {
-    String name = readName();
-    if (readChar() != '=') throw unexpected("expected '='");
-    int tag = readInt();
+    String name = reader.readName();
+    reader.require('=');
+    int tag = reader.readInt();
 
     FieldElement.Builder builder = FieldElement.builder(location)
         .label(label)
@@ -387,8 +355,7 @@ public final class ProtoParser {
         .tag(tag);
 
     ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
-    if (peekChar() == '[') {
-      pos++;
+    if (reader.peekChar('[')) {
       while (true) {
         OptionElement option = readOption('=');
         if (option.name().equals("default")) {
@@ -397,20 +364,15 @@ public final class ProtoParser {
           options.add(option);
         }
 
-        // Check for optional ',' or closing ']'
-        char c = peekChar();
-        if (c == ']') {
-          pos++;
-          break;
-        } else if (c == ',') {
-          pos++;
-        }
+        // Check for closing ']'
+        if (reader.peekChar(']')) break;
+
+        // Discard optional ','.
+        reader.peekChar(',');
       }
     }
-    if (readChar() != ';') {
-      throw unexpected("expected ';'");
-    }
-    documentation = tryAppendTrailingDocumentation(documentation);
+    reader.require(';');
+    documentation = reader.tryAppendTrailingDocumentation(documentation);
     return builder.documentation(documentation)
         .options(options.build())
         .build();
@@ -418,20 +380,18 @@ public final class ProtoParser {
 
   private OneOfElement readOneOf(String documentation) {
     OneOfElement.Builder builder = OneOfElement.builder()
-        .name(readName())
+        .name(reader.readName())
         .documentation(documentation);
     ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
     ImmutableList.Builder<GroupElement> groups = ImmutableList.builder();
 
-    if (readChar() != '{') throw unexpected("expected '{'");
+    reader.require('{');
     while (true) {
-      String nestedDocumentation = readDocumentation();
-      if (peekChar() == '}') {
-        pos++;
-        break;
-      }
-      Location location = location();
-      String type = readDataType();
+      String nestedDocumentation = reader.readDocumentation();
+      if (reader.peekChar('}')) break;
+
+      Location location = reader.location();
+      String type = reader.readDataType();
       if (type.equals("group")) {
         groups.add(readGroup(nestedDocumentation, null));
       } else {
@@ -444,11 +404,9 @@ public final class ProtoParser {
   }
 
   private GroupElement readGroup(String documentation, Field.Label label) {
-    String name = readWord();
-    if (readChar() != '=') {
-      throw unexpected("expected '='");
-    }
-    int tag = readInt();
+    String name = reader.readWord();
+    reader.require('=');
+    int tag = reader.readInt();
 
     GroupElement.Builder builder = GroupElement.builder()
         .label(label)
@@ -457,18 +415,16 @@ public final class ProtoParser {
         .documentation(documentation);
     ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
 
-    if (readChar() != '{') throw unexpected("expected '{'");
+    reader.require('{');
     while (true) {
-      String nestedDocumentation = readDocumentation();
-      if (peekChar() == '}') {
-        pos++;
-        break;
-      }
-      Location location = location();
-      String fieldLabel = readWord();
+      String nestedDocumentation = reader.readDocumentation();
+      if (reader.peekChar('}')) break;
+
+      Location location = reader.location();
+      String fieldLabel = reader.readWord();
       Object field = readField(nestedDocumentation, location, fieldLabel);
       if (!(field instanceof FieldElement)) {
-        throw unexpected("expected field declaration, was " + field);
+        throw reader.unexpected("expected field declaration, was " + field);
       }
       fields.add((FieldElement) field);
     }
@@ -482,72 +438,72 @@ public final class ProtoParser {
     ImmutableList.Builder<Object> valuesBuilder = ImmutableList.builder();
 
     while (true) {
-      char c = peekChar();
+      char c = reader.peekChar();
       if (c == '"' || c == '\'') {
-        valuesBuilder.add(readQuotedString());
+        valuesBuilder.add(reader.readQuotedString());
       } else {
-        int tagStart = readInt();
+        int tagStart = reader.readInt();
 
-        c = peekChar();
+        c = reader.peekChar();
         if (c != ',' && c != ';') {
-          if (!readWord().equals("to")) {
-            throw unexpected("expected ',', ';', or 'to'");
+          if (!reader.readWord().equals("to")) {
+            throw reader.unexpected("expected ',', ';', or 'to'");
           }
-          int tagEnd = readInt();
+          int tagEnd = reader.readInt();
           valuesBuilder.add(Range.closed(tagStart, tagEnd));
         } else {
           valuesBuilder.add(tagStart);
         }
       }
-      c = readChar();
+      c = reader.readChar();
       if (c == ';') break;
-      if (c != ',') throw unexpected("expected ',' or ';'");
+      if (c != ',') throw reader.unexpected("expected ',' or ';'");
     }
 
     ImmutableList<Object> values = valuesBuilder.build();
     if (values.isEmpty()) {
-      throw unexpected("'reserved' must have at least one field name or tag");
+      throw reader.unexpected("'reserved' must have at least one field name or tag");
     }
     return ReservedElement.create(location, documentation, values);
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
   private ExtensionsElement readExtensions(Location location, String documentation) {
-    int start = readInt(); // Range start.
+    int start = reader.readInt(); // Range start.
     int end = start;
-    if (peekChar() != ';') {
-      if (!"to".equals(readWord())) throw unexpected("expected ';' or 'to'");
-      String s = readWord(); // Range end.
+    if (reader.peekChar() != ';') {
+      if (!"to".equals(reader.readWord())) throw reader.unexpected("expected ';' or 'to'");
+      String s = reader.readWord(); // Range end.
       if (s.equals("max")) {
         end = Util.MAX_TAG_VALUE;
       } else {
         end = Integer.parseInt(s);
       }
     }
-    if (readChar() != ';') throw unexpected("expected ';'");
+    reader.require(';');
     return ExtensionsElement.create(location, start, end, documentation);
   }
 
   /** Reads a option containing a name, an '=' or ':', and a value. */
   private OptionElement readOption(char keyValueSeparator) {
-    boolean isExtension = (peekChar() == '[');
-    boolean isParenthesized = (peekChar() == '(');
-    String name = readName(); // Option name.
+    boolean isExtension = (reader.peekChar() == '[');
+    boolean isParenthesized = (reader.peekChar() == '(');
+    String name = reader.readName(); // Option name.
     if (isExtension) {
       name = "[" + name + "]";
     }
     String subName = null;
-    char c = readChar();
+    char c = reader.readChar();
     if (c == '.') {
       // Read nested field name. For example "baz" in "(foo.bar).baz = 12".
-      subName = readName();
-      c = readChar();
+      subName = reader.readName();
+      c = reader.readChar();
     }
     if (keyValueSeparator == ':' && c == '{') {
       // In text format, values which are maps can omit a separator. Backtrack so it can be re-read.
-      pos--;
+      reader.pushBack('{');
     } else if (c != keyValueSeparator) {
-      throw unexpected("expected '" + keyValueSeparator + "' in option");
+      throw reader.unexpected("expected '" + keyValueSeparator + "' in option");
     }
     OptionKindAndValue kindAndValue = readKindAndValue();
     OptionElement.Kind kind = kindAndValue.kind();
@@ -557,6 +513,38 @@ public final class ProtoParser {
       kind = OptionElement.Kind.OPTION;
     }
     return OptionElement.create(name, kind, value, isParenthesized);
+  }
+
+  /** Reads an enum constant like "ROCK = 0;". The label is the constant name. */
+  private EnumConstantElement readEnumConstant(
+      String documentation, Location location, String label) {
+    reader.require('=');
+
+    int tag = reader.readInt();
+
+    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
+    if (reader.peekChar() == '[') {
+      reader.readChar();
+      while (true) {
+        options.add(readOption('='));
+        char c = reader.readChar();
+        if (c == ']') {
+          break;
+        }
+        if (c != ',') {
+          throw reader.unexpected("Expected ',' or ']");
+        }
+      }
+    }
+    reader.require(';');
+    documentation = reader.tryAppendTrailingDocumentation(documentation);
+
+    return EnumConstantElement.builder(location)
+        .name(label)
+        .tag(tag)
+        .documentation(documentation)
+        .options(options.build())
+        .build();
   }
 
   @AutoValue
@@ -571,7 +559,7 @@ public final class ProtoParser {
 
   /** Reads a value that can be a map, list, string, number, boolean or enum. */
   private OptionKindAndValue readKindAndValue() {
-    char peeked = peekChar();
+    char peeked = reader.peekChar();
     switch (peeked) {
       case '{':
         return OptionKindAndValue.of(OptionElement.Kind.MAP, readMap('{', '}', ':'));
@@ -579,12 +567,12 @@ public final class ProtoParser {
         return OptionKindAndValue.of(OptionElement.Kind.LIST, readList());
       case '"':
       case '\'':
-        return OptionKindAndValue.of(OptionElement.Kind.STRING, readString());
+        return OptionKindAndValue.of(OptionElement.Kind.STRING, reader.readString());
       default:
         if (Character.isDigit(peeked) || peeked == '-') {
-          return OptionKindAndValue.of(OptionElement.Kind.NUMBER, readWord());
+          return OptionKindAndValue.of(OptionElement.Kind.NUMBER, reader.readWord());
         }
-        String word = readWord();
+        String word = reader.readWord();
         switch (word) {
           case "true":
             return OptionKindAndValue.of(OptionElement.Kind.BOOLEAN, "true");
@@ -603,12 +591,11 @@ public final class ProtoParser {
    */
   @SuppressWarnings("unchecked")
   private Map<String, Object> readMap(char openBrace, char closeBrace, char keyValueSeparator) {
-    if (readChar() != openBrace) throw new AssertionError();
+    if (reader.readChar() != openBrace) throw new AssertionError();
     Map<String, Object> result = new LinkedHashMap<>();
     while (true) {
-      if (peekChar() == closeBrace) {
+      if (reader.peekChar(closeBrace)) {
         // If we see the close brace, finish immediately. This handles {}/[] and ,}/,] cases.
-        pos++;
         return result;
       }
 
@@ -640,10 +627,8 @@ public final class ProtoParser {
         }
       }
 
-      // ',' separator is optional, skip if present
-      if (peekChar() == ',') {
-        pos++;
-      }
+      // Discard optional ',' separator.
+      reader.peekChar(',');
     }
   }
 
@@ -663,64 +648,55 @@ public final class ProtoParser {
    * surrounding the list and ',' separating values.
    */
   private List<Object> readList() {
-    if (readChar() != '[') throw new AssertionError();
+    reader.require('[');
     List<Object> result = new ArrayList<>();
     while (true) {
-      if (peekChar() == ']') {
-        // If we see the close brace, finish immediately. This handles [] and ,] cases.
-        pos++;
-        return result;
-      }
+      // If we see the close brace, finish immediately. This handles [] and ,] cases.
+      if (reader.peekChar(']')) return result;
 
       result.add(readKindAndValue().value());
 
-      char c = peekChar();
-      if (c == ',') {
-        pos++;
-      } else if (c != ']') {
-        throw unexpected("expected ',' or ']'");
-      }
+      if (reader.peekChar(',')) continue;
+      if (reader.peekChar() != ']') throw reader.unexpected("expected ',' or ']'");
     }
   }
 
   /** Reads an rpc and returns it. */
   private RpcElement readRpc(Location location, String documentation) {
     RpcElement.Builder builder = RpcElement.builder(location)
-        .name(readName())
+        .name(reader.readName())
         .documentation(documentation);
 
-    if (readChar() != '(') throw unexpected("expected '('");
+    reader.require('(');
     String type;
-    String word = readWord();
+    String word = reader.readWord();
     if (word.equals("stream")) {
       builder.requestStreaming(true);
-      type = readDataType();
+      type = reader.readDataType();
     } else {
-      type = readDataType(word);
+      type = reader.readDataType(word);
     }
     builder.requestType(type);
-    if (readChar() != ')') throw unexpected("expected ')'");
+    reader.require(')');
 
-    if (!readWord().equals("returns")) throw unexpected("expected 'returns'");
+    if (!reader.readWord().equals("returns")) throw reader.unexpected("expected 'returns'");
 
-    if (readChar() != '(') throw unexpected("expected '('");
-    word = readWord();
+    reader.require('(');
+    word = reader.readWord();
     if (word.equals("stream")) {
       builder.responseStreaming(true);
-      type = readDataType();
+      type = reader.readDataType();
     } else {
-      type = readDataType(word);
+      type = reader.readDataType(word);
     }
     builder.responseType(type);
-    if (readChar() != ')') throw unexpected("expected ')'");
+    reader.require(')');
 
-    if (peekChar() == '{') {
+    if (reader.peekChar('{')) {
       ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
-      pos++;
       while (true) {
-        String rpcDocumentation = readDocumentation();
-        if (peekChar() == '}') {
-          pos++;
+        String rpcDocumentation = reader.readDocumentation();
+        if (reader.peekChar('}')) {
           break;
         }
         Object declared = readDeclaration(rpcDocumentation, Context.RPC);
@@ -729,361 +705,11 @@ public final class ProtoParser {
         }
       }
       builder.options(options.build());
-    } else if (readChar() != ';') throw unexpected("expected ';'");
+    } else {
+      reader.require(';');
+    }
 
     return builder.build();
-  }
-
-  /** Reads a non-whitespace character and returns it. */
-  private char readChar() {
-    char result = peekChar();
-    pos++;
-    return result;
-  }
-
-  /**
-   * Peeks a non-whitespace character and returns it. The only difference
-   * between this and {@code readChar} is that this doesn't consume the char.
-   */
-  private char peekChar() {
-    skipWhitespace(true);
-    if (pos == data.length) throw unexpected("unexpected end of file");
-    return data[pos];
-  }
-
-  /** Reads a quoted or unquoted string and returns it. */
-  private String readString() {
-    skipWhitespace(true);
-    char c = peekChar();
-    return c == '"' || c == '\'' ? readQuotedString() : readWord();
-  }
-
-  private String readQuotedString() {
-    char startQuote = readChar();
-    if (startQuote != '"' && startQuote != '\'') throw new AssertionError();
-    StringBuilder result = new StringBuilder();
-    while (pos < data.length) {
-      char c = data[pos++];
-      if (c == startQuote) {
-        if (peekChar() == '"' || peekChar() == '\'') {
-          // Adjacent strings are concatenated. Consume new quote and continue reading.
-          startQuote = readChar();
-          continue;
-        }
-        return result.toString();
-      }
-
-      if (c == '\\') {
-        if (pos == data.length) throw unexpected("unexpected end of file");
-        c = data[pos++];
-        switch (c) {
-          case 'a': c = 0x7; break;
-          case 'b': c = '\b'; break;
-          case 'f': c = '\f'; break;
-          case 'n': c = '\n'; break;
-          case 'r': c = '\r'; break;
-          case 't': c = '\t'; break;
-          case 'v': c = 0xb; break;
-          case 'x':case 'X':
-            c = readNumericEscape(16, 2);
-            break;
-          case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':
-            --pos;
-            c = readNumericEscape(8, 3);
-            break;
-          default:
-            // use char as-is
-            break;
-        }
-      }
-
-      result.append(c);
-      if (c == '\n') newline();
-    }
-    throw unexpected("unterminated string");
-  }
-
-  private char readNumericEscape(int radix, int len) {
-    int value = -1;
-    for (int endPos = Math.min(pos + len, data.length); pos < endPos; pos++) {
-      int digit = hexDigit(data[pos]);
-      if (digit == -1 || digit >= radix) break;
-      if (value < 0) {
-        value = digit;
-      } else {
-        value = value * radix + digit;
-      }
-    }
-    if (value < 0) throw unexpected("expected a digit after \\x or \\X");
-    return (char) value;
-  }
-
-  private int hexDigit(char c) {
-    if (c >= '0' && c <= '9') return c - '0';
-    else if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-    else if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-    else return -1;
-  }
-
-  /** Reads a (paren-wrapped), [square-wrapped] or naked symbol name. */
-  private String readName() {
-    String optionName;
-    char c = peekChar();
-    if (c == '(') {
-      pos++;
-      optionName = readWord();
-      if (readChar() != ')') throw unexpected("expected ')'");
-    } else if (c == '[') {
-      pos++;
-      optionName = readWord();
-      if (readChar() != ']') throw unexpected("expected ']'");
-    } else {
-      optionName = readWord();
-    }
-    return optionName;
-  }
-
-  /** Reads a scalar, map, or type name. */
-  private String readDataType() {
-    String name = readWord();
-    return readDataType(name);
-  }
-
-  /** Reads a scalar, map, or type name with {@code name} as a prefix word. */
-  private String readDataType(String name) {
-    if (name.equals("map")) {
-      if (readChar() != '<') throw unexpected("expected '<'");
-      String keyType = readDataType();
-      if (readChar() != ',') throw unexpected("expected ','");
-      String valueType = readDataType();
-      if (readChar() != '>') throw unexpected("expected '>'");
-      return String.format("map<%s, %s>", keyType, valueType);
-    } else {
-      return name;
-    }
-  }
-
-  /** Reads a non-empty word and returns it. */
-  private String readWord() {
-    skipWhitespace(true);
-    int start = pos;
-    while (pos < data.length) {
-      char c = data[pos];
-      if ((c >= 'a' && c <= 'z')
-          || (c >= 'A' && c <= 'Z')
-          || (c >= '0' && c <= '9')
-          || (c == '_')
-          || (c == '-')
-          || (c == '.')) {
-        pos++;
-      } else {
-        break;
-      }
-    }
-    if (start == pos) throw unexpected("expected a word");
-    return new String(data, start, pos - start);
-  }
-
-  /** Reads an integer and returns it. */
-  private int readInt() {
-    String tag = readWord();
-    try {
-      int radix = 10;
-      if (tag.startsWith("0x") || tag.startsWith("0X")) {
-        tag = tag.substring("0x".length());
-        radix = 16;
-      }
-      return Integer.valueOf(tag, radix);
-    } catch (Exception e) {
-      throw unexpected("expected an integer but was " + tag);
-    }
-  }
-
-  /**
-   * Like {@link #skipWhitespace}, but this returns a string containing all
-   * comment text. By convention, comments before a declaration document that
-   * declaration.
-   */
-  private String readDocumentation() {
-    String result = null;
-    while (true) {
-      skipWhitespace(false);
-      if (pos == data.length || data[pos] != '/') {
-        return result != null ? result : "";
-      }
-      String comment = readComment();
-      result = (result == null) ? comment : (result + "\n" + comment);
-    }
-  }
-
-  /** Reads a comment and returns its body. */
-  private String readComment() {
-    if (pos == data.length || data[pos] != '/') throw new AssertionError();
-    pos++;
-    int commentType = pos < data.length ? data[pos++] : -1;
-    if (commentType == '*') {
-      StringBuilder result = new StringBuilder();
-      boolean startOfLine = true;
-
-      for (; pos + 1 < data.length; pos++) {
-        char c = data[pos];
-        if (c == '*' && data[pos + 1] == '/') {
-          pos += 2;
-          return result.toString().trim();
-        }
-        if (c == '\n') {
-          result.append('\n');
-          newline();
-          startOfLine = true;
-        } else if (!startOfLine) {
-          result.append(c);
-        } else if (c == '*') {
-          if (data[pos + 1] == ' ') {
-            pos += 1; // Skip a single leading space, if present.
-          }
-          startOfLine = false;
-        } else if (!Character.isWhitespace(c)) {
-          result.append(c);
-          startOfLine = false;
-        }
-      }
-      throw unexpected("unterminated comment");
-    } else if (commentType == '/') {
-      if (pos < data.length && data[pos] == ' ') {
-        pos += 1; // Skip a single leading space, if present.
-      }
-      int start = pos;
-      while (pos < data.length) {
-        char c = data[pos++];
-        if (c == '\n') {
-          newline();
-          break;
-        }
-      }
-      return new String(data, start, pos - 1 - start);
-    } else {
-      throw unexpected("unexpected '/'");
-    }
-  }
-
-  private String tryAppendTrailingDocumentation(String documentation) {
-    // Search for a '/' character ignoring spaces and tabs.
-    while (pos < data.length) {
-      char c = data[pos];
-      if (c == ' ' || c == '\t') {
-        pos++;
-      } else if (c == '/') {
-        pos++;
-        break;
-      } else {
-        // Not a whitespace or comment-starting character. Return original documentation.
-        return documentation;
-      }
-    }
-
-    if (pos == data.length || (data[pos] != '/' && data[pos] != '*')) {
-      pos--; // Backtrack to start of comment.
-      throw unexpected("expected '//' or '/*'");
-    }
-    boolean isStar = data[pos] == '*';
-    pos++;
-
-    if (pos < data.length && data[pos] == ' ') {
-      pos++; // Skip a single leading space, if present.
-    }
-
-    int start = pos;
-    int end;
-
-    if (isStar) {
-      // Consume star comment until it closes on the same line.
-      while (true) {
-        if (pos == data.length || data[pos] == '\n') {
-          throw unexpected("trailing comment must be closed on the same line");
-        }
-        if (data[pos] == '*' && pos + 1 < data.length && data[pos + 1] == '/') {
-          end = pos - 1; // The character before '*'.
-          pos += 2; // Skip to the character after '/'.
-          break;
-        }
-        pos++;
-      }
-      // Ensure nothing follows a trailing star comment.
-      while (pos < data.length) {
-        char c = data[pos++];
-        if (c == '\n') {
-          newline();
-          break;
-        }
-        if (c != ' ' && c != '\t') {
-          throw unexpected("no syntax may follow trailing comment");
-        }
-      }
-    } else {
-      // Consume comment until newline.
-      while (true) {
-        if (pos == data.length) {
-          end = pos - 1;
-          break;
-        }
-        char c = data[pos++];
-        if (c == '\n') {
-          newline();
-          end = pos - 2; // Account for stepping past the newline.
-          break;
-        }
-      }
-    }
-
-    // Remove trailing whitespace.
-    while (end > start && (data[end] == ' ' || data[end] == '\t')) {
-      end--;
-    }
-
-    if (end == start) {
-      return documentation;
-    }
-    String trailingDocumentation = new String(data, start, end - start + 1);
-    if (documentation.isEmpty()) {
-      return trailingDocumentation;
-    }
-    return documentation + '\n' + trailingDocumentation;
-  }
-
-  /**
-   * Skips whitespace characters and optionally comments. When this returns,
-   * either {@code pos == data.length} or a non-whitespace character.
-   */
-  private void skipWhitespace(boolean skipComments) {
-    while (pos < data.length) {
-      char c = data[pos];
-      if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
-        pos++;
-        if (c == '\n') newline();
-      } else if (skipComments && c == '/') {
-        readComment();
-      } else {
-        break;
-      }
-    }
-  }
-
-  /** Call this every time a '\n' is encountered. */
-  private void newline() {
-    line++;
-    lineStart = pos;
-  }
-
-  private Location location() {
-    return location.at(line + 1, pos - lineStart + 1);
-  }
-
-  private RuntimeException unexpected(String message) {
-    return unexpected(location(), message);
-  }
-
-  private RuntimeException unexpected(Location location, String message) {
-    throw new IllegalStateException(String.format("Syntax error in %s: %s", location, message));
   }
 
   enum Context {
