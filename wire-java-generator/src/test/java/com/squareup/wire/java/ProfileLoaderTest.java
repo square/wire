@@ -16,56 +16,59 @@
 package com.squareup.wire.java;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import com.squareup.javapoet.ClassName;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
+import com.squareup.wire.schema.SchemaException;
 import com.squareup.wire.schema.SchemaLoader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.assertj.core.data.MapEntry;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public final class ProfileLoaderTest {
-  @Rule public final TemporaryFolder temp = new TemporaryFolder();
+  FileSystem fileSystem = Jimfs.newFileSystem(Configuration.unix());
 
   @Test public void test() throws IOException {
-    temp.newFolder("a", "b", "c");
-    writeFile(temp.newFile("a/b/message1.proto"), ""
+    Files.createDirectories(fileSystem.getPath("/source/a/b/c"));
+    writeFile("/source/a/b/message1.proto", ""
         + "package a.b;\n"
         + "message Message1 {\n"
         + "}\n");
-    writeFile(temp.newFile("a/b/c/message2.proto"), ""
+    writeFile("/source/a/b/c/message2.proto", ""
         + "package a.b.c;\n"
-        + "message Message1 {\n"
+        + "message Message2 {\n"
         + "}\n");
-    writeFile(temp.newFile("android.wire"), ""
+    writeFile("/source/android.wire", ""
         + "syntax = \"wire2\";\n"
+        + "import \"a/b/message1.proto\";\n"
         + "type a.b.Message1 {\n"
         + "  target java.lang.Object using com.example.Message1#OBJECT_ADAPTER;\n"
         + "}\n");
-    writeFile(temp.newFile("a/b/c/android.wire"), ""
+    writeFile("/source/a/b/c/android.wire", ""
         + "syntax = \"wire2\";\n"
+        + "import \"a/b/c/message2.proto\";\n"
         + "package a.b.c;\n"
         + "type a.b.c.Message2 {\n"
         + "  target java.lang.String using com.example.Message2#STRING_ADAPTER;\n"
         + "}\n");
 
     Schema schema = new SchemaLoader()
-        .addSource(temp.getRoot())
+        .addSource(fileSystem.getPath("/source"))
         .load();
-    Profile profile = new ProfileLoader("android")
-        .addSchema(schema)
+    Profile profile = new ProfileLoader(fileSystem, "android")
+        .schema(schema)
         .load();
 
     ProtoType message1 = ProtoType.get("a.b.Message1");
@@ -78,8 +81,9 @@ public final class ProfileLoaderTest {
   }
 
   @Test public void profileInZip() throws IOException {
-    File file = temp.newFile();
-    ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
+    Files.createDirectories(fileSystem.getPath("/source"));
+    Path zip = fileSystem.getPath("/source/protos.zip");
+    ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zip));
     writeFile(zipOutputStream, "a/b/message.proto", ""
         + "package a.b;\n"
         + "message Message {"
@@ -87,16 +91,17 @@ public final class ProfileLoaderTest {
     writeFile(zipOutputStream, "a/b/android.wire", ""
         + "syntax = \"wire2\";\n"
         + "package a.b;\n"
+        + "import \"a/b/message.proto\";\n"
         + "type a.b.Message {\n"
         + "  target java.lang.Object using com.example.Message#ADAPTER;\n"
         + "}");
     zipOutputStream.close();
 
     Schema schema = new SchemaLoader()
-        .addSource(file)
+        .addSource(zip)
         .load();
-    Profile profile = new ProfileLoader("android")
-        .addSchema(schema)
+    Profile profile = new ProfileLoader(fileSystem, "android")
+        .schema(schema)
         .load();
 
     ProtoType message = ProtoType.get("a.b.Message");
@@ -105,37 +110,91 @@ public final class ProfileLoaderTest {
   }
 
   @Test public void pathsToAttempt() throws Exception {
-    ProfileLoader loader = new ProfileLoader("android")
-        .addProtoLocation(Location.get("/a/b", "c/d/e.proto"));
-    assertThat(loader.pathsToAttempt().asMap()).containsExactly(
-        MapEntry.entry(Paths.get("/a/b"), ImmutableSet.of(
+    ImmutableSet<Location> locations = ImmutableSet.of(
+        Location.get("/a/b", "c/d/e.proto"));
+    ProfileLoader loader = new ProfileLoader(fileSystem, "android");
+    assertThat(loader.pathsToAttempt(locations).asMap()).containsExactly(
+        MapEntry.entry(fileSystem.getPath("/a/b"), ImmutableSet.of(
             "c/d/android.wire",
             "c/android.wire",
             "android.wire")));
   }
 
   @Test public void pathsToAttemptMultipleRoots() throws Exception {
-    ProfileLoader loader = new ProfileLoader("android")
-        .addProtoLocation(Location.get("/a/b", "c/d/e.proto"))
-        .addProtoLocation(Location.get("/a/b", "c/f/g/h.proto"))
-        .addProtoLocation(Location.get("/i/j.zip", "k/l/m.proto"))
-        .addProtoLocation(Location.get("/i/j.zip", "k/l/m/n.proto"));
-    assertThat(loader.pathsToAttempt().asMap()).containsExactly(
-        MapEntry.entry(Paths.get("/a/b"), ImmutableSet.of(
+    ImmutableSet<Location> locations = ImmutableSet.of(
+        Location.get("/a/b", "c/d/e.proto"),
+        Location.get("/a/b", "c/f/g/h.proto"),
+        Location.get("/i/j.zip", "k/l/m.proto"),
+        Location.get("/i/j.zip", "k/l/m/n.proto"));
+    ProfileLoader loader = new ProfileLoader(fileSystem, "android");
+    assertThat(loader.pathsToAttempt(locations).asMap()).containsExactly(
+        MapEntry.entry(fileSystem.getPath("/a/b"), ImmutableSet.of(
             "c/d/android.wire",
             "c/android.wire",
             "android.wire",
             "c/f/g/android.wire",
             "c/f/android.wire")),
-        MapEntry.entry(Paths.get("/i/j.zip"), ImmutableSet.of(
+        MapEntry.entry(fileSystem.getPath("/i/j.zip"), ImmutableSet.of(
             "k/l/android.wire",
             "k/android.wire",
             "android.wire",
             "k/l/m/android.wire")));
   }
 
-  private void writeFile(File file, String content) throws IOException {
-    Files.write(file.toPath(), content.getBytes(UTF_8));
+  @Test public void unknownType() throws Exception {
+    Files.createDirectories(fileSystem.getPath("/source/a/b"));
+    writeFile("/source/a/b/message.proto", ""
+        + "package a.b;\n"
+        + "message Message {\n"
+        + "}\n");
+    writeFile("/source/a/b/android.wire", ""
+        + "syntax = \"wire2\";\n"
+        + "type a.b.Message2 {\n"
+        + "  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;\n"
+        + "}\n");
+
+    Schema schema = new SchemaLoader()
+        .addSource(fileSystem.getPath("/source"))
+        .load();
+    try {
+      new ProfileLoader(fileSystem, "android")
+          .schema(schema)
+          .load();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage(
+          "unable to resolve a.b.Message2 (/source/a/b/android.wire at 2:1)");
+    }
+  }
+
+  @Test public void missingImport() throws Exception {
+    Files.createDirectories(fileSystem.getPath("/source/a/b"));
+    writeFile("/source/a/b/message.proto", ""
+        + "package a.b;\n"
+        + "message Message {\n"
+        + "}\n");
+    writeFile("/source/a/b/android.wire", ""
+        + "syntax = \"wire2\";\n"
+        + "type a.b.Message {\n"
+        + "  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;\n"
+        + "}\n");
+
+    Schema schema = new SchemaLoader()
+        .addSource(fileSystem.getPath("/source"))
+        .load();
+    try {
+      new ProfileLoader(fileSystem, "android")
+          .schema(schema)
+          .load();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage(
+          "a/b/android.wire needs to import a/b/message.proto (/source/a/b/android.wire at 2:1)");
+    }
+  }
+
+  private void writeFile(String path, String content) throws IOException {
+    Files.write(fileSystem.getPath(path), content.getBytes(UTF_8));
   }
 
   private void writeFile(ZipOutputStream out, String file, String content) throws IOException {
