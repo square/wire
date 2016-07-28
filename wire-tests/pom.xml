@@ -9,7 +9,7 @@
     <version>2.2.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>wire-schema-tests</artifactId>
+  <artifactId>wire-tests</artifactId>
 
   <dependencies>
     <dependency>

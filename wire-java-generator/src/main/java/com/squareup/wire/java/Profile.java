@@ -33,14 +33,18 @@ public final class Profile {
     this.profileFiles = profileFiles;
   }
 
+  public Profile() {
+    this(ImmutableList.<ProfileFileElement>of());
+  }
+
   public TypeName getTarget(ProtoType type) {
     TypeConfigElement typeConfig = typeConfig(type);
     return typeConfig != null ? ClassName.bestGuess(typeConfig.target()) : null;
   }
 
-  public String getAdapter(ProtoType type) {
+  public AdapterConstant getAdapter(ProtoType type) {
     TypeConfigElement typeConfig = typeConfig(type);
-    return typeConfig != null ? typeConfig.adapter() : null;
+    return typeConfig != null ? new AdapterConstant(typeConfig.adapter()) : null;
   }
 
   /** Returns the config for {@code type}, or null if it is not configured. */

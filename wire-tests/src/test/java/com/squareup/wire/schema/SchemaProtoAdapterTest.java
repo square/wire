@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class SchemaProtoAdapterTest {
-  final Schema coffeeSchema = new SchemaBuilder()
+  final Schema coffeeSchema = new RepoBuilder()
       .add("coffee.proto", ""
           + "message CafeDrink {\n"
           + "  optional string customer_name = 1;\n"
@@ -53,7 +53,7 @@ public final class SchemaProtoAdapterTest {
           + "  optional string bean_type = 1;\n"
           + "  optional double caffeine_level = 2;\n"
           + "}\n")
-      .build();
+      .schema();
 
   // Golden data emitted by protoc using the schema above.
   final ImmutableMap<String, Object> dansCoffee = ImmutableMap.<String, Object>of(
@@ -90,7 +90,7 @@ public final class SchemaProtoAdapterTest {
   }
 
   @Test public void groupsIgnored() throws IOException {
-    ProtoAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new RepoBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -102,7 +102,7 @@ public final class SchemaProtoAdapterTest {
             + "  // }\n"
             + "  optional string b = 4;\n"
             + "}\n")
-        .buildProtoAdapter("Message");
+        .protoAdapter("Message");
     ByteString encoded = ByteString.decodeHex("0a0161135a02080114135a02100214135a090803720568656c6c"
         + "6f141baa010208011c1baa010210021c1baa01090803720568656c6c6f1c220162");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
@@ -112,12 +112,12 @@ public final class SchemaProtoAdapterTest {
   }
 
   @Test public void startGroupWithoutEndGroup() throws IOException {
-    ProtoAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new RepoBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
             + "}\n")
-        .buildProtoAdapter("Message");
+        .protoAdapter("Message");
     ByteString encoded = ByteString.decodeHex("130a0161");
     try {
       adapter.decode(new Buffer().write(encoded));
@@ -127,12 +127,12 @@ public final class SchemaProtoAdapterTest {
   }
 
   @Test public void unexpectedEndGroup() throws IOException {
-    ProtoAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new RepoBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
             + "}\n")
-        .buildProtoAdapter("Message");
+        .protoAdapter("Message");
     ByteString encoded = ByteString.decodeHex("0a01611c");
     try {
       adapter.decode(new Buffer().write(encoded));
@@ -143,12 +143,12 @@ public final class SchemaProtoAdapterTest {
   }
 
   @Test public void endGroupDoesntMatchStartGroup() throws IOException {
-    ProtoAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new RepoBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
             + "}\n")
-        .buildProtoAdapter("Message");
+        .protoAdapter("Message");
     ByteString encoded = ByteString.decodeHex("130a01611c");
     try {
       adapter.decode(new Buffer().write(encoded));
@@ -159,12 +159,12 @@ public final class SchemaProtoAdapterTest {
   }
 
   @Test public void decodeToUnpacked() throws IOException {
-    ProtoAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new RepoBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = false];\n"
             + "}\n")
-        .buildProtoAdapter("Message");
+        .protoAdapter("Message");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
     ByteString packedEncoded = ByteString.decodeHex("d20504d904bd05");
@@ -174,12 +174,12 @@ public final class SchemaProtoAdapterTest {
   }
 
   @Test public void decodeToPacked() throws IOException {
-    ProtoAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new RepoBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  repeated int32 a = 90 [packed = true];\n"
             + "}\n")
-        .buildProtoAdapter("Message");
+        .protoAdapter("Message");
     ImmutableMap<String, Object> expected = ImmutableMap.<String, Object>of(
         "a", ImmutableList.of(601, 701));
     ByteString unpackedEncoded = ByteString.decodeHex("d005d904d005bd05");
@@ -189,14 +189,14 @@ public final class SchemaProtoAdapterTest {
   }
 
   @Test public void recursiveMessage() throws IOException {
-    ProtoAdapter<Object> adapter = new SchemaBuilder()
+    ProtoAdapter<Object> adapter = new RepoBuilder()
         .add("tree.proto", ""
             + "message BinaryTreeNode {\n"
             + "  optional BinaryTreeNode left = 1;\n"
             + "  optional BinaryTreeNode right = 2;\n"
             + "  optional string value = 3;\n"
             + "}\n")
-        .buildProtoAdapter("BinaryTreeNode");
+        .protoAdapter("BinaryTreeNode");
     ImmutableMap<String, Object> value = ImmutableMap.<String, Object>of(
         "value", "D",
         "left", ImmutableMap.of(
@@ -214,13 +214,13 @@ public final class SchemaProtoAdapterTest {
   }
 
   @Test public void includeUnknowns() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("coffee.proto", ""
             + "message CafeDrink {\n"
             + "  optional string customer_name = 1;\n"
             + "  optional int32 size_ounces = 14;\n"
             + "}\n")
-        .build();
+        .schema();
 
     ImmutableMap<String, Object> dansCoffeeWithUnknowns = ImmutableMap.<String, Object>of(
         "customer_name", "Dan",
@@ -234,13 +234,13 @@ public final class SchemaProtoAdapterTest {
   }
 
   @Test public void omitUnknowns() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("coffee.proto", ""
             + "message CafeDrink {\n"
             + "  optional string customer_name = 1;\n"
             + "  optional int32 size_ounces = 14;\n"
             + "}\n")
-        .build();
+        .schema();
 
     ImmutableMap<String, Object> dansCoffeeWithoutUnknowns = ImmutableMap.<String, Object>of(
         "customer_name", "Dan",

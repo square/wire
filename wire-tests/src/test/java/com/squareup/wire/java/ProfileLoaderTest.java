@@ -21,11 +21,13 @@ import com.google.common.jimfs.Jimfs;
 import com.squareup.javapoet.ClassName;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoType;
+import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaException;
 import com.squareup.wire.schema.SchemaLoader;
 import java.io.IOException;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
@@ -38,49 +40,45 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class ProfileLoaderTest {
-  FileSystem fileSystem = Jimfs.newFileSystem(Configuration.unix());
-
   @Test public void test() throws IOException {
-    Files.createDirectories(fileSystem.getPath("/source/a/b/c"));
-    writeFile("/source/a/b/message1.proto", ""
-        + "package a.b;\n"
-        + "message Message1 {\n"
-        + "}\n");
-    writeFile("/source/a/b/c/message2.proto", ""
-        + "package a.b.c;\n"
-        + "message Message2 {\n"
-        + "}\n");
-    writeFile("/source/android.wire", ""
-        + "syntax = \"wire2\";\n"
-        + "import \"a/b/message1.proto\";\n"
-        + "type a.b.Message1 {\n"
-        + "  target java.lang.Object using com.example.Message1#OBJECT_ADAPTER;\n"
-        + "}\n");
-    writeFile("/source/a/b/c/android.wire", ""
-        + "syntax = \"wire2\";\n"
-        + "import \"a/b/c/message2.proto\";\n"
-        + "package a.b.c;\n"
-        + "type a.b.c.Message2 {\n"
-        + "  target java.lang.String using com.example.Message2#STRING_ADAPTER;\n"
-        + "}\n");
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("a/b/message1.proto", ""
+            + "package a.b;\n"
+            + "message Message1 {\n"
+            + "}\n")
+        .add("a/b/c/message2.proto", ""
+            + "package a.b.c;\n"
+            + "message Message2 {\n"
+            + "}\n")
+        .add("android.wire", ""
+            + "syntax = \"wire2\";\n"
+            + "import \"a/b/message1.proto\";\n"
+            + "type a.b.Message1 {\n"
+            + "  target java.lang.Object using com.example.Message1#OBJECT_ADAPTER;\n"
+            + "}\n")
+        .add("a/b/c/android.wire", ""
+            + "syntax = \"wire2\";\n"
+            + "import \"a/b/c/message2.proto\";\n"
+            + "package a.b.c;\n"
+            + "type a.b.c.Message2 {\n"
+            + "  target java.lang.String using com.example.Message2#STRING_ADAPTER;\n"
+            + "}\n");
 
-    Schema schema = new SchemaLoader()
-        .addSource(fileSystem.getPath("/source"))
-        .load();
-    Profile profile = new ProfileLoader(fileSystem, "android")
-        .schema(schema)
-        .load();
+    Profile profile = repoBuilder.profile("android");
 
     ProtoType message1 = ProtoType.get("a.b.Message1");
     assertThat(profile.getTarget(message1)).isEqualTo(ClassName.OBJECT);
-    assertThat(profile.getAdapter(message1)).isEqualTo("com.example.Message1#OBJECT_ADAPTER");
+    assertThat(profile.getAdapter(message1)).isEqualTo(
+        new AdapterConstant("com.example.Message1#OBJECT_ADAPTER"));
 
     ProtoType message2 = ProtoType.get("a.b.c.Message2");
     assertThat(profile.getTarget(message2)).isEqualTo(ClassName.get(String.class));
-    assertThat(profile.getAdapter(message2)).isEqualTo("com.example.Message2#STRING_ADAPTER");
+    assertThat(profile.getAdapter(message2)).isEqualTo(
+        new AdapterConstant("com.example.Message2#STRING_ADAPTER"));
   }
 
   @Test public void profileInZip() throws IOException {
+    FileSystem fileSystem = Jimfs.newFileSystem(Configuration.unix());
     Files.createDirectories(fileSystem.getPath("/source"));
     Path zip = fileSystem.getPath("/source/protos.zip");
     ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zip));
@@ -106,10 +104,12 @@ public final class ProfileLoaderTest {
 
     ProtoType message = ProtoType.get("a.b.Message");
     assertThat(profile.getTarget(message)).isEqualTo(ClassName.OBJECT);
-    assertThat(profile.getAdapter(message)).isEqualTo("com.example.Message#ADAPTER");
+    assertThat(profile.getAdapter(message)).isEqualTo(
+        new AdapterConstant("com.example.Message#ADAPTER"));
   }
 
   @Test public void pathsToAttempt() throws Exception {
+    FileSystem fileSystem = FileSystems.getDefault();
     ImmutableSet<Location> locations = ImmutableSet.of(
         Location.get("/a/b", "c/d/e.proto"));
     ProfileLoader loader = new ProfileLoader(fileSystem, "android");
@@ -121,6 +121,7 @@ public final class ProfileLoaderTest {
   }
 
   @Test public void pathsToAttemptMultipleRoots() throws Exception {
+    FileSystem fileSystem = FileSystems.getDefault();
     ImmutableSet<Location> locations = ImmutableSet.of(
         Location.get("/a/b", "c/d/e.proto"),
         Location.get("/a/b", "c/f/g/h.proto"),
@@ -142,24 +143,19 @@ public final class ProfileLoaderTest {
   }
 
   @Test public void unknownType() throws Exception {
-    Files.createDirectories(fileSystem.getPath("/source/a/b"));
-    writeFile("/source/a/b/message.proto", ""
-        + "package a.b;\n"
-        + "message Message {\n"
-        + "}\n");
-    writeFile("/source/a/b/android.wire", ""
-        + "syntax = \"wire2\";\n"
-        + "type a.b.Message2 {\n"
-        + "  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;\n"
-        + "}\n");
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("a/b/message.proto", ""
+            + "package a.b;\n"
+            + "message Message {\n"
+            + "}\n")
+        .add("a/b/android.wire", ""
+            + "syntax = \"wire2\";\n"
+            + "type a.b.Message2 {\n"
+            + "  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;\n"
+            + "}\n");
 
-    Schema schema = new SchemaLoader()
-        .addSource(fileSystem.getPath("/source"))
-        .load();
     try {
-      new ProfileLoader(fileSystem, "android")
-          .schema(schema)
-          .load();
+      repoBuilder.profile("android");
       fail();
     } catch (SchemaException expected) {
       assertThat(expected).hasMessage(
@@ -168,33 +164,24 @@ public final class ProfileLoaderTest {
   }
 
   @Test public void missingImport() throws Exception {
-    Files.createDirectories(fileSystem.getPath("/source/a/b"));
-    writeFile("/source/a/b/message.proto", ""
-        + "package a.b;\n"
-        + "message Message {\n"
-        + "}\n");
-    writeFile("/source/a/b/android.wire", ""
-        + "syntax = \"wire2\";\n"
-        + "type a.b.Message {\n"
-        + "  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;\n"
-        + "}\n");
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("a/b/message.proto", ""
+            + "package a.b;\n"
+            + "message Message {\n"
+            + "}\n")
+        .add("a/b/android.wire", ""
+            + "syntax = \"wire2\";\n"
+            + "type a.b.Message {\n"
+            + "  target java.lang.Object using com.example.Message#OBJECT_ADAPTER;\n"
+            + "}\n");
 
-    Schema schema = new SchemaLoader()
-        .addSource(fileSystem.getPath("/source"))
-        .load();
     try {
-      new ProfileLoader(fileSystem, "android")
-          .schema(schema)
-          .load();
+      repoBuilder.profile("android");
       fail();
     } catch (SchemaException expected) {
       assertThat(expected).hasMessage(
           "a/b/android.wire needs to import a/b/message.proto (/source/a/b/android.wire at 2:1)");
     }
-  }
-
-  private void writeFile(String path, String content) throws IOException {
-    Files.write(fileSystem.getPath(path), content.getBytes(UTF_8));
   }
 
   private void writeFile(ZipOutputStream out, String file, String content) throws IOException {

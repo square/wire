@@ -15,16 +15,15 @@
  */
 package com.squareup.wire;
 
-import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.java.AdapterConstant;
 import com.squareup.wire.java.JavaGenerator;
+import com.squareup.wire.java.Profile;
+import com.squareup.wire.java.ProfileLoader;
 import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
-import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaLoader;
 import com.squareup.wire.schema.Type;
@@ -36,9 +35,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -99,7 +96,6 @@ public final class WireCompiler {
   public static final String NAMED_FILES_ONLY = "--named_files_only";
   public static final String ANDROID = "--android";
   public static final String COMPACT = "--compact";
-  public static final String PROTO_ADAPTER = "--proto_adapter=";
   public static final int MAX_WRITE_CONCURRENCY = 8;
 
   private static final String CODE_GENERATED_BY_WIRE =
@@ -117,14 +113,10 @@ public final class WireCompiler {
   final boolean namedFilesOnly;
   final boolean emitAndroid;
   final boolean emitCompact;
-  final ImmutableMap<ProtoType, ClassName> protoTypeToJavaClassName;
-  final ImmutableMap<ProtoType, AdapterConstant> protoTypeToAdapterConstant;
 
   WireCompiler(FileSystem fs, WireLogger log, List<String> protoPaths, String javaOut,
       List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
-      boolean namedFilesOnly, boolean emitAndroid, boolean emitCompact,
-      Map<ProtoType, ClassName> protoTypeToJavaClassName,
-      Map<ProtoType, AdapterConstant> protoTypeToAdapterConstant) {
+      boolean namedFilesOnly, boolean emitAndroid, boolean emitCompact) {
     this.fs = fs;
     this.log = log;
     this.protoPaths = protoPaths;
@@ -135,8 +127,6 @@ public final class WireCompiler {
     this.namedFilesOnly = namedFilesOnly;
     this.emitAndroid = emitAndroid;
     this.emitCompact = emitCompact;
-    this.protoTypeToJavaClassName = ImmutableMap.copyOf(protoTypeToJavaClassName);
-    this.protoTypeToAdapterConstant = ImmutableMap.copyOf(protoTypeToAdapterConstant);
   }
 
   public static void main(String... args) throws IOException {
@@ -165,8 +155,6 @@ public final class WireCompiler {
     boolean namedFilesOnly = false;
     boolean emitAndroid = false;
     boolean emitCompact = false;
-    Map<ProtoType, ClassName> protoTypeToJavaClass = new LinkedHashMap<>();
-    Map<ProtoType, AdapterConstant> protoTypeToAdapter = new LinkedHashMap<>();
 
     for (String arg : args) {
       if (arg.startsWith(PROTO_PATH_FLAG)) {
@@ -190,19 +178,6 @@ public final class WireCompiler {
         for (String identifier : splitArg(arg, EXCLUDES_FLAG.length())) {
           identifierSetBuilder.exclude(identifier);
         }
-      } else if (arg.startsWith(PROTO_ADAPTER)) {
-        List<String> customProtoAdapterArgs = splitArg(arg, PROTO_ADAPTER.length());
-        if (customProtoAdapterArgs.size() != 3) {
-          throw new IllegalArgumentException(
-              "Expected <proto type>,<class name>,<adapter constant> but was " + arg);
-        }
-
-        ProtoType protoType = ProtoType.get(customProtoAdapterArgs.get(0).trim());
-        ClassName javaClassName = ClassName.bestGuess(customProtoAdapterArgs.get(1).trim());
-
-        protoTypeToJavaClass.put(protoType, javaClassName);
-        protoTypeToAdapter.put(protoType, new AdapterConstant(
-            customProtoAdapterArgs.get(2).trim()));
       } else if (arg.equals(QUIET_FLAG)) {
         quiet = true;
       } else if (arg.equals(DRY_RUN_FLAG)) {
@@ -227,8 +202,7 @@ public final class WireCompiler {
     logger.setQuiet(quiet);
 
     return new WireCompiler(fileSystem, logger, protoPaths, javaOut, sourceFileNames,
-        identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitCompact,
-        protoTypeToJavaClass, protoTypeToAdapter);
+        identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitCompact);
   }
 
   private static List<String> splitArg(String arg, int flagLength) {
@@ -245,6 +219,11 @@ public final class WireCompiler {
     }
     Schema schema = schemaLoader.load();
 
+    String profileName = emitAndroid ? "android" : "java";
+    Profile profile = new ProfileLoader(profileName)
+        .schema(schema)
+        .load();
+
     if (!identifierSet.isEmpty()) {
       log.info("Analyzing dependencies of root types.");
       schema = schema.prune(identifierSet);
@@ -257,7 +236,7 @@ public final class WireCompiler {
     }
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
-        .withCustomProtoAdapter(protoTypeToJavaClassName, protoTypeToAdapterConstant)
+        .withProfile(profile)
         .withAndroid(emitAndroid)
         .withCompact(emitCompact);
 

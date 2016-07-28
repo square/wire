@@ -26,13 +26,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public final class PrunerTest {
   @Test public void retainType() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message MessageA {\n"
             + "}\n"
             + "message MessageB {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA")
         .build());
@@ -41,7 +41,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainTypeRetainsEnclosingButNotNested() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message A {\n"
             + "  message B {\n"
@@ -51,7 +51,7 @@ public final class PrunerTest {
             + "  message D {\n"
             + "  }\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("A.B")
         .build());
@@ -62,7 +62,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainTypeRetainsFieldTypesTransitively() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message MessageA {\n"
             + "  optional MessageB b = 1;\n"
@@ -74,7 +74,7 @@ public final class PrunerTest {
             + "}\n"
             + "message MessageD {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA")
         .build());
@@ -85,7 +85,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainRpcRetainsRequestAndResponseTypes() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message RequestA {\n"
             + "}\n"
@@ -99,7 +99,7 @@ public final class PrunerTest {
             + "  rpc CallA (RequestA) returns (ResponseA);\n"
             + "  rpc CallB (RequestB) returns (ResponseB);\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Service#CallA")
         .build());
@@ -112,7 +112,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainField() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message MessageA {\n"
             + "  optional string b = 1;\n"
@@ -120,7 +120,7 @@ public final class PrunerTest {
             + "}\n"
             + "message MessageB {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA#b")
         .build());
@@ -130,7 +130,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainFieldRetainsFieldTypesTransitively() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message MessageA {\n"
             + "  optional MessageB b = 1;\n"
@@ -143,7 +143,7 @@ public final class PrunerTest {
             + "}\n"
             + "message MessageD {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA#b")
         .build());
@@ -156,7 +156,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainFieldPrunesOneOf() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message Message {\n"
             + "  oneof selection {\n"
@@ -165,7 +165,7 @@ public final class PrunerTest {
             + "  }\n"
             + "  optional string c = 3;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message#c")
         .build());
@@ -173,7 +173,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainFieldRetainsOneOf() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message Message {\n"
             + "  oneof selection {\n"
@@ -182,7 +182,7 @@ public final class PrunerTest {
             + "  }\n"
             + "  optional string c = 3;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message#b")
         .build());
@@ -195,7 +195,7 @@ public final class PrunerTest {
   }
 
   @Test public void typeWithRetainedMembersOnlyHasThoseMembersRetained() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message MessageA {\n"
             + "  optional MessageB b = 1;\n"
@@ -208,7 +208,7 @@ public final class PrunerTest {
             + "}\n"
             + "message MessageD {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA#b")
         .include("MessageB#c")
@@ -223,14 +223,14 @@ public final class PrunerTest {
   }
 
   @Test public void retainEnumConstant() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "enum Roshambo {\n"
             + "  ROCK = 0;\n"
             + "  SCISSORS = 1;\n"
             + "  PAPER = 2;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Roshambo#SCISSORS")
         .build());
@@ -240,7 +240,7 @@ public final class PrunerTest {
   }
 
   @Test public void enumWithRetainedConstantHasThatConstantRetained() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message Message {\n"
             + "  optional Roshambo roshambo = 1;\n"
@@ -250,7 +250,7 @@ public final class PrunerTest {
             + "  SCISSORS = 1;\n"
             + "  PAPER = 2;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message")
         .include("Roshambo#SCISSORS")
@@ -264,7 +264,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainedOptionRetainsOptionsType() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "extend google.protobuf.FieldOptions {\n"
@@ -273,7 +273,7 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [a = \"a\"];\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message#f")
         .build());
@@ -282,7 +282,7 @@ public final class PrunerTest {
   }
 
   @Test public void prunedOptionDoesNotRetainOptionsType() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "extend google.protobuf.FieldOptions {\n"
@@ -292,7 +292,7 @@ public final class PrunerTest {
             + "  optional string f = 1 [a = \"a\"];\n"
             + "  optional string g = 2;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message#g")
         .build());
@@ -300,7 +300,7 @@ public final class PrunerTest {
   }
 
   @Test public void optionRetainsField() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "message SomeFieldOptions {\n"
@@ -314,7 +314,7 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [some_field_options.a = \"a\"];\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message")
         .include("SomeFieldOptions#b")
@@ -326,7 +326,7 @@ public final class PrunerTest {
   }
 
   @Test public void optionRetainsType() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "message SomeFieldOptions {\n"
@@ -340,7 +340,7 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [some_field_options.a = \"a\"];\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message")
         .build());
@@ -351,7 +351,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainExtension() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -359,7 +359,7 @@ public final class PrunerTest {
             + "extend Message {\n"
             + "  optional string b = 2;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message")
         .build());
@@ -368,7 +368,7 @@ public final class PrunerTest {
   }
 
   @Test public void retainExtensionMembers() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message Message {\n"
             + "  optional string a = 1;\n"
@@ -378,7 +378,7 @@ public final class PrunerTest {
             + "  optional string c = 3;\n"
             + "  optional string d = 4;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Message#a")
         .include("Message#c")
@@ -391,13 +391,13 @@ public final class PrunerTest {
 
   /** When we include excludes only, the mark phase is skipped. */
   @Test public void excludeWithoutInclude() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message MessageA {\n"
             + "  optional string b = 1;\n"
             + "  optional string c = 2;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("MessageA#c")
         .build());
@@ -406,13 +406,13 @@ public final class PrunerTest {
   }
 
   @Test public void excludeField() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message MessageA {\n"
             + "  optional string b = 1;\n"
             + "  optional string c = 2;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA")
         .exclude("MessageA#c")
@@ -422,7 +422,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludeTypeExcludesField() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "message MessageA {\n"
             + "  optional MessageB b = 1;\n"
@@ -432,7 +432,7 @@ public final class PrunerTest {
             + "}\n"
             + "message MessageC {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA")
         .exclude("MessageC")
@@ -444,7 +444,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludeTypeExcludesRpc() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "service ServiceA {\n"
             + "  rpc CallB (MessageB) returns (MessageB);\n"
@@ -454,7 +454,7 @@ public final class PrunerTest {
             + "}\n"
             + "message MessageC {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("ServiceA")
         .exclude("MessageC")
@@ -466,7 +466,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludeRpcExcludesTypes() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "service ServiceA {\n"
             + "  rpc CallB (MessageB) returns (MessageB);\n"
@@ -476,7 +476,7 @@ public final class PrunerTest {
             + "}\n"
             + "message MessageC {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("ServiceA")
         .exclude("ServiceA#CallC")
@@ -488,7 +488,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludeFieldExcludesTypes() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("message.proto", ""
             + "message MessageA {\n"
             + "  optional MessageB b = 1;\n"
@@ -501,7 +501,7 @@ public final class PrunerTest {
             + "}\n"
             + "message MessageD {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("MessageA")
         .exclude("MessageA#c")
@@ -516,7 +516,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludeEnumExcludesOptions() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("message.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "enum Enum {\n"
@@ -529,7 +529,7 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional int32 c = 1;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("Enum")
         .exclude("Enum#B")
@@ -540,7 +540,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludedFieldPrunesTopLevelOption() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "extend google.protobuf.FieldOptions {\n"
@@ -550,7 +550,7 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [a = \"a\", b = \"b\"];\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("google.protobuf.FieldOptions#b")
         .build());
@@ -560,7 +560,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludedTypePrunesTopLevelOption() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "message SomeFieldOptions {\n"
@@ -573,7 +573,7 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [some_field_options.a = \"a\", b = \"b\"];\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("SomeFieldOptions")
         .build());
@@ -585,7 +585,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludedFieldPrunesNestedOption() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "message SomeFieldOptions {\n"
@@ -598,7 +598,7 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [some_field_options = { a: \"a\", b: \"b\" }];\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("SomeFieldOptions#b")
         .build());
@@ -611,7 +611,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludedTypePrunesNestedOption() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "message SomeFieldOptions {\n"
@@ -633,7 +633,7 @@ public final class PrunerTest {
             + "      b = \"b\"\n"
             + "  ];\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("Dimensions")
         .build());
@@ -645,7 +645,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludeOptions() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "extend google.protobuf.FieldOptions {\n"
@@ -655,7 +655,7 @@ public final class PrunerTest {
             + "message Message {\n"
             + "  optional string f = 1 [ a = \"a\", b = \"b\" ];\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("google.protobuf.FieldOptions")
         .build());
@@ -664,7 +664,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludeRepeatedOptions() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("service.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "extend google.protobuf.MessageOptions {\n"
@@ -678,7 +678,7 @@ public final class PrunerTest {
             + "  option (b) = \"b2\";\n"
             + "  optional string f = 1;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("google.protobuf.MessageOptions#a")
         .build());
@@ -689,7 +689,7 @@ public final class PrunerTest {
   }
 
   @Test public void includePackage() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("a/b/messages.proto", ""
             + "package a.b;\n"
             + "message MessageAB {\n"
@@ -698,7 +698,7 @@ public final class PrunerTest {
             + "package a.c;\n"
             + "message MessageAC {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .include("a.b.*")
         .build());
@@ -707,7 +707,7 @@ public final class PrunerTest {
   }
 
   @Test public void excludePackage() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("a/b/messages.proto", ""
             + "package a.b;\n"
             + "message MessageAB {\n"
@@ -716,7 +716,7 @@ public final class PrunerTest {
             + "package a.c;\n"
             + "message MessageAC {\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("a.c.*")
         .build());
@@ -725,7 +725,7 @@ public final class PrunerTest {
   }
 
   @Test public void specialOptionsNotPruned() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("message.proto", ""
             + "option java_package = \"p\";\n"
             + "\n"
@@ -737,7 +737,7 @@ public final class PrunerTest {
             + "  A = 1;\n"
             + "  B = 1;\n"
             + "}\n")
-        .build();
+        .schema();
     Schema pruned = schema.prune(new IdentifierSet.Builder()
         .exclude("google.protobuf.*")
         .build());

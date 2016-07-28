@@ -163,59 +163,30 @@ public final class JavaGenerator {
   });
 
   private final Schema schema;
-  private final ImmutableMap<ProtoType, ClassName> nameToAbstractAdapterName;
   private final ImmutableMap<ProtoType, ClassName> nameToJavaName;
-  private final ImmutableMap<ProtoType, AdapterConstant> protoTypeToAdapterConstant;
+  private final Profile profile;
   private final boolean emitAndroid;
   private final boolean emitCompact;
 
-  private JavaGenerator(Schema schema,
-      ImmutableMap<ProtoType, ClassName> nameToAbstractAdapterName,
-      ImmutableMap<ProtoType, ClassName> nameToJavaName,
-      ImmutableMap<ProtoType, AdapterConstant> protoTypeToAdapterConstant,
+  private JavaGenerator(Schema schema, Map<ProtoType, ClassName> nameToJavaName, Profile profile,
       boolean emitAndroid, boolean emitCompact) {
     this.schema = schema;
-    this.nameToAbstractAdapterName = nameToAbstractAdapterName;
-    this.nameToJavaName = nameToJavaName;
-    this.protoTypeToAdapterConstant = protoTypeToAdapterConstant;
+    this.nameToJavaName = ImmutableMap.copyOf(nameToJavaName);
+    this.profile = profile;
     this.emitAndroid = emitAndroid;
     this.emitCompact = emitCompact;
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToAbstractAdapterName, nameToJavaName,
-        protoTypeToAdapterConstant, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact);
   }
 
-  public JavaGenerator withCompact(boolean compactGeneration) {
-    return new JavaGenerator(schema, nameToAbstractAdapterName, nameToJavaName,
-        protoTypeToAdapterConstant, emitAndroid, compactGeneration);
+  public JavaGenerator withCompact(boolean emitCompact) {
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact);
   }
 
-  public JavaGenerator withCustomProtoAdapter(
-      Map<ProtoType, ClassName> protoTypeToCustomJavaName,
-      Map<ProtoType, AdapterConstant> protoTypeToAdapterConstant) {
-    if (!nameToAbstractAdapterName.isEmpty()) {
-      throw new IllegalStateException("Custom proto adapters already defined");
-    }
-
-    Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>(this.nameToJavaName);
-    Map<ProtoType, ClassName> nameToAbstractAdapterName = new LinkedHashMap<>();
-
-    for (Map.Entry<ProtoType, ClassName> entry : protoTypeToCustomJavaName.entrySet()) {
-      ClassName javaName = nameToJavaName.put(entry.getKey(), entry.getValue());
-      if (javaName == null) {
-        throw new IllegalArgumentException("Custom adapter specified for " + entry.getKey()
-            + " but no proto was found!");
-      }
-
-      nameToAbstractAdapterName.put(entry.getKey(),
-          javaName.peerClass("Abstract" + javaName.simpleName() + "Adapter"));
-    }
-
-    return new JavaGenerator(schema, ImmutableMap.copyOf(nameToAbstractAdapterName),
-        ImmutableMap.copyOf(nameToJavaName), ImmutableMap.copyOf(protoTypeToAdapterConstant),
-        emitAndroid, emitCompact);
+  public JavaGenerator withProfile(Profile profile) {
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -232,9 +203,7 @@ public final class JavaGenerator {
       }
     }
 
-    return new JavaGenerator(schema, ImmutableMap.<ProtoType, ClassName>of(),
-        ImmutableMap.copyOf(nameToJavaName),
-        ImmutableMap.<ProtoType, AdapterConstant>of(), false, false);
+    return new JavaGenerator(schema, nameToJavaName, new Profile(), false, false);
   }
 
   private static void putAll(Map<ProtoType, ClassName> wireToJava, String javaPackage,
@@ -259,6 +228,8 @@ public final class JavaGenerator {
    *     if that type wasn't in this generator's schema.
    */
   public TypeName typeName(ProtoType protoType) {
+    TypeName profileJavaName = profile.getTarget(protoType);
+    if (profileJavaName != null) return profileJavaName;
     TypeName candidate = nameToJavaName.get(protoType);
     checkArgument(candidate != null, "unexpected type %s", protoType);
     return candidate;
@@ -269,7 +240,11 @@ public final class JavaGenerator {
    * protoType}. Returns null if {@code protoType} is not using a custom proto adapter.
    */
   public ClassName abstractAdapterName(ProtoType protoType) {
-    return nameToAbstractAdapterName.get(protoType);
+    TypeName profileJavaName = profile.getTarget(protoType);
+    if (profileJavaName == null) return null;
+
+    ClassName javaName = nameToJavaName.get(protoType);
+    return javaName.peerClass("Abstract" + javaName.simpleName() + "Adapter");
   }
 
   private CodeBlock singleAdapterFor(Field field) {
@@ -285,9 +260,9 @@ public final class JavaGenerator {
     } else if (type.isMap()) {
       throw new IllegalArgumentException("Cannot create single adapter for map type " + type);
     } else {
-      AdapterConstant adapterConstant = protoTypeToAdapterConstant.get(type);
+      AdapterConstant adapterConstant = profile.getAdapter(type);
       if (adapterConstant != null) {
-        result.add("$T.$L", adapterConstant.className, adapterConstant.adapterName);
+        result.add("$T.$L", adapterConstant.className, adapterConstant.memberName);
       } else {
         result.add("$T.ADAPTER", typeName(type));
       }
@@ -368,7 +343,8 @@ public final class JavaGenerator {
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateType(Type type) {
     if (type instanceof MessageType) {
-      if (protoTypeToAdapterConstant.containsKey(type.type())) {
+      AdapterConstant adapterConstant = profile.getAdapter(type.type());
+      if (adapterConstant != null) {
         return generateAbstractAdapter((MessageType) type);
       }
       //noinspection deprecation: Only deprecated as a public API.
@@ -632,7 +608,7 @@ public final class JavaGenerator {
         nameAllocator, type, typeName, adapterTypeName, null).toBuilder();
 
     for (Type nestedType : type.nestedTypes()) {
-      if (!protoTypeToAdapterConstant.containsKey(nestedType.type())) {
+      if (profile.getAdapter(nestedType.type()) == null) {
         throw new IllegalArgumentException("Missing custom proto adapter for "
             + nestedType.type().enclosingTypeOrPackage() + "." + nestedType.type().simpleName()
             + " when enclosing proto has custom proto adapter.");
@@ -1038,9 +1014,9 @@ public final class JavaGenerator {
       return ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US);
     }
 
-    AdapterConstant adapterConstant = protoTypeToAdapterConstant.get(type);
+    AdapterConstant adapterConstant = profile.getAdapter(type);
     if (adapterConstant != null) {
-      return reflectionName(adapterConstant.className) + "#" + adapterConstant.adapterName;
+      return reflectionName(adapterConstant.className) + "#" + adapterConstant.memberName;
     }
 
     return reflectionName((ClassName) typeName(type)) + "#ADAPTER";
