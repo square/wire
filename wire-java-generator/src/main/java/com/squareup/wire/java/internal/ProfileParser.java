@@ -19,23 +19,23 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.internal.parser.SyntaxReader;
 
-/** Parses {@code build.wire} files. */
-public final class BuildConfigParser {
+/** Parses {@code .wire} files. */
+public final class ProfileParser {
   private final SyntaxReader reader;
 
-  private final BuildConfigFileElement.Builder fileBuilder;
+  private final ProfileFileElement.Builder fileBuilder;
   private final ImmutableList.Builder<String> imports = ImmutableList.builder();
   private final ImmutableList.Builder<TypeConfigElement> typeConfigs = ImmutableList.builder();
 
   /** Output package name, or null if none yet encountered. */
   private String packageName;
 
-  BuildConfigParser(Location location, char[] data) {
-    this.reader = new SyntaxReader(data, location);
-    this.fileBuilder = BuildConfigFileElement.builder(location);
+  public ProfileParser(Location location, String data) {
+    this.reader = new SyntaxReader(data.toCharArray(), location);
+    this.fileBuilder = ProfileFileElement.builder(location);
   }
 
-  BuildConfigFileElement read() {
+  public ProfileFileElement read() {
     String label = reader.readWord();
     if (!label.equals("syntax")) throw reader.unexpected("expected 'syntax'");
     reader.require('=');

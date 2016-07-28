@@ -39,6 +39,8 @@ import okio.BufferedSource;
 import okio.Okio;
 import okio.Source;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
+
 /**
  * Load proto files and their transitive dependencies, parse them, and link them together.
  *
@@ -96,9 +98,7 @@ public final class SchemaLoader {
         if (Files.isRegularFile(source)) {
           FileSystem sourceFs = FileSystems.newFileSystem(source, getClass().getClassLoader());
           closer.register(sourceFs);
-          for (Path root : sourceFs.getRootDirectories()) {
-            directories.put(source, root);
-          }
+          directories.put(source, getOnlyElement(sourceFs.getRootDirectories()));
         } else {
           directories.put(source, source);
         }
@@ -134,7 +134,7 @@ public final class SchemaLoader {
 
       ProtoFileElement element = null;
       for (Map.Entry<Path, Path> entry : directories.entrySet()) {
-        Source source = source(proto, entry.getValue());
+        Source source = source(entry.getValue(), proto);
         if (source == null) {
           continue;
         }
@@ -182,8 +182,8 @@ public final class SchemaLoader {
     }
   }
 
-  private static Source source(String proto, Path directory) throws IOException {
-    Path resolvedPath = directory.resolve(proto);
+  private static Source source(Path base, String path) throws IOException {
+    Path resolvedPath = base.resolve(path);
     if (Files.exists(resolvedPath)) {
       return Okio.source(resolvedPath);
     }

@@ -22,8 +22,8 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public final class BuildConfigParserTest {
-  Location location = Location.get("build.wire");
+public final class ProfileParserTest {
+  Location location = Location.get("android.wire");
 
   @Test public void parseType() {
     String proto = ""
@@ -40,7 +40,7 @@ public final class BuildConfigParserTest {
         + "type squareup.geology.Period {\n"
         + "  target java.time.Period using com.squareup.time.Time#PERIOD_ADAPTER;\n"
         + "}\n";
-    BuildConfigFileElement expected = BuildConfigFileElement.builder(location)
+    ProfileFileElement expected = ProfileFileElement.builder(location)
         .packageName("squareup.dinosaurs")
         .imports(ImmutableList.of("squareup/geology/period.proto"))
         .typeConfigs(ImmutableList.of(
@@ -56,7 +56,7 @@ public final class BuildConfigParserTest {
                 .adapter("com.squareup.time.Time#PERIOD_ADAPTER")
                 .build()))
         .build();
-    BuildConfigParser parser = new BuildConfigParser(location, proto.toCharArray());
+    ProfileParser parser = new ProfileParser(location, proto);
     assertThat(parser.read()).isEqualTo(expected);
   }
 
@@ -67,12 +67,12 @@ public final class BuildConfigParserTest {
         + "type squareup.dinosaurs.Dinosaur {\n"
         + "  target com.squareup.dino.Dinosaur using com.squareup.dino.Dinosaurs#DINO_ADAPTER;\n"
         + "}\n";
-    BuildConfigParser parser = new BuildConfigParser(location, proto.toCharArray());
+    ProfileParser parser = new ProfileParser(location, proto);
     try {
       parser.read();
       fail();
     } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage("Syntax error in build.wire at 1:18: expected 'wire2'");
+      assertThat(expected).hasMessage("Syntax error in android.wire at 1:18: expected 'wire2'");
     }
   }
 
@@ -84,12 +84,12 @@ public final class BuildConfigParserTest {
         + "  target com.squareup.dino.Herbivore using com.squareup.dino.Dinosaurs#PLANT_ADAPTER;\n"
         + "  target com.squareup.dino.Carnivore using com.squareup.dino.Dinosaurs#MEAT_ADAPTER;\n"
         + "}\n";
-    BuildConfigParser parser = new BuildConfigParser(location, proto.toCharArray());
+    ProfileParser parser = new ProfileParser(location, proto);
     try {
       parser.read();
       fail();
     } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage("Syntax error in build.wire at 5:3: too many targets");
+      assertThat(expected).hasMessage("Syntax error in android.wire at 5:3: too many targets");
     }
   }
 }
