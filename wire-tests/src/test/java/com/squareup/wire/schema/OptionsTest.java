@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public final class OptionsTest {
   @Test public void structuredAndUnstructuredOptions() throws Exception {
     // From https://developers.google.com/protocol-buffers/docs/proto#options
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("foo.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "message FooOptions {\n"
@@ -42,7 +42,7 @@ public final class OptionsTest {
             + "  optional int32 a = 1 [(foo_options).opt1 = 123, (foo_options).opt2 = \"baz\"];\n"
             + "  optional int32 b = 2 [(foo_options) = { opt1: 456 opt2: \"quux\" }];\n"
             + "}\n")
-        .build();
+        .schema();
 
     ProtoMember fooOptions = ProtoMember.get(Options.FIELD_OPTIONS, "foo_options");
     ProtoMember opt1 = ProtoMember.get(ProtoType.get("FooOptions"), "opt1");
@@ -56,7 +56,7 @@ public final class OptionsTest {
   }
 
   @Test public void textFormatCanOmitMapValueSeparator() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("foo.proto", ""
             + "import \"google/protobuf/descriptor.proto\";\n"
             + "message FooOptions {\n"
@@ -73,7 +73,7 @@ public final class OptionsTest {
             + "message Message {\n"
             + "  optional int32 b = 2 [(foo) = { bar { baz: 123 } }];\n"
             + "}\n")
-        .build();
+        .schema();
 
     ProtoMember foo = ProtoMember.get(Options.FIELD_OPTIONS, "foo");
     ProtoMember bar = ProtoMember.get(ProtoType.get("FooOptions"), "bar");
@@ -85,7 +85,7 @@ public final class OptionsTest {
   }
 
   @Test public void fullyQualifiedOptionFields() throws Exception {
-    Schema schema = new SchemaBuilder()
+    Schema schema = new RepoBuilder()
         .add("a/b/more_options.proto", ""
             + "syntax = \"proto2\";\n"
             + "package a.b;\n"
@@ -124,7 +124,7 @@ public final class OptionsTest {
             + "    [a.c.even_more_options]: {string_option: \"foo\"}\n"
             + "  };\n"
             + "}\n")
-        .build();
+        .schema();
     ProtoType moreOptionsType = ProtoType.get("a.b.MoreOptions");
     ProtoType evenMoreOptionsType = ProtoType.get("a.c.EvenMoreOptions");
     ProtoMember moreOptions = ProtoMember.get(Options.MESSAGE_OPTIONS, "a.b.more_options");

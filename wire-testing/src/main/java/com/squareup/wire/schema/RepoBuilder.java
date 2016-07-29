@@ -18,6 +18,8 @@ package com.squareup.wire.schema;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.java.Profile;
+import com.squareup.wire.java.ProfileLoader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -28,13 +30,22 @@ import okio.Source;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-/** Builds schemas for testing. */
-public final class SchemaBuilder {
+/**
+ * Builds a repository of {@code .proto} and {@code .wire} files to create schemas, profiles, and
+ * adapters for testing.
+ */
+public final class RepoBuilder {
   final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
-  final Path root = fs.getPath("/");
+  final Path root = fs.getPath("/source");
   final SchemaLoader schemaLoader = new SchemaLoader().addSource(root);
 
-  public SchemaBuilder add(String name, String protoFile) {
+  public RepoBuilder add(String name, String protoFile) {
+    if (name.endsWith(".proto")) {
+      schemaLoader.addProto(name);
+    } else if (!name.endsWith(".wire")) {
+      throw new IllegalArgumentException("unexpected file extension: " + name);
+    }
+
     Path relativePath = fs.getPath(name);
     try {
       Path resolvedPath = root.resolve(relativePath);
@@ -46,11 +57,11 @@ public final class SchemaBuilder {
     } catch (IOException e) {
       throw new AssertionError(e);
     }
-    schemaLoader.addProto(name);
+
     return this;
   }
 
-  public SchemaBuilder add(String path) throws IOException {
+  public RepoBuilder add(String path) throws IOException {
     File file = new File("../wire-runtime/src/test/proto/" + path);
     try (Source source = Okio.source(file)) {
       String protoFile = Okio.buffer(source).readUtf8();
@@ -58,7 +69,7 @@ public final class SchemaBuilder {
     }
   }
 
-  public Schema build() {
+  public Schema schema() {
     try {
       return schemaLoader.load();
     } catch (IOException e) {
@@ -66,8 +77,14 @@ public final class SchemaBuilder {
     }
   }
 
-  public ProtoAdapter<Object> buildProtoAdapter(String messageTypeName) {
-    Schema schema = build();
+  public Profile profile(String name) throws IOException {
+    return new ProfileLoader(fs, name)
+        .schema(schema())
+        .load();
+  }
+
+  public ProtoAdapter<Object> protoAdapter(String messageTypeName) throws IOException {
+    Schema schema = schema();
     return schema.protoAdapter(messageTypeName, true);
   }
 }

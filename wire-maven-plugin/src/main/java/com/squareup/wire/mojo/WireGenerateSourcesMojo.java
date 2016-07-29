@@ -4,12 +4,12 @@ import com.google.common.base.Stopwatch;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.java.AdapterConstant;
 import com.squareup.wire.java.JavaGenerator;
+import com.squareup.wire.java.Profile;
+import com.squareup.wire.java.ProfileLoader;
 import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
-import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.SchemaLoader;
 import com.squareup.wire.schema.Type;
@@ -17,9 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -59,10 +57,6 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.protoFiles", required = true)
   private String[] protoFiles;
 
-  /** List of proto adapter options. */
-  @Parameter(property = "wire.protoAdapters")
-  private ProtoAdapterParameter[] protoAdapters;
-
   @Parameter(
       property = "wire.generatedSourceDirectory",
       defaultValue = "${project.build.directory}/generated-sources/wire")
@@ -84,23 +78,17 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           : Collections.singletonList(protoSourceDirectory);
       List<String> protoFilesList = Arrays.asList(protoFiles);
       Schema schema = loadSchema(directories, protoFilesList);
+      Profile profile = loadProfile(schema);
 
       IdentifierSet identifierSet = identifierSet();
       if (!identifierSet.isEmpty()) {
         schema = retainRoots(identifierSet, schema);
       }
 
-      Map<ProtoType, ClassName> protoTypeToCustomJavaName = new LinkedHashMap<>();
-      Map<ProtoType, AdapterConstant> protoTypeToAdapterConstant = new LinkedHashMap<>();
-      for (ProtoAdapterParameter parameter : protoAdapters) {
-        protoTypeToCustomJavaName.put(parameter.protoType(), parameter.javaName());
-        protoTypeToAdapterConstant.put(parameter.protoType(), parameter.adapter());
-      }
-
       JavaGenerator javaGenerator = JavaGenerator.get(schema)
           .withAndroid(emitAndroid)
           .withCompact(emitCompact)
-          .withCustomProtoAdapter(protoTypeToCustomJavaName, protoTypeToAdapterConstant);
+          .withProfile(profile);
 
       for (ProtoFile protoFile : schema.protoFiles()) {
         if (!protoFilesList.isEmpty() && !protoFilesList.contains(protoFile.location().path())) {
@@ -179,6 +167,13 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
         schema.protoFiles().size(), stopwatch));
 
     return schema;
+  }
+
+  private Profile loadProfile(Schema schema) throws IOException {
+    String profileName = emitAndroid ? "android" : "java";
+    return  new ProfileLoader(profileName)
+        .schema(schema)
+        .load();
   }
 
   private void writeJavaFile(ClassName javaTypeName, TypeSpec typeSpec, Location location)

@@ -25,11 +25,11 @@ import com.squareup.wire.ProtoAdapter;
  */
 public final class AdapterConstant {
   public final ClassName className;
-  public final String adapterName;
+  public final String memberName;
 
-  public AdapterConstant(ClassName className, String adapterName) {
+  public AdapterConstant(ClassName className, String memberName) {
     this.className = className;
-    this.adapterName = adapterName;
+    this.memberName = memberName;
   }
 
   public AdapterConstant(String adapter) {
@@ -38,6 +38,16 @@ public final class AdapterConstant {
       throw new IllegalArgumentException("Illegally formatted adapter: " + adapter + ".");
     }
     this.className = ClassName.bestGuess(names[0]);
-    this.adapterName = names[1];
+    this.memberName = names[1];
+  }
+
+  @Override public boolean equals(Object o) {
+    return o instanceof AdapterConstant
+        && ((AdapterConstant) o).className.equals(className)
+        && ((AdapterConstant) o).memberName.equals(memberName);
+  }
+
+  @Override public int hashCode() {
+    return className.hashCode() * 37 + memberName.hashCode();
   }
 }

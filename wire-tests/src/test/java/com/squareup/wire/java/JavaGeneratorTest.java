@@ -20,12 +20,11 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.ProtoType;
+import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
-import com.squareup.wire.schema.SchemaBuilder;
 import java.io.IOException;
 import org.junit.Test;
 
-import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class JavaGeneratorTest {
@@ -47,13 +46,13 @@ public final class JavaGeneratorTest {
     assertThat(JavaGenerator.sanitizeJavadoc(input)).isEqualTo(expected);
   }
 
-  @Test public void generateTypeUsesNameAllocatorInMessageBuilderBuild() {
-    Schema schema = new SchemaBuilder()
+  @Test public void generateTypeUsesNameAllocatorInMessageBuilderBuild() throws Exception {
+    Schema schema = new RepoBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  required float long = 1;\n"
             + "}\n")
-        .build();
+        .schema();
     MessageType message = (MessageType) schema.getType("Message");
     JavaGenerator javaGenerator = JavaGenerator.get(schema);
     TypeSpec typeSpec = javaGenerator.generateType(message);
@@ -67,8 +66,8 @@ public final class JavaGeneratorTest {
         + "    }\n");
   }
 
-  @Test public void generateAbstractAdapter() {
-    Schema schema = new SchemaBuilder()
+  @Test public void generateAbstractAdapter() throws Exception {
+    RepoBuilder repoBuilder = new RepoBuilder()
         .add("message.proto", ""
             + "package original.proto;\n"
             + "option java_package = \"original.java\";\n"
@@ -85,17 +84,21 @@ public final class JavaGeneratorTest {
             + "}\n"
             + "message Bar {\n"
             + "}\n")
-        .build();
+        .add("android.wire", ""
+            + "syntax = \"wire2\";\n"
+            + "import \"message.proto\";\n"
+            + "package original.proto;\n"
+            + "type original.proto.ProtoMessage {\n"
+            + "  target target.java.JavaMessage using target.java.JavaMessage#ADAPTER;\n"
+            + "}\n");
+    Schema schema = repoBuilder.schema();
+    Profile profile = repoBuilder.profile("android");
 
     ProtoType protoType = ProtoType.get("original.proto", "ProtoMessage");
-    ClassName className = ClassName.get("target.java", "JavaMessage");
-
     MessageType message = (MessageType) schema.getType(protoType);
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
-        .withCustomProtoAdapter(
-            singletonMap(protoType, className),
-            singletonMap(protoType, new AdapterConstant(className, "ADAPTER")));
+        .withProfile(profile);
     TypeSpec typeSpec = javaGenerator.generateAbstractAdapter(message);
     ClassName typeName = javaGenerator.abstractAdapterName(protoType);
 
@@ -174,24 +177,28 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void generateAbstractAdapterWithRedactedField() throws IOException {
-    Schema schema = new SchemaBuilder()
+    RepoBuilder repoBuilder = new RepoBuilder()
         .add("message.proto", ""
             + "import \"option_redacted.proto\";\n"
             + "message ProtoMessage {\n"
             + "  optional string secret = 1 [(squareup.protos.redacted_option.redacted) = true];\n"
             + "}\n")
         .add("option_redacted.proto")
-        .build();
+        .add("android.wire", ""
+            + "syntax = \"wire2\";\n"
+            + "import \"message.proto\";\n"
+            + "type ProtoMessage {\n"
+            + "  target JavaMessage using JavaMessage#ADAPTER;\n"
+            + "}\n");
+    Schema schema = repoBuilder.schema();
+    Profile profile = repoBuilder.profile("android");
 
     ProtoType protoType = ProtoType.get("ProtoMessage");
-    ClassName className = ClassName.get("", "JavaMessage");
 
     MessageType message = (MessageType) schema.getType(protoType);
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
-        .withCustomProtoAdapter(
-            singletonMap(protoType, className),
-            singletonMap(protoType, new AdapterConstant(className, "ADAPTER")));
+        .withProfile(profile);
     TypeSpec typeSpec = javaGenerator.generateAbstractAdapter(message);
     ClassName typeName = javaGenerator.abstractAdapterName(protoType);
 

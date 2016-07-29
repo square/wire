@@ -50,8 +50,8 @@
     <module>wire-maven-plugin</module>
     <module>wire-runtime</module>
     <module>wire-schema</module>
-    <module>wire-schema-tests</module>
     <module>wire-testing</module>
+    <module>wire-tests</module>
   </modules>
 
   <properties>
