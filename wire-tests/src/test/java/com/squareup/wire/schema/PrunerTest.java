@@ -40,6 +40,39 @@ public final class PrunerTest {
     assertThat(pruned.getType("MessageB")).isNull();
   }
 
+  @Test public void retainMap() throws Exception {
+    Schema schema = new RepoBuilder()
+        .add("service.proto", ""
+            + "message MessageA {\n"
+            + "  map<string, MessageB> maps = 1;\n"
+            + "  message MessageB {\n"
+            + "  }\n"
+            + "}\n")
+        .schema();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA")
+        .build());
+    assertThat(pruned.getType("MessageA")).isNotNull();
+    assertThat(pruned.getField(ProtoMember.get("MessageA#maps"))).isNotNull();
+  }
+
+  @Test public void excludeMap() throws Exception {
+    Schema schema = new RepoBuilder()
+        .add("service.proto", ""
+            + "message MessageA {\n"
+            + "  map<string, MessageB> maps = 1;\n"
+            + "  message MessageB {\n"
+            + "  }\n"
+            + "}\n")
+        .schema();
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("MessageA")
+        .exclude("MessageA#maps")
+        .build());
+    assertThat(pruned.getType("MessageA")).isNotNull();
+    assertThat(pruned.getField(ProtoMember.get("MessageA#maps"))).isNull();
+  }
+
   @Test public void retainTypeRetainsEnclosingButNotNested() throws Exception {
     Schema schema = new RepoBuilder()
         .add("service.proto", ""
