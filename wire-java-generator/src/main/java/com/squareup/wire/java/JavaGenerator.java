@@ -783,10 +783,15 @@ public final class JavaGenerator {
         result.beginControlFlow("try");
         result.addCode(decodeAndAssign(field, nameAllocator, useBuilder));
         result.addCode(";\n");
-        result.nextControlFlow("catch ($T e)", EnumConstantNotFoundException.class);
-        result.addStatement("builder.addUnknownField(tag, $T.VARINT, (long) e.value)",
-            FieldEncoding.class);
-        result.endControlFlow(); // try/catch
+        if (useBuilder) {
+          result.nextControlFlow("catch ($T e)", EnumConstantNotFoundException.class);
+          result.addStatement("builder.addUnknownField(tag, $T.VARINT, (long) e.value)",
+              FieldEncoding.class);
+          result.endControlFlow(); // try/catch
+        } else {
+          result.nextControlFlow("catch ($T ignored)", EnumConstantNotFoundException.class);
+          result.endControlFlow(); // try/catch
+        }
         result.addStatement("break");
         result.endControlFlow(); // case
       } else {
@@ -814,7 +819,7 @@ public final class JavaGenerator {
     } else {
       result.addCode("return fromProto(");
       boolean first = true;
-      for (Field field : fields) {
+      for (Field field : type.fieldsAndOneOfFields()) {
         if (!first) result.addCode(", ");
         result.addCode("$N", nameAllocator.get(field));
         first = false;
