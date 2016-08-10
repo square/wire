@@ -203,6 +203,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
     public static final ProtoAdapter<PhoneType> ADAPTER = ProtoAdapter.newEnumAdapter(PhoneType.class);
 
+    public static final Parcelable.Creator<PhoneType> CREATOR = AndroidMessage.newCreator(ADAPTER);
+
     private final int value;
 
     PhoneType(int value) {
