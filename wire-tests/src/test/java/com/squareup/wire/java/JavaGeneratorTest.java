@@ -15,13 +15,7 @@
  */
 package com.squareup.wire.java;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.schema.MessageType;
-import com.squareup.wire.schema.ProtoType;
 import com.squareup.wire.schema.RepoBuilder;
-import com.squareup.wire.schema.Schema;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -47,16 +41,12 @@ public final class JavaGeneratorTest {
   }
 
   @Test public void generateTypeUsesNameAllocatorInMessageBuilderBuild() throws Exception {
-    Schema schema = new RepoBuilder()
+    RepoBuilder repoBuilder = new RepoBuilder()
         .add("message.proto", ""
             + "message Message {\n"
             + "  required float long = 1;\n"
-            + "}\n")
-        .schema();
-    MessageType message = (MessageType) schema.getType("Message");
-    JavaGenerator javaGenerator = JavaGenerator.get(schema);
-    TypeSpec typeSpec = javaGenerator.generateType(message);
-    assertThat(JavaFile.builder("com.squareup.message", typeSpec).build().toString()).contains(""
+            + "}\n");
+    assertThat(repoBuilder.generateCode("Message")).contains(""
         + "    @Override\n"
         + "    public Message build() {\n"
         + "      if (long_ == null) {\n"
@@ -96,18 +86,7 @@ public final class JavaGeneratorTest {
             + "type original.proto.ProtoMessage {\n"
             + "  target target.java.JavaMessage using target.java.JavaMessage#ADAPTER;\n"
             + "}\n");
-    Schema schema = repoBuilder.schema();
-    Profile profile = repoBuilder.profile("android");
-
-    ProtoType protoType = ProtoType.get("original.proto", "ProtoMessage");
-    MessageType message = (MessageType) schema.getType(protoType);
-
-    JavaGenerator javaGenerator = JavaGenerator.get(schema)
-        .withProfile(profile);
-    TypeSpec typeSpec = javaGenerator.generateAbstractAdapter(message);
-    ClassName typeName = javaGenerator.abstractAdapterName(protoType);
-
-    assertThat(JavaFile.builder(typeName.packageName(), typeSpec).build().toString()).isEqualTo(""
+    assertThat(repoBuilder.generateCode("original.proto.ProtoMessage", "android")).isEqualTo(""
         + "package original.java;\n"
         + "\n"
         + "import com.squareup.wire.FieldEncoding;\n"
@@ -208,22 +187,28 @@ public final class JavaGeneratorTest {
             + "type ProtoMessage {\n"
             + "  target JavaMessage using JavaMessage#ADAPTER;\n"
             + "}\n");
-    Schema schema = repoBuilder.schema();
-    Profile profile = repoBuilder.profile("android");
-
-    ProtoType protoType = ProtoType.get("ProtoMessage");
-
-    MessageType message = (MessageType) schema.getType(protoType);
-
-    JavaGenerator javaGenerator = JavaGenerator.get(schema)
-        .withProfile(profile);
-    TypeSpec typeSpec = javaGenerator.generateAbstractAdapter(message);
-    ClassName typeName = javaGenerator.abstractAdapterName(protoType);
-
-    assertThat(JavaFile.builder(typeName.packageName(), typeSpec).build().toString()).contains(""
+    assertThat(repoBuilder.generateCode("ProtoMessage", "android")).contains(""
         + "  @Override\n"
         + "  public JavaMessage redact(JavaMessage value) {\n"
         + "    return null;\n"
         + "  }\n");
+  }
+
+  @Test public void nestedAbstractAdapterIsStatic() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("message.proto", ""
+            + "message A {\n"
+            + "  message B {\n"
+            + "    optional string c = 1;\n"
+            + "  }\n"
+            + "}\n")
+        .add("android.wire", ""
+            + "syntax = \"wire2\";\n"
+            + "import \"message.proto\";\n"
+            + "type A.B {\n"
+            + "  target java.lang.String using AbAdapter#INSTANCE;\n"
+            + "}\n");
+    assertThat(repoBuilder.generateCode("A", "android")).contains(""
+        + "  public abstract static class AbstractBAdapter extends ProtoAdapter<String> {\n");
   }
 }
