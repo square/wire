@@ -17,7 +17,11 @@ package com.squareup.wire.schema;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.Profile;
 import com.squareup.wire.java.ProfileLoader;
 import java.io.File;
@@ -86,5 +90,21 @@ public final class RepoBuilder {
   public ProtoAdapter<Object> protoAdapter(String messageTypeName) throws IOException {
     Schema schema = schema();
     return schema.protoAdapter(messageTypeName, true);
+  }
+
+  public String generateCode(String typeName) throws IOException {
+    return generateCode(typeName, null);
+  }
+
+  public String generateCode(String typeName, String profile) throws IOException {
+    Schema schema = schema();
+    JavaGenerator javaGenerator = JavaGenerator.get(schema);
+    if (profile != null) {
+      javaGenerator = javaGenerator.withProfile(profile(profile));
+    }
+    Type type = schema.getType(typeName);
+    TypeSpec typeSpec = javaGenerator.generateType(type);
+    ClassName typeName1 = javaGenerator.generatedTypeName(type);
+    return JavaFile.builder(typeName1.packageName(), typeSpec).build().toString();
   }
 }

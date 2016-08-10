@@ -607,6 +607,10 @@ public final class JavaGenerator {
     TypeSpec.Builder adapter = messageAdapter(
         nameAllocator, type, typeName, adapterTypeName, null).toBuilder();
 
+    if (adapterTypeName.enclosingClassName() != null) {
+      adapter.addModifiers(STATIC);
+    }
+
     for (Type nestedType : type.nestedTypes()) {
       if (profile.getAdapter(nestedType.type()) == null) {
         throw new IllegalArgumentException("Missing custom proto adapter for "
