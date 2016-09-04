@@ -1032,9 +1032,7 @@ public final class JavaGenerator {
   }
 
   private String reflectionName(ClassName className) {
-    return className.packageName().isEmpty()
-        ? Joiner.on('$').join(className.simpleNames())
-        : className.packageName() + '.' + Joiner.on('$').join(className.simpleNames());
+    return className.packageName() + '.' + Joiner.on('$').join(className.simpleNames());
   }
 
   // Example:
