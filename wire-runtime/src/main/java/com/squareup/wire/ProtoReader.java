@@ -256,12 +256,14 @@ public final class ProtoReader {
    */
   public ByteString readBytes() throws IOException {
     long byteCount = beforeLengthDelimitedScalar();
+    source.require(byteCount); // Throws EOFException if insufficient bytes are available.
     return source.readByteString(byteCount);
   }
 
   /** Reads a {@code string} field value from the stream. */
   public String readString() throws IOException {
     long byteCount = beforeLengthDelimitedScalar();
+    source.require(byteCount); // Throws EOFException if insufficient bytes are available.
     return source.readUtf8(byteCount);
   }
 
@@ -279,32 +281,38 @@ public final class ProtoReader {
   }
 
   private int internalReadVarint32() throws IOException {
+    source.require(1); // Throws EOFException if insufficient bytes are available.
     pos++;
     byte tmp = source.readByte();
     if (tmp >= 0) {
       return tmp;
     }
     int result = tmp & 0x7f;
+    source.require(1); // Throws EOFException if insufficient bytes are available.
     pos++;
     if ((tmp = source.readByte()) >= 0) {
       result |= tmp << 7;
     } else {
       result |= (tmp & 0x7f) << 7;
+      source.require(1); // Throws EOFException if insufficient bytes are available.
       pos++;
       if ((tmp = source.readByte()) >= 0) {
         result |= tmp << 14;
       } else {
         result |= (tmp & 0x7f) << 14;
+        source.require(1); // Throws EOFException if insufficient bytes are available.
         pos++;
         if ((tmp = source.readByte()) >= 0) {
           result |= tmp << 21;
         } else {
           result |= (tmp & 0x7f) << 21;
+          source.require(1); // Throws EOFException if insufficient bytes are available.
           pos++;
           result |= (tmp = source.readByte()) << 28;
           if (tmp < 0) {
             // Discard upper 32 bits.
             for (int i = 0; i < 5; i++) {
+              source.require(1); // Throws EOFException if insufficient bytes are available.
               pos++;
               if (source.readByte() >= 0) {
                 return result;
@@ -326,6 +334,7 @@ public final class ProtoReader {
     int shift = 0;
     long result = 0;
     while (shift < 64) {
+      source.require(1); // Throws EOFException if insufficient bytes are available.
       pos++;
       byte b = source.readByte();
       result |= (long) (b & 0x7F) << shift;
