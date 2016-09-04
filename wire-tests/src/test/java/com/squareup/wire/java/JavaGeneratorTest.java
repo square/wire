@@ -56,27 +56,6 @@ public final class JavaGeneratorTest {
         + "    }\n");
   }
 
-  @Test public void map() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "message Message {\n"
-            + "  map<string, CdnResource> templates = 1;\n"
-            + "  message CdnResource {\n"
-            + "  }\n"
-            + "}\n")
-        .schema();
-    MessageType message = (MessageType) schema.getType("Message");
-    JavaGenerator javaGenerator = JavaGenerator.get(schema);
-    TypeSpec typeSpec = javaGenerator.generateType(message);
-    assertThat(JavaFile.builder("", typeSpec).build().toString()).contains(""
-        + "  @WireField(\n"
-        + "      tag = 1,\n"
-        + "      keyAdapter = \"com.squareup.wire.ProtoAdapter#STRING\",\n"
-        + "      adapter = \"Message$CdnResource#ADAPTER\"\n"
-        + "  )\n"
-        + "  public final Map<String, CdnResource> templates;\n");
-  }
-
   @Test public void generateAbstractAdapter() throws Exception {
     RepoBuilder repoBuilder = new RepoBuilder()
         .add("message.proto", ""
