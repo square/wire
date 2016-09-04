@@ -15,7 +15,11 @@
  */
 package com.squareup.wire.java;
 
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.RepoBuilder;
+import com.squareup.wire.schema.Schema;
 import java.io.IOException;
 import org.junit.Test;
 
