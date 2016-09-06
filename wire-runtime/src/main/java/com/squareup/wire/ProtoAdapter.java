@@ -93,8 +93,13 @@ public abstract class ProtoAdapter<E> {
     }
   }
 
+  /**
+   * Returns the adapter for a given {@code adapterString}. {@code adapterString} is specified on a
+   * proto message field's {@link WireField} annotation in the form
+   * {@code com.squareup.wire.protos.person.Person#ADAPTER}.
+   */
   @SuppressWarnings("unchecked")
-  static ProtoAdapter<?> get(String adapterString) {
+  public static ProtoAdapter<?> get(String adapterString) {
     try {
       int hash = adapterString.indexOf('#');
       String className = adapterString.substring(0, hash);
