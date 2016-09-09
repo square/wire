@@ -2,6 +2,7 @@
 // Source file: roots.proto at 60:1
 package com.squareup.wire.protos.roots;
 
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import java.lang.Override;
@@ -11,7 +12,7 @@ public enum G implements WireEnum {
 
   BAR(2);
 
-  public static final ProtoAdapter<G> ADAPTER = ProtoAdapter.newEnumAdapter(G.class);
+  public static final ProtoAdapter<G> ADAPTER = new ProtoAdapter_G();
 
   private final int value;
 
@@ -33,5 +34,16 @@ public enum G implements WireEnum {
   @Override
   public int getValue() {
     return value;
+  }
+
+  private static final class ProtoAdapter_G extends EnumAdapter<G> {
+    ProtoAdapter_G() {
+      super(G.class);
+    }
+
+    @Override
+    protected G fromValue(int value) {
+      return G.fromValue(value);
+    }
   }
 }

@@ -2,6 +2,7 @@
 // Source file: all_types.proto at 21:1
 package com.squareup.wire.protos.alltypes;
 
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -3094,7 +3095,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public enum NestedEnum implements WireEnum {
     A(1);
 
-    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);
+    public static final ProtoAdapter<NestedEnum> ADAPTER = new ProtoAdapter_NestedEnum();
 
     private final int value;
 
@@ -3115,6 +3116,17 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_NestedEnum extends EnumAdapter<NestedEnum> {
+      ProtoAdapter_NestedEnum() {
+        super(NestedEnum.class);
+      }
+
+      @Override
+      protected NestedEnum fromValue(int value) {
+        return NestedEnum.fromValue(value);
+      }
     }
   }
 

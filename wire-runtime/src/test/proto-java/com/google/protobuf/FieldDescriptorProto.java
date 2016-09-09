@@ -2,6 +2,7 @@
 // Source file: google/protobuf/descriptor.proto at 125:1
 package com.google.protobuf;
 
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -369,7 +370,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
      */
     TYPE_SINT64(18);
 
-    public static final ProtoAdapter<Type> ADAPTER = ProtoAdapter.newEnumAdapter(Type.class);
+    public static final ProtoAdapter<Type> ADAPTER = new ProtoAdapter_Type();
 
     private final int value;
 
@@ -408,6 +409,17 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     public int getValue() {
       return value;
     }
+
+    private static final class ProtoAdapter_Type extends EnumAdapter<Type> {
+      ProtoAdapter_Type() {
+        super(Type.class);
+      }
+
+      @Override
+      protected Type fromValue(int value) {
+        return Type.fromValue(value);
+      }
+    }
   }
 
   public enum Label implements WireEnum {
@@ -420,7 +432,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     LABEL_REPEATED(3);
 
-    public static final ProtoAdapter<Label> ADAPTER = ProtoAdapter.newEnumAdapter(Label.class);
+    public static final ProtoAdapter<Label> ADAPTER = new ProtoAdapter_Label();
 
     private final int value;
 
@@ -443,6 +455,17 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_Label extends EnumAdapter<Label> {
+      ProtoAdapter_Label() {
+        super(Label.class);
+      }
+
+      @Override
+      protected Label fromValue(int value) {
+        return Label.fromValue(value);
+      }
     }
   }
 

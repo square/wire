@@ -4,6 +4,7 @@ package com.squareup.wire.protos.custom_options;
 
 import com.google.protobuf.EnumOptions;
 import com.google.protobuf.FieldOptions;
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -574,7 +575,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     BAZ(3, 18, null, false);
 
-    public static final ProtoAdapter<FooBarBazEnum> ADAPTER = ProtoAdapter.newEnumAdapter(FooBarBazEnum.class);
+    public static final ProtoAdapter<FooBarBazEnum> ADAPTER = new ProtoAdapter_FooBarBazEnum();
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .enum_option(true)
@@ -610,6 +611,17 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_FooBarBazEnum extends EnumAdapter<FooBarBazEnum> {
+      ProtoAdapter_FooBarBazEnum() {
+        super(FooBarBazEnum.class);
+      }
+
+      @Override
+      protected FooBarBazEnum fromValue(int value) {
+        return FooBarBazEnum.fromValue(value);
+      }
     }
   }
 

@@ -2,6 +2,7 @@
 // Source file: google/protobuf/descriptor.proto at 441:1
 package com.google.protobuf;
 
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -568,7 +569,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     STRING_PIECE(2);
 
-    public static final ProtoAdapter<CType> ADAPTER = ProtoAdapter.newEnumAdapter(CType.class);
+    public static final ProtoAdapter<CType> ADAPTER = new ProtoAdapter_CType();
 
     private final int value;
 
@@ -592,6 +593,17 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     public int getValue() {
       return value;
     }
+
+    private static final class ProtoAdapter_CType extends EnumAdapter<CType> {
+      ProtoAdapter_CType() {
+        super(CType.class);
+      }
+
+      @Override
+      protected CType fromValue(int value) {
+        return CType.fromValue(value);
+      }
+    }
   }
 
   public enum JSType implements WireEnum {
@@ -610,7 +622,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
      */
     JS_NUMBER(2);
 
-    public static final ProtoAdapter<JSType> ADAPTER = ProtoAdapter.newEnumAdapter(JSType.class);
+    public static final ProtoAdapter<JSType> ADAPTER = new ProtoAdapter_JSType();
 
     private final int value;
 
@@ -633,6 +645,17 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_JSType extends EnumAdapter<JSType> {
+      ProtoAdapter_JSType() {
+        super(JSType.class);
+      }
+
+      @Override
+      protected JSType fromValue(int value) {
+        return JSType.fromValue(value);
+      }
     }
   }
 
