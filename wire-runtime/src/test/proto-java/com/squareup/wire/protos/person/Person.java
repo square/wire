@@ -2,6 +2,7 @@
 // Source file: person.proto at 21:1
 package com.squareup.wire.protos.person;
 
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -195,7 +196,7 @@ public final class Person extends Message<Person, Person.Builder> {
      */
     WORK(2);
 
-    public static final ProtoAdapter<PhoneType> ADAPTER = ProtoAdapter.newEnumAdapter(PhoneType.class);
+    public static final ProtoAdapter<PhoneType> ADAPTER = new ProtoAdapter_PhoneType();
 
     private final int value;
 
@@ -218,6 +219,17 @@ public final class Person extends Message<Person, Person.Builder> {
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_PhoneType extends EnumAdapter<PhoneType> {
+      ProtoAdapter_PhoneType() {
+        super(PhoneType.class);
+      }
+
+      @Override
+      protected PhoneType fromValue(int value) {
+        return PhoneType.fromValue(value);
+      }
     }
   }
 

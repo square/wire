@@ -15,19 +15,18 @@
  */
 package com.squareup.wire;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Converts values of an enum to and from integers.
+ * Converts values of an enum to and from integers using reflection.
  */
-final class RuntimeEnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
+final class RuntimeEnumAdapter<E extends WireEnum> extends EnumAdapter<E> {
   private final Class<E> type;
   private Method fromValueMethod; // Loaded lazily to avoid reflection during class loading.
 
   RuntimeEnumAdapter(Class<E> type) {
-    super(FieldEncoding.VARINT, type);
+    super(type);
     this.type = type;
   }
 
@@ -43,25 +42,13 @@ final class RuntimeEnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
     }
   }
 
-  @Override public int encodedSize(E value) {
-    return ProtoWriter.varint32Size(value.getValue());
-  }
-
-  @Override public void encode(ProtoWriter writer, E value) throws IOException {
-    writer.writeVarint32(value.getValue());
-  }
-
-  @Override public E decode(ProtoReader reader) throws IOException {
-    int value = reader.readVarint32();
+  @Override protected E fromValue(int value) {
     E constant;
     try {
       //noinspection unchecked
       constant = (E) getFromValueMethod().invoke(null, value);
     } catch (IllegalAccessException | InvocationTargetException e) {
       throw new AssertionError(e);
-    }
-    if (constant == null) {
-      throw new EnumConstantNotFoundException(value, type);
     }
     return constant;
   }

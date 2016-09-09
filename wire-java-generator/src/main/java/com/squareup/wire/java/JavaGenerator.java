@@ -34,6 +34,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -78,6 +79,7 @@ import static com.squareup.wire.schema.Options.MESSAGE_OPTIONS;
 import static javax.lang.model.element.Modifier.ABSTRACT;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PROTECTED;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
@@ -100,6 +102,7 @@ public final class JavaGenerator {
   static final ClassName ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage");
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
+  static final ClassName ENUM_ADAPTER = ClassName.get(EnumAdapter.class);
   static final ClassName NULLABLE = ClassName.get("android.support.annotation", "Nullable");
   static final ClassName CREATOR = ClassName.get("android.os", "Parcelable", "Creator");
 
@@ -320,6 +323,10 @@ public final class JavaGenerator {
     return ParameterizedTypeName.get(CREATOR, messageType);
   }
 
+  static TypeName enumAdapterOf(TypeName enumType) {
+    return ParameterizedTypeName.get(ENUM_ADAPTER, enumType);
+  }
+
   /** A grab-bag of fixes for things that can go wrong when converting to javadoc. */
   static String sanitizeJavadoc(String documentation) {
     // Remove trailing whitespace on each line.
@@ -438,10 +445,16 @@ public final class JavaGenerator {
         .endControlFlow()
         .build());
 
-    builder.addField(FieldSpec.builder(adapterOf(javaType), "ADAPTER")
-        .addModifiers(PUBLIC, STATIC, FINAL)
-        .initializer("$T.newEnumAdapter($T.class)", ProtoAdapter.class, javaType)
-        .build());
+    // ADAPTER
+    FieldSpec.Builder adapterBuilder = FieldSpec.builder(adapterOf(javaType), "ADAPTER")
+        .addModifiers(PUBLIC, STATIC, FINAL);
+    ClassName adapterJavaType = javaType.nestedClass("ProtoAdapter_" + javaType.simpleName());
+    if (!emitCompact) {
+      adapterBuilder.initializer("new $T()", adapterJavaType);
+    } else {
+      adapterBuilder.initializer("$T.newEnumAdapter($T.class)", ProtoAdapter.class, javaType);
+    }
+    builder.addField(adapterBuilder.build());
 
     // Enum type options.
     FieldSpec options = optionsField(ENUM_OPTIONS, "ENUM_OPTIONS", type.options());
@@ -456,6 +469,11 @@ public final class JavaGenerator {
         .returns(TypeName.INT)
         .addStatement("return value")
         .build());
+
+    if (!emitCompact) {
+      // Adds the ProtoAdapter implementation at the bottom.
+      builder.addType(enumAdapter(javaType, adapterJavaType));
+    }
 
     return builder.build();
   }
@@ -647,6 +665,23 @@ public final class JavaGenerator {
       result.initializer("new $T()", adapterJavaType);
     }
     return result.build();
+  }
+
+  private TypeSpec enumAdapter(ClassName javaType,  ClassName adapterJavaType) {
+    return TypeSpec.classBuilder(adapterJavaType.simpleName())
+        .superclass(enumAdapterOf(javaType))
+        .addModifiers(PRIVATE, STATIC, FINAL)
+        .addMethod(MethodSpec.constructorBuilder()
+            .addStatement("super($T.class)", javaType)
+            .build())
+        .addMethod(MethodSpec.methodBuilder("fromValue")
+            .addAnnotation(Override.class)
+            .addModifiers(PROTECTED)
+            .returns(javaType)
+            .addParameter(int.class, "value")
+            .addStatement("return $T.fromValue(value)", javaType)
+            .build())
+        .build();
   }
 
   private TypeSpec messageAdapter(NameAllocator nameAllocator, MessageType type, ClassName javaType,

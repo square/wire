@@ -3,6 +3,7 @@
 package com.squareup.wire.protos.simple;
 
 import com.google.protobuf.EnumOptions;
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -526,7 +527,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     @Deprecated
     BUZ(3, true);
 
-    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);
+    public static final ProtoAdapter<NestedEnum> ADAPTER = new ProtoAdapter_NestedEnum();
 
     public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
         .allow_alias(true)
@@ -556,6 +557,17 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_NestedEnum extends EnumAdapter<NestedEnum> {
+      ProtoAdapter_NestedEnum() {
+        super(NestedEnum.class);
+      }
+
+      @Override
+      protected NestedEnum fromValue(int value) {
+        return NestedEnum.fromValue(value);
+      }
     }
   }
 

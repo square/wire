@@ -2,6 +2,7 @@
 // Source file: google/protobuf/descriptor.proto at 277:1
 package com.google.protobuf;
 
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -586,7 +587,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
      */
     LITE_RUNTIME(3);
 
-    public static final ProtoAdapter<OptimizeMode> ADAPTER = ProtoAdapter.newEnumAdapter(OptimizeMode.class);
+    public static final ProtoAdapter<OptimizeMode> ADAPTER = new ProtoAdapter_OptimizeMode();
 
     private final int value;
 
@@ -609,6 +610,17 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     @Override
     public int getValue() {
       return value;
+    }
+
+    private static final class ProtoAdapter_OptimizeMode extends EnumAdapter<OptimizeMode> {
+      ProtoAdapter_OptimizeMode() {
+        super(OptimizeMode.class);
+      }
+
+      @Override
+      protected OptimizeMode fromValue(int value) {
+        return OptimizeMode.fromValue(value);
+      }
     }
   }
 
