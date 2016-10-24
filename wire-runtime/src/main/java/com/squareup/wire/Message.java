@@ -103,8 +103,8 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
    */
   public abstract static class Builder<T extends Message<T, B>, B extends Builder<T, B>> {
     // Lazily-instantiated buffer and writer of this message's unknown fields.
-    Buffer unknownFieldsBuffer;
-    ProtoWriter unknownFieldsWriter;
+    transient Buffer unknownFieldsBuffer;
+    transient ProtoWriter unknownFieldsWriter;
 
     protected Builder() {
     }
