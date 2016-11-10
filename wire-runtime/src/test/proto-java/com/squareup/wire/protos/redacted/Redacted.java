@@ -68,7 +68,8 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
     this(a, b, c, extension, ByteString.EMPTY);
   }
 
-  public Redacted(String a, String b, String c, RedactedExtension extension, ByteString unknownFields) {
+  public Redacted(String a, String b, String c, RedactedExtension extension,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.a = a;
     this.b = b;

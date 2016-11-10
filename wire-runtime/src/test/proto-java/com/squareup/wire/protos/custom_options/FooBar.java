@@ -157,11 +157,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   )
   public final List<FooBarBazEnum> rep;
 
-  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep) {
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy,
+      List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep) {
     this(foo, bar, baz, qux, fred, daisy, nested, ext, rep, ByteString.EMPTY);
   }
 
-  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy, List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, ByteString unknownFields) {
+  public FooBar(Integer foo, String bar, Nested baz, Long qux, List<Float> fred, Double daisy,
+      List<FooBar> nested, FooBarBazEnum ext, List<FooBarBazEnum> rep, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.foo = foo;
     this.bar = bar;
@@ -589,7 +591,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     public final Boolean foreign_enum_value_option;
 
-    FooBarBazEnum(int value, Integer enum_value_option, More complex_enum_value_option, Boolean foreign_enum_value_option) {
+    FooBarBazEnum(int value, Integer enum_value_option, More complex_enum_value_option,
+        Boolean foreign_enum_value_option) {
       this.value = value;
       this.enum_value_option = enum_value_option;
       this.complex_enum_value_option = complex_enum_value_option;

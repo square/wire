@@ -70,11 +70,14 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
   )
   public final Boolean enum_option;
 
-  public EnumOptions(Boolean allow_alias, Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Boolean enum_option) {
+  public EnumOptions(Boolean allow_alias, Boolean deprecated,
+      List<UninterpretedOption> uninterpreted_option, Boolean enum_option) {
     this(allow_alias, deprecated, uninterpreted_option, enum_option, ByteString.EMPTY);
   }
 
-  public EnumOptions(Boolean allow_alias, Boolean deprecated, List<UninterpretedOption> uninterpreted_option, Boolean enum_option, ByteString unknownFields) {
+  public EnumOptions(Boolean allow_alias, Boolean deprecated,
+      List<UninterpretedOption> uninterpreted_option, Boolean enum_option,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.allow_alias = allow_alias;
     this.deprecated = deprecated;

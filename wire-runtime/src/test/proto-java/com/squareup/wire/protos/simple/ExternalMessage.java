@@ -84,11 +84,14 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   )
   public final SimpleMessage.NestedEnum nested_enum_ext;
 
-  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext) {
+  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext,
+      SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext) {
     this(f, fooext, barext, bazext, nested_message_ext, nested_enum_ext, ByteString.EMPTY);
   }
 
-  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext, SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext, ByteString unknownFields) {
+  public ExternalMessage(Float f, List<Integer> fooext, Integer barext, Integer bazext,
+      SimpleMessage.NestedMessage nested_message_ext, SimpleMessage.NestedEnum nested_enum_ext,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.f = f;
     this.fooext = Internal.immutableCopyOf("fooext", fooext);

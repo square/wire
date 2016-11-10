@@ -74,7 +74,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     this(name, id, email, phone, ByteString.EMPTY);
   }
 
-  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone, ByteString unknownFields) {
+  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.id = id;
