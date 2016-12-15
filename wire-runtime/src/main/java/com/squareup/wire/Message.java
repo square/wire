@@ -102,7 +102,18 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
    * Superclass for protocol buffer message builders.
    */
   public abstract static class Builder<T extends Message<T, B>, B extends Builder<T, B>> {
-    // Lazily-instantiated buffer and writer of this message's unknown fields.
+    /**
+     * Caches unknown fields as a {@link ByteString} when {@link #buildUnknownFields()} is called.
+     * When the caller adds an additional unknown field after that, it will be written to the new
+     * {@link #unknownFieldsBuffer} to ensure that all unknown fields are retained between calls to
+     * {@link #buildUnknownFields()}.
+     */
+    transient ByteString unknownFieldsByteString = ByteString.EMPTY;
+    /**
+     * {@link Buffer} of the message's unknown fields that is lazily instantiated between calls to
+     * {@link #buildUnknownFields()}. It's automatically cleared in {@link #buildUnknownFields()},
+     * and can also be manually cleared by calling {@link #clearUnknownFields()}.
+     */
     transient Buffer unknownFieldsBuffer;
     transient ProtoWriter unknownFieldsWriter;
 
@@ -111,10 +122,7 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
 
     public final Builder<T, B> addUnknownFields(ByteString unknownFields) {
       if (unknownFields.size() > 0) {
-        if (unknownFieldsWriter == null) {
-          unknownFieldsBuffer = new Buffer();
-          unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
-        }
+        prepareForNewUnknownFields();
         try {
           unknownFieldsWriter.writeBytes(unknownFields);
         } catch (IOException e) {
@@ -125,10 +133,7 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     }
 
     public final Builder<T, B> addUnknownField(int tag, FieldEncoding fieldEncoding, Object value) {
-      if (unknownFieldsWriter == null) {
-        unknownFieldsBuffer = new Buffer();
-        unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
-      }
+      prepareForNewUnknownFields();
       try {
         ProtoAdapter<Object> protoAdapter = (ProtoAdapter<Object>) fieldEncoding.rawProtoAdapter();
         protoAdapter.encodeWithTag(unknownFieldsWriter, tag, value);
@@ -139,8 +144,12 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     }
 
     public final Builder<T, B> clearUnknownFields() {
+      unknownFieldsByteString = ByteString.EMPTY;
+      if (unknownFieldsBuffer != null) {
+        unknownFieldsBuffer.clear();
+        unknownFieldsBuffer = null;
+      }
       unknownFieldsWriter = null;
-      unknownFieldsBuffer = null;
       return this;
     }
 
@@ -149,12 +158,30 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
      * this message has no unknown fields.
      */
     public final ByteString buildUnknownFields() {
-      return unknownFieldsBuffer != null
-          ? unknownFieldsBuffer.clone().readByteString()
-          : ByteString.EMPTY;
+      if (unknownFieldsBuffer != null) {
+        // Reads and caches the unknown fields from the buffer.
+        unknownFieldsByteString = unknownFieldsBuffer.readByteString();
+        unknownFieldsBuffer = null;
+        unknownFieldsWriter = null;
+      }
+      return unknownFieldsByteString;
     }
 
     /** Returns an immutable {@link Message} based on the fields that set in this builder. */
     public abstract T build();
+
+    private void prepareForNewUnknownFields() {
+      if (unknownFieldsBuffer == null) {
+        unknownFieldsBuffer = new Buffer();
+        unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
+        try {
+          // Writes the cached unknown fields to the buffer.
+          unknownFieldsWriter.writeBytes(unknownFieldsByteString);
+        } catch (IOException e) {
+          throw new AssertionError();
+        }
+        unknownFieldsByteString = ByteString.EMPTY;
+      }
+    }
   }
 }
