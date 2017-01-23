@@ -99,7 +99,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           Stopwatch stopwatch = Stopwatch.createStarted();
           TypeSpec typeSpec = javaGenerator.generateType(type);
           ClassName javaTypeName = javaGenerator.generatedTypeName(type);
-          writeJavaFile(javaTypeName, typeSpec, type.location().withoutBase());
+          writeJavaFile(javaTypeName, typeSpec, type.location().withPathOnly());
           getLog().info(String.format("Generated %s in %s", javaTypeName, stopwatch));
         }
       }
