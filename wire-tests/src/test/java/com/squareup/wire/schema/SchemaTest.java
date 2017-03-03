@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.squareup.wire.schema.internal.Util;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
@@ -67,6 +68,30 @@ public final class SchemaTest {
     ProtoType bars = message.field("bars").type();
     assertThat(bars.keyType()).isEqualTo(ProtoType.STRING);
     assertThat(bars.valueType()).isEqualTo(schema.getType("foo_package.Bar").type());
+  }
+
+  @Ignore("Resolution happens from the root not from inside Outer and so this fails.")
+  @Test public void linkExtendTypeInOuterMessage() throws Exception {
+    Schema schema = new RepoBuilder()
+        .add("foo.proto", ""
+            + "message Other {\n"
+            + "  extensions 1;\n"
+            + "}\n"
+            + "message Outer {\n"
+            + "  enum Choice {\n"
+            + "    ZERO = 0;\n"
+            + "    ONE = 1;\n"
+            + "  }\n"
+            + "\n"
+            + "  extend Other {\n"
+            + "    optional Choice choice = 1;\n"
+            + "  }\n"
+            + "}")
+        .schema();
+
+    MessageType message = (MessageType) schema.getType("Other");
+    Field field = message.field("choice");
+    assertThat(field.type()).isEqualTo(schema.getType("Outer.Choice").type());
   }
 
   @Test public void isValidTag() {
