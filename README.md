@@ -340,7 +340,7 @@ dependencies. This is useful when sharing a schema between projects: a Java serv
 may each use a subset of a larger shared schema.
 
 If you don't use Maven, the compiler also has a command line interface. Just substitute
-`wire-compiler-VERSION-jar-with-dependencies.jar` with the path to your jar.
+`wire-compiler-VERSION-jar-with-dependencies.jar` with the path to your jar. [Download](https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&c=jar-with-dependencies&v=LATEST) the latest precompiled jar.
 
     % java -jar wire-compiler-VERSION-jar-with-dependencies.jar \
         --proto_path=src/main/proto \
@@ -349,6 +349,8 @@ If you don't use Maven, the compiler also has a command line interface. Just sub
         squareup/geology/period.proto
     Writing com.squareup.dinosaurs.Dinosaur to out
     Writing com.squareup.geology.Period to out
+
+Supplying the `--android` flag to the compiler causes Wire messages to implement `Parcelable`.
 
 If you use Proguard, then you need to add `keep` rules.  The simplest option is to tell Proguard not
 to touch the Wire runtime library and your generated protocol buffers (of course these simple rules
