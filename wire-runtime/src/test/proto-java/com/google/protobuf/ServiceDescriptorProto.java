@@ -46,11 +46,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   )
   public final ServiceOptions options;
 
-  public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, ServiceOptions options) {
+  public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method,
+      ServiceOptions options) {
     this(name, method, options, ByteString.EMPTY);
   }
 
-  public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method, ServiceOptions options, ByteString unknownFields) {
+  public ServiceDescriptorProto(String name, List<MethodDescriptorProto> method,
+      ServiceOptions options, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.method = Internal.immutableCopyOf("method", method);

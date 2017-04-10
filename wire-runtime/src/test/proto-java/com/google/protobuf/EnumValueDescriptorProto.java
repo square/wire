@@ -51,7 +51,8 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
     this(name, number, options, ByteString.EMPTY);
   }
 
-  public EnumValueDescriptorProto(String name, Integer number, EnumValueOptions options, ByteString unknownFields) {
+  public EnumValueDescriptorProto(String name, Integer number, EnumValueOptions options,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.number = number;

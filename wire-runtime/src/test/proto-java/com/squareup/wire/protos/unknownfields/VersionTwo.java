@@ -71,11 +71,13 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
   )
   public final List<String> v2_rs;
 
-  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs) {
+  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64,
+      List<String> v2_rs) {
     this(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, ByteString.EMPTY);
   }
 
-  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64, List<String> v2_rs, ByteString unknownFields) {
+  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64,
+      List<String> v2_rs, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.i = i;
     this.v2_i = v2_i;

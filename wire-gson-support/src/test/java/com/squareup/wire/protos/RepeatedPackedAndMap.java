@@ -45,11 +45,13 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
   )
   public final Map<Integer, Integer> map_int32_int32;
 
-  public RepeatedPackedAndMap(List<Integer> rep_int32, List<Integer> pack_int32, Map<Integer, Integer> map_int32_int32) {
+  public RepeatedPackedAndMap(List<Integer> rep_int32, List<Integer> pack_int32,
+      Map<Integer, Integer> map_int32_int32) {
     this(rep_int32, pack_int32, map_int32_int32, ByteString.EMPTY);
   }
 
-  public RepeatedPackedAndMap(List<Integer> rep_int32, List<Integer> pack_int32, Map<Integer, Integer> map_int32_int32, ByteString unknownFields) {
+  public RepeatedPackedAndMap(List<Integer> rep_int32, List<Integer> pack_int32,
+      Map<Integer, Integer> map_int32_int32, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.rep_int32 = Internal.immutableCopyOf("rep_int32", rep_int32);
     this.pack_int32 = Internal.immutableCopyOf("pack_int32", pack_int32);

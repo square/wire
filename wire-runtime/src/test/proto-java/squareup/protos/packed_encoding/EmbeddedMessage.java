@@ -42,7 +42,8 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
     this(inner_repeated_number, inner_number_after, ByteString.EMPTY);
   }
 
-  public EmbeddedMessage(List<Integer> inner_repeated_number, Integer inner_number_after, ByteString unknownFields) {
+  public EmbeddedMessage(List<Integer> inner_repeated_number, Integer inner_number_after,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.inner_repeated_number = Internal.immutableCopyOf("inner_repeated_number", inner_repeated_number);
     this.inner_number_after = inner_number_after;

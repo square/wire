@@ -46,11 +46,13 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   )
   public final EnumOptions options;
 
-  public EnumDescriptorProto(String name, List<EnumValueDescriptorProto> value, EnumOptions options) {
+  public EnumDescriptorProto(String name, List<EnumValueDescriptorProto> value,
+      EnumOptions options) {
     this(name, value, options, ByteString.EMPTY);
   }
 
-  public EnumDescriptorProto(String name, List<EnumValueDescriptorProto> value, EnumOptions options, ByteString unknownFields) {
+  public EnumDescriptorProto(String name, List<EnumValueDescriptorProto> value, EnumOptions options,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.value = Internal.immutableCopyOf("value", value);

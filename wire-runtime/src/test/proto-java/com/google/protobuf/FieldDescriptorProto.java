@@ -123,11 +123,14 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
   )
   public final FieldOptions options;
 
-  public FieldDescriptorProto(String name, Integer number, Label label, Type type, String type_name, String extendee, String default_value, Integer oneof_index, FieldOptions options) {
+  public FieldDescriptorProto(String name, Integer number, Label label, Type type, String type_name,
+      String extendee, String default_value, Integer oneof_index, FieldOptions options) {
     this(name, number, label, type, type_name, extendee, default_value, oneof_index, options, ByteString.EMPTY);
   }
 
-  public FieldDescriptorProto(String name, Integer number, Label label, Type type, String type_name, String extendee, String default_value, Integer oneof_index, FieldOptions options, ByteString unknownFields) {
+  public FieldDescriptorProto(String name, Integer number, Label label, Type type, String type_name,
+      String extendee, String default_value, Integer oneof_index, FieldOptions options,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.number = number;

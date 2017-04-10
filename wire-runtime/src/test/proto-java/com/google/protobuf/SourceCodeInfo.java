@@ -312,11 +312,14 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     )
     public final List<String> leading_detached_comments;
 
-    public Location(List<Integer> path, List<Integer> span, String leading_comments, String trailing_comments, List<String> leading_detached_comments) {
+    public Location(List<Integer> path, List<Integer> span, String leading_comments,
+        String trailing_comments, List<String> leading_detached_comments) {
       this(path, span, leading_comments, trailing_comments, leading_detached_comments, ByteString.EMPTY);
     }
 
-    public Location(List<Integer> path, List<Integer> span, String leading_comments, String trailing_comments, List<String> leading_detached_comments, ByteString unknownFields) {
+    public Location(List<Integer> path, List<Integer> span, String leading_comments,
+        String trailing_comments, List<String> leading_detached_comments,
+        ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.path = Internal.immutableCopyOf("path", path);
       this.span = Internal.immutableCopyOf("span", span);

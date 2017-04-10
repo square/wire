@@ -40,7 +40,8 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
     this(outer_number_before, embedded_message, ByteString.EMPTY);
   }
 
-  public OuterMessage(Integer outer_number_before, EmbeddedMessage embedded_message, ByteString unknownFields) {
+  public OuterMessage(Integer outer_number_before, EmbeddedMessage embedded_message,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.outer_number_before = outer_number_before;
     this.embedded_message = embedded_message;

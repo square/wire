@@ -81,11 +81,14 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
   )
   public final Boolean server_streaming;
 
-  public MethodDescriptorProto(String name, String input_type, String output_type, MethodOptions options, Boolean client_streaming, Boolean server_streaming) {
+  public MethodDescriptorProto(String name, String input_type, String output_type,
+      MethodOptions options, Boolean client_streaming, Boolean server_streaming) {
     this(name, input_type, output_type, options, client_streaming, server_streaming, ByteString.EMPTY);
   }
 
-  public MethodDescriptorProto(String name, String input_type, String output_type, MethodOptions options, Boolean client_streaming, Boolean server_streaming, ByteString unknownFields) {
+  public MethodDescriptorProto(String name, String input_type, String output_type,
+      MethodOptions options, Boolean client_streaming, Boolean server_streaming,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.input_type = input_type;

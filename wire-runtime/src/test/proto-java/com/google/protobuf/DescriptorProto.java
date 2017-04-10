@@ -100,11 +100,19 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   )
   public final List<String> reserved_name;
 
-  public DescriptorProto(String name, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, List<OneofDescriptorProto> oneof_decl, MessageOptions options, List<ReservedRange> reserved_range, List<String> reserved_name) {
+  public DescriptorProto(String name, List<FieldDescriptorProto> field,
+      List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type,
+      List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range,
+      List<OneofDescriptorProto> oneof_decl, MessageOptions options,
+      List<ReservedRange> reserved_range, List<String> reserved_name) {
     this(name, field, extension, nested_type, enum_type, extension_range, oneof_decl, options, reserved_range, reserved_name, ByteString.EMPTY);
   }
 
-  public DescriptorProto(String name, List<FieldDescriptorProto> field, List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type, List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range, List<OneofDescriptorProto> oneof_decl, MessageOptions options, List<ReservedRange> reserved_range, List<String> reserved_name, ByteString unknownFields) {
+  public DescriptorProto(String name, List<FieldDescriptorProto> field,
+      List<FieldDescriptorProto> extension, List<DescriptorProto> nested_type,
+      List<EnumDescriptorProto> enum_type, List<ExtensionRange> extension_range,
+      List<OneofDescriptorProto> oneof_decl, MessageOptions options,
+      List<ReservedRange> reserved_range, List<String> reserved_name, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.field = Internal.immutableCopyOf("field", field);

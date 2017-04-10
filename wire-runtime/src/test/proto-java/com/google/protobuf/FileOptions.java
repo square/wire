@@ -256,11 +256,21 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8, OptimizeMode optimize_for, String go_package, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, Boolean deprecated, Boolean cc_enable_arenas, String objc_class_prefix, String csharp_namespace, List<UninterpretedOption> uninterpreted_option) {
+  public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files,
+      Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8,
+      OptimizeMode optimize_for, String go_package, Boolean cc_generic_services,
+      Boolean java_generic_services, Boolean py_generic_services, Boolean deprecated,
+      Boolean cc_enable_arenas, String objc_class_prefix, String csharp_namespace,
+      List<UninterpretedOption> uninterpreted_option) {
     this(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, java_string_check_utf8, optimize_for, go_package, cc_generic_services, java_generic_services, py_generic_services, deprecated, cc_enable_arenas, objc_class_prefix, csharp_namespace, uninterpreted_option, ByteString.EMPTY);
   }
 
-  public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files, Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8, OptimizeMode optimize_for, String go_package, Boolean cc_generic_services, Boolean java_generic_services, Boolean py_generic_services, Boolean deprecated, Boolean cc_enable_arenas, String objc_class_prefix, String csharp_namespace, List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
+  public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files,
+      Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8,
+      OptimizeMode optimize_for, String go_package, Boolean cc_generic_services,
+      Boolean java_generic_services, Boolean py_generic_services, Boolean deprecated,
+      Boolean cc_enable_arenas, String objc_class_prefix, String csharp_namespace,
+      List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.java_package = java_package;
     this.java_outer_classname = java_outer_classname;

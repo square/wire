@@ -92,11 +92,15 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
   )
   public final String aggregate_value;
 
-  public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value) {
+  public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value,
+      Long negative_int_value, Double double_value, ByteString string_value,
+      String aggregate_value) {
     this(name, identifier_value, positive_int_value, negative_int_value, double_value, string_value, aggregate_value, ByteString.EMPTY);
   }
 
-  public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value, Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value, ByteString unknownFields) {
+  public UninterpretedOption(List<NamePart> name, String identifier_value, Long positive_int_value,
+      Long negative_int_value, Double double_value, ByteString string_value, String aggregate_value,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = Internal.immutableCopyOf("name", name);
     this.identifier_value = identifier_value;
