@@ -280,10 +280,11 @@ back into a message.
 
 ```java
 Dinosaur stegosaurus = ...
-byte[] stegosaurusBytes = Dinosaur.ADAPTER.encode(stegosaurus);
+byte[] stegosaurusBytes = stegosaurus.toByteArray();
 
 byte[] tyrannosaurusBytes = ...
-Dinosaur tyrannosaurus = Dinosaur.ADAPTER.decode(tyrannosaurusBytes);
+Wire wire = new Wire();
+Dinosaur tyrannosaurus = wire.parseFrom(tyrannosaurusBytes, Dinosaur.class);
 ```
 
 When accessing a field, use `Wire.get()` to replace null values with the corresponding default:
