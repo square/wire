@@ -46,6 +46,12 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
     this.unknownFields = unknownFields;
   }
 
+  // This contructor is no longer used. Available for backward compatibility.
+  protected Message(Builder builder) {
+    this();
+    setBuilder(builder);
+  }
+
   /**
    * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
    * an empty byte string if this message has no unknown fields.
