@@ -69,6 +69,16 @@ public class WireCompilerTest {
     assertOutputs(outputs);
   }
 
+  @Test public void testCreator() throws Exception {
+    String[] sources = {
+        "android.proto"
+    };
+    String[] outputs = {
+        "com/squareup/wire/protos/android/Creator.java"
+    };
+    testProtoAndroid(sources, outputs);
+  }
+
   @Test public void testPerson() throws Exception {
     String[] sources = {
         "person.proto"
