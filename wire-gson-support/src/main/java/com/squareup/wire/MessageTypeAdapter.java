@@ -46,7 +46,7 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
   private final Map<String, FieldBinding<M, B>> fieldBindings;
 
   @SuppressWarnings("unchecked")
-  public MessageTypeAdapter(Gson gson, TypeToken<M> type) {
+  MessageTypeAdapter(Gson gson, TypeToken<M> type) {
     this.gson = gson;
     this.messageAdapter = RuntimeMessageAdapter.create((Class<M>) type.getRawType());
 

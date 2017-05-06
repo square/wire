@@ -30,7 +30,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 final class ServiceGenerator {
   final JavaGenerator javaGenerator;
 
-  public ServiceGenerator(JavaGenerator javaGenerator) {
+  ServiceGenerator(JavaGenerator javaGenerator) {
     this.javaGenerator = javaGenerator;
   }
 

@@ -27,7 +27,7 @@ final class MessageSerializedForm<M extends Message<M, B>, B extends Message.Bui
   private final byte[] bytes;
   private final Class<M> messageClass;
 
-  public MessageSerializedForm(byte[] bytes, Class<M> messageClass) {
+  MessageSerializedForm(byte[] bytes, Class<M> messageClass) {
     this.bytes = bytes;
     this.messageClass = messageClass;
   }

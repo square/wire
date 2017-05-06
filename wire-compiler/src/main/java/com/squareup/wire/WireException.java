@@ -16,11 +16,11 @@
 package com.squareup.wire;
 
 final class WireException extends Exception {
-  public WireException(String message) {
+  WireException(String message) {
     super(message);
   }
 
-  public WireException(String message, Throwable throwable) {
+  WireException(String message, Throwable throwable) {
     super(message, throwable);
   }
 }

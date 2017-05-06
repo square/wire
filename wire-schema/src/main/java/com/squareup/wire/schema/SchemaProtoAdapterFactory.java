@@ -34,7 +34,7 @@ final class SchemaProtoAdapterFactory {
   final boolean includeUnknown;
   final Map<ProtoType, ProtoAdapter<?>> adapterMap = new LinkedHashMap<>();
 
-  public SchemaProtoAdapterFactory(Schema schema, boolean includeUnknown) {
+  SchemaProtoAdapterFactory(Schema schema, boolean includeUnknown) {
     this.schema = schema;
     this.includeUnknown = includeUnknown;
 
@@ -94,7 +94,7 @@ final class SchemaProtoAdapterFactory {
   static final class EnumAdapter extends ProtoAdapter<Object> {
     final EnumType enumType;
 
-    public EnumAdapter(EnumType enumType) {
+    EnumAdapter(EnumType enumType) {
       super(FieldEncoding.VARINT, Object.class);
       this.enumType = enumType;
     }
@@ -126,7 +126,7 @@ final class SchemaProtoAdapterFactory {
     final Map<String, Field> fieldsByName = new LinkedHashMap<>();
     final boolean includeUnknown;
 
-    public MessageAdapter(boolean includeUnknown) {
+    MessageAdapter(boolean includeUnknown) {
       super(FieldEncoding.LENGTH_DELIMITED, Map.class);
       this.includeUnknown = includeUnknown;
     }
@@ -212,7 +212,7 @@ final class SchemaProtoAdapterFactory {
     final boolean repeated;
     final ProtoAdapter<?> protoAdapter;
 
-    public Field(String name, int tag, boolean repeated, ProtoAdapter<?> protoAdapter) {
+    Field(String name, int tag, boolean repeated, ProtoAdapter<?> protoAdapter) {
       this.name = name;
       this.tag = tag;
       this.repeated = repeated;

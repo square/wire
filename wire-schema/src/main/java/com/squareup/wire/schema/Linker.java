@@ -34,7 +34,7 @@ final class Linker {
   private final List<String> errors;
   private final List<Object> contextStack;
 
-  public Linker(Iterable<ProtoFile> protoFiles) {
+  Linker(Iterable<ProtoFile> protoFiles) {
     this.protoFiles = ImmutableList.copyOf(protoFiles);
     this.protoTypeNames = new LinkedHashMap<>();
     this.imports = LinkedHashMultimap.create();
