@@ -20,6 +20,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import javax.annotation.Nullable;
 import okio.ByteString;
 
 /**
@@ -29,7 +30,7 @@ import okio.ByteString;
  */
 class ByteStringTypeAdapter extends TypeAdapter<ByteString> {
 
-  @Override public void write(JsonWriter out, ByteString value) throws IOException {
+  @Override public void write(JsonWriter out, @Nullable ByteString value) throws IOException {
     if (value == null) {
       out.nullValue();
     } else {
@@ -37,7 +38,7 @@ class ByteStringTypeAdapter extends TypeAdapter<ByteString> {
     }
   }
 
-  @Override public ByteString read(JsonReader in) throws IOException {
+  @Override public @Nullable ByteString read(JsonReader in) throws IOException {
     if (in.peek() == JsonToken.NULL) {
       in.nextNull();
       return null;

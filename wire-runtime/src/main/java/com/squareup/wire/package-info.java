@@ -17,4 +17,5 @@
 /**
  * Wire runtime support classes.
  */
+@javax.annotation.ParametersAreNonnullByDefault
 package com.squareup.wire;

@@ -17,13 +17,14 @@ package com.squareup.wire;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import javax.annotation.Nullable;
 
 /**
  * Converts values of an enum to and from integers using reflection.
  */
 final class RuntimeEnumAdapter<E extends WireEnum> extends EnumAdapter<E> {
   private final Class<E> type;
-  private Method fromValueMethod; // Loaded lazily to avoid reflection during class loading.
+  private @Nullable Method fromValueMethod; // Lazy to avoid reflection during class loading.
 
   RuntimeEnumAdapter(Class<E> type) {
     super(type);

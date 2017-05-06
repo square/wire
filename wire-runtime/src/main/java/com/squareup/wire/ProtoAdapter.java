@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -48,10 +49,10 @@ public abstract class ProtoAdapter<E> {
   private final FieldEncoding fieldEncoding;
   final Class<?> javaType;
 
-  ProtoAdapter<List<E>> packedAdapter;
-  ProtoAdapter<List<E>> repeatedAdapter;
+  @Nullable ProtoAdapter<List<E>> packedAdapter;
+  @Nullable ProtoAdapter<List<E>> repeatedAdapter;
 
-  public ProtoAdapter(FieldEncoding fieldEncoding, Class<?> javaType) {
+  public ProtoAdapter(FieldEncoding fieldEncoding, @Nullable Class<?> javaType) {
     this.fieldEncoding = fieldEncoding;
     this.javaType = javaType;
   }
@@ -111,7 +112,7 @@ public abstract class ProtoAdapter<E> {
   }
 
   /** Returns the redacted form of {@code value}. */
-  public E redact(E value) {
+  public @Nullable E redact(E value) {
     return null;
   }
 
@@ -126,7 +127,7 @@ public abstract class ProtoAdapter<E> {
    * length-delimited prefix (should the type require one), and value. Returns 0 if {@code value} is
    * null.
    */
-  public int encodedSizeWithTag(int tag, E value) {
+  public int encodedSizeWithTag(int tag, @Nullable E value) {
     if (value == null) return 0;
     int size = encodedSize(value);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
@@ -139,7 +140,7 @@ public abstract class ProtoAdapter<E> {
   public abstract void encode(ProtoWriter writer, E value) throws IOException;
 
   /** Write {@code tag} and {@code value} to {@code writer}. If value is null this does nothing. */
-  public void encodeWithTag(ProtoWriter writer, int tag, E value) throws IOException {
+  public void encodeWithTag(ProtoWriter writer, int tag, @Nullable E value) throws IOException {
     if (value == null) return;
     writer.writeTag(tag, fieldEncoding);
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
@@ -517,7 +518,7 @@ public abstract class ProtoAdapter<E> {
     private final MapEntryProtoAdapter<K, V> entryAdapter;
 
     MapProtoAdapter(ProtoAdapter<K> keyAdapter, ProtoAdapter<V> valueAdapter) {
-      super(FieldEncoding.LENGTH_DELIMITED, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Map.class);
       entryAdapter = new MapEntryProtoAdapter<>(keyAdapter, valueAdapter);
     }
 
@@ -573,7 +574,7 @@ public abstract class ProtoAdapter<E> {
     final ProtoAdapter<V> valueAdapter;
 
     MapEntryProtoAdapter(ProtoAdapter<K> keyAdapter, ProtoAdapter<V> valueAdapter) {
-      super(FieldEncoding.LENGTH_DELIMITED, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Map.Entry.class);
       this.keyAdapter = keyAdapter;
       this.valueAdapter = valueAdapter;
     }

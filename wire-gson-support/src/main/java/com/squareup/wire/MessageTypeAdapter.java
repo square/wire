@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 import static com.squareup.wire.WireField.Label;
 import static java.util.Collections.unmodifiableMap;
@@ -58,7 +59,7 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
   }
 
   @SuppressWarnings("unchecked")
-  @Override public void write(JsonWriter out, M message) throws IOException {
+  @Override public void write(JsonWriter out, @Nullable M message) throws IOException {
     if (message == null) {
       out.nullValue();
       return;
@@ -105,7 +106,7 @@ class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B
   }
 
   @SuppressWarnings("unchecked")
-  @Override public M read(JsonReader in) throws IOException {
+  @Override public @Nullable M read(JsonReader in) throws IOException {
     if (in.peek() == JsonToken.NULL) {
       in.nextNull();
       return null;

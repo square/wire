@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
+import javax.annotation.Nullable;
 import okio.ByteString;
 
 /**
@@ -42,7 +43,7 @@ import okio.ByteString;
  */
 public final class WireTypeAdapterFactory implements TypeAdapterFactory {
   @SuppressWarnings("unchecked")
-  @Override public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+  @Override public @Nullable <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
     if (type.getRawType().equals(ByteString.class)) {
       return (TypeAdapter<T>) new ByteStringTypeAdapter();
     }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import javax.annotation.Nullable;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.ByteString;
@@ -114,7 +115,7 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
      * {@link #buildUnknownFields()}. It's automatically cleared in {@link #buildUnknownFields()},
      * and can also be manually cleared by calling {@link #clearUnknownFields()}.
      */
-    transient Buffer unknownFieldsBuffer;
+    transient @Nullable Buffer unknownFieldsBuffer;
     transient ProtoWriter unknownFieldsWriter;
 
     protected Builder() {
@@ -132,7 +133,8 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
       return this;
     }
 
-    public final Builder<M, B> addUnknownField(int tag, FieldEncoding fieldEncoding, Object value) {
+    public final Builder<M, B> addUnknownField(
+        int tag, FieldEncoding fieldEncoding, @Nullable Object value) {
       prepareForNewUnknownFields();
       try {
         ProtoAdapter<Object> protoAdapter = (ProtoAdapter<Object>) fieldEncoding.rawProtoAdapter();

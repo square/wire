@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 
 /**
  * An abstract {@link ProtoAdapter} that converts values of an enum to and from integers.
@@ -46,5 +47,5 @@ public abstract class EnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
    * Converts an integer to an enum.
    * Returns null if there is no corresponding enum.
    */
-  protected abstract E fromValue(int value);
+  protected abstract @Nullable E fromValue(int value);
 }
