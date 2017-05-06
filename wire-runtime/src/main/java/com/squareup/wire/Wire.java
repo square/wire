@@ -15,6 +15,8 @@
  */
 package com.squareup.wire;
 
+import javax.annotation.Nullable;
+
 public final class Wire {
   private Wire() {
   }
@@ -34,7 +36,7 @@ public final class Wire {
    * second argument, which in this case is the default value for the field
    * 'f'.
    */
-  public static <T> T get(T value, T defaultValue) {
+  public static <T> T get(@Nullable T value, T defaultValue) {
     return value != null ? value : defaultValue;
   }
 }
