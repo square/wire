@@ -268,7 +268,7 @@ public final class WireCompiler {
     private final JavaGenerator javaGenerator;
     private final ConcurrentLinkedQueue<Type> queue;
 
-    public JavaFileWriter(JavaGenerator javaGenerator, ConcurrentLinkedQueue<Type> queue) {
+    JavaFileWriter(JavaGenerator javaGenerator, ConcurrentLinkedQueue<Type> queue) {
       this.javaGenerator = javaGenerator;
       this.queue = queue;
     }

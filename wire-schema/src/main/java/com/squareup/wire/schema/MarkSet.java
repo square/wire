@@ -40,7 +40,7 @@ final class MarkSet {
   final Set<ProtoType> types = new LinkedHashSet<>();
   final Multimap<ProtoType, ProtoMember> members = LinkedHashMultimap.create();
 
-  public MarkSet(IdentifierSet identifierSet) {
+  MarkSet(IdentifierSet identifierSet) {
     this.identifierSet = identifierSet;
   }
 

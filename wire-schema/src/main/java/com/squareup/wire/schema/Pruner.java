@@ -35,7 +35,7 @@ final class Pruner {
    */
   final Deque<Object> queue;
 
-  public Pruner(Schema schema, IdentifierSet identifierSet) {
+  Pruner(Schema schema, IdentifierSet identifierSet) {
     this.schema = schema;
     this.identifierSet = identifierSet;
     this.marks = new MarkSet(identifierSet);
