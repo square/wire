@@ -324,8 +324,8 @@ public final class SyntaxReader {
     if (isStar) {
       // Consume star comment until it closes on the same line.
       while (true) {
-        if (pos == data.length || data[pos] == '\n') {
-          throw unexpected("trailing comment must be closed on the same line");
+        if (pos == data.length) {
+          throw unexpected("trailing comment must be closed");
         }
         if (data[pos] == '*' && pos + 1 < data.length && data[pos + 1] == '/') {
           end = pos - 1; // The character before '*'.

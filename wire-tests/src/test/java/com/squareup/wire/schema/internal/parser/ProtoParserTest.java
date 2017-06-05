@@ -391,7 +391,7 @@ public final class ProtoParserTest {
     assertThat(value.documentation()).isEqualTo("Test all the things!");
   }
 
-  @Test public void trailingMultilineComment() {
+  @Test public void trailingSinglelineComment() {
     String proto = ""
         + "enum Test {\n"
         + "  FOO = 1; /* Test all the things!  */  \n"
@@ -405,17 +405,16 @@ public final class ProtoParserTest {
     assertThat(bar.documentation()).isEqualTo("Test all the things!");
   }
 
-  @Test public void trailingUnclosedMultilineCommentThrows() {
+  @Test public void trailingMultilineComment() {
     String proto = ""
         + "enum Test {\n"
-        + "  FOO = 1; /* Test all the things!   \n"
+        + "  FOO = 1; /* Test all the\n"
+        + "things! */ \n"
         + "}";
-    try {
-      ProtoParser.parse(location, proto);
-    } catch (IllegalStateException e) {
-      assertThat(e).hasMessage(
-          "Syntax error in file.proto at 2:38: trailing comment must be closed on the same line");
-    }
+    ProtoFileElement parsed = ProtoParser.parse(location, proto);
+    EnumElement enumElement = (EnumElement) parsed.types().get(0);
+    EnumConstantElement value = enumElement.constants().get(0);
+    assertThat(value.documentation()).isEqualTo("Test all the\nthings!");
   }
 
   @Test public void trailingMultilineCommentMustBeLastOnLineThrows() {
