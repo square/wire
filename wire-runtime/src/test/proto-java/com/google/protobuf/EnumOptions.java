@@ -145,6 +145,15 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
       uninterpreted_option = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        allow_alias = DEFAULT_ALLOW_ALIAS;
+        deprecated = DEFAULT_DEPRECATED;
+        enum_option = DEFAULT_ENUM_OPTION;
+      }
+    }
+
     /**
      * Set this option to true to allow mapping different tag names to the same
      * value.

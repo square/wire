@@ -80,6 +80,13 @@ public final class K extends Message<K, K.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        i = DEFAULT_I;
+      }
+    }
+
     public Builder i(Integer i) {
       this.i = i;
       return this;

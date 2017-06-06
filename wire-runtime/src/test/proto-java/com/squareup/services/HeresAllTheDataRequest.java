@@ -79,6 +79,13 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        data = DEFAULT_DATA;
+      }
+    }
+
     public Builder data(ByteString data) {
       this.data = data;
       return this;

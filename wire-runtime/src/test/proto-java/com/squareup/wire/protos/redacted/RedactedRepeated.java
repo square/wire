@@ -105,6 +105,12 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
       b = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder a(List<String> a) {
       Internal.checkElementsNotNull(a);
       this.a = a;

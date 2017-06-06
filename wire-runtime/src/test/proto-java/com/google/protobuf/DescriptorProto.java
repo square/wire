@@ -229,6 +229,13 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       reserved_name = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        name = DEFAULT_NAME;
+      }
+    }
+
     public Builder name(String name) {
       this.name = name;
       return this;
@@ -373,6 +380,14 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       public Integer end;
 
       public Builder() {
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+          start = DEFAULT_START;
+          end = DEFAULT_END;
+        }
       }
 
       public Builder start(Integer start) {
@@ -525,6 +540,14 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       public Integer end;
 
       public Builder() {
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+          start = DEFAULT_START;
+          end = DEFAULT_END;
+        }
       }
 
       /**

@@ -159,6 +159,17 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
       v2_rs = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        i = DEFAULT_I;
+        v2_i = DEFAULT_V2_I;
+        v2_s = DEFAULT_V2_S;
+        v2_f32 = DEFAULT_V2_F32;
+        v2_f64 = DEFAULT_V2_F64;
+      }
+    }
+
     public Builder i(Integer i) {
       this.i = i;
       return this;

@@ -113,6 +113,12 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     @Override
     public MessageWithOptions build() {
       return new MessageWithOptions(super.buildUnknownFields());

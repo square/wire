@@ -105,6 +105,13 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        a = DEFAULT_A;
+      }
+    }
+
     public Builder a(String a) {
       this.a = a;
       return this;

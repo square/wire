@@ -268,6 +268,17 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       rep = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        foo = DEFAULT_FOO;
+        bar = DEFAULT_BAR;
+        qux = DEFAULT_QUX;
+        daisy = DEFAULT_DAISY;
+        ext = DEFAULT_EXT;
+      }
+    }
+
     public Builder foo(Integer foo) {
       this.foo = foo;
       return this;
@@ -383,6 +394,13 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       public FooBarBazEnum value;
 
       public Builder() {
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+          value = DEFAULT_VALUE;
+        }
       }
 
       public Builder value(FooBarBazEnum value) {
@@ -508,6 +526,12 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       public Builder() {
         serial = Internal.newMutableList();
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+        }
       }
 
       public Builder serial(List<Integer> serial) {

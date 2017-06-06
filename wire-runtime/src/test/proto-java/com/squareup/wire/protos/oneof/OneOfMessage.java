@@ -122,6 +122,15 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        foo = DEFAULT_FOO;
+        bar = DEFAULT_BAR;
+        baz = DEFAULT_BAZ;
+      }
+    }
+
     /**
      * What foo.
      */

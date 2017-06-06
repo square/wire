@@ -412,6 +412,26 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       uninterpreted_option = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        ctype = DEFAULT_CTYPE;
+        packed = DEFAULT_PACKED;
+        jstype = DEFAULT_JSTYPE;
+        lazy = DEFAULT_LAZY;
+        deprecated = DEFAULT_DEPRECATED;
+        weak = DEFAULT_WEAK;
+        my_field_option_one = DEFAULT_MY_FIELD_OPTION_ONE;
+        my_field_option_two = DEFAULT_MY_FIELD_OPTION_TWO;
+        my_field_option_three = DEFAULT_MY_FIELD_OPTION_THREE;
+        squareup_protos_extension_collision_1_a = DEFAULT_SQUAREUP_PROTOS_EXTENSION_COLLISION_1_A;
+        b = DEFAULT_B;
+        squareup_protos_extension_collision_2_a = DEFAULT_SQUAREUP_PROTOS_EXTENSION_COLLISION_2_A;
+        c = DEFAULT_C;
+        redacted = DEFAULT_REDACTED;
+      }
+    }
+
     /**
      * The ctype option instructs the C++ code generator to use a different
      * representation of the field than it normally would.  See the specific

@@ -93,6 +93,13 @@ public final class E extends Message<E, E.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        g = DEFAULT_G;
+      }
+    }
+
     public Builder f(F f) {
       this.f = f;
       return this;
@@ -170,6 +177,13 @@ public final class E extends Message<E, E.Builder> {
       public Integer i;
 
       public Builder() {
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+          i = DEFAULT_I;
+        }
       }
 
       public Builder i(Integer i) {

@@ -169,6 +169,17 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        name = DEFAULT_NAME;
+        input_type = DEFAULT_INPUT_TYPE;
+        output_type = DEFAULT_OUTPUT_TYPE;
+        client_streaming = DEFAULT_CLIENT_STREAMING;
+        server_streaming = DEFAULT_SERVER_STREAMING;
+      }
+    }
+
     public Builder name(String name) {
       this.name = name;
       return this;

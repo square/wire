@@ -95,6 +95,13 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        id = DEFAULT_ID;
+      }
+    }
+
     public Builder id(String id) {
       this.id = id;
       return this;

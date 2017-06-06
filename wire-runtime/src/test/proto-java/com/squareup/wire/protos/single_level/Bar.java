@@ -80,6 +80,13 @@ public final class Bar extends Message<Bar, Bar.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        baz = DEFAULT_BAZ;
+      }
+    }
+
     public Builder baz(Integer baz) {
       this.baz = baz;
       return this;

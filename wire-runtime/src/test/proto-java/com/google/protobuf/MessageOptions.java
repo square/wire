@@ -326,6 +326,18 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
       uninterpreted_option = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        message_set_wire_format = DEFAULT_MESSAGE_SET_WIRE_FORMAT;
+        no_standard_descriptor_accessor = DEFAULT_NO_STANDARD_DESCRIPTOR_ACCESSOR;
+        deprecated = DEFAULT_DEPRECATED;
+        map_entry = DEFAULT_MAP_ENTRY;
+        my_message_option_two = DEFAULT_MY_MESSAGE_OPTION_TWO;
+        my_message_option_four = DEFAULT_MY_MESSAGE_OPTION_FOUR;
+      }
+    }
+
     /**
      * Set true to use the old proto1 MessageSet wire format for extensions.
      * This is provided for backwards-compatibility with the MessageSet wire

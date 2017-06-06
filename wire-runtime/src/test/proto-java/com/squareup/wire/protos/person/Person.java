@@ -143,6 +143,15 @@ public final class Person extends Message<Person, Person.Builder> {
       phone = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        name = DEFAULT_NAME;
+        id = DEFAULT_ID;
+        email = DEFAULT_EMAIL;
+      }
+    }
+
     /**
      * The customer's full name.
      */
@@ -317,6 +326,14 @@ public final class Person extends Message<Person, Person.Builder> {
       public PhoneType type;
 
       public Builder() {
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+          number = DEFAULT_NUMBER;
+          type = DEFAULT_TYPE;
+        }
       }
 
       /**

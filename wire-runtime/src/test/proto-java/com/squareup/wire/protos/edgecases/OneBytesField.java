@@ -79,6 +79,13 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        opt_bytes = DEFAULT_OPT_BYTES;
+      }
+    }
+
     public Builder opt_bytes(ByteString opt_bytes) {
       this.opt_bytes = opt_bytes;
       return this;

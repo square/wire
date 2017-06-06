@@ -80,6 +80,12 @@ public final class Foos extends Message<Foos, Foos.Builder> {
       foos = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder foos(List<Foo> foos) {
       Internal.checkElementsNotNull(foos);
       this.foos = foos;

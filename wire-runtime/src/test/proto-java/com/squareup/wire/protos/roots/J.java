@@ -77,6 +77,12 @@ public final class J extends Message<J, J.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder k(K k) {
       this.k = k;
       return this;

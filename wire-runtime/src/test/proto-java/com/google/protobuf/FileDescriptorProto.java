@@ -283,6 +283,15 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
       extension = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        name = DEFAULT_NAME;
+        package_ = DEFAULT_PACKAGE_;
+        syntax = DEFAULT_SYNTAX;
+      }
+    }
+
     /**
      * file name, relative to root of source tree
      */

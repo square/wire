@@ -132,6 +132,12 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       location = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     /**
      * A Location identifies a piece of source code in a .proto file which
      * corresponds to a particular definition.  This information is intended
@@ -394,6 +400,14 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
         path = Internal.newMutableList();
         span = Internal.newMutableList();
         leading_detached_comments = Internal.newMutableList();
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+          leading_comments = DEFAULT_LEADING_COMMENTS;
+          trailing_comments = DEFAULT_TRAILING_COMMENTS;
+        }
       }
 
       /**

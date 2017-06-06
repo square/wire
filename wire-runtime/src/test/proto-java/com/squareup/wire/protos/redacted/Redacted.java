@@ -136,6 +136,15 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        a = DEFAULT_A;
+        b = DEFAULT_B;
+        c = DEFAULT_C;
+      }
+    }
+
     public Builder a(String a) {
       this.a = a;
       return this;

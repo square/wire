@@ -87,6 +87,13 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        a = DEFAULT_A;
+      }
+    }
+
     public Builder a(String a) {
       this.a = a;
       return this;

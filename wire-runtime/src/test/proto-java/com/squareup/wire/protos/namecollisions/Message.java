@@ -217,6 +217,22 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        unknownFields = DEFAULT_UNKNOWNFIELDS;
+        other = DEFAULT_OTHER;
+        o = DEFAULT_O;
+        result = DEFAULT_RESULT;
+        hashCode = DEFAULT_HASHCODE;
+        serialVersionUID_ = DEFAULT_SERIALVERSIONUID_;
+        ADAPTER_ = DEFAULT_ADAPTER_;
+        MESSAGE_OPTIONS_ = DEFAULT_MESSAGE_OPTIONS_;
+        this_ = DEFAULT_THIS_;
+        message = DEFAULT_MESSAGE;
+      }
+    }
+
     public Builder unknownFields(String unknownFields) {
       this.unknownFields = unknownFields;
       return this;

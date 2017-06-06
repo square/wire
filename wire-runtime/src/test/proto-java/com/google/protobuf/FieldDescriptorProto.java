@@ -232,6 +232,20 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        name = DEFAULT_NAME;
+        number = DEFAULT_NUMBER;
+        label = DEFAULT_LABEL;
+        type = DEFAULT_TYPE;
+        type_name = DEFAULT_TYPE_NAME;
+        extendee = DEFAULT_EXTENDEE;
+        default_value = DEFAULT_DEFAULT_VALUE;
+        oneof_index = DEFAULT_ONEOF_INDEX;
+      }
+    }
+
     public Builder name(String name) {
       this.name = name;
       return this;

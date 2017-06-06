@@ -113,6 +113,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
       method = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        name = DEFAULT_NAME;
+      }
+    }
+
     public Builder name(String name) {
       this.name = name;
       return this;

@@ -84,6 +84,12 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
       file = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder file(List<FileDescriptorProto> file) {
       Internal.checkElementsNotNull(file);
       this.file = file;

@@ -163,6 +163,15 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
       uninterpreted_option = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        deprecated = DEFAULT_DEPRECATED;
+        enum_value_option = DEFAULT_ENUM_VALUE_OPTION;
+        foreign_enum_value_option = DEFAULT_FOREIGN_ENUM_VALUE_OPTION;
+      }
+    }
+
     /**
      * Is this enum value deprecated?
      * Depending on the target platform, this can emit Deprecated annotations

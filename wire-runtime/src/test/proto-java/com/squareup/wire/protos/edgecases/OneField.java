@@ -80,6 +80,13 @@ public final class OneField extends Message<OneField, OneField.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        opt_int32 = DEFAULT_OPT_INT32;
+      }
+    }
+
     public Builder opt_int32(Integer opt_int32) {
       this.opt_int32 = opt_int32;
       return this;

@@ -54,6 +54,12 @@ public final class TheResponse extends Message<TheResponse, TheResponse.Builder>
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     @Override
     public TheResponse build() {
       return new TheResponse(super.buildUnknownFields());

@@ -100,6 +100,14 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        d = DEFAULT_D;
+        e = DEFAULT_E;
+      }
+    }
+
     public Builder d(String d) {
       this.d = d;
       return this;

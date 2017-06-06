@@ -189,6 +189,18 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       name = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        identifier_value = DEFAULT_IDENTIFIER_VALUE;
+        positive_int_value = DEFAULT_POSITIVE_INT_VALUE;
+        negative_int_value = DEFAULT_NEGATIVE_INT_VALUE;
+        double_value = DEFAULT_DOUBLE_VALUE;
+        string_value = DEFAULT_STRING_VALUE;
+        aggregate_value = DEFAULT_AGGREGATE_VALUE;
+      }
+    }
+
     public Builder name(List<NamePart> name) {
       Internal.checkElementsNotNull(name);
       this.name = name;
@@ -320,6 +332,14 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       public Boolean is_extension;
 
       public Builder() {
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+          name_part = DEFAULT_NAME_PART;
+          is_extension = DEFAULT_IS_EXTENSION;
+        }
       }
 
       public Builder name_part(String name_part) {

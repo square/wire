@@ -80,6 +80,13 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        inner_foreign_enum = DEFAULT_INNER_FOREIGN_ENUM;
+      }
+    }
+
     public Builder inner_foreign_enum(ForeignEnum inner_foreign_enum) {
       this.inner_foreign_enum = inner_foreign_enum;
       return this;

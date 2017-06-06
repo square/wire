@@ -78,6 +78,12 @@ public final class B extends Message<B, B.Builder> {
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+      }
+    }
+
     public Builder c(C c) {
       this.c = c;
       return this;

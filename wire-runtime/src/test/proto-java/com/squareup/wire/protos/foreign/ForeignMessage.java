@@ -98,6 +98,14 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
     public Builder() {
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        i = DEFAULT_I;
+        j = DEFAULT_J;
+      }
+    }
+
     public Builder i(Integer i) {
       this.i = i;
       return this;

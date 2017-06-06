@@ -295,6 +295,21 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       repeated_double = Internal.newMutableList();
     }
 
+    public Builder(boolean useDefaults) {
+      this();
+      if (useDefaults) {
+        optional_int32 = DEFAULT_OPTIONAL_INT32;
+        default_nested_enum = DEFAULT_DEFAULT_NESTED_ENUM;
+        required_int32 = DEFAULT_REQUIRED_INT32;
+        default_foreign_enum = DEFAULT_DEFAULT_FOREIGN_ENUM;
+        no_default_foreign_enum = DEFAULT_NO_DEFAULT_FOREIGN_ENUM;
+        package_ = DEFAULT_PACKAGE_;
+        result = DEFAULT_RESULT;
+        other = DEFAULT_OTHER;
+        o = DEFAULT_O;
+      }
+    }
+
     /**
      * An optional int32
      */
@@ -464,6 +479,13 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       public Integer bb;
 
       public Builder() {
+      }
+
+      public Builder(boolean useDefaults) {
+        this();
+        if (useDefaults) {
+          bb = DEFAULT_BB;
+        }
       }
 
       /**
