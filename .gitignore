@@ -15,4 +15,8 @@ release.properties
 # Maven shade plugin
 dependency-reduced-pom.xml
 
+# Gradle
+.gradle
+build
+
 out/
