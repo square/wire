@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.internal.parser.MessageElement;
 
 /** An empty type which only holds nested types. */
 public final class EnclosingType extends Type {
@@ -84,5 +85,12 @@ public final class EnclosingType extends Type {
       return null;
     }
     return new EnclosingType(location, type, documentation, retainedNestedTypes);
+  }
+
+  MessageElement toElement() {
+    return MessageElement.builder(location)
+        .name(type.simpleName())
+        .nestedTypes(Type.toElements(nestedTypes))
+        .build();
   }
 }

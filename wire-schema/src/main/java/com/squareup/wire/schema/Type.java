@@ -59,6 +59,9 @@ public abstract class Type {
     } else if (type instanceof MessageType) {
       return ((MessageType) type).toElement();
 
+    } else if (type instanceof EnclosingType) {
+      return ((EnclosingType) type).toElement();
+
     } else {
       throw new IllegalArgumentException("unexpected type: " + type.getClass());
     }
