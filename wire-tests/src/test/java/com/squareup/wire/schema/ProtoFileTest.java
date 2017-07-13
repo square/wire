@@ -101,7 +101,7 @@ public class ProtoFileTest {
         + "  };\n"
         + "}\n"
         + "service Service2 {}\n";
-    assertThat(file.toElement().toSchema()).isEqualTo(expected);
+    assertThat(file.toSchema()).isEqualTo(expected);
     assertThat(file.toElement()).isEqualToComparingFieldByField(fileElement);
   }
 }

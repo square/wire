@@ -169,6 +169,10 @@ public final class ProtoFile {
     return location().path();
   }
 
+  public String toSchema() {
+    return toElement().toSchema();
+  }
+
   /** Syntax version. */
   public enum Syntax {
     PROTO_2("proto2"),
