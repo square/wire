@@ -49,7 +49,7 @@ public abstract class ProtoFileElement {
     StringBuilder builder = new StringBuilder();
     builder.append("// ").append(location()).append('\n');
     if (syntax() != null) {
-      builder.append("syntax \"").append(syntax()).append("\";\n");
+      builder.append("syntax = \"").append(syntax()).append("\";\n");
     }
     if (packageName() != null) {
       builder.append("package ").append(packageName()).append(";\n");

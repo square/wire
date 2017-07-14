@@ -261,7 +261,7 @@ public final class ProtoFileElementTest {
         .build();
     String expected = ""
         + "// file.proto\n"
-        + "syntax \"proto2\";\n"
+        + "syntax = \"proto2\";\n"
         + "\n"
         + "message Message {}\n";
     assertThat(file.toSchema()).isEqualTo(expected);
