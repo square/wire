@@ -42,6 +42,7 @@
   </licenses>
 
   <modules>
+    <module>proto-pruner</module>
     <module>sample</module>
     <module>wire-compiler</module>
     <module>wire-codegen-sample</module>
@@ -67,6 +68,7 @@
     <jimfs.version>1.0</jimfs.version>
     <jsr305.version>3.0.2</jsr305.version>
     <junit.version>4.12</junit.version>
+    <kotlin.version>1.1.3-2</kotlin.version>
     <okio.version>1.13.0</okio.version>
   </properties>
 
@@ -124,6 +126,11 @@
         <artifactId>jimfs</artifactId>
         <version>${jimfs.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib</artifactId>
+        <version>${kotlin.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -151,6 +158,28 @@
             <version>${errorprone.version}</version>
           </dependency>
         </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-maven-plugin</artifactId>
+        <version>${kotlin.version}</version>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>test-compile</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>test-compile</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>

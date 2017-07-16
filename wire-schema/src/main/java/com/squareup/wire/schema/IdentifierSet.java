@@ -171,9 +171,21 @@ public final class IdentifierSet {
       return this;
     }
 
+    public Builder include(Iterable<String> identifiers) {
+      if (identifiers == null) throw new NullPointerException("identifiers == null");
+      includes.addAll(identifiers);
+      return this;
+    }
+
     public Builder exclude(String identifier) {
       if (identifier == null) throw new NullPointerException("identifier == null");
       excludes.add(identifier);
+      return this;
+    }
+
+    public Builder exclude(Iterable<String> identifiers) {
+      if (identifiers == null) throw new NullPointerException("identifiers == null");
+      excludes.addAll(identifiers);
       return this;
     }
 
