@@ -58,7 +58,7 @@ import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1500,14 +1500,10 @@ public final class JavaGenerator {
       return CodeBlock.of("$L", value != null ? value : false);
 
     } else if (javaType.equals(TypeName.INT.box())) {
-      return CodeBlock.of("$L", value != null
-          ? new BigDecimal(String.valueOf(value)).intValue()
-          : 0);
+      return CodeBlock.of("$L", valueToInt(value));
 
     } else if (javaType.equals(TypeName.LONG.box())) {
-      return CodeBlock.of("$LL", value != null
-          ? Long.toString(new BigDecimal(String.valueOf(value)).longValue())
-          : 0L);
+      return CodeBlock.of("$LL", Long.toString(valueToLong(value)));
 
     } else if (javaType.equals(TypeName.FLOAT.box())) {
       return CodeBlock.of("$Lf", value != null ? String.valueOf(value) : 0f);
@@ -1531,6 +1527,32 @@ public final class JavaGenerator {
 
     } else {
       throw new IllegalStateException(type + " is not an allowed scalar type");
+    }
+  }
+
+  static int valueToInt(Object value) {
+    if (value == null) return 0;
+
+    String string = String.valueOf(value);
+    if (string.startsWith("0x") || string.startsWith("0X")) {
+      return Integer.valueOf(string.substring("0x".length()), 16); // Hexadecimal.
+    } else if (string.startsWith("0") && !string.equals("0")) {
+      throw new IllegalStateException("Octal literal unsupported: " + value); // Octal.
+    } else {
+      return new BigInteger(string).intValue(); // Decimal.
+    }
+  }
+
+  static long valueToLong(Object value) {
+    if (value == null) return 0L;
+
+    String string = String.valueOf(value);
+    if (string.startsWith("0x") || string.startsWith("0X")) {
+      return Long.valueOf(string.substring("0x".length()), 16); // Hexadecimal.
+    } else if (string.startsWith("0") && !string.equals("0")) {
+      throw new IllegalStateException("Octal literal unsupported: " + value); // Octal.
+    } else {
+      return new BigInteger(string).longValue(); // Decimal.
     }
   }
 }
