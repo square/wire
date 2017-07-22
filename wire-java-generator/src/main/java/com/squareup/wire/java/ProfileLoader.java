@@ -39,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 import okio.Okio;
 import okio.Source;
 
@@ -178,7 +179,7 @@ public final class ProfileLoader {
   }
 
   /** Returns the type to import for {@code type}. */
-  private ProtoType importedType(ProtoType type) {
+  private @Nullable ProtoType importedType(ProtoType type) {
     // Map key type is always scalar.
     if (type.isMap()) type = type.valueType();
     return type.isScalar() ? null : type;

@@ -69,6 +69,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -242,7 +243,7 @@ public final class JavaGenerator {
    * Returns the Java type of the abstract adapter class generated for a corresponding {@code
    * protoType}. Returns null if {@code protoType} is not using a custom proto adapter.
    */
-  public ClassName abstractAdapterName(ProtoType protoType) {
+  public @Nullable ClassName abstractAdapterName(ProtoType protoType) {
     TypeName profileJavaName = profile.getTarget(protoType);
     if (profileJavaName == null) return null;
 
@@ -1324,7 +1325,7 @@ public final class JavaGenerator {
   }
 
   /** Returns the initial value of {@code field}, or null if it is doesn't have one. */
-  private CodeBlock initialValue(Field field) {
+  private @Nullable CodeBlock initialValue(Field field) {
     if (field.isPacked() || field.isRepeated()) {
       return CodeBlock.of("$T.newMutableList()", Internal.class);
     } else if (field.type().isMap()) {
@@ -1469,7 +1470,7 @@ public final class JavaGenerator {
     throw new IllegalStateException("Field " + field + " cannot have default value");
   }
 
-  private CodeBlock fieldInitializer(ProtoType type, Object value) {
+  private CodeBlock fieldInitializer(ProtoType type, @Nullable Object value) {
     TypeName javaType = typeName(type);
 
     if (value instanceof List) {
@@ -1530,7 +1531,7 @@ public final class JavaGenerator {
     }
   }
 
-  static int valueToInt(Object value) {
+  static int valueToInt(@Nullable Object value) {
     if (value == null) return 0;
 
     String string = String.valueOf(value);
@@ -1543,7 +1544,7 @@ public final class JavaGenerator {
     }
   }
 
-  static long valueToLong(Object value) {
+  static long valueToLong(@Nullable Object value) {
     if (value == null) return 0L;
 
     String string = String.valueOf(value);
