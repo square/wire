@@ -21,6 +21,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.wire.java.internal.ProfileFileElement;
 import com.squareup.wire.java.internal.TypeConfigElement;
 import com.squareup.wire.schema.ProtoType;
+import javax.annotation.Nullable;
 
 /**
  * Describes how to map {@code .proto} to {@code .java}. A single repository of {@code .proto} files
@@ -37,18 +38,18 @@ public final class Profile {
     this(ImmutableList.<ProfileFileElement>of());
   }
 
-  public TypeName getTarget(ProtoType type) {
+  public @Nullable TypeName getTarget(ProtoType type) {
     TypeConfigElement typeConfig = typeConfig(type);
     return typeConfig != null ? ClassName.bestGuess(typeConfig.target()) : null;
   }
 
-  public AdapterConstant getAdapter(ProtoType type) {
+  public @Nullable AdapterConstant getAdapter(ProtoType type) {
     TypeConfigElement typeConfig = typeConfig(type);
     return typeConfig != null ? new AdapterConstant(typeConfig.adapter()) : null;
   }
 
   /** Returns the config for {@code type}, or null if it is not configured. */
-  private TypeConfigElement typeConfig(ProtoType type) {
+  private @Nullable TypeConfigElement typeConfig(ProtoType type) {
     for (ProfileFileElement element : profileFiles) {
       for (TypeConfigElement typeConfig : element.typeConfigs()) {
         if (typeConfig.type().equals(type.toString())) return typeConfig;

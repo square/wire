@@ -69,7 +69,7 @@ public abstract class ProfileFileElement {
   public final String toSchema() {
     StringBuilder builder = new StringBuilder();
     builder.append("// ").append(location()).append('\n');
-    builder.append("syntax \"wire2\";\n");
+    builder.append("syntax = \"wire2\";\n");
     if (packageName() != null) {
       builder.append("package ").append(packageName()).append(";\n");
     }

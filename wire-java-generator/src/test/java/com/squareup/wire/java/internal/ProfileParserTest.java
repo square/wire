@@ -92,4 +92,23 @@ public final class ProfileParserTest {
       assertThat(expected).hasMessage("Syntax error in android.wire at 5:3: too many targets");
     }
   }
+
+  @Test public void readAndWriteRoundTrip() {
+    String proto = ""
+        + "// android.wire\n"
+        + "syntax = \"wire2\";\n"
+        + "package squareup.dinosaurs;\n"
+        + "\n"
+        + "import \"squareup/geology/period.proto\";\n"
+        + "\n"
+        + "// Roar!\n"
+        + "type squareup.dinosaurs.Dinosaur {\n"
+        + "  target com.squareup.dino.Dinosaur using com.squareup.dino.Dinosaurs#DINO_ADAPTER;\n"
+        + "}\n"
+        + "type squareup.geology.Period {\n"
+        + "  target java.time.Period using com.squareup.time.Time#PERIOD_ADAPTER;\n"
+        + "}\n";
+    ProfileParser parser = new ProfileParser(location, proto);
+    assertThat(parser.read().toSchema()).isEqualTo(proto);
+  }
 }

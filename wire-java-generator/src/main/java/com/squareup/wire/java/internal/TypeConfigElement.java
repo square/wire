@@ -42,7 +42,7 @@ public abstract class TypeConfigElement {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append("type ").append(type()).append(" {\n");
-    builder.append("  target ").append(target()).append(" using ").append(adapter()).append("\n");
+    builder.append("  target ").append(target()).append(" using ").append(adapter()).append(";\n");
     builder.append("}\n");
     return builder.toString();
   }
