@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public final class JavaGeneratorTest {
   @Test public void sanitizeJavadocStripsTrailingWhitespace() {
@@ -236,5 +237,37 @@ public final class JavaGeneratorTest {
             + "}\n");
     assertThat(repoBuilder.generateCode("A", "android")).contains(""
         + "  public abstract static class AbstractBAdapter extends ProtoAdapter<String> {\n");
+  }
+
+  /** https://github.com/square/wire/issues/655 */
+  @Test public void defaultValues() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  optional int32 a = 1 [default = 10 ];\n"
+            + "  optional int32 b = 2 [default = 0x20 ];\n"
+            + "  optional int64 c = 3 [default = 11 ];\n"
+            + "  optional int64 d = 4 [default = 0x21 ];\n"
+            + "}\n");
+    String code = repoBuilder.generateCode("Message");
+    assertThat(code).contains("  public static final Integer DEFAULT_A = 10;");
+    assertThat(code).contains("  public static final Integer DEFAULT_B = 32;");
+    assertThat(code).contains("  public static final Long DEFAULT_C = 11L;");
+    assertThat(code).contains("  public static final Long DEFAULT_D = 33L;");
+  }
+
+  @Test public void defaultValuesMustNotBeOctal() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  optional int32 a = 1 [default = 020 ];\n"
+            + "  optional int64 b = 2 [default = 021 ];\n"
+            + "}\n");
+    try {
+      repoBuilder.generateCode("Message");
+      fail();
+    } catch (IllegalStateException expected) {
+      assertThat(expected).hasMessage("Octal literal unsupported: 020");
+    }
   }
 }
