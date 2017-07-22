@@ -17,10 +17,15 @@ package com.squareup.wire.java;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.FieldEncoding;
+import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoReader;
+import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
 import java.io.IOException;
+import java.net.ProtocolException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -196,6 +201,85 @@ public final class JavaGeneratorTest {
         + "  @Override\n"
         + "  public JavaMessage redact(JavaMessage value) {\n"
         + "    return value;\n"
+        + "  }\n"
+        + "}\n");
+  }
+
+  @Test public void generateAbstractAdapterForEnum() throws Exception {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("message.proto", ""
+            + "package original.proto;\n"
+            + "message ProtoMessage {\n"
+            + "  optional CoinFlip coin_flip = 1;\n"
+            + "}\n"
+            + "enum CoinFlip {\n"
+            + "  // In Canada this is the Queen!\n"
+            + "  HEADS = 1;\n"
+            + "  TAILS = 2;\n"
+            + "}\n")
+        .add("android.wire", ""
+            + "syntax = \"wire2\";\n"
+            + "import \"message.proto\";\n"
+            + "package original.proto;\n"
+            + "type original.proto.CoinFlip {\n"
+            + "  target target.java.JavaCoinFlip using target.java.JavaCoinFlip#ADAPTER;\n"
+            + "}\n");
+    assertThat(repoBuilder.generateCode("original.proto.CoinFlip", "android")).isEqualTo(""
+        + "package original.proto;\n"
+        + "\n"
+        + "import com.squareup.wire.FieldEncoding;\n"
+        + "import com.squareup.wire.ProtoAdapter;\n"
+        + "import com.squareup.wire.ProtoReader;\n"
+        + "import com.squareup.wire.ProtoWriter;\n"
+        + "import java.io.IOException;\n"
+        + "import java.lang.Override;\n"
+        + "import java.net.ProtocolException;\n"
+        + "import target.java.JavaCoinFlip;\n"
+        + "\n"
+        + "public class CoinFlipAdapter extends ProtoAdapter<JavaCoinFlip> {\n"
+        + "  /**\n"
+        + "   * In Canada this is the Queen!\n"
+        + "   */\n"
+        + "  protected final JavaCoinFlip HEADS;\n"
+        + "\n"
+        + "  protected final JavaCoinFlip TAILS;\n"
+        + "\n"
+        + "  public CoinFlipAdapter(JavaCoinFlip HEADS, JavaCoinFlip TAILS) {\n"
+        + "    super(FieldEncoding.VARINT, JavaCoinFlip.class);\n"
+        + "    this.HEADS = HEADS;\n"
+        + "    this.TAILS = TAILS;\n"
+        + "  }\n"
+        + "\n"
+        + "  protected int toValue(JavaCoinFlip value) {\n"
+        + "    if (value.equals(HEADS)) return 1;\n"
+        + "    if (value.equals(TAILS)) return 2;\n"
+        + "    return -1;\n"
+        + "  }\n"
+        + "\n"
+        + "  protected JavaCoinFlip fromValue(int value) {\n"
+        + "    switch (value) {\n"
+        + "      case 1: return HEADS;\n"
+        + "      case 2: return TAILS;\n"
+        + "      default: throw new ProtoAdapter.EnumConstantNotFoundException(value, JavaCoinFlip.class);\n"
+        + "    }\n"
+        + "  }\n"
+        + "\n"
+        + "  @Override\n"
+        + "  public int encodedSize(JavaCoinFlip value) {\n"
+        + "    return ProtoAdapter.UINT32.encodedSize(toValue(value));\n"
+        + "  }\n"
+        + "\n"
+        + "  @Override\n"
+        + "  public void encode(ProtoWriter writer, JavaCoinFlip value) throws IOException {\n"
+        + "    int i = toValue(value);\n"
+        + "    if (i == -1) throw new ProtocolException(\"Unexpected enum constant: \" + value);\n"
+        + "    writer.writeVarint32(i);\n"
+        + "  }\n"
+        + "\n"
+        + "  @Override\n"
+        + "  public JavaCoinFlip decode(ProtoReader reader) throws IOException {\n"
+        + "    int value = reader.readVarint32();\n"
+        + "    return fromValue(value);\n"
         + "  }\n"
         + "}\n");
   }

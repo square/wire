@@ -59,6 +59,7 @@ import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -145,23 +146,39 @@ public final class JavaGenerator {
    * <p>Name allocations are computed once and reused because some types may be needed when
    * generating other types.
    */
-  private final LoadingCache<MessageType, NameAllocator> nameAllocators
-      = CacheBuilder.newBuilder().build(new CacheLoader<MessageType, NameAllocator>() {
-    @Override public NameAllocator load(MessageType type) throws Exception {
+  private final LoadingCache<Type, NameAllocator> nameAllocators
+      = CacheBuilder.newBuilder().build(new CacheLoader<Type, NameAllocator>() {
+    @Override public NameAllocator load(Type type) throws Exception {
       NameAllocator nameAllocator = new NameAllocator();
-      nameAllocator.newName("serialVersionUID", "serialVersionUID");
-      nameAllocator.newName("ADAPTER", "ADAPTER");
-      nameAllocator.newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS");
-      if (emitAndroid) {
-        nameAllocator.newName("CREATOR", "CREATOR");
+
+      if (type instanceof MessageType) {
+        nameAllocator.newName("serialVersionUID", "serialVersionUID");
+        nameAllocator.newName("ADAPTER", "ADAPTER");
+        nameAllocator.newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS");
+        if (emitAndroid) {
+          nameAllocator.newName("CREATOR", "CREATOR");
+        }
+
+        ImmutableList<Field> fieldsAndOneOfFields = ((MessageType) type).fieldsAndOneOfFields();
+        Set<String> collidingNames = collidingFieldNames(fieldsAndOneOfFields);
+        for (Field field : fieldsAndOneOfFields) {
+          String suggestion = collidingNames.contains(field.name())
+              ? field.qualifiedName()
+              : field.name();
+          nameAllocator.newName(suggestion, field);
+        }
+
+      } else if (type instanceof EnumType) {
+        nameAllocator.newName("value", "value");
+        nameAllocator.newName("i", "i");
+        nameAllocator.newName("reader", "reader");
+        nameAllocator.newName("writer", "writer");
+
+        for (EnumConstant constant : ((EnumType) type).constants()) {
+          nameAllocator.newName(constant.name(), constant);
+        }
       }
-      Set<String> collidingNames = collidingFieldNames(type.fieldsAndOneOfFields());
-      for (Field field : type.fieldsAndOneOfFields()) {
-        String suggestion = collidingNames.contains(field.name())
-            ? field.qualifiedName()
-            : field.name();
-        nameAllocator.newName(suggestion, field);
-      }
+
       return nameAllocator;
     }
   });
@@ -248,7 +265,10 @@ public final class JavaGenerator {
     if (profileJavaName == null) return null;
 
     ClassName javaName = nameToJavaName.get(protoType);
-    return javaName.peerClass("Abstract" + javaName.simpleName() + "Adapter");
+    Type type = schema.getType(protoType);
+    return type instanceof EnumType
+        ? javaName.peerClass(javaName.simpleName() + "Adapter")
+        : javaName.peerClass("Abstract" + javaName.simpleName() + "Adapter");
   }
 
   private CodeBlock singleAdapterFor(Field field) {
@@ -350,11 +370,11 @@ public final class JavaGenerator {
 
   /** Returns the generated code for {@code type}, which may be a top-level or a nested type. */
   public TypeSpec generateType(Type type) {
+    AdapterConstant adapterConstant = profile.getAdapter(type.type());
+    if (adapterConstant != null) {
+      return generateAdapterForCustomType(type);
+    }
     if (type instanceof MessageType) {
-      AdapterConstant adapterConstant = profile.getAdapter(type.type());
-      if (adapterConstant != null) {
-        return generateAbstractAdapter((MessageType) type);
-      }
       //noinspection deprecation: Only deprecated as a public API.
       return generateMessage((MessageType) type);
     }
@@ -371,6 +391,8 @@ public final class JavaGenerator {
   /** @deprecated Use {@link #generateType(Type)} */
   @Deprecated
   public TypeSpec generateEnum(EnumType type) {
+    NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
+    String value = nameAllocator.get("value");
     ClassName javaType = (ClassName) typeName(type.type());
 
     TypeSpec.Builder builder = TypeSpec.enumBuilder(javaType.simpleName())
@@ -382,11 +404,11 @@ public final class JavaGenerator {
     }
 
     // Output Private tag field
-    builder.addField(TypeName.INT, "value", PRIVATE, FINAL);
+    builder.addField(TypeName.INT, value, PRIVATE, FINAL);
 
     MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
-    constructorBuilder.addStatement("this.value = value");
-    constructorBuilder.addParameter(TypeName.INT, "value");
+    constructorBuilder.addStatement("this.$N = $N", value, value);
+    constructorBuilder.addParameter(TypeName.INT, value);
 
     // Enum constant options, each of which requires a constructor parameter and a field.
     Set<ProtoMember> allOptionFieldsBuilder = new LinkedHashSet<>();
@@ -406,11 +428,11 @@ public final class JavaGenerator {
     builder.addMethod(constructorBuilder.build());
 
     MethodSpec.Builder fromValueBuilder = MethodSpec.methodBuilder("fromValue")
-        .addJavadoc("Return the constant for {@code value} or null.\n")
+        .addJavadoc("Return the constant for {@code $N} or null.\n", value)
         .addModifiers(PUBLIC, STATIC)
         .returns(javaType)
-        .addParameter(int.class, "value")
-        .beginControlFlow("switch (value)");
+        .addParameter(int.class, value)
+        .beginControlFlow("switch ($N)", value);
 
     Set<Integer> seenTags = new LinkedHashSet<>();
     for (EnumConstant constant : type.constants()) {
@@ -419,9 +441,9 @@ public final class JavaGenerator {
       for (int i = 0; i < allOptionMembers.size(); i++) {
         ProtoMember protoMember = allOptionMembers.get(i);
         Field field = schema.getField(protoMember);
-        Object value = constant.options().map().get(protoMember);
-        enumArgs[i + 1] = value != null
-            ? fieldInitializer(field.type(), value)
+        Object fieldValue = constant.options().map().get(protoMember);
+        enumArgs[i + 1] = fieldValue != null
+            ? fieldInitializer(field.type(), fieldValue)
             : null;
       }
 
@@ -468,7 +490,7 @@ public final class JavaGenerator {
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
         .returns(TypeName.INT)
-        .addStatement("return value")
+        .addStatement("return $N", value)
         .build());
 
     if (!emitCompact) {
@@ -618,17 +640,21 @@ public final class JavaGenerator {
     return builder.build();
   }
 
-  /** Returns an abstract adapter for {@code type}. */
-  public TypeSpec generateAbstractAdapter(MessageType type) {
+  /** Returns a standalone adapter for {@code type}. */
+  public TypeSpec generateAdapterForCustomType(Type type) {
     NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
     ClassName adapterTypeName = abstractAdapterName(type.type());
     ClassName typeName = (ClassName) typeName(type.type());
-    TypeSpec.Builder adapter = messageAdapter(
-        nameAllocator, type, typeName, adapterTypeName, null).toBuilder();
 
-    if (adapterTypeName.enclosingClassName() != null) {
-      adapter.addModifiers(STATIC);
+    TypeSpec.Builder adapter;
+    if (type instanceof MessageType) {
+      adapter = messageAdapter(nameAllocator, (MessageType) type, typeName, adapterTypeName, null)
+          .toBuilder();
+    } else {
+      adapter = enumAdapter(nameAllocator, (EnumType) type, typeName, adapterTypeName).toBuilder();
     }
+
+    if (adapterTypeName.enclosingClassName() != null) adapter.addModifiers(STATIC);
 
     for (Type nestedType : type.nestedTypes()) {
       if (profile.getAdapter(nestedType.type()) == null) {
@@ -636,9 +662,7 @@ public final class JavaGenerator {
             + nestedType.type().enclosingTypeOrPackage() + "." + nestedType.type().simpleName()
             + " when enclosing proto has custom proto adapter.");
       }
-      if (nestedType instanceof MessageType) {
-        adapter.addType(generateAbstractAdapter((MessageType) nestedType));
-      }
+      adapter.addType(generateAdapterForCustomType(nestedType));
     }
 
     return adapter.build();
@@ -666,6 +690,106 @@ public final class JavaGenerator {
       result.initializer("new $T()", adapterJavaType);
     }
     return result.build();
+  }
+
+  /**
+   * Generates a custom enum adapter to decode a proto enum to a user-specified Java type. Users
+   * need to instantiate a constant instance of this adapter that provides all enum constants in
+   * the constructor in the proper order.
+   *
+   * <pre>   {@code
+   *
+   *   public static final ProtoAdapter<Roshambo> ADAPTER
+   *       = new RoshamboAdapter(Roshambo.ROCK, Roshambo.SCISSORS, Roshambo.PAPER);
+   * }</pre>
+   */
+  private TypeSpec enumAdapter(NameAllocator nameAllocator, EnumType type, ClassName javaType,
+      ClassName adapterJavaType) {
+    String value = nameAllocator.get("value");
+    String i = nameAllocator.get("i");
+    String reader = nameAllocator.get("reader");
+    String writer = nameAllocator.get("writer");
+
+    TypeSpec.Builder builder = TypeSpec.classBuilder(adapterJavaType.simpleName());
+    builder.superclass(adapterOf(javaType));
+    builder.addModifiers(PUBLIC);
+
+    MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
+    constructorBuilder.addModifiers(PUBLIC);
+    constructorBuilder.addStatement("super($T.VARINT, $T.class)", FieldEncoding.class, javaType);
+    for (EnumConstant constant : type.constants()) {
+      String name = nameAllocator.get(constant);
+      FieldSpec.Builder fieldBuilder = FieldSpec.builder(javaType, name)
+          .addModifiers(PROTECTED, FINAL);
+      if (!constant.documentation().isEmpty()) {
+        fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.documentation()));
+      }
+      if ("true".equals(constant.options().get(ENUM_DEPRECATED))) {
+        fieldBuilder.addAnnotation(Deprecated.class);
+      }
+      builder.addField(fieldBuilder.build());
+
+      constructorBuilder.addParameter(javaType, name);
+      constructorBuilder.addStatement("this.$N = $N", name, name);
+    }
+    builder.addMethod(constructorBuilder.build());
+
+    MethodSpec.Builder toValueBuilder = MethodSpec.methodBuilder("toValue")
+        .addModifiers(PROTECTED)
+        .returns(int.class)
+        .addParameter(javaType, value);
+    for (EnumConstant constant : type.constants()) {
+      String name = nameAllocator.get(constant);
+      toValueBuilder.addStatement("if ($N.equals($N)) return $L", value, name, constant.tag());
+    }
+    toValueBuilder.addStatement("return $L", -1);
+    builder.addMethod(toValueBuilder.build());
+
+    MethodSpec.Builder fromValueBuilder = MethodSpec.methodBuilder("fromValue")
+        .addModifiers(PROTECTED)
+        .returns(javaType)
+        .addParameter(int.class, value);
+    fromValueBuilder.beginControlFlow("switch ($N)", value);
+    for (EnumConstant constant : type.constants()) {
+      String name = nameAllocator.get(constant);
+      fromValueBuilder.addStatement("case $L: return $N", constant.tag(), name);
+    }
+    fromValueBuilder.addStatement("default: throw new $T($N, $T.class)",
+        EnumConstantNotFoundException.class, value, javaType);
+    fromValueBuilder.endControlFlow();
+    builder.addMethod(fromValueBuilder.build());
+
+    builder.addMethod(MethodSpec.methodBuilder("encodedSize")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(int.class)
+        .addParameter(javaType, value)
+        .addStatement("return $T.UINT32.encodedSize(toValue($N))", ProtoAdapter.class, value)
+        .build());
+
+    builder.addMethod(MethodSpec.methodBuilder("encode")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .addParameter(ProtoWriter.class, writer)
+        .addParameter(javaType, value)
+        .addException(IOException.class)
+        .addStatement("int $N = toValue($N)", i, value)
+        .addStatement("if ($N == $L) throw new $T($S + $N)",
+            i, -1, ProtocolException.class, "Unexpected enum constant: ", value)
+        .addStatement("$N.writeVarint32($N)", writer, i)
+        .build());
+
+    builder.addMethod(MethodSpec.methodBuilder("decode")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(javaType)
+        .addParameter(ProtoReader.class, reader)
+        .addException(IOException.class)
+        .addStatement("int $N = $N.readVarint32()", value, reader)
+        .addStatement("return fromValue($N)", value)
+        .build());
+
+    return builder.build();
   }
 
   private TypeSpec enumAdapter(ClassName javaType,  ClassName adapterJavaType) {
