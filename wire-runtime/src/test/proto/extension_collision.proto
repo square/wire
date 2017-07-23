@@ -7,7 +7,7 @@ message CollisionSubject {
   optional string f = 1 [
     (squareup.protos.extension_collision_1.a) = "1a",
     (squareup.protos.extension_collision_1.b) = "1b",
-    (squareup.protos.extension_collision_2.a) = "2a"
+    (squareup.protos.extension_collision_2.a) = "2a",
     (squareup.protos.extension_collision_2.c) = "2c"
   ];
 }

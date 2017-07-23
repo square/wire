@@ -1533,8 +1533,8 @@ public final class ProtoParserTest {
         + "message StructuredOption {\n"
         + "    optional field.type has_options = 3 [\n"
         + "            (option_map) = {\n"
-        + "                nested_map: {key:\"value\" key2:[\"value2a\",\"value2b\"]},\n"
-        + "            }\n"
+        + "                nested_map: {key:\"value\", key2:[\"value2a\",\"value2b\"]},\n"
+        + "            },\n"
         + "            (option_string) = [\"string1\",\"string2\"]\n"
         + "    ];\n"
         + "}";
