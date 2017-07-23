@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser;
 
-import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.squareup.wire.schema.Field;
@@ -23,9 +22,8 @@ import com.squareup.wire.schema.Location;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.internal.Util;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /** Basic parser for {@code .proto} schema declarations. */
 public final class ProtoParser {
@@ -130,7 +128,7 @@ public final class ProtoParser {
       reader.require(';');
       return null;
     } else if (label.equals("option")) {
-      OptionElement result = readOption('=');
+      OptionElement result = new OptionReader(reader).readOption('=');
       reader.require(';');
       return result;
     } else if (label.equals("reserved")) {
@@ -354,28 +352,33 @@ public final class ProtoParser {
         .name(name)
         .tag(tag);
 
-    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
-    if (reader.peekChar('[')) {
-      while (true) {
-        OptionElement option = readOption('=');
-        if (option.name().equals("default")) {
-          builder.defaultValue(String.valueOf(option.value())); // Defaults aren't options!
-        } else {
-          options.add(option);
-        }
-
-        // Check for closing ']'
-        if (reader.peekChar(']')) break;
-
-        // Discard optional ','.
-        reader.peekChar(',');
-      }
-    }
+    List<OptionElement> options = new OptionReader(reader).readOptions();
     reader.require(';');
+
+    options = new ArrayList<>(options); // Mutable copy for extractDefault.
+    String defaultValue = stripDefault(options);
+
     documentation = reader.tryAppendTrailingDocumentation(documentation);
     return builder.documentation(documentation)
-        .options(options.build())
+        .defaultValue(defaultValue)
+        .options(ImmutableList.copyOf(options))
         .build();
+  }
+
+  /**
+   * Defaults aren't options. This finds an option named "default", removes, and returns it. Returns
+   * null if no default option is present.
+   */
+  private @Nullable String stripDefault(List<OptionElement> options) {
+    String result = null;
+    for (Iterator<OptionElement> i = options.iterator(); i.hasNext();) {
+      OptionElement option = i.next();
+      if (option.name().equals("default")) {
+        i.remove();
+        result = String.valueOf(option.value()); // Defaults aren't options!
+      }
+    }
+    return result;
   }
 
   private OneOfElement readOneOf(String documentation) {
@@ -484,37 +487,6 @@ public final class ProtoParser {
     return ExtensionsElement.create(location, start, end, documentation);
   }
 
-  /** Reads a option containing a name, an '=' or ':', and a value. */
-  private OptionElement readOption(char keyValueSeparator) {
-    boolean isExtension = (reader.peekChar() == '[');
-    boolean isParenthesized = (reader.peekChar() == '(');
-    String name = reader.readName(); // Option name.
-    if (isExtension) {
-      name = "[" + name + "]";
-    }
-    String subName = null;
-    char c = reader.readChar();
-    if (c == '.') {
-      // Read nested field name. For example "baz" in "(foo.bar).baz = 12".
-      subName = reader.readName();
-      c = reader.readChar();
-    }
-    if (keyValueSeparator == ':' && c == '{') {
-      // In text format, values which are maps can omit a separator. Backtrack so it can be re-read.
-      reader.pushBack('{');
-    } else if (c != keyValueSeparator) {
-      throw reader.unexpected("expected '" + keyValueSeparator + "' in option");
-    }
-    OptionKindAndValue kindAndValue = readKindAndValue();
-    OptionElement.Kind kind = kindAndValue.kind();
-    Object value = kindAndValue.value();
-    if (subName != null) {
-      value = OptionElement.create(subName, kind, value);
-      kind = OptionElement.Kind.OPTION;
-    }
-    return OptionElement.create(name, kind, value, isParenthesized);
-  }
-
   /** Reads an enum constant like "ROCK = 0;". The label is the constant name. */
   private EnumConstantElement readEnumConstant(
       String documentation, Location location, String label) {
@@ -522,20 +494,7 @@ public final class ProtoParser {
 
     int tag = reader.readInt();
 
-    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
-    if (reader.peekChar() == '[') {
-      reader.readChar();
-      while (true) {
-        options.add(readOption('='));
-        char c = reader.readChar();
-        if (c == ']') {
-          break;
-        }
-        if (c != ',') {
-          throw reader.unexpected("Expected ',' or ']");
-        }
-      }
-    }
+    ImmutableList<OptionElement> options = new OptionReader(reader).readOptions();
     reader.require(';');
     documentation = reader.tryAppendTrailingDocumentation(documentation);
 
@@ -543,122 +502,8 @@ public final class ProtoParser {
         .name(label)
         .tag(tag)
         .documentation(documentation)
-        .options(options.build())
+        .options(options)
         .build();
-  }
-
-  @AutoValue
-  abstract static class OptionKindAndValue {
-    static OptionKindAndValue of(OptionElement.Kind kind, Object value) {
-      return new AutoValue_ProtoParser_OptionKindAndValue(kind, value);
-    }
-
-    abstract OptionElement.Kind kind();
-    abstract Object value();
-  }
-
-  /** Reads a value that can be a map, list, string, number, boolean or enum. */
-  private OptionKindAndValue readKindAndValue() {
-    char peeked = reader.peekChar();
-    switch (peeked) {
-      case '{':
-        return OptionKindAndValue.of(OptionElement.Kind.MAP, readMap('{', '}', ':'));
-      case '[':
-        return OptionKindAndValue.of(OptionElement.Kind.LIST, readList());
-      case '"':
-      case '\'':
-        return OptionKindAndValue.of(OptionElement.Kind.STRING, reader.readString());
-      default:
-        if (Character.isDigit(peeked) || peeked == '-') {
-          return OptionKindAndValue.of(OptionElement.Kind.NUMBER, reader.readWord());
-        }
-        String word = reader.readWord();
-        switch (word) {
-          case "true":
-            return OptionKindAndValue.of(OptionElement.Kind.BOOLEAN, "true");
-          case "false":
-            return OptionKindAndValue.of(OptionElement.Kind.BOOLEAN, "false");
-          default:
-            return OptionKindAndValue.of(OptionElement.Kind.ENUM, word);
-        }
-    }
-  }
-
-  /**
-   * Returns a map of string keys and values. This is similar to a JSON object,
-   * with '{' and '}' surrounding the map, ':' separating keys from values, and
-   * ',' separating entries.
-   */
-  @SuppressWarnings("unchecked")
-  private Map<String, Object> readMap(char openBrace, char closeBrace, char keyValueSeparator) {
-    if (reader.readChar() != openBrace) throw new AssertionError();
-    Map<String, Object> result = new LinkedHashMap<>();
-    while (true) {
-      if (reader.peekChar(closeBrace)) {
-        // If we see the close brace, finish immediately. This handles {}/[] and ,}/,] cases.
-        return result;
-      }
-
-      OptionElement option = readOption(keyValueSeparator);
-      String name = option.name();
-      Object value = option.value();
-      if (value instanceof OptionElement) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> nested = (Map<String, Object>) result.get(name);
-        if (nested == null) {
-          nested = new LinkedHashMap<>();
-          result.put(name, nested);
-        }
-        OptionElement valueOption = (OptionElement) value;
-        nested.put(valueOption.name(), valueOption.value());
-      } else {
-        // Add the value(s) to any previous values with the same key
-        Object previous = result.get(name);
-        if (previous == null) {
-          result.put(name, value);
-        } else if (previous instanceof List) {
-          // Add to previous List
-          addToList((List<Object>) previous, value);
-        } else {
-          List<Object> newList = new ArrayList<>();
-          newList.add(previous);
-          addToList(newList, value);
-          result.put(name, newList);
-        }
-      }
-
-      // Discard optional ',' separator.
-      reader.peekChar(',');
-    }
-  }
-
-  /**
-   * Adds an object or objects to a List.
-   */
-  private void addToList(List<Object> list, Object value) {
-    if (value instanceof List) {
-      list.addAll((List) value);
-    } else {
-      list.add(value);
-    }
-  }
-
-  /**
-   * Returns a list of values. This is similar to JSON with '[' and ']'
-   * surrounding the list and ',' separating values.
-   */
-  private List<Object> readList() {
-    reader.require('[');
-    List<Object> result = new ArrayList<>();
-    while (true) {
-      // If we see the close brace, finish immediately. This handles [] and ,] cases.
-      if (reader.peekChar(']')) return result;
-
-      result.add(readKindAndValue().value());
-
-      if (reader.peekChar(',')) continue;
-      if (reader.peekChar() != ']') throw reader.unexpected("expected ',' or ']'");
-    }
   }
 
   /** Reads an rpc and returns it. */
