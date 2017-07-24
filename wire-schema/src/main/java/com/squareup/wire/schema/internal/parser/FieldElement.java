@@ -19,10 +19,10 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.internal.Util;
 import java.util.Locale;
 
 import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class FieldElement {
@@ -54,11 +54,8 @@ public abstract class FieldElement {
         .append(" = ")
         .append(tag());
     if (!options().isEmpty()) {
-      builder.append(" [\n");
-      for (OptionElement option : options()) {
-        appendIndented(builder, option.toSchema());
-      }
-      builder.append(']');
+      builder.append(" ");
+      Util.appendOptions(builder, options());
     }
     return builder.append(";\n").toString();
   }

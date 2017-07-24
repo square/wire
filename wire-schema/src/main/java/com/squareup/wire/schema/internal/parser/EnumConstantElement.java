@@ -18,9 +18,9 @@ package com.squareup.wire.schema.internal.parser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.internal.Util;
 
 import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.parser.OptionElement.formatOptionList;
 
 @AutoValue
 public abstract class EnumConstantElement {
@@ -44,9 +44,8 @@ public abstract class EnumConstantElement {
         .append(" = ")
         .append(tag());
     if (!options().isEmpty()) {
-      builder.append(" [\n");
-      formatOptionList(builder, options());
-      builder.append(']');
+      builder.append(" ");
+      Util.appendOptions(builder, options());
     }
     return builder.append(";\n").toString();
   }

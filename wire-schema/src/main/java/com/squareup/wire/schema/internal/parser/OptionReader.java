@@ -30,10 +30,10 @@ import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP;
 import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.NUMBER;
 import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING;
 
-final class OptionReader {
+public final class OptionReader {
   final SyntaxReader reader;
 
-  OptionReader(SyntaxReader reader) {
+  public OptionReader(SyntaxReader reader) {
     this.reader = reader;
   }
 
