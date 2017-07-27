@@ -28,6 +28,7 @@ import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.ByteString;
 import okio.Okio;
+import okio.Utf8;
 
 import static com.squareup.wire.Preconditions.checkNotNull;
 import static com.squareup.wire.ProtoWriter.decodeZigZag32;
@@ -35,7 +36,6 @@ import static com.squareup.wire.ProtoWriter.decodeZigZag64;
 import static com.squareup.wire.ProtoWriter.encodeZigZag32;
 import static com.squareup.wire.ProtoWriter.encodeZigZag64;
 import static com.squareup.wire.ProtoWriter.int32Size;
-import static com.squareup.wire.ProtoWriter.utf8Length;
 import static com.squareup.wire.ProtoWriter.varint32Size;
 import static com.squareup.wire.ProtoWriter.varint64Size;
 import static java.lang.Double.doubleToLongBits;
@@ -375,7 +375,7 @@ public abstract class ProtoAdapter<E> {
   public static final ProtoAdapter<String> STRING = new ProtoAdapter<String>(
       FieldEncoding.LENGTH_DELIMITED, String.class) {
     @Override public int encodedSize(String value) {
-      return utf8Length(value);
+      return (int) Utf8.size(value);
     }
 
     @Override public void encode(ProtoWriter writer, String value) throws IOException {
