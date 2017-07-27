@@ -68,29 +68,6 @@ public final class ProtoWriter {
     return varint32Size(makeTag(tag, FieldEncoding.VARINT));
   }
 
-  static int utf8Length(String s) {
-    int result = 0;
-    for (int i = 0, length = s.length(); i < length; i++) {
-      char c = s.charAt(i);
-      if (c < 0x80) {
-        result++;
-      } else if (c < 0x800) {
-        result += 2;
-      } else if (c < 0xd800 || c > 0xdfff) {
-        result += 3;
-      } else if (c <= 0xdbff && i + 1 < length
-          && s.charAt(i + 1) >= 0xdc00 && s.charAt(i + 1) <= 0xdfff) {
-        // A UTF-16 high surrogate followed by UTF-16 low surrogate yields 4 UTF-8 bytes.
-        result += 4;
-        i++;
-      } else {
-        // An unexpected surrogate yields a '?' character.
-        result++;
-      }
-    }
-    return result;
-  }
-
   /**
    * Computes the number of bytes that would be needed to encode a signed variable-length integer
    * of up to 32 bits.

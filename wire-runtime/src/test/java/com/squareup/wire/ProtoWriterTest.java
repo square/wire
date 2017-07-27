@@ -17,6 +17,7 @@ package com.squareup.wire;
 
 import java.io.IOException;
 import okio.Buffer;
+import okio.Utf8;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,6 +58,6 @@ public final class ProtoWriterTest {
     ProtoWriter writer = new ProtoWriter(buffer);
     writer.writeString(string);
     assertThat(buffer.readByteString().hex()).isEqualTo(expectedHex);
-    assertThat(ProtoWriter.utf8Length(string)).isEqualTo(expectedHex.length() / 2);
+    assertThat(Utf8.size(string)).isEqualTo(expectedHex.length() / 2);
   }
 }
