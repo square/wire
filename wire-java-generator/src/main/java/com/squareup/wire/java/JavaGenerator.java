@@ -1644,7 +1644,7 @@ public final class JavaGenerator {
         return CodeBlock.of("$T.EMPTY", ByteString.class);
       } else {
         return CodeBlock.of("$T.decodeBase64($S)", ByteString.class,
-            ByteString.of(String.valueOf(value).getBytes(Charsets.ISO_8859_1)).base64());
+            ByteString.encodeString(String.valueOf(value), Charsets.ISO_8859_1).base64());
       }
 
     } else if (isEnum(type) && value != null) {
