@@ -17,6 +17,8 @@ package com.squareup.wire.java.internal;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.internal.parser.OptionElement;
+import com.squareup.wire.schema.internal.parser.OptionReader;
 import com.squareup.wire.schema.internal.parser.SyntaxReader;
 
 /** Parses {@code .wire} files. */
@@ -78,6 +80,7 @@ public final class ProfileParser {
   /** Reads a type config and returns it. */
   private TypeConfigElement readTypeConfig(Location location, String documentation) {
     String name = reader.readDataType();
+    ImmutableList.Builder<OptionElement> withOptions = ImmutableList.builder();
     String target = null;
     String adapter = null;
 
@@ -97,6 +100,11 @@ public final class ProfileParser {
           adapter = adapterType + '#' + adapterConstant;
           break;
 
+        case "with":
+          withOptions.add(new OptionReader(reader).readOption('='));
+          reader.require(';');
+          break;
+
         default:
           throw reader.unexpected(wordLocation, "unexpected label: " + word);
       }
@@ -105,6 +113,7 @@ public final class ProfileParser {
     return TypeConfigElement.builder(location)
         .type(name)
         .documentation(documentation)
+        .with(withOptions.build())
         .target(target)
         .adapter(adapter)
         .build();

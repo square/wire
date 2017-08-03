@@ -16,9 +16,12 @@
 package com.squareup.wire.java.internal;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.internal.parser.OptionElement;
 
 import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 /**
  * Configures how Wire will generate code for a specific type. This configuration belongs in a
@@ -29,12 +32,14 @@ public abstract class TypeConfigElement {
   public static Builder builder(Location location) {
     return new AutoValue_TypeConfigElement.Builder()
         .location(location)
-        .documentation("");
+        .documentation("")
+        .with(ImmutableList.<OptionElement>of());
   }
 
   public abstract Location location();
   public abstract String type();
   public abstract String documentation();
+  public abstract ImmutableList<OptionElement> with();
   public abstract String target();
   public abstract String adapter();
 
@@ -42,6 +47,9 @@ public abstract class TypeConfigElement {
     StringBuilder builder = new StringBuilder();
     appendDocumentation(builder, documentation());
     builder.append("type ").append(type()).append(" {\n");
+    for (OptionElement option : with()) {
+      appendIndented(builder, "with " + option.toSchema() + ";\n");
+    }
     builder.append("  target ").append(target()).append(" using ").append(adapter()).append(";\n");
     builder.append("}\n");
     return builder.toString();
@@ -52,6 +60,7 @@ public abstract class TypeConfigElement {
     Builder location(Location location);
     Builder type(String type);
     Builder documentation(String documentation);
+    Builder with(ImmutableList<OptionElement> options);
     Builder target(String target);
     Builder adapter(String adapter);
     TypeConfigElement build();

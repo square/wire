@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal;
 
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.internal.parser.OptionElement;
 import java.util.List;
 
 public final class Util {
@@ -31,6 +32,15 @@ public final class Util {
     for (String line : documentation.split("\n")) {
       builder.append("// ").append(line).append('\n');
     }
+  }
+
+  public static void appendOptions(StringBuilder builder, List<OptionElement> options) {
+    builder.append("[\n");
+    for (int i = 0, count = options.size(); i < count; i++) {
+      String endl = (i < count - 1) ? "," : "";
+      appendIndented(builder, options.get(i).toSchema() + endl);
+    }
+    builder.append(']');
   }
 
   public static void appendIndented(StringBuilder builder, String value) {

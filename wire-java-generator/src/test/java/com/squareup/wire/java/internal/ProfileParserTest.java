@@ -17,6 +17,7 @@ package com.squareup.wire.java.internal;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.internal.parser.OptionElement;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +39,7 @@ public final class ProfileParserTest {
         + "}\n"
         + "\n"
         + "type squareup.geology.Period {\n"
+        + "  with custom_type = \"duration\";\n"
         + "  target java.time.Period using com.squareup.time.Time#PERIOD_ADAPTER;\n"
         + "}\n";
     ProfileFileElement expected = ProfileFileElement.builder(location)
@@ -52,6 +54,8 @@ public final class ProfileParserTest {
                 .build(),
             TypeConfigElement.builder(location.at(11, 1))
                 .type("squareup.geology.Period")
+                .with(ImmutableList.of(OptionElement.create(
+                    "custom_type", OptionElement.Kind.STRING, "duration")))
                 .target("java.time.Period")
                 .adapter("com.squareup.time.Time#PERIOD_ADAPTER")
                 .build()))
@@ -106,6 +110,7 @@ public final class ProfileParserTest {
         + "  target com.squareup.dino.Dinosaur using com.squareup.dino.Dinosaurs#DINO_ADAPTER;\n"
         + "}\n"
         + "type squareup.geology.Period {\n"
+        + "  with custom_type = \"duration\";\n"
         + "  target java.time.Period using com.squareup.time.Time#PERIOD_ADAPTER;\n"
         + "}\n";
     ProfileParser parser = new ProfileParser(location, proto);

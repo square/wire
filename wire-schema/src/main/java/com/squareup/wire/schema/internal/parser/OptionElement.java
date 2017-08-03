@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal.parser;
 
 import com.google.auto.value.AutoValue;
+import com.squareup.wire.schema.internal.Util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -78,11 +79,10 @@ public abstract class OptionElement {
       }
       case LIST: {
         StringBuilder builder = new StringBuilder();
-        builder.append(formatName()).append(" = [\n");
+        builder.append(formatName()).append(" = ");
         //noinspection unchecked
         List<OptionElement> optionList = (List<OptionElement>) value;
-        formatOptionList(builder, optionList);
-        builder.append(']');
+        Util.appendOptions(builder, optionList);
         return builder.toString();
       }
       default:
@@ -92,13 +92,6 @@ public abstract class OptionElement {
 
   public final String toSchemaDeclaration() {
     return "option " + toSchema() + ";\n";
-  }
-
-  static void formatOptionList(StringBuilder builder, List<OptionElement> optionList) {
-    for (int i = 0, count = optionList.size(); i < count; i++) {
-      String endl = (i < count - 1) ? "," : "";
-      appendIndented(builder, optionList.get(i).toSchema() + endl);
-    }
   }
 
   static void formatOptionMap(StringBuilder builder, Map<String, ?> valueMap) {
