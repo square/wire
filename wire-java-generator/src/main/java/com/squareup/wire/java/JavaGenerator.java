@@ -625,8 +625,8 @@ public final class JavaGenerator {
       documentation += "\n\n<p>";
     }
     documentation += "<b>NOTE:</b> This type only exists to maintain class structure"
-        + " for its nested types and is not an actual message.\n";
-    builder.addJavadoc(documentation);
+        + " for its nested types and is not an actual message.";
+    builder.addJavadoc("$L\n", documentation);
 
     builder.addMethod(MethodSpec.constructorBuilder()
         .addModifiers(PRIVATE)
