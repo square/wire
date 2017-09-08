@@ -59,7 +59,7 @@ public abstract class Message<M extends Message<M, B>, B extends Message.Builder
   /**
    * Returns a new builder initialized with the data in this message.
    */
-  public abstract Builder<M, B> newBuilder();
+  public abstract B newBuilder();
 
   /** Returns this message with any unknown fields removed. */
   public final M withoutUnknownFields() {
