@@ -42,9 +42,9 @@ import okio.ByteString;
 /**
  * Reads and decodes protocol message fields.
  */
-public final class ProtoReader {
+public class ProtoReader {
   /** The standard number of levels of message nesting to allow. */
-  private static final int RECURSION_LIMIT = 65;
+  protected static final int RECURSION_LIMIT = 65;
 
   private static final int FIELD_ENCODING_MASK = 0x7;
   static final int TAG_FIELD_ENCODING_BITS = 3;
