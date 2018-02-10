@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public final class OptionsTest {
   @Test public void structuredAndUnstructuredOptions() throws Exception {
@@ -53,6 +54,40 @@ public final class OptionsTest {
         fooOptions, ImmutableMap.of(opt1, "123", opt2, "baz")));
     assertThat(bar.field("b").options().map()).isEqualTo(ImmutableMap.of(
         fooOptions, ImmutableMap.of(opt1, "456", opt2, "quux")));
+  }
+
+  @Test public void invalidOptions() throws Exception {
+    try {
+      new RepoBuilder()
+          .add("foo.proto", ""
+              + "import \"google/protobuf/descriptor.proto\";\n"
+              + "message FooOptions {\n"
+              + "  optional int32 opt1 = 1;\n"
+              + "  optional string opt2 = 2;\n"
+              + "}\n"
+              + "\n"
+              + "extend google.protobuf.FieldOptions {\n"
+              + "  optional FooOptions foo_options = 1234;\n"
+              + "}\n"
+              + "extend google.protobuf.MessageOptions {\n"
+              + "  optional string baz_option = 1234;\n"
+              + "}\n"
+              + "message Bar {\n"
+              + "  option (bad_option) = \"Hello World\";"
+              + "  option (baz_option) = \"Hello World\";"
+              + "  optional int32 a = 1 [(foo_options).opt1 = 123, (foo_options).opt2 = \"baz\"];\n"
+              + "  optional int32 b = 2 [(foo_options) = { opt1: 456 opt2: \"quux\" opt3: 1}];\n"
+              + "}\n")
+          .schema();
+      fail();
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessage(""
+          + "unable to resolve option opt3 on FooOptions\n"
+          + "  for field b (/source/foo.proto at 15:3)\n"
+          + "  in message Bar (/source/foo.proto at 13:1)\n"
+          + "unable to resolve option bad_option\n"
+          + "  for message Bar (/source/foo.proto at 13:1)");
+    }
   }
 
   @Test public void textFormatCanOmitMapValueSeparator() throws Exception {

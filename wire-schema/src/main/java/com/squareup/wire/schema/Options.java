@@ -127,6 +127,7 @@ public final class Options {
         path = resolveFieldPath(packageName + "." + option.name(), extensionsForType.keySet());
       }
       if (path == null) {
+        linker.addError("unable to resolve option %s", option.name());
         return null; // Unable to find the root of this field path.
       }
 
