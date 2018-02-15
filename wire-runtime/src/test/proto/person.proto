@@ -42,4 +42,13 @@ message Person {
 
   // A list of the customer's phone numbers.
   repeated PhoneNumber phone = 4;
+
+  // The customer's Address
+  message Address {
+    required string zipCode = 1;
+    required string address = 2;
+  }
+
+  optional Address address = 5;
+
 }

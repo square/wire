@@ -2,9 +2,7 @@
 // Source file: person.proto
 package com.squareup.wire.protos.person;
 
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import com.squareup.wire.AndroidMessage;
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
@@ -23,10 +21,8 @@ import java.lang.StringBuilder;
 import java.util.List;
 import okio.ByteString;
 
-public final class Person extends AndroidMessage<Person, Person.Builder> {
+public final class Person extends Message<Person, Person.Builder> {
   public static final ProtoAdapter<Person> ADAPTER = new ProtoAdapter_Person();
-
-  public static final Parcelable.Creator<Person> CREATOR = AndroidMessage.newCreator(ADAPTER);
 
   private static final long serialVersionUID = 0L;
 
@@ -83,19 +79,22 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   @Nullable
   public final Address address;
 
-  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone,
-      @Nullable Address address) {
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone, Address address) {
     this(name, id, email, phone, address, ByteString.EMPTY);
   }
 
-  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone,
-      @Nullable Address address, ByteString unknownFields) {
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone, Address address,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.id = id;
     this.email = email;
     this.phone = Internal.immutableCopyOf("phone", phone);
     this.address = address;
+  }
+
+  public String getEmailOrDefault() {
+    return com.squareup.wire.Wire.get(email, Person.DEFAULT_EMAIL);
   }
 
   @Override
@@ -260,10 +259,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     }
   }
 
-  public static final class PhoneNumber extends AndroidMessage<PhoneNumber, PhoneNumber.Builder> {
+  public static final class PhoneNumber extends Message<PhoneNumber, PhoneNumber.Builder> {
     public static final ProtoAdapter<PhoneNumber> ADAPTER = new ProtoAdapter_PhoneNumber();
-
-    public static final Parcelable.Creator<PhoneNumber> CREATOR = AndroidMessage.newCreator(ADAPTER);
 
     private static final long serialVersionUID = 0L;
 
@@ -291,11 +288,11 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     @Nullable
     public final PhoneType type;
 
-    public PhoneNumber(String number, @Nullable PhoneType type) {
+    public PhoneNumber(String number, PhoneType type) {
       this(number, type, ByteString.EMPTY);
     }
 
-    public PhoneNumber(String number, @Nullable PhoneType type, ByteString unknownFields) {
+    public PhoneNumber(String number, PhoneType type, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.number = number;
       this.type = type;
@@ -430,10 +427,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   /**
    * The customer's Address
    */
-  public static final class Address extends AndroidMessage<Address, Address.Builder> {
+  public static final class Address extends Message<Address, Address.Builder> {
     public static final ProtoAdapter<Address> ADAPTER = new ProtoAdapter_Address();
-
-    public static final Parcelable.Creator<Address> CREATOR = AndroidMessage.newCreator(ADAPTER);
 
     private static final long serialVersionUID = 0L;
 

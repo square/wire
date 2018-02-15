@@ -102,6 +102,7 @@ public final class JavaGenerator {
   static final ClassName LIST = ClassName.get(List.class);
   static final ClassName MESSAGE = ClassName.get(Message.class);
   static final ClassName ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage");
+  static final ClassName KOTLIN_MESSAGE = MESSAGE.peerClass("KotlinMessage");
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
   static final ClassName ENUM_ADAPTER = ClassName.get(EnumAdapter.class);
@@ -188,26 +189,32 @@ public final class JavaGenerator {
   private final Profile profile;
   private final boolean emitAndroid;
   private final boolean emitCompact;
+  private final boolean emitKotlin;
 
   private JavaGenerator(Schema schema, Map<ProtoType, ClassName> nameToJavaName, Profile profile,
-      boolean emitAndroid, boolean emitCompact) {
+      boolean emitAndroid, boolean emitCompact, boolean emitKotlin) {
     this.schema = schema;
     this.nameToJavaName = ImmutableMap.copyOf(nameToJavaName);
     this.profile = profile;
     this.emitAndroid = emitAndroid;
     this.emitCompact = emitCompact;
+    this.emitKotlin = emitKotlin;
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact, emitKotlin);
   }
 
   public JavaGenerator withCompact(boolean emitCompact) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact, emitKotlin);
   }
 
   public JavaGenerator withProfile(Profile profile) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact, emitKotlin);
+  }
+
+  public JavaGenerator withKotlin(boolean emitKotlin) {
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact, emitKotlin);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -224,7 +231,7 @@ public final class JavaGenerator {
       }
     }
 
-    return new JavaGenerator(schema, nameToJavaName, new Profile(), false, false);
+    return new JavaGenerator(schema, nameToJavaName, new Profile(), false, false, false);
   }
 
   private static void putAll(Map<ProtoType, ClassName> wireToJava, String javaPackage,
@@ -579,10 +586,20 @@ public final class JavaGenerator {
       if (field.isDeprecated()) {
         fieldBuilder.addAnnotation(Deprecated.class);
       }
-      if (emitAndroid && field.isOptional()) {
+      boolean isNonNull = field.type().isMap() || field.isRepeated() || field.isRequired();
+      if ((emitAndroid && field.isOptional()) || (emitKotlin && !isNonNull)) {
         fieldBuilder.addAnnotation(NULLABLE);
       }
+
       builder.addField(fieldBuilder.build());
+    }
+
+    if (emitKotlin) {
+      for (Field field : type.fieldsAndOneOfFields()) {
+        if (!field.isRequired() && field.type().isScalar()) {
+          builder.addMethod(messageOrDefault(nameAllocator, field, javaType));
+        }
+      }
     }
 
     builder.addMethod(messageFieldsConstructor(nameAllocator, type));
@@ -1399,6 +1416,25 @@ public final class JavaGenerator {
     result.addStatement("return builder.replace(0, 2, \"$L{\").append('}').toString()",
         type.type().simpleName());
 
+    return result.build();
+  }
+
+  private MethodSpec messageOrDefault(NameAllocator nameAllocator, Field field,
+      ClassName javaType) {
+    NameAllocator localNameAllocator = nameAllocator.clone();
+    TypeName fieldJavaType = fieldType(field);
+    boolean isMapOrRepeated = field.type().isMap() || field.isRepeated();
+    String fieldName = localNameAllocator.get(field);
+    String capitalizedFieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+    MethodSpec.Builder result = MethodSpec.methodBuilder("get" + capitalizedFieldName + "OrDefault")
+        .addModifiers(PUBLIC)
+        .returns(fieldJavaType);
+    if (isMapOrRepeated) {
+      result.addStatement("return $N", fieldName);
+    } else {
+      result.addStatement("return com.squareup.wire.Wire.get($N, $N.DEFAULT_$N)", fieldName,
+          javaType.simpleName(), fieldName.toUpperCase(Locale.US));
+    }
     return result.build();
   }
 

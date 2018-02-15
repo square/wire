@@ -70,17 +70,26 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   )
   public final List<PhoneNumber> phone;
 
-  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone) {
-    this(name, id, email, phone, ByteString.EMPTY);
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.protos.person.Person$Address#ADAPTER"
+  )
+  @Nullable
+  public final Address address;
+
+  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone,
+      @Nullable Address address) {
+    this(name, id, email, phone, address, ByteString.EMPTY);
   }
 
   public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone,
-      ByteString unknownFields) {
+      @Nullable Address address, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.id = id;
     this.email = email;
     this.phone = Internal.immutableCopyOf("phone", phone);
+    this.address = address;
   }
 
   @Override
@@ -90,6 +99,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     builder.id = id;
     builder.email = email;
     builder.phone = Internal.copyOf("phone", phone);
+    builder.address = address;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -103,7 +113,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
         && name.equals(o.name)
         && id.equals(o.id)
         && Internal.equals(email, o.email)
-        && phone.equals(o.phone);
+        && phone.equals(o.phone)
+        && Internal.equals(address, o.address);
   }
 
   @Override
@@ -115,6 +126,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       result = result * 37 + id.hashCode();
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + phone.hashCode();
+      result = result * 37 + (address != null ? address.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -128,6 +140,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     public String email;
 
     public List<PhoneNumber> phone;
+
+    public Address address;
 
     public Builder() {
       phone = Internal.newMutableList();
@@ -166,6 +180,11 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       return this;
     }
 
+    public Builder address(Address address) {
+      this.address = address;
+      return this;
+    }
+
     @Override
     public Person build() {
       if (name == null
@@ -173,7 +192,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
         throw Internal.missingRequiredFields(name, "name",
             id, "id");
       }
-      return new Person(name, id, email, phone, super.buildUnknownFields());
+      return new Person(name, id, email, phone, address, super.buildUnknownFields());
     }
   }
 
@@ -315,6 +334,105 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
           throw Internal.missingRequiredFields(number, "number");
         }
         return new PhoneNumber(number, type, super.buildUnknownFields());
+      }
+    }
+  }
+
+  /**
+   * The customer's Address
+   */
+  public static final class Address extends AndroidMessage<Address, Address.Builder> {
+    public static final ProtoAdapter<Address> ADAPTER = ProtoAdapter.newMessageAdapter(Address.class);
+
+    public static final Parcelable.Creator<Address> CREATOR = AndroidMessage.newCreator(ADAPTER);
+
+    private static final long serialVersionUID = 0L;
+
+    public static final String DEFAULT_ZIPCODE = "";
+
+    public static final String DEFAULT_ADDRESS = "";
+
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
+        label = WireField.Label.REQUIRED
+    )
+    public final String zipCode;
+
+    @WireField(
+        tag = 2,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
+        label = WireField.Label.REQUIRED
+    )
+    public final String address;
+
+    public Address(String zipCode, String address) {
+      this(zipCode, address, ByteString.EMPTY);
+    }
+
+    public Address(String zipCode, String address, ByteString unknownFields) {
+      super(ADAPTER, unknownFields);
+      this.zipCode = zipCode;
+      this.address = address;
+    }
+
+    @Override
+    public Builder newBuilder() {
+      Builder builder = new Builder();
+      builder.zipCode = zipCode;
+      builder.address = address;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (other == this) return true;
+      if (!(other instanceof Address)) return false;
+      Address o = (Address) other;
+      return unknownFields().equals(o.unknownFields())
+          && zipCode.equals(o.zipCode)
+          && address.equals(o.address);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = super.hashCode;
+      if (result == 0) {
+        result = unknownFields().hashCode();
+        result = result * 37 + zipCode.hashCode();
+        result = result * 37 + address.hashCode();
+        super.hashCode = result;
+      }
+      return result;
+    }
+
+    public static final class Builder extends Message.Builder<Address, Builder> {
+      public String zipCode;
+
+      public String address;
+
+      public Builder() {
+      }
+
+      public Builder zipCode(String zipCode) {
+        this.zipCode = zipCode;
+        return this;
+      }
+
+      public Builder address(String address) {
+        this.address = address;
+        return this;
+      }
+
+      @Override
+      public Address build() {
+        if (zipCode == null
+            || address == null) {
+          throw Internal.missingRequiredFields(zipCode, "zipCode",
+              address, "address");
+        }
+        return new Address(zipCode, address, super.buildUnknownFields());
       }
     }
   }
