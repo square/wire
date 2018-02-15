@@ -105,6 +105,18 @@ public class WireCompilerTest {
     assertOutputs(outputs, ".compact");
   }
 
+  @Test public void testPersonKotlin() throws Exception {
+    String[] sources = {
+            "person.proto"
+    };
+    invokeCompiler(sources, "--kotlin");
+
+    String[] outputs = {
+            "com/squareup/wire/protos/person/Person.java"
+    };
+    assertOutputs(outputs, ".kotlin");
+  }
+
   @Test public void testSimple() throws Exception {
     String[] sources = {
         "simple_message.proto",

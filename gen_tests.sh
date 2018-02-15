@@ -85,8 +85,20 @@ cp src/test/proto-java.compact/com/squareup/wire/protos/alltypes/AllTypes.java \
 cp src/test/proto-java/com/squareup/wire/protos/RepeatedPackedAndMap.java \
    ../wire-gson-support/src/test/java/com/squareup/wire/protos/RepeatedPackedAndMap.java
 
+# KOTLIN
+
+java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+  --proto_path=../wire-runtime/src/test/proto \
+  --java_out=../wire-runtime/src/test/proto-java.kotlin \
+  --kotlin \
+  person.proto
+
+cp src/test/proto-java.kotlin/com/squareup/wire/protos/person/Person.java \
+   src/test/proto-java/com/squareup/wire/protos/person/Person.java.kotlin
+
 rm -r src/test/proto-java.noOptions
 rm -r src/test/proto-java.pruned
 rm -r src/test/proto-java.compact
 rm -r src/test/proto-java.android
 rm -r src/test/proto-java.android.compact
+rm -r src/test/proto-java.kotlin
