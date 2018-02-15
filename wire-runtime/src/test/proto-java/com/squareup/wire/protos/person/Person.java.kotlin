@@ -72,25 +72,29 @@ public final class Person extends Message<Person, Person.Builder> {
   )
   public final List<PhoneNumber> phone;
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
-    this(name, id, email, phone, ByteString.EMPTY);
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.protos.person.Person$Address#ADAPTER"
+  )
+  @Nullable
+  public final Address address;
+
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone, Address address) {
+    this(name, id, email, phone, address, ByteString.EMPTY);
   }
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phone,
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone, Address address,
       ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.id = id;
     this.email = email;
     this.phone = Internal.immutableCopyOf("phone", phone);
+    this.address = address;
   }
 
   public String getEmailOrDefault() {
     return com.squareup.wire.Wire.get(email, Person.DEFAULT_EMAIL);
-  }
-
-  public List<PhoneNumber> getPhoneOrDefault() {
-    return phone;
   }
 
   @Override
@@ -100,6 +104,7 @@ public final class Person extends Message<Person, Person.Builder> {
     builder.id = id;
     builder.email = email;
     builder.phone = Internal.copyOf("phone", phone);
+    builder.address = address;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -113,7 +118,8 @@ public final class Person extends Message<Person, Person.Builder> {
         && name.equals(o.name)
         && id.equals(o.id)
         && Internal.equals(email, o.email)
-        && phone.equals(o.phone);
+        && phone.equals(o.phone)
+        && Internal.equals(address, o.address);
   }
 
   @Override
@@ -125,6 +131,7 @@ public final class Person extends Message<Person, Person.Builder> {
       result = result * 37 + id.hashCode();
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + phone.hashCode();
+      result = result * 37 + (address != null ? address.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -137,6 +144,7 @@ public final class Person extends Message<Person, Person.Builder> {
     builder.append(", id=").append(id);
     if (email != null) builder.append(", email=").append(email);
     if (!phone.isEmpty()) builder.append(", phone=").append(phone);
+    if (address != null) builder.append(", address=").append(address);
     return builder.replace(0, 2, "Person{").append('}').toString();
   }
 
@@ -148,6 +156,8 @@ public final class Person extends Message<Person, Person.Builder> {
     public String email;
 
     public List<PhoneNumber> phone;
+
+    public Address address;
 
     public Builder() {
       phone = Internal.newMutableList();
@@ -186,6 +196,11 @@ public final class Person extends Message<Person, Person.Builder> {
       return this;
     }
 
+    public Builder address(Address address) {
+      this.address = address;
+      return this;
+    }
+
     @Override
     public Person build() {
       if (name == null
@@ -193,7 +208,7 @@ public final class Person extends Message<Person, Person.Builder> {
         throw Internal.missingRequiredFields(name, "name",
             id, "id");
       }
-      return new Person(name, id, email, phone, super.buildUnknownFields());
+      return new Person(name, id, email, phone, address, super.buildUnknownFields());
     }
   }
 
@@ -281,10 +296,6 @@ public final class Person extends Message<Person, Person.Builder> {
       super(ADAPTER, unknownFields);
       this.number = number;
       this.type = type;
-    }
-
-    public PhoneType getTypeOrDefault() {
-      return com.squareup.wire.Wire.get(type, PhoneNumber.DEFAULT_TYPE);
     }
 
     @Override
@@ -413,6 +424,157 @@ public final class Person extends Message<Person, Person.Builder> {
     }
   }
 
+  /**
+   * The customer's Address
+   */
+  public static final class Address extends Message<Address, Address.Builder> {
+    public static final ProtoAdapter<Address> ADAPTER = new ProtoAdapter_Address();
+
+    private static final long serialVersionUID = 0L;
+
+    public static final String DEFAULT_ZIPCODE = "";
+
+    public static final String DEFAULT_ADDRESS = "";
+
+    @WireField(
+        tag = 1,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
+        label = WireField.Label.REQUIRED
+    )
+    public final String zipCode;
+
+    @WireField(
+        tag = 2,
+        adapter = "com.squareup.wire.ProtoAdapter#STRING",
+        label = WireField.Label.REQUIRED
+    )
+    public final String address;
+
+    public Address(String zipCode, String address) {
+      this(zipCode, address, ByteString.EMPTY);
+    }
+
+    public Address(String zipCode, String address, ByteString unknownFields) {
+      super(ADAPTER, unknownFields);
+      this.zipCode = zipCode;
+      this.address = address;
+    }
+
+    @Override
+    public Builder newBuilder() {
+      Builder builder = new Builder();
+      builder.zipCode = zipCode;
+      builder.address = address;
+      builder.addUnknownFields(unknownFields());
+      return builder;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (other == this) return true;
+      if (!(other instanceof Address)) return false;
+      Address o = (Address) other;
+      return unknownFields().equals(o.unknownFields())
+          && zipCode.equals(o.zipCode)
+          && address.equals(o.address);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = super.hashCode;
+      if (result == 0) {
+        result = unknownFields().hashCode();
+        result = result * 37 + zipCode.hashCode();
+        result = result * 37 + address.hashCode();
+        super.hashCode = result;
+      }
+      return result;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      builder.append(", zipCode=").append(zipCode);
+      builder.append(", address=").append(address);
+      return builder.replace(0, 2, "Address{").append('}').toString();
+    }
+
+    public static final class Builder extends Message.Builder<Address, Builder> {
+      public String zipCode;
+
+      public String address;
+
+      public Builder() {
+      }
+
+      public Builder zipCode(String zipCode) {
+        this.zipCode = zipCode;
+        return this;
+      }
+
+      public Builder address(String address) {
+        this.address = address;
+        return this;
+      }
+
+      @Override
+      public Address build() {
+        if (zipCode == null
+            || address == null) {
+          throw Internal.missingRequiredFields(zipCode, "zipCode",
+              address, "address");
+        }
+        return new Address(zipCode, address, super.buildUnknownFields());
+      }
+    }
+
+    private static final class ProtoAdapter_Address extends ProtoAdapter<Address> {
+      public ProtoAdapter_Address() {
+        super(FieldEncoding.LENGTH_DELIMITED, Address.class);
+      }
+
+      @Override
+      public int encodedSize(Address value) {
+        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.zipCode)
+            + ProtoAdapter.STRING.encodedSizeWithTag(2, value.address)
+            + value.unknownFields().size();
+      }
+
+      @Override
+      public void encode(ProtoWriter writer, Address value) throws IOException {
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.zipCode);
+        ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address);
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
+      public Address decode(ProtoReader reader) throws IOException {
+        Builder builder = new Builder();
+        long token = reader.beginMessage();
+        for (int tag; (tag = reader.nextTag()) != -1;) {
+          switch (tag) {
+            case 1: builder.zipCode(ProtoAdapter.STRING.decode(reader)); break;
+            case 2: builder.address(ProtoAdapter.STRING.decode(reader)); break;
+            default: {
+              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
+              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
+              builder.addUnknownField(tag, fieldEncoding, value);
+            }
+          }
+        }
+        reader.endMessage(token);
+        return builder.build();
+      }
+
+      @Override
+      public Address redact(Address value) {
+        Builder builder = value.newBuilder();
+        builder.clearUnknownFields();
+        return builder.build();
+      }
+    }
+  }
+
   private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
     public ProtoAdapter_Person() {
       super(FieldEncoding.LENGTH_DELIMITED, Person.class);
@@ -424,6 +586,7 @@ public final class Person extends Message<Person, Person.Builder> {
           + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
           + ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
           + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
+          + Address.ADAPTER.encodedSizeWithTag(5, value.address)
           + value.unknownFields().size();
     }
 
@@ -433,6 +596,7 @@ public final class Person extends Message<Person, Person.Builder> {
       ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
       ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
+      Address.ADAPTER.encodeWithTag(writer, 5, value.address);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -446,6 +610,7 @@ public final class Person extends Message<Person, Person.Builder> {
           case 2: builder.id(ProtoAdapter.INT32.decode(reader)); break;
           case 3: builder.email(ProtoAdapter.STRING.decode(reader)); break;
           case 4: builder.phone.add(PhoneNumber.ADAPTER.decode(reader)); break;
+          case 5: builder.address(Address.ADAPTER.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
             Object value = fieldEncoding.rawProtoAdapter().decode(reader);
@@ -461,6 +626,7 @@ public final class Person extends Message<Person, Person.Builder> {
     public Person redact(Person value) {
       Builder builder = value.newBuilder();
       Internal.redactElements(builder.phone, PhoneNumber.ADAPTER);
+      if (builder.address != null) builder.address = Address.ADAPTER.redact(builder.address);
       builder.clearUnknownFields();
       return builder.build();
     }
