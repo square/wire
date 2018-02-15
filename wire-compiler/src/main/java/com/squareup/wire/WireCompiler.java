@@ -58,6 +58,7 @@ import java.util.concurrent.Future;
  *     [--dry_run]
  *     [--android]
  *     [--compact]
+ *     [--kotlin]
  *     [file [file...]]
  * </pre>
  *
@@ -81,6 +82,8 @@ import java.util.concurrent.Future;
  *
  * <p>The {@code --compact} flag will emit code that uses reflection for reading, writing, and
  * toString methods which are normally implemented with code generation.
+ *
+ * <p>The {@code --kotlin} flag will add Nullable annotation and DefaultGetter class.
  */
 public final class WireCompiler {
   public static final String PROTO_PATH_FLAG = "--proto_path=";
@@ -93,6 +96,7 @@ public final class WireCompiler {
   public static final String NAMED_FILES_ONLY = "--named_files_only";
   public static final String ANDROID = "--android";
   public static final String COMPACT = "--compact";
+  public static final String KOTLIN = "--kotlin";
   public static final int MAX_WRITE_CONCURRENCY = 8;
 
   private static final String CODE_GENERATED_BY_WIRE =
@@ -110,10 +114,11 @@ public final class WireCompiler {
   final boolean namedFilesOnly;
   final boolean emitAndroid;
   final boolean emitCompact;
+  final boolean emitKotlin;
 
   WireCompiler(FileSystem fs, WireLogger log, List<String> protoPaths, String javaOut,
-      List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
-      boolean namedFilesOnly, boolean emitAndroid, boolean emitCompact) {
+               List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
+               boolean namedFilesOnly, boolean emitAndroid, boolean emitCompact, boolean emitKotlin) {
     this.fs = fs;
     this.log = log;
     this.protoPaths = protoPaths;
@@ -124,6 +129,7 @@ public final class WireCompiler {
     this.namedFilesOnly = namedFilesOnly;
     this.emitAndroid = emitAndroid;
     this.emitCompact = emitCompact;
+    this.emitKotlin = emitKotlin;
   }
 
   public static void main(String... args) throws IOException {
@@ -152,6 +158,7 @@ public final class WireCompiler {
     boolean namedFilesOnly = false;
     boolean emitAndroid = false;
     boolean emitCompact = false;
+    boolean emitKotlin = false;
 
     for (String arg : args) {
       if (arg.startsWith(PROTO_PATH_FLAG)) {
@@ -185,6 +192,8 @@ public final class WireCompiler {
         emitAndroid = true;
       } else if (arg.equals(COMPACT)) {
         emitCompact = true;
+      } else if (arg.equals(KOTLIN)) {
+        emitKotlin = true;
       } else if (arg.startsWith("--")) {
         throw new IllegalArgumentException("Unknown argument '" + arg + "'.");
       } else {
@@ -199,7 +208,7 @@ public final class WireCompiler {
     logger.setQuiet(quiet);
 
     return new WireCompiler(fileSystem, logger, protoPaths, javaOut, sourceFileNames,
-        identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitCompact);
+        identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitCompact, emitKotlin);
   }
 
   private static List<String> splitArg(String arg, int flagLength) {
@@ -235,7 +244,8 @@ public final class WireCompiler {
     JavaGenerator javaGenerator = JavaGenerator.get(schema)
         .withProfile(profile)
         .withAndroid(emitAndroid)
-        .withCompact(emitCompact);
+        .withCompact(emitCompact)
+        .withKotlin(emitKotlin);
 
     ConcurrentLinkedQueue<Type> types = new ConcurrentLinkedQueue<>();
     for (ProtoFile protoFile : schema.protoFiles()) {
