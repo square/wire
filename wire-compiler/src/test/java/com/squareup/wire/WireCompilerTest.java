@@ -107,12 +107,12 @@ public class WireCompilerTest {
 
   @Test public void testPersonKotlin() throws Exception {
     String[] sources = {
-            "person.proto"
+        "person.proto"
     };
     invokeCompiler(sources, "--kotlin");
 
     String[] outputs = {
-            "com/squareup/wire/protos/person/Person.java"
+        "com/squareup/wire/protos/person/Person.java"
     };
     assertOutputs(outputs, ".kotlin");
   }

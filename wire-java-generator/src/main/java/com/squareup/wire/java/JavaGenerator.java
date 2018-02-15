@@ -192,7 +192,7 @@ public final class JavaGenerator {
   private final boolean emitKotlin;
 
   private JavaGenerator(Schema schema, Map<ProtoType, ClassName> nameToJavaName, Profile profile,
-                        boolean emitAndroid, boolean emitCompact, boolean emitKotlin) {
+      boolean emitAndroid, boolean emitCompact, boolean emitKotlin) {
     this.schema = schema;
     this.nameToJavaName = ImmutableMap.copyOf(nameToJavaName);
     this.profile = profile;
@@ -596,7 +596,7 @@ public final class JavaGenerator {
 
     if (emitKotlin) {
       for (Field field : type.fieldsAndOneOfFields()) {
-        if(!field.isRequired()) {
+        if (!field.isRequired()) {
           builder.addMethod(messageOrDefault(nameAllocator, field, javaType));
         }
       }
@@ -1419,20 +1419,21 @@ public final class JavaGenerator {
     return result.build();
   }
 
-  private MethodSpec messageOrDefault(NameAllocator nameAllocator, Field field, ClassName javaType) {
+  private MethodSpec messageOrDefault(NameAllocator nameAllocator, Field field,
+      ClassName javaType) {
     NameAllocator localNameAllocator = nameAllocator.clone();
     TypeName fieldJavaType = fieldType(field);
     boolean isMapOrRepeated = field.type().isMap() || field.isRepeated();
     String fieldName = localNameAllocator.get(field);
     String capitalizedFieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
     MethodSpec.Builder result = MethodSpec.methodBuilder("get" + capitalizedFieldName + "OrDefault")
-            .addModifiers(PUBLIC)
-            .returns(fieldJavaType);
+        .addModifiers(PUBLIC)
+        .returns(fieldJavaType);
     if (isMapOrRepeated) {
       result.addStatement("return $N", fieldName);
     } else {
-      result.addStatement("return com.squareup.wire.Wire.get($N, $N.DEFAULT_$N)", fieldName, javaType.simpleName(),
-              fieldName.toUpperCase(Locale.US));
+      result.addStatement("return com.squareup.wire.Wire.get($N, $N.DEFAULT_$N)", fieldName,
+          javaType.simpleName(), fieldName.toUpperCase(Locale.US));
     }
     return result.build();
   }

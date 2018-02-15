@@ -117,8 +117,8 @@ public final class WireCompiler {
   final boolean emitKotlin;
 
   WireCompiler(FileSystem fs, WireLogger log, List<String> protoPaths, String javaOut,
-               List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
-               boolean namedFilesOnly, boolean emitAndroid, boolean emitCompact, boolean emitKotlin) {
+      List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
+      boolean namedFilesOnly, boolean emitAndroid, boolean emitCompact, boolean emitKotlin) {
     this.fs = fs;
     this.log = log;
     this.protoPaths = protoPaths;
