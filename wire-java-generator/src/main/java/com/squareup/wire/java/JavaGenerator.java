@@ -596,7 +596,7 @@ public final class JavaGenerator {
 
     if (emitKotlin) {
       for (Field field : type.fieldsAndOneOfFields()) {
-        if (!field.isRequired()) {
+        if (!field.isRequired() && field.type().isScalar()) {
           builder.addMethod(messageOrDefault(nameAllocator, field, javaType));
         }
       }
