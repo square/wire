@@ -534,7 +534,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       return this;
     }
 
-    public Builder squareup_protos_extension_collision_1_a(String squareup_protos_extension_collision_1_a) {
+    public Builder squareup_protos_extension_collision_1_a(
+        String squareup_protos_extension_collision_1_a) {
       this.squareup_protos_extension_collision_1_a = squareup_protos_extension_collision_1_a;
       return this;
     }
@@ -544,7 +545,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       return this;
     }
 
-    public Builder squareup_protos_extension_collision_2_a(String squareup_protos_extension_collision_2_a) {
+    public Builder squareup_protos_extension_collision_2_a(
+        String squareup_protos_extension_collision_2_a) {
       this.squareup_protos_extension_collision_2_a = squareup_protos_extension_collision_2_a;
       return this;
     }
