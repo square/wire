@@ -211,8 +211,7 @@ public final class JavaGenerator {
   }
 
   public static JavaGenerator get(Schema schema) {
-    Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>();
-    nameToJavaName.putAll(BUILT_IN_TYPES_MAP);
+    Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>(BUILT_IN_TYPES_MAP);
 
     for (ProtoFile protoFile : schema.protoFiles()) {
       String javaPackage = javaPackage(protoFile);
@@ -407,7 +406,7 @@ public final class JavaGenerator {
     builder.addField(TypeName.INT, value, PRIVATE, FINAL);
 
     MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
-    constructorBuilder.addStatement("this.$N = $N", value, value);
+    constructorBuilder.addStatement("this.$1N = $1N", value);
     constructorBuilder.addParameter(TypeName.INT, value);
 
     // Enum constant options, each of which requires a constructor parameter and a field.
