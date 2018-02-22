@@ -16,10 +16,12 @@
 package com.squareup.wire;
 
 import com.squareup.javapoet.JavaFile;
+import com.squareup.kotlinpoet.FileSpec;
 import java.nio.file.Path;
 
 interface WireLogger {
   void setQuiet(boolean quiet);
   void artifact(Path outputPath, JavaFile javaFile);
+  void artifact(Path outputPath, FileSpec kotlinFile);
   void info(String message);
 }

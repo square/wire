@@ -15,7 +15,10 @@
  */
 package com.squareup.wire;
 
+import com.google.common.collect.Iterables;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.kotlinpoet.FileSpec;
+import com.squareup.kotlinpoet.TypeSpec;
 import java.nio.file.Path;
 
 final class ConsoleWireLogger implements WireLogger {
@@ -38,6 +41,17 @@ final class ConsoleWireLogger implements WireLogger {
     } else {
       System.out.printf("Writing %s.%s to %s%n",
           javaFile.packageName, javaFile.typeSpec.name, outputPath);
+    }
+  }
+
+  @Override public void artifact(Path outputPath, FileSpec kotlinFile) {
+    TypeSpec typeSpec = (TypeSpec) Iterables.getOnlyElement(kotlinFile.getMembers());
+    if (quiet) {
+      System.out.printf("%s.%s%n",
+          kotlinFile.getPackageName(), typeSpec.getName());
+    } else {
+      System.out.printf("Writing %s.%s to %s%n",
+          kotlinFile.getPackageName(), typeSpec.getName(), outputPath);
     }
   }
 }

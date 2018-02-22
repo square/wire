@@ -18,6 +18,7 @@ package com.squareup.wire;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.Profile;
 import com.squareup.wire.java.ProfileLoader;
+import com.squareup.wire.kotlin.KotlinGenerator;
 import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.Schema;
@@ -85,6 +86,7 @@ import static com.google.common.base.Preconditions.checkState;
 public final class WireCompiler {
   public static final String PROTO_PATH_FLAG = "--proto_path=";
   public static final String JAVA_OUT_FLAG = "--java_out=";
+  public static final String KOTLIN_OUT_FLAG = "--kotlin_out=";
   public static final String FILES_FLAG = "--files=";
   public static final String INCLUDES_FLAG = "--includes=";
   public static final String EXCLUDES_FLAG = "--excludes=";
@@ -105,6 +107,7 @@ public final class WireCompiler {
 
   final List<String> protoPaths;
   final String javaOut;
+  final String kotlinOut;
   final List<String> sourceFileNames;
   final IdentifierSet identifierSet;
   final boolean dryRun;
@@ -114,13 +117,14 @@ public final class WireCompiler {
   final boolean emitCompact;
 
   WireCompiler(FileSystem fs, WireLogger log, List<String> protoPaths, String javaOut,
-      List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
+      String kotlinOut, List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
       boolean namedFilesOnly, boolean emitAndroid, boolean emitAndroidAnnotations,
       boolean emitCompact) {
     this.fs = fs;
     this.log = log;
     this.protoPaths = protoPaths;
     this.javaOut = javaOut;
+    this.kotlinOut = kotlinOut;
     this.sourceFileNames = sourceFileNames;
     this.identifierSet = identifierSet;
     this.dryRun = dryRun;
@@ -151,6 +155,7 @@ public final class WireCompiler {
     IdentifierSet.Builder identifierSetBuilder = new IdentifierSet.Builder();
     List<String> protoPaths = new ArrayList<>();
     String javaOut = null;
+    String kotlinOut = null;
     boolean quiet = false;
     boolean dryRun = false;
     boolean namedFilesOnly = false;
@@ -164,6 +169,9 @@ public final class WireCompiler {
       } else if (arg.startsWith(JAVA_OUT_FLAG)) {
         checkState(javaOut == null, "java_out already set");
         javaOut = arg.substring(JAVA_OUT_FLAG.length());
+      } else if (arg.startsWith(KOTLIN_OUT_FLAG)) {
+        checkState(kotlinOut == null, "kotlin_out already set");
+        kotlinOut = arg.substring(KOTLIN_OUT_FLAG.length());
       } else if (arg.startsWith(FILES_FLAG)) {
         File files = new File(arg.substring(FILES_FLAG.length()));
         String[] fileNames;
@@ -200,13 +208,14 @@ public final class WireCompiler {
       }
     }
 
-    if (javaOut == null) {
-      throw new WireException("Must specify " + JAVA_OUT_FLAG + " flag");
+    if ((javaOut != null) == (kotlinOut != null)) {
+      throw new WireException(
+          "Only one of " + JAVA_OUT_FLAG + " or " + KOTLIN_OUT_FLAG + " flag must be specified");
     }
 
     logger.setQuiet(quiet);
 
-    return new WireCompiler(fileSystem, logger, protoPaths, javaOut, sourceFileNames,
+    return new WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, sourceFileNames,
         identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitAndroidAnnotations,
         emitCompact);
   }
@@ -245,10 +254,12 @@ public final class WireCompiler {
       types.addAll(protoFile.types());
     }
 
+    ExecutorService executor = Executors.newCachedThreadPool();
+    List<Future<Void>> futures = new ArrayList<>(MAX_WRITE_CONCURRENCY);
+
+    if (javaOut != null) {
       String profileName = emitAndroid ? "android" : "java";
-      Profile profile = new ProfileLoader(profileName)
-          .schema(schema)
-          .load();
+      Profile profile = new ProfileLoader(profileName).schema(schema).load();
 
       JavaGenerator javaGenerator = JavaGenerator.get(schema)
           .withProfile(profile)
@@ -256,11 +267,21 @@ public final class WireCompiler {
           .withAndroidAnnotations(emitAndroidAnnotations)
           .withCompact(emitCompact);
 
-    ExecutorService executor = Executors.newCachedThreadPool();
-    List<Future<Void>> futures = new ArrayList<>(MAX_WRITE_CONCURRENCY);
-    for (int i = 0; i < MAX_WRITE_CONCURRENCY; ++i) {
-      JavaFileWriter task = new JavaFileWriter(javaOut, javaGenerator, types, dryRun, fs, log);
-      futures.add(executor.submit(task));
+      for (int i = 0; i < MAX_WRITE_CONCURRENCY; ++i) {
+        JavaFileWriter task = new JavaFileWriter(javaOut, javaGenerator, types, dryRun, fs, log);
+        futures.add(executor.submit(
+            task));
+      }
+    } else if (kotlinOut != null) {
+      KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema, emitAndroid);
+
+      for (int i = 0; i < MAX_WRITE_CONCURRENCY; ++i) {
+        KotlinFileWriter task =
+            new KotlinFileWriter(kotlinOut, kotlinGenerator, types, fs, log, dryRun);
+        futures.add(executor.submit(task));
+      }
+    } else {
+      throw new AssertionError();
     }
 
     executor.shutdown();
