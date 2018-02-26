@@ -25,12 +25,12 @@
 
   <organization>
     <name>Square, Inc.</name>
-    <url>http://squareup.com</url>
+    <url>https://squareup.com</url>
   </organization>
 
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>http://github.com/square/wire/issues</url>
+    <url>https://github.com/square/wire/issues</url>
   </issueManagement>
 
   <licenses>
