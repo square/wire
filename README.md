@@ -402,7 +402,7 @@ Further Documentation
 See [Google's excellent documentation][schema_docs] on the structure and syntax of proto schemas.
 
  [google_protos]: https://developers.google.com/protocol-buffers/docs/overview
- [effective_java]: https://www.amazon.ca/Effective-Java-Edition-Joshua-Bloch/dp/0321356683
+ [effective_java]: https://www.amazon.ca/Effective-Java-3rd-Joshua-Bloch/dp/0134685997/
  [schema_docs]: https://developers.google.com/protocol-buffers/docs/proto
  [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
