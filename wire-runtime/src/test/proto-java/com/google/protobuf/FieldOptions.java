@@ -84,13 +84,15 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   /**
    * The jstype option determines the JavaScript type used for values of the
    * field.  The option is permitted only for 64 bit integral and fixed types
-   * (int64, uint64, sint64, fixed64, sfixed64).  By default these types are
-   * represented as JavaScript strings.  This avoids loss of precision that can
-   * happen when a large value is converted to a floating point JavaScript
-   * numbers.  Specifying JS_NUMBER for the jstype causes the generated
-   * JavaScript code to use the JavaScript "number" type instead of strings.
-   * This option is an enum to permit additional types to be added,
-   * e.g. goog.math.Integer.
+   * (int64, uint64, sint64, fixed64, sfixed64).  A field with jstype JS_STRING
+   * is represented as JavaScript string, which avoids loss of precision that
+   * can happen when a large value is converted to a floating point JavaScript.
+   * Specifying JS_NUMBER for the jstype causes the generated JavaScript code to
+   * use the JavaScript "number" type.  The behavior of the default option
+   * JS_NORMAL is implementation dependent.
+   *
+   * This option is an enum to permit additional types to be added, e.g.
+   * goog.math.Integer.
    */
   @WireField(
       tag = 6,
@@ -118,7 +120,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    *
    *
    * Note that implementations may choose not to check required fields within
-   * a lazy sub-message.  That is, calling IsInitialized() on the outher message
+   * a lazy sub-message.  That is, calling IsInitialized() on the outer message
    * may return true even if the inner message has missing required fields.
    * This is necessary because otherwise the inner message would have to be
    * parsed in order to perform the check, defeating the purpose of lazy
@@ -438,13 +440,15 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     /**
      * The jstype option determines the JavaScript type used for values of the
      * field.  The option is permitted only for 64 bit integral and fixed types
-     * (int64, uint64, sint64, fixed64, sfixed64).  By default these types are
-     * represented as JavaScript strings.  This avoids loss of precision that can
-     * happen when a large value is converted to a floating point JavaScript
-     * numbers.  Specifying JS_NUMBER for the jstype causes the generated
-     * JavaScript code to use the JavaScript "number" type instead of strings.
-     * This option is an enum to permit additional types to be added,
-     * e.g. goog.math.Integer.
+     * (int64, uint64, sint64, fixed64, sfixed64).  A field with jstype JS_STRING
+     * is represented as JavaScript string, which avoids loss of precision that
+     * can happen when a large value is converted to a floating point JavaScript.
+     * Specifying JS_NUMBER for the jstype causes the generated JavaScript code to
+     * use the JavaScript "number" type.  The behavior of the default option
+     * JS_NORMAL is implementation dependent.
+     *
+     * This option is an enum to permit additional types to be added, e.g.
+     * goog.math.Integer.
      */
     public Builder jstype(JSType jstype) {
       this.jstype = jstype;
@@ -471,7 +475,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
      *
      *
      * Note that implementations may choose not to check required fields within
-     * a lazy sub-message.  That is, calling IsInitialized() on the outher message
+     * a lazy sub-message.  That is, calling IsInitialized() on the outer message
      * may return true even if the inner message has missing required fields.
      * This is necessary because otherwise the inner message would have to be
      * parsed in order to perform the check, defeating the purpose of lazy

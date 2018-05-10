@@ -2,11 +2,13 @@
 // Source file: google/protobuf/descriptor.proto
 package com.google.protobuf;
 
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -25,6 +27,8 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
   public static final Boolean DEFAULT_DEPRECATED = false;
 
+  public static final IdempotencyLevel DEFAULT_IDEMPOTENCY_LEVEL = IdempotencyLevel.IDEMPOTENCY_UNKNOWN;
+
   /**
    * Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
    *   framework.  We apologize for hoarding these numbers to ourselves, but
@@ -41,6 +45,12 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   )
   public final Boolean deprecated;
 
+  @WireField(
+      tag = 34,
+      adapter = "com.google.protobuf.MethodOptions$IdempotencyLevel#ADAPTER"
+  )
+  public final IdempotencyLevel idempotency_level;
+
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
@@ -51,14 +61,16 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  public MethodOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option) {
-    this(deprecated, uninterpreted_option, ByteString.EMPTY);
+  public MethodOptions(Boolean deprecated, IdempotencyLevel idempotency_level,
+      List<UninterpretedOption> uninterpreted_option) {
+    this(deprecated, idempotency_level, uninterpreted_option, ByteString.EMPTY);
   }
 
-  public MethodOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option,
-      ByteString unknownFields) {
+  public MethodOptions(Boolean deprecated, IdempotencyLevel idempotency_level,
+      List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.deprecated = deprecated;
+    this.idempotency_level = idempotency_level;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
@@ -66,6 +78,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.deprecated = deprecated;
+    builder.idempotency_level = idempotency_level;
     builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -78,6 +91,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     MethodOptions o = (MethodOptions) other;
     return unknownFields().equals(o.unknownFields())
         && Internal.equals(deprecated, o.deprecated)
+        && Internal.equals(idempotency_level, o.idempotency_level)
         && uninterpreted_option.equals(o.uninterpreted_option);
   }
 
@@ -87,6 +101,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
+      result = result * 37 + (idempotency_level != null ? idempotency_level.hashCode() : 0);
       result = result * 37 + uninterpreted_option.hashCode();
       super.hashCode = result;
     }
@@ -97,12 +112,15 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
+    if (idempotency_level != null) builder.append(", idempotency_level=").append(idempotency_level);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     return builder.replace(0, 2, "MethodOptions{").append('}').toString();
   }
 
   public static final class Builder extends Message.Builder<MethodOptions, Builder> {
     public Boolean deprecated;
+
+    public IdempotencyLevel idempotency_level;
 
     public List<UninterpretedOption> uninterpreted_option;
 
@@ -125,6 +143,11 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
       return this;
     }
 
+    public Builder idempotency_level(IdempotencyLevel idempotency_level) {
+      this.idempotency_level = idempotency_level;
+      return this;
+    }
+
     /**
      * The parser stores options it doesn't recognize here. See above.
      */
@@ -136,7 +159,62 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
     @Override
     public MethodOptions build() {
-      return new MethodOptions(deprecated, uninterpreted_option, super.buildUnknownFields());
+      return new MethodOptions(deprecated, idempotency_level, uninterpreted_option, super.buildUnknownFields());
+    }
+  }
+
+  /**
+   * Is this method side-effect-free (or safe in HTTP parlance), or idempotent,
+   * or neither? HTTP based RPC implementation may choose GET verb for safe
+   * methods, and PUT verb for idempotent methods instead of the default POST.
+   */
+  public enum IdempotencyLevel implements WireEnum {
+    IDEMPOTENCY_UNKNOWN(0),
+
+    /**
+     * implies idempotent
+     */
+    NO_SIDE_EFFECTS(1),
+
+    /**
+     * idempotent, but may have side effects
+     */
+    IDEMPOTENT(2);
+
+    public static final ProtoAdapter<IdempotencyLevel> ADAPTER = new ProtoAdapter_IdempotencyLevel();
+
+    private final int value;
+
+    IdempotencyLevel(int value) {
+      this.value = value;
+    }
+
+    /**
+     * Return the constant for {@code value} or null.
+     */
+    public static IdempotencyLevel fromValue(int value) {
+      switch (value) {
+        case 0: return IDEMPOTENCY_UNKNOWN;
+        case 1: return NO_SIDE_EFFECTS;
+        case 2: return IDEMPOTENT;
+        default: return null;
+      }
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
+
+    private static final class ProtoAdapter_IdempotencyLevel extends EnumAdapter<IdempotencyLevel> {
+      ProtoAdapter_IdempotencyLevel() {
+        super(IdempotencyLevel.class);
+      }
+
+      @Override
+      protected IdempotencyLevel fromValue(int value) {
+        return IdempotencyLevel.fromValue(value);
+      }
     }
   }
 
@@ -148,6 +226,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     @Override
     public int encodedSize(MethodOptions value) {
       return ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
+          + IdempotencyLevel.ADAPTER.encodedSizeWithTag(34, value.idempotency_level)
           + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
           + value.unknownFields().size();
     }
@@ -155,6 +234,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     @Override
     public void encode(ProtoWriter writer, MethodOptions value) throws IOException {
       ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
+      IdempotencyLevel.ADAPTER.encodeWithTag(writer, 34, value.idempotency_level);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }
@@ -166,6 +246,14 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
           case 33: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
+          case 34: {
+            try {
+              builder.idempotency_level(IdempotencyLevel.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
