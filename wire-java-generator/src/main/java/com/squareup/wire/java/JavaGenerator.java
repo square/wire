@@ -187,27 +187,37 @@ public final class JavaGenerator {
   private final ImmutableMap<ProtoType, ClassName> nameToJavaName;
   private final Profile profile;
   private final boolean emitAndroid;
+  private final boolean emitAndroidAnnotations;
   private final boolean emitCompact;
 
   private JavaGenerator(Schema schema, Map<ProtoType, ClassName> nameToJavaName, Profile profile,
-      boolean emitAndroid, boolean emitCompact) {
+      boolean emitAndroid, boolean emitAndroidAnnotations, boolean emitCompact) {
     this.schema = schema;
     this.nameToJavaName = ImmutableMap.copyOf(nameToJavaName);
     this.profile = profile;
     this.emitAndroid = emitAndroid;
+    this.emitAndroidAnnotations = emitAndroidAnnotations || emitAndroid;
     this.emitCompact = emitCompact;
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitAndroidAnnotations,
+        emitCompact);
+  }
+
+  public JavaGenerator withAndroidAnnotations(boolean emitAndroidAnnotations) {
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitAndroidAnnotations,
+        emitCompact);
   }
 
   public JavaGenerator withCompact(boolean emitCompact) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitAndroidAnnotations,
+        emitCompact);
   }
 
   public JavaGenerator withProfile(Profile profile) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitCompact);
+    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitAndroidAnnotations,
+        emitCompact);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -223,7 +233,7 @@ public final class JavaGenerator {
       }
     }
 
-    return new JavaGenerator(schema, nameToJavaName, new Profile(), false, false);
+    return new JavaGenerator(schema, nameToJavaName, new Profile(), false, false, false);
   }
 
   private static void putAll(Map<ProtoType, ClassName> wireToJava, String javaPackage,
@@ -578,7 +588,7 @@ public final class JavaGenerator {
       if (field.isDeprecated()) {
         fieldBuilder.addAnnotation(Deprecated.class);
       }
-      if (emitAndroid && field.isOptional()) {
+      if (emitAndroidAnnotations && field.isOptional()) {
         fieldBuilder.addAnnotation(NULLABLE);
       }
       builder.addField(fieldBuilder.build());
@@ -1210,7 +1220,7 @@ public final class JavaGenerator {
       TypeName javaType = fieldType(field);
       String fieldName = nameAllocator.get(field);
       ParameterSpec.Builder param = ParameterSpec.builder(javaType, fieldName);
-      if (emitAndroid && field.isOptional()) {
+      if (emitAndroidAnnotations && field.isOptional()) {
         param.addAnnotation(NULLABLE);
       }
       result.addParameter(param.build());
@@ -1257,7 +1267,7 @@ public final class JavaGenerator {
       TypeName javaType = fieldType(field);
       String fieldName = localNameAllocator.get(field);
       ParameterSpec.Builder param = ParameterSpec.builder(javaType, fieldName);
-      if (emitAndroid && field.isOptional()) {
+      if (emitAndroidAnnotations && field.isOptional()) {
         param.addAnnotation(NULLABLE);
       }
       result.addParameter(param.build());
