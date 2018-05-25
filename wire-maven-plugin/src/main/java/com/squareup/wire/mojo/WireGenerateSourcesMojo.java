@@ -5,6 +5,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.java.JavaGenerator;
+import com.squareup.wire.java.JavaPackage;
 import com.squareup.wire.java.Profile;
 import com.squareup.wire.java.ProfileLoader;
 import com.squareup.wire.schema.IdentifierSet;
@@ -50,6 +51,9 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   @Parameter(property = "wire.excludes")
   private String[] excludes;
 
+  @Parameter(property = "wire.packagePrefix")
+  private String packagePrefix;
+
   @Parameter(property = "wire.serviceFactory")
   private String serviceFactory;
 
@@ -85,7 +89,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
         schema = retainRoots(identifierSet, schema);
       }
 
-      JavaGenerator javaGenerator = JavaGenerator.get(schema)
+      JavaGenerator javaGenerator = JavaGenerator.get(schema, packagePrefix())
           .withAndroid(emitAndroid)
           .withCompact(emitCompact)
           .withProfile(profile);
@@ -106,6 +110,10 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     } catch (Exception e) {
       throw new MojoExecutionException("Wire Plugin: Failure compiling proto sources.", e);
     }
+  }
+
+  private JavaPackage packagePrefix() {
+    return packagePrefix == null ? JavaPackage.ROOT : JavaPackage.parse(packagePrefix);
   }
 
   private IdentifierSet identifierSet() {

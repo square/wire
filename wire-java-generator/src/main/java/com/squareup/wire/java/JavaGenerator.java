@@ -211,10 +211,17 @@ public final class JavaGenerator {
   }
 
   public static JavaGenerator get(Schema schema) {
+    return get(schema, JavaPackage.ROOT);
+  }
+
+  public static JavaGenerator get(Schema schema, JavaPackage packagePrefix) {
+    if (packagePrefix == null) {
+      throw new NullPointerException("packagePrefix");
+    }
     Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>(BUILT_IN_TYPES_MAP);
 
     for (ProtoFile protoFile : schema.protoFiles()) {
-      String javaPackage = javaPackage(protoFile);
+      String javaPackage = javaPackage(protoFile, packagePrefix);
       putAll(nameToJavaName, javaPackage, null, protoFile.types());
 
       for (Service service : protoFile.services()) {
@@ -303,7 +310,11 @@ public final class JavaGenerator {
     return result.build();
   }
 
-  private static String javaPackage(ProtoFile protoFile) {
+  private static String javaPackage(ProtoFile protoFile, JavaPackage packagePrefix) {
+    return packagePrefix.plus(javaPackageFromProto(protoFile)).asString();
+  }
+
+  private static String javaPackageFromProto(ProtoFile protoFile) {
     String javaPackage = protoFile.javaPackage();
     if (javaPackage != null) {
       return javaPackage;
