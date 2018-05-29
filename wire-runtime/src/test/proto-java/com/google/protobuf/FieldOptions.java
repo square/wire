@@ -247,37 +247,24 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   )
   public final Boolean redacted;
 
-  public FieldOptions(CType ctype, Boolean packed, JSType jstype, Boolean lazy, Boolean deprecated,
-      Boolean weak, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one,
-      Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three,
-      FooBar my_field_option_four, String squareup_protos_extension_collision_1_a, String b,
-      String squareup_protos_extension_collision_2_a, String c, Boolean redacted) {
-    this(ctype, packed, jstype, lazy, deprecated, weak, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, squareup_protos_extension_collision_1_a, b, squareup_protos_extension_collision_2_a, c, redacted, ByteString.EMPTY);
-  }
-
-  public FieldOptions(CType ctype, Boolean packed, JSType jstype, Boolean lazy, Boolean deprecated,
-      Boolean weak, List<UninterpretedOption> uninterpreted_option, Integer my_field_option_one,
-      Float my_field_option_two, FooBar.FooBarBazEnum my_field_option_three,
-      FooBar my_field_option_four, String squareup_protos_extension_collision_1_a, String b,
-      String squareup_protos_extension_collision_2_a, String c, Boolean redacted,
-      ByteString unknownFields) {
+  public FieldOptions(Builder builder, ByteString unknownFields)  {
     super(ADAPTER, unknownFields);
-    this.ctype = ctype;
-    this.packed = packed;
-    this.jstype = jstype;
-    this.lazy = lazy;
-    this.deprecated = deprecated;
-    this.weak = weak;
-    this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
-    this.my_field_option_one = my_field_option_one;
-    this.my_field_option_two = my_field_option_two;
-    this.my_field_option_three = my_field_option_three;
-    this.my_field_option_four = my_field_option_four;
-    this.squareup_protos_extension_collision_1_a = squareup_protos_extension_collision_1_a;
-    this.b = b;
-    this.squareup_protos_extension_collision_2_a = squareup_protos_extension_collision_2_a;
-    this.c = c;
-    this.redacted = redacted;
+    this.ctype = builder.ctype;
+    this.packed = builder.packed;
+    this.jstype = builder.jstype;
+    this.lazy = builder.lazy;
+    this.deprecated = builder.deprecated;
+    this.weak = builder.weak;
+    this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", builder.uninterpreted_option);
+    this.my_field_option_one = builder.my_field_option_one;
+    this.my_field_option_two = builder.my_field_option_two;
+    this.my_field_option_three = builder.my_field_option_three;
+    this.my_field_option_four = builder.my_field_option_four;
+    this.squareup_protos_extension_collision_1_a = builder.squareup_protos_extension_collision_1_a;
+    this.b = builder.b;
+    this.squareup_protos_extension_collision_2_a = builder.squareup_protos_extension_collision_2_a;
+    this.c = builder.c;
+    this.redacted = builder.redacted;
   }
 
   @Override
@@ -564,7 +551,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     @Override
     public FieldOptions build() {
-      return new FieldOptions(ctype, packed, jstype, lazy, deprecated, weak, uninterpreted_option, my_field_option_one, my_field_option_two, my_field_option_three, my_field_option_four, squareup_protos_extension_collision_1_a, b, squareup_protos_extension_collision_2_a, c, redacted, super.buildUnknownFields());
+      return new FieldOptions(this, super.buildUnknownFields());
     }
   }
 

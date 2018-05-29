@@ -26,8 +26,12 @@ import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
 import java.io.IOException;
 import java.net.ProtocolException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.junit.Test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -64,6 +68,26 @@ public final class JavaGeneratorTest {
         + "      }\n"
         + "      return new Message(long_, super.buildUnknownFields());\n"
         + "    }\n");
+  }
+
+  @Test public void tooManyFieldsTest() throws Exception {
+    StringBuilder s = new StringBuilder();
+    for (int i = 1; i < 257; i++) {
+      s.append("  repeated int32 field_" + i + " = " + i + ";\n");
+    }
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + s.toString()
+            + "    oneof oneof_name {\n"
+            + "       int32 foo = 257;\n"
+            + "       int32 bar = 258;\n"
+            + "    }\n"
+            + "}\n");
+    String generatedCode = repoBuilder.generateCode("Message");
+    Path file = Paths.get("MessageWithManyFields");
+    String message = new String(Files.readAllBytes(file), UTF_8);
+    assertThat(generatedCode).isEqualTo(message);
   }
 
   @Test public void map() throws Exception {

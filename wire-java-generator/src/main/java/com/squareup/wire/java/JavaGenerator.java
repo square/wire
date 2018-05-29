@@ -137,6 +137,7 @@ public final class JavaGenerator {
           .build();
 
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
+  private static final int MAX_PARAMS_IN_CONSTRUCTOR = 16;
 
   /**
    * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
@@ -504,6 +505,8 @@ public final class JavaGenerator {
   /** @deprecated Use {@link #generateType(Type)} */
   @Deprecated
   public TypeSpec generateMessage(MessageType type) {
+    boolean constructorTakesAllFields = constructorTakesAllFields(type);
+
     NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
 
     ClassName javaType = (ClassName) typeName(type.type());
@@ -585,8 +588,10 @@ public final class JavaGenerator {
       builder.addField(fieldBuilder.build());
     }
 
-    builder.addMethod(messageFieldsConstructor(nameAllocator, type));
-    builder.addMethod(messageFieldsAndUnknownFieldsConstructor(nameAllocator, type));
+    if (constructorTakesAllFields) {
+      builder.addMethod(messageFieldsConstructor(nameAllocator, type));
+    }
+    builder.addMethod(messageConstructor(nameAllocator, type, builderJavaType));
 
     builder.addMethod(newBuilder(nameAllocator, type));
 
@@ -609,6 +614,13 @@ public final class JavaGenerator {
     }
 
     return builder.build();
+  }
+
+  /**
+   * Decides if a constructor should take all fields or a builder as a parameter.
+   */
+  private boolean constructorTakesAllFields(MessageType type) {
+    return type.fields().size() < MAX_PARAMS_IN_CONSTRUCTOR;
   }
 
   private TypeSpec generateEnclosingType(EnclosingType type) {
@@ -1229,12 +1241,25 @@ public final class JavaGenerator {
   //   this.optional_int64 = optional_int64;
   // }
   //
-  private MethodSpec messageFieldsAndUnknownFieldsConstructor(
-      NameAllocator nameAllocator, MessageType type) {
+  // Alternate example, where the constructor takes in a builder, would be the case when there are
+  // too many fields:
+  //
+  // public SimpleMessage(Builder builder, ByteString unknownFields) {
+  //   super(ADAPTER, unknownFields);
+  //   this.optional_int32 = builder.optional_int32;
+  //   this.optional_int64 = builder.optional_int64;
+  // }
+  //
+  private MethodSpec messageConstructor(
+      NameAllocator nameAllocator, MessageType type,
+      ClassName builderJavaType) {
+    boolean constructorTakesAllFields = constructorTakesAllFields(type);
+
     NameAllocator localNameAllocator = nameAllocator.clone();
 
     String adapterName = localNameAllocator.get("ADAPTER");
     String unknownFieldsName = localNameAllocator.newName("unknownFields");
+    String builderName = localNameAllocator.newName("builder");
     MethodSpec.Builder result = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addStatement("super($N, $N)", adapterName, unknownFieldsName);
@@ -1245,7 +1270,11 @@ public final class JavaGenerator {
       boolean first = true;
       for (Field field : oneOf.fields()) {
         if (!first) fieldNamesBuilder.add(", ");
-        fieldNamesBuilder.add("$N", localNameAllocator.get(field));
+        if (constructorTakesAllFields) {
+          fieldNamesBuilder.add("$N", localNameAllocator.get(field));
+        } else {
+          fieldNamesBuilder.add("$N.$N", builderName, localNameAllocator.get(field));
+        }
         first = false;
       }
       CodeBlock fieldNames = fieldNamesBuilder.build();
@@ -1257,17 +1286,28 @@ public final class JavaGenerator {
     for (Field field : type.fieldsAndOneOfFields()) {
       TypeName javaType = fieldType(field);
       String fieldName = localNameAllocator.get(field);
-      ParameterSpec.Builder param = ParameterSpec.builder(javaType, fieldName);
-      if (emitAndroid && field.isOptional()) {
-        param.addAnnotation(NULLABLE);
+      String fieldAccessName = constructorTakesAllFields
+          ? fieldName
+          : builderName + "." + fieldName;
+
+      if (constructorTakesAllFields) {
+        ParameterSpec.Builder param = ParameterSpec.builder(javaType, fieldName);
+        if (emitAndroid && field.isOptional()) {
+          param.addAnnotation(NULLABLE);
+        }
+        result.addParameter(param.build());
       }
-      result.addParameter(param.build());
+
       if (field.isRepeated() || field.type().isMap()) {
-        result.addStatement("this.$1L = $2T.immutableCopyOf($1S, $1L)", fieldName,
-            Internal.class);
+        result.addStatement("this.$1L = $2T.immutableCopyOf($1S, $3L)", fieldName,
+            Internal.class, fieldAccessName);
       } else {
-        result.addStatement("this.$1L = $1L", fieldName);
+        result.addStatement("this.$1L = $2L", fieldName, fieldAccessName);
       }
+    }
+
+    if (!constructorTakesAllFields) {
+      result.addParameter(builderJavaType, builderName);
     }
 
     result.addParameter(BYTE_STRING, unknownFieldsName);
@@ -1540,11 +1580,12 @@ public final class JavaGenerator {
   //   if (field_one == null) {
   //     throw missingRequiredFields(field_one, "field_one");
   //   }
-  //   return new SimpleMessage(this);
+  //   return new SimpleMessage(field_one, super.buildUnknownFields());
   // }
   //
   // The call to checkRequiredFields will be emitted only if the message has
-  // required fields.
+  // required fields. The constructor can also take instance of the builder
+  // rather than individual fields depending on how many fields there are.
   //
   private MethodSpec builderBuild(
       NameAllocator nameAllocator, MessageType message, ClassName javaType) {
@@ -1572,10 +1613,17 @@ public final class JavaGenerator {
           .endControlFlow();
     }
 
+    boolean constructorTakesAllFields = constructorTakesAllFields(message);
+
     result.addCode("return new $T(", javaType);
-    for (Field field : message.fieldsAndOneOfFields()) {
-      result.addCode("$L, ", nameAllocator.get(field));
+    if (constructorTakesAllFields) {
+      for (Field field : message.fieldsAndOneOfFields()) {
+        result.addCode("$L, ", nameAllocator.get(field));
+      }
+    } else {
+      result.addCode("this, ");
     }
+
     result.addCode("super.buildUnknownFields());\n");
     return result.build();
   }
