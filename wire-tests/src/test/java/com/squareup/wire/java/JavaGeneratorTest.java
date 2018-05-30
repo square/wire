@@ -17,21 +17,12 @@ package com.squareup.wire.java;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.FieldEncoding;
-import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.ProtoReader;
-import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
 import java.io.IOException;
-import java.net.ProtocolException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.junit.Test;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -84,10 +75,8 @@ public final class JavaGeneratorTest {
             + "       int32 bar = 258;\n"
             + "    }\n"
             + "}\n");
-    String generatedCode = repoBuilder.generateCode("Message");
-    Path file = Paths.get("MessageWithManyFields");
-    String message = new String(Files.readAllBytes(file), UTF_8);
-    assertThat(generatedCode).isEqualTo(message);
+    assertThat(repoBuilder.generateCode("Message")).contains(""
+        + "public Message(Builder builder, ByteString unknownFields)");
   }
 
   @Test public void map() throws Exception {

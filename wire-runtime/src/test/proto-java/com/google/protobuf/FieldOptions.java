@@ -247,7 +247,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   )
   public final Boolean redacted;
 
-  public FieldOptions(Builder builder, ByteString unknownFields)  {
+  public FieldOptions(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.ctype = builder.ctype;
     this.packed = builder.packed;

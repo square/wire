@@ -1218,7 +1218,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   )
   public final Map<String, NestedEnum> ext_map_string_enum;
 
-public AllTypes(Builder builder, ByteString unknownFields) {
+  public AllTypes(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.opt_int32 = builder.opt_int32;
     this.opt_uint32 = builder.opt_uint32;
