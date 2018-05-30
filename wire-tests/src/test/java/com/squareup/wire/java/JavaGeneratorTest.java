@@ -367,4 +367,49 @@ public final class JavaGeneratorTest {
       assertThat(expected).hasMessage("Octal literal unsupported: 020");
     }
   }
+
+  @Test public void nullableFieldsWithoutParcelable() {
+    Schema schema = new RepoBuilder()
+        .add("message.proto", ""
+            + "message A {\n"
+            + "  message B {\n"
+            + "    optional string c = 1;\n"
+            + "  }\n"
+            + "}\n")
+        .schema();
+    MessageType message = (MessageType) schema.getType("A");
+    JavaGenerator javaGenerator = JavaGenerator.get(schema).withAndroidAnnotations(true);
+    TypeSpec typeSpec = javaGenerator.generateType(message);
+    assertThat(JavaFile.builder("", typeSpec).build().toString()).contains(""
+        + " @WireField(\n"
+        + "        tag = 1,\n"
+        + "        adapter = \"com.squareup.wire.ProtoAdapter#STRING\"\n"
+        + "    )\n"
+        + "    @Nullable\n"
+        + "    public final String c;");
+  }
+
+  @Test public void androidSupport() {
+    Schema schema = new RepoBuilder()
+        .add("message.proto", ""
+            + "message A {\n"
+            + "  message B {\n"
+            + "    optional string c = 1;\n"
+            + "  }\n"
+            + "}\n")
+        .schema();
+    MessageType message = (MessageType) schema.getType("A");
+    JavaGenerator javaGenerator = JavaGenerator.get(schema).withAndroid(true);
+    TypeSpec typeSpec = javaGenerator.generateType(message);
+    assertThat(JavaFile.builder("", typeSpec).build().toString()).contains(""
+        + " @WireField(\n"
+        + "        tag = 1,\n"
+        + "        adapter = \"com.squareup.wire.ProtoAdapter#STRING\"\n"
+        + "    )\n"
+        + "    @Nullable\n"
+        + "    public final String c;")
+        .contains(""
+        + "public static final Parcelable.Creator<B> CREATOR = AndroidMessage.newCreator(ADAPTER)");
+        ;
+  }
 }

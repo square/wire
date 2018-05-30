@@ -53,6 +53,7 @@ import static com.google.common.base.Preconditions.checkState;
  *     [--quiet]
  *     [--dry_run]
  *     [--android]
+ *     [--android-annotations]
  *     [--compact]
  *     [file [file...]]
  * </pre>
@@ -73,7 +74,10 @@ import static com.google.common.base.Preconditions.checkState;
  * would be generated to stdout.
  *
  * <p>The {@code --android} flag will cause all messages to implement the {@code Parcelable}
- * interface.
+ * interface. This implies {@code --android-annotations} as well.
+ *
+ * <p>The {@code --android-annotations} flag will add the {@code Nullable} annotation to optional
+ *  * fields.
  *
  * <p>The {@code --compact} flag will emit code that uses reflection for reading, writing, and
  * toString methods which are normally implemented with code generation.
@@ -88,6 +92,7 @@ public final class WireCompiler {
   public static final String DRY_RUN_FLAG = "--dry_run";
   public static final String NAMED_FILES_ONLY = "--named_files_only";
   public static final String ANDROID = "--android";
+  public static final String ANDROID_ANNOTATIONS = "--android-annotations";
   public static final String COMPACT = "--compact";
   public static final int MAX_WRITE_CONCURRENCY = 8;
 
@@ -105,11 +110,13 @@ public final class WireCompiler {
   final boolean dryRun;
   final boolean namedFilesOnly;
   final boolean emitAndroid;
+  final boolean emitAndroidAnnotations;
   final boolean emitCompact;
 
   WireCompiler(FileSystem fs, WireLogger log, List<String> protoPaths, String javaOut,
       List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
-      boolean namedFilesOnly, boolean emitAndroid, boolean emitCompact) {
+      boolean namedFilesOnly, boolean emitAndroid, boolean emitAndroidAnnotations,
+      boolean emitCompact) {
     this.fs = fs;
     this.log = log;
     this.protoPaths = protoPaths;
@@ -119,6 +126,7 @@ public final class WireCompiler {
     this.dryRun = dryRun;
     this.namedFilesOnly = namedFilesOnly;
     this.emitAndroid = emitAndroid;
+    this.emitAndroidAnnotations = emitAndroidAnnotations;
     this.emitCompact = emitCompact;
   }
 
@@ -147,6 +155,7 @@ public final class WireCompiler {
     boolean dryRun = false;
     boolean namedFilesOnly = false;
     boolean emitAndroid = false;
+    boolean emitAndroidAnnotations = false;
     boolean emitCompact = false;
 
     for (String arg : args) {
@@ -180,6 +189,8 @@ public final class WireCompiler {
         namedFilesOnly = true;
       } else if (arg.equals(ANDROID)) {
         emitAndroid = true;
+      } else if (arg.equals(ANDROID_ANNOTATIONS)) {
+        emitAndroidAnnotations = true;
       } else if (arg.equals(COMPACT)) {
         emitCompact = true;
       } else if (arg.startsWith("--")) {
@@ -196,7 +207,8 @@ public final class WireCompiler {
     logger.setQuiet(quiet);
 
     return new WireCompiler(fileSystem, logger, protoPaths, javaOut, sourceFileNames,
-        identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitCompact);
+        identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitAndroidAnnotations,
+        emitCompact);
   }
 
   private static List<String> splitArg(String arg, int flagLength) {
@@ -241,6 +253,7 @@ public final class WireCompiler {
       JavaGenerator javaGenerator = JavaGenerator.get(schema)
           .withProfile(profile)
           .withAndroid(emitAndroid)
+          .withAndroidAnnotations(emitAndroidAnnotations)
           .withCompact(emitCompact);
 
     ExecutorService executor = Executors.newCachedThreadPool();
