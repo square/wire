@@ -1224,235 +1224,145 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   )
   public final Map<String, NestedEnum> ext_map_string_enum;
 
-  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32,
-      Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64,
-      Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string,
-      ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message,
-      Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32,
-      Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64,
-      Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string,
-      ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message,
-      List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32,
-      List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64,
-      List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64,
-      List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double,
-      List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum,
-      List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32,
-      List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32,
-      List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64,
-      List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool,
-      List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum,
-      Integer default_int32, Integer default_uint32, Integer default_sint32,
-      Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64,
-      Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool,
-      Float default_float, Double default_double, String default_string, ByteString default_bytes,
-      NestedEnum default_nested_enum, Map<Integer, Integer> map_int32_int32,
-      Map<String, String> map_string_string, Map<String, NestedMessage> map_string_message,
-      Map<String, NestedEnum> map_string_enum, Integer ext_opt_int32, Integer ext_opt_uint32,
-      Integer ext_opt_sint32, Integer ext_opt_fixed32, Integer ext_opt_sfixed32, Long ext_opt_int64,
-      Long ext_opt_uint64, Long ext_opt_sint64, Long ext_opt_fixed64, Long ext_opt_sfixed64,
-      Boolean ext_opt_bool, Float ext_opt_float, Double ext_opt_double, String ext_opt_string,
-      ByteString ext_opt_bytes, NestedEnum ext_opt_nested_enum,
-      NestedMessage ext_opt_nested_message, List<Integer> ext_rep_int32,
-      List<Integer> ext_rep_uint32, List<Integer> ext_rep_sint32, List<Integer> ext_rep_fixed32,
-      List<Integer> ext_rep_sfixed32, List<Long> ext_rep_int64, List<Long> ext_rep_uint64,
-      List<Long> ext_rep_sint64, List<Long> ext_rep_fixed64, List<Long> ext_rep_sfixed64,
-      List<Boolean> ext_rep_bool, List<Float> ext_rep_float, List<Double> ext_rep_double,
-      List<String> ext_rep_string, List<ByteString> ext_rep_bytes,
-      List<NestedEnum> ext_rep_nested_enum, List<NestedMessage> ext_rep_nested_message,
-      List<Integer> ext_pack_int32, List<Integer> ext_pack_uint32, List<Integer> ext_pack_sint32,
-      List<Integer> ext_pack_fixed32, List<Integer> ext_pack_sfixed32, List<Long> ext_pack_int64,
-      List<Long> ext_pack_uint64, List<Long> ext_pack_sint64, List<Long> ext_pack_fixed64,
-      List<Long> ext_pack_sfixed64, List<Boolean> ext_pack_bool, List<Float> ext_pack_float,
-      List<Double> ext_pack_double, List<NestedEnum> ext_pack_nested_enum,
-      Map<Integer, Integer> ext_map_int32_int32, Map<String, String> ext_map_string_string,
-      Map<String, NestedMessage> ext_map_string_message,
-      Map<String, NestedEnum> ext_map_string_enum) {
-    this(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, map_int32_int32, map_string_string, map_string_message, map_string_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum, ext_map_int32_int32, ext_map_string_string, ext_map_string_message, ext_map_string_enum, ByteString.EMPTY);
-  }
-
-  public AllTypes(Integer opt_int32, Integer opt_uint32, Integer opt_sint32, Integer opt_fixed32,
-      Integer opt_sfixed32, Long opt_int64, Long opt_uint64, Long opt_sint64, Long opt_fixed64,
-      Long opt_sfixed64, Boolean opt_bool, Float opt_float, Double opt_double, String opt_string,
-      ByteString opt_bytes, NestedEnum opt_nested_enum, NestedMessage opt_nested_message,
-      Integer req_int32, Integer req_uint32, Integer req_sint32, Integer req_fixed32,
-      Integer req_sfixed32, Long req_int64, Long req_uint64, Long req_sint64, Long req_fixed64,
-      Long req_sfixed64, Boolean req_bool, Float req_float, Double req_double, String req_string,
-      ByteString req_bytes, NestedEnum req_nested_enum, NestedMessage req_nested_message,
-      List<Integer> rep_int32, List<Integer> rep_uint32, List<Integer> rep_sint32,
-      List<Integer> rep_fixed32, List<Integer> rep_sfixed32, List<Long> rep_int64,
-      List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64, List<Long> rep_sfixed64,
-      List<Boolean> rep_bool, List<Float> rep_float, List<Double> rep_double,
-      List<String> rep_string, List<ByteString> rep_bytes, List<NestedEnum> rep_nested_enum,
-      List<NestedMessage> rep_nested_message, List<Integer> pack_int32, List<Integer> pack_uint32,
-      List<Integer> pack_sint32, List<Integer> pack_fixed32, List<Integer> pack_sfixed32,
-      List<Long> pack_int64, List<Long> pack_uint64, List<Long> pack_sint64,
-      List<Long> pack_fixed64, List<Long> pack_sfixed64, List<Boolean> pack_bool,
-      List<Float> pack_float, List<Double> pack_double, List<NestedEnum> pack_nested_enum,
-      Integer default_int32, Integer default_uint32, Integer default_sint32,
-      Integer default_fixed32, Integer default_sfixed32, Long default_int64, Long default_uint64,
-      Long default_sint64, Long default_fixed64, Long default_sfixed64, Boolean default_bool,
-      Float default_float, Double default_double, String default_string, ByteString default_bytes,
-      NestedEnum default_nested_enum, Map<Integer, Integer> map_int32_int32,
-      Map<String, String> map_string_string, Map<String, NestedMessage> map_string_message,
-      Map<String, NestedEnum> map_string_enum, Integer ext_opt_int32, Integer ext_opt_uint32,
-      Integer ext_opt_sint32, Integer ext_opt_fixed32, Integer ext_opt_sfixed32, Long ext_opt_int64,
-      Long ext_opt_uint64, Long ext_opt_sint64, Long ext_opt_fixed64, Long ext_opt_sfixed64,
-      Boolean ext_opt_bool, Float ext_opt_float, Double ext_opt_double, String ext_opt_string,
-      ByteString ext_opt_bytes, NestedEnum ext_opt_nested_enum,
-      NestedMessage ext_opt_nested_message, List<Integer> ext_rep_int32,
-      List<Integer> ext_rep_uint32, List<Integer> ext_rep_sint32, List<Integer> ext_rep_fixed32,
-      List<Integer> ext_rep_sfixed32, List<Long> ext_rep_int64, List<Long> ext_rep_uint64,
-      List<Long> ext_rep_sint64, List<Long> ext_rep_fixed64, List<Long> ext_rep_sfixed64,
-      List<Boolean> ext_rep_bool, List<Float> ext_rep_float, List<Double> ext_rep_double,
-      List<String> ext_rep_string, List<ByteString> ext_rep_bytes,
-      List<NestedEnum> ext_rep_nested_enum, List<NestedMessage> ext_rep_nested_message,
-      List<Integer> ext_pack_int32, List<Integer> ext_pack_uint32, List<Integer> ext_pack_sint32,
-      List<Integer> ext_pack_fixed32, List<Integer> ext_pack_sfixed32, List<Long> ext_pack_int64,
-      List<Long> ext_pack_uint64, List<Long> ext_pack_sint64, List<Long> ext_pack_fixed64,
-      List<Long> ext_pack_sfixed64, List<Boolean> ext_pack_bool, List<Float> ext_pack_float,
-      List<Double> ext_pack_double, List<NestedEnum> ext_pack_nested_enum,
-      Map<Integer, Integer> ext_map_int32_int32, Map<String, String> ext_map_string_string,
-      Map<String, NestedMessage> ext_map_string_message,
-      Map<String, NestedEnum> ext_map_string_enum, ByteString unknownFields) {
+  public AllTypes(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
-    this.opt_int32 = opt_int32;
-    this.opt_uint32 = opt_uint32;
-    this.opt_sint32 = opt_sint32;
-    this.opt_fixed32 = opt_fixed32;
-    this.opt_sfixed32 = opt_sfixed32;
-    this.opt_int64 = opt_int64;
-    this.opt_uint64 = opt_uint64;
-    this.opt_sint64 = opt_sint64;
-    this.opt_fixed64 = opt_fixed64;
-    this.opt_sfixed64 = opt_sfixed64;
-    this.opt_bool = opt_bool;
-    this.opt_float = opt_float;
-    this.opt_double = opt_double;
-    this.opt_string = opt_string;
-    this.opt_bytes = opt_bytes;
-    this.opt_nested_enum = opt_nested_enum;
-    this.opt_nested_message = opt_nested_message;
-    this.req_int32 = req_int32;
-    this.req_uint32 = req_uint32;
-    this.req_sint32 = req_sint32;
-    this.req_fixed32 = req_fixed32;
-    this.req_sfixed32 = req_sfixed32;
-    this.req_int64 = req_int64;
-    this.req_uint64 = req_uint64;
-    this.req_sint64 = req_sint64;
-    this.req_fixed64 = req_fixed64;
-    this.req_sfixed64 = req_sfixed64;
-    this.req_bool = req_bool;
-    this.req_float = req_float;
-    this.req_double = req_double;
-    this.req_string = req_string;
-    this.req_bytes = req_bytes;
-    this.req_nested_enum = req_nested_enum;
-    this.req_nested_message = req_nested_message;
-    this.rep_int32 = Internal.immutableCopyOf("rep_int32", rep_int32);
-    this.rep_uint32 = Internal.immutableCopyOf("rep_uint32", rep_uint32);
-    this.rep_sint32 = Internal.immutableCopyOf("rep_sint32", rep_sint32);
-    this.rep_fixed32 = Internal.immutableCopyOf("rep_fixed32", rep_fixed32);
-    this.rep_sfixed32 = Internal.immutableCopyOf("rep_sfixed32", rep_sfixed32);
-    this.rep_int64 = Internal.immutableCopyOf("rep_int64", rep_int64);
-    this.rep_uint64 = Internal.immutableCopyOf("rep_uint64", rep_uint64);
-    this.rep_sint64 = Internal.immutableCopyOf("rep_sint64", rep_sint64);
-    this.rep_fixed64 = Internal.immutableCopyOf("rep_fixed64", rep_fixed64);
-    this.rep_sfixed64 = Internal.immutableCopyOf("rep_sfixed64", rep_sfixed64);
-    this.rep_bool = Internal.immutableCopyOf("rep_bool", rep_bool);
-    this.rep_float = Internal.immutableCopyOf("rep_float", rep_float);
-    this.rep_double = Internal.immutableCopyOf("rep_double", rep_double);
-    this.rep_string = Internal.immutableCopyOf("rep_string", rep_string);
-    this.rep_bytes = Internal.immutableCopyOf("rep_bytes", rep_bytes);
-    this.rep_nested_enum = Internal.immutableCopyOf("rep_nested_enum", rep_nested_enum);
-    this.rep_nested_message = Internal.immutableCopyOf("rep_nested_message", rep_nested_message);
-    this.pack_int32 = Internal.immutableCopyOf("pack_int32", pack_int32);
-    this.pack_uint32 = Internal.immutableCopyOf("pack_uint32", pack_uint32);
-    this.pack_sint32 = Internal.immutableCopyOf("pack_sint32", pack_sint32);
-    this.pack_fixed32 = Internal.immutableCopyOf("pack_fixed32", pack_fixed32);
-    this.pack_sfixed32 = Internal.immutableCopyOf("pack_sfixed32", pack_sfixed32);
-    this.pack_int64 = Internal.immutableCopyOf("pack_int64", pack_int64);
-    this.pack_uint64 = Internal.immutableCopyOf("pack_uint64", pack_uint64);
-    this.pack_sint64 = Internal.immutableCopyOf("pack_sint64", pack_sint64);
-    this.pack_fixed64 = Internal.immutableCopyOf("pack_fixed64", pack_fixed64);
-    this.pack_sfixed64 = Internal.immutableCopyOf("pack_sfixed64", pack_sfixed64);
-    this.pack_bool = Internal.immutableCopyOf("pack_bool", pack_bool);
-    this.pack_float = Internal.immutableCopyOf("pack_float", pack_float);
-    this.pack_double = Internal.immutableCopyOf("pack_double", pack_double);
-    this.pack_nested_enum = Internal.immutableCopyOf("pack_nested_enum", pack_nested_enum);
-    this.default_int32 = default_int32;
-    this.default_uint32 = default_uint32;
-    this.default_sint32 = default_sint32;
-    this.default_fixed32 = default_fixed32;
-    this.default_sfixed32 = default_sfixed32;
-    this.default_int64 = default_int64;
-    this.default_uint64 = default_uint64;
-    this.default_sint64 = default_sint64;
-    this.default_fixed64 = default_fixed64;
-    this.default_sfixed64 = default_sfixed64;
-    this.default_bool = default_bool;
-    this.default_float = default_float;
-    this.default_double = default_double;
-    this.default_string = default_string;
-    this.default_bytes = default_bytes;
-    this.default_nested_enum = default_nested_enum;
-    this.map_int32_int32 = Internal.immutableCopyOf("map_int32_int32", map_int32_int32);
-    this.map_string_string = Internal.immutableCopyOf("map_string_string", map_string_string);
-    this.map_string_message = Internal.immutableCopyOf("map_string_message", map_string_message);
-    this.map_string_enum = Internal.immutableCopyOf("map_string_enum", map_string_enum);
-    this.ext_opt_int32 = ext_opt_int32;
-    this.ext_opt_uint32 = ext_opt_uint32;
-    this.ext_opt_sint32 = ext_opt_sint32;
-    this.ext_opt_fixed32 = ext_opt_fixed32;
-    this.ext_opt_sfixed32 = ext_opt_sfixed32;
-    this.ext_opt_int64 = ext_opt_int64;
-    this.ext_opt_uint64 = ext_opt_uint64;
-    this.ext_opt_sint64 = ext_opt_sint64;
-    this.ext_opt_fixed64 = ext_opt_fixed64;
-    this.ext_opt_sfixed64 = ext_opt_sfixed64;
-    this.ext_opt_bool = ext_opt_bool;
-    this.ext_opt_float = ext_opt_float;
-    this.ext_opt_double = ext_opt_double;
-    this.ext_opt_string = ext_opt_string;
-    this.ext_opt_bytes = ext_opt_bytes;
-    this.ext_opt_nested_enum = ext_opt_nested_enum;
-    this.ext_opt_nested_message = ext_opt_nested_message;
-    this.ext_rep_int32 = Internal.immutableCopyOf("ext_rep_int32", ext_rep_int32);
-    this.ext_rep_uint32 = Internal.immutableCopyOf("ext_rep_uint32", ext_rep_uint32);
-    this.ext_rep_sint32 = Internal.immutableCopyOf("ext_rep_sint32", ext_rep_sint32);
-    this.ext_rep_fixed32 = Internal.immutableCopyOf("ext_rep_fixed32", ext_rep_fixed32);
-    this.ext_rep_sfixed32 = Internal.immutableCopyOf("ext_rep_sfixed32", ext_rep_sfixed32);
-    this.ext_rep_int64 = Internal.immutableCopyOf("ext_rep_int64", ext_rep_int64);
-    this.ext_rep_uint64 = Internal.immutableCopyOf("ext_rep_uint64", ext_rep_uint64);
-    this.ext_rep_sint64 = Internal.immutableCopyOf("ext_rep_sint64", ext_rep_sint64);
-    this.ext_rep_fixed64 = Internal.immutableCopyOf("ext_rep_fixed64", ext_rep_fixed64);
-    this.ext_rep_sfixed64 = Internal.immutableCopyOf("ext_rep_sfixed64", ext_rep_sfixed64);
-    this.ext_rep_bool = Internal.immutableCopyOf("ext_rep_bool", ext_rep_bool);
-    this.ext_rep_float = Internal.immutableCopyOf("ext_rep_float", ext_rep_float);
-    this.ext_rep_double = Internal.immutableCopyOf("ext_rep_double", ext_rep_double);
-    this.ext_rep_string = Internal.immutableCopyOf("ext_rep_string", ext_rep_string);
-    this.ext_rep_bytes = Internal.immutableCopyOf("ext_rep_bytes", ext_rep_bytes);
-    this.ext_rep_nested_enum = Internal.immutableCopyOf("ext_rep_nested_enum", ext_rep_nested_enum);
-    this.ext_rep_nested_message = Internal.immutableCopyOf("ext_rep_nested_message", ext_rep_nested_message);
-    this.ext_pack_int32 = Internal.immutableCopyOf("ext_pack_int32", ext_pack_int32);
-    this.ext_pack_uint32 = Internal.immutableCopyOf("ext_pack_uint32", ext_pack_uint32);
-    this.ext_pack_sint32 = Internal.immutableCopyOf("ext_pack_sint32", ext_pack_sint32);
-    this.ext_pack_fixed32 = Internal.immutableCopyOf("ext_pack_fixed32", ext_pack_fixed32);
-    this.ext_pack_sfixed32 = Internal.immutableCopyOf("ext_pack_sfixed32", ext_pack_sfixed32);
-    this.ext_pack_int64 = Internal.immutableCopyOf("ext_pack_int64", ext_pack_int64);
-    this.ext_pack_uint64 = Internal.immutableCopyOf("ext_pack_uint64", ext_pack_uint64);
-    this.ext_pack_sint64 = Internal.immutableCopyOf("ext_pack_sint64", ext_pack_sint64);
-    this.ext_pack_fixed64 = Internal.immutableCopyOf("ext_pack_fixed64", ext_pack_fixed64);
-    this.ext_pack_sfixed64 = Internal.immutableCopyOf("ext_pack_sfixed64", ext_pack_sfixed64);
-    this.ext_pack_bool = Internal.immutableCopyOf("ext_pack_bool", ext_pack_bool);
-    this.ext_pack_float = Internal.immutableCopyOf("ext_pack_float", ext_pack_float);
-    this.ext_pack_double = Internal.immutableCopyOf("ext_pack_double", ext_pack_double);
-    this.ext_pack_nested_enum = Internal.immutableCopyOf("ext_pack_nested_enum", ext_pack_nested_enum);
-    this.ext_map_int32_int32 = Internal.immutableCopyOf("ext_map_int32_int32", ext_map_int32_int32);
-    this.ext_map_string_string = Internal.immutableCopyOf("ext_map_string_string", ext_map_string_string);
-    this.ext_map_string_message = Internal.immutableCopyOf("ext_map_string_message", ext_map_string_message);
-    this.ext_map_string_enum = Internal.immutableCopyOf("ext_map_string_enum", ext_map_string_enum);
+    this.opt_int32 = builder.opt_int32;
+    this.opt_uint32 = builder.opt_uint32;
+    this.opt_sint32 = builder.opt_sint32;
+    this.opt_fixed32 = builder.opt_fixed32;
+    this.opt_sfixed32 = builder.opt_sfixed32;
+    this.opt_int64 = builder.opt_int64;
+    this.opt_uint64 = builder.opt_uint64;
+    this.opt_sint64 = builder.opt_sint64;
+    this.opt_fixed64 = builder.opt_fixed64;
+    this.opt_sfixed64 = builder.opt_sfixed64;
+    this.opt_bool = builder.opt_bool;
+    this.opt_float = builder.opt_float;
+    this.opt_double = builder.opt_double;
+    this.opt_string = builder.opt_string;
+    this.opt_bytes = builder.opt_bytes;
+    this.opt_nested_enum = builder.opt_nested_enum;
+    this.opt_nested_message = builder.opt_nested_message;
+    this.req_int32 = builder.req_int32;
+    this.req_uint32 = builder.req_uint32;
+    this.req_sint32 = builder.req_sint32;
+    this.req_fixed32 = builder.req_fixed32;
+    this.req_sfixed32 = builder.req_sfixed32;
+    this.req_int64 = builder.req_int64;
+    this.req_uint64 = builder.req_uint64;
+    this.req_sint64 = builder.req_sint64;
+    this.req_fixed64 = builder.req_fixed64;
+    this.req_sfixed64 = builder.req_sfixed64;
+    this.req_bool = builder.req_bool;
+    this.req_float = builder.req_float;
+    this.req_double = builder.req_double;
+    this.req_string = builder.req_string;
+    this.req_bytes = builder.req_bytes;
+    this.req_nested_enum = builder.req_nested_enum;
+    this.req_nested_message = builder.req_nested_message;
+    this.rep_int32 = Internal.immutableCopyOf("rep_int32", builder.rep_int32);
+    this.rep_uint32 = Internal.immutableCopyOf("rep_uint32", builder.rep_uint32);
+    this.rep_sint32 = Internal.immutableCopyOf("rep_sint32", builder.rep_sint32);
+    this.rep_fixed32 = Internal.immutableCopyOf("rep_fixed32", builder.rep_fixed32);
+    this.rep_sfixed32 = Internal.immutableCopyOf("rep_sfixed32", builder.rep_sfixed32);
+    this.rep_int64 = Internal.immutableCopyOf("rep_int64", builder.rep_int64);
+    this.rep_uint64 = Internal.immutableCopyOf("rep_uint64", builder.rep_uint64);
+    this.rep_sint64 = Internal.immutableCopyOf("rep_sint64", builder.rep_sint64);
+    this.rep_fixed64 = Internal.immutableCopyOf("rep_fixed64", builder.rep_fixed64);
+    this.rep_sfixed64 = Internal.immutableCopyOf("rep_sfixed64", builder.rep_sfixed64);
+    this.rep_bool = Internal.immutableCopyOf("rep_bool", builder.rep_bool);
+    this.rep_float = Internal.immutableCopyOf("rep_float", builder.rep_float);
+    this.rep_double = Internal.immutableCopyOf("rep_double", builder.rep_double);
+    this.rep_string = Internal.immutableCopyOf("rep_string", builder.rep_string);
+    this.rep_bytes = Internal.immutableCopyOf("rep_bytes", builder.rep_bytes);
+    this.rep_nested_enum = Internal.immutableCopyOf("rep_nested_enum", builder.rep_nested_enum);
+    this.rep_nested_message = Internal.immutableCopyOf("rep_nested_message", builder.rep_nested_message);
+    this.pack_int32 = Internal.immutableCopyOf("pack_int32", builder.pack_int32);
+    this.pack_uint32 = Internal.immutableCopyOf("pack_uint32", builder.pack_uint32);
+    this.pack_sint32 = Internal.immutableCopyOf("pack_sint32", builder.pack_sint32);
+    this.pack_fixed32 = Internal.immutableCopyOf("pack_fixed32", builder.pack_fixed32);
+    this.pack_sfixed32 = Internal.immutableCopyOf("pack_sfixed32", builder.pack_sfixed32);
+    this.pack_int64 = Internal.immutableCopyOf("pack_int64", builder.pack_int64);
+    this.pack_uint64 = Internal.immutableCopyOf("pack_uint64", builder.pack_uint64);
+    this.pack_sint64 = Internal.immutableCopyOf("pack_sint64", builder.pack_sint64);
+    this.pack_fixed64 = Internal.immutableCopyOf("pack_fixed64", builder.pack_fixed64);
+    this.pack_sfixed64 = Internal.immutableCopyOf("pack_sfixed64", builder.pack_sfixed64);
+    this.pack_bool = Internal.immutableCopyOf("pack_bool", builder.pack_bool);
+    this.pack_float = Internal.immutableCopyOf("pack_float", builder.pack_float);
+    this.pack_double = Internal.immutableCopyOf("pack_double", builder.pack_double);
+    this.pack_nested_enum = Internal.immutableCopyOf("pack_nested_enum", builder.pack_nested_enum);
+    this.default_int32 = builder.default_int32;
+    this.default_uint32 = builder.default_uint32;
+    this.default_sint32 = builder.default_sint32;
+    this.default_fixed32 = builder.default_fixed32;
+    this.default_sfixed32 = builder.default_sfixed32;
+    this.default_int64 = builder.default_int64;
+    this.default_uint64 = builder.default_uint64;
+    this.default_sint64 = builder.default_sint64;
+    this.default_fixed64 = builder.default_fixed64;
+    this.default_sfixed64 = builder.default_sfixed64;
+    this.default_bool = builder.default_bool;
+    this.default_float = builder.default_float;
+    this.default_double = builder.default_double;
+    this.default_string = builder.default_string;
+    this.default_bytes = builder.default_bytes;
+    this.default_nested_enum = builder.default_nested_enum;
+    this.map_int32_int32 = Internal.immutableCopyOf("map_int32_int32", builder.map_int32_int32);
+    this.map_string_string = Internal.immutableCopyOf("map_string_string", builder.map_string_string);
+    this.map_string_message = Internal.immutableCopyOf("map_string_message", builder.map_string_message);
+    this.map_string_enum = Internal.immutableCopyOf("map_string_enum", builder.map_string_enum);
+    this.ext_opt_int32 = builder.ext_opt_int32;
+    this.ext_opt_uint32 = builder.ext_opt_uint32;
+    this.ext_opt_sint32 = builder.ext_opt_sint32;
+    this.ext_opt_fixed32 = builder.ext_opt_fixed32;
+    this.ext_opt_sfixed32 = builder.ext_opt_sfixed32;
+    this.ext_opt_int64 = builder.ext_opt_int64;
+    this.ext_opt_uint64 = builder.ext_opt_uint64;
+    this.ext_opt_sint64 = builder.ext_opt_sint64;
+    this.ext_opt_fixed64 = builder.ext_opt_fixed64;
+    this.ext_opt_sfixed64 = builder.ext_opt_sfixed64;
+    this.ext_opt_bool = builder.ext_opt_bool;
+    this.ext_opt_float = builder.ext_opt_float;
+    this.ext_opt_double = builder.ext_opt_double;
+    this.ext_opt_string = builder.ext_opt_string;
+    this.ext_opt_bytes = builder.ext_opt_bytes;
+    this.ext_opt_nested_enum = builder.ext_opt_nested_enum;
+    this.ext_opt_nested_message = builder.ext_opt_nested_message;
+    this.ext_rep_int32 = Internal.immutableCopyOf("ext_rep_int32", builder.ext_rep_int32);
+    this.ext_rep_uint32 = Internal.immutableCopyOf("ext_rep_uint32", builder.ext_rep_uint32);
+    this.ext_rep_sint32 = Internal.immutableCopyOf("ext_rep_sint32", builder.ext_rep_sint32);
+    this.ext_rep_fixed32 = Internal.immutableCopyOf("ext_rep_fixed32", builder.ext_rep_fixed32);
+    this.ext_rep_sfixed32 = Internal.immutableCopyOf("ext_rep_sfixed32", builder.ext_rep_sfixed32);
+    this.ext_rep_int64 = Internal.immutableCopyOf("ext_rep_int64", builder.ext_rep_int64);
+    this.ext_rep_uint64 = Internal.immutableCopyOf("ext_rep_uint64", builder.ext_rep_uint64);
+    this.ext_rep_sint64 = Internal.immutableCopyOf("ext_rep_sint64", builder.ext_rep_sint64);
+    this.ext_rep_fixed64 = Internal.immutableCopyOf("ext_rep_fixed64", builder.ext_rep_fixed64);
+    this.ext_rep_sfixed64 = Internal.immutableCopyOf("ext_rep_sfixed64", builder.ext_rep_sfixed64);
+    this.ext_rep_bool = Internal.immutableCopyOf("ext_rep_bool", builder.ext_rep_bool);
+    this.ext_rep_float = Internal.immutableCopyOf("ext_rep_float", builder.ext_rep_float);
+    this.ext_rep_double = Internal.immutableCopyOf("ext_rep_double", builder.ext_rep_double);
+    this.ext_rep_string = Internal.immutableCopyOf("ext_rep_string", builder.ext_rep_string);
+    this.ext_rep_bytes = Internal.immutableCopyOf("ext_rep_bytes", builder.ext_rep_bytes);
+    this.ext_rep_nested_enum = Internal.immutableCopyOf("ext_rep_nested_enum", builder.ext_rep_nested_enum);
+    this.ext_rep_nested_message = Internal.immutableCopyOf("ext_rep_nested_message", builder.ext_rep_nested_message);
+    this.ext_pack_int32 = Internal.immutableCopyOf("ext_pack_int32", builder.ext_pack_int32);
+    this.ext_pack_uint32 = Internal.immutableCopyOf("ext_pack_uint32", builder.ext_pack_uint32);
+    this.ext_pack_sint32 = Internal.immutableCopyOf("ext_pack_sint32", builder.ext_pack_sint32);
+    this.ext_pack_fixed32 = Internal.immutableCopyOf("ext_pack_fixed32", builder.ext_pack_fixed32);
+    this.ext_pack_sfixed32 = Internal.immutableCopyOf("ext_pack_sfixed32", builder.ext_pack_sfixed32);
+    this.ext_pack_int64 = Internal.immutableCopyOf("ext_pack_int64", builder.ext_pack_int64);
+    this.ext_pack_uint64 = Internal.immutableCopyOf("ext_pack_uint64", builder.ext_pack_uint64);
+    this.ext_pack_sint64 = Internal.immutableCopyOf("ext_pack_sint64", builder.ext_pack_sint64);
+    this.ext_pack_fixed64 = Internal.immutableCopyOf("ext_pack_fixed64", builder.ext_pack_fixed64);
+    this.ext_pack_sfixed64 = Internal.immutableCopyOf("ext_pack_sfixed64", builder.ext_pack_sfixed64);
+    this.ext_pack_bool = Internal.immutableCopyOf("ext_pack_bool", builder.ext_pack_bool);
+    this.ext_pack_float = Internal.immutableCopyOf("ext_pack_float", builder.ext_pack_float);
+    this.ext_pack_double = Internal.immutableCopyOf("ext_pack_double", builder.ext_pack_double);
+    this.ext_pack_nested_enum = Internal.immutableCopyOf("ext_pack_nested_enum", builder.ext_pack_nested_enum);
+    this.ext_map_int32_int32 = Internal.immutableCopyOf("ext_map_int32_int32", builder.ext_map_int32_int32);
+    this.ext_map_string_string = Internal.immutableCopyOf("ext_map_string_string", builder.ext_map_string_string);
+    this.ext_map_string_message = Internal.immutableCopyOf("ext_map_string_message", builder.ext_map_string_message);
+    this.ext_map_string_enum = Internal.immutableCopyOf("ext_map_string_enum", builder.ext_map_string_enum);
   }
 
   @Override
@@ -3174,7 +3084,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             req_nested_enum, "req_nested_enum",
             req_nested_message, "req_nested_message");
       }
-      return new AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64, opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double, opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32, req_fixed32, req_sfixed32, req_int64, req_uint64, req_sint64, req_fixed64, req_sfixed64, req_bool, req_float, req_double, req_string, req_bytes, req_nested_enum, req_nested_message, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes, rep_nested_enum, rep_nested_message, pack_int32, pack_uint32, pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, default_int32, default_uint32, default_sint32, default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64, default_fixed64, default_sfixed64, default_bool, default_float, default_double, default_string, default_bytes, default_nested_enum, map_int32_int32, map_string_string, map_string_message, map_string_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum, ext_map_int32_int32, ext_map_string_string, ext_map_string_message, ext_map_string_enum, super.buildUnknownFields());
+      return new AllTypes(this, super.buildUnknownFields());
     }
   }
 

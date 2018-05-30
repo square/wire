@@ -17,15 +17,10 @@ package com.squareup.wire.java;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.FieldEncoding;
-import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.ProtoReader;
-import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
 import java.io.IOException;
-import java.net.ProtocolException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +59,24 @@ public final class JavaGeneratorTest {
         + "      }\n"
         + "      return new Message(long_, super.buildUnknownFields());\n"
         + "    }\n");
+  }
+
+  @Test public void tooManyFieldsTest() throws Exception {
+    StringBuilder s = new StringBuilder();
+    for (int i = 1; i < 257; i++) {
+      s.append("  repeated int32 field_" + i + " = " + i + ";\n");
+    }
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + s.toString()
+            + "    oneof oneof_name {\n"
+            + "       int32 foo = 257;\n"
+            + "       int32 bar = 258;\n"
+            + "    }\n"
+            + "}\n");
+    assertThat(repoBuilder.generateCode("Message")).contains(""
+        + "public Message(Builder builder, ByteString unknownFields)");
   }
 
   @Test public void map() throws Exception {
