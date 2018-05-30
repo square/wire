@@ -61,7 +61,25 @@ public final class JavaGeneratorTest {
         + "    }\n");
   }
 
-  @Test public void map() {
+  @Test public void tooManyFieldsTest() throws Exception {
+    StringBuilder s = new StringBuilder();
+    for (int i = 1; i < 257; i++) {
+      s.append("  repeated int32 field_" + i + " = " + i + ";\n");
+    }
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + s.toString()
+            + "    oneof oneof_name {\n"
+            + "       int32 foo = 257;\n"
+            + "       int32 bar = 258;\n"
+            + "    }\n"
+            + "}\n");
+    assertThat(repoBuilder.generateCode("Message")).contains(""
+        + "public Message(Builder builder, ByteString unknownFields)");
+  }
+
+  @Test public void map() throws Exception {
     Schema schema = new RepoBuilder()
         .add("message.proto", ""
             + "message Message {\n"
