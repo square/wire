@@ -13,6 +13,7 @@ import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Boolean;
+import java.lang.Deprecated;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -77,6 +78,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
   public static final Boolean DEFAULT_PY_GENERIC_SERVICES = false;
 
+  public static final Boolean DEFAULT_PHP_GENERIC_SERVICES = false;
+
   public static final Boolean DEFAULT_DEPRECATED = false;
 
   public static final Boolean DEFAULT_CC_ENABLE_ARENAS = false;
@@ -84,6 +87,12 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   public static final String DEFAULT_OBJC_CLASS_PREFIX = "";
 
   public static final String DEFAULT_CSHARP_NAMESPACE = "";
+
+  public static final String DEFAULT_SWIFT_PREFIX = "";
+
+  public static final String DEFAULT_PHP_CLASS_PREFIX = "";
+
+  public static final String DEFAULT_PHP_NAMESPACE = "";
 
   /**
    * Sets the Java package where classes generated from this .proto will be
@@ -125,21 +134,13 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   public final Boolean java_multiple_files;
 
   /**
-   * If set true, then the Java code generator will generate equals() and
-   * hashCode() methods for all messages defined in the .proto file.
-   * - In the full runtime, this is purely a speed optimization, as the
-   * AbstractMessage base class includes reflection-based implementations of
-   * these methods.
-   * - In the lite runtime, setting this option changes the semantics of
-   * equals() and hashCode() to more closely match those of the full runtime;
-   * the generated methods compute their results based on field values rather
-   * than object identity. (Implementations should not assume that hashcodes
-   * will be consistent across runtimes or versions of the protocol compiler.)
+   * This option does nothing.
    */
   @WireField(
       tag = 20,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
+  @Deprecated
   public final Boolean java_generate_equals_and_hash;
 
   /**
@@ -205,6 +206,12 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   )
   public final Boolean py_generic_services;
 
+  @WireField(
+      tag = 42,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean php_generic_services;
+
   /**
    * Is this file deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
@@ -247,7 +254,41 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   public final String csharp_namespace;
 
   /**
-   * The parser stores options it doesn't recognize here. See above.
+   * By default Swift generators will take the proto package and CamelCase it
+   * replacing '.' with underscore and use that to prefix the types/symbols
+   * defined. When this options is provided, they will use this value instead
+   * to prefix the types/symbols defined.
+   */
+  @WireField(
+      tag = 39,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String swift_prefix;
+
+  /**
+   * Sets the php class prefix which is prepended to all php generated classes
+   * from this .proto. Default is empty.
+   */
+  @WireField(
+      tag = 40,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String php_class_prefix;
+
+  /**
+   * Use this option to change the namespace of php generated classes. Default
+   * is empty. When this option is empty, the package name will be used for
+   * determining the namespace.
+   */
+  @WireField(
+      tag = 41,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String php_namespace;
+
+  /**
+   * The parser stores options it doesn't recognize here.
+   * See the documentation for the "Options" section above.
    */
   @WireField(
       tag = 999,
@@ -259,17 +300,19 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files,
       Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8,
       OptimizeMode optimize_for, String go_package, Boolean cc_generic_services,
-      Boolean java_generic_services, Boolean py_generic_services, Boolean deprecated,
-      Boolean cc_enable_arenas, String objc_class_prefix, String csharp_namespace,
+      Boolean java_generic_services, Boolean py_generic_services, Boolean php_generic_services,
+      Boolean deprecated, Boolean cc_enable_arenas, String objc_class_prefix,
+      String csharp_namespace, String swift_prefix, String php_class_prefix, String php_namespace,
       List<UninterpretedOption> uninterpreted_option) {
-    this(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, java_string_check_utf8, optimize_for, go_package, cc_generic_services, java_generic_services, py_generic_services, deprecated, cc_enable_arenas, objc_class_prefix, csharp_namespace, uninterpreted_option, ByteString.EMPTY);
+    this(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, java_string_check_utf8, optimize_for, go_package, cc_generic_services, java_generic_services, py_generic_services, php_generic_services, deprecated, cc_enable_arenas, objc_class_prefix, csharp_namespace, swift_prefix, php_class_prefix, php_namespace, uninterpreted_option, ByteString.EMPTY);
   }
 
   public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files,
       Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8,
       OptimizeMode optimize_for, String go_package, Boolean cc_generic_services,
-      Boolean java_generic_services, Boolean py_generic_services, Boolean deprecated,
-      Boolean cc_enable_arenas, String objc_class_prefix, String csharp_namespace,
+      Boolean java_generic_services, Boolean py_generic_services, Boolean php_generic_services,
+      Boolean deprecated, Boolean cc_enable_arenas, String objc_class_prefix,
+      String csharp_namespace, String swift_prefix, String php_class_prefix, String php_namespace,
       List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.java_package = java_package;
@@ -282,10 +325,14 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     this.cc_generic_services = cc_generic_services;
     this.java_generic_services = java_generic_services;
     this.py_generic_services = py_generic_services;
+    this.php_generic_services = php_generic_services;
     this.deprecated = deprecated;
     this.cc_enable_arenas = cc_enable_arenas;
     this.objc_class_prefix = objc_class_prefix;
     this.csharp_namespace = csharp_namespace;
+    this.swift_prefix = swift_prefix;
+    this.php_class_prefix = php_class_prefix;
+    this.php_namespace = php_namespace;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
   }
 
@@ -302,10 +349,14 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     builder.cc_generic_services = cc_generic_services;
     builder.java_generic_services = java_generic_services;
     builder.py_generic_services = py_generic_services;
+    builder.php_generic_services = php_generic_services;
     builder.deprecated = deprecated;
     builder.cc_enable_arenas = cc_enable_arenas;
     builder.objc_class_prefix = objc_class_prefix;
     builder.csharp_namespace = csharp_namespace;
+    builder.swift_prefix = swift_prefix;
+    builder.php_class_prefix = php_class_prefix;
+    builder.php_namespace = php_namespace;
     builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -327,10 +378,14 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
         && Internal.equals(cc_generic_services, o.cc_generic_services)
         && Internal.equals(java_generic_services, o.java_generic_services)
         && Internal.equals(py_generic_services, o.py_generic_services)
+        && Internal.equals(php_generic_services, o.php_generic_services)
         && Internal.equals(deprecated, o.deprecated)
         && Internal.equals(cc_enable_arenas, o.cc_enable_arenas)
         && Internal.equals(objc_class_prefix, o.objc_class_prefix)
         && Internal.equals(csharp_namespace, o.csharp_namespace)
+        && Internal.equals(swift_prefix, o.swift_prefix)
+        && Internal.equals(php_class_prefix, o.php_class_prefix)
+        && Internal.equals(php_namespace, o.php_namespace)
         && uninterpreted_option.equals(o.uninterpreted_option);
   }
 
@@ -349,10 +404,14 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       result = result * 37 + (cc_generic_services != null ? cc_generic_services.hashCode() : 0);
       result = result * 37 + (java_generic_services != null ? java_generic_services.hashCode() : 0);
       result = result * 37 + (py_generic_services != null ? py_generic_services.hashCode() : 0);
+      result = result * 37 + (php_generic_services != null ? php_generic_services.hashCode() : 0);
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
       result = result * 37 + (cc_enable_arenas != null ? cc_enable_arenas.hashCode() : 0);
       result = result * 37 + (objc_class_prefix != null ? objc_class_prefix.hashCode() : 0);
       result = result * 37 + (csharp_namespace != null ? csharp_namespace.hashCode() : 0);
+      result = result * 37 + (swift_prefix != null ? swift_prefix.hashCode() : 0);
+      result = result * 37 + (php_class_prefix != null ? php_class_prefix.hashCode() : 0);
+      result = result * 37 + (php_namespace != null ? php_namespace.hashCode() : 0);
       result = result * 37 + uninterpreted_option.hashCode();
       super.hashCode = result;
     }
@@ -372,10 +431,14 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     if (cc_generic_services != null) builder.append(", cc_generic_services=").append(cc_generic_services);
     if (java_generic_services != null) builder.append(", java_generic_services=").append(java_generic_services);
     if (py_generic_services != null) builder.append(", py_generic_services=").append(py_generic_services);
+    if (php_generic_services != null) builder.append(", php_generic_services=").append(php_generic_services);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (cc_enable_arenas != null) builder.append(", cc_enable_arenas=").append(cc_enable_arenas);
     if (objc_class_prefix != null) builder.append(", objc_class_prefix=").append(objc_class_prefix);
     if (csharp_namespace != null) builder.append(", csharp_namespace=").append(csharp_namespace);
+    if (swift_prefix != null) builder.append(", swift_prefix=").append(swift_prefix);
+    if (php_class_prefix != null) builder.append(", php_class_prefix=").append(php_class_prefix);
+    if (php_namespace != null) builder.append(", php_namespace=").append(php_namespace);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     return builder.replace(0, 2, "FileOptions{").append('}').toString();
   }
@@ -401,6 +464,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
     public Boolean py_generic_services;
 
+    public Boolean php_generic_services;
+
     public Boolean deprecated;
 
     public Boolean cc_enable_arenas;
@@ -408,6 +473,12 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     public String objc_class_prefix;
 
     public String csharp_namespace;
+
+    public String swift_prefix;
+
+    public String php_class_prefix;
+
+    public String php_namespace;
 
     public List<UninterpretedOption> uninterpreted_option;
 
@@ -452,17 +523,9 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     }
 
     /**
-     * If set true, then the Java code generator will generate equals() and
-     * hashCode() methods for all messages defined in the .proto file.
-     * - In the full runtime, this is purely a speed optimization, as the
-     * AbstractMessage base class includes reflection-based implementations of
-     * these methods.
-     * - In the lite runtime, setting this option changes the semantics of
-     * equals() and hashCode() to more closely match those of the full runtime;
-     * the generated methods compute their results based on field values rather
-     * than object identity. (Implementations should not assume that hashcodes
-     * will be consistent across runtimes or versions of the protocol compiler.)
+     * This option does nothing.
      */
+    @Deprecated
     public Builder java_generate_equals_and_hash(Boolean java_generate_equals_and_hash) {
       this.java_generate_equals_and_hash = java_generate_equals_and_hash;
       return this;
@@ -525,6 +588,11 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       return this;
     }
 
+    public Builder php_generic_services(Boolean php_generic_services) {
+      this.php_generic_services = php_generic_services;
+      return this;
+    }
+
     /**
      * Is this file deprecated?
      * Depending on the target platform, this can emit Deprecated annotations
@@ -563,7 +631,38 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     }
 
     /**
-     * The parser stores options it doesn't recognize here. See above.
+     * By default Swift generators will take the proto package and CamelCase it
+     * replacing '.' with underscore and use that to prefix the types/symbols
+     * defined. When this options is provided, they will use this value instead
+     * to prefix the types/symbols defined.
+     */
+    public Builder swift_prefix(String swift_prefix) {
+      this.swift_prefix = swift_prefix;
+      return this;
+    }
+
+    /**
+     * Sets the php class prefix which is prepended to all php generated classes
+     * from this .proto. Default is empty.
+     */
+    public Builder php_class_prefix(String php_class_prefix) {
+      this.php_class_prefix = php_class_prefix;
+      return this;
+    }
+
+    /**
+     * Use this option to change the namespace of php generated classes. Default
+     * is empty. When this option is empty, the package name will be used for
+     * determining the namespace.
+     */
+    public Builder php_namespace(String php_namespace) {
+      this.php_namespace = php_namespace;
+      return this;
+    }
+
+    /**
+     * The parser stores options it doesn't recognize here.
+     * See the documentation for the "Options" section above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
       Internal.checkElementsNotNull(uninterpreted_option);
@@ -573,7 +672,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
     @Override
     public FileOptions build() {
-      return new FileOptions(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, java_string_check_utf8, optimize_for, go_package, cc_generic_services, java_generic_services, py_generic_services, deprecated, cc_enable_arenas, objc_class_prefix, csharp_namespace, uninterpreted_option, super.buildUnknownFields());
+      return new FileOptions(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, java_string_check_utf8, optimize_for, go_package, cc_generic_services, java_generic_services, py_generic_services, php_generic_services, deprecated, cc_enable_arenas, objc_class_prefix, csharp_namespace, swift_prefix, php_class_prefix, php_namespace, uninterpreted_option, super.buildUnknownFields());
     }
   }
 
@@ -651,10 +750,14 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
           + ProtoAdapter.BOOL.encodedSizeWithTag(16, value.cc_generic_services)
           + ProtoAdapter.BOOL.encodedSizeWithTag(17, value.java_generic_services)
           + ProtoAdapter.BOOL.encodedSizeWithTag(18, value.py_generic_services)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(42, value.php_generic_services)
           + ProtoAdapter.BOOL.encodedSizeWithTag(23, value.deprecated)
           + ProtoAdapter.BOOL.encodedSizeWithTag(31, value.cc_enable_arenas)
           + ProtoAdapter.STRING.encodedSizeWithTag(36, value.objc_class_prefix)
           + ProtoAdapter.STRING.encodedSizeWithTag(37, value.csharp_namespace)
+          + ProtoAdapter.STRING.encodedSizeWithTag(39, value.swift_prefix)
+          + ProtoAdapter.STRING.encodedSizeWithTag(40, value.php_class_prefix)
+          + ProtoAdapter.STRING.encodedSizeWithTag(41, value.php_namespace)
           + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
           + value.unknownFields().size();
     }
@@ -671,10 +774,14 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       ProtoAdapter.BOOL.encodeWithTag(writer, 16, value.cc_generic_services);
       ProtoAdapter.BOOL.encodeWithTag(writer, 17, value.java_generic_services);
       ProtoAdapter.BOOL.encodeWithTag(writer, 18, value.py_generic_services);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 42, value.php_generic_services);
       ProtoAdapter.BOOL.encodeWithTag(writer, 23, value.deprecated);
       ProtoAdapter.BOOL.encodeWithTag(writer, 31, value.cc_enable_arenas);
       ProtoAdapter.STRING.encodeWithTag(writer, 36, value.objc_class_prefix);
       ProtoAdapter.STRING.encodeWithTag(writer, 37, value.csharp_namespace);
+      ProtoAdapter.STRING.encodeWithTag(writer, 39, value.swift_prefix);
+      ProtoAdapter.STRING.encodeWithTag(writer, 40, value.php_class_prefix);
+      ProtoAdapter.STRING.encodeWithTag(writer, 41, value.php_namespace);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }
@@ -706,6 +813,10 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
           case 31: builder.cc_enable_arenas(ProtoAdapter.BOOL.decode(reader)); break;
           case 36: builder.objc_class_prefix(ProtoAdapter.STRING.decode(reader)); break;
           case 37: builder.csharp_namespace(ProtoAdapter.STRING.decode(reader)); break;
+          case 39: builder.swift_prefix(ProtoAdapter.STRING.decode(reader)); break;
+          case 40: builder.php_class_prefix(ProtoAdapter.STRING.decode(reader)); break;
+          case 41: builder.php_namespace(ProtoAdapter.STRING.decode(reader)); break;
+          case 42: builder.php_generic_services(ProtoAdapter.BOOL.decode(reader)); break;
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
