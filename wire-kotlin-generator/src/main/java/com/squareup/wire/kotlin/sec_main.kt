@@ -1,22 +1,21 @@
+package com.squareup.wire.kotlin
+
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
-import com.squareup.wire.internal.Internal.missingRequiredFields
-import com.squareup.wire.kotlin.JavaPerson
-import com.squareup.wire.kotlin.Person2
-import com.squareup.wire.kotlin.UNKNOWN_FIELD
-import com.squareup.wire.kotlin.decodeMessage
-import com.squareup.wire.kotlin.getAlien
+import com.squareup.wire.internal.Internal
 import okio.ByteString
 
-data class Person(
+data class Person2(
     val name: String,
     val id: Int,
     val email: String? = null,
     val phone: List<PhoneNumber>,
+    val weight: Int,
+    val height: Int,
     val unknownFields: ByteString = ByteString.EMPTY
 ) {
   companion object {
@@ -83,37 +82,43 @@ data class Person(
           }
         }
 
-        return PhoneNumber(number = number ?: throw missingRequiredFields(number, "number"),
-            phoneType = phoneType ?: throw missingRequiredFields(phoneType, "phoneType"),
+        return PhoneNumber(number = number ?: throw Internal.missingRequiredFields(number, "number"),
+            phoneType = phoneType ?: throw Internal.missingRequiredFields(phoneType, "phoneType"),
             unknownFields = unknownFields
         )
       }
     }
   }
 
-  class Person_ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
+  class Person_ADAPTER : ProtoAdapter<Person2>(FieldEncoding.LENGTH_DELIMITED, Person2::class.java) {
 
-    override fun encodedSize(value: Person): Int {
+    override fun encodedSize(value: Person2): Int {
       return (ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
           + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
           + ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
           + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
+          + ProtoAdapter.INT32.encodedSizeWithTag(5, value.weight)
+          + ProtoAdapter.INT32.encodedSizeWithTag(6, value.height)
           + value.unknownFields.size())
     }
 
-    override fun encode(writer: ProtoWriter, value: Person) {
+    override fun encode(writer: ProtoWriter, value: Person2) {
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
       ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
+      ProtoAdapter.INT32.encodeWithTag(writer, 5, value.weight)
+      ProtoAdapter.INT32.encodeWithTag(writer, 6, value.height)
       writer.writeBytes(value.unknownFields)
     }
 
-    override fun decode(reader: ProtoReader): Person {
+    override fun decode(reader: ProtoReader): Person2 {
       var name: String? = null
       var id: Int? = null
       var email: String? = null
-      var phone = mutableListOf<Person.PhoneNumber>()
+      var phone = mutableListOf<Person2.PhoneNumber>()
+      var weight: Int? = null
+      var height: Int? = null
 
 
       val unknownFields = reader.decodeMessage { tag ->
@@ -122,61 +127,34 @@ data class Person(
           2 -> id = ProtoAdapter.INT32.decode(reader)
           3 -> email = ProtoAdapter.STRING.decode(reader)
           4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
+          5 -> weight = ProtoAdapter.INT32.decode(reader)
+          6 -> height = ProtoAdapter.INT32.decode(reader)
           else -> UNKNOWN_FIELD
         }
       }
 
-      return Person(name = name ?: throw missingRequiredFields(name, "name"),
-          id = id ?: throw missingRequiredFields(id, "id"),
+      return Person2(name = name ?: throw Internal.missingRequiredFields(name, "name"),
+          id = id ?: throw Internal.missingRequiredFields(id, "id"),
           email = email,
           phone = phone,
+          weight = weight ?: throw Internal.missingRequiredFields(weight, "weight"),
+          height = height ?: throw Internal.missingRequiredFields(height, "height"),
           unknownFields = unknownFields)
     }
   }
 }
 
-fun test() {
-  val phoneNumber = Person.PhoneNumber(
+
+fun getAlien() : Person2 {
+  val phoneNumber = Person2.PhoneNumber(
       number = "PII",
-      phoneType = Person.PhoneNumber.PhoneType.MOBILE)
+      phoneType = Person2.PhoneNumber.PhoneType.MOBILE)
 
-  val person1 = Person(
-      id = 1,
-      name = "ashutosh",
-      phone = mutableListOf(phoneNumber))
-
-
-  val phoneNumberAdapter = ProtoAdapter.get(Person.PhoneNumber::class.java)
-  val encoded = phoneNumberAdapter.encode(phoneNumber)
-  val decoded = phoneNumberAdapter.decode(encoded)
-  println(phoneNumber == decoded)
-
-  val personAdapter = ProtoAdapter.get(Person::class.java)
-  val encoded1 = personAdapter.encode(person1)
-  val decoded1 = personAdapter.decode(encoded1)
-  println(person1 == decoded1)
-
-  // Test unknown fields
-  val alien = getAlien()
-  val alienAdapter = ProtoAdapter.get(Person2::class.java)
-  val encoded2 = alienAdapter.encode(alien)
-  val decoded2 = alienAdapter.decode(encoded2)
-  println(alien == decoded2)
-
-
-  val mutation = personAdapter.decode(encoded2)
-  println(mutation)
-
-  println(alien == alienAdapter.decode(personAdapter.encode(mutation)))
-
-  val superman = mutation.copy(name = "clark kent")
-  println(alienAdapter.decode(personAdapter.encode(superman)))
-
-  // Need to able access the java Person class
-  val javaPersonAdapter = ProtoAdapter.get(JavaPerson::class.java)
-  println(javaPersonAdapter.decode(encoded1))
-}
-
-fun main(args: Array<String>) {
-  test()
+  return Person2(
+      id = 2,
+      name = "Singla",
+      phone =  mutableListOf(phoneNumber),
+      height = 12,
+      weight = 15
+  )
 }
