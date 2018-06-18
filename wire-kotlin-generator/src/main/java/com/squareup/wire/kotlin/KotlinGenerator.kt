@@ -1,25 +1,35 @@
 package com.squareup.wire.kotlin
 
+import com.squareup.kotlinpoet.ARRAY
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.DOUBLE
 import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.KModifier.DATA
 import com.squareup.kotlinpoet.KModifier.FINAL
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.LONG
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
+import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
+import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.ProtoReader
+import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
+import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.Options.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.ProtoFile
@@ -28,6 +38,7 @@ import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Type
 import okio.ByteString
+import java.util.*
 
 class KotlinGenerator private constructor(
     val schema: Schema,
@@ -48,25 +59,191 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateMessage(type: MessageType): TypeSpec {
-    val kotlinType = requireNotNull(typeName(type.type())) { "Unknown type $type" }
-    val builderJavaType = kotlinType.nestedClass("Builder")
+    val className = type.type().simpleName()
 
-    val builder = TypeSpec.classBuilder(type.type().simpleName())
+    val adapterClassName = ClassName("", className, className + "_ADAPTER")
 
-    if (!type.documentation().isEmpty()) {
-      builder.addKdoc("%L\n", type.documentation())
+    val compaionObjectBuilder = TypeSpec.companionObjectBuilder()
+        .addProperty("ADAPTER", adapterClassName)
+        .build()
+
+    val adapterBuilder = generateAdapter(type)
+
+    val classBuilder = TypeSpec.classBuilder(className)
+        .addModifiers(DATA)
+        .companionObject(compaionObjectBuilder)
+        .addType(generateAdapter(type))
+        .primaryConstructor(messageConstructor(type))
+
+    type.nestedTypes().forEach { it -> classBuilder.addType(generateType(it)) }
+
+    return classBuilder.build()
+  }
+
+  private fun generateAdapter(type: MessageType): TypeSpec {
+    val className = type.type().simpleName()
+
+    val adapterClassName = ClassName("", className, className + "_ADAPTER")
+
+    return TypeSpec.classBuilder(adapterClassName.simpleName())
+        .superclass(ParameterizedTypeName.Companion.get(ProtoAdapter::class.asClassName(),
+            nameToKotlinName[type.type()]!!))
+        .addSuperclassConstructorParameter("%L", FieldEncoding.LENGTH_DELIMITED)
+        .addSuperclassConstructorParameter("%L::class.java",
+            nameToKotlinName[type.type()]!!.simpleName())
+        .addFunction(encodedSizeAdapterFunc(type))
+        .addFunction(encodeFunc(type))
+        .addFunction(decodeFunc(type))
+        .build()
+  }
+
+  private fun decodeFunc(message: MessageType): FunSpec {
+    val className = nameToKotlinName[message.type()]!!
+
+    var body = CodeBlock.builder()
+    var returnBody = CodeBlock.builder()
+    var decodeBlock = CodeBlock.builder()
+    decodeBlock.beginControlFlow("val unknownFields = reader.decodeMessage")
+    decodeBlock.addStatement("tag->")
+    decodeBlock.beginControlFlow("when(tag)")
+    returnBody.beginControlFlow("return")
+    returnBody.addStatement("%L(", className.simpleName())
+
+    // Declarations.
+    message.fields().forEach { field ->
+      val adapterName = getAdapterName(field)
+      if (field.isRepeated) {
+        body.addStatement("var %L = mutableListOf<%L>()", field.name(),
+            nameToKotlinName[field.type()]!!)
+        returnBody.addStatement("%L = %L", field.name(), field.name())
+        decodeBlock.addStatement("%L -> %L.add(%L.decode(reader))", field.tag(), field.name(),
+            adapterName)
+      } else {
+        body.addStatement("var %L: %L = null", field.name(),
+            nameToKotlinName[field.type()]!!.asNullable())
+        decodeBlock.addStatement("%L -> %L = %L.decode(reader)", field.tag(), field.name(),
+            adapterName)
+
+        if (field.isOptional) {
+          returnBody.addStatement("%L = %L", field.name(), field.name())
+        } else {
+          returnBody.addStatement("%L = %L ?: throw missingRequiredFields(%L, \"%L\"),",
+              field.name(), field.name(), field.name(), field.name())
+        }
+      }
     }
 
-    val messageType = if (emitAndroid) ANDROID_MESSAGE else MESSAGE
-    builder.superclass(ParameterizedTypeName.get(messageType, kotlinType, builderJavaType))
+    decodeBlock.addStatement("else -> UNKNOWN_FIELD")
+    decodeBlock.endControlFlow()
+    decodeBlock.endControlFlow()
 
-    builder.addType(generateMessageBuilder(type, kotlinType, builderJavaType))
+    returnBody.addStatement("unknownFields = unknownFields)")
+    returnBody.endControlFlow()
 
-    for (nestedType in type.nestedTypes()) {
-      builder.addType(generateType(nestedType))
+    return FunSpec.builder("decode")
+        .addParameter("reader", ProtoReader::class.asClassName())
+        .returns(className)
+        .addCode(body.build())
+        .addCode(decodeBlock.build())
+        .addCode(returnBody.build())
+        .addModifiers(OVERRIDE)
+        .build()
+  }
+
+  private fun getAdapterName(field: Field): CodeBlock {
+    if (field.type().isScalar) {
+      return CodeBlock.of("%L.%L", ProtoAdapter::class.asClassName().simpleName(),
+          field.type().simpleName().toUpperCase(Locale.US))
+    }
+    return CodeBlock.of("%L.ADAPTER", nameToKotlinName[field.type()]!!.simpleName())
+  }
+
+  private fun encodeFunc(message: MessageType): FunSpec {
+    val className = nameToKotlinName[message.type()]!!
+    var body = CodeBlock.builder()
+
+    message.fields().forEach { field ->
+      if (field.type().isScalar) {
+        body.addStatement("%L.%L.encodeWithTag(writer, %L, value.%L) + ",
+            ProtoAdapter::class.asClassName().simpleName(),
+            field.type().simpleName().toUpperCase(Locale.US),
+            field.tag(),
+            field.name())
+      } else {
+        body.addStatement("%L.ADAPTER.encodeWithTag(writer, %L, value.%L)",
+            nameToKotlinName[field.type()]!!.simpleName(),
+            field.tag(),
+            field.name())
+      }
     }
 
-    return builder.build()
+    body.addStatement("writer.writeBytes(value.unknownFields)")
+
+    return FunSpec.builder("encode")
+        .addParameter("writer", ProtoWriter::class.asClassName())
+        .addParameter("value", className)
+        .addCode(body.build())
+        .addModifiers(OVERRIDE)
+        .build()
+  }
+
+  private fun encodedSizeAdapterFunc(message: MessageType): FunSpec {
+    val className = nameToKotlinName[message.type()]!!
+
+    var body = CodeBlock.builder()
+        .beginControlFlow("return")
+
+    message.fields().forEach { field ->
+      if (field.type().isScalar) {
+        body.addStatement("%L.%L.encodedSizeWithTag(%L, value.%L) + ",
+            ProtoAdapter::class.asClassName().simpleName(),
+            field.type().simpleName().toUpperCase(Locale.US),
+            field.tag(),
+            field.name())
+      } else {
+        body.addStatement("%L.ADAPTER.encodedSizeWithTag(%L, value.%L) + ",
+            nameToKotlinName[field.type()]!!.simpleName(),
+            field.tag(),
+            field.name())
+      }
+    }
+
+    return FunSpec.builder("encodedSize")
+        .addParameter("value", className)
+        .returns(Int::class.asTypeName())
+        .addCode(body
+            .addStatement("value.unknownFields.size()")
+            .endControlFlow()
+            .build())
+        .addModifiers(OVERRIDE)
+        .build()
+  }
+
+  private fun messageConstructor(message: MessageType): FunSpec {
+    val constructorBuilder = FunSpec.constructorBuilder()
+    message.fields().forEach { field ->
+      val type = field.type()
+      var kotlinType: ClassName = nameToKotlinName[type]!!
+      val fieldName = field.name()
+
+      if (field.isOptional) {
+        constructorBuilder.addParameter(ParameterSpec.builder(fieldName, kotlinType.asNullable())
+            .defaultValue("null")
+            .build())
+      } else if (field.isRepeated) {
+        constructorBuilder.addParameter(fieldName,
+            ParameterizedTypeName.Companion.get(ARRAY, kotlinType))
+      } else {
+        constructorBuilder.addParameter(fieldName, kotlinType)
+      }
+    }
+
+    constructorBuilder.addParameter(
+        ParameterSpec.builder("unknownFields", ByteString::class.asClassName())
+            .defaultValue("%L", ByteString.EMPTY)
+            .build())
+
+    return constructorBuilder.build()
   }
 
   private fun generateMessageBuilder(

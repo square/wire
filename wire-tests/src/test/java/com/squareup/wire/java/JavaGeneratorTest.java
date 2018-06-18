@@ -45,6 +45,28 @@ public final class JavaGeneratorTest {
     assertThat(JavaGenerator.sanitizeJavadoc(input)).isEqualTo(expected);
   }
 
+  @Test public void saneKotlinGeneratorTest() {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("message.proto", ""
+            + "message Person {\n"+
+                "  required string name = 1;\n" +
+                "  required int32 id = 2;\n" +
+                "  optional string email = 3;\n" +
+                "  enum PhoneType {\n" +
+                "    MOBILE = 0;\n" +
+                "    HOME = 1;\n" +
+                "    WORK = 2;\n" +
+                "  }\n" +
+                "  message PhoneNumber {\n" +
+                "    required string number = 1;\n" +
+                "    optional PhoneType type = 2 [default = HOME];\n" +
+                "  }\n" +
+                "  repeated PhoneNumber phone = 4;\n" +
+                "}\n"
+        );
+    System.out.println(repoBuilder.generateKotlin("Person"));
+  }
+
   @Test public void generateTypeUsesNameAllocatorInMessageBuilderBuild() throws Exception {
     RepoBuilder repoBuilder = new RepoBuilder()
         .add("message.proto", ""
