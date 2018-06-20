@@ -64,7 +64,7 @@ public final class JavaGeneratorTest {
                 "  repeated PhoneNumber phone = 4;\n" +
                 "}\n"
         );
-    System.out.println(repoBuilder.generateKotlin("Person"));
+     System.out.println(repoBuilder.generateKotlin("Person"));
   }
 
   @Test public void generateTypeUsesNameAllocatorInMessageBuilderBuild() throws Exception {

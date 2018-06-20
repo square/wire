@@ -54,9 +54,10 @@ class UnkownFieldsBuilder {
   companion object {
     fun create() : UnkownFieldsBuilder {
       val unkownFieldsBuilder =  UnkownFieldsBuilder()
-      unkownFieldsBuilder.prepareUnkownFields();
-      return unkownFieldsBuilder;
+      unkownFieldsBuilder.prepareUnkownFields()
+      return unkownFieldsBuilder
     }
+    object UNKNOWN_FIELD
   }
 
 }
@@ -68,7 +69,7 @@ fun ProtoReader.decodeMessage(tagHandler: (Int) -> Any): ByteString {
   while (true) {
     val tag = nextTag()
     if (tag == -1) break
-    if (tagHandler(tag) == UNKNOWN_FIELD) {
+    if (tagHandler(tag) == UnkownFieldsBuilder.Companion.UNKNOWN_FIELD) {
       println("We are receiving an unkown field")
       val fieldEncoding = peekFieldEncoding()
       val value = fieldEncoding.rawProtoAdapter().decode(this)
@@ -79,4 +80,3 @@ fun ProtoReader.decodeMessage(tagHandler: (Int) -> Any): ByteString {
   return unknownFieldsBuilder.buildUnknownFields()
 }
 
-object UNKNOWN_FIELD
