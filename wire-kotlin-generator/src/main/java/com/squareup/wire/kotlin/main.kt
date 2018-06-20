@@ -4,7 +4,6 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
-import com.squareup.wire.internal.Internal
 import com.squareup.wire.kotlin.UnkownFieldsBuilder
 import com.squareup.wire.kotlin.decodeMessage
 import kotlin.Int
@@ -17,7 +16,7 @@ data class Person(
     val id: Int,
     val email: String? = null,
     val phone: List<PhoneNumber>,
-    val unknownFields: ByteString = okio.ByteString.EMPTY
+    val unknownFields: ByteString = ByteString.EMPTY
 ) {
   object ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
     override fun encodedSize(value: Person): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
@@ -49,8 +48,8 @@ data class Person(
       }
       }
       return Person(
-          name = name ?: throw Internal.missingRequiredFields(name, "name"),
-          id = id ?: throw Internal.missingRequiredFields(id, "id"),
+          name = name ?: throw com.squareup.wire.internal.Internal.missingRequiredFields(name, "name"),
+          id = id ?: throw com.squareup.wire.internal.Internal.missingRequiredFields(id, "id"),
           email = email,
           phone = phone,
           unknownFields = unknownFields)
@@ -78,7 +77,7 @@ data class Person(
   data class PhoneNumber(
       val number: String,
       val type: PhoneType? = null,
-      val unknownFields: ByteString = okio.ByteString.EMPTY
+      val unknownFields: ByteString = ByteString.EMPTY
   ) {
     object ADAPTER : ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber::class.java) {
       override fun encodedSize(value: PhoneNumber): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +
@@ -102,7 +101,7 @@ data class Person(
         }
         }
         return PhoneNumber(
-            number = number ?: throw Internal.missingRequiredFields(number, "number"),
+            number = number ?: throw com.squareup.wire.internal.Internal.missingRequiredFields(number, "number"),
             type = type,
             unknownFields = unknownFields)
       }

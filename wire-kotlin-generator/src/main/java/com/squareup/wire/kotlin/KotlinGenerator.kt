@@ -1,6 +1,5 @@
 package com.squareup.wire.kotlin
 
-import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -17,6 +16,7 @@ import com.squareup.kotlinpoet.NameAllocator
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
@@ -69,6 +69,8 @@ class KotlinGenerator private constructor(
         }
       }
       is MessageType -> {
+        allocator.newName("unknownFields", "unknownFields")
+        allocator.newName("ADAPTER", "ADAPTER")
         message.fields().forEach { field ->
           allocator.newName(field.name(), field)
         }
@@ -78,16 +80,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateMessage(type: MessageType): TypeSpec {
-    val className = type.type().simpleName()
-
-    val adapterClassName = ClassName("", className, className + "_ADAPTER")
-
-    val compaionObjectBuilder = TypeSpec.companionObjectBuilder()
-        .addProperty(PropertySpec.builder("ADAPTER", adapterClassName)
-            .addAnnotation(AnnotationSpec.builder(JvmField::class).build())
-            .initializer(adapterClassName.toString() + "()")
-            .build())
-        .build()
+    val className = nameToKotlinName[type.type()]!!
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addModifiers(DATA)
@@ -114,40 +107,129 @@ class KotlinGenerator private constructor(
         .build()
   }
 
+  private fun addMessageConstructor(message: MessageType, classBuilder: TypeSpec.Builder): FunSpec {
+    val constructorBuilder = FunSpec.constructorBuilder()
+    val nameAllocator = nameAllocator(message)
+
+    message.fields().forEach { field ->
+      var fieldClass: TypeName = nameToKotlinName[field.type()]!!
+      val fieldName = nameAllocator.get(field)
+
+      when {
+        field.isOptional -> {
+          fieldClass = fieldClass.asNullable()
+        }
+        field.isRepeated -> {
+          fieldClass = List::class.asClassName().parameterizedBy(fieldClass)
+        }
+      }
+
+      val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
+      if (field.isOptional) {
+        parameterSpec.defaultValue("null")
+      }
+      constructorBuilder.addParameter(parameterSpec.build())
+      classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
+          .initializer(fieldName)
+          .build())
+    }
+
+    val unknownFields = nameAllocator.get("unknownFields")
+    constructorBuilder.addParameter(
+        ParameterSpec.builder(unknownFields, ByteString::class.asClassName())
+            .defaultValue("%T.EMPTY", ByteString::class.asClassName())
+            .build())
+    classBuilder.addProperty(PropertySpec.builder(unknownFields, ByteString::class.asClassName())
+        .initializer(unknownFields)
+        .build())
+
+    classBuilder.primaryConstructor(constructorBuilder.build())
+
+    return constructorBuilder.build()
+  }
+
+  private fun encodedSizeFunc(message: MessageType): FunSpec {
+    val className = nameToKotlinName[message.type()]!!
+    val body = CodeBlock.builder()
+        .add("return ")
+
+    message.fields().forEach { field ->
+      val adapterName = getAdapterName(field)
+
+      body.add("%L.%LencodedSizeWithTag(%L, value.%L) + \n",
+          adapterName, if (field.isRepeated) "asRepeated()." else "", field.tag(), field.name())
+    }
+
+    return FunSpec.builder("encodedSize")
+        .addParameter("value", className)
+        .returns(Int::class.asTypeName())
+        .addCode(body
+            .add("value.unknownFields.size()\n")
+            .build())
+        .addModifiers(OVERRIDE)
+        .build()
+  }
+
+  private fun encodeFunc(message: MessageType): FunSpec {
+    val className = nameToKotlinName[message.type()]!!
+    var body = CodeBlock.builder()
+
+    message.fields().forEach { field ->
+      val adapterName = getAdapterName(field)
+      body.addStatement("%L.%LencodeWithTag(writer, %L, value.%L)",
+          adapterName, if (field.isRepeated) "asRepeated()." else "", field.tag(), field.name())
+    }
+
+    body.addStatement("writer.writeBytes(value.unknownFields)")
+
+    return FunSpec.builder("encode")
+        .addParameter("writer", ProtoWriter::class.asClassName())
+        .addParameter("value", className)
+        .addCode(body.build())
+        .addModifiers(OVERRIDE)
+        .build()
+  }
+
   private fun decodeFunc(message: MessageType): FunSpec {
     val className = nameToKotlinName[message.type()]!!
 
     var body = CodeBlock.builder()
+
     var returnBody = CodeBlock.builder()
+    returnBody.add("return %L(\n", className.simpleName)
+
     var decodeBlock = CodeBlock.builder()
     decodeBlock.beginControlFlow("val unknownFields = reader.decodeMessage")
     decodeBlock.beginControlFlow("tag -> when(tag)")
-    returnBody.add("return %L(\n", className.simpleName)
+    val nameAllocator = nameAllocator(message)
+
     val missingRequiredFields = ClassName("com.squareup.wire.internal", "Internal")
 
-    // Declarations.
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
-      if (field.isRepeated) {
-        body.addStatement("var %L = mutableListOf<%L>()", field.name(),
-            nameToKotlinName[field.type()]!!)
-        returnBody.add("%L = %L,\n", field.name(), field.name())
-        decodeBlock.addStatement("%L -> %L.add(%L.decode(reader))", field.tag(), field.name(),
-            adapterName)
-      } else {
-        body.addStatement("var %L: %L = null", field.name(),
-            nameToKotlinName[field.type()]!!.asNullable())
-        decodeBlock.addStatement("%L -> %L = %L.decode(reader)", field.tag(), field.name(),
-            adapterName)
+      var throwExceptionBlock = ""
+      var bodyTemplate = ""
+      var decodeBodyTemplate = ""
+      val fieldName = nameAllocator.get(field)
+      var fieldClass = nameToKotlinName[field.type()]!!
 
-        if (field.isOptional) {
-          returnBody.add("%L = %L,\n", field.name(), field.name())
-        } else {
-          returnBody.add("%L = %L ?: throw %T.%L(%L, \"%L\"),\n",
-              field.name(), field.name(), missingRequiredFields, "missingRequiredFields",
-              field.name(), field.name())
+      if (field.isRepeated) {
+        bodyTemplate = "var %L = mutableListOf<%L>()"
+        decodeBodyTemplate = "%L -> %L.add(%L.decode(reader))"
+      } else {
+        bodyTemplate = "var %L: %L = null"
+        fieldClass = fieldClass.asNullable()
+        decodeBodyTemplate = "%L -> %L = %L.decode(reader)"
+
+        if (!field.isOptional) {
+          throwExceptionBlock = CodeBlock.of(" ?: throw %T.%L(%L, \"%L\")",
+              missingRequiredFields, "missingRequiredFields", field.name(), field.name()).toString()
         }
       }
+
+      body.addStatement(bodyTemplate, fieldName, fieldClass)
+      decodeBlock.addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
+      returnBody.add("%L = %L%L,\n", fieldName, fieldName, throwExceptionBlock)
     }
 
     val unknownFieldsBuilder = ClassName("com.squareup.wire.kotlin", "UnkownFieldsBuilder")
@@ -174,115 +256,6 @@ class KotlinGenerator private constructor(
           field.type().simpleName().toUpperCase(Locale.US))
     }
     return CodeBlock.of("%L.ADAPTER", nameToKotlinName[field.type()]!!.simpleName)
-  }
-
-  private fun encodeFunc(message: MessageType): FunSpec {
-    val className = nameToKotlinName[message.type()]!!
-    var body = CodeBlock.builder()
-
-    message.fields().forEach { field ->
-      if (field.type().isScalar) {
-        body.addStatement("%T.%L.encodeWithTag(writer, %L, value.%L)",
-            ProtoAdapter::class.asClassName(),
-            field.type().simpleName().toUpperCase(Locale.US),
-            field.tag(),
-            field.name())
-      } else {
-        body.addStatement("%T.ADAPTER.%LencodeWithTag(writer, %L, value.%L)",
-            nameToKotlinName[field.type()]!!,
-            if (field.isRepeated) "asRepeated()." else "",
-            field.tag(),
-            field.name())
-      }
-    }
-
-    body.addStatement("writer.writeBytes(value.unknownFields)")
-
-    return FunSpec.builder("encode")
-        .addParameter("writer", ProtoWriter::class.asClassName())
-        .addParameter("value", className)
-        .addCode(body.build())
-        .addModifiers(OVERRIDE)
-        .build()
-  }
-
-  private fun encodedSizeFunc(message: MessageType): FunSpec {
-    val className = nameToKotlinName[message.type()]!!
-
-    var body = CodeBlock.builder()
-        .add("return ")
-
-    message.fields().forEach { field ->
-      if (field.type().isScalar) {
-        body.add("%T.%L.encodedSizeWithTag(%L, value.%L) + \n",
-            ProtoAdapter::class.asClassName(),
-            field.type().simpleName().toUpperCase(Locale.US),
-            field.tag(),
-            field.name())
-      } else {
-        body.add("%T.ADAPTER.%LencodedSizeWithTag(%L, value.%L) + \n",
-            nameToKotlinName[field.type()]!!,
-            if (field.isRepeated) "asRepeated()." else "",
-            field.tag(),
-            field.name())
-      }
-    }
-
-    return FunSpec.builder("encodedSize")
-        .addParameter("value", className)
-        .returns(Int::class.asTypeName())
-        .addCode(body
-            .add("value.unknownFields.size()\n")
-            .build())
-        .addModifiers(OVERRIDE)
-        .build()
-  }
-
-  private fun addMessageConstructor(message: MessageType, classBuilder: TypeSpec.Builder): FunSpec {
-    val constructorBuilder = FunSpec.constructorBuilder()
-    message.fields().forEach { field ->
-      val type = field.type()
-      var kotlinType: ClassName = nameToKotlinName[type]!!
-      val fieldName = field.name()
-
-      when {
-        field.isOptional -> {
-          constructorBuilder.addParameter(ParameterSpec.builder(fieldName, kotlinType.asNullable())
-              .defaultValue("null")
-              .build())
-          classBuilder.addProperty(PropertySpec.builder(fieldName, kotlinType.asNullable())
-              .initializer(fieldName)
-              .build())
-        }
-
-        field.isRepeated -> {
-          constructorBuilder.addParameter(fieldName,
-              List::class.asClassName().parameterizedBy(kotlinType))
-          classBuilder.addProperty(PropertySpec.builder(fieldName,
-              List::class.asClassName().parameterizedBy(kotlinType))
-              .initializer(fieldName)
-              .build())
-        }
-        else -> {
-          constructorBuilder.addParameter(fieldName, kotlinType)
-          classBuilder.addProperty(PropertySpec.builder(fieldName, kotlinType)
-              .initializer(fieldName)
-              .build())
-        }
-      }
-    }
-
-    constructorBuilder.addParameter(
-        ParameterSpec.builder("unknownFields", ByteString::class.asClassName())
-            .defaultValue("%L.EMPTY", ByteString::class.asClassName())
-            .build())
-    classBuilder.addProperty(PropertySpec.builder("unknownFields", ByteString::class.asClassName())
-        .initializer("unknownFields")
-        .build())
-
-    classBuilder.primaryConstructor(constructorBuilder.build())
-
-    return constructorBuilder.build()
   }
 
   private fun generateEnum(message: EnumType): TypeSpec {
