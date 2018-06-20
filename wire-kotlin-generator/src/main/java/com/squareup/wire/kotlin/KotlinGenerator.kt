@@ -1,6 +1,5 @@
 package com.squareup.wire.kotlin
 
-import com.squareup.kotlinpoet.ARRAY
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
@@ -64,16 +63,17 @@ class KotlinGenerator private constructor(
     val adapterClassName = ClassName("", className, className + "_ADAPTER")
 
     val compaionObjectBuilder = TypeSpec.companionObjectBuilder()
-        .addProperty("ADAPTER", adapterClassName)
+        .addProperty(PropertySpec.builder("ADAPTER", adapterClassName)
+            .initializer(adapterClassName.toString() + "()")
+            .build())
         .build()
-
-    val adapterBuilder = generateAdapter(type)
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addModifiers(DATA)
-        .companionObject(compaionObjectBuilder)
         .addType(generateAdapter(type))
-        .primaryConstructor(messageConstructor(type))
+        .companionObject(compaionObjectBuilder)
+
+    addMessageConstructor(type, classBuilder)
 
     type.nestedTypes().forEach { it -> classBuilder.addType(generateType(it)) }
 
@@ -88,7 +88,8 @@ class KotlinGenerator private constructor(
     return TypeSpec.classBuilder(adapterClassName.simpleName())
         .superclass(ParameterizedTypeName.Companion.get(ProtoAdapter::class.asClassName(),
             nameToKotlinName[type.type()]!!))
-        .addSuperclassConstructorParameter("%L", FieldEncoding.LENGTH_DELIMITED)
+        .addSuperclassConstructorParameter("%L.%L", FieldEncoding::class.asClassName(),
+            "LENGTH_DELIMITED")
         .addSuperclassConstructorParameter("%L::class.java",
             nameToKotlinName[type.type()]!!.simpleName())
         .addFunction(encodedSizeAdapterFunc(type))
@@ -115,7 +116,7 @@ class KotlinGenerator private constructor(
       if (field.isRepeated) {
         body.addStatement("var %L = mutableListOf<%L>()", field.name(),
             nameToKotlinName[field.type()]!!)
-        returnBody.addStatement("%L = %L", field.name(), field.name())
+        returnBody.addStatement("%L = %L,", field.name(), field.name())
         decodeBlock.addStatement("%L -> %L.add(%L.decode(reader))", field.tag(), field.name(),
             adapterName)
       } else {
@@ -125,7 +126,7 @@ class KotlinGenerator private constructor(
             adapterName)
 
         if (field.isOptional) {
-          returnBody.addStatement("%L = %L", field.name(), field.name())
+          returnBody.addStatement("%L = %L,", field.name(), field.name())
         } else {
           returnBody.addStatement("%L = %L ?: throw missingRequiredFields(%L, \"%L\"),",
               field.name(), field.name(), field.name(), field.name())
@@ -164,14 +165,15 @@ class KotlinGenerator private constructor(
 
     message.fields().forEach { field ->
       if (field.type().isScalar) {
-        body.addStatement("%L.%L.encodeWithTag(writer, %L, value.%L) + ",
+        body.addStatement("%L.%L.encodeWithTag(writer, %L, value.%L)",
             ProtoAdapter::class.asClassName().simpleName(),
             field.type().simpleName().toUpperCase(Locale.US),
             field.tag(),
             field.name())
       } else {
-        body.addStatement("%L.ADAPTER.encodeWithTag(writer, %L, value.%L)",
+        body.addStatement("%L.ADAPTER.%LencodeWithTag(writer, %L, value.%L)",
             nameToKotlinName[field.type()]!!.simpleName(),
+            if (field.isRepeated) "asRepeated()." else "",
             field.tag(),
             field.name())
       }
@@ -201,8 +203,9 @@ class KotlinGenerator private constructor(
             field.tag(),
             field.name())
       } else {
-        body.addStatement("%L.ADAPTER.encodedSizeWithTag(%L, value.%L) + ",
+        body.addStatement("%L.ADAPTER.%LencodedSizeWithTag(%L, value.%L) + ",
             nameToKotlinName[field.type()]!!.simpleName(),
+            if (field.isRepeated) "asRepeated()." else "",
             field.tag(),
             field.name())
       }
@@ -219,29 +222,48 @@ class KotlinGenerator private constructor(
         .build()
   }
 
-  private fun messageConstructor(message: MessageType): FunSpec {
+  private fun addMessageConstructor(message: MessageType, classBuilder: TypeSpec.Builder): FunSpec {
     val constructorBuilder = FunSpec.constructorBuilder()
     message.fields().forEach { field ->
       val type = field.type()
       var kotlinType: ClassName = nameToKotlinName[type]!!
       val fieldName = field.name()
 
-      if (field.isOptional) {
-        constructorBuilder.addParameter(ParameterSpec.builder(fieldName, kotlinType.asNullable())
-            .defaultValue("null")
-            .build())
-      } else if (field.isRepeated) {
-        constructorBuilder.addParameter(fieldName,
-            ParameterizedTypeName.Companion.get(ARRAY, kotlinType))
-      } else {
-        constructorBuilder.addParameter(fieldName, kotlinType)
+      when {
+        field.isOptional -> {
+          constructorBuilder.addParameter(ParameterSpec.builder(fieldName, kotlinType.asNullable())
+              .defaultValue("null")
+              .build())
+          classBuilder.addProperty(PropertySpec.builder(fieldName, kotlinType.asNullable())
+              .initializer(fieldName)
+              .build())
+        }
+        field.isRepeated -> {
+          constructorBuilder.addParameter(fieldName,
+              ParameterizedTypeName.Companion.get(List::class.asClassName(), kotlinType))
+          classBuilder.addProperty(PropertySpec.builder(fieldName,
+              ParameterizedTypeName.Companion.get(List::class.asClassName(), kotlinType))
+              .initializer(fieldName)
+              .build())
+        }
+        else -> {
+          constructorBuilder.addParameter(fieldName, kotlinType)
+          classBuilder.addProperty(PropertySpec.builder(fieldName, kotlinType)
+              .initializer(fieldName)
+              .build())
+        }
       }
     }
 
     constructorBuilder.addParameter(
         ParameterSpec.builder("unknownFields", ByteString::class.asClassName())
-            .defaultValue("%L", ByteString.EMPTY)
+            .defaultValue("%L.EMPTY", ByteString::class.asClassName())
             .build())
+    classBuilder.addProperty(PropertySpec.builder("unknownFields", ByteString::class.asClassName())
+        .initializer("unknownFields")
+        .build())
+
+    classBuilder.primaryConstructor(constructorBuilder.build())
 
     return constructorBuilder.build()
   }
