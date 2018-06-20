@@ -13,8 +13,8 @@ import com.squareup.kotlinpoet.KModifier.FINAL
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.LONG
+import com.squareup.kotlinpoet.NameAllocator
 import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -58,6 +58,25 @@ class KotlinGenerator private constructor(
     else -> error("Unknown type $type")
   }
 
+  private fun nameAllocator(message: Type): NameAllocator {
+    val allocator = NameAllocator()
+    when (message) {
+      is EnumType -> {
+        allocator.newName("value", "value")
+        allocator.newName("ADAPTER", "ADAPTER")
+        message.constants().forEach { constant ->
+          allocator.newName(constant.name(), constant)
+        }
+      }
+      is MessageType -> {
+        message.fields().forEach { field ->
+          allocator.newName(field.name(), field)
+        }
+      }
+    }
+    return allocator;
+  }
+
   private fun generateMessage(type: MessageType): TypeSpec {
     val className = type.type().simpleName()
 
@@ -72,8 +91,7 @@ class KotlinGenerator private constructor(
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addModifiers(DATA)
-        .addType(generateAdapter(type)) // Maybe this should go to the companion object
-        .addType(compaionObjectBuilder)
+        .addType(generateAdapter(type))
 
     addMessageConstructor(type, classBuilder)
 
@@ -83,17 +101,13 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateAdapter(type: MessageType): TypeSpec {
-    val className = type.type().simpleName()
-
-    val adapterClassName = ClassName("", className, className + "_ADAPTER")
-
     val parentClassName = nameToKotlinName[type.type()]!!
 
-    return TypeSpec.classBuilder(adapterClassName.simpleName)
+    return TypeSpec.objectBuilder("ADAPTER")
         .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("%L.%L", FieldEncoding::class.asClassName(),
+        .addSuperclassConstructorParameter("%T.%L", FieldEncoding::class.asClassName(),
             "LENGTH_DELIMITED")
-        .addSuperclassConstructorParameter("%L::class.java", parentClassName)
+        .addSuperclassConstructorParameter("%T::class.java", parentClassName)
         .addFunction(encodedSizeFunc(type))
         .addFunction(encodeFunc(type))
         .addFunction(decodeFunc(type))
@@ -107,9 +121,9 @@ class KotlinGenerator private constructor(
     var returnBody = CodeBlock.builder()
     var decodeBlock = CodeBlock.builder()
     decodeBlock.beginControlFlow("val unknownFields = reader.decodeMessage")
-    decodeBlock.addStatement("tag->")
-    decodeBlock.beginControlFlow("when(tag)")
+    decodeBlock.beginControlFlow("tag -> when(tag)")
     returnBody.add("return %L(\n", className.simpleName)
+    val missingRequiredFields = ClassName("com.squareup.wire.internal", "Internal")
 
     // Declarations.
     message.fields().forEach { field ->
@@ -129,16 +143,16 @@ class KotlinGenerator private constructor(
         if (field.isOptional) {
           returnBody.add("%L = %L,\n", field.name(), field.name())
         } else {
-          returnBody.add("%L = %L ?: throw %L(%L, \"%L\"),\n",
-              field.name(), field.name(),
-              "com.squareup.wire.internal.Internal.missingRequiredFields", field.name(),
-              field.name())
+          returnBody.add("%L = %L ?: throw %T.%L(%L, \"%L\"),\n",
+              field.name(), field.name(), missingRequiredFields, "missingRequiredFields",
+              field.name(), field.name())
         }
       }
     }
 
-    decodeBlock.addStatement("else -> %L", "com.squareup.wire.kotlin." +
-        "UnkownFieldsBuilder.Companion.UNKNOWN_FIELD")
+    val unknownFieldsBuilder = ClassName("com.squareup.wire.kotlin", "UnkownFieldsBuilder")
+
+    decodeBlock.addStatement("else -> %T.%L", unknownFieldsBuilder, "UNKNOWN_FIELD")
     decodeBlock.endControlFlow()
     decodeBlock.endControlFlow()
 
@@ -156,7 +170,7 @@ class KotlinGenerator private constructor(
 
   private fun getAdapterName(field: Field): CodeBlock {
     if (field.type().isScalar) {
-      return CodeBlock.of("%L.%L", ProtoAdapter::class.asClassName(),
+      return CodeBlock.of("%T.%L", ProtoAdapter::class.asClassName(),
           field.type().simpleName().toUpperCase(Locale.US))
     }
     return CodeBlock.of("%L.ADAPTER", nameToKotlinName[field.type()]!!.simpleName)
@@ -168,14 +182,14 @@ class KotlinGenerator private constructor(
 
     message.fields().forEach { field ->
       if (field.type().isScalar) {
-        body.addStatement("%L.%L.encodeWithTag(writer, %L, value.%L)",
+        body.addStatement("%T.%L.encodeWithTag(writer, %L, value.%L)",
             ProtoAdapter::class.asClassName(),
             field.type().simpleName().toUpperCase(Locale.US),
             field.tag(),
             field.name())
       } else {
-        body.addStatement("%L.ADAPTER.%LencodeWithTag(writer, %L, value.%L)",
-            nameToKotlinName[field.type()]!!.simpleName,
+        body.addStatement("%T.ADAPTER.%LencodeWithTag(writer, %L, value.%L)",
+            nameToKotlinName[field.type()]!!,
             if (field.isRepeated) "asRepeated()." else "",
             field.tag(),
             field.name())
@@ -200,14 +214,14 @@ class KotlinGenerator private constructor(
 
     message.fields().forEach { field ->
       if (field.type().isScalar) {
-        body.add("%L.%L.encodedSizeWithTag(%L, value.%L) + \n",
+        body.add("%T.%L.encodedSizeWithTag(%L, value.%L) + \n",
             ProtoAdapter::class.asClassName(),
             field.type().simpleName().toUpperCase(Locale.US),
             field.tag(),
             field.name())
       } else {
-        body.add("%L.ADAPTER.%LencodedSizeWithTag(%L, value.%L) + \n",
-            nameToKotlinName[field.type()]!!.simpleName,
+        body.add("%T.ADAPTER.%LencodedSizeWithTag(%L, value.%L) + \n",
+            nameToKotlinName[field.type()]!!,
             if (field.isRepeated) "asRepeated()." else "",
             field.tag(),
             field.name())
@@ -218,7 +232,7 @@ class KotlinGenerator private constructor(
         .addParameter("value", className)
         .returns(Int::class.asTypeName())
         .addCode(body
-            .add("value.unknownFields.size()")
+            .add("value.unknownFields.size()\n")
             .build())
         .addModifiers(OVERRIDE)
         .build()
@@ -271,61 +285,63 @@ class KotlinGenerator private constructor(
     return constructorBuilder.build()
   }
 
-  private fun generateEnum(type: EnumType): TypeSpec {
-    val className = nameToKotlinName[type.type()]!!
-    val adapterClassName = ClassName("", className.simpleName, className.simpleName + "_ADAPTER")
+  private fun generateEnum(message: EnumType): TypeSpec {
+    val type = message.type()
+    val className = nameToKotlinName[type]!!
+    val nameAllocator = nameAllocator(message)
 
-    var builder = TypeSpec.enumBuilder(type.type().simpleName())
+    val valueName = nameAllocator.get("value")
+
+    var builder = TypeSpec.enumBuilder(type.simpleName())
         .addSuperinterface(WireEnum::class)
-        .addProperty(PropertySpec.builder("value", Int::class, PRIVATE)
-            .initializer("value")
-            .build())
         .primaryConstructor(FunSpec.constructorBuilder()
-            .addParameter("value", Int::class, PRIVATE)
+            .addParameter(valueName, Int::class, PRIVATE)
+            .build())
+        .addProperty(PropertySpec.builder(valueName, Int::class, PRIVATE)
+            .initializer(valueName)
             .build())
         .addFunction(FunSpec.builder("getValue")
             .returns(Int::class)
             .addModifiers(OVERRIDE)
-            .addStatement("return value")
+            .addStatement("return $valueName")
             .build())
-
-        .addType(generateEnumAdapter(type))
+        .addType(generateEnumAdapter(message))
         .addType(TypeSpec.companionObjectBuilder()
-            .addProperty(PropertySpec.builder("ADAPTER", adapterClassName)
-                .addAnnotation(AnnotationSpec.builder(JvmField::class).build())
-                .initializer(adapterClassName.toString() + "()")
-                .build())
             .addFunction(FunSpec.builder("fromValue")
-                .addParameter("value", Int::class)
+                .addParameter(valueName, Int::class)
                 .returns(className.asNullable())
-                .addStatement("return values().find { it.value == value } ")
+                .addStatement("return values().find { it.$valueName == $valueName } ")
                 .build())
             .build())
 
-    type.constants().forEach { constant ->
-      builder.addEnumConstant(constant.name(), TypeSpec.anonymousClassBuilder()
+    message.constants().forEach { constant ->
+      builder.addEnumConstant(nameAllocator.get(constant), TypeSpec.anonymousClassBuilder()
           .addSuperclassConstructorParameter("%L", constant.tag())
+          .addKdoc(constant.documentation())
           .build())
     }
 
     return builder.build()
   }
 
-  private fun generateEnumAdapter(enum: EnumType): TypeSpec {
-    val className = ClassName("", enum.type().simpleName(), enum.type().simpleName() + "_ADAPTER")
-    val parentClassName = nameToKotlinName[enum.type()]!!
-    return TypeSpec.classBuilder(className.simpleName)
+  private fun generateEnumAdapter(message: EnumType): TypeSpec {
+    val parentClassName = nameToKotlinName[message.type()]!!
+    val nameAllocator = nameAllocator(message)
+
+    val adapterName = nameAllocator.get("ADAPTER")
+    val valueName = nameAllocator.get("value")
+
+    return TypeSpec.objectBuilder(adapterName)
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("%L::class.java", parentClassName)
+        .addSuperclassConstructorParameter("%T::class.java", parentClassName)
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
-            .addParameter("value", Int::class)
+            .addParameter(valueName, Int::class)
             .returns(parentClassName.asNullable())
-            .addStatement("return %L.fromValue(value)", parentClassName)
+            .addStatement("return %T.fromValue($valueName)", parentClassName)
             .build())
         .build()
   }
-
 
   private fun generateEnclosingType(type: EnclosingType): TypeSpec {
     val kotlinType = requireNotNull(typeName(type.type())) { "Unknown type $type" }
