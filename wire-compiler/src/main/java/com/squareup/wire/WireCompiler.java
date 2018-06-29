@@ -269,8 +269,7 @@ public final class WireCompiler {
 
       for (int i = 0; i < MAX_WRITE_CONCURRENCY; ++i) {
         JavaFileWriter task = new JavaFileWriter(javaOut, javaGenerator, types, dryRun, fs, log);
-        futures.add(executor.submit(
-            task));
+        futures.add(executor.submit(task));
       }
     } else if (kotlinOut != null) {
       KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema);
