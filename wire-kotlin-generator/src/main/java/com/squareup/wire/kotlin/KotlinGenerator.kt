@@ -42,14 +42,13 @@ import java.util.*
 
 class KotlinGenerator private constructor(
     val schema: Schema,
-    private val nameToKotlinName: Map<ProtoType, ClassName>,
-    val emitAndroid: Boolean
+    private val nameToKotlinName: Map<ProtoType, ClassName>
 ) {
   /** Returns the Kotlin type for [protoType]. */
-  fun typeName(protoType: ProtoType) = nameToKotlinName[protoType]
+  fun typeName(protoType: ProtoType) = nameToKotlinName[protoType]!!
 
   /** Returns the full name of the class generated for `type`.  */
-  fun generatedTypeName(type: Type) = typeName(type.type())
+  fun generatedTypeName(type: Type) = typeName(type.type())!!
 
   fun generateType(type: Type): TypeSpec = when (type) {
     is MessageType -> generateMessage(type)
@@ -96,7 +95,7 @@ class KotlinGenerator private constructor(
 
   private fun generateAdapter(type: MessageType): TypeSpec {
     val nameAllocator = nameAllocator(type)
-    val parentClassName = generatedTypeName(type)!!
+    val parentClassName = generatedTypeName(type)
     val adapterName = nameAllocator.get("ADAPTER")
 
     return TypeSpec.objectBuilder(adapterName)
@@ -150,7 +149,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun encodedSizeFunc(message: MessageType): FunSpec {
-    val className = nameToKotlinName[message.type()]!!
+    val className = generatedTypeName(message)
     val body = CodeBlock.builder()
         .add("return ")
 
@@ -172,7 +171,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun encodeFunc(message: MessageType): FunSpec {
-    val className = nameToKotlinName[message.type()]!!
+    val className = generatedTypeName(message)
     var body = CodeBlock.builder()
 
     message.fields().forEach { field ->
@@ -194,14 +193,17 @@ class KotlinGenerator private constructor(
   private fun decodeFunc(message: MessageType): FunSpec {
     val className = nameToKotlinName[message.type()]!!
 
-    var body = CodeBlock.builder()
+    var declarationBody = CodeBlock.builder()
 
     var returnBody = CodeBlock.builder()
     returnBody.add("return %L(\n", className.simpleName)
 
     var decodeBlock = CodeBlock.builder()
     decodeBlock.addStatement("val unknownFields = reader.decodeMessage { tag -> ")
+
     val INDENTATION = " ".repeat(4)
+
+    // Indent manually as code generator doesn't handle this block gracefully.
     decodeBlock.addStatement("%Lwhen(tag) {", INDENTATION)
     val nameAllocator = nameAllocator(message)
 
@@ -210,16 +212,16 @@ class KotlinGenerator private constructor(
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
       var throwExceptionBlock = ""
-      var bodyTemplate = ""
+      var declarationBodyTemplate = ""
       var decodeBodyTemplate = ""
       val fieldName = nameAllocator.get(field)
       var fieldClass = nameToKotlinName[field.type()]!!
 
       if (field.isRepeated) {
-        bodyTemplate = "var %L = mutableListOf<%L>()"
+        declarationBodyTemplate = "var %L = mutableListOf<%L>()"
         decodeBodyTemplate = "%L%L -> %L.add(%L.decode(reader))"
       } else {
-        bodyTemplate = "var %L: %L = null"
+        declarationBodyTemplate = "var %L: %L = null"
         fieldClass = fieldClass.asNullable()
         decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
 
@@ -229,7 +231,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      body.addStatement(bodyTemplate, fieldName, fieldClass)
+      declarationBody.addStatement(declarationBodyTemplate, fieldName, fieldClass)
       decodeBlock.addStatement(decodeBodyTemplate, INDENTATION.repeat(2), field.tag(), fieldName,
           adapterName)
       returnBody.add("%L%L = %L%L,\n", INDENTATION, fieldName, fieldName, throwExceptionBlock)
@@ -247,24 +249,26 @@ class KotlinGenerator private constructor(
     return FunSpec.builder("decode")
         .addParameter("reader", ProtoReader::class.asClassName())
         .returns(className)
-        .addCode(body.build())
+        .addCode(declarationBody.build())
         .addCode(decodeBlock.build())
         .addCode(returnBody.build())
         .addModifiers(OVERRIDE)
         .build()
   }
 
+  // TODO add support for custom adapters.
   private fun getAdapterName(field: Field): CodeBlock {
     if (field.type().isScalar) {
       return CodeBlock.of("%T.%L", ProtoAdapter::class.asClassName(),
           field.type().simpleName().toUpperCase(Locale.US))
     }
-    return CodeBlock.of("%L.ADAPTER", nameToKotlinName[field.type()]!!.simpleName)
+
+    return CodeBlock.of("%L.ADAPTER", typeName(field.type()).simpleName)
   }
 
   private fun generateEnum(message: EnumType): TypeSpec {
     val type = message.type()
-    val className = nameToKotlinName[type]!!
+    val className = generatedTypeName(message)
     val nameAllocator = nameAllocator(message)
 
     val valueName = nameAllocator.get("value")
@@ -346,12 +350,6 @@ class KotlinGenerator private constructor(
   }
 
   companion object {
-    private val MESSAGE = Message::class.asClassName()
-    private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
-    private val MESSAGE_BUILDER = Message.Builder::class.asClassName()
-
-    private val ENUM_DEPRECATED = ProtoMember.get(ENUM_VALUE_OPTIONS, "deprecated")
-
     private val BUILT_IN_TYPES = mapOf(
         ProtoType.BOOL to BOOLEAN,
         ProtoType.BYTES to ByteString::class.asClassName(),
@@ -371,7 +369,7 @@ class KotlinGenerator private constructor(
     )
 
     @JvmStatic @JvmName("get")
-    operator fun invoke(schema: Schema, emitAndroid: Boolean): KotlinGenerator {
+    operator fun invoke(schema: Schema): KotlinGenerator {
       val map = BUILT_IN_TYPES.toMutableMap()
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
@@ -393,7 +391,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      return KotlinGenerator(schema, map, emitAndroid)
+      return KotlinGenerator(schema, map)
     }
   }
 }

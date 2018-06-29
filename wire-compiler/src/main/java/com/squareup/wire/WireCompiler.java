@@ -273,7 +273,7 @@ public final class WireCompiler {
             task));
       }
     } else if (kotlinOut != null) {
-      KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema, emitAndroid);
+      KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema);
 
       for (int i = 0; i < MAX_WRITE_CONCURRENCY; ++i) {
         KotlinFileWriter task =
