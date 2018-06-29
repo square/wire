@@ -44,7 +44,7 @@ class KotlinFileWriter implements Callable<Void> {
       ClassName className = kotlinGenerator.generatedTypeName(type);
       Location location = type.location();
 
-      FileSpec.Builder builder = FileSpec.builder(className.packageName(), typeSpec.getName())
+      FileSpec.Builder builder = FileSpec.builder(className.getPackageName(), typeSpec.getName())
           .addComment(CODE_GENERATED_BY_WIRE);
       if (location != null) {
         builder.addComment("\nSource file: %L", location.withPathOnly());
