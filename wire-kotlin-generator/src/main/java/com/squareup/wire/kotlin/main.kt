@@ -38,14 +38,14 @@ data class Person(
       var id: kotlin.Int? = null
       var email: kotlin.String? = null
       var phone = mutableListOf<Person.PhoneNumber>()
-      val unknownFields = reader.decodeMessage {
-        tag -> when(tag) {
-        1 -> name = ProtoAdapter.STRING.decode(reader)
-        2 -> id = ProtoAdapter.INT32.decode(reader)
-        3 -> email = ProtoAdapter.STRING.decode(reader)
-        4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
-        else -> UnkownFieldsBuilder.UNKNOWN_FIELD
-      }
+      val unknownFields = reader.decodeMessage { tag ->
+        when(tag) {
+          1 -> name = ProtoAdapter.STRING.decode(reader)
+          2 -> id = ProtoAdapter.INT32.decode(reader)
+          3 -> email = ProtoAdapter.STRING.decode(reader)
+          4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
+          else -> UnkownFieldsBuilder.UNKNOWN_FIELD
+        }
       }
       return Person(
           name = name ?: throw com.squareup.wire.internal.Internal.missingRequiredFields(name, "name"),
@@ -93,12 +93,12 @@ data class Person(
       override fun decode(reader: ProtoReader): PhoneNumber {
         var number: kotlin.String? = null
         var type: Person.PhoneType? = null
-        val unknownFields = reader.decodeMessage {
-          tag -> when(tag) {
-          1 -> number = ProtoAdapter.STRING.decode(reader)
-          2 -> type = PhoneType.ADAPTER.decode(reader)
-          else -> UnkownFieldsBuilder.UNKNOWN_FIELD
-        }
+        val unknownFields = reader.decodeMessage { tag ->
+          when(tag) {
+            1 -> number = ProtoAdapter.STRING.decode(reader)
+            2 -> type = PhoneType.ADAPTER.decode(reader)
+            else -> UnkownFieldsBuilder.UNKNOWN_FIELD
+          }
         }
         return PhoneNumber(
             number = number ?: throw com.squareup.wire.internal.Internal.missingRequiredFields(number, "number"),

@@ -58,6 +58,7 @@ class KotlinGenerator private constructor(
     else -> error("Unknown type $type")
   }
 
+  // TODO make this a cache
   private fun nameAllocator(message: Type): NameAllocator {
     val allocator = NameAllocator()
     when (message) {
@@ -76,11 +77,11 @@ class KotlinGenerator private constructor(
         }
       }
     }
-    return allocator;
+    return allocator
   }
 
   private fun generateMessage(type: MessageType): TypeSpec {
-    val className = nameToKotlinName[type.type()]!!
+    val className = typeName(type.type())!!
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addModifiers(DATA)
@@ -94,9 +95,11 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateAdapter(type: MessageType): TypeSpec {
-    val parentClassName = nameToKotlinName[type.type()]!!
+    val nameAllocator = nameAllocator(type)
+    val parentClassName = generatedTypeName(type)!!
+    val adapterName = nameAllocator.get("ADAPTER")
 
-    return TypeSpec.objectBuilder("ADAPTER")
+    return TypeSpec.objectBuilder(adapterName)
         .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
         .addSuperclassConstructorParameter("%T.%L", FieldEncoding::class.asClassName(),
             "LENGTH_DELIMITED")
@@ -107,12 +110,12 @@ class KotlinGenerator private constructor(
         .build()
   }
 
-  private fun addMessageConstructor(message: MessageType, classBuilder: TypeSpec.Builder): FunSpec {
+  private fun addMessageConstructor(message: MessageType, classBuilder: TypeSpec.Builder) {
     val constructorBuilder = FunSpec.constructorBuilder()
     val nameAllocator = nameAllocator(message)
 
     message.fields().forEach { field ->
-      var fieldClass: TypeName = nameToKotlinName[field.type()]!!
+      var fieldClass: TypeName = typeName(field.type())!!
       val fieldName = nameAllocator.get(field)
 
       when {
@@ -144,8 +147,6 @@ class KotlinGenerator private constructor(
         .build())
 
     classBuilder.primaryConstructor(constructorBuilder.build())
-
-    return constructorBuilder.build()
   }
 
   private fun encodedSizeFunc(message: MessageType): FunSpec {
@@ -199,8 +200,9 @@ class KotlinGenerator private constructor(
     returnBody.add("return %L(\n", className.simpleName)
 
     var decodeBlock = CodeBlock.builder()
-    decodeBlock.beginControlFlow("val unknownFields = reader.decodeMessage")
-    decodeBlock.beginControlFlow("tag -> when(tag)")
+    decodeBlock.addStatement("val unknownFields = reader.decodeMessage { tag -> ")
+    val INDENTATION = " ".repeat(4)
+    decodeBlock.addStatement("%Lwhen(tag) {", INDENTATION)
     val nameAllocator = nameAllocator(message)
 
     val missingRequiredFields = ClassName("com.squareup.wire.internal", "Internal")
@@ -215,11 +217,11 @@ class KotlinGenerator private constructor(
 
       if (field.isRepeated) {
         bodyTemplate = "var %L = mutableListOf<%L>()"
-        decodeBodyTemplate = "%L -> %L.add(%L.decode(reader))"
+        decodeBodyTemplate = "%L%L -> %L.add(%L.decode(reader))"
       } else {
         bodyTemplate = "var %L: %L = null"
         fieldClass = fieldClass.asNullable()
-        decodeBodyTemplate = "%L -> %L = %L.decode(reader)"
+        decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
 
         if (!field.isOptional) {
           throwExceptionBlock = CodeBlock.of(" ?: throw %T.%L(%L, \"%L\")",
@@ -228,17 +230,19 @@ class KotlinGenerator private constructor(
       }
 
       body.addStatement(bodyTemplate, fieldName, fieldClass)
-      decodeBlock.addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
-      returnBody.add("%L = %L%L,\n", fieldName, fieldName, throwExceptionBlock)
+      decodeBlock.addStatement(decodeBodyTemplate, INDENTATION.repeat(2), field.tag(), fieldName,
+          adapterName)
+      returnBody.add("%L%L = %L%L,\n", INDENTATION, fieldName, fieldName, throwExceptionBlock)
     }
 
     val unknownFieldsBuilder = ClassName("com.squareup.wire.kotlin", "UnkownFieldsBuilder")
 
-    decodeBlock.addStatement("else -> %T.%L", unknownFieldsBuilder, "UNKNOWN_FIELD")
-    decodeBlock.endControlFlow()
-    decodeBlock.endControlFlow()
+    decodeBlock.addStatement("%Lelse -> %T.%L", INDENTATION.repeat(2), unknownFieldsBuilder,
+        "UNKNOWN_FIELD")
+    decodeBlock.addStatement("%L}", INDENTATION)
+    decodeBlock.addStatement("}")
 
-    returnBody.add("unknownFields = unknownFields)\n")
+    returnBody.add("%LunknownFields = unknownFields)\n", INDENTATION)
 
     return FunSpec.builder("decode")
         .addParameter("reader", ProtoReader::class.asClassName())
