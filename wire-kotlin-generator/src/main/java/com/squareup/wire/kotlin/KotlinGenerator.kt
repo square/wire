@@ -121,8 +121,13 @@ class KotlinGenerator private constructor(
         }
         field.isRepeated -> {
           fieldClass = List::class.asClassName().parameterizedBy(fieldClass)
-          defaultValue = "emptyArray<>()"
+          defaultValue = "emptyList()"
         }
+      }
+
+      if (field.default != null) {
+        defaultValue = field.default
+        fieldClass = fieldClass.asNonNullable()
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
@@ -215,17 +220,18 @@ class KotlinGenerator private constructor(
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
       var throwExceptionBlock = CodeBlock.of("")
-      var declarationBodyTemplate = ""
       var decodeBodyTemplate = ""
       val fieldName = nameAllocator.get(field)
-      var fieldClass = nameToKotlinName[field.type()]!!
+      var fieldClass: TypeName = nameToKotlinName.getValue(field.type())
+      var fieldDeclaration = CodeBlock.of("");
 
       if (field.isRepeated) {
-        declarationBodyTemplate = "var %L = mutableListOf<%T>()"
+        fieldDeclaration = CodeBlock.of("var %L = mutableListOf<%T>()", fieldName, fieldClass)
         decodeBodyTemplate = "%L%L -> %L.add(%L.decode(reader))"
+        fieldClass = List::class.asClassName().parameterizedBy(fieldClass)
       } else {
-        declarationBodyTemplate = "var %L: %T = null"
         fieldClass = fieldClass.asNullable()
+        fieldDeclaration = CodeBlock.of("var %L: %T = null", fieldName, fieldClass)
         decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
 
         if (!field.isOptional) {
@@ -234,7 +240,13 @@ class KotlinGenerator private constructor(
         }
       }
 
-      declarationBody.addStatement(declarationBodyTemplate, fieldName, fieldClass)
+      if (field.default != null) {
+        fieldClass = fieldClass.asNonNullable()
+        fieldDeclaration = CodeBlock.of("var %L: %T = ${field.default}", fieldName, fieldClass)
+        throwExceptionBlock = CodeBlock.of("")
+      }
+
+      declarationBody.addStatement("%L", fieldDeclaration)
       decodeBlock.addStatement(decodeBodyTemplate, INDENTATION.repeat(2), field.tag(), fieldName,
           adapterName)
       returnBody.add("%L%L = %L%L,\n", INDENTATION, fieldName, fieldName, throwExceptionBlock)

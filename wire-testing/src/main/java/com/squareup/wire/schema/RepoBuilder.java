@@ -26,6 +26,7 @@ import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.Profile;
 import com.squareup.wire.java.ProfileLoader;
 import com.squareup.wire.kotlin.KotlinGenerator;
+import com.squareup.wire.kotlin.Person;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;

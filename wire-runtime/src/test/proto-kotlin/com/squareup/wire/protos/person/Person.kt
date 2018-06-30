@@ -19,7 +19,7 @@ data class Person(
     val name: String,
     val id: Int,
     val email: String? = null,
-    val phone: List<PhoneNumber> = emptyArray<>(),
+    val phone: List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
 ) {
     object ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
@@ -79,7 +79,7 @@ data class Person(
 
     data class PhoneNumber(
         val number: String,
-        val type: PhoneType? = null,
+        val type: PhoneType = HOME,
         val unknownFields: ByteString = ByteString.EMPTY
     ) {
         object ADAPTER : ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber::class.java) {
@@ -95,7 +95,7 @@ data class Person(
 
             override fun decode(reader: ProtoReader): PhoneNumber {
                 var number: String? = null
-                var type: PhoneType? = null
+                var type: PhoneType = HOME
                 val unknownFields = reader.decodeMessage { tag -> 
                     when (tag) {
                         1 -> number = ProtoAdapter.STRING.decode(reader)
