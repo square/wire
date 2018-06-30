@@ -19,10 +19,8 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
-import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
@@ -31,9 +29,7 @@ import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
-import com.squareup.wire.schema.Options.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.ProtoFile
-import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Type
@@ -45,10 +41,10 @@ class KotlinGenerator private constructor(
     private val nameToKotlinName: Map<ProtoType, ClassName>
 ) {
   /** Returns the Kotlin type for [protoType]. */
-  fun typeName(protoType: ProtoType) = nameToKotlinName[protoType]!!
+  fun typeName(protoType: ProtoType) = nameToKotlinName.getValue(protoType)
 
   /** Returns the full name of the class generated for `type`.  */
-  fun generatedTypeName(type: Type) = typeName(type.type())!!
+  fun generatedTypeName(type: Type) = typeName(type.type())
 
   fun generateType(type: Type): TypeSpec = when (type) {
     is MessageType -> generateMessage(type)
@@ -88,7 +84,7 @@ class KotlinGenerator private constructor(
 
     addMessageConstructor(type, classBuilder)
 
-    type.nestedTypes().forEach { it -> classBuilder.addType(generateType(it)) }
+    type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
 
     return classBuilder.build()
   }
@@ -116,20 +112,24 @@ class KotlinGenerator private constructor(
     message.fields().forEach { field ->
       var fieldClass: TypeName = typeName(field.type())!!
       val fieldName = nameAllocator.get(field)
+      var defaultValue = ""
 
       when {
         field.isOptional -> {
           fieldClass = fieldClass.asNullable()
+          defaultValue = "null"
         }
         field.isRepeated -> {
           fieldClass = List::class.asClassName().parameterizedBy(fieldClass)
+          defaultValue = "emptyArray<>()"
         }
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-      if (field.isOptional) {
-        parameterSpec.defaultValue("null")
+      if (field.isOptional || field.isRepeated) {
+        parameterSpec.defaultValue(defaultValue)
       }
+
       constructorBuilder.addParameter(parameterSpec.build())
       classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
           .initializer(fieldName)
@@ -138,10 +138,10 @@ class KotlinGenerator private constructor(
 
     val unknownFields = nameAllocator.get("unknownFields")
     constructorBuilder.addParameter(
-        ParameterSpec.builder(unknownFields, ByteString::class.asClassName())
-            .defaultValue("%T.EMPTY", ByteString::class.asClassName())
+        ParameterSpec.builder(unknownFields, ByteString::class)
+            .defaultValue("%T.EMPTY", ByteString::class)
             .build())
-    classBuilder.addProperty(PropertySpec.builder(unknownFields, ByteString::class.asClassName())
+    classBuilder.addProperty(PropertySpec.builder(unknownFields, ByteString::class)
         .initializer(unknownFields)
         .build())
 
@@ -153,16 +153,19 @@ class KotlinGenerator private constructor(
     val body = CodeBlock.builder()
         .add("return ")
 
+    val INDENTATION = " ".repeat(4)
+
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
 
       body.add("%L.%LencodedSizeWithTag(%L, value.%L) + \n",
           adapterName, if (field.isRepeated) "asRepeated()." else "", field.tag(), field.name())
+      body.add("%L", INDENTATION)
     }
 
     return FunSpec.builder("encodedSize")
         .addParameter("value", className)
-        .returns(Int::class.asTypeName())
+        .returns(Int::class)
         .addCode(body
             .add("value.unknownFields.size()\n")
             .build())
@@ -183,7 +186,7 @@ class KotlinGenerator private constructor(
     body.addStatement("writer.writeBytes(value.unknownFields)")
 
     return FunSpec.builder("encode")
-        .addParameter("writer", ProtoWriter::class.asClassName())
+        .addParameter("writer", ProtoWriter::class)
         .addParameter("value", className)
         .addCode(body.build())
         .addModifiers(OVERRIDE)
@@ -191,7 +194,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun decodeFunc(message: MessageType): FunSpec {
-    val className = nameToKotlinName[message.type()]!!
+    val className = nameToKotlinName.getValue(message.type())
 
     var declarationBody = CodeBlock.builder()
 
@@ -204,30 +207,30 @@ class KotlinGenerator private constructor(
     val INDENTATION = " ".repeat(4)
 
     // Indent manually as code generator doesn't handle this block gracefully.
-    decodeBlock.addStatement("%Lwhen(tag) {", INDENTATION)
+    decodeBlock.addStatement("%Lwhen (tag) {", INDENTATION)
     val nameAllocator = nameAllocator(message)
 
     val missingRequiredFields = ClassName("com.squareup.wire.internal", "Internal")
 
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
-      var throwExceptionBlock = ""
+      var throwExceptionBlock = CodeBlock.of("")
       var declarationBodyTemplate = ""
       var decodeBodyTemplate = ""
       val fieldName = nameAllocator.get(field)
       var fieldClass = nameToKotlinName[field.type()]!!
 
       if (field.isRepeated) {
-        declarationBodyTemplate = "var %L = mutableListOf<%L>()"
+        declarationBodyTemplate = "var %L = mutableListOf<%T>()"
         decodeBodyTemplate = "%L%L -> %L.add(%L.decode(reader))"
       } else {
-        declarationBodyTemplate = "var %L: %L = null"
+        declarationBodyTemplate = "var %L: %T = null"
         fieldClass = fieldClass.asNullable()
         decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
 
         if (!field.isOptional) {
           throwExceptionBlock = CodeBlock.of(" ?: throw %T.%L(%L, \"%L\")",
-              missingRequiredFields, "missingRequiredFields", field.name(), field.name()).toString()
+              missingRequiredFields, "missingRequiredFields", field.name(), field.name())
         }
       }
 
@@ -244,10 +247,10 @@ class KotlinGenerator private constructor(
     decodeBlock.addStatement("%L}", INDENTATION)
     decodeBlock.addStatement("}")
 
-    returnBody.add("%LunknownFields = unknownFields)\n", INDENTATION)
+    returnBody.add("%LunknownFields = unknownFields\n)\n", INDENTATION)
 
     return FunSpec.builder("decode")
-        .addParameter("reader", ProtoReader::class.asClassName())
+        .addParameter("reader", ProtoReader::class)
         .returns(className)
         .addCode(declarationBody.build())
         .addCode(decodeBlock.build())
@@ -259,7 +262,7 @@ class KotlinGenerator private constructor(
   // TODO add support for custom adapters.
   private fun getAdapterName(field: Field): CodeBlock {
     if (field.type().isScalar) {
-      return CodeBlock.of("%T.%L", ProtoAdapter::class.asClassName(),
+      return CodeBlock.of("%T.%L", ProtoAdapter::class,
           field.type().simpleName().toUpperCase(Locale.US))
     }
 
@@ -268,7 +271,6 @@ class KotlinGenerator private constructor(
 
   private fun generateEnum(message: EnumType): TypeSpec {
     val type = message.type()
-    val className = generatedTypeName(message)
     val nameAllocator = nameAllocator(message)
 
     val valueName = nameAllocator.get("value")
@@ -287,13 +289,6 @@ class KotlinGenerator private constructor(
             .addStatement("return $valueName")
             .build())
         .addType(generateEnumAdapter(message))
-        .addType(TypeSpec.companionObjectBuilder()
-            .addFunction(FunSpec.builder("fromValue")
-                .addParameter(valueName, Int::class)
-                .returns(className.asNullable())
-                .addStatement("return values().find { it.$valueName == $valueName } ")
-                .build())
-            .build())
 
     message.constants().forEach { constant ->
       builder.addEnumConstant(nameAllocator.get(constant), TypeSpec.anonymousClassBuilder()
@@ -306,7 +301,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateEnumAdapter(message: EnumType): TypeSpec {
-    val parentClassName = nameToKotlinName[message.type()]!!
+    val parentClassName = nameToKotlinName.getValue(message.type())
     val nameAllocator = nameAllocator(message)
 
     val adapterName = nameAllocator.get("ADAPTER")
@@ -319,7 +314,7 @@ class KotlinGenerator private constructor(
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)
             .returns(parentClassName.asNullable())
-            .addStatement("return %T.fromValue($valueName)", parentClassName)
+            .addStatement("return values().find { it.value == value }")
             .build())
         .build()
   }

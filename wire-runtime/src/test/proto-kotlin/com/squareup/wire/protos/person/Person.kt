@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
+import com.squareup.wire.internal.Internal
 import com.squareup.wire.kotlin.UnkownFieldsBuilder
 import kotlin.Int
 import kotlin.String
@@ -18,15 +19,15 @@ data class Person(
     val name: String,
     val id: Int,
     val email: String? = null,
-    val phone: List<PhoneNumber>,
+    val phone: List<PhoneNumber> = emptyArray<>(),
     val unknownFields: ByteString = ByteString.EMPTY
 ) {
     object ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
         override fun encodedSize(value: Person): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) + 
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) + 
-        ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) + 
-        PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone) + 
-        value.unknownFields.size()
+            ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) + 
+            ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) + 
+            PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone) + 
+            value.unknownFields.size()
 
         override fun encode(writer: ProtoWriter, value: Person) {
             ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
@@ -37,12 +38,12 @@ data class Person(
         }
 
         override fun decode(reader: ProtoReader): Person {
-            var name: kotlin.String? = null
-            var id: kotlin.Int? = null
-            var email: kotlin.String? = null
-            var phone = mutableListOf<com.squareup.wire.protos.person.Person.PhoneNumber>()
+            var name: String? = null
+            var id: Int? = null
+            var email: String? = null
+            var phone = mutableListOf<PhoneNumber>()
             val unknownFields = reader.decodeMessage { tag -> 
-                when(tag) {
+                when (tag) {
                     1 -> name = ProtoAdapter.STRING.decode(reader)
                     2 -> id = ProtoAdapter.INT32.decode(reader)
                     3 -> email = ProtoAdapter.STRING.decode(reader)
@@ -51,11 +52,12 @@ data class Person(
                 }
             }
             return Person(
-                name = name ?: throw com.squareup.wire.internal.Internal.missingRequiredFields(name, "name"),
-                id = id ?: throw com.squareup.wire.internal.Internal.missingRequiredFields(id, "id"),
+                name = name ?: throw Internal.missingRequiredFields(name, "name"),
+                id = id ?: throw Internal.missingRequiredFields(id, "id"),
                 email = email,
                 phone = phone,
-                unknownFields = unknownFields)
+                unknownFields = unknownFields
+            )
         }
     }
 
@@ -71,11 +73,7 @@ data class Person(
         override fun getValue(): Int = value
 
         object ADAPTER : EnumAdapter<PhoneType>(PhoneType::class.java) {
-            override fun fromValue(value: Int): PhoneType? = PhoneType.fromValue(value)
-        }
-
-        companion object {
-            fun fromValue(value: Int): PhoneType? = values().find { it.value == value } 
+            override fun fromValue(value: Int): PhoneType? = values().find { it.value == value }
         }
     }
 
@@ -86,8 +84,8 @@ data class Person(
     ) {
         object ADAPTER : ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber::class.java) {
             override fun encodedSize(value: PhoneNumber): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) + 
-            PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) + 
-            value.unknownFields.size()
+                PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) + 
+                value.unknownFields.size()
 
             override fun encode(writer: ProtoWriter, value: PhoneNumber) {
                 ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
@@ -96,19 +94,20 @@ data class Person(
             }
 
             override fun decode(reader: ProtoReader): PhoneNumber {
-                var number: kotlin.String? = null
-                var type: com.squareup.wire.protos.person.Person.PhoneType? = null
+                var number: String? = null
+                var type: PhoneType? = null
                 val unknownFields = reader.decodeMessage { tag -> 
-                    when(tag) {
+                    when (tag) {
                         1 -> number = ProtoAdapter.STRING.decode(reader)
                         2 -> type = PhoneType.ADAPTER.decode(reader)
                         else -> UnkownFieldsBuilder.UNKNOWN_FIELD
                     }
                 }
                 return PhoneNumber(
-                    number = number ?: throw com.squareup.wire.internal.Internal.missingRequiredFields(number, "number"),
+                    number = number ?: throw Internal.missingRequiredFields(number, "number"),
                     type = type,
-                    unknownFields = unknownFields)
+                    unknownFields = unknownFields
+                )
             }
         }
     }

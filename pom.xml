@@ -70,7 +70,7 @@
     <jimfs.version>1.0</jimfs.version>
     <jsr305.version>3.0.2</jsr305.version>
     <junit.version>4.12</junit.version>
-    <kotlin.version>1.2.20</kotlin.version>
+    <kotlin.version>1.2.50</kotlin.version>
     <okio.version>1.14.0</okio.version>
   </properties>
 

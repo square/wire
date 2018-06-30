@@ -9,7 +9,6 @@ import okio.ByteString
 import java.io.IOException
 
 class UnkownFieldsBuilder {
-  val unkownFields = ByteString.EMPTY
   var unknownFieldsByteString = ByteString.EMPTY
   var unknownFieldsBuffer: Buffer? = null
   var unknownFieldsWriter: ProtoWriter? = null
@@ -17,12 +16,13 @@ class UnkownFieldsBuilder {
   fun addUnknownField(
       tag: Int,
       fieldEncoding: FieldEncoding,
-      value: Any) {
+      value: Any
+  ) {
 
     try {
       val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
       protoAdapter.encodeWithTag(unknownFieldsWriter, tag, value)
-    } catch (e: IOException) {
+    } catch (_: IOException) {
       throw AssertionError()
     }
   }
@@ -44,7 +44,7 @@ class UnkownFieldsBuilder {
       try {
         // Writes the cached unknown fields to the buffer.
         unknownFieldsWriter!!.writeBytes(unknownFieldsByteString)
-      } catch (e: IOException) {
+      } catch (_: IOException) {
         throw AssertionError()
       }
       unknownFieldsByteString = ByteString.EMPTY
