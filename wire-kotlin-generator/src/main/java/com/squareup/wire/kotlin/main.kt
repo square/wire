@@ -1,3 +1,5 @@
+import android.os.Bundle
+import android.os.Parcel
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.ProtoAdapter
@@ -7,10 +9,14 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal.missingRequiredFields
 import com.squareup.wire.kotlin.JavaPerson
 import com.squareup.wire.kotlin.Person2
-import com.squareup.wire.kotlin.UNKNOWN_FIELD
+import com.squareup.wire.kotlin.UnkownFieldsBuilder
 import com.squareup.wire.kotlin.decodeMessage
 import com.squareup.wire.kotlin.getAlien
+import com.squareup.wire.protos.person.PersonAndroid
 import okio.ByteString
+import android.content.Intent
+
+
 
 data class Person(
     val name: String,
@@ -79,7 +85,7 @@ data class Person(
           when (tag) {
             1 -> number = ProtoAdapter.STRING.decode(reader)
             2 -> phoneType = PhoneType.ADAPTER.decode(reader)
-            else -> UNKNOWN_FIELD
+            else -> UnkownFieldsBuilder.UNKNOWN_FIELD
           }
         }
 
@@ -122,7 +128,7 @@ data class Person(
           2 -> id = ProtoAdapter.INT32.decode(reader)
           3 -> email = ProtoAdapter.STRING.decode(reader)
           4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
-          else -> UNKNOWN_FIELD
+          else -> UnkownFieldsBuilder.UNKNOWN_FIELD
         }
       }
 
@@ -175,8 +181,28 @@ fun test() {
   // Need to able access the java Person class
   val javaPersonAdapter = ProtoAdapter.get(JavaPerson::class.java)
   println(javaPersonAdapter.decode(encoded1))
+
+
 }
 
+//fun testAndroid() {
+//  val personAndroid: PersonAndroid = getPerson()
+//  val creator = PersonAndroid.CREATOR
+//
+//  val intent = Intent()
+//  intent.putExtra("PERSON", personAndroid)
+//
+//  intent.getBundleExtra("PERSON")
+//}
+
+fun getPerson(): PersonAndroid {
+  val pp : PersonAndroid.PhoneNumber = PersonAndroid.PhoneNumber(number = "90992121",
+      type = PersonAndroid.PhoneType.MOBILE)
+  return PersonAndroid(name = "ashutosh", id = 1, phone = arrayListOf(pp))
+}
+
+
 fun main(args: Array<String>) {
-  test()
+ // test()
+  testAndroid()
 }

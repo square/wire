@@ -78,7 +78,7 @@ data class Person2(
           when (tag) {
             1 -> number = ProtoAdapter.STRING.decode(reader)
             2 -> phoneType = PhoneType.ADAPTER.decode(reader)
-            else -> UNKNOWN_FIELD
+            else -> UnkownFieldsBuilder.UNKNOWN_FIELD
           }
         }
 
@@ -129,7 +129,7 @@ data class Person2(
           4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
           5 -> weight = ProtoAdapter.INT32.decode(reader)
           6 -> height = ProtoAdapter.INT32.decode(reader)
-          else -> UNKNOWN_FIELD
+          else -> UnkownFieldsBuilder.UNKNOWN_FIELD
         }
       }
 
