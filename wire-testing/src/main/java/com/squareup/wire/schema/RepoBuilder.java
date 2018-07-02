@@ -26,7 +26,6 @@ import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.Profile;
 import com.squareup.wire.java.ProfileLoader;
 import com.squareup.wire.kotlin.KotlinGenerator;
-import com.squareup.wire.kotlin.Person;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -113,10 +112,10 @@ public final class RepoBuilder {
 
   public String generateKotlin(String typeName) {
     Schema schema = schema();
-    KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema);
+    KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema, true);
     com.squareup.kotlinpoet.TypeSpec typeSpec =
         kotlinGenerator.generateType(schema.getType(typeName));
-    FileSpec fileSpec = FileSpec.builder("", "temp")
+    FileSpec fileSpec = FileSpec.builder("", "_")
         .addType(typeSpec)
         .addImport("com.squareup.wire.kotlin", "decodeMessage")
         .build();

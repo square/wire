@@ -1,5 +1,8 @@
 package com.squareup.wire.kotlin
 
+import android.os.Parcel
+import android.os.Parcelable
+import com.squareup.kotlinpoet.ARRAY
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -38,7 +41,8 @@ import java.util.*
 
 class KotlinGenerator private constructor(
     val schema: Schema,
-    private val nameToKotlinName: Map<ProtoType, ClassName>
+    private val nameToKotlinName: Map<ProtoType, ClassName>,
+    val emitAndroid: Boolean
 ) {
   /** Returns the Kotlin type for [protoType]. */
   fun typeName(protoType: ProtoType) = nameToKotlinName.getValue(protoType)
@@ -60,6 +64,9 @@ class KotlinGenerator private constructor(
       is EnumType -> {
         allocator.newName("value", "value")
         allocator.newName("ADAPTER", "ADAPTER")
+        if (emitAndroid) {
+          allocator.newName("CREATOR", "CREATOR")
+        }
         message.constants().forEach { constant ->
           allocator.newName(constant.name(), constant)
         }
@@ -76,17 +83,53 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateMessage(type: MessageType): TypeSpec {
-    val className = typeName(type.type())!!
+    val className = typeName(type.type())
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addModifiers(DATA)
         .addType(generateAdapter(type))
+
+    if (emitAndroid) {
+      classBuilder.addFunction(FunSpec.builder("writeToParcel")
+          .addStatement("return dest.writeByteArray(ADAPTER.encode(this))")
+          .addParameter("dest", Parcel::class)
+          .addParameter("flags", Int::class)
+          .addModifiers(OVERRIDE)
+          .build())
+      classBuilder.addFunction(FunSpec.builder("describeContents")
+          .addStatement("return 0")
+          .addModifiers(OVERRIDE)
+          .build())
+      classBuilder.addSuperinterface(Parcelable::class)
+      classBuilder.addType(generateAndroidCreator(type))
+    }
 
     addMessageConstructor(type, classBuilder)
 
     type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
 
     return classBuilder.build()
+  }
+
+  private fun generateAndroidCreator(type: MessageType): TypeSpec {
+    val nameAllocator = nameAllocator(type)
+    val parentClassName = generatedTypeName(type)
+    val creatorName = "CREATOR" // nameAllocator.get("CREATOR")
+
+    return TypeSpec.objectBuilder(creatorName)
+        .addSuperinterface(Parcelable.Creator::class.asClassName().parameterizedBy(parentClassName))
+        .addFunction(FunSpec.builder("createFromParcel")
+            .addParameter("input", Parcel::class)
+            .addStatement("return ADAPTER.decode(input.createByteArray())")
+            .addModifiers(OVERRIDE)
+            .build())
+        .addFunction(FunSpec.builder("newArray")
+            .addParameter("size", Int::class)
+            .returns(ARRAY.parameterizedBy(parentClassName.asNullable()))
+            .addStatement("return arrayOfNulls(size)")
+            .addModifiers(OVERRIDE)
+            .build())
+        .build()
   }
 
   private fun generateAdapter(type: MessageType): TypeSpec {
@@ -376,7 +419,7 @@ class KotlinGenerator private constructor(
     )
 
     @JvmStatic @JvmName("get")
-    operator fun invoke(schema: Schema): KotlinGenerator {
+    operator fun invoke(schema: Schema, emitAndroid: Boolean = false): KotlinGenerator {
       val map = BUILT_IN_TYPES.toMutableMap()
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
@@ -398,7 +441,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      return KotlinGenerator(schema, map)
+      return KotlinGenerator(schema, map, true)
     }
   }
 }

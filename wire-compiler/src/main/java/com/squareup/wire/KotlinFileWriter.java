@@ -49,7 +49,10 @@ class KotlinFileWriter implements Callable<Void> {
       if (location != null) {
         builder.addComment("\nSource file: %L", location.withPathOnly());
       }
-      FileSpec kotlinFile = builder.addType(typeSpec).build();
+
+      FileSpec kotlinFile = builder.addType(typeSpec)
+          .addImport("com.squareup.wire.kotlin", "decodeMessage")
+          .build();
 
       Path path = fs.getPath(destination);
       log.artifact(path, kotlinFile);
