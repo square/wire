@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal
 import com.squareup.wire.kotlin.UnkownFieldsBuilder
+import com.squareup.wire.kotlin.decodeMessage
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -79,7 +80,7 @@ data class Person(
 
     data class PhoneNumber(
         val number: String,
-        val type: PhoneType = HOME,
+        val type: PhoneType = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
     ) {
         object ADAPTER : ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber::class.java) {
@@ -95,7 +96,7 @@ data class Person(
 
             override fun decode(reader: ProtoReader): PhoneNumber {
                 var number: String? = null
-                var type: PhoneType = HOME
+                var type: PhoneType = PhoneType.HOME
                 val unknownFields = reader.decodeMessage { tag -> 
                     when (tag) {
                         1 -> number = ProtoAdapter.STRING.decode(reader)

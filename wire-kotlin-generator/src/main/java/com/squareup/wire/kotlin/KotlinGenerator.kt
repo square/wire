@@ -155,21 +155,20 @@ class KotlinGenerator private constructor(
     message.fields().forEach { field ->
       var fieldClass: TypeName = typeName(field.type())!!
       val fieldName = nameAllocator.get(field)
-      var defaultValue = ""
+      var defaultValue = CodeBlock.of("null")
 
       when {
         field.isOptional -> {
           fieldClass = fieldClass.asNullable()
-          defaultValue = "null"
         }
         field.isRepeated -> {
           fieldClass = List::class.asClassName().parameterizedBy(fieldClass)
-          defaultValue = "emptyList()"
+          defaultValue = CodeBlock.of("emptyList()")
         }
       }
 
       if (field.default != null) {
-        defaultValue = field.default
+        defaultValue = getDefaultValue(field)
         fieldClass = fieldClass.asNonNullable()
       }
 
@@ -263,10 +262,10 @@ class KotlinGenerator private constructor(
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
       var throwExceptionBlock = CodeBlock.of("")
-      var decodeBodyTemplate = ""
+      var decodeBodyTemplate: String
       val fieldName = nameAllocator.get(field)
       var fieldClass: TypeName = nameToKotlinName.getValue(field.type())
-      var fieldDeclaration = CodeBlock.of("");
+      var fieldDeclaration: CodeBlock;
 
       if (field.isRepeated) {
         fieldDeclaration = CodeBlock.of("var %L = mutableListOf<%T>()", fieldName, fieldClass)
@@ -285,7 +284,8 @@ class KotlinGenerator private constructor(
 
       if (field.default != null) {
         fieldClass = fieldClass.asNonNullable()
-        fieldDeclaration = CodeBlock.of("var %L: %T = ${field.default}", fieldName, fieldClass)
+        fieldDeclaration = CodeBlock.of("var %L: %T = %L", fieldName,
+            fieldClass, getDefaultValue(field))
         throwExceptionBlock = CodeBlock.of("")
       }
 
@@ -399,6 +399,19 @@ class KotlinGenerator private constructor(
     return builder.build()
   }
 
+  private fun getDefaultValue(field: Field): CodeBlock {
+    return when {
+      isEnum(field) -> {
+        CodeBlock.of("%T.%L", typeName(field.type()), field.default)
+      }
+      else -> CodeBlock.of("%L", field.default)
+    }
+  }
+
+  private fun isEnum(field: Field) : Boolean {
+    return schema.getType(field.type()) is EnumType
+  }
+
   companion object {
     private val BUILT_IN_TYPES = mapOf(
         ProtoType.BOOL to BOOLEAN,
@@ -441,7 +454,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      return KotlinGenerator(schema, map, true)
+      return KotlinGenerator(schema, map, emitAndroid)
     }
   }
 }

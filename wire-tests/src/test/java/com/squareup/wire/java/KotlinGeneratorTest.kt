@@ -57,8 +57,7 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("val ADAPTER_: Int"))
   }
 
-  @Test
-  fun androidSupport() {
+  @Test fun androidSupport() {
     val repoBuilder = RepoBuilder()
         .add("message.proto", ""
             + "message Person {\n" +
@@ -90,5 +89,26 @@ class KotlinGeneratorTest {
         "ADAPTER.decode(input.createByteArray())"))
     assertTrue(code.contains("override fun newArray(size: Int): Array<PhoneNumber?> = " +
         "arrayOfNulls(size)\n"))
+  }
+
+  @Test fun optionsTest() {
+    val repoBuilder = RepoBuilder()
+        .add("foo.proto", ""
+            + "import \"google/protobuf/descriptor.proto\";\n"
+            + "message FooOptions {\n"
+            + "  optional int32 opt1 = 1;\n"
+            + "  optional string opt2 = 2;\n"
+            + "}\n"
+            + "\n"
+            + "extend google.protobuf.FieldOptions {\n"
+            + "  optional FooOptions foo_options = 1234;\n"
+            + "}\n"
+            + "\n"
+            + "message Bar {\n"
+            + "  optional int32 a = 1 [(foo_options).opt1 = 123, (foo_options).opt2 = \"baz\"];\n"
+            + "  optional int32 b = 2 [(foo_options) = { opt1: 456 opt2: \"quux\" }];\n"
+            + "}\n")
+    val code = repoBuilder.generateKotlin("google.protobuf.FieldOptions")
+    println(code)
   }
 }

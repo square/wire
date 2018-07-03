@@ -112,7 +112,7 @@ public final class RepoBuilder {
 
   public String generateKotlin(String typeName) {
     Schema schema = schema();
-    KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema, true);
+    KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema, false);
     com.squareup.kotlinpoet.TypeSpec typeSpec =
         kotlinGenerator.generateType(schema.getType(typeName));
     FileSpec fileSpec = FileSpec.builder("", "_")
