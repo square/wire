@@ -14,9 +14,10 @@ import com.squareup.wire.kotlin.decodeMessage
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
+import kotlin.jvm.JvmOverloads
 import okio.ByteString
 
-data class Person(
+data class Person @JvmOverloads constructor(
     val name: String,
     val id: Int,
     val email: String? = null,
@@ -78,7 +79,7 @@ data class Person(
         }
     }
 
-    data class PhoneNumber(
+    data class PhoneNumber @JvmOverloads constructor(
         val number: String,
         val type: PhoneType = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY

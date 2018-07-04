@@ -26,7 +26,14 @@ class KotlinGeneratorTest {
             "  repeated PhoneNumber phone = 4;\n" +
             "}\n"
         )
-    println(repoBuilder.generateKotlin("Person"))
+    val code = repoBuilder.generateKotlin("Person")
+    assertTrue(code.contains("data class Person @JvmOverloads constructor"))
+    assertTrue(code.contains("object ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, " +
+        "Person::class.java) {"))
+    assertTrue(code.contains("override fun encode(writer: ProtoWriter, value: Person)"))
+    assertTrue(code.contains("enum class PhoneType(private val value: Int) : WireEnum"))
+    assertTrue(code.contains("value_(1),"))
+
   }
 
   @Test fun defaultValues() {

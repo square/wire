@@ -22,7 +22,6 @@ class UnknownFieldsBuilder {
       fieldEncoding: FieldEncoding,
       value: Any
   ) {
-
     try {
       val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
       protoAdapter.encodeWithTag(writer, tag, value)

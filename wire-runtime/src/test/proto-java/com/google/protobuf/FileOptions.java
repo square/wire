@@ -297,43 +297,27 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files,
-      Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8,
-      OptimizeMode optimize_for, String go_package, Boolean cc_generic_services,
-      Boolean java_generic_services, Boolean py_generic_services, Boolean php_generic_services,
-      Boolean deprecated, Boolean cc_enable_arenas, String objc_class_prefix,
-      String csharp_namespace, String swift_prefix, String php_class_prefix, String php_namespace,
-      List<UninterpretedOption> uninterpreted_option) {
-    this(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, java_string_check_utf8, optimize_for, go_package, cc_generic_services, java_generic_services, py_generic_services, php_generic_services, deprecated, cc_enable_arenas, objc_class_prefix, csharp_namespace, swift_prefix, php_class_prefix, php_namespace, uninterpreted_option, ByteString.EMPTY);
-  }
-
-  public FileOptions(String java_package, String java_outer_classname, Boolean java_multiple_files,
-      Boolean java_generate_equals_and_hash, Boolean java_string_check_utf8,
-      OptimizeMode optimize_for, String go_package, Boolean cc_generic_services,
-      Boolean java_generic_services, Boolean py_generic_services, Boolean php_generic_services,
-      Boolean deprecated, Boolean cc_enable_arenas, String objc_class_prefix,
-      String csharp_namespace, String swift_prefix, String php_class_prefix, String php_namespace,
-      List<UninterpretedOption> uninterpreted_option, ByteString unknownFields) {
+  public FileOptions(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
-    this.java_package = java_package;
-    this.java_outer_classname = java_outer_classname;
-    this.java_multiple_files = java_multiple_files;
-    this.java_generate_equals_and_hash = java_generate_equals_and_hash;
-    this.java_string_check_utf8 = java_string_check_utf8;
-    this.optimize_for = optimize_for;
-    this.go_package = go_package;
-    this.cc_generic_services = cc_generic_services;
-    this.java_generic_services = java_generic_services;
-    this.py_generic_services = py_generic_services;
-    this.php_generic_services = php_generic_services;
-    this.deprecated = deprecated;
-    this.cc_enable_arenas = cc_enable_arenas;
-    this.objc_class_prefix = objc_class_prefix;
-    this.csharp_namespace = csharp_namespace;
-    this.swift_prefix = swift_prefix;
-    this.php_class_prefix = php_class_prefix;
-    this.php_namespace = php_namespace;
-    this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.java_package = builder.java_package;
+    this.java_outer_classname = builder.java_outer_classname;
+    this.java_multiple_files = builder.java_multiple_files;
+    this.java_generate_equals_and_hash = builder.java_generate_equals_and_hash;
+    this.java_string_check_utf8 = builder.java_string_check_utf8;
+    this.optimize_for = builder.optimize_for;
+    this.go_package = builder.go_package;
+    this.cc_generic_services = builder.cc_generic_services;
+    this.java_generic_services = builder.java_generic_services;
+    this.py_generic_services = builder.py_generic_services;
+    this.php_generic_services = builder.php_generic_services;
+    this.deprecated = builder.deprecated;
+    this.cc_enable_arenas = builder.cc_enable_arenas;
+    this.objc_class_prefix = builder.objc_class_prefix;
+    this.csharp_namespace = builder.csharp_namespace;
+    this.swift_prefix = builder.swift_prefix;
+    this.php_class_prefix = builder.php_class_prefix;
+    this.php_namespace = builder.php_namespace;
+    this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", builder.uninterpreted_option);
   }
 
   @Override
@@ -672,7 +656,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
     @Override
     public FileOptions build() {
-      return new FileOptions(java_package, java_outer_classname, java_multiple_files, java_generate_equals_and_hash, java_string_check_utf8, optimize_for, go_package, cc_generic_services, java_generic_services, py_generic_services, php_generic_services, deprecated, cc_enable_arenas, objc_class_prefix, csharp_namespace, swift_prefix, php_class_prefix, php_namespace, uninterpreted_option, super.buildUnknownFields());
+      return new FileOptions(this, super.buildUnknownFields());
     }
   }
 

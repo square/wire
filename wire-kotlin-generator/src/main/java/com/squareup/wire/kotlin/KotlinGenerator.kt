@@ -3,6 +3,7 @@ package com.squareup.wire.kotlin
 import android.os.Parcel
 import android.os.Parcelable
 import com.squareup.kotlinpoet.ARRAY
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -109,6 +110,8 @@ class KotlinGenerator private constructor(
    */
   private fun addMessageConstructor(message: MessageType, classBuilder: TypeSpec.Builder) {
     val constructorBuilder = FunSpec.constructorBuilder()
+    constructorBuilder.addAnnotation(AnnotationSpec.builder(JvmOverloads::class)
+        .build())
     val nameAllocator = nameAllocator(message)
     val byteClass = typeName(ProtoType.BYTES)
 
