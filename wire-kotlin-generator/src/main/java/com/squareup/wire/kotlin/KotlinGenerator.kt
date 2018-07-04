@@ -42,7 +42,7 @@ import java.util.*
 class KotlinGenerator private constructor(
     val schema: Schema,
     private val nameToKotlinName: Map<ProtoType, ClassName>,
-    val emitAndroid: Boolean
+    private val emitAndroid: Boolean
 ) {
   /** Returns the Kotlin type for [protoType]. */
   fun typeName(protoType: ProtoType) = nameToKotlinName.getValue(protoType)
@@ -53,20 +53,15 @@ class KotlinGenerator private constructor(
   fun generateType(type: Type): TypeSpec = when (type) {
     is MessageType -> generateMessage(type)
     is EnumType -> generateEnum(type)
-    is EnclosingType -> generateEnclosingType(type)
     else -> error("Unknown type $type")
   }
 
-  // TODO make this a cache
   private fun nameAllocator(message: Type): NameAllocator {
     val allocator = NameAllocator()
     when (message) {
       is EnumType -> {
         allocator.newName("value", "value")
         allocator.newName("ADAPTER", "ADAPTER")
-        if (emitAndroid) {
-          allocator.newName("CREATOR", "CREATOR")
-        }
         message.constants().forEach { constant ->
           allocator.newName(constant.name(), constant)
         }
@@ -74,6 +69,9 @@ class KotlinGenerator private constructor(
       is MessageType -> {
         allocator.newName("unknownFields", "unknownFields")
         allocator.newName("ADAPTER", "ADAPTER")
+        if (emitAndroid) {
+          allocator.newName("CREATOR", "CREATOR")
+        }
         message.fields().forEach { field ->
           allocator.newName(field.name(), field)
         }
@@ -91,8 +89,8 @@ class KotlinGenerator private constructor(
 
     if (emitAndroid) {
       classBuilder.addFunction(FunSpec.builder("writeToParcel")
-          .addStatement("return dest.writeByteArray(ADAPTER.encode(this))")
-          .addParameter("dest", Parcel::class)
+          .addStatement("return destination.writeByteArray(ADAPTER.encode(this))")
+          .addParameter("destination", Parcel::class)
           .addParameter("flags", Int::class)
           .addModifiers(OVERRIDE)
           .build())
@@ -114,7 +112,7 @@ class KotlinGenerator private constructor(
   private fun generateAndroidCreator(type: MessageType): TypeSpec {
     val nameAllocator = nameAllocator(type)
     val parentClassName = generatedTypeName(type)
-    val creatorName = "CREATOR" // nameAllocator.get("CREATOR")
+    val creatorName = nameAllocator.get("CREATOR")
 
     return TypeSpec.objectBuilder(creatorName)
         .addSuperinterface(Parcelable.Creator::class.asClassName().parameterizedBy(parentClassName))
@@ -196,26 +194,24 @@ class KotlinGenerator private constructor(
   }
 
   private fun encodedSizeFunc(message: MessageType): FunSpec {
+    // TODO Fix indentation here.
     val className = generatedTypeName(message)
     val body = CodeBlock.builder()
-        .add("return ")
-
-    val INDENTATION = " ".repeat(4)
+    body.add("%[")
 
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
 
       body.add("%L.%LencodedSizeWithTag(%L, value.%L) + \n",
           adapterName, if (field.isRepeated) "asRepeated()." else "", field.tag(), field.name())
-      body.add("%L", INDENTATION)
     }
+
+    body.add("value.unknownFields.size()%]\n")
 
     return FunSpec.builder("encodedSize")
         .addParameter("value", className)
         .returns(Int::class)
-        .addCode(body
-            .add("value.unknownFields.size()\n")
-            .build())
+        .addCode("return %L", body.build())
         .addModifiers(OVERRIDE)
         .build()
   }
@@ -295,7 +291,7 @@ class KotlinGenerator private constructor(
       returnBody.add("%L%L = %L%L,\n", INDENTATION, fieldName, fieldName, throwExceptionBlock)
     }
 
-    val unknownFieldsBuilder = ClassName("com.squareup.wire.kotlin", "UnkownFieldsBuilder")
+    val unknownFieldsBuilder = ClassName("com.squareup.wire.kotlin", "UnknownFieldsBuilder")
 
     decodeBlock.addStatement("%Lelse -> %T.%L", INDENTATION.repeat(2), unknownFieldsBuilder,
         "UNKNOWN_FIELD")
@@ -372,31 +368,6 @@ class KotlinGenerator private constructor(
             .addStatement("return values().find { it.value == value }")
             .build())
         .build()
-  }
-
-  private fun generateEnclosingType(type: EnclosingType): TypeSpec {
-    val kotlinType = requireNotNull(typeName(type.type())) { "Unknown type $type" }
-
-    val builder = TypeSpec.classBuilder(kotlinType.simpleName)
-        .addModifiers(FINAL)
-
-    var documentation = type.documentation()
-    if (!documentation.isEmpty()) {
-      documentation += "\n\n<p>"
-    }
-    documentation += "<b>NOTE:</b> This type only exists to maintain class structure" + " for its nested types and is not an actual message."
-    builder.addKdoc("%L\n", documentation)
-
-    builder.primaryConstructor(FunSpec.constructorBuilder()
-        .addModifiers(PRIVATE)
-        .addStatement("throw new \$T()", AssertionError::class)
-        .build())
-
-    for (nestedType in type.nestedTypes()) {
-      builder.addType(generateType(nestedType))
-    }
-
-    return builder.build()
   }
 
   private fun getDefaultValue(field: Field): CodeBlock {

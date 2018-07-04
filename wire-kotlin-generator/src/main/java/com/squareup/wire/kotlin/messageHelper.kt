@@ -8,10 +8,14 @@ import okio.Buffer
 import okio.ByteString
 import java.io.IOException
 
-class UnkownFieldsBuilder {
-  var unknownFieldsByteString = ByteString.EMPTY
-  var unknownFieldsBuffer: Buffer? = null
-  var unknownFieldsWriter: ProtoWriter? = null
+class UnknownFieldsBuilder {
+  var byteString = ByteString.EMPTY
+  var buffer: Buffer? = null
+  var writer: ProtoWriter? = null
+
+  constructor() {
+    prepareUnknownFields()
+  }
 
   fun addUnknownField(
       tag: Int,
@@ -21,57 +25,49 @@ class UnkownFieldsBuilder {
 
     try {
       val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
-      protoAdapter.encodeWithTag(unknownFieldsWriter, tag, value)
+      protoAdapter.encodeWithTag(writer, tag, value)
     } catch (_: IOException) {
       throw AssertionError()
     }
   }
 
   fun buildUnknownFields(): ByteString {
-    if (unknownFieldsBuffer != null) {
-      // Reads and caches the unknown fields from the buffer.
-      unknownFieldsByteString = unknownFieldsBuffer!!.readByteString()
-      unknownFieldsBuffer = null
-      unknownFieldsWriter = null
+    if (buffer != null) {
+      byteString = buffer!!.readByteString()
+      buffer = null
+      writer = null
     }
-    return unknownFieldsByteString
+    return byteString
   }
 
-  fun prepareUnkownFields() {
-    if (unknownFieldsBuffer == null) {
-      unknownFieldsBuffer = Buffer()
-      unknownFieldsWriter = ProtoWriter(unknownFieldsBuffer!!)
+  private fun prepareUnknownFields() {
+    if (buffer == null) {
+      buffer = Buffer()
+      writer = ProtoWriter(buffer!!)
       try {
-        // Writes the cached unknown fields to the buffer.
-        unknownFieldsWriter!!.writeBytes(unknownFieldsByteString)
+        writer!!.writeBytes(byteString)
       } catch (_: IOException) {
+        // Impossible; we’re not doing I/O.
         throw AssertionError()
       }
-      unknownFieldsByteString = ByteString.EMPTY
+      byteString = ByteString.EMPTY
     }
   }
 
   companion object {
-    fun create() : UnkownFieldsBuilder {
-      val unkownFieldsBuilder =  UnkownFieldsBuilder()
-      unkownFieldsBuilder.prepareUnkownFields()
-      return unkownFieldsBuilder
-    }
-
     val UNKNOWN_FIELD = Any()
   }
 
 }
 
 fun ProtoReader.decodeMessage(tagHandler: (Int) -> Any): ByteString {
-  val unknownFieldsBuilder = UnkownFieldsBuilder.create()
+  val unknownFieldsBuilder = UnknownFieldsBuilder()
 
   val token = beginMessage()
   while (true) {
     val tag = nextTag()
     if (tag == -1) break
-    if (tagHandler(tag) == UnkownFieldsBuilder.UNKNOWN_FIELD) {
-      println("We are receiving an unkown field")
+    if (tagHandler(tag) == UnknownFieldsBuilder.UNKNOWN_FIELD) {
       val fieldEncoding = peekFieldEncoding()
       val value = fieldEncoding.rawProtoAdapter().decode(this)
       unknownFieldsBuilder.addUnknownField(tag, fieldEncoding, value)
