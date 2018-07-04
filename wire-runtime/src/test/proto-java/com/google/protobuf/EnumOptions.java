@@ -52,6 +52,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
   public final Boolean deprecated;
 
   /**
+   * javanano_as_lite
    * The parser stores options it doesn't recognize here. See above.
    */
   @WireField(
@@ -166,6 +167,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     }
 
     /**
+     * javanano_as_lite
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {

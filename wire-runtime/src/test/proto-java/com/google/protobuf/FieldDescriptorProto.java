@@ -43,6 +43,8 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
   public static final Integer DEFAULT_ONEOF_INDEX = 0;
 
+  public static final String DEFAULT_JSON_NAME = "";
+
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
@@ -117,6 +119,18 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
   )
   public final Integer oneof_index;
 
+  /**
+   * JSON name of this field. The value is set by protocol compiler. If the
+   * user has set a "json_name" option on this field, that option's value
+   * will be used. Otherwise, it's deduced from the field's name by converting
+   * it to camelCase.
+   */
+  @WireField(
+      tag = 10,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String json_name;
+
   @WireField(
       tag = 8,
       adapter = "com.google.protobuf.FieldOptions#ADAPTER"
@@ -124,13 +138,14 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
   public final FieldOptions options;
 
   public FieldDescriptorProto(String name, Integer number, Label label, Type type, String type_name,
-      String extendee, String default_value, Integer oneof_index, FieldOptions options) {
-    this(name, number, label, type, type_name, extendee, default_value, oneof_index, options, ByteString.EMPTY);
+      String extendee, String default_value, Integer oneof_index, String json_name,
+      FieldOptions options) {
+    this(name, number, label, type, type_name, extendee, default_value, oneof_index, json_name, options, ByteString.EMPTY);
   }
 
   public FieldDescriptorProto(String name, Integer number, Label label, Type type, String type_name,
-      String extendee, String default_value, Integer oneof_index, FieldOptions options,
-      ByteString unknownFields) {
+      String extendee, String default_value, Integer oneof_index, String json_name,
+      FieldOptions options, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.number = number;
@@ -140,6 +155,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     this.extendee = extendee;
     this.default_value = default_value;
     this.oneof_index = oneof_index;
+    this.json_name = json_name;
     this.options = options;
   }
 
@@ -154,6 +170,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     builder.extendee = extendee;
     builder.default_value = default_value;
     builder.oneof_index = oneof_index;
+    builder.json_name = json_name;
     builder.options = options;
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -173,6 +190,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
         && Internal.equals(extendee, o.extendee)
         && Internal.equals(default_value, o.default_value)
         && Internal.equals(oneof_index, o.oneof_index)
+        && Internal.equals(json_name, o.json_name)
         && Internal.equals(options, o.options);
   }
 
@@ -189,6 +207,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
       result = result * 37 + (extendee != null ? extendee.hashCode() : 0);
       result = result * 37 + (default_value != null ? default_value.hashCode() : 0);
       result = result * 37 + (oneof_index != null ? oneof_index.hashCode() : 0);
+      result = result * 37 + (json_name != null ? json_name.hashCode() : 0);
       result = result * 37 + (options != null ? options.hashCode() : 0);
       super.hashCode = result;
     }
@@ -206,6 +225,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     if (extendee != null) builder.append(", extendee=").append(extendee);
     if (default_value != null) builder.append(", default_value=").append(default_value);
     if (oneof_index != null) builder.append(", oneof_index=").append(oneof_index);
+    if (json_name != null) builder.append(", json_name=").append(json_name);
     if (options != null) builder.append(", options=").append(options);
     return builder.replace(0, 2, "FieldDescriptorProto{").append('}').toString();
   }
@@ -226,6 +246,8 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
     public String default_value;
 
     public Integer oneof_index;
+
+    public String json_name;
 
     public FieldOptions options;
 
@@ -298,6 +320,17 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
       return this;
     }
 
+    /**
+     * JSON name of this field. The value is set by protocol compiler. If the
+     * user has set a "json_name" option on this field, that option's value
+     * will be used. Otherwise, it's deduced from the field's name by converting
+     * it to camelCase.
+     */
+    public Builder json_name(String json_name) {
+      this.json_name = json_name;
+      return this;
+    }
+
     public Builder options(FieldOptions options) {
       this.options = options;
       return this;
@@ -305,7 +338,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     @Override
     public FieldDescriptorProto build() {
-      return new FieldDescriptorProto(name, number, label, type, type_name, extendee, default_value, oneof_index, options, super.buildUnknownFields());
+      return new FieldDescriptorProto(name, number, label, type, type_name, extendee, default_value, oneof_index, json_name, options, super.buildUnknownFields());
     }
   }
 
@@ -342,6 +375,9 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     /**
      * Tag-delimited aggregate.
+     * Group type is deprecated and not supported in proto3. However, Proto3
+     * implementations should still be able to parse the group wire format and
+     * treat group fields as unknown fields.
      */
     TYPE_GROUP(10),
 
@@ -487,6 +523,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
           + ProtoAdapter.STRING.encodedSizeWithTag(2, value.extendee)
           + ProtoAdapter.STRING.encodedSizeWithTag(7, value.default_value)
           + ProtoAdapter.INT32.encodedSizeWithTag(9, value.oneof_index)
+          + ProtoAdapter.STRING.encodedSizeWithTag(10, value.json_name)
           + FieldOptions.ADAPTER.encodedSizeWithTag(8, value.options)
           + value.unknownFields().size();
     }
@@ -501,6 +538,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
       ProtoAdapter.STRING.encodeWithTag(writer, 2, value.extendee);
       ProtoAdapter.STRING.encodeWithTag(writer, 7, value.default_value);
       ProtoAdapter.INT32.encodeWithTag(writer, 9, value.oneof_index);
+      ProtoAdapter.STRING.encodeWithTag(writer, 10, value.json_name);
       FieldOptions.ADAPTER.encodeWithTag(writer, 8, value.options);
       writer.writeBytes(value.unknownFields());
     }
@@ -534,6 +572,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
           case 7: builder.default_value(ProtoAdapter.STRING.decode(reader)); break;
           case 8: builder.options(FieldOptions.ADAPTER.decode(reader)); break;
           case 9: builder.oneof_index(ProtoAdapter.INT32.decode(reader)); break;
+          case 10: builder.json_name(ProtoAdapter.STRING.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
             Object value = fieldEncoding.rawProtoAdapter().decode(reader);

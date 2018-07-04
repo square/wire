@@ -32,19 +32,27 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
   )
   public final String name;
 
-  public OneofDescriptorProto(String name) {
-    this(name, ByteString.EMPTY);
+  @WireField(
+      tag = 2,
+      adapter = "com.google.protobuf.OneofOptions#ADAPTER"
+  )
+  public final OneofOptions options;
+
+  public OneofDescriptorProto(String name, OneofOptions options) {
+    this(name, options, ByteString.EMPTY);
   }
 
-  public OneofDescriptorProto(String name, ByteString unknownFields) {
+  public OneofDescriptorProto(String name, OneofOptions options, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
+    this.options = options;
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.name = name;
+    builder.options = options;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -55,7 +63,8 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     if (!(other instanceof OneofDescriptorProto)) return false;
     OneofDescriptorProto o = (OneofDescriptorProto) other;
     return unknownFields().equals(o.unknownFields())
-        && Internal.equals(name, o.name);
+        && Internal.equals(name, o.name)
+        && Internal.equals(options, o.options);
   }
 
   @Override
@@ -64,6 +73,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
+      result = result * 37 + (options != null ? options.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -73,11 +83,14 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (name != null) builder.append(", name=").append(name);
+    if (options != null) builder.append(", options=").append(options);
     return builder.replace(0, 2, "OneofDescriptorProto{").append('}').toString();
   }
 
   public static final class Builder extends Message.Builder<OneofDescriptorProto, Builder> {
     public String name;
+
+    public OneofOptions options;
 
     public Builder() {
     }
@@ -87,9 +100,14 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
       return this;
     }
 
+    public Builder options(OneofOptions options) {
+      this.options = options;
+      return this;
+    }
+
     @Override
     public OneofDescriptorProto build() {
-      return new OneofDescriptorProto(name, super.buildUnknownFields());
+      return new OneofDescriptorProto(name, options, super.buildUnknownFields());
     }
   }
 
@@ -101,12 +119,14 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     @Override
     public int encodedSize(OneofDescriptorProto value) {
       return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+          + OneofOptions.ADAPTER.encodedSizeWithTag(2, value.options)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, OneofDescriptorProto value) throws IOException {
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      OneofOptions.ADAPTER.encodeWithTag(writer, 2, value.options);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -117,6 +137,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
           case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.options(OneofOptions.ADAPTER.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
             Object value = fieldEncoding.rawProtoAdapter().decode(reader);
@@ -131,6 +152,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
     @Override
     public OneofDescriptorProto redact(OneofDescriptorProto value) {
       Builder builder = value.newBuilder();
+      if (builder.options != null) builder.options = OneofOptions.ADAPTER.redact(builder.options);
       builder.clearUnknownFields();
       return builder.build();
     }

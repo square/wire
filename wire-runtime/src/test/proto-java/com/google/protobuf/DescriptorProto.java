@@ -318,14 +318,22 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     )
     public final Integer end;
 
-    public ExtensionRange(Integer start, Integer end) {
-      this(start, end, ByteString.EMPTY);
+    @WireField(
+        tag = 3,
+        adapter = "com.google.protobuf.ExtensionRangeOptions#ADAPTER"
+    )
+    public final ExtensionRangeOptions options;
+
+    public ExtensionRange(Integer start, Integer end, ExtensionRangeOptions options) {
+      this(start, end, options, ByteString.EMPTY);
     }
 
-    public ExtensionRange(Integer start, Integer end, ByteString unknownFields) {
+    public ExtensionRange(Integer start, Integer end, ExtensionRangeOptions options,
+        ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.start = start;
       this.end = end;
+      this.options = options;
     }
 
     @Override
@@ -333,6 +341,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       Builder builder = new Builder();
       builder.start = start;
       builder.end = end;
+      builder.options = options;
       builder.addUnknownFields(unknownFields());
       return builder;
     }
@@ -344,7 +353,8 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       ExtensionRange o = (ExtensionRange) other;
       return unknownFields().equals(o.unknownFields())
           && Internal.equals(start, o.start)
-          && Internal.equals(end, o.end);
+          && Internal.equals(end, o.end)
+          && Internal.equals(options, o.options);
     }
 
     @Override
@@ -354,6 +364,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
         result = unknownFields().hashCode();
         result = result * 37 + (start != null ? start.hashCode() : 0);
         result = result * 37 + (end != null ? end.hashCode() : 0);
+        result = result * 37 + (options != null ? options.hashCode() : 0);
         super.hashCode = result;
       }
       return result;
@@ -364,6 +375,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       StringBuilder builder = new StringBuilder();
       if (start != null) builder.append(", start=").append(start);
       if (end != null) builder.append(", end=").append(end);
+      if (options != null) builder.append(", options=").append(options);
       return builder.replace(0, 2, "ExtensionRange{").append('}').toString();
     }
 
@@ -371,6 +383,8 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       public Integer start;
 
       public Integer end;
+
+      public ExtensionRangeOptions options;
 
       public Builder() {
       }
@@ -385,9 +399,14 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
         return this;
       }
 
+      public Builder options(ExtensionRangeOptions options) {
+        this.options = options;
+        return this;
+      }
+
       @Override
       public ExtensionRange build() {
-        return new ExtensionRange(start, end, super.buildUnknownFields());
+        return new ExtensionRange(start, end, options, super.buildUnknownFields());
       }
     }
 
@@ -400,6 +419,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       public int encodedSize(ExtensionRange value) {
         return ProtoAdapter.INT32.encodedSizeWithTag(1, value.start)
             + ProtoAdapter.INT32.encodedSizeWithTag(2, value.end)
+            + ExtensionRangeOptions.ADAPTER.encodedSizeWithTag(3, value.options)
             + value.unknownFields().size();
       }
 
@@ -407,6 +427,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       public void encode(ProtoWriter writer, ExtensionRange value) throws IOException {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start);
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.end);
+        ExtensionRangeOptions.ADAPTER.encodeWithTag(writer, 3, value.options);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -418,6 +439,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
           switch (tag) {
             case 1: builder.start(ProtoAdapter.INT32.decode(reader)); break;
             case 2: builder.end(ProtoAdapter.INT32.decode(reader)); break;
+            case 3: builder.options(ExtensionRangeOptions.ADAPTER.decode(reader)); break;
             default: {
               FieldEncoding fieldEncoding = reader.peekFieldEncoding();
               Object value = fieldEncoding.rawProtoAdapter().decode(reader);
@@ -432,6 +454,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       @Override
       public ExtensionRange redact(ExtensionRange value) {
         Builder builder = value.newBuilder();
+        if (builder.options != null) builder.options = ExtensionRangeOptions.ADAPTER.redact(builder.options);
         builder.clearUnknownFields();
         return builder.build();
       }
