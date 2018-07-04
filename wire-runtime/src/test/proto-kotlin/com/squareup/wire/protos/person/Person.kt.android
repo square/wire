@@ -2,6 +2,8 @@
 // Source file: person.proto
 package com.squareup.wire.protos.person
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.ProtoAdapter
@@ -11,6 +13,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal
 import com.squareup.wire.kotlin.UnknownFieldsBuilder
 import com.squareup.wire.kotlin.decodeMessage
+import kotlin.Array
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -22,7 +25,11 @@ data class Person(
     val email: String? = null,
     val phone: List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
-) {
+) : Parcelable {
+    override fun writeToParcel(destination: Parcel, flags: Int) = destination.writeByteArray(ADAPTER.encode(this))
+
+    override fun describeContents() = 0
+
     object ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
         override fun encodedSize(value: Person): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
             ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) +
@@ -62,6 +69,12 @@ data class Person(
         }
     }
 
+    object CREATOR : Parcelable.Creator<Person> {
+        override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
+
+        override fun newArray(size: Int): Array<Person?> = arrayOfNulls(size)
+    }
+
     enum class PhoneType(private val value: Int) : WireEnum {
         MOBILE(0),
 
@@ -82,7 +95,11 @@ data class Person(
         val number: String,
         val type: PhoneType = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
-    ) {
+    ) : Parcelable {
+        override fun writeToParcel(destination: Parcel, flags: Int) = destination.writeByteArray(ADAPTER.encode(this))
+
+        override fun describeContents() = 0
+
         object ADAPTER : ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber::class.java) {
             override fun encodedSize(value: PhoneNumber): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +
                 PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) +
@@ -110,6 +127,12 @@ data class Person(
                     unknownFields = unknownFields
                 )
             }
+        }
+
+        object CREATOR : Parcelable.Creator<PhoneNumber> {
+            override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
+
+            override fun newArray(size: Int): Array<PhoneNumber?> = arrayOfNulls(size)
         }
     }
 }
