@@ -6,7 +6,6 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import okio.Buffer
 import okio.ByteString
-import java.io.IOException
 
 class UnknownFieldsBuilder {
   var byteString = ByteString.EMPTY
@@ -22,12 +21,8 @@ class UnknownFieldsBuilder {
       fieldEncoding: FieldEncoding,
       value: Any
   ) {
-    try {
       val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
       protoAdapter.encodeWithTag(writer, tag, value)
-    } catch (_: IOException) {
-      throw AssertionError()
-    }
   }
 
   fun buildUnknownFields(): ByteString {
@@ -43,12 +38,7 @@ class UnknownFieldsBuilder {
     if (buffer == null) {
       buffer = Buffer()
       writer = ProtoWriter(buffer!!)
-      try {
-        writer!!.writeBytes(byteString)
-      } catch (_: IOException) {
-        // Impossible; we’re not doing I/O.
-        throw AssertionError()
-      }
+      writer!!.writeBytes(byteString)
       byteString = ByteString.EMPTY
     }
   }
