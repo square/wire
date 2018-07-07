@@ -7,7 +7,7 @@ import junit.framework.TestCase.assertTrue
 import org.junit.Test
 
 class KotlinGeneratorTest {
-  @Test fun test() {
+  @Test fun basic() {
     val repoBuilder = RepoBuilder()
       .add("message.proto", """
         |message Person {

@@ -58,6 +58,8 @@ class KotlinGenerator private constructor(
   private val nameToKotlinName: Map<ProtoType, ClassName>,
   private val emitAndroid: Boolean
 ) {
+  val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
+
   /** Returns the Kotlin type for [protoType]. */
   fun typeName(protoType: ProtoType) = nameToKotlinName.getValue(protoType)
 
@@ -70,30 +72,31 @@ class KotlinGenerator private constructor(
     else -> error("Unknown type $type")
   }
 
-  // TODO Make this a CACHE
   private fun nameAllocator(message: Type): NameAllocator {
-    val allocator = NameAllocator()
-    when (message) {
-      is EnumType -> {
-        allocator.newName("value", "value")
-        allocator.newName("ADAPTER", "ADAPTER")
-        message.constants().forEach { constant ->
-          allocator.newName(constant.name(), constant)
+    return nameAllocatorStore.getOrPut(message) {
+      val allocator = NameAllocator()
+      when (message) {
+        is EnumType -> {
+          allocator.newName("value", "value")
+          allocator.newName("ADAPTER", "ADAPTER")
+          message.constants().forEach { constant ->
+            allocator.newName(constant.name(), constant)
+          }
+        }
+        is MessageType -> {
+          allocator.newName("unknownFields", "unknownFields")
+          allocator.newName("ADAPTER", "ADAPTER")
+          allocator.newName("reader", "reader")
+          if (emitAndroid) {
+            allocator.newName("CREATOR", "CREATOR")
+          }
+          message.fields().forEach { field ->
+            allocator.newName(field.name(), field)
+          }
         }
       }
-      is MessageType -> {
-        allocator.newName("unknownFields", "unknownFields")
-        allocator.newName("ADAPTER", "ADAPTER")
-        allocator.newName("reader", "reader")
-        if (emitAndroid) {
-          allocator.newName("CREATOR", "CREATOR")
-        }
-        message.fields().forEach { field ->
-          allocator.newName(field.name(), field)
-        }
-      }
+      allocator
     }
-    return allocator
   }
 
   private fun generateMessage(type: MessageType): TypeSpec {
@@ -283,7 +286,7 @@ class KotlinGenerator private constructor(
         decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
 
         if (!field.isOptional && field.default == null) {
-          throwExceptionBlock = CodeBlock.of(" ?: throw %T.%S(%L, \"%L\")",
+          throwExceptionBlock = CodeBlock.of(" ?: throw %T.%L(%L, %S)",
             internalClass, "missingRequiredFields", field.name(), field.name())
         }
       }
