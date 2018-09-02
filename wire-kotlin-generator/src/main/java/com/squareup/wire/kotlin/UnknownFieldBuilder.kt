@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright 2018 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,17 @@ class UnknownFieldsBuilder {
   var buffer: Buffer? = null
   var writer: ProtoWriter? = null
 
-  constructor() {
+  init {
     prepareUnknownFields()
   }
 
   fun addUnknownField(
-      tag: Int,
-      fieldEncoding: FieldEncoding,
-      value: Any
+    tag: Int,
+    fieldEncoding: FieldEncoding,
+    value: Any
   ) {
-      val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
-      protoAdapter.encodeWithTag(writer, tag, value)
+    val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
+    protoAdapter.encodeWithTag(writer, tag, value)
   }
 
   fun buildUnknownFields(): ByteString {
@@ -61,7 +61,6 @@ class UnknownFieldsBuilder {
   companion object {
     val UNKNOWN_FIELD = Any()
   }
-
 }
 
 fun ProtoReader.decodeMessage(tagHandler: (Int) -> Any): ByteString {

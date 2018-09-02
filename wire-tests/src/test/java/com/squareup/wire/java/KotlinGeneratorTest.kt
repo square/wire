@@ -3,8 +3,8 @@ package com.squareup.wire.java
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.schema.RepoBuilder
-import junit.framework.TestCase.assertTrue
 import org.junit.Test
+import kotlin.test.assertTrue
 
 class KotlinGeneratorTest {
   @Test fun basic() {
@@ -36,13 +36,13 @@ class KotlinGeneratorTest {
 
   @Test fun defaultValues() {
     val repoBuilder = RepoBuilder()
-        .add("message.proto", """
-            |message Message {
-            |  optional int32 a = 1 [default = 10 ];
-            |  optional int32 b = 2 [default = 0x20 ];
-            |  optional int64 c = 3 [default = 11 ];
-            |  optional int64 d = 4 [default = 0x21 ];
-            |}""".trimMargin());
+      .add("message.proto", """
+        |message Message {
+        |  optional int32 a = 1 [default = 10 ];
+        |  optional int32 b = 2 [default = 0x20 ];
+        |  optional int64 c = 3 [default = 11 ];
+        |  optional int64 d = 4 [default = 0x21 ];
+        |}""".trimMargin());
     val code = repoBuilder.generateKotlin("Message")
     assertTrue(code.contains("val a: Int = 10"))
     assertTrue(code.contains("val b: Int = 0x20"))
@@ -52,11 +52,11 @@ class KotlinGeneratorTest {
 
   @Test fun nameAllocatorIsUsed() {
     val repoBuilder = RepoBuilder()
-        .add("message.proto", """
-            |message Message {
-            |  required float when = 1;
-            |  required int32 ADAPTER = 2;
-            |}""".trimMargin())
+      .add("message.proto", """
+        |message Message {
+        |  required float when = 1;
+        |  required int32 ADAPTER = 2;
+        |}""".trimMargin())
     val code = repoBuilder.generateKotlin("Message")
     assertTrue(code.contains("val when_: Float"))
     assertTrue(code.contains("val ADAPTER_: Int"))
@@ -64,22 +64,22 @@ class KotlinGeneratorTest {
 
   @Test fun androidSupport() {
     val repoBuilder = RepoBuilder()
-        .add("message.proto", """
-            |message Person {
-            |  required string name = 1;
-            |  required int32 id = 2;
-            |  optional string email = 3;
-            |  enum PhoneType {
-            |    HOME = 0;
-            |    value = 1;
-            |    WORK = 2;
-            |  }
-            |  message PhoneNumber {
-            |    required string number = 1;
-            |    optional PhoneType type = 2 [default = HOME];
-            |  }
-            |  repeated PhoneNumber phone = 4;
-            |}""".trimMargin())
+      .add("message.proto", """
+        |message Person {
+        |  required string name = 1;
+        |  required int32 id = 2;
+        |  optional string email = 3;
+        |  enum PhoneType {
+        |    HOME = 0;
+        |    value = 1;
+        |    WORK = 2;
+        |  }
+        |  message PhoneNumber {
+        |    required string number = 1;
+        |    optional PhoneType type = 2 [default = HOME];
+        |  }
+        |  repeated PhoneNumber phone = 4;
+        |}""".trimMargin())
     val schema = repoBuilder.schema()
     val kotlinGenerator = KotlinGenerator(schema, true)
     val typeSpec = kotlinGenerator.generateType(schema.getType("Person"))
