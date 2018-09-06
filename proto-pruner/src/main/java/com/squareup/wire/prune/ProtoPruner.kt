@@ -20,10 +20,10 @@ import com.squareup.wire.schema.SchemaLoader
 import java.io.File
 
 class ProtoPruner(
-    private val inPaths: List<String>,
-    private val outPath: String,
-    private val identifierSet: IdentifierSet
-): Runnable {
+  private val inPaths: List<String>,
+  private val outPath: String,
+  private val identifierSet: IdentifierSet
+) : Runnable {
   override fun run() {
     val schema = SchemaLoader()
         .apply {
