@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.internal.parser.GroupElement;
 import com.squareup.wire.schema.internal.parser.OneOfElement;
 
 public final class OneOf {
@@ -64,7 +65,8 @@ public final class OneOf {
     ImmutableList.Builder<OneOf> oneOfs = ImmutableList.builder();
     for (OneOfElement oneOf : elements) {
       if (!oneOf.groups().isEmpty()) {
-        throw new IllegalStateException("'group' is not supported");
+        GroupElement group = oneOf.groups().get(0);
+        throw new IllegalStateException(group.location() + ": 'group' is not supported");
       }
       oneOfs.add(new OneOf(oneOf.name(), oneOf.documentation(),
           Field.fromElements(packageName, oneOf.fields(), extension)));

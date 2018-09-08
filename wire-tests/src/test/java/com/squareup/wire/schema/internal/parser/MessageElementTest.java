@@ -253,7 +253,7 @@ public final class MessageElementTest {
                         .name("name")
                         .tag(1)
                         .build()))
-            .groups(ImmutableList.of(GroupElement.builder()
+            .groups(ImmutableList.of(GroupElement.builder(location.at(5, 5))
                 .name("Stuff")
                 .tag(3)
                 .fields(ImmutableList.of(
@@ -336,7 +336,7 @@ public final class MessageElementTest {
     TypeElement element = MessageElement.builder(location.at(1, 1))
         .name("SearchResponse")
         .groups(ImmutableList.of(
-            GroupElement.builder()
+            GroupElement.builder(location.at(2, 3))
                 .label(REPEATED)
                 .name("Result")
                 .tag(1)
