@@ -18,6 +18,7 @@ package com.squareup.wire.schema.internal.parser;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.Field;
+import com.squareup.wire.schema.Location;
 import java.util.Locale;
 
 import static com.squareup.wire.schema.internal.Util.appendDocumentation;
@@ -25,13 +26,15 @@ import static com.squareup.wire.schema.internal.Util.appendIndented;
 
 @AutoValue
 public abstract class GroupElement {
-  public static Builder builder() {
+  public static Builder builder(Location location) {
     return new AutoValue_GroupElement.Builder()
+        .location(location)
         .documentation("")
         .fields(ImmutableList.<FieldElement>of());
   }
 
   @Nullable public abstract Field.Label label();
+  public abstract Location location();
   public abstract String name();
   public abstract int tag();
   public abstract String documentation();
@@ -59,6 +62,7 @@ public abstract class GroupElement {
 
   @AutoValue.Builder
   public interface Builder {
+    Builder location(Location location);
     Builder label(Field.Label label);
     Builder name(String name);
     Builder tag(int value);

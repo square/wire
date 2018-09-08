@@ -16,6 +16,7 @@
 package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.internal.parser.GroupElement;
 import com.squareup.wire.schema.internal.parser.MessageElement;
 import com.squareup.wire.schema.internal.parser.TypeElement;
 import java.util.ArrayList;
@@ -257,7 +258,8 @@ public final class MessageType extends Type {
   static MessageType fromElement(String packageName, ProtoType protoType,
       MessageElement messageElement) {
     if (!messageElement.groups().isEmpty()) {
-      throw new IllegalStateException("'group' is not supported");
+      GroupElement group = messageElement.groups().get(0);
+      throw new IllegalStateException(group.location() + ": 'group' is not supported");
     }
 
     ImmutableList<Field> declaredFields =

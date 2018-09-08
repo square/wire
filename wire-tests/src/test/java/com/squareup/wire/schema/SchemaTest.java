@@ -1134,7 +1134,7 @@ public final class SchemaTest {
           .schema();
       fail();
     } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage("'group' is not supported");
+      assertThat(expected).hasMessage("/source/test.proto at 2:3: 'group' is not supported");
     }
   }
 
@@ -1155,7 +1155,7 @@ public final class SchemaTest {
           .schema();
       fail();
     } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage("'group' is not supported");
+      assertThat(expected).hasMessage("/source/test.proto at 5:5: 'group' is not supported");
     }
   }
 

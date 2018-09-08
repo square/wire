@@ -333,7 +333,7 @@ public final class ProtoParser {
       throw reader.unexpected(location, "'map' type cannot have label");
     }
     if (type.equals("group")) {
-      return readGroup(documentation, label);
+      return readGroup(location, documentation, label);
     }
 
     return readField(location, documentation, label, type);
@@ -396,7 +396,7 @@ public final class ProtoParser {
       Location location = reader.location();
       String type = reader.readDataType();
       if (type.equals("group")) {
-        groups.add(readGroup(nestedDocumentation, null));
+        groups.add(readGroup(location, nestedDocumentation, null));
       } else {
         fields.add(readField(location, nestedDocumentation, null, type));
       }
@@ -406,12 +406,12 @@ public final class ProtoParser {
         .build();
   }
 
-  private GroupElement readGroup(String documentation, Field.Label label) {
+  private GroupElement readGroup(Location location, String documentation, Field.Label label) {
     String name = reader.readWord();
     reader.require('=');
     int tag = reader.readInt();
 
-    GroupElement.Builder builder = GroupElement.builder()
+    GroupElement.Builder builder = GroupElement.builder(location)
         .label(label)
         .name(name)
         .tag(tag)
@@ -423,9 +423,9 @@ public final class ProtoParser {
       String nestedDocumentation = reader.readDocumentation();
       if (reader.peekChar('}')) break;
 
-      Location location = reader.location();
+      Location fieldLocation = reader.location();
       String fieldLabel = reader.readWord();
-      Object field = readField(nestedDocumentation, location, fieldLabel);
+      Object field = readField(nestedDocumentation, fieldLocation, fieldLabel);
       if (!(field instanceof FieldElement)) {
         throw reader.unexpected("expected field declaration, was " + field);
       }
