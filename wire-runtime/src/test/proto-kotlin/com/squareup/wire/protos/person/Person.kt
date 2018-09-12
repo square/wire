@@ -7,17 +7,15 @@ import com.squareup.wire.FieldEncoding
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.UnknownFieldsBuilder
 import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal
-import com.squareup.wire.kotlin.UnknownFieldsBuilder
-import com.squareup.wire.kotlin.decodeMessage
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
-import kotlin.jvm.JvmOverloads
 import okio.ByteString
 
-data class Person @JvmOverloads constructor(
+data class Person(
     val name: String,
     val id: Int,
     val email: String? = null,
@@ -44,7 +42,7 @@ data class Person @JvmOverloads constructor(
             var id: Int? = null
             var email: String? = null
             var phone = mutableListOf<PhoneNumber>()
-            val unknownFields = reader.decodeMessage { tag ->
+            val unknownFields = UnknownFieldsBuilder.decodeMessage(reader) { tag ->
                 when (tag) {
                     1 -> name = ProtoAdapter.STRING.decode(reader)
                     2 -> id = ProtoAdapter.INT32.decode(reader)
@@ -79,7 +77,7 @@ data class Person @JvmOverloads constructor(
         }
     }
 
-    data class PhoneNumber @JvmOverloads constructor(
+    data class PhoneNumber(
         val number: String,
         val type: PhoneType = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
@@ -98,7 +96,7 @@ data class Person @JvmOverloads constructor(
             override fun decode(reader: ProtoReader): PhoneNumber {
                 var number: String? = null
                 var type: PhoneType = PhoneType.HOME
-                val unknownFields = reader.decodeMessage { tag ->
+                val unknownFields = UnknownFieldsBuilder.decodeMessage(reader) { tag ->
                     when (tag) {
                         1 -> number = ProtoAdapter.STRING.decode(reader)
                         2 -> type = PhoneType.ADAPTER.decode(reader)

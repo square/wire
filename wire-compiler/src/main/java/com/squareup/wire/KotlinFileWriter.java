@@ -66,7 +66,6 @@ class KotlinFileWriter implements Callable<Void> {
       }
 
       FileSpec kotlinFile = builder.addType(typeSpec)
-          .addImport("com.squareup.wire.kotlin", "decodeMessage")
           .build();
 
       Path path = fs.getPath(destination);

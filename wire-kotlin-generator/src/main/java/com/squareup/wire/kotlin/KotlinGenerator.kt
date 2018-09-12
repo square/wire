@@ -130,8 +130,6 @@ class KotlinGenerator private constructor(
    */
   private fun addMessageConstructor(message: MessageType, classBuilder: TypeSpec.Builder) {
     val constructorBuilder = FunSpec.constructorBuilder()
-    constructorBuilder.addAnnotation(AnnotationSpec.builder(JvmOverloads::class)
-        .build())
     val nameAllocator = nameAllocator(message)
     val byteClass = typeName(ProtoType.BYTES)
 
@@ -264,10 +262,11 @@ class KotlinGenerator private constructor(
     var declarationBody = CodeBlock.builder()
 
     var returnBody = CodeBlock.builder()
-    returnBody.add("return %L(\n", className.simpleName)
+    returnBody.add("return %T(\n", className)
 
     var decodeBlock = CodeBlock.builder()
-    decodeBlock.addStatement("val unknownFields = reader.decodeMessage { tag ->")
+    decodeBlock.addStatement(
+      "val unknownFields = UnknownFieldsBuilder.decodeMessage(reader) { tag ->")
 
     // Indent manually as code generator doesn't handle this block gracefully.
     decodeBlock.addStatement("%Lwhen (tag) {", indentation)
@@ -309,7 +308,7 @@ class KotlinGenerator private constructor(
       returnBody.add("%L%L = %L%L,\n", indentation, fieldName, fieldName, throwExceptionBlock)
     }
 
-    val unknownFieldsBuilder = ClassName("com.squareup.wire.kotlin", "UnknownFieldsBuilder")
+    val unknownFieldsBuilder = ClassName("com.squareup.wire", "UnknownFieldsBuilder")
 
     decodeBlock.addStatement("%Lelse -> %T.%L", indentation.repeat(2), unknownFieldsBuilder,
         "UNKNOWN_FIELD")
@@ -339,8 +338,8 @@ class KotlinGenerator private constructor(
   }
 
   /**
-   * ```
    * Example
+   * ```
    * enum class PhoneType(private val value: Int) : WireEnum {
    *     HOME(0),
    *     ...
