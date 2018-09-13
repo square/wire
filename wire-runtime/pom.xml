@@ -71,6 +71,7 @@
             <configuration>
               <sources>
                 <source>src/test/proto-java</source>
+                <source>src/test/proto-kotlin</source>
               </sources>
             </configuration>
           </execution>

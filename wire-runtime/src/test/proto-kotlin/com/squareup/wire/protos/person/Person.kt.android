@@ -9,7 +9,7 @@ import com.squareup.wire.FieldEncoding
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.UnknownFieldsBuilder
+import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal
 import kotlin.Array
@@ -49,13 +49,13 @@ data class Person(
             var id: Int? = null
             var email: String? = null
             var phone = mutableListOf<PhoneNumber>()
-            val unknownFields = UnknownFieldsBuilder.decodeMessage(reader) { tag ->
+            val unknownFields = reader.forEachTag { tag ->
                 when (tag) {
                     1 -> name = ProtoAdapter.STRING.decode(reader)
                     2 -> id = ProtoAdapter.INT32.decode(reader)
                     3 -> email = ProtoAdapter.STRING.decode(reader)
                     4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
-                    else -> UnknownFieldsBuilder.UNKNOWN_FIELD
+                    else -> TagHandler.UNKNOWN_TAG
                 }
             }
             return Person(
@@ -113,11 +113,11 @@ data class Person(
             override fun decode(reader: ProtoReader): PhoneNumber {
                 var number: String? = null
                 var type: PhoneType = PhoneType.HOME
-                val unknownFields = UnknownFieldsBuilder.decodeMessage(reader) { tag ->
+                val unknownFields = reader.forEachTag { tag ->
                     when (tag) {
                         1 -> number = ProtoAdapter.STRING.decode(reader)
                         2 -> type = PhoneType.ADAPTER.decode(reader)
-                        else -> UnknownFieldsBuilder.UNKNOWN_FIELD
+                        else -> TagHandler.UNKNOWN_TAG
                     }
                 }
                 return PhoneNumber(

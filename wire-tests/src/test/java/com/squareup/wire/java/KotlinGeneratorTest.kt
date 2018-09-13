@@ -26,7 +26,7 @@ class KotlinGeneratorTest {
         |	repeated PhoneNumber phone = 4;
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin("Person")
-    assertTrue(code.contains("data class Person @JvmOverloads constructor"))
+    assertTrue(code.contains("data class Person"))
     assertTrue(code.contains("object ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, " +
         "Person::class.java) {"))
     assertTrue(code.contains("override fun encode(writer: ProtoWriter, value: Person)"))

@@ -266,7 +266,7 @@ class KotlinGenerator private constructor(
 
     var decodeBlock = CodeBlock.builder()
     decodeBlock.addStatement(
-      "val unknownFields = UnknownFieldsBuilder.decodeMessage(reader) { tag ->")
+      "val unknownFields = reader.forEachTag { tag ->")
 
     // Indent manually as code generator doesn't handle this block gracefully.
     decodeBlock.addStatement("%Lwhen (tag) {", indentation)
@@ -308,10 +308,10 @@ class KotlinGenerator private constructor(
       returnBody.add("%L%L = %L%L,\n", indentation, fieldName, fieldName, throwExceptionBlock)
     }
 
-    val unknownFieldsBuilder = ClassName("com.squareup.wire", "UnknownFieldsBuilder")
+    val tagHandlerClass = ClassName("com.squareup.wire", "TagHandler")
 
-    decodeBlock.addStatement("%Lelse -> %T.%L", indentation.repeat(2), unknownFieldsBuilder,
-        "UNKNOWN_FIELD")
+    decodeBlock.addStatement("%Lelse -> %T.%L", indentation.repeat(2), tagHandlerClass,
+        "UNKNOWN_TAG")
     decodeBlock.addStatement("%L}", indentation)
     decodeBlock.addStatement("}")
 
