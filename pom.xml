@@ -49,6 +49,7 @@
     <module>wire-gson-support</module>
     <module>wire-java-generator</module>
     <module>wire-maven-plugin</module>
+    <module>wire-moshi-adapter</module>
     <module>wire-runtime</module>
     <module>wire-schema</module>
     <module>wire-testing</module>
@@ -70,6 +71,7 @@
     <junit.version>4.12</junit.version>
     <kotlin.version>1.2.61</kotlin.version>
     <okio.version>1.14.0</okio.version>
+    <moshi.version>1.6.0</moshi.version>
   </properties>
 
   <dependencyManagement>
@@ -130,6 +132,11 @@
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-stdlib</artifactId>
         <version>${kotlin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.moshi</groupId>
+        <artifactId>moshi</artifactId>
+        <version>${moshi.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
