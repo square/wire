@@ -5,7 +5,8 @@ set -e
 mvn clean package -pl wire-compiler -am -Dmaven.test.skip
 
 cd wire-runtime
-PROTOS=`find src/test/proto -name '*.proto' | sed 's|^src/test/proto/||' | sort`
+PROTOS=`find src/test/proto -not -path src/test/proto/kotlin/* -name '*.proto' \
+  | sed 's|^src/test/proto/||' | sort`
 
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
   --proto_path=../wire-runtime/src/test/proto \
@@ -67,6 +68,24 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
 cp src/test/proto-java.android.compact/com/squareup/wire/protos/person/Person.java \
    src/test/proto-java/com/squareup/wire/protos/person/Person.java.android.compact
 
+# KOTLIN
+
+java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+  --proto_path=../wire-runtime/src/test/proto/kotlin \
+  --kotlin_out=../wire-runtime/src/test/proto-kotlin \
+  person.proto
+
+# KOTLIN ANDROID
+
+java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+  --proto_path=../wire-runtime/src/test/proto/kotlin \
+  --kotlin_out=../wire-runtime/src/test/proto-kotlin.android \
+  --android \
+  person.proto
+
+cp src/test/proto-kotlin.android/com/squareup/wire/protos/kotlin/person/Person.kt \
+   src/test/proto-kotlin/com/squareup/wire/protos/kotlin/person/Person.kt.android
+
 # COMPACT
 
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
@@ -90,3 +109,4 @@ rm -r src/test/proto-java.pruned
 rm -r src/test/proto-java.compact
 rm -r src/test/proto-java.android
 rm -r src/test/proto-java.android.compact
+rm -r src/test/proto-kotlin.android

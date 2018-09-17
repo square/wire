@@ -36,8 +36,11 @@ package com.squareup.wire;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.ProtocolException;
+import okio.Buffer;
 import okio.BufferedSource;
 import okio.ByteString;
+
+import static com.squareup.wire.TagHandler.UNKNOWN_TAG;
 
 /**
  * Reads and decodes protocol message fields.
@@ -400,5 +403,40 @@ public final class ProtoReader {
     limit = pushedLimit;
     pushedLimit = -1;
     return byteCount;
+  }
+
+  /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
+  public ByteString forEachTag(TagHandler tagHandler) throws IOException {
+    // Lazily created if the current message has unknown fields.
+    Buffer unknownFieldsBuffer = null;
+    ProtoWriter unknownFieldsWriter = null;
+
+    long token = beginMessage();
+    for (int tag; (tag = nextTag()) != -1;) {
+      if (tagHandler.decodeMessage(tag) != UNKNOWN_TAG) continue;
+      if (unknownFieldsBuffer == null) {
+        unknownFieldsBuffer = new Buffer();
+        unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
+      }
+      copyTag(unknownFieldsWriter, tag);
+    }
+    endMessage(token);
+
+    return unknownFieldsBuffer != null
+      ? unknownFieldsBuffer.readByteString()
+      : ByteString.EMPTY;
+  }
+
+  /** Reads the next value from this and writes it to {@code writer}. */
+  @SuppressWarnings("unchecked") // We encode and decode the same types.
+  private void copyTag(ProtoWriter writer, int tag) throws IOException {
+    FieldEncoding fieldEncoding = peekFieldEncoding();
+    ProtoAdapter<?> protoAdapter = fieldEncoding.rawProtoAdapter();
+    Object value = protoAdapter.decode(this);
+    try {
+      ((ProtoAdapter<Object>) protoAdapter).encodeWithTag(writer, tag, value);
+    } catch (IOException e) {
+      throw new AssertionError(e); // Impossible.
+    }
   }
 }

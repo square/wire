@@ -20,10 +20,12 @@ import com.google.common.jimfs.Jimfs;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.kotlinpoet.FileSpec;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.java.JavaGenerator;
 import com.squareup.wire.java.Profile;
 import com.squareup.wire.java.ProfileLoader;
+import com.squareup.wire.kotlin.KotlinGenerator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -106,5 +108,17 @@ public final class RepoBuilder {
     TypeSpec typeSpec = javaGenerator.generateType(type);
     ClassName typeName1 = javaGenerator.generatedTypeName(type);
     return JavaFile.builder(typeName1.packageName(), typeSpec).build().toString();
+  }
+
+  public String generateKotlin(String typeName) {
+    Schema schema = schema();
+    KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema, false);
+    com.squareup.kotlinpoet.TypeSpec typeSpec =
+        kotlinGenerator.generateType(schema.getType(typeName));
+    FileSpec fileSpec = FileSpec.builder("", "_")
+        .addType(typeSpec)
+        .addImport("com.squareup.wire.kotlin", "decodeMessage")
+        .build();
+    return fileSpec.toString();
   }
 }

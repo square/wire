@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright 2018 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,12 @@
  */
 package com.squareup.wire;
 
-import com.squareup.javapoet.JavaFile;
-import com.squareup.kotlinpoet.FileSpec;
-import java.nio.file.Path;
+public interface TagHandler {
+  Object UNKNOWN_TAG = new Object();
 
-interface WireLogger {
-  void setQuiet(boolean quiet);
-  void artifact(Path outputPath, JavaFile javaFile);
-  void artifact(Path outputPath, FileSpec kotlinFile);
-  void info(String message);
+  /**
+   * Reads a value from the calling reader. Returns {@link #UNKNOWN_TAG} if
+   * no value was read, or any other value otherwise.
+   */
+  Object decodeMessage(int tag);
 }

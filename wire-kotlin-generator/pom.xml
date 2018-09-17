@@ -9,7 +9,7 @@
     <version>2.3.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>wire-compiler</artifactId>
+  <artifactId>wire-kotlin-generator</artifactId>
 
   <dependencies>
     <dependency>
@@ -23,26 +23,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.squareup.wire</groupId>
-      <artifactId>wire-java-generator</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.wire</groupId>
-      <artifactId>wire-kotlin-generator</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
     </dependency>
     <dependency>
       <groupId>com.squareup.okio</groupId>
       <artifactId>okio</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.squareup</groupId>
-      <artifactId>javapoet</artifactId>
+      <artifactId>kotlinpoet</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -61,37 +51,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.jimfs</groupId>
       <artifactId>jimfs</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-              <mainClass>com.squareup.wire.WireCompiler</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

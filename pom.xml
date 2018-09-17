@@ -48,6 +48,7 @@
     <module>wire-codegen-sample</module>
     <module>wire-gson-support</module>
     <module>wire-java-generator</module>
+    <module>wire-kotlin-generator</module>
     <module>wire-maven-plugin</module>
     <module>wire-moshi-adapter</module>
     <module>wire-runtime</module>
@@ -66,6 +67,7 @@
     <guava.version>20.0</guava.version>
     <java.version>1.7</java.version>
     <javapoet.version>1.10.0</javapoet.version>
+    <kotlinpoet.version>1.0.0-RC1</kotlinpoet.version>
     <jimfs.version>1.0</jimfs.version>
     <jsr305.version>3.0.2</jsr305.version>
     <junit.version>4.12</junit.version>
@@ -113,6 +115,11 @@
         <version>${javapoet.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.squareup</groupId>
+        <artifactId>kotlinpoet</artifactId>
+        <version>${kotlinpoet.version}</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.auto.value</groupId>
         <artifactId>auto-value</artifactId>
         <version>${autovalue.version}</version>
@@ -140,6 +147,20 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+      <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-test</artifactId>
+      <version>${kotlin.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
@@ -174,7 +195,7 @@
         <executions>
           <execution>
             <id>compile</id>
-            <phase>process-sources</phase>
+            <phase>compile</phase>
             <goals>
               <goal>compile</goal>
             </goals>
@@ -187,6 +208,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <jvmTarget>1.8</jvmTarget>
+        </configuration>
       </plugin>
 
       <plugin>
