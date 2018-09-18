@@ -16,6 +16,7 @@ import kotlin.Array
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
+import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 data class Person(
@@ -68,10 +69,13 @@ data class Person(
         }
     }
 
-    object CREATOR : Parcelable.Creator<Person> {
-        override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
+    companion object {
+        @JvmStatic
+        val CREATOR: Parcelable.Creator<Person> = object : Parcelable.Creator<Person> {
+            override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
 
-        override fun newArray(size: Int): Array<Person?> = arrayOfNulls(size)
+            override fun newArray(size: Int): Array<Person?> = arrayOfNulls(size)
+        }
     }
 
     enum class PhoneType(private val value: Int) : WireEnum {
@@ -128,10 +132,14 @@ data class Person(
             }
         }
 
-        object CREATOR : Parcelable.Creator<PhoneNumber> {
-            override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
+        companion object {
+            @JvmStatic
+            val CREATOR: Parcelable.Creator<PhoneNumber> =
+                    object : Parcelable.Creator<PhoneNumber> {
+                override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
 
-            override fun newArray(size: Int): Array<PhoneNumber?> = arrayOfNulls(size)
+                override fun newArray(size: Int): Array<PhoneNumber?> = arrayOfNulls(size)
+            }
         }
     }
 }

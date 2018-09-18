@@ -88,7 +88,10 @@ class KotlinGeneratorTest {
         .addImport("com.squareup.wire.kotlin", "decodeMessage")
         .build()
     val code = fileSpec.toString()
-    assertTrue(code.contains("object CREATOR : Parcelable.Creator<PhoneNumber>"))
+    assertTrue(code.contains("companion object"))
+    assertTrue(code.contains("@JvmStatic"))
+    assertTrue(code.contains("val CREATOR"))
+    assertTrue(code.contains("object : Parcelable.Creator<PhoneNumber>"))
     assertTrue(code.contains("override fun createFromParcel(input: Parcel) = " +
         "ADAPTER.decode(input.createByteArray())"))
     assertTrue(code.contains("override fun newArray(size: Int): Array<PhoneNumber?> = " +

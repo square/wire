@@ -18,7 +18,6 @@ package com.squareup.wire.kotlin
 import android.os.Parcel
 import android.os.Parcelable
 import com.squareup.kotlinpoet.ARRAY
-import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -37,6 +36,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.jvm.jvmStatic
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.ProtoAdapter
@@ -428,9 +428,12 @@ class KotlinGenerator private constructor(
   /**
    * Example
    * ```
-   * object CREATOR : Parcelable.Creator<Person> {
-   *     override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
-   *     override fun newArray(size: Int): Array<Person?> = arrayOfNulls(size)
+   * companion object {
+   *     @JvmStatic
+   *     val CREATOR: Parcelable.Creator<Person> = object : Parcelable.Creator<Person> {
+   *         override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
+   *         override fun newArray(size: Int): Array<Person?> = arrayOfNulls(size)
+   *     }
    * }
    * ```
    */
@@ -438,19 +441,25 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(type)
     val parentClassName = generatedTypeName(type)
     val creatorName = nameAllocator.get("CREATOR")
+    val creatorTypeName = Parcelable.Creator::class.asClassName().parameterizedBy(parentClassName)
 
-    return TypeSpec.objectBuilder(creatorName)
-        .addSuperinterface(Parcelable.Creator::class.asClassName().parameterizedBy(parentClassName))
-        .addFunction(FunSpec.builder("createFromParcel")
-            .addParameter("input", Parcel::class)
-            .addStatement("return ADAPTER.decode(input.createByteArray())")
-            .addModifiers(OVERRIDE)
-            .build())
-        .addFunction(FunSpec.builder("newArray")
-            .addParameter("size", Int::class)
-            .returns(ARRAY.parameterizedBy(parentClassName.asNullable()))
-            .addStatement("return arrayOfNulls(size)")
-            .addModifiers(OVERRIDE)
+    return TypeSpec.companionObjectBuilder()
+        .addProperty(PropertySpec.builder(creatorName, creatorTypeName)
+            .jvmStatic()
+            .initializer("%L", TypeSpec.anonymousClassBuilder()
+                .addSuperinterface(creatorTypeName)
+                .addFunction(FunSpec.builder("createFromParcel")
+                    .addParameter("input", Parcel::class)
+                    .addStatement("return ADAPTER.decode(input.createByteArray())")
+                    .addModifiers(OVERRIDE)
+                    .build())
+                .addFunction(FunSpec.builder("newArray")
+                    .addParameter("size", Int::class)
+                    .returns(ARRAY.parameterizedBy(parentClassName.asNullable()))
+                    .addStatement("return arrayOfNulls(size)")
+                    .addModifiers(OVERRIDE)
+                    .build())
+                .build())
             .build())
         .build()
   }
