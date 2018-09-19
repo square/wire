@@ -18,7 +18,6 @@ package com.squareup.wire.kotlin
 import android.os.Parcel
 import android.os.Parcelable
 import com.squareup.kotlinpoet.ARRAY
-import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -37,6 +36,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.ProtoAdapter
@@ -179,10 +179,14 @@ class KotlinGenerator private constructor(
   /**
    * Example
    * ```
-   * object ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
-   *     override fun encodedSize(value: Person): Int { .. }
-   *     override fun encode(writer: ProtoWriter, value: Person) { .. }
-   *     override fun decode(reader: ProtoReader): Person { .. }
+   * companion object {
+   *  @JvmField
+   *  val ADAPTER : ProtoAdapter<Person> =
+   *      object : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
+   *    override fun encodedSize(value: Person): Int { .. }
+   *    override fun encode(writer: ProtoWriter, value: Person) { .. }
+   *    override fun decode(reader: ProtoReader): Person { .. }
+   *  }
    * }
    * ```
    */
@@ -191,7 +195,7 @@ class KotlinGenerator private constructor(
     val parentClassName = generatedTypeName(type)
     val adapterName = nameAllocator.get("ADAPTER")
 
-    return TypeSpec.objectBuilder(adapterName)
+    val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
         .addSuperclassConstructorParameter("%T.LENGTH_DELIMITED",
             FieldEncoding::class.asClassName())
@@ -199,6 +203,15 @@ class KotlinGenerator private constructor(
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
+        .build()
+
+    val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
+
+    return TypeSpec.companionObjectBuilder()
+        .addProperty(PropertySpec.builder(adapterName, adapterType)
+            .jvmField()
+            .initializer("%L", adapterObject)
+            .build())
         .build()
   }
 
