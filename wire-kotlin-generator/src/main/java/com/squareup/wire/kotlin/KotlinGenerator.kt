@@ -18,6 +18,7 @@ package com.squareup.wire.kotlin
 import android.os.Parcel
 import android.os.Parcelable
 import com.squareup.kotlinpoet.ARRAY
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -36,9 +37,11 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.jvm.jvmStatic
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
+import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
@@ -101,9 +104,19 @@ class KotlinGenerator private constructor(
 
   private fun generateMessage(type: MessageType): TypeSpec {
     val className = typeName(type.type())
+    val builderClassName = className.nestedClass("Builder")
+    val nameAllocator = nameAllocator(type)
+    val adapterName = nameAllocator.get("ADAPTER")
+    val unknownFields = nameAllocator.get("unknownFields")
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addModifiers(DATA)
+        .superclass(Message::class.asTypeName()
+            .parameterizedBy(className, builderClassName))
+        .addSuperclassConstructorParameter(adapterName)
+        .addSuperclassConstructorParameter(unknownFields)
+        .addFunction(generateNewBuilderMethod(builderClassName))
+        .addType(generateBuilderClass(className, builderClassName))
         .addType(generateAdapter(type))
 
     if (emitAndroid) {
@@ -115,6 +128,45 @@ class KotlinGenerator private constructor(
     type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
 
     return classBuilder.build()
+  }
+
+  private fun generateNewBuilderMethod(builderClassName: ClassName): FunSpec {
+    return FunSpec.builder("newBuilder")
+        .addAnnotation(generateDeprecatedBuilderAnnotation().toBuilder()
+            .addMember("replaceWith = %L", AnnotationSpec.builder(ReplaceWith::class)
+                .addMember("expression = %S", "this.copy()")
+                .build())
+            .build())
+        .addModifiers(OVERRIDE)
+        .returns(builderClassName)
+        .addStatement("return %T(this.copy())", builderClassName)
+        .build()
+  }
+
+  private fun generateDeprecatedBuilderAnnotation(): AnnotationSpec {
+    return AnnotationSpec.builder(Deprecated::class)
+        .addMember("message = %S", "Not relevant for data classes, use copy()")
+        .build()
+  }
+
+  private fun generateBuilderClass(className: ClassName, builderClassName: ClassName): TypeSpec {
+    return TypeSpec.classBuilder("Builder")
+        .addAnnotation(generateDeprecatedBuilderAnnotation())
+        .primaryConstructor(FunSpec.constructorBuilder()
+            .addParameter("message", className)
+            .build())
+        .superclass(Message.Builder::class.asTypeName()
+            .parameterizedBy(className, builderClassName))
+        .addProperty(PropertySpec.builder("message", className)
+            .addModifiers(PRIVATE)
+            .initializer("message")
+            .build())
+        .addFunction(FunSpec.builder("build")
+            .addModifiers(OVERRIDE)
+            .returns(className)
+            .addStatement("return message")
+            .build())
+        .build()
   }
 
   /**
