@@ -39,6 +39,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.jvm.jvmStatic
+import com.squareup.wire.AndroidMessage
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
@@ -108,10 +109,11 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(type)
     val adapterName = nameAllocator.get("ADAPTER")
     val unknownFields = nameAllocator.get("unknownFields")
+    val superclass = if (emitAndroid) AndroidMessage::class else Message::class
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addModifiers(DATA)
-        .superclass(Message::class.asTypeName()
+        .superclass(superclass.asTypeName()
             .parameterizedBy(className, builderClassName))
         .addSuperclassConstructorParameter(adapterName)
         .addSuperclassConstructorParameter(unknownFields)
@@ -120,7 +122,7 @@ class KotlinGenerator private constructor(
         .addType(generateAdapter(type))
 
     if (emitAndroid) {
-      addAndroidCodeToMessage(classBuilder, type)
+      classBuilder.addType(generateAndroidCreator(type))
     }
 
     addMessageConstructor(type, classBuilder)
@@ -452,32 +454,11 @@ class KotlinGenerator private constructor(
   }
 
   /**
-   * Adds code to help message class implement Parcelable.
-   */
-  private fun addAndroidCodeToMessage(classBuilder: TypeSpec.Builder, type: MessageType) {
-    classBuilder.addFunction(FunSpec.builder("writeToParcel")
-        .addStatement("return destination.writeByteArray(ADAPTER.encode(this))")
-        .addParameter("destination", Parcel::class)
-        .addParameter("flags", Int::class)
-        .addModifiers(OVERRIDE)
-        .build())
-    classBuilder.addFunction(FunSpec.builder("describeContents")
-        .addStatement("return 0")
-        .addModifiers(OVERRIDE)
-        .build())
-    classBuilder.addSuperinterface(Parcelable::class)
-    classBuilder.addType(generateAndroidCreator(type))
-  }
-
-  /**
    * Example
    * ```
    * companion object {
    *     @JvmStatic
-   *     val CREATOR: Parcelable.Creator<Person> = object : Parcelable.Creator<Person> {
-   *         override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
-   *         override fun newArray(size: Int): Array<Person?> = arrayOfNulls(size)
-   *     }
+   *     val CREATOR: Parcelable.Creator<Person> = AndroidMessage.newCreator(ADAPTER)
    * }
    * ```
    */
@@ -490,20 +471,7 @@ class KotlinGenerator private constructor(
     return TypeSpec.companionObjectBuilder()
         .addProperty(PropertySpec.builder(creatorName, creatorTypeName)
             .jvmStatic()
-            .initializer("%L", TypeSpec.anonymousClassBuilder()
-                .addSuperinterface(creatorTypeName)
-                .addFunction(FunSpec.builder("createFromParcel")
-                    .addParameter("input", Parcel::class)
-                    .addStatement("return ADAPTER.decode(input.createByteArray())")
-                    .addModifiers(OVERRIDE)
-                    .build())
-                .addFunction(FunSpec.builder("newArray")
-                    .addParameter("size", Int::class)
-                    .returns(ARRAY.parameterizedBy(parentClassName.asNullable()))
-                    .addStatement("return arrayOfNulls(size)")
-                    .addModifiers(OVERRIDE)
-                    .build())
-                .build())
+            .initializer("%T.newCreator(ADAPTER)", AndroidMessage::class)
             .build())
         .build()
   }

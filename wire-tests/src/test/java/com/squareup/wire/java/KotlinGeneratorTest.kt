@@ -90,11 +90,7 @@ class KotlinGeneratorTest {
     val code = fileSpec.toString()
     assertTrue(code.contains("companion object"))
     assertTrue(code.contains("@JvmStatic"))
-    assertTrue(code.contains("val CREATOR"))
-    assertTrue(code.contains("object : Parcelable.Creator<PhoneNumber>"))
-    assertTrue(code.contains("override fun createFromParcel(input: Parcel) = " +
-        "ADAPTER.decode(input.createByteArray())"))
-    assertTrue(code.contains("override fun newArray(size: Int): Array<PhoneNumber?> = " +
-        "arrayOfNulls(size)\n"))
+    assertTrue(code.contains("val CREATOR: Parcelable.Creator<PhoneNumber>"))
+    assertTrue(code.contains("AndroidMessage.newCreator(ADAPTER)"))
   }
 }
