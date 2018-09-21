@@ -89,7 +89,7 @@ class KotlinGeneratorTest {
         .build()
     val code = fileSpec.toString()
     assertTrue(code.contains("companion object"))
-    assertTrue(code.contains("@JvmStatic"))
+    assertTrue(code.contains("@JvmField"))
     assertTrue(code.contains("val CREATOR: Parcelable.Creator<PhoneNumber>"))
     assertTrue(code.contains("AndroidMessage.newCreator(ADAPTER)"))
   }

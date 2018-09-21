@@ -15,9 +15,7 @@
  */
 package com.squareup.wire.kotlin
 
-import android.os.Parcel
 import android.os.Parcelable
-import com.squareup.kotlinpoet.ARRAY
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
@@ -38,7 +36,7 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
-import com.squareup.kotlinpoet.jvm.jvmStatic
+import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.wire.AndroidMessage
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
@@ -470,7 +468,7 @@ class KotlinGenerator private constructor(
 
     return TypeSpec.companionObjectBuilder()
         .addProperty(PropertySpec.builder(creatorName, creatorTypeName)
-            .jvmStatic()
+            .jvmField()
             .initializer("%T.newCreator(ADAPTER)", AndroidMessage::class)
             .build())
         .build()
