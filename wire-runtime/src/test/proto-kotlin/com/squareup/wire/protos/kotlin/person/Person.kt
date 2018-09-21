@@ -4,12 +4,15 @@ package com.squareup.wire.protos.kotlin.person
 
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
+import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal
+import kotlin.Deprecated
+import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -21,7 +24,17 @@ data class Person(
     val email: String? = null,
     val phone: List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
-) {
+) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
+    @Deprecated(
+            message = "Shouldn't be used in Kotlin",
+            level = DeprecationLevel.HIDDEN
+    )
+    override fun newBuilder(): Builder = Builder(this.copy())
+
+    class Builder(private val message: Person) : Message.Builder<Person, Builder>() {
+        override fun build(): Person = message
+    }
+
     object ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
         override fun encodedSize(value: Person): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
             ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) +
@@ -81,7 +94,17 @@ data class Person(
         val number: String,
         val type: PhoneType = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
-    ) {
+    ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
+        @Deprecated(
+                message = "Shouldn't be used in Kotlin",
+                level = DeprecationLevel.HIDDEN
+        )
+        override fun newBuilder(): Builder = Builder(this.copy())
+
+        class Builder(private val message: PhoneNumber) : Message.Builder<PhoneNumber, Builder>() {
+            override fun build(): PhoneNumber = message
+        }
+
         object ADAPTER : ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber::class.java) {
             override fun encodedSize(value: PhoneNumber): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +
                 PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) +
