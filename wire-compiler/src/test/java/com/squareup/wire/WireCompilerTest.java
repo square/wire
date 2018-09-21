@@ -384,10 +384,39 @@ public class WireCompilerTest {
     assertThat(getPaths()).isNotEmpty();
   }
 
+  @Test public void testPersonKotlin() throws Exception {
+    String[] sources = {
+        "person.proto"
+    };
+    invokeCompiler(TargetLanguage.KOTLIN, sources);
+
+    String[] outputs = {
+        "com/squareup/wire/protos/kotlin/person/Person.kt"
+    };
+    assertOutputs(TargetLanguage.KOTLIN, outputs);
+  }
+
+  @Test public void testPersonAndroidKotlin() throws Exception {
+    String[] sources = {
+        "person.proto"
+    };
+    invokeCompiler(TargetLanguage.KOTLIN, sources, "--android");
+
+    String[] outputs = {
+        "com/squareup/wire/protos/kotlin/person/Person.kt"
+    };
+    assertOutputs(TargetLanguage.KOTLIN, outputs, ".android");
+  }
+
   private void invokeCompiler(String[] sources, String... extraArgs) throws Exception {
+    invokeCompiler(TargetLanguage.JAVA, sources, extraArgs);
+  }
+
+  private void invokeCompiler(TargetLanguage target, String[] sources, String... extraArgs)
+      throws Exception {
     List<String> args = new ArrayList<>();
-    args.add("--proto_path=../wire-runtime/src/test/proto");
-    args.add("--java_out=" + testDir.getAbsolutePath());
+    args.add(target.protoPathArg());
+    args.add(target.outArg(testDir.getAbsolutePath()));
     Collections.addAll(args, extraArgs);
     Collections.addAll(args, sources);
 
@@ -398,17 +427,26 @@ public class WireCompilerTest {
   }
 
   private void assertOutputs(String[] outputs) throws IOException {
-    assertOutputs(outputs, "");
+    assertOutputs(TargetLanguage.JAVA, outputs);
+  }
+
+  private void assertOutputs(TargetLanguage target, String[] outputs) throws IOException {
+    assertOutputs(target, outputs, "");
   }
 
   private void assertOutputs(String[] outputs, String suffix) throws IOException {
+    assertOutputs(TargetLanguage.JAVA, outputs, suffix);
+  }
+
+  private void assertOutputs(TargetLanguage target, String[] outputs, String suffix)
+      throws IOException {
     List<String> filesAfter = getPaths();
     assertThat(filesAfter.size())
         .overridingErrorMessage(filesAfter.toString())
         .isEqualTo(outputs.length);
 
     for (String output : outputs) {
-      assertFilesMatch(testDir, output, suffix);
+      assertFilesMatch(target, testDir, output, suffix);
     }
   }
 
@@ -435,14 +473,10 @@ public class WireCompilerTest {
     }
   }
 
-  private void assertFilesMatch(File outputDir, String path, String suffix) throws IOException {
+  private void assertFilesMatch(TargetLanguage target, File outputDir, String path, String suffix)
+      throws IOException {
     // Compare against file with suffix if present
-    File expectedFile = new File("../wire-runtime/src/test/proto-java/" + path + suffix);
-    if (expectedFile.exists()) {
-      System.out.println("Comparing against expected output " + expectedFile.getName());
-    } else {
-      expectedFile = new File("../wire-runtime/src/test/proto-java/" + path);
-    }
+    File expectedFile = target.expectedFile(path, suffix);
     File actualFile = new File(outputDir, path);
     assertFilesMatch(expectedFile, actualFile);
   }
@@ -462,5 +496,45 @@ public class WireCompilerTest {
     expected = expected.replace("\r\n", "\n");
     actual = actual.replace("\r\n", "\n");
     assertThat(actual).isEqualTo(expected);
+  }
+
+  private enum TargetLanguage {
+    JAVA {
+      @Override String protoPathArg() {
+        return "--proto_path=../wire-runtime/src/test/proto";
+      }
+      @Override String outArg(String testDirPath) {
+        return "--java_out=" + testDirPath;
+      }
+      @Override String protoFolderSuffix() {
+        return "java";
+      }
+    },
+    KOTLIN {
+      @Override String protoPathArg() {
+        return "--proto_path=../wire-runtime/src/test/proto/kotlin";
+      }
+      @Override String outArg(String testDirPath) {
+        return "--kotlin_out=" + testDirPath;
+      }
+      @Override String protoFolderSuffix() {
+        return "kotlin";
+      }
+    };
+
+    abstract String protoPathArg();
+    abstract String outArg(String testDirPath);
+    abstract String protoFolderSuffix();
+
+    File expectedFile(String path, String suffix) {
+      String protoFolder = "/proto-" + protoFolderSuffix() + "/";
+      File expectedFile = new File("../wire-runtime/src/test" + protoFolder + path + suffix);
+      if (expectedFile.exists()) {
+        System.out.println("Comparing against expected output " + expectedFile.getName());
+      } else {
+        expectedFile = new File("../wire-runtime/src/test" + protoFolder + path);
+      }
+      return expectedFile;
+    }
   }
 }
