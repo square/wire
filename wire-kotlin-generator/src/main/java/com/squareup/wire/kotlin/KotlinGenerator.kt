@@ -132,10 +132,9 @@ class KotlinGenerator private constructor(
 
   private fun generateNewBuilderMethod(builderClassName: ClassName): FunSpec {
     return FunSpec.builder("newBuilder")
-        .addAnnotation(generateDeprecatedBuilderAnnotation().toBuilder()
-            .addMember("replaceWith = %L", AnnotationSpec.builder(ReplaceWith::class)
-                .addMember("expression = %S", "this.copy()")
-                .build())
+        .addAnnotation(AnnotationSpec.builder(Deprecated::class)
+            .addMember("message = %S", "Shouldn't be used in Kotlin")
+            .addMember("level = %T.%L", DeprecationLevel::class, DeprecationLevel.HIDDEN)
             .build())
         .addModifiers(OVERRIDE)
         .returns(builderClassName)
@@ -143,15 +142,8 @@ class KotlinGenerator private constructor(
         .build()
   }
 
-  private fun generateDeprecatedBuilderAnnotation(): AnnotationSpec {
-    return AnnotationSpec.builder(Deprecated::class)
-        .addMember("message = %S", "Not relevant for data classes, use copy()")
-        .build()
-  }
-
   private fun generateBuilderClass(className: ClassName, builderClassName: ClassName): TypeSpec {
     return TypeSpec.classBuilder("Builder")
-        .addAnnotation(generateDeprecatedBuilderAnnotation())
         .primaryConstructor(FunSpec.constructorBuilder()
             .addParameter("message", className)
             .build())
@@ -186,7 +178,7 @@ class KotlinGenerator private constructor(
     val byteClass = typeName(ProtoType.BYTES)
 
     message.fields().forEach { field ->
-      var fieldClass: TypeName = typeName(field.type())!!
+      var fieldClass: TypeName = typeName(field.type())
       val fieldName = nameAllocator.get(field)
       var defaultValue = CodeBlock.of("null")
 
@@ -284,7 +276,7 @@ class KotlinGenerator private constructor(
 
   private fun encodeFun(message: MessageType): FunSpec {
     val className = generatedTypeName(message)
-    var body = CodeBlock.builder()
+    val body = CodeBlock.builder()
 
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
@@ -311,12 +303,12 @@ class KotlinGenerator private constructor(
     val indentation = " ".repeat(4)
     val internalClass = ClassName("com.squareup.wire.internal", "Internal")
 
-    var declarationBody = CodeBlock.builder()
+    val declarationBody = CodeBlock.builder()
 
-    var returnBody = CodeBlock.builder()
+    val returnBody = CodeBlock.builder()
     returnBody.add("return %T(\n", className)
 
-    var decodeBlock = CodeBlock.builder()
+    val decodeBlock = CodeBlock.builder()
     decodeBlock.addStatement(
       "val unknownFields = reader.forEachTag { tag ->")
 
@@ -328,7 +320,7 @@ class KotlinGenerator private constructor(
       val fieldName = nameAllocator.get(field)
 
       var throwExceptionBlock = CodeBlock.of("")
-      var decodeBodyTemplate: String
+      val decodeBodyTemplate: String
 
       var fieldClass: TypeName = nameToKotlinName.getValue(field.type())
       var fieldDeclaration: CodeBlock
@@ -406,7 +398,7 @@ class KotlinGenerator private constructor(
 
     val valueName = nameAllocator.get("value")
 
-    var builder = TypeSpec.enumBuilder(type.simpleName())
+    val builder = TypeSpec.enumBuilder(type.simpleName())
         .addSuperinterface(WireEnum::class)
         .primaryConstructor(FunSpec.constructorBuilder()
             .addParameter(valueName, Int::class, PRIVATE)

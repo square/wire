@@ -12,8 +12,8 @@ import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal
 import kotlin.Deprecated
+import kotlin.DeprecationLevel
 import kotlin.Int
-import kotlin.ReplaceWith
 import kotlin.String
 import kotlin.collections.List
 import okio.ByteString
@@ -26,12 +26,11 @@ data class Person(
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
-            message = "Not relevant for data classes, use copy()",
-            replaceWith = ReplaceWith(expression = "this.copy()")
+            message = "Shouldn't be used in Kotlin",
+            level = DeprecationLevel.HIDDEN
     )
     override fun newBuilder(): Builder = Builder(this.copy())
 
-    @Deprecated(message = "Not relevant for data classes, use copy()")
     class Builder(private val message: Person) : Message.Builder<Person, Builder>() {
         override fun build(): Person = message
     }
@@ -97,12 +96,11 @@ data class Person(
         val unknownFields: ByteString = ByteString.EMPTY
     ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
         @Deprecated(
-                message = "Not relevant for data classes, use copy()",
-                replaceWith = ReplaceWith(expression = "this.copy()")
+                message = "Shouldn't be used in Kotlin",
+                level = DeprecationLevel.HIDDEN
         )
         override fun newBuilder(): Builder = Builder(this.copy())
 
-        @Deprecated(message = "Not relevant for data classes, use copy()")
         class Builder(private val message: PhoneNumber) : Message.Builder<PhoneNumber, Builder>() {
             override fun build(): PhoneNumber = message
         }
