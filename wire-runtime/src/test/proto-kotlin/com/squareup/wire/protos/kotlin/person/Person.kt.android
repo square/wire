@@ -18,7 +18,7 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
-import kotlin.jvm.JvmStatic
+import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class Person(
@@ -78,7 +78,7 @@ data class Person(
     }
 
     companion object {
-        @JvmStatic
+        @JvmField
         val CREATOR: Parcelable.Creator<Person> = AndroidMessage.newCreator(ADAPTER)
     }
 
@@ -143,7 +143,7 @@ data class Person(
         }
 
         companion object {
-            @JvmStatic
+            @JvmField
             val CREATOR: Parcelable.Creator<PhoneNumber> = AndroidMessage.newCreator(ADAPTER)
         }
     }
