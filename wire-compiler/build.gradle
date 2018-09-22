@@ -1,0 +1,26 @@
+apply plugin: 'application'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+mainClassName = 'com.squareup.wire.WireCompiler'
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-compiler')
+  }
+}
+
+dependencies {
+  implementation project(':wire-runtime')
+  implementation project(':wire-schema')
+  implementation project(':wire-java-generator')
+  implementation project(':wire-kotlin-generator')
+  implementation deps.okio
+  implementation deps.guava
+  implementation deps.javapoet
+  compileOnly deps.jsr305
+  testImplementation deps.junit
+  testImplementation deps.assertj
+  testImplementation deps.jimfs
+}

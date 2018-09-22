@@ -16,3 +16,7 @@ release.properties
 dependency-reduced-pom.xml
 
 out/
+
+# Gradle
+.gradle
+build

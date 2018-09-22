@@ -1,0 +1,18 @@
+apply plugin: 'application'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+mainClassName = 'com.squareup.wire.prune.ProtoPruner'
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'proto-pruner')
+  }
+}
+
+dependencies {
+  implementation project(':wire-schema')
+  implementation deps.kotlin.stdlib.jdk8
+}

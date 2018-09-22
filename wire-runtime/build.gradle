@@ -1,0 +1,32 @@
+apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'ru.vyarus.animalsniffer'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+sourceSets {
+  test.java.srcDirs += 'src/test/proto-java'
+  test.kotlin.srcDirs += 'src/test/proto-kotlin'
+}
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-runtime')
+  }
+}
+
+animalsniffer {
+  sourceSets = [sourceSets.main]
+  ignore 'com.squareup.wire.internal'
+}
+
+dependencies {
+  implementation deps.okio
+  compileOnly deps.android
+  compileOnly deps.jsr305
+  testImplementation deps.kotlin.stdlib.jdk6
+  testImplementation deps.junit
+  testImplementation deps.assertj
+  testImplementation deps.guava
+}

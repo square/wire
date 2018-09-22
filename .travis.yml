@@ -12,6 +12,9 @@ before_script:
   - ./gen_tests.sh
   - if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run gen_tests.sh?"; exit 1; fi
 
+script:
+  - ./gradlew clean build
+
 after_success:
   - .buildscript/deploy_snapshot.sh
 
@@ -31,4 +34,7 @@ sudo: false
 
 cache:
   directories:
-    - $HOME/.m2
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.gradle/native/
+    - $HOME/.gradle/daemon/native/
