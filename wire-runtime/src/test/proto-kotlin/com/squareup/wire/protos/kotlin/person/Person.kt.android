@@ -2,17 +2,19 @@
 // Source file: person.proto
 package com.squareup.wire.protos.kotlin.person
 
-import android.os.Parcel
 import android.os.Parcelable
+import com.squareup.wire.AndroidMessage
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
+import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal
-import kotlin.Array
+import kotlin.Deprecated
+import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -25,10 +27,16 @@ data class Person(
     val email: String? = null,
     val phone: List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
-) : Parcelable {
-    override fun writeToParcel(destination: Parcel, flags: Int) = destination.writeByteArray(ADAPTER.encode(this))
+) : AndroidMessage<Person, Person.Builder>(ADAPTER, unknownFields) {
+    @Deprecated(
+            message = "Shouldn't be used in Kotlin",
+            level = DeprecationLevel.HIDDEN
+    )
+    override fun newBuilder(): Builder = Builder(this.copy())
 
-    override fun describeContents() = 0
+    class Builder(private val message: Person) : Message.Builder<Person, Builder>() {
+        override fun build(): Person = message
+    }
 
     companion object {
         @JvmField
@@ -71,12 +79,9 @@ data class Person(
                 )
             }
         }
-    }
 
-    object CREATOR : Parcelable.Creator<Person> {
-        override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
-
-        override fun newArray(size: Int): Array<Person?> = arrayOfNulls(size)
+        @JvmField
+        val CREATOR: Parcelable.Creator<Person> = AndroidMessage.newCreator(ADAPTER)
     }
 
     enum class PhoneType(private val value: Int) : WireEnum {
@@ -99,10 +104,16 @@ data class Person(
         val number: String,
         val type: PhoneType = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
-    ) : Parcelable {
-        override fun writeToParcel(destination: Parcel, flags: Int) = destination.writeByteArray(ADAPTER.encode(this))
+    ) : AndroidMessage<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
+        @Deprecated(
+                message = "Shouldn't be used in Kotlin",
+                level = DeprecationLevel.HIDDEN
+        )
+        override fun newBuilder(): Builder = Builder(this.copy())
 
-        override fun describeContents() = 0
+        class Builder(private val message: PhoneNumber) : Message.Builder<PhoneNumber, Builder>() {
+            override fun build(): PhoneNumber = message
+        }
 
         companion object {
             @JvmField
@@ -135,12 +146,9 @@ data class Person(
                     )
                 }
             }
-        }
 
-        object CREATOR : Parcelable.Creator<PhoneNumber> {
-            override fun createFromParcel(input: Parcel) = ADAPTER.decode(input.createByteArray())
-
-            override fun newArray(size: Int): Array<PhoneNumber?> = arrayOfNulls(size)
+            @JvmField
+            val CREATOR: Parcelable.Creator<PhoneNumber> = AndroidMessage.newCreator(ADAPTER)
         }
     }
 }
