@@ -108,6 +108,9 @@ class KotlinGenerator private constructor(
     val adapterName = nameAllocator.get("ADAPTER")
     val unknownFields = nameAllocator.get("unknownFields")
     val superclass = if (emitAndroid) AndroidMessage::class else Message::class
+    val companionObjBuilder = TypeSpec.companionObjectBuilder();
+
+    addAdapter(type, companionObjBuilder)
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addModifiers(DATA)
@@ -117,11 +120,12 @@ class KotlinGenerator private constructor(
         .addSuperclassConstructorParameter(unknownFields)
         .addFunction(generateNewBuilderMethod(builderClassName))
         .addType(generateBuilderClass(className, builderClassName))
-        .addType(generateAdapter(type))
 
     if (emitAndroid) {
-      classBuilder.addType(generateAndroidCreator(type))
+      addAndroidCreator(type, companionObjBuilder)
     }
+
+    classBuilder.addType(companionObjBuilder.build())
 
     addMessageConstructor(type, classBuilder)
 
@@ -223,19 +227,23 @@ class KotlinGenerator private constructor(
   /**
    * Example
    * ```
-   * object ADAPTER : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
-   *     override fun encodedSize(value: Person): Int { .. }
-   *     override fun encode(writer: ProtoWriter, value: Person) { .. }
-   *     override fun decode(reader: ProtoReader): Person { .. }
+   * companion object {
+   *  @JvmField
+   *  val ADAPTER : ProtoAdapter<Person> =
+   *      object : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
+   *    override fun encodedSize(value: Person): Int { .. }
+   *    override fun encode(writer: ProtoWriter, value: Person) { .. }
+   *    override fun decode(reader: ProtoReader): Person { .. }
+   *  }
    * }
    * ```
    */
-  private fun generateAdapter(type: MessageType): TypeSpec {
+  private fun addAdapter(type: MessageType, companionObjBuilder: TypeSpec.Builder) {
     val nameAllocator = nameAllocator(type)
     val parentClassName = generatedTypeName(type)
     val adapterName = nameAllocator.get("ADAPTER")
 
-    return TypeSpec.objectBuilder(adapterName)
+    val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
         .addSuperclassConstructorParameter("%T.LENGTH_DELIMITED",
             FieldEncoding::class.asClassName())
@@ -244,6 +252,13 @@ class KotlinGenerator private constructor(
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
         .build()
+
+    val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
+
+    companionObjBuilder.addProperty(PropertySpec.builder(adapterName, adapterType)
+        .jvmField()
+        .initializer("%L", adapterObject)
+        .build())
   }
 
   private fun encodedSizeFun(message: MessageType): FunSpec {
@@ -460,18 +475,16 @@ class KotlinGenerator private constructor(
    * }
    * ```
    */
-  private fun generateAndroidCreator(type: MessageType): TypeSpec {
+  private fun addAndroidCreator(type: MessageType, companionObjBuilder: TypeSpec.Builder) {
     val nameAllocator = nameAllocator(type)
     val parentClassName = generatedTypeName(type)
     val creatorName = nameAllocator.get("CREATOR")
     val creatorTypeName = Parcelable.Creator::class.asClassName().parameterizedBy(parentClassName)
 
-    return TypeSpec.companionObjectBuilder()
-        .addProperty(PropertySpec.builder(creatorName, creatorTypeName)
-            .jvmField()
-            .initializer("%T.newCreator(ADAPTER)", AndroidMessage::class)
-            .build())
-        .build()
+    companionObjBuilder.addProperty(PropertySpec.builder(creatorName, creatorTypeName)
+        .jvmField()
+        .initializer("%T.newCreator(ADAPTER)", AndroidMessage::class)
+        .build())
   }
 
   private fun getDefaultValue(field: Field): CodeBlock {
