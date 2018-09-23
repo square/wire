@@ -84,7 +84,10 @@ subprojects {
   apply plugin: 'com.vanniktech.maven.publish'
   apply plugin: 'checkstyle'
 
-  checkstyle {
-    toolVersion '7.7'
+  afterEvaluate {
+    checkstyle {
+      toolVersion '7.7'
+      sourceSets = [project.sourceSets.main]
+    }
   }
 }
