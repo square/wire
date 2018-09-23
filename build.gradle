@@ -82,4 +82,9 @@ subprojects {
   }
 
   apply plugin: 'com.vanniktech.maven.publish'
+  apply plugin: 'checkstyle'
+
+  checkstyle {
+    toolVersion '7.7'
+  }
 }
