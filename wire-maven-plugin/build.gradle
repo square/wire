@@ -1,0 +1,18 @@
+apply plugin: 'java'
+apply plugin: 'com.liferay.maven.plugin.builder'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-maven-plugin')
+  }
+}
+
+dependencies {
+  implementation project(':wire-java-generator')
+  implementation deps.maven.core
+  implementation deps.maven.plugin.api
+  implementation deps.maven.plugin.annotations
+}

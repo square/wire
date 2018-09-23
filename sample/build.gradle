@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-sample')
+  }
+}
+
+dependencies {
+  implementation project(':wire-runtime')
+  implementation deps.okio
+}

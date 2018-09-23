@@ -16,6 +16,9 @@ buildscript {
       'jimfs': '1.0',
       'animalSniffer': '1.16',
       'animalSnifferGradle': '1.4.3',
+      'maven': '3.5.0',
+      'mavenAnnotations': '3.5',
+      'mavenPluginBuilder': '1.2.1',
       'mavenPublish': '0.4.0',
   ]
 
@@ -45,7 +48,11 @@ buildscript {
           'annotations': "org.codehaus.mojo:animal-sniffer-annotations:${versions.animalSniffer}",
       ],
       'maven': [
+          'core': "org.apache.maven:maven-core:${versions.maven}",
           'plugin': [
+              'api': "org.apache.maven:maven-plugin-api:${versions.maven}",
+              'annotations': "org.apache.maven.plugin-tools:maven-plugin-annotations:${versions.mavenAnnotations}",
+              'builder': "gradle.plugin.com.liferay:gradle-plugins-maven-plugin-builder:${versions.mavenPluginBuilder}",
               'publish': "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}",
           ]
       ]
@@ -54,6 +61,7 @@ buildscript {
   dependencies {
     classpath deps.kotlin.gradle
     classpath deps.animalSniffer.gradle
+    classpath deps.maven.plugin.builder
     classpath deps.maven.plugin.publish
   }
 
