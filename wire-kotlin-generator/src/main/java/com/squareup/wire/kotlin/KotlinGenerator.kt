@@ -45,6 +45,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
+import com.squareup.wire.internal.Internal
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
@@ -89,6 +90,9 @@ class KotlinGenerator private constructor(
             newName("unknownFields", "unknownFields")
             newName("ADAPTER", "ADAPTER")
             newName("reader", "reader")
+            newName("Builder", "Builder")
+            newName("builder", "builder")
+
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
             }
@@ -108,7 +112,7 @@ class KotlinGenerator private constructor(
     val adapterName = nameAllocator.get("ADAPTER")
     val unknownFields = nameAllocator.get("unknownFields")
     val superclass = if (emitAndroid) AndroidMessage::class else Message::class
-    val companionObjBuilder = TypeSpec.companionObjectBuilder();
+    val companionObjBuilder = TypeSpec.companionObjectBuilder()
 
     addAdapter(type, companionObjBuilder)
 
@@ -118,8 +122,8 @@ class KotlinGenerator private constructor(
             .parameterizedBy(className, builderClassName))
         .addSuperclassConstructorParameter(adapterName)
         .addSuperclassConstructorParameter(unknownFields)
-        .addFunction(generateNewBuilderMethod(builderClassName))
-        .addType(generateBuilderClass(className, builderClassName))
+        .addFunction(generateNewBuilderMethod(type, builderClassName))
+        .addType(generateBuilderClass(type, className, builderClassName))
 
     if (emitAndroid) {
       addAndroidCreator(type, companionObjBuilder)
@@ -134,35 +138,97 @@ class KotlinGenerator private constructor(
     return classBuilder.build()
   }
 
-  private fun generateNewBuilderMethod(builderClassName: ClassName): FunSpec {
-    return FunSpec.builder("newBuilder")
+  private fun generateNewBuilderMethod(type: MessageType, builderClassName: ClassName): FunSpec {
+    val funBuilder = FunSpec.builder("newBuilder")
         .addAnnotation(AnnotationSpec.builder(Deprecated::class)
             .addMember("message = %S", "Shouldn't be used in Kotlin")
             .addMember("level = %T.%L", DeprecationLevel::class, DeprecationLevel.HIDDEN)
             .build())
         .addModifiers(OVERRIDE)
+        .addStatement("val builder = Builder()")
         .returns(builderClassName)
-        .addStatement("return %T(this.copy())", builderClassName)
+
+    val nameAllocator = nameAllocator(type)
+
+    type.fields().forEach { field ->
+      val fieldName = nameAllocator.get(field)
+      funBuilder.addStatement("builder.%L = %L", fieldName, fieldName)
+    }
+    funBuilder.addStatement("builder.addUnknownFields(unknownFields());")
+    return funBuilder
+        .addStatement("return builder", builderClassName)
         .build()
   }
 
-  private fun generateBuilderClass(className: ClassName, builderClassName: ClassName): TypeSpec {
-    return TypeSpec.classBuilder("Builder")
-        .primaryConstructor(FunSpec.constructorBuilder()
-            .addParameter("message", className)
-            .build())
+  private fun generateBuilderClass(
+    type: MessageType,
+    className: ClassName,
+    builderClassName: ClassName
+  ): TypeSpec {
+
+    val nameAllocator = nameAllocator(type)
+
+    val builder = TypeSpec.classBuilder("Builder")
         .superclass(Message.Builder::class.asTypeName()
             .parameterizedBy(className, builderClassName))
-        .addProperty(PropertySpec.builder("message", className)
-            .addModifiers(PRIVATE)
-            .initializer("message")
-            .build())
-        .addFunction(FunSpec.builder("build")
-            .addModifiers(OVERRIDE)
-            .returns(className)
-            .addStatement("return message")
+
+    val builderClass = className.nestedClass("Builder")
+
+    val returnBody = CodeBlock.builder()
+    returnBody.add("return %T(\n", className)
+
+    val indentation = " ".repeat(4)
+
+    type.fields().forEach { field ->
+      val fieldName = nameAllocator.get(field)
+      var throwExceptionBlock = CodeBlock.of("")
+      val internalClass = ClassName("com.squareup.wire.internal", "Internal")
+
+      if (!field.isRepeated && !field.isOptional && field.default == null) {
+        throwExceptionBlock = CodeBlock.of(" ?: throw %T.%L(%L, %S)",
+            internalClass, "missingRequiredFields", field.name(), field.name())
+      }
+
+      builder.addProperty(PropertySpec.builder(fieldName, field.declarationClass())
+          .mutable(true)
+          .initializer(getDefaultValue(field))
+          .build())
+
+      builder.addFunction(builderSetter(field, nameAllocator, builderClass))
+
+      returnBody.add("%L%L = %L%L,\n", indentation, fieldName, fieldName, throwExceptionBlock)
+
+    }
+
+    val buildFunction = FunSpec.builder("build")
+        .addModifiers(OVERRIDE)
+        .returns(className)
+        .addCode(returnBody
+            .add("%LunknownFields = super.buildUnknownFields()\n)\n", indentation)
             .build())
         .build()
+
+    return builder.addFunction(buildFunction)
+        .build()
+  }
+
+  fun builderSetter(field: Field, nameAllocator: NameAllocator, builderType: TypeName) : FunSpec {
+    val fieldName = nameAllocator.get(field)
+    val funBuilder = FunSpec.builder(fieldName)
+        .addParameter(fieldName, field.getClass())
+        .returns(builderType)
+    if (field.documentation().isNotEmpty()) {
+      funBuilder.addKdoc(field.documentation())
+    }
+    if (field.isDeprecated) {
+      funBuilder.addAnnotation(Deprecated::class.java)
+    }
+    if (field.isRepeated) {
+      funBuilder.addStatement("%T.checkElementsNotNull(%L)", Internal::class.java, fieldName)
+    }
+    funBuilder.addStatement("this.%L = %L", fieldName, fieldName)
+    funBuilder.addStatement("return this")
+    return funBuilder.build()
   }
 
   /**
@@ -191,7 +257,7 @@ class KotlinGenerator private constructor(
           fieldClass = fieldClass.asNullable()
         }
         field.isRepeated -> {
-          fieldClass = List::class.asClassName().parameterizedBy(fieldClass)
+          fieldClass = MutableList::class.asClassName().parameterizedBy(fieldClass)
           defaultValue = CodeBlock.of("emptyList()")
         }
       }
@@ -325,7 +391,7 @@ class KotlinGenerator private constructor(
 
     val decodeBlock = CodeBlock.builder()
     decodeBlock.addStatement(
-      "val unknownFields = reader.forEachTag { tag ->")
+        "val unknownFields = reader.forEachTag { tag ->")
 
     // Indent manually as code generator doesn't handle this block gracefully.
     decodeBlock.addStatement("%Lwhen (tag) {", indentation)
@@ -336,29 +402,17 @@ class KotlinGenerator private constructor(
 
       var throwExceptionBlock = CodeBlock.of("")
       val decodeBodyTemplate: String
-
-      var fieldClass: TypeName = nameToKotlinName.getValue(field.type())
-      var fieldDeclaration: CodeBlock
+      var fieldDeclaration: CodeBlock = field.getDeclaration(fieldName)
 
       if (field.isRepeated) {
-        fieldDeclaration = CodeBlock.of("var %L = mutableListOf<%T>()", fieldName, fieldClass)
         decodeBodyTemplate = "%L%L -> %L.add(%L.decode(reader))"
-        fieldClass = List::class.asClassName().parameterizedBy(fieldClass)
       } else {
-        fieldClass = fieldClass.asNullable()
-        fieldDeclaration = CodeBlock.of("var %L: %T = null", fieldName, fieldClass)
         decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
 
         if (!field.isOptional && field.default == null) {
           throwExceptionBlock = CodeBlock.of(" ?: throw %T.%L(%L, %S)",
               internalClass, "missingRequiredFields", field.name(), field.name())
         }
-      }
-
-      if (field.default != null) {
-        fieldClass = fieldClass.asNonNullable()
-        fieldDeclaration = CodeBlock.of("var %L: %T = %L", fieldName,
-            fieldClass, getDefaultValue(field))
       }
 
       declarationBody.addStatement("%L", fieldDeclaration)
@@ -491,11 +545,36 @@ class KotlinGenerator private constructor(
     return when {
       isEnum(field) ->
         CodeBlock.of("%T.%L", typeName(field.type()), field.default)
+      field.isRepeated -> CodeBlock.of("mutableListOf()")
       else -> CodeBlock.of("%L", field.default)
     }
   }
 
   private fun isEnum(field: Field): Boolean = schema.getType(field.type()) is EnumType
+
+  private fun Field.getDeclaration(allocatedName: String): CodeBlock {
+    val baseClass = nameToKotlinName.getValue(type())
+    val fieldClass = declarationClass()
+    val default = getDefaultValue(this)
+    return when {
+      isRepeated -> CodeBlock.of("var %L = mutableListOf<%T>()", allocatedName, baseClass)
+      default != null -> CodeBlock.of("var %L: %T = %L", allocatedName,
+          fieldClass, default)
+      else -> CodeBlock.of("var %L: %T = null", allocatedName, fieldClass)
+    }
+  }
+
+  private fun Field.declarationClass() : TypeName {
+    val fieldClass = getClass()
+    if (isRepeated || default != null) return fieldClass
+    return fieldClass.asNullable()
+  }
+
+  private fun Field.getClass(baseClass: TypeName = nameToKotlinName.getValue(type())) = when {
+    isRepeated -> List::class.asClassName().parameterizedBy(baseClass)
+    isOptional && default == null -> baseClass.asNullable()
+    else -> baseClass.asNonNullable()
+  }
 
   companion object {
     private val BUILT_IN_TYPES = mapOf(

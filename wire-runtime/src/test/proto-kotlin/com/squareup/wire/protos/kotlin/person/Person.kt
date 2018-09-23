@@ -30,10 +30,61 @@ data class Person(
             message = "Shouldn't be used in Kotlin",
             level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
+    override fun newBuilder(): Builder {
+        val builder = Builder()
+        builder.name = name
+        builder.id = id
+        builder.email = email
+        builder.phone = phone
+        builder.addUnknownFields(unknownFields());
+        return builder
+    }
 
-    class Builder(private val message: Person) : Message.Builder<Person, Builder>() {
-        override fun build(): Person = message
+    class Builder : Message.Builder<Person, Builder>() {
+        var name: String? = null
+
+        var id: Int? = null
+
+        var email: String? = null
+
+        var phone: List<PhoneNumber> = mutableListOf()
+
+        /**
+         * The customer's full name. */
+        fun name(name: String): Builder {
+            this.name = name
+            return this
+        }
+
+        /**
+         * The customer's ID number. */
+        fun id(id: Int): Builder {
+            this.id = id
+            return this
+        }
+
+        /**
+         * Email address for the customer. */
+        fun email(email: String?): Builder {
+            this.email = email
+            return this
+        }
+
+        /**
+         * A list of the customer's phone numbers. */
+        fun phone(phone: List<PhoneNumber>): Builder {
+            Internal.checkElementsNotNull(phone)
+            this.phone = phone
+            return this
+        }
+
+        override fun build(): Person = Person(
+            name = name ?: throw Internal.missingRequiredFields(name, "name"),
+            id = id ?: throw Internal.missingRequiredFields(id, "id"),
+            email = email,
+            phone = phone,
+            unknownFields = super.buildUnknownFields()
+        )
     }
 
     companion object {
@@ -104,10 +155,38 @@ data class Person(
                 message = "Shouldn't be used in Kotlin",
                 level = DeprecationLevel.HIDDEN
         )
-        override fun newBuilder(): Builder = Builder(this.copy())
+        override fun newBuilder(): Builder {
+            val builder = Builder()
+            builder.number = number
+            builder.type = type
+            builder.addUnknownFields(unknownFields());
+            return builder
+        }
 
-        class Builder(private val message: PhoneNumber) : Message.Builder<PhoneNumber, Builder>() {
-            override fun build(): PhoneNumber = message
+        class Builder : Message.Builder<PhoneNumber, Builder>() {
+            var number: String? = null
+
+            var type: PhoneType = PhoneType.HOME
+
+            /**
+             * The customer's phone number. */
+            fun number(number: String): Builder {
+                this.number = number
+                return this
+            }
+
+            /**
+             * The type of phone stored here. */
+            fun type(type: PhoneType): Builder {
+                this.type = type
+                return this
+            }
+
+            override fun build(): PhoneNumber = PhoneNumber(
+                number = number ?: throw Internal.missingRequiredFields(number, "number"),
+                type = type,
+                unknownFields = super.buildUnknownFields()
+            )
         }
 
         companion object {
