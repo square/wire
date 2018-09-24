@@ -146,7 +146,6 @@ class KotlinGenerator private constructor(
             .addMember("level = %T.%L", DeprecationLevel::class, DeprecationLevel.HIDDEN)
             .build())
         .addModifiers(OVERRIDE)
-
         .returns(builderClassName)
 
     if (!javaInterOp) {
@@ -155,16 +154,17 @@ class KotlinGenerator private constructor(
           .build()
     }
 
-    funBuilder.addStatement("val builder = Builder()")
-
     val nameAllocator = nameAllocator(type)
+
+    funBuilder.addStatement("val builder = Builder()")
 
     type.fields().forEach { field ->
       val fieldName = nameAllocator.get(field)
       funBuilder.addStatement("builder.%L = %L", fieldName, fieldName)
     }
-    funBuilder.addStatement("builder.addUnknownFields(unknownFields());")
+
     return funBuilder
+        .addStatement("builder.addUnknownFields(unknownFields())")
         .addStatement("return builder", builderClassName)
         .build()
   }
@@ -184,9 +184,9 @@ class KotlinGenerator private constructor(
               .addParameter("message", className)
               .build())
           .addProperty(PropertySpec.builder("message", className)
-          .addModifiers(PRIVATE)
-          .initializer("message")
-          .build())
+              .addModifiers(PRIVATE)
+              .initializer("message")
+              .build())
           .addFunction(FunSpec.builder("build")
               .addModifiers(OVERRIDE)
               .returns(className)
@@ -196,33 +196,41 @@ class KotlinGenerator private constructor(
     }
 
     val nameAllocator = nameAllocator(type)
-
     val builderClass = className.nestedClass("Builder")
+    val indentation = " ".repeat(4)
+    val internalClass = ClassName("com.squareup.wire.internal", "Internal")
 
     val returnBody = CodeBlock.builder()
-    returnBody.add("return %T(\n", className)
-
-    val indentation = " ".repeat(4)
+        .add("return %T(\n", className)
 
     type.fields().forEach { field ->
       val fieldName = nameAllocator.get(field)
-      var throwExceptionBlock = CodeBlock.of("")
-      val internalClass = ClassName("com.squareup.wire.internal", "Internal")
 
-      if (!field.isRepeated && !field.isOptional && field.default == null) {
-        throwExceptionBlock = CodeBlock.of(" ?: throw %T.%L(%L, %S)",
-            internalClass, "missingRequiredFields", field.name(), field.name())
+      val throwExceptionBlock = if (!field.isRepeated
+          && !field.isOptional
+          && field.default == null) {
+        CodeBlock.of(" ?: throw %T.%L(%L, %S)",
+            internalClass,
+            "missingRequiredFields",
+            field.name(),
+            field.name())
+      } else {
+        CodeBlock.of("")
       }
 
-      builder.addProperty(PropertySpec.builder(fieldName, field.declarationClass())
-          .mutable(true)
-          .initializer(getDefaultValue(field))
-          .build())
+      builder
+          .addProperty(PropertySpec.builder(fieldName, field.declarationClass())
+              .mutable(true)
+              .initializer(getDefaultValue(field))
+              .addModifiers(PRIVATE)
+              .build())
+          .addFunction(builderSetter(field, nameAllocator, builderClass))
 
-      builder.addFunction(builderSetter(field, nameAllocator, builderClass))
-
-      returnBody.add("%L%L = %L%L,\n", indentation, fieldName, fieldName, throwExceptionBlock)
-
+      returnBody.add("%L%L = %L%L,\n",
+          indentation,
+          fieldName,
+          fieldName,
+          throwExceptionBlock)
     }
 
     val buildFunction = FunSpec.builder("build")
@@ -237,7 +245,7 @@ class KotlinGenerator private constructor(
         .build()
   }
 
-  fun builderSetter(field: Field, nameAllocator: NameAllocator, builderType: TypeName) : FunSpec {
+  private fun builderSetter(field: Field, nameAllocator: NameAllocator, builderType: TypeName): FunSpec {
     val fieldName = nameAllocator.get(field)
     val funBuilder = FunSpec.builder(fieldName)
         .addParameter(fieldName, field.getClass())
@@ -251,9 +259,11 @@ class KotlinGenerator private constructor(
     if (field.isRepeated) {
       funBuilder.addStatement("%T.checkElementsNotNull(%L)", Internal::class.java, fieldName)
     }
-    funBuilder.addStatement("this.%L = %L", fieldName, fieldName)
-    funBuilder.addStatement("return this")
-    return funBuilder.build()
+
+    return funBuilder
+        .addStatement("this.%L = %L", fieldName, fieldName)
+        .addStatement("return this")
+        .build()
   }
 
   /**
@@ -435,8 +445,10 @@ class KotlinGenerator private constructor(
         decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
 
         if (!field.isOptional && field.default == null) {
-          throwExceptionBlock = CodeBlock.of(" ?: throw %T.%L(%L, %S)",
-              internalClass, "missingRequiredFields", field.name(), field.name())
+          throwExceptionBlock = CodeBlock.of(" ?: throw %T.missingRequiredFields(%L, %S)",
+              internalClass,
+              field.name(),
+              field.name())
         }
       }
 
@@ -589,7 +601,7 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun Field.declarationClass() : TypeName {
+  private fun Field.declarationClass(): TypeName {
     val fieldClass = getClass()
     if (isRepeated || default != null) return fieldClass
     return fieldClass.asNullable()
@@ -624,7 +636,7 @@ class KotlinGenerator private constructor(
     operator fun invoke(
       schema: Schema,
       emitAndroid: Boolean = false,
-      javaInterOp: Boolean = false
+      javaInterop: Boolean = false
     ): KotlinGenerator {
       val map = BUILT_IN_TYPES.toMutableMap()
 
@@ -647,7 +659,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      return KotlinGenerator(schema, map, emitAndroid, javaInterOp)
+      return KotlinGenerator(schema, map, emitAndroid, javaInterop)
     }
   }
 }

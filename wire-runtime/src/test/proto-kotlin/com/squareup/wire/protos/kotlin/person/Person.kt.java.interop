@@ -36,18 +36,18 @@ data class Person(
         builder.id = id
         builder.email = email
         builder.phone = phone
-        builder.addUnknownFields(unknownFields());
+        builder.addUnknownFields(unknownFields())
         return builder
     }
 
     class Builder : Message.Builder<Person, Builder>() {
-        var name: String? = null
+        private var name: String? = null
 
-        var id: Int? = null
+        private var id: Int? = null
 
-        var email: String? = null
+        private var email: String? = null
 
-        var phone: List<PhoneNumber> = mutableListOf()
+        private var phone: List<PhoneNumber> = mutableListOf()
 
         /**
          * The customer's full name. */
@@ -159,14 +159,14 @@ data class Person(
             val builder = Builder()
             builder.number = number
             builder.type = type
-            builder.addUnknownFields(unknownFields());
+            builder.addUnknownFields(unknownFields())
             return builder
         }
 
         class Builder : Message.Builder<PhoneNumber, Builder>() {
-            var number: String? = null
+            private var number: String? = null
 
-            var type: PhoneType = PhoneType.HOME
+            private var type: PhoneType = PhoneType.HOME
 
             /**
              * The customer's phone number. */

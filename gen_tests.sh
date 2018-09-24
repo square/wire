@@ -96,7 +96,6 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
 cp src/test/proto-kotlin.java.interop/com/squareup/wire/protos/kotlin/person/Person.kt \
    src/test/proto-kotlin/com/squareup/wire/protos/kotlin/person/Person.kt.java.interop
 
-
 # COMPACT
 
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
