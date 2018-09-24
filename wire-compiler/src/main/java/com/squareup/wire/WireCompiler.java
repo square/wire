@@ -103,6 +103,7 @@ public final class WireCompiler {
   public static final String ANDROID = "--android";
   public static final String ANDROID_ANNOTATIONS = "--android-annotations";
   public static final String COMPACT = "--compact";
+  public static final String JAVA_INTEROP = "--java_interop";
   public static final int MAX_WRITE_CONCURRENCY = 8;
 
   static final String CODE_GENERATED_BY_WIRE =
@@ -122,11 +123,12 @@ public final class WireCompiler {
   final boolean emitAndroid;
   final boolean emitAndroidAnnotations;
   final boolean emitCompact;
+  final boolean javaInterop;
 
   WireCompiler(FileSystem fs, WireLogger log, List<String> protoPaths, String javaOut,
       String kotlinOut, List<String> sourceFileNames, IdentifierSet identifierSet, boolean dryRun,
       boolean namedFilesOnly, boolean emitAndroid, boolean emitAndroidAnnotations,
-      boolean emitCompact) {
+      boolean emitCompact, boolean javaInterop) {
     this.fs = fs;
     this.log = log;
     this.protoPaths = protoPaths;
@@ -139,6 +141,7 @@ public final class WireCompiler {
     this.emitAndroid = emitAndroid;
     this.emitAndroidAnnotations = emitAndroidAnnotations;
     this.emitCompact = emitCompact;
+    this.javaInterop = javaInterop;
   }
 
   public static void main(String... args) throws IOException {
@@ -169,6 +172,7 @@ public final class WireCompiler {
     boolean emitAndroid = false;
     boolean emitAndroidAnnotations = false;
     boolean emitCompact = false;
+    boolean javaInterop = false;
 
     for (String arg : args) {
       if (arg.startsWith(PROTO_PATH_FLAG)) {
@@ -208,6 +212,8 @@ public final class WireCompiler {
         emitAndroidAnnotations = true;
       } else if (arg.equals(COMPACT)) {
         emitCompact = true;
+      } else if (arg.equals(JAVA_INTEROP)) {
+        javaInterop = true;
       } else if (arg.startsWith("--")) {
         throw new IllegalArgumentException("Unknown argument '" + arg + "'.");
       } else {
@@ -224,7 +230,7 @@ public final class WireCompiler {
 
     return new WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, sourceFileNames,
         identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitAndroidAnnotations,
-        emitCompact);
+        emitCompact, javaInterop);
   }
 
   private static List<String> splitArg(String arg, int flagLength) {
@@ -279,7 +285,7 @@ public final class WireCompiler {
         futures.add(executor.submit(task));
       }
     } else if (kotlinOut != null) {
-      KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema, emitAndroid);
+      KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema, emitAndroid, javaInterop);
 
       for (int i = 0; i < MAX_WRITE_CONCURRENCY; ++i) {
         KotlinFileWriter task =

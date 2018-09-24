@@ -86,6 +86,17 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
 cp src/test/proto-kotlin.android/com/squareup/wire/protos/kotlin/person/Person.kt \
    src/test/proto-kotlin/com/squareup/wire/protos/kotlin/person/Person.kt.android
 
+# KOTLIN JAVA INTEROP
+java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+  --proto_path=../wire-runtime/src/test/proto/kotlin \
+  --kotlin_out=../wire-runtime/src/test/proto-kotlin.java.interop \
+  --java_interop \
+  person.proto
+
+cp src/test/proto-kotlin.java.interop/com/squareup/wire/protos/kotlin/person/Person.kt \
+   src/test/proto-kotlin/com/squareup/wire/protos/kotlin/person/Person.kt.java.interop
+
+
 # COMPACT
 
 java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
@@ -110,3 +121,4 @@ rm -r src/test/proto-java.compact
 rm -r src/test/proto-java.android
 rm -r src/test/proto-java.android.compact
 rm -r src/test/proto-kotlin.android
+rm -r src/test/proto-kotlin.java.interop

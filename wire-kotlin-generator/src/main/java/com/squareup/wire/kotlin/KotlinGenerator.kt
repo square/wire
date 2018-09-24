@@ -59,7 +59,8 @@ import java.util.Locale
 class KotlinGenerator private constructor(
   val schema: Schema,
   private val nameToKotlinName: Map<ProtoType, ClassName>,
-  private val emitAndroid: Boolean
+  private val emitAndroid: Boolean,
+  private val javaInterOp: Boolean
 ) {
   val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -145,8 +146,16 @@ class KotlinGenerator private constructor(
             .addMember("level = %T.%L", DeprecationLevel::class, DeprecationLevel.HIDDEN)
             .build())
         .addModifiers(OVERRIDE)
-        .addStatement("val builder = Builder()")
+
         .returns(builderClassName)
+
+    if (!javaInterOp) {
+      return funBuilder
+          .addStatement("return %T(this.copy())", builderClassName)
+          .build()
+    }
+
+    funBuilder.addStatement("val builder = Builder()")
 
     val nameAllocator = nameAllocator(type)
 
@@ -165,12 +174,28 @@ class KotlinGenerator private constructor(
     className: ClassName,
     builderClassName: ClassName
   ): TypeSpec {
-
-    val nameAllocator = nameAllocator(type)
-
     val builder = TypeSpec.classBuilder("Builder")
         .superclass(Message.Builder::class.asTypeName()
             .parameterizedBy(className, builderClassName))
+
+    if (!javaInterOp) {
+      return builder
+          .primaryConstructor(FunSpec.constructorBuilder()
+              .addParameter("message", className)
+              .build())
+          .addProperty(PropertySpec.builder("message", className)
+          .addModifiers(PRIVATE)
+          .initializer("message")
+          .build())
+          .addFunction(FunSpec.builder("build")
+              .addModifiers(OVERRIDE)
+              .returns(className)
+              .addStatement("return message")
+              .build())
+          .build()
+    }
+
+    val nameAllocator = nameAllocator(type)
 
     val builderClass = className.nestedClass("Builder")
 
@@ -596,7 +621,11 @@ class KotlinGenerator private constructor(
     )
 
     @JvmStatic @JvmName("get")
-    operator fun invoke(schema: Schema, emitAndroid: Boolean = false): KotlinGenerator {
+    operator fun invoke(
+      schema: Schema,
+      emitAndroid: Boolean = false,
+      javaInterOp: Boolean = false
+    ): KotlinGenerator {
       val map = BUILT_IN_TYPES.toMutableMap()
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
@@ -618,7 +647,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      return KotlinGenerator(schema, map, emitAndroid)
+      return KotlinGenerator(schema, map, emitAndroid, javaInterOp)
     }
   }
 }
