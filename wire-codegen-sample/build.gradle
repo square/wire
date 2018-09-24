@@ -1,4 +1,3 @@
-apply plugin: 'java'
 apply plugin: 'com.liferay.maven.plugin.builder'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
