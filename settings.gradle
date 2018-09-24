@@ -1,5 +1,5 @@
 include ':proto-pruner'
-//include ':sample' // TODO(egor): Make this work with Wire Gradle plugin
+include ':sample'
 include ':wire-codegen-sample'
 include ':wire-compiler'
 include ':wire-gson-support'
