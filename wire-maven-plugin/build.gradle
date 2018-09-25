@@ -11,6 +11,9 @@ jar {
 
 buildPluginDescriptor {
   goalPrefix = 'wire'
+  pomGroupId = GROUP
+  pomArtifactId = POM_ARTIFACT_ID
+  pomVersion = VERSION_NAME
 }
 
 dependencies {
