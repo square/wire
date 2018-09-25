@@ -1,0 +1,23 @@
+apply plugin: 'java-library'
+apply plugin: 'ru.vyarus.animalsniffer'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-moshi-adapter')
+  }
+}
+
+animalsniffer {
+  sourceSets = [sourceSets.main]
+}
+
+dependencies {
+  api project(':wire-runtime')
+  api deps.moshi
+  compileOnly deps.jsr305
+  testImplementation deps.junit
+  testImplementation deps.assertj
+}

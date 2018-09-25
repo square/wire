@@ -1,0 +1,31 @@
+apply plugin: 'com.liferay.maven.plugin.builder'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-codegen-sample')
+  }
+}
+
+buildPluginDescriptor {
+  goalPrefix = 'wire'
+  pomGroupId = GROUP
+  pomArtifactId = POM_ARTIFACT_ID
+  pomVersion = VERSION_NAME
+}
+
+dependencies {
+  implementation project(':wire-runtime')
+  implementation project(':wire-schema')
+  implementation project(':wire-java-generator')
+  implementation deps.okio
+  implementation deps.guava
+  implementation deps.javapoet
+  implementation deps.maven.core
+  implementation deps.maven.plugin.api
+  implementation deps.maven.plugin.annotations
+  testImplementation deps.junit
+  testImplementation deps.assertj
+}

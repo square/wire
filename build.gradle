@@ -1,0 +1,93 @@
+buildscript {
+  ext.versions = [
+      'android': '4.1.1.4',
+      'autovalue': '1.1',
+      'errorprone': '2.0.21',
+      'gson': '2.8.1',
+      'guava': '20.0',
+      'javapoet': '1.10.0',
+      'kotlinpoet': '1.0.0-RC1',
+      'jsr305': '3.0.2',
+      'kotlin': '1.2.61',
+      'okio': '1.14.0',
+      'moshi': '1.6.0',
+      'junit': '4.12',
+      'assertj': '1.7.0',
+      'jimfs': '1.0',
+      'animalSniffer': '1.16',
+      'animalSnifferGradle': '1.4.3',
+      'maven': '3.5.0',
+      'mavenAnnotations': '3.5',
+      'mavenPluginBuilder': '1.2.1',
+      'mavenPublish': '0.4.0',
+  ]
+
+  ext.deps = [
+      'android': "com.google.android:android:${versions.android}",
+      'guava': "com.google.guava:guava:${versions.guava}",
+      'okio': "com.squareup.okio:okio:${versions.okio}",
+      'jsr305': "com.google.code.findbugs:jsr305:${versions.jsr305}",
+      'gson': "com.google.code.gson:gson:${versions.gson}",
+      'javapoet': "com.squareup:javapoet:${versions.javapoet}",
+      'kotlinpoet': "com.squareup:kotlinpoet:${versions.kotlinpoet}",
+      'autovalue': "com.google.auto.value:auto-value:${versions.autovalue}",
+      'kotlin': [
+          'gradle': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+          'stdlib': [
+              'jdk6': "org.jetbrains.kotlin:kotlin-stdlib",
+              'jdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+          ],
+          'test': "org.jetbrains.kotlin:kotlin-test",
+      ],
+      'moshi': "com.squareup.moshi:moshi:${versions.moshi}",
+      'junit': "junit:junit:${versions.junit}",
+      'assertj': "org.assertj:assertj-core:${versions.assertj}",
+      'jimfs': "com.google.jimfs:jimfs:${versions.jimfs}",
+      'animalSniffer': [
+          'gradle': "ru.vyarus:gradle-animalsniffer-plugin:${versions.animalSnifferGradle}",
+          'annotations': "org.codehaus.mojo:animal-sniffer-annotations:${versions.animalSniffer}",
+      ],
+      'maven': [
+          'core': "org.apache.maven:maven-core:${versions.maven}",
+          'plugin': [
+              'api': "org.apache.maven:maven-plugin-api:${versions.maven}",
+              'annotations': "org.apache.maven.plugin-tools:maven-plugin-annotations:${versions.mavenAnnotations}",
+              'builder': "gradle.plugin.com.liferay:gradle-plugins-maven-plugin-builder:${versions.mavenPluginBuilder}",
+              'publish': "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}",
+          ]
+      ]
+  ]
+
+  dependencies {
+    classpath deps.kotlin.gradle
+    classpath deps.animalSniffer.gradle
+    classpath deps.maven.plugin.builder
+    classpath deps.maven.plugin.publish
+  }
+
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
+allprojects {
+  group = GROUP
+  version = VERSION_NAME
+}
+
+subprojects {
+  repositories {
+    mavenCentral()
+  }
+
+  apply plugin: 'com.vanniktech.maven.publish'
+  apply plugin: 'checkstyle'
+
+  afterEvaluate {
+    checkstyle {
+      toolVersion '7.7'
+      sourceSets = [project.sourceSets.main]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-kotlin-generator')
+  }
+}
+
+dependencies {
+  api project(':wire-schema')
+  implementation project(':wire-runtime')
+  api deps.kotlin.stdlib.jdk8
+  implementation deps.okio
+  api deps.kotlinpoet
+  testImplementation deps.junit
+  testImplementation deps.assertj
+}

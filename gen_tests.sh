@@ -2,13 +2,13 @@
 
 set -e
 
-mvn clean package -pl wire-compiler -am -Dmaven.test.skip
+./gradlew -p wire-compiler clean installDist
 
 cd wire-runtime
 PROTOS=`find src/test/proto -not -path src/test/proto/kotlin/* -name '*.proto' \
   | sed 's|^src/test/proto/||' | sort`
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java \
   google/protobuf/descriptor.proto \
@@ -16,7 +16,7 @@ java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies
 
 # NO OPTIONS
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.noOptions \
   --excludes=google.protobuf.* \
@@ -29,7 +29,7 @@ cp src/test/proto-java.noOptions/com/squareup/wire/protos/custom_options/Message
 
 # INCLUDES / EXCLUDES
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.pruned \
   --includes=squareup.protos.roots.A,squareup.protos.roots.H \
@@ -47,7 +47,7 @@ cp src/test/proto-java.pruned/com/squareup/wire/protos/roots/H.java \
 
 # ANDROID
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.android \
   --android \
@@ -58,7 +58,7 @@ cp src/test/proto-java.android/com/squareup/wire/protos/person/Person.java \
 
 # ANDROID COMPACT
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.android.compact \
   --android \
@@ -70,14 +70,14 @@ cp src/test/proto-java.android.compact/com/squareup/wire/protos/person/Person.ja
 
 # KOTLIN
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto/kotlin \
   --kotlin_out=../wire-runtime/src/test/proto-kotlin \
   person.proto
 
 # KOTLIN ANDROID
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto/kotlin \
   --kotlin_out=../wire-runtime/src/test/proto-kotlin.android \
   --android \
@@ -88,7 +88,7 @@ cp src/test/proto-kotlin.android/com/squareup/wire/protos/kotlin/person/Person.k
 
 # COMPACT
 
-java -jar ../wire-compiler/target/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar \
+../wire-compiler/build/install/wire-compiler/bin/wire-compiler \
   --proto_path=../wire-runtime/src/test/proto \
   --java_out=../wire-runtime/src/test/proto-java.compact \
   --compact \
