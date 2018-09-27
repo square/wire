@@ -74,13 +74,13 @@ buildscript {
 allprojects {
   group = GROUP
   version = VERSION_NAME
-}
 
-subprojects {
   repositories {
     mavenCentral()
   }
+}
 
+subprojects {
   apply plugin: 'com.vanniktech.maven.publish'
   apply plugin: 'checkstyle'
 
@@ -91,3 +91,5 @@ subprojects {
     }
   }
 }
+
+apply from: 'gen-tests.gradle'

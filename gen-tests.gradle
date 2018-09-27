@@ -1,0 +1,185 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.stream.Collectors
+
+def PROTOS = Files.find(
+      Paths.get("wire-runtime/src/test/proto"),
+      Integer.MAX_VALUE,
+      { path, attrs -> attrs.isRegularFile() }
+    )
+    .map { path -> Paths.get("wire-runtime/src/test/proto").relativize(path) }
+    .filter { path -> !path.startsWith("kotlin") }
+    .map { path -> path.toString() }
+    .filter { path -> path.endsWith(".proto") }
+    .sorted()
+    .collect(Collectors.toList())
+
+configurations {
+  wire
+}
+
+dependencies {
+  wire project(':wire-compiler')
+}
+
+// JAVA
+
+task generateJavaTests(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-runtime/src/test/proto',
+      '--java_out=wire-runtime/src/test/proto-java',
+      'google/protobuf/descriptor.proto'
+  ] + PROTOS
+}
+
+// NO OPTIONS
+
+task generateNoOptionsTests(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-runtime/src/test/proto',
+      '--java_out=wire-runtime/src/test/proto-java.compact',
+      '--excludes=google.protobuf.*'
+  ] + PROTOS
+}
+task copyNoOptionsFiles(type: Copy) {
+  from 'wire-runtime/src/test/proto-java.noOptions/com/squareup/wire/protos/custom_options'
+  into 'wire-runtime/src/test/proto-java/com/squareup/wire/protos/custom_options'
+  rename '(.+)', '$1.noOptions'
+}
+generateNoOptionsTests.finalizedBy copyNoOptionsFiles
+
+// COMPACT
+
+task generateCompactTests(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-runtime/src/test/proto',
+      '--java_out=wire-runtime/src/test/proto-java.compact',
+      '--compact',
+      'all_types.proto'
+  ]
+}
+task copyCompactFiles(type: Copy) {
+  from 'wire-runtime/src/test/proto-java.compact/com/squareup/wire/protos/alltypes/AllTypes.java'
+  into 'wire-runtime/src/test/proto-java/com/squareup/wire/protos/alltypes'
+  rename '(.+)', '$1.compact'
+}
+generateCompactTests.finalizedBy copyCompactFiles
+
+// GSON (uses COMPACT)
+
+task copyAllTypesTest(type: Copy) {
+  from 'wire-runtime/src/test/proto-java.compact/com/squareup/wire/protos/alltypes/AllTypes.java'
+  into 'wire-gson-support/src/test/java/com/squareup/wire/protos/alltypes'
+}
+task copyRepeatedPackedAndMapTest(type: Copy) {
+  from 'wire-runtime/src/test/proto-java.compact/com/squareup/wire/protos/RepeatedPackedAndMap.java'
+  into 'wire-gson-support/src/test/java/com/squareup/wire/protos'
+}
+task generateGsonTests(dependsOn: [copyAllTypesTest, copyRepeatedPackedAndMapTest])
+
+// INCLUDES / EXCLUDES
+
+task generateIncludesExcludesTests(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-runtime/src/test/proto',
+      '--java_out=wire-runtime/src/test/proto-java.pruned',
+      '--includes=squareup.protos.roots.A,squareup.protos.roots.H',
+      '--excludes=squareup.protos.roots.B',
+      'roots.proto'
+  ]
+}
+task copyIncludesExcludesFiles(type: Copy) {
+  from 'wire-runtime/src/test/proto-java.pruned/com/squareup/wire/protos/roots'
+  into 'wire-runtime/src/test/proto-java/com/squareup/wire/protos/roots'
+  rename '(.+)', '$1.pruned'
+}
+generateIncludesExcludesTests.finalizedBy copyIncludesExcludesFiles
+
+// ANDROID
+
+task generateAndroidTests(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-runtime/src/test/proto',
+      '--java_out=wire-runtime/src/test/proto-java.android',
+      '--android',
+      'person.proto'
+  ]
+}
+task copyAndroidFiles(type: Copy) {
+  from 'wire-runtime/src/test/proto-java.android/com/squareup/wire/protos/Person.java'
+  into 'wire-runtime/src/test/proto-java/com/squareup/wire/protos/Person.java.android'
+}
+generateAndroidTests.finalizedBy copyAndroidFiles
+
+// ANDROID COMPACT
+
+task generateAndroidCompactTests(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-runtime/src/test/proto',
+      '--java_out=wire-runtime/src/test/proto-java.android.compact',
+      '--android',
+      '--compact',
+      'person.proto'
+  ]
+}
+task copyAndroidCompactFiles(type: Copy) {
+  from 'wire-runtime/src/test/proto-java.android.compact/com/squareup/wire/protos/Person.java'
+  into 'wire-runtime/src/test/proto-java/com/squareup/wire/protos/Person.java.android.compact'
+}
+generateAndroidCompactTests.finalizedBy copyAndroidCompactFiles
+
+// KOTLIN
+
+task generateKotlinTests(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-runtime/src/test/proto/kotlin',
+      '--kotlin_out=wire-runtime/src/test/proto-kotlin',
+      'person.proto'
+  ]
+}
+
+// KOTLIN ANDROID
+
+task generateKotlinAndroidTests(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-runtime/src/test/proto/kotlin',
+      '--kotlin_out=wire-runtime/src/test/proto-kotlin.android',
+      '--android',
+      'person.proto'
+  ]
+}
+task copyKotlinAndroidFiles(type: Copy) {
+  from 'wire-runtime/src/test/proto-kotlin.android/com/squareup/wire/protos/kotlin/person/Person.kt'
+  into 'wire-runtime/src/test/proto-kotlin/com/squareup/wire/protos/kotlin/person'
+  rename '(.+)', '$1.android'
+}
+generateKotlinAndroidTests.finalizedBy copyKotlinAndroidFiles
+
+task removeTempDirs(type: Delete) {
+  delete 'wire-runtime/src/test/proto-java.compact',
+      'wire-runtime/src/test/proto-java.pruned',
+      'wire-runtime/src/test/proto-java.android',
+      'wire-runtime/src/test/proto-java.android.compact',
+      'wire-runtime/src/test/proto-kotlin.android'
+}
+
+task generateTests(dependsOn: [generateCompactTests, generateNoOptionsTests, generateGsonTests,
+    generateIncludesExcludesTests, generateAndroidTests, generateAndroidCompactTests,
+    generateKotlinTests, generateKotlinAndroidTests])
+generateTests.finalizedBy removeTempDirs
