@@ -30,7 +30,7 @@
   <module name="TreeWalker">
     <module name="FileContentsHolder"/>
 
-    <property name="cacheFile" value="${checkstyle.cache.file}"/>
+    <property name="cacheFile" value="build/checkstyle/cache"/>
 
     <!-- Checks for Javadoc comments.                     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html -->

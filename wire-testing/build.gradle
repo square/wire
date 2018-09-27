@@ -1,0 +1,21 @@
+apply plugin: 'java-library'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-testing')
+  }
+}
+
+dependencies {
+  api project(':wire-schema')
+  api project(':wire-runtime')
+  implementation project(':wire-java-generator')
+  implementation project(':wire-kotlin-generator')
+  implementation deps.okio
+  implementation deps.guava
+  compileOnly deps.autovalue
+  implementation deps.jimfs
+}

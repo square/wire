@@ -7,12 +7,8 @@ classes
 .classpath
 .project
 
-# Maven
-target
-pom.xml.*
-release.properties
-
-# Maven shade plugin
-dependency-reduced-pom.xml
-
 out/
+
+# Gradle
+.gradle
+build

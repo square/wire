@@ -1,0 +1,40 @@
+ext {
+  generatedSourcesDir = "${buildDir}/generated/src/java"
+}
+
+apply plugin: 'application'
+
+mainClassName = 'com.squareup.dinosaurs.Sample'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-sample')
+  }
+}
+
+configurations {
+  wire
+}
+
+dependencies {
+  wire project(':wire-compiler')
+  implementation project(':wire-runtime')
+  implementation deps.okio
+}
+
+task generateProtos(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=src/main/proto',
+      "--java_out=$generatedSourcesDir"
+  ]
+}
+
+compileJava {
+  dependsOn generateProtos
+  source generatedSourcesDir
+}

@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.kotlin
 
-import android.os.Parcelable
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
@@ -37,7 +36,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.jvm.jvmField
-import com.squareup.wire.AndroidMessage
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
@@ -112,15 +110,14 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(type)
     val adapterName = nameAllocator.get("ADAPTER")
     val unknownFields = nameAllocator.get("unknownFields")
-    val superclass = if (emitAndroid) AndroidMessage::class else Message::class
+    val superclass = if (emitAndroid) ANDROID_MESSAGE else MESSAGE
     val companionObjBuilder = TypeSpec.companionObjectBuilder()
 
     addAdapter(type, companionObjBuilder)
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addModifiers(DATA)
-        .superclass(superclass.asTypeName()
-            .parameterizedBy(className, builderClassName))
+        .superclass(superclass.parameterizedBy(className, builderClassName))
         .addSuperclassConstructorParameter(adapterName)
         .addSuperclassConstructorParameter(unknownFields)
         .addFunction(generateNewBuilderMethod(type, builderClassName))
@@ -570,11 +567,12 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(type)
     val parentClassName = generatedTypeName(type)
     val creatorName = nameAllocator.get("CREATOR")
-    val creatorTypeName = Parcelable.Creator::class.asClassName().parameterizedBy(parentClassName)
+    val creatorTypeName = ClassName("android.os", "Parcelable", "Creator")
+        .parameterizedBy(parentClassName)
 
     companionObjBuilder.addProperty(PropertySpec.builder(creatorName, creatorTypeName)
         .jvmField()
-        .initializer("%T.newCreator(ADAPTER)", AndroidMessage::class)
+        .initializer("%T.newCreator(ADAPTER)", ANDROID_MESSAGE)
         .build())
   }
 
@@ -631,6 +629,8 @@ class KotlinGenerator private constructor(
         ProtoType.UINT32 to INT,
         ProtoType.UINT64 to LONG
     )
+    private val MESSAGE = Message::class.asClassName()
+    private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
 
     @JvmStatic @JvmName("get")
     operator fun invoke(
