@@ -15,7 +15,8 @@ dependencies {
   implementation deps.okio
   implementation deps.guava
   api deps.javapoet
-  compileOnly deps.autovalue
+  annotationProcessor deps.autovalue.compiler
+  compileOnly deps.autovalue.annotations
   compileOnly deps.jsr305
   testImplementation deps.junit
   testImplementation deps.assertj
