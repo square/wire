@@ -1,7 +1,7 @@
 buildscript {
   ext.versions = [
       'android': '4.1.1.4',
-      'autovalue': '1.1',
+      'autovalue': '1.6.2',
       'errorprone': '2.0.21',
       'gson': '2.8.1',
       'guava': '20.0',
@@ -30,7 +30,10 @@ buildscript {
       'gson': "com.google.code.gson:gson:${versions.gson}",
       'javapoet': "com.squareup:javapoet:${versions.javapoet}",
       'kotlinpoet': "com.squareup:kotlinpoet:${versions.kotlinpoet}",
-      'autovalue': "com.google.auto.value:auto-value:${versions.autovalue}",
+      'autovalue': [
+          'compiler': "com.google.auto.value:auto-value:${versions.autovalue}",
+          'annotations': "com.google.auto.value:auto-value-annotations:${versions.autovalue}"
+      ],
       'kotlin': [
           'gradle': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
           'stdlib': [
