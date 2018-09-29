@@ -90,8 +90,12 @@ data class Person(
 
         override fun getValue(): Int = value
 
-        object ADAPTER : EnumAdapter<PhoneType>(PhoneType::class.java) {
-            override fun fromValue(value: Int): PhoneType? = values().find { it.value == value }
+        companion object {
+            @JvmField
+            val ADAPTER: ProtoAdapter<PhoneType> =
+                    object : EnumAdapter<PhoneType>(PhoneType::class.java) {
+                override fun fromValue(value: Int): PhoneType? = values().find { it.value == value }
+            }
         }
     }
 

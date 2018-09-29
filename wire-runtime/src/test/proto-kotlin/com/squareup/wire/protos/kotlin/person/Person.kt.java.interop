@@ -11,8 +11,6 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal
-import kotlin.Deprecated
-import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -26,10 +24,6 @@ data class Person(
     val phone: List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
-    @Deprecated(
-            message = "Shouldn't be used in Kotlin",
-            level = DeprecationLevel.HIDDEN
-    )
     override fun newBuilder(): Builder {
         val builder = Builder()
         builder.name = name
@@ -41,13 +35,13 @@ data class Person(
     }
 
     class Builder : Message.Builder<Person, Builder>() {
-        private var name: String? = null
+        var name: String? = null
 
-        private var id: Int? = null
+        var id: Int? = null
 
-        private var email: String? = null
+        var email: String? = null
 
-        private var phone: List<PhoneNumber> = mutableListOf()
+        var phone: List<PhoneNumber> = Internal.newMutableList()
 
         /**
          * The customer's full name. */
@@ -83,7 +77,7 @@ data class Person(
             id = id ?: throw Internal.missingRequiredFields(id, "id"),
             email = email,
             phone = phone,
-            unknownFields = super.buildUnknownFields()
+            unknownFields = buildUnknownFields()
         )
     }
 
@@ -141,8 +135,12 @@ data class Person(
 
         override fun getValue(): Int = value
 
-        object ADAPTER : EnumAdapter<PhoneType>(PhoneType::class.java) {
-            override fun fromValue(value: Int): PhoneType? = values().find { it.value == value }
+        companion object {
+            @JvmField
+            val ADAPTER: ProtoAdapter<PhoneType> =
+                    object : EnumAdapter<PhoneType>(PhoneType::class.java) {
+                override fun fromValue(value: Int): PhoneType? = values().find { it.value == value }
+            }
         }
     }
 
@@ -151,10 +149,6 @@ data class Person(
         val type: PhoneType = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
     ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
-        @Deprecated(
-                message = "Shouldn't be used in Kotlin",
-                level = DeprecationLevel.HIDDEN
-        )
         override fun newBuilder(): Builder {
             val builder = Builder()
             builder.number = number
@@ -164,9 +158,9 @@ data class Person(
         }
 
         class Builder : Message.Builder<PhoneNumber, Builder>() {
-            private var number: String? = null
+            var number: String? = null
 
-            private var type: PhoneType = PhoneType.HOME
+            var type: PhoneType = PhoneType.HOME
 
             /**
              * The customer's phone number. */
@@ -185,7 +179,7 @@ data class Person(
             override fun build(): PhoneNumber = PhoneNumber(
                 number = number ?: throw Internal.missingRequiredFields(number, "number"),
                 type = type,
-                unknownFields = super.buildUnknownFields()
+                unknownFields = buildUnknownFields()
             )
         }
 
