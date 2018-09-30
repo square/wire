@@ -408,6 +408,18 @@ public class WireCompilerTest {
     assertOutputs(TargetLanguage.KOTLIN, outputs, ".android");
   }
 
+  @Test public void testPersonJavaInteropKotlin() throws Exception {
+    String[] sources = {
+        "person.proto"
+    };
+    invokeCompiler(TargetLanguage.KOTLIN, sources, "--java_interop");
+
+    String[] outputs = {
+        "com/squareup/wire/protos/kotlin/person/Person.kt"
+    };
+    assertOutputs(TargetLanguage.KOTLIN, outputs, ".java.interop");
+  }
+
   private void invokeCompiler(String[] sources, String... extraArgs) throws Exception {
     invokeCompiler(TargetLanguage.JAVA, sources, extraArgs);
   }

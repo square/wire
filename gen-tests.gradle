@@ -173,16 +173,37 @@ task copyKotlinAndroidFiles(type: Copy) {
 }
 generateKotlinAndroidTests.finalizedBy copyKotlinAndroidFiles
 
+
+// KOTLIN JAVA INTEROP
+
+task generateKotlinJavaInteropTests(type: JavaExec) {
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-runtime/src/test/proto/kotlin',
+          '--kotlin_out=wire-runtime/src/test/proto-kotlin.java.interop',
+          '--java_interop',
+          'person.proto'
+  ]
+}
+task copyKotlinJavaInteropFiles(type: Copy) {
+  from 'wire-runtime/src/test/proto-kotlin.java.interop/com/squareup/wire/protos/kotlin/person/Person.kt'
+  into 'wire-runtime/src/test/proto-kotlin/com/squareup/wire/protos/kotlin/person'
+  rename '(.+)', '$1.java.interop'
+}
+generateKotlinJavaInteropTests.finalizedBy copyKotlinJavaInteropFiles
+
 task removeTempDirs(type: Delete) {
-  delete 'wire-runtime/src/test/proto-java.noOptions', 
+  delete 'wire-runtime/src/test/proto-java.noOptions',
       'wire-runtime/src/test/proto-java.compact',
       'wire-runtime/src/test/proto-java.pruned',
       'wire-runtime/src/test/proto-java.android',
       'wire-runtime/src/test/proto-java.android.compact',
-      'wire-runtime/src/test/proto-kotlin.android'
+      'wire-runtime/src/test/proto-kotlin.android',
+      'wire-runtime/src/test/proto-kotlin.java.interop'
 }
 
 task generateTests(dependsOn: [generateCompactTests, generateNoOptionsTests, generateGsonTests,
     generateIncludesExcludesTests, generateAndroidTests, generateAndroidCompactTests,
-    generateKotlinTests, generateKotlinAndroidTests])
+    generateKotlinTests, generateKotlinAndroidTests, generateKotlinJavaInteropTests])
 generateTests.finalizedBy removeTempDirs

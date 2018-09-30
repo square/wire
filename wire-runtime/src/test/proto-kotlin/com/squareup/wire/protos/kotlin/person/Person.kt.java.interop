@@ -2,8 +2,6 @@
 // Source file: person.proto
 package com.squareup.wire.protos.kotlin.person
 
-import android.os.Parcelable
-import com.squareup.wire.AndroidMessage
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
@@ -13,8 +11,6 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.internal.Internal
-import kotlin.Deprecated
-import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -27,15 +23,62 @@ data class Person(
     val email: String? = null,
     val phone: List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
-) : AndroidMessage<Person, Person.Builder>(ADAPTER, unknownFields) {
-    @Deprecated(
-            message = "Shouldn't be used in Kotlin",
-            level = DeprecationLevel.HIDDEN
-    )
-    override fun newBuilder(): Builder = Builder(this.copy())
+) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
+    override fun newBuilder(): Builder {
+        val builder = Builder()
+        builder.name = name
+        builder.id = id
+        builder.email = email
+        builder.phone = phone
+        builder.addUnknownFields(unknownFields())
+        return builder
+    }
 
-    class Builder(private val message: Person) : Message.Builder<Person, Builder>() {
-        override fun build(): Person = message
+    class Builder : Message.Builder<Person, Builder>() {
+        internal var name: String? = null
+
+        internal var id: Int? = null
+
+        internal var email: String? = null
+
+        internal var phone: List<PhoneNumber> = Internal.newMutableList()
+
+        /**
+         * The customer's full name. */
+        fun name(name: String): Builder {
+            this.name = name
+            return this
+        }
+
+        /**
+         * The customer's ID number. */
+        fun id(id: Int): Builder {
+            this.id = id
+            return this
+        }
+
+        /**
+         * Email address for the customer. */
+        fun email(email: String?): Builder {
+            this.email = email
+            return this
+        }
+
+        /**
+         * A list of the customer's phone numbers. */
+        fun phone(phone: List<PhoneNumber>): Builder {
+            Internal.checkElementsNotNull(phone)
+            this.phone = phone
+            return this
+        }
+
+        override fun build(): Person = Person(
+            name = name ?: throw Internal.missingRequiredFields(name, "name"),
+            id = id ?: throw Internal.missingRequiredFields(id, "id"),
+            email = email,
+            phone = phone,
+            unknownFields = buildUnknownFields()
+        )
     }
 
     companion object {
@@ -79,9 +122,6 @@ data class Person(
                 )
             }
         }
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<Person> = AndroidMessage.newCreator(ADAPTER)
     }
 
     enum class PhoneType(private val value: Int) : WireEnum {
@@ -108,15 +148,39 @@ data class Person(
         val number: String,
         val type: PhoneType = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
-    ) : AndroidMessage<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
-        @Deprecated(
-                message = "Shouldn't be used in Kotlin",
-                level = DeprecationLevel.HIDDEN
-        )
-        override fun newBuilder(): Builder = Builder(this.copy())
+    ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
+        override fun newBuilder(): Builder {
+            val builder = Builder()
+            builder.number = number
+            builder.type = type
+            builder.addUnknownFields(unknownFields())
+            return builder
+        }
 
-        class Builder(private val message: PhoneNumber) : Message.Builder<PhoneNumber, Builder>() {
-            override fun build(): PhoneNumber = message
+        class Builder : Message.Builder<PhoneNumber, Builder>() {
+            internal var number: String? = null
+
+            internal var type: PhoneType = PhoneType.HOME
+
+            /**
+             * The customer's phone number. */
+            fun number(number: String): Builder {
+                this.number = number
+                return this
+            }
+
+            /**
+             * The type of phone stored here. */
+            fun type(type: PhoneType): Builder {
+                this.type = type
+                return this
+            }
+
+            override fun build(): PhoneNumber = PhoneNumber(
+                number = number ?: throw Internal.missingRequiredFields(number, "number"),
+                type = type,
+                unknownFields = buildUnknownFields()
+            )
         }
 
         companion object {
@@ -150,9 +214,6 @@ data class Person(
                     )
                 }
             }
-
-            @JvmField
-            val CREATOR: Parcelable.Creator<PhoneNumber> = AndroidMessage.newCreator(ADAPTER)
         }
     }
 }
