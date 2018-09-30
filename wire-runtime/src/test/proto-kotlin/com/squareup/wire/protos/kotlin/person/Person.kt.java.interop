@@ -35,13 +35,13 @@ data class Person(
     }
 
     class Builder : Message.Builder<Person, Builder>() {
-        var name: String? = null
+        internal var name: String? = null
 
-        var id: Int? = null
+        internal var id: Int? = null
 
-        var email: String? = null
+        internal var email: String? = null
 
-        var phone: List<PhoneNumber> = Internal.newMutableList()
+        internal var phone: List<PhoneNumber> = Internal.newMutableList()
 
         /**
          * The customer's full name. */
@@ -158,9 +158,9 @@ data class Person(
         }
 
         class Builder : Message.Builder<PhoneNumber, Builder>() {
-            var number: String? = null
+            internal var number: String? = null
 
-            var type: PhoneType = PhoneType.HOME
+            internal var type: PhoneType = PhoneType.HOME
 
             /**
              * The customer's phone number. */

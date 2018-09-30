@@ -24,6 +24,7 @@ import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier.DATA
+import com.squareup.kotlinpoet.KModifier.INTERNAL
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.LONG
@@ -218,6 +219,7 @@ class KotlinGenerator private constructor(
           .addProperty(PropertySpec.builder(fieldName, field.declarationClass())
               .mutable(true)
               .initializer(getDefaultValue(field))
+              .addModifiers(INTERNAL)
               .build())
           .addFunction(builderSetter(field, nameAllocator, builderClass))
 
