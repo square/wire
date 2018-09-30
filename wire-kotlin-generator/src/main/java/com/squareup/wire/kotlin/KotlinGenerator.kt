@@ -264,15 +264,17 @@ class KotlinGenerator private constructor(
         .add("return ")
 
     val indentation = " ".repeat(4)
+    val nameAllocator = nameAllocator(message)
 
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
+      val fieldName = nameAllocator.get(field)
 
       body.add("%L.%LencodedSizeWithTag(%L, value.%L) +\n",
           adapterName,
           if (field.isRepeated) "asRepeated()." else "",
           field.tag(),
-          field.name())
+          fieldName)
       body.add(indentation)
     }
 
@@ -289,14 +291,16 @@ class KotlinGenerator private constructor(
   private fun encodeFun(message: MessageType): FunSpec {
     val className = generatedTypeName(message)
     val body = CodeBlock.builder()
+    val nameAllocator = nameAllocator(message)
 
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
+      val fieldName = nameAllocator.get(field)
       body.addStatement("%L.%LencodeWithTag(writer, %L, value.%L)",
           adapterName,
           if (field.isRepeated) "asRepeated()." else "",
           field.tag(),
-          field.name())
+          fieldName)
     }
 
     body.addStatement("writer.writeBytes(value.unknownFields)")
@@ -322,7 +326,7 @@ class KotlinGenerator private constructor(
 
     val decodeBlock = CodeBlock.builder()
     decodeBlock.addStatement(
-      "val unknownFields = reader.forEachTag { tag ->")
+        "val unknownFields = reader.forEachTag { tag ->")
 
     // Indent manually as code generator doesn't handle this block gracefully.
     decodeBlock.addStatement("%Lwhen (tag) {", indentation)

@@ -60,37 +60,9 @@ class KotlinGeneratorTest {
     val code = repoBuilder.generateKotlin("Message")
     assertTrue(code.contains("val when_: Float"))
     assertTrue(code.contains("val ADAPTER_: Int"))
-  }
-
-  @Test fun androidSupport() {
-    val repoBuilder = RepoBuilder()
-      .add("message.proto", """
-        |message Person {
-        |  required string name = 1;
-        |  required int32 id = 2;
-        |  optional string email = 3;
-        |  enum PhoneType {
-        |    HOME = 0;
-        |    value = 1;
-        |    WORK = 2;
-        |  }
-        |  message PhoneNumber {
-        |    required string number = 1;
-        |    optional PhoneType type = 2 [default = HOME];
-        |  }
-        |  repeated PhoneNumber phone = 4;
-        |}""".trimMargin())
-    val schema = repoBuilder.schema()
-    val kotlinGenerator = KotlinGenerator(schema, true)
-    val typeSpec = kotlinGenerator.generateType(schema.getType("Person"))
-    val fileSpec = FileSpec.builder("", "_")
-        .addType(typeSpec)
-        .addImport("com.squareup.wire.kotlin", "decodeMessage")
-        .build()
-    val code = fileSpec.toString()
-    assertTrue(code.contains("companion object"))
-    assertTrue(code.contains("@JvmField"))
-    assertTrue(code.contains("val CREATOR: Parcelable.Creator<PhoneNumber>"))
-    assertTrue(code.contains("AndroidMessage.newCreator(ADAPTER)"))
+    assertTrue(code.contains("ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.when_) +"))
+    assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
+    assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
+    assertTrue(code.contains("1 -> when_ = ProtoAdapter.FLOAT.decode(reader)"))
   }
 }
