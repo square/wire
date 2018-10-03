@@ -441,7 +441,7 @@ class KotlinGenerator private constructor(
 
       var throwExceptionBlock = CodeBlock.of("")
       val decodeBodyTemplate: String
-      var fieldDeclaration: CodeBlock = field.getDeclaration(fieldName)
+      val fieldDeclaration: CodeBlock = field.getDeclaration(fieldName)
 
       if (field.isRepeated) {
         decodeBodyTemplate = "%L%L -> %L.add(%L.decode(reader))"
@@ -551,7 +551,7 @@ class KotlinGenerator private constructor(
     val adapterName = nameAllocator.get("ADAPTER")
     val valueName = nameAllocator.get("value")
 
-    val companionObjBuilder = TypeSpec.companionObjectBuilder();
+    val companionObjBuilder = TypeSpec.companionObjectBuilder()
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
@@ -597,8 +597,11 @@ class KotlinGenerator private constructor(
   private fun getDefaultValue(field: Field): CodeBlock {
     val internalClass = ClassName("com.squareup.wire.internal", "Internal")
     return when {
-      isEnum(field) ->
+      isEnum(field) -> if (field.default != null) {
         CodeBlock.of("%T.%L", typeName(field.type()), field.default)
+      } else {
+        CodeBlock.of("null")
+      }
       field.isRepeated -> CodeBlock.of("%T.newMutableList()", internalClass)
       else -> CodeBlock.of("%L", field.default)
     }
@@ -612,8 +615,7 @@ class KotlinGenerator private constructor(
     val default = getDefaultValue(this)
     return when {
       isRepeated -> CodeBlock.of("var $allocatedName = mutableListOf<%T>()", baseClass)
-      default != null -> CodeBlock.of("var $allocatedName: %T = %L", fieldClass, default)
-      else -> CodeBlock.of("var $allocatedName: %T = null", fieldClass)
+      else -> CodeBlock.of("var $allocatedName: %T = %L", fieldClass, default)
     }
   }
 
