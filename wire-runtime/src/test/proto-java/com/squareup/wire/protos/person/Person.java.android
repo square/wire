@@ -3,7 +3,7 @@
 package com.squareup.wire.protos.person;
 
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.squareup.wire.AndroidMessage;
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
