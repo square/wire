@@ -254,7 +254,9 @@ class KotlinGenerator private constructor(
       funBuilder.addKdoc(field.documentation())
     }
     if (field.isDeprecated) {
-      funBuilder.addAnnotation(Deprecated::class)
+      funBuilder.addAnnotation(AnnotationSpec.builder(Deprecated::class)
+          .addMember("message = %S", "$fieldName is deprecated")
+          .build())
     }
     if (field.isRepeated) {
       funBuilder.addStatement("%T.checkElementsNotNull(%L)", Internal::class, fieldName)
