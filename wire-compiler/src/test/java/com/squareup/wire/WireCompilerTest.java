@@ -420,6 +420,18 @@ public class WireCompilerTest {
     assertOutputs(TargetLanguage.KOTLIN, outputs, ".java.interop");
   }
 
+  @Test public void testDeprecatedJavaInteropKotlin() throws Exception {
+    String[] sources = {
+        "deprecated.proto"
+    };
+    invokeCompiler(TargetLanguage.KOTLIN, sources, "--java_interop");
+
+    String[] outputs = {
+        "com/squareup/wire/protos/kotlin/DeprecatedProto.kt"
+    };
+    assertOutputs(TargetLanguage.KOTLIN, outputs, ".java.interop");
+  }
+
   private void invokeCompiler(String[] sources, String... extraArgs) throws Exception {
     invokeCompiler(TargetLanguage.JAVA, sources, extraArgs);
   }

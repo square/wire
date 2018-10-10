@@ -184,12 +184,13 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
           '--proto_path=wire-runtime/src/test/proto/kotlin',
           '--kotlin_out=wire-runtime/src/test/proto-kotlin.java.interop',
           '--java_interop',
-          'person.proto'
+          'person.proto',
+          'deprecated.proto'
   ]
 }
 task copyKotlinJavaInteropFiles(type: Copy) {
-  from 'wire-runtime/src/test/proto-kotlin.java.interop/com/squareup/wire/protos/kotlin/person/Person.kt'
-  into 'wire-runtime/src/test/proto-kotlin/com/squareup/wire/protos/kotlin/person'
+  from 'wire-runtime/src/test/proto-kotlin.java.interop/com/squareup/wire/protos/kotlin'
+  into 'wire-runtime/src/test/proto-kotlin/com/squareup/wire/protos/kotlin'
   rename '(.+)', '$1.java.interop'
 }
 generateKotlinJavaInteropTests.finalizedBy copyKotlinJavaInteropFiles
