@@ -105,7 +105,7 @@ public final class JavaGenerator {
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
   static final ClassName ENUM_ADAPTER = ClassName.get(EnumAdapter.class);
-  static final ClassName NULLABLE = ClassName.get("android.support.annotation", "Nullable");
+  static final ClassName NULLABLE = ClassName.get("androidx.annotation", "Nullable");
   static final ClassName CREATOR = ClassName.get("android.os", "Parcelable", "Creator");
 
   private static final Ordering<Field> TAG_ORDERING = Ordering.from(new Comparator<Field>() {
