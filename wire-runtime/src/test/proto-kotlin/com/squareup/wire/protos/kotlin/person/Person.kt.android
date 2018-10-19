@@ -46,7 +46,7 @@ data class Person(
                 ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) +
                 ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) +
                 PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone) +
-                value.unknownFields.size()
+                value.unknownFields.size
 
             override fun encode(writer: ProtoWriter, value: Person) {
                 ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
@@ -125,7 +125,7 @@ data class Person(
                     object : ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber::class.java) {
                 override fun encodedSize(value: PhoneNumber): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +
                     PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) +
-                    value.unknownFields.size()
+                    value.unknownFields.size
 
                 override fun encode(writer: ProtoWriter, value: PhoneNumber) {
                     ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)

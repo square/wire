@@ -32,7 +32,7 @@ data class OptionalEnumUser(val optional_enum: OptionalEnum? = null, val unknown
         val ADAPTER: ProtoAdapter<OptionalEnumUser> =
                 object : ProtoAdapter<OptionalEnumUser>(FieldEncoding.LENGTH_DELIMITED, OptionalEnumUser::class.java) {
             override fun encodedSize(value: OptionalEnumUser): Int = OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
-                value.unknownFields.size()
+                value.unknownFields.size
 
             override fun encode(writer: ProtoWriter, value: OptionalEnumUser) {
                 OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)

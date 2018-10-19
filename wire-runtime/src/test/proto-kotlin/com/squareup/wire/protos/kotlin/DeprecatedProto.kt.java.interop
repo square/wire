@@ -42,7 +42,7 @@ data class DeprecatedProto(val foo: String? = null, val unknownFields: ByteStrin
         val ADAPTER: ProtoAdapter<DeprecatedProto> =
                 object : ProtoAdapter<DeprecatedProto>(FieldEncoding.LENGTH_DELIMITED, DeprecatedProto::class.java) {
             override fun encodedSize(value: DeprecatedProto): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +
-                value.unknownFields.size()
+                value.unknownFields.size
 
             override fun encode(writer: ProtoWriter, value: DeprecatedProto) {
                 ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)

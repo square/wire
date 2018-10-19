@@ -388,7 +388,7 @@ class KotlinGenerator private constructor(
         .addParameter("value", className)
         .returns(Int::class)
         .addCode(body
-            .add("value.unknownFields.size()\n")
+            .add("value.unknownFields.size\n")
             .build())
         .addModifiers(OVERRIDE)
         .build()
