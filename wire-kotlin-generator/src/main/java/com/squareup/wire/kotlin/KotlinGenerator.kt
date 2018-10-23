@@ -302,7 +302,7 @@ class KotlinGenerator private constructor(
 
       if (field.default != null) {
         defaultValue = getDefaultValue(field)
-        fieldClass = fieldClass.asNonNullable()
+        fieldClass = fieldClass.asNonNull()
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
@@ -638,7 +638,7 @@ class KotlinGenerator private constructor(
   private fun Field.getClass(baseClass: TypeName = nameToKotlinName.getValue(type())) = when {
     isRepeated -> List::class.asClassName().parameterizedBy(baseClass)
     isOptional && default == null -> baseClass.asNullable()
-    else -> baseClass.asNonNullable()
+    else -> baseClass.asNonNull()
   }
 
   companion object {

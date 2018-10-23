@@ -6,7 +6,7 @@ buildscript {
       'gson': '2.8.1',
       'guava': '20.0',
       'javapoet': '1.10.0',
-      'kotlinpoet': '1.0.0-RC1',
+      'kotlinpoet': '1.0.0-RC2',
       'jsr305': '3.0.2',
       'kotlin': '1.2.61',
       'okio': '2.1.0',
