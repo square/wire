@@ -10,13 +10,14 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
+import com.squareup.wire.WireField
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class OptionalEnumUser(val optional_enum: OptionalEnum? = null, val unknownFields: ByteString = ByteString.EMPTY) : Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
+data class OptionalEnumUser(@WireField(tag = 1, adapter = "OptionalEnum.ADAPTER") val optional_enum: OptionalEnum? = null, val unknownFields: ByteString = ByteString.EMPTY) : Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
             message = "Shouldn't be used in Kotlin",
             level = DeprecationLevel.HIDDEN

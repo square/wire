@@ -44,6 +44,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
+import com.squareup.wire.WireField
 import com.squareup.wire.internal.Internal
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
@@ -305,6 +306,10 @@ class KotlinGenerator private constructor(
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
+          .addAnnotation(AnnotationSpec.builder(WireField::class)
+              .addMember("tag = %L", field.tag())
+              .addMember("adapter = %S", getAdapterName(field))
+              .build())
       if (field.isOptional || field.isRepeated) {
         parameterSpec.defaultValue(defaultValue)
       }

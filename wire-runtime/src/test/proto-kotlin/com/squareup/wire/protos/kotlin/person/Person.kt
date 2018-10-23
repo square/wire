@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
+import com.squareup.wire.WireField
 import com.squareup.wire.internal.Internal
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
@@ -20,10 +21,10 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class Person(
-    val name: String,
-    val id: Int,
-    val email: String? = null,
-    val phone: List<PhoneNumber> = emptyList(),
+    @WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter.STRING") val name: String,
+    @WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter.INT32") val id: Int,
+    @WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter.STRING") val email: String? = null,
+    @WireField(tag = 4, adapter = "PhoneNumber.ADAPTER") val phone: List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -100,8 +101,8 @@ data class Person(
     }
 
     data class PhoneNumber(
-        val number: String,
-        val type: PhoneType = PhoneType.HOME,
+        @WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter.STRING") val number: String,
+        @WireField(tag = 2, adapter = "PhoneType.ADAPTER") val type: PhoneType = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
     ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
         @Deprecated(
