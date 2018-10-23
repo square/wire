@@ -306,12 +306,15 @@ class KotlinGenerator private constructor(
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-          .addAnnotation(AnnotationSpec.builder(WireField::class)
-              .addMember("tag = %L", field.tag())
-              .addMember("adapter = %S", getAdapterName(field))
-              .build())
       if (field.isOptional || field.isRepeated) {
         parameterSpec.defaultValue(defaultValue)
+      }
+
+      if (javaInterOp) {
+        parameterSpec.addAnnotation(AnnotationSpec.builder(WireField::class)
+            .addMember("tag = %L", field.tag())
+            .addMember("adapter = %S", getAdapterName(field))
+            .build())
       }
 
       constructorBuilder.addParameter(parameterSpec.build())
