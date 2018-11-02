@@ -151,7 +151,8 @@ task generateKotlinTests(type: JavaExec) {
       '--proto_path=wire-runtime/src/test/proto/kotlin',
       '--kotlin_out=wire-runtime/src/test/proto-kotlin',
       'person.proto',
-      'optional_enum.proto'
+      'optional_enum.proto',
+      'one_of.proto'
   ]
 }
 

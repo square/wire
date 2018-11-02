@@ -97,7 +97,7 @@ class KotlinGenerator private constructor(
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
             }
-            message.fields().forEach { field ->
+            message.fieldsAndOneOfFields().forEach { field ->
               newName(field.name(), field)
             }
           }
@@ -125,6 +125,10 @@ class KotlinGenerator private constructor(
         .addFunction(generateNewBuilderMethod(type, builderClassName))
         .addType(generateBuilderClass(type, className, builderClassName))
 
+    if (type.oneOfs().size != 0) {
+      classBuilder.addInitializerBlock(generateInitializerOneOfBlock(type))
+    }
+
     if (emitAndroid) {
       addAndroidCreator(type, companionObjBuilder)
     }
@@ -136,6 +140,25 @@ class KotlinGenerator private constructor(
     type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
 
     return classBuilder.build()
+  }
+
+  private fun generateInitializerOneOfBlock(type: MessageType): CodeBlock {
+    val oneOfs = type.oneOfs()
+    val result = CodeBlock.Builder()
+    val nameAllocator = nameAllocator(type)
+
+    oneOfs
+        .filter { oneOf -> oneOf.fields().size >= 2 }
+        .forEach { oneOf ->
+          val fieldNames = oneOf.fields().map { nameAllocator.get(it) }.joinToString(", ")
+          result.beginControlFlow("if (%T.countNonNull(%L) > 1)",
+              Internal::class, fieldNames)
+          result.addStatement("throw IllegalArgumentException(" +
+              "\"at most one of " + "$fieldNames may be non-null\")")
+          result.endControlFlow()
+        }
+
+    return result.build()
   }
 
   private fun generateNewBuilderMethod(type: MessageType, builderClassName: ClassName): FunSpec {
@@ -157,7 +180,7 @@ class KotlinGenerator private constructor(
 
     funBuilder.addStatement("val builder = Builder()")
 
-    type.fields().forEach { field ->
+    type.fieldsAndOneOfFields().forEach { field ->
       val fieldName = nameAllocator.get(field)
       funBuilder.addStatement("builder.%1L = %1L", fieldName)
     }
@@ -206,8 +229,7 @@ class KotlinGenerator private constructor(
       val fieldName = nameAllocator.get(field)
 
       val throwExceptionBlock = if (!field.isRepeated
-          && !field.isOptional
-          && field.default == null) {
+          && field.isRequired) {
         CodeBlock.of(" ?: throw %1T.%2L(%3L, %3S)",
             internalClass,
             "missingRequiredFields",
@@ -285,18 +307,18 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val byteClass = typeName(ProtoType.BYTES)
 
-    message.fields().forEach { field ->
+    message.fieldsAndOneOfFields().forEach { field ->
       var fieldClass: TypeName = typeName(field.type())
       val fieldName = nameAllocator.get(field)
       var defaultValue = CodeBlock.of("null")
 
       when {
-        field.isOptional -> {
-          fieldClass = fieldClass.asNullable()
-        }
         field.isRepeated -> {
           fieldClass = List::class.asClassName().parameterizedBy(fieldClass)
           defaultValue = CodeBlock.of("emptyList()")
+        }
+        !field.isRequired -> {
+          fieldClass = fieldClass.asNullable()
         }
       }
 
@@ -306,7 +328,7 @@ class KotlinGenerator private constructor(
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-      if (field.isOptional || field.isRepeated) {
+      if (!field.isRequired) {
         parameterSpec.defaultValue(defaultValue)
       }
 
@@ -380,7 +402,7 @@ class KotlinGenerator private constructor(
     val indentation = " ".repeat(4)
     val nameAllocator = nameAllocator(message)
 
-    message.fields().forEach { field ->
+    message.fieldsAndOneOfFields().forEach { field ->
       val adapterName = getAdapterName(field)
       val fieldName = nameAllocator.get(field)
 
@@ -407,7 +429,7 @@ class KotlinGenerator private constructor(
     val body = CodeBlock.builder()
     val nameAllocator = nameAllocator(message)
 
-    message.fields().forEach { field ->
+    message.fieldsAndOneOfFields().forEach { field ->
       val adapterName = getAdapterName(field)
       val fieldName = nameAllocator.get(field)
       body.addStatement("%L.%LencodeWithTag(writer, %L, value.%L)",
@@ -445,7 +467,7 @@ class KotlinGenerator private constructor(
     // Indent manually as code generator doesn't handle this block gracefully.
     decodeBlock.addStatement("%Lwhen (tag) {", indentation)
 
-    message.fields().forEach { field ->
+    message.fieldsAndOneOfFields().forEach { field ->
       val adapterName = getAdapterName(field)
       val fieldName = nameAllocator.get(field)
 
@@ -458,7 +480,7 @@ class KotlinGenerator private constructor(
       } else {
         decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
 
-        if (!field.isOptional && field.default == null) {
+        if (field.isRequired) {
           throwExceptionBlock = CodeBlock.of(" ?: throw %1T.missingRequiredFields(%2L, %2S)",
               internalClass,
               field.name())

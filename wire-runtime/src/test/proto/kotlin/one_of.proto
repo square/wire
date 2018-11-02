@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package squareup.protos.kotlin;
+package squareup.protos.kotlin.oneof;
 
 option java_package = "com.squareup.wire.protos.kotlin";
 
-message OptionalEnumUser {
-  optional OptionalEnum optional_enum = 1;
+message OneOfMessage {
 
-  enum OptionalEnum {
-    FOO = 1;
-    BAR = 2;
+  // Must have a foo or a bar.
+  oneof choice {
+    // What foo.
+    int32 foo = 1;
+    // Such bar.
+    string bar = 3;
+    // Nice baz.
+    string baz = 4;
   }
 }
