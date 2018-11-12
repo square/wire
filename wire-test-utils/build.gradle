@@ -5,7 +5,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 jar {
   manifest {
-    attributes('Automatic-Module-Name': 'wire-testing')
+    attributes('Automatic-Module-Name': 'wire-test-utils')
   }
 }
 

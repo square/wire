@@ -12,7 +12,7 @@ jar {
 dependencies {
   testImplementation project(':wire-runtime')
   testImplementation project(':wire-schema')
-  testImplementation project(':wire-testing')
+  testImplementation project(':wire-test-utils')
   testImplementation project(':wire-java-generator')
   testImplementation project(':wire-kotlin-generator')
   testImplementation deps.okio
