@@ -1,7 +1,13 @@
 apply plugin: 'java'
+apply plugin: 'org.jetbrains.kotlin.jvm'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
+
+sourceSets {
+  test.java.srcDirs += 'src/test/proto-java'
+  test.kotlin.srcDirs += 'src/test/proto-kotlin'
+}
 
 jar {
   manifest {
@@ -11,10 +17,7 @@ jar {
 
 dependencies {
   testImplementation project(':wire-runtime')
-  testImplementation project(':wire-schema')
   testImplementation project(':wire-test-utils')
-  testImplementation deps.okio
-  testImplementation deps.guava
   testImplementation deps.junit
   testImplementation deps.assertj
   testImplementation deps.jimfs
