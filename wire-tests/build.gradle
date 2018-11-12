@@ -13,8 +13,6 @@ dependencies {
   testImplementation project(':wire-runtime')
   testImplementation project(':wire-schema')
   testImplementation project(':wire-test-utils')
-  testImplementation project(':wire-java-generator')
-  testImplementation project(':wire-kotlin-generator')
   testImplementation deps.okio
   testImplementation deps.guava
   testImplementation deps.junit

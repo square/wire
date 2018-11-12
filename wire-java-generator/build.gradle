@@ -18,6 +18,8 @@ dependencies {
   annotationProcessor deps.autovalue.compiler
   compileOnly deps.autovalue.annotations
   compileOnly deps.jsr305
+  testImplementation project(':wire-test-utils')
   testImplementation deps.junit
   testImplementation deps.assertj
+  testImplementation deps.jimfs
 }

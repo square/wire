@@ -1,9 +1,7 @@
-package com.squareup.wire.java
+package com.squareup.wire.kotlin
 
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.schema.RepoBuilder
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class KotlinGeneratorTest {
