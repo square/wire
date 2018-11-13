@@ -116,8 +116,8 @@ task generateAndroidTests(type: JavaExec) {
   ]
 }
 task copyAndroidFiles(type: Copy) {
-  from 'wire-tests/src/test/proto-java.android/com/squareup/wire/protos/Person.java'
-  into 'wire-tests/src/test/proto-java/com/squareup/wire/protos'
+  from 'wire-tests/src/test/proto-java.android/com/squareup/wire/protos/person/Person.java'
+  into 'wire-tests/src/test/proto-java/com/squareup/wire/protos/person'
   rename '(.+)', '$1.android'
 }
 generateAndroidTests.finalizedBy copyAndroidFiles
@@ -136,8 +136,8 @@ task generateAndroidCompactTests(type: JavaExec) {
   ]
 }
 task copyAndroidCompactFiles(type: Copy) {
-  from 'wire-tests/src/test/proto-java.android.compact/com/squareup/wire/protos/Person.java'
-  into 'wire-tests/src/test/proto-java/com/squareup/wire/protos'
+  from 'wire-tests/src/test/proto-java.android.compact/com/squareup/wire/protos/person/Person.java'
+  into 'wire-tests/src/test/proto-java/com/squareup/wire/protos/person'
   rename '(.+)', '$1.android.compact'
 }
 generateAndroidCompactTests.finalizedBy copyAndroidCompactFiles
