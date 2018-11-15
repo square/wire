@@ -68,7 +68,7 @@ public final class RepoBuilder {
   }
 
   public RepoBuilder add(String path) throws IOException {
-    File file = new File("../wire-runtime/src/test/proto/" + path);
+    File file = new File("../wire-tests/src/test/proto/" + path);
     try (Source source = Okio.source(file)) {
       String protoFile = Okio.buffer(source).readUtf8();
       return add(path, protoFile);

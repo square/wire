@@ -15,7 +15,6 @@
  */
 package com.squareup.wire;
 
-import com.squareup.wire.protos.RepeatedAndPacked;
 import com.squareup.wire.protos.edgecases.NoFields;
 import com.squareup.wire.protos.person.Person;
 import com.squareup.wire.protos.person.Person.PhoneNumber;
@@ -328,13 +327,6 @@ public class WireTest {
     // Serialize again, value is preserved
     byte[] newData = adapter.encode(result);
     assertThat(data).isEqualTo(newData);
-  }
-
-  @Test public void missingRepeatedAndPackedFieldsBecomesEmptyList() throws IOException {
-    byte[] bytes = new byte[0];
-    RepeatedAndPacked data = RepeatedAndPacked.ADAPTER.decode(bytes);
-    assertThat(data.rep_int32).isEqualTo(Collections.emptyList());
-    assertThat(data.pack_int32).isEqualTo(Collections.emptyList());
   }
 
   @Test public void unmodifiedMutableListReusesImmutableInstance() {
