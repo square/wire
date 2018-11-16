@@ -36,6 +36,7 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
+import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
@@ -356,9 +357,9 @@ class KotlinGenerator private constructor(
 
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("%T.LENGTH_DELIMITED",
+        .addSuperclassConstructorParameter("\n%>%T.LENGTH_DELIMITED",
             FieldEncoding::class.asClassName())
-        .addSuperclassConstructorParameter("%T::class.java", parentClassName)
+        .addSuperclassConstructorParameter("\n%T::class.java\n%<", parentClassName)
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
@@ -374,30 +375,24 @@ class KotlinGenerator private constructor(
 
   private fun encodedSizeFun(message: MessageType): FunSpec {
     val className = generatedTypeName(message)
-    val body = CodeBlock.builder()
-        .add("return ")
-
-    val indentation = " ".repeat(4)
     val nameAllocator = nameAllocator(message)
-
-    message.fields().forEach { field ->
-      val adapterName = getAdapterName(field)
-      val fieldName = nameAllocator.get(field)
-
-      body.add("%L.%LencodedSizeWithTag(%L, value.%L) +\n",
-          adapterName,
-          if (field.isRepeated) "asRepeated()." else "",
-          field.tag(),
-          fieldName)
-      body.add(indentation)
+    val body = buildCodeBlock {
+      add("return \n%>")
+      message.fields().forEach { field ->
+        val adapterName = getAdapterName(field)
+        val fieldName = nameAllocator.get(field)
+        add("%L.%LencodedSizeWithTag(%L, value.%L) +\n",
+            adapterName,
+            if (field.isRepeated) "asRepeated()." else "",
+            field.tag(),
+            fieldName)
+      }
+      add("value.unknownFields.size%<\n")
     }
-
     return FunSpec.builder("encodedSize")
         .addParameter("value", className)
         .returns(Int::class)
-        .addCode(body
-            .add("value.unknownFields.size\n")
-            .build())
+        .addCode(body)
         .addModifiers(OVERRIDE)
         .build()
   }
@@ -565,7 +560,7 @@ class KotlinGenerator private constructor(
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("%T::class.java", parentClassName)
+        .addSuperclassConstructorParameter("\n%>%T::class.java\n%<", parentClassName)
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)
