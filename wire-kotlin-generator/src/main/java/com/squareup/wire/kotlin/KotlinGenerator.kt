@@ -286,23 +286,28 @@ class KotlinGenerator private constructor(
     val byteClass = typeName(ProtoType.BYTES)
 
     message.fields().forEach { field ->
-      var fieldClass: TypeName = typeName(field.type())
+      var fieldClass: TypeName
       val fieldName = nameAllocator.get(field)
+      val fieldType = field.type()
       var defaultValue = CodeBlock.of("null")
 
       when {
-        field.isOptional -> {
-          fieldClass = fieldClass.asNullable()
-        }
+        field.isOptional -> fieldClass = typeName(fieldType).asNullable()
         field.isRepeated -> {
-          fieldClass = List::class.asClassName().parameterizedBy(fieldClass)
+          fieldClass = List::class.asClassName().parameterizedBy(typeName(fieldType))
           defaultValue = CodeBlock.of("emptyList()")
         }
+        fieldType.isMap -> {
+          fieldClass = Map::class.asTypeName()
+              .parameterizedBy(typeName(fieldType.keyType()), typeName(fieldType.valueType()))
+          defaultValue = CodeBlock.of("emptyMap()")
+        }
+        else -> fieldClass = typeName(fieldType)
       }
 
       if (field.default != null) {
         defaultValue = getDefaultValue(field)
-        fieldClass = fieldClass.asNonNull()
+        fieldClass = typeName(fieldType).asNonNull()
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
@@ -362,13 +367,31 @@ class KotlinGenerator private constructor(
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
-        .build()
+
+    for (field in type.fields()) {
+      if (field.type().isMap) {
+        val keyType = field.type().keyType()
+        val valueType = field.type().valueType()
+        val adapterType = ProtoAdapter::class.asTypeName()
+            .parameterizedBy(Map::class.asTypeName()
+                .parameterizedBy(typeName(keyType), typeName(valueType)))
+        adapterObject.addProperty(
+            PropertySpec.builder("${field.name()}Adapter", adapterType, PRIVATE)
+                .initializer(
+                    "%T.newMapAdapter(%L, %L)",
+                    ProtoAdapter::class,
+                    getAdapterName(keyType),
+                    getAdapterName(valueType)
+                )
+                .build())
+      }
+    }
 
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
 
     companionObjBuilder.addProperty(PropertySpec.builder(adapterName, adapterType)
         .jvmField()
-        .initializer("%L", adapterObject)
+        .initializer("%L", adapterObject.build())
         .build())
   }
 
@@ -453,15 +476,16 @@ class KotlinGenerator private constructor(
       val decodeBodyTemplate: String
       val fieldDeclaration: CodeBlock = field.getDeclaration(fieldName)
 
-      if (field.isRepeated) {
-        decodeBodyTemplate = "%L%L -> %L.add(%L.decode(reader))"
-      } else {
-        decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
-
-        if (!field.isOptional && field.default == null) {
-          throwExceptionBlock = CodeBlock.of(" ?: throw %1T.missingRequiredFields(%2L, %2S)",
-              internalClass,
-              field.name())
+      when {
+        field.isRepeated -> decodeBodyTemplate = "%L%L -> %L.add(%L.decode(reader))"
+        field.type().isMap -> decodeBodyTemplate = "%L%L -> %L.putAll(%L.decode(reader))"
+        else -> {
+          decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
+          if (!field.isOptional && field.default == null) {
+            throwExceptionBlock = CodeBlock.of(" ?: throw %1T.missingRequiredFields(%2L, %2S)",
+                internalClass,
+                field.name())
+          }
         }
       }
 
@@ -491,13 +515,17 @@ class KotlinGenerator private constructor(
   }
 
   // TODO add support for custom adapters.
-  private fun getAdapterName(field: Field): CodeBlock {
-    if (field.type().isScalar) {
-      return CodeBlock.of("%T.%L", ProtoAdapter::class,
-          field.type().simpleName().toUpperCase(Locale.US))
-    }
+  private fun getAdapterName(field: Field) = if (field.type().isMap) {
+    CodeBlock.of("%NAdapter", field.name())
+  } else {
+    getAdapterName(field.type())
+  }
 
-    return CodeBlock.of("%L.ADAPTER", typeName(field.type()).simpleName)
+  private fun getAdapterName(type: ProtoType) = when {
+    type.isScalar ->
+      CodeBlock.of("%T.%L", ProtoAdapter::class, type.simpleName().toUpperCase(Locale.US))
+    type.isMap -> throw IllegalArgumentException("Can't create single adapter for map type $type")
+    else -> CodeBlock.of("%L.ADAPTER", typeName(type).simpleName)
   }
 
   /**
@@ -619,14 +647,11 @@ class KotlinGenerator private constructor(
 
   private fun isEnum(field: Field): Boolean = schema.getType(field.type()) is EnumType
 
-  private fun Field.getDeclaration(allocatedName: String): CodeBlock {
-    val baseClass = nameToKotlinName.getValue(type())
-    val fieldClass = declarationClass()
-    val default = getDefaultValue(this)
-    return when {
-      isRepeated -> CodeBlock.of("var $allocatedName = mutableListOf<%T>()", baseClass)
-      else -> CodeBlock.of("var $allocatedName: %T = %L", fieldClass, default)
-    }
+  private fun Field.getDeclaration(allocatedName: String) = when {
+    isRepeated -> CodeBlock.of("var $allocatedName = mutableListOf<%T>()", typeName(type()))
+    type().isMap -> CodeBlock.of("var $allocatedName = mutableMapOf<%T, %T>()",
+        typeName(type().keyType()), typeName(type().valueType()))
+    else -> CodeBlock.of("var $allocatedName: %T = %L", declarationClass(), getDefaultValue(this))
   }
 
   private fun Field.declarationClass(): TypeName {
