@@ -25,8 +25,9 @@ class KotlinGeneratorTest {
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin("Person")
     assertTrue(code.contains("data class Person"))
-    assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>(" +
-        "FieldEncoding.LENGTH_DELIMITED, PhoneNumber::class.java)"))
+    assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>(\n"))
+    assertTrue(code.contains("FieldEncoding.LENGTH_DELIMITED"))
+    assertTrue(code.contains("PhoneNumber::class.java"))
     assertTrue(code.contains("override fun encode(writer: ProtoWriter, value: Person)"))
     assertTrue(code.contains("enum class PhoneType(private val value: Int) : WireEnum"))
     assertTrue(code.contains("WORK(1),"))
