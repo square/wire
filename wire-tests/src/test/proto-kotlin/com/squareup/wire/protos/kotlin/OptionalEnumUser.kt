@@ -29,9 +29,12 @@ data class OptionalEnumUser(val optional_enum: OptionalEnum? = null, val unknown
 
     companion object {
         @JvmField
-        val ADAPTER: ProtoAdapter<OptionalEnumUser> =
-                object : ProtoAdapter<OptionalEnumUser>(FieldEncoding.LENGTH_DELIMITED, OptionalEnumUser::class.java) {
-            override fun encodedSize(value: OptionalEnumUser): Int = OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
+        val ADAPTER: ProtoAdapter<OptionalEnumUser> = object : ProtoAdapter<OptionalEnumUser>(
+            FieldEncoding.LENGTH_DELIMITED, 
+            OptionalEnumUser::class.java
+        ) {
+            override fun encodedSize(value: OptionalEnumUser): Int = 
+                OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
                 value.unknownFields.size
 
             override fun encode(writer: ProtoWriter, value: OptionalEnumUser) {
@@ -64,8 +67,9 @@ data class OptionalEnumUser(val optional_enum: OptionalEnum? = null, val unknown
 
         companion object {
             @JvmField
-            val ADAPTER: ProtoAdapter<OptionalEnum> =
-                    object : EnumAdapter<OptionalEnum>(OptionalEnum::class.java) {
+            val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
+                OptionalEnum::class.java
+            ) {
                 override fun fromValue(value: Int): OptionalEnum? = values().find { it.value == value }
             }
         }

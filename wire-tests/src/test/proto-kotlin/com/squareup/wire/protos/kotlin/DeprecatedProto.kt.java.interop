@@ -40,9 +40,12 @@ data class DeprecatedProto(@WireField(tag = 1, adapter = "com.squareup.wire.Prot
 
     companion object {
         @JvmField
-        val ADAPTER: ProtoAdapter<DeprecatedProto> =
-                object : ProtoAdapter<DeprecatedProto>(FieldEncoding.LENGTH_DELIMITED, DeprecatedProto::class.java) {
-            override fun encodedSize(value: DeprecatedProto): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +
+        val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(
+            FieldEncoding.LENGTH_DELIMITED, 
+            DeprecatedProto::class.java
+        ) {
+            override fun encodedSize(value: DeprecatedProto): Int = 
+                ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +
                 value.unknownFields.size
 
             override fun encode(writer: ProtoWriter, value: DeprecatedProto) {

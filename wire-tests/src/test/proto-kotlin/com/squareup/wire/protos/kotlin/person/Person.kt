@@ -38,9 +38,12 @@ data class Person(
 
     companion object {
         @JvmField
-        val ADAPTER: ProtoAdapter<Person> =
-                object : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
-            override fun encodedSize(value: Person): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
+        val ADAPTER: ProtoAdapter<Person> = object : ProtoAdapter<Person>(
+            FieldEncoding.LENGTH_DELIMITED, 
+            Person::class.java
+        ) {
+            override fun encodedSize(value: Person): Int = 
+                ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
                 ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) +
                 ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) +
                 PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone) +
@@ -92,8 +95,9 @@ data class Person(
 
         companion object {
             @JvmField
-            val ADAPTER: ProtoAdapter<PhoneType> =
-                    object : EnumAdapter<PhoneType>(PhoneType::class.java) {
+            val ADAPTER: ProtoAdapter<PhoneType> = object : EnumAdapter<PhoneType>(
+                PhoneType::class.java
+            ) {
                 override fun fromValue(value: Int): PhoneType? = values().find { it.value == value }
             }
         }
@@ -116,9 +120,12 @@ data class Person(
 
         companion object {
             @JvmField
-            val ADAPTER: ProtoAdapter<PhoneNumber> =
-                    object : ProtoAdapter<PhoneNumber>(FieldEncoding.LENGTH_DELIMITED, PhoneNumber::class.java) {
-                override fun encodedSize(value: PhoneNumber): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +
+            val ADAPTER: ProtoAdapter<PhoneNumber> = object : ProtoAdapter<PhoneNumber>(
+                FieldEncoding.LENGTH_DELIMITED, 
+                PhoneNumber::class.java
+            ) {
+                override fun encodedSize(value: PhoneNumber): Int = 
+                    ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +
                     PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) +
                     value.unknownFields.size
 
