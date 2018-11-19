@@ -197,11 +197,10 @@ class KotlinGenerator private constructor(
 
     val nameAllocator = nameAllocator(type)
     val builderClass = className.nestedClass("Builder")
-    val indentation = " ".repeat(4)
     val internalClass = ClassName("com.squareup.wire.internal", "Internal")
 
     val returnBody = CodeBlock.builder()
-        .add("return %T(\n", className)
+        .add("return %T(%>\n", className)
 
     type.fields().forEach { field ->
       val fieldName = nameAllocator.get(field)
@@ -225,17 +224,15 @@ class KotlinGenerator private constructor(
               .build())
           .addFunction(builderSetter(field, nameAllocator, builderClass))
 
-      returnBody.add("%1L%2L = %2L%3L,\n",
-          indentation,
-          fieldName,
-          throwExceptionBlock)
+      returnBody.addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
     }
 
     val buildFunction = FunSpec.builder("build")
         .addModifiers(OVERRIDE)
         .returns(className)
         .addCode(returnBody
-            .add("%LunknownFields = buildUnknownFields()\n)\n", indentation)
+            .add("unknownFields = buildUnknownFields()")
+            .add("%<\n)\n") // close the block
             .build())
         .build()
 
@@ -448,20 +445,18 @@ class KotlinGenerator private constructor(
   private fun decodeFun(message: MessageType): FunSpec {
     val className = nameToKotlinName.getValue(message.type())
     val nameAllocator = nameAllocator(message)
-    val indentation = " ".repeat(4)
     val internalClass = ClassName("com.squareup.wire.internal", "Internal")
 
     val declarationBody = CodeBlock.builder()
 
     val returnBody = CodeBlock.builder()
-    returnBody.add("return %T(\n", className)
+    returnBody.addStatement("return %T(%>", className)
 
     val decodeBlock = CodeBlock.builder()
     decodeBlock.addStatement(
         "val unknownFields = reader.forEachTag { tag ->")
 
-    // Indent manually as code generator doesn't handle this block gracefully.
-    decodeBlock.addStatement("%Lwhen (tag) {", indentation)
+    decodeBlock.addStatement("%>when (tag) {%>")
 
     message.fields().forEach { field ->
       val adapterName = getAdapterName(field)
@@ -472,10 +467,10 @@ class KotlinGenerator private constructor(
       val fieldDeclaration: CodeBlock = field.getDeclaration(fieldName)
 
       when {
-        field.isRepeated -> decodeBodyTemplate = "%L%L -> %L.add(%L.decode(reader))"
-        field.type().isMap -> decodeBodyTemplate = "%L%L -> %L.putAll(%L.decode(reader))"
+        field.isRepeated -> decodeBodyTemplate = "%L -> %L.add(%L.decode(reader))"
+        field.type().isMap -> decodeBodyTemplate = "%L -> %L.putAll(%L.decode(reader))"
         else -> {
-          decodeBodyTemplate = "%L%L -> %L = %L.decode(reader)"
+          decodeBodyTemplate = "%L -> %L = %L.decode(reader)"
           if (!field.isOptional && field.default == null) {
             throwExceptionBlock = CodeBlock.of(" ?: throw %1T.missingRequiredFields(%2L, %2S)",
                 internalClass,
@@ -485,19 +480,17 @@ class KotlinGenerator private constructor(
       }
 
       declarationBody.addStatement("%L", fieldDeclaration)
-      decodeBlock.addStatement(decodeBodyTemplate, indentation.repeat(2), field.tag(), fieldName,
-          adapterName)
-      returnBody.add("%L%L = %L%L,\n", indentation, fieldName, fieldName, throwExceptionBlock)
+      decodeBlock.addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
+      returnBody.addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
     }
 
     val tagHandlerClass = ClassName("com.squareup.wire", "TagHandler")
 
-    decodeBlock.addStatement("%Lelse -> %T.%L", indentation.repeat(2), tagHandlerClass,
-        "UNKNOWN_TAG")
-    decodeBlock.addStatement("%L}", indentation)
-    decodeBlock.addStatement("}")
+    decodeBlock.addStatement("else -> %T.%L", tagHandlerClass, "UNKNOWN_TAG")
+    decodeBlock.add("%<}\n%<}\n") // close the block
 
-    returnBody.add("%LunknownFields = unknownFields\n)\n", indentation)
+    returnBody.add("unknownFields = unknownFields")
+    returnBody.add("%<\n)\n") // close the block
 
     return FunSpec.builder("decode")
         .addParameter("reader", ProtoReader::class)
