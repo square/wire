@@ -70,7 +70,11 @@ data class OptionalEnumUser(val optional_enum: OptionalEnum? = null, val unknown
             val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
                 OptionalEnum::class.java
             ) {
-                override fun fromValue(value: Int): OptionalEnum? = values().find { it.value == value }
+                override fun fromValue(value: Int): OptionalEnum = when (value) {
+                    1 -> FOO
+                    2 -> BAR
+                    else -> throw IllegalArgumentException("Unexpected value: " + value)
+                }
             }
         }
     }
